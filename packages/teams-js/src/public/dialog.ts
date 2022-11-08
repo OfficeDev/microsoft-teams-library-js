@@ -101,7 +101,6 @@ export namespace dialog {
      * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
      * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
      *
-     *
      * @beta
      */
     export function open(
@@ -220,9 +219,12 @@ export namespace dialog {
      *
      * @returns boolean to represent whether dialog.url module is supported
      *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.url ? true : false) : false;
     }
 
@@ -267,15 +269,16 @@ export namespace dialog {
        * Checks if dialog.url.bot capability is supported by the host
        *
        * @returns boolean to represent whether dialog.url.bot is supported
+       *
+       * @throws Error if {@linkcode app.initialize} has not successfully completed
+       *
+       * @beta
        */
       export function isSupported(): boolean {
-        return runtime.supports.dialog
-          ? runtime.supports.dialog.url
-            ? runtime.supports.dialog.url.bot
-              ? true
-              : false
-            : false
-          : false;
+        ensureInitialized();
+        return (
+          (runtime.supports.dialog && runtime.supports.dialog.url && runtime.supports.dialog.url.bot) !== undefined
+        );
       }
     }
 
@@ -318,9 +321,12 @@ export namespace dialog {
    *
    * @returns boolean to represent whether dialog module is supported
    *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.dialog ? true : false;
   }
 
@@ -350,9 +356,12 @@ export namespace dialog {
      *
      * @returns boolean to represent whether dialog.update is supported
      *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
     }
   }
@@ -389,9 +398,12 @@ export namespace dialog {
      *
      * @returns boolean to represent whether dialog.adaptiveCard module is supported
      *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
      * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       const isAdaptiveCardVersionSupported =
         runtime.hostVersionsInfo &&
         runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&
@@ -433,8 +445,13 @@ export namespace dialog {
        * Checks if dialog.adaptiveCard.bot capability is supported by the host
        *
        * @returns boolean to represent whether dialog.adaptiveCard.bot is supported
+       *
+       * @throws Error if {@linkcode app.initialize} has not successfully completed
+       *
+       * @beta
        */
       export function isSupported(): boolean {
+        ensureInitialized();
         const isAdaptiveCardVersionSupported =
           runtime.hostVersionsInfo &&
           runtime.hostVersionsInfo.adaptiveCardSchemaVersion &&

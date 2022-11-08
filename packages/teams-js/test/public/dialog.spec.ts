@@ -10,7 +10,7 @@ import {
 import { dialog } from '../../src/public/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -408,19 +408,27 @@ describe('Dialog', () => {
       });
     });
     describe('dialog.update.isSupported function', () => {
-      it('dialog.update.isSupported should return false if the runtime says dialog is not supported', () => {
+      it('dialog.update.isSupported should return false if the runtime says dialog is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', () => {
+      it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', () => {
+      it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { update: {} } } });
         expect(dialog.update.isSupported()).toBeTruthy();
+      });
+
+      it('dialog.update.isSupported should throw before initialization', () => {
+        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
   });
@@ -527,14 +535,20 @@ describe('Dialog', () => {
     });
   });
   describe('dialog.isSupported function', () => {
-    it('dialog.isSupported should return false if the runtime says dialog is not supported', () => {
+    it('dialog.isSupported should return false if the runtime says dialog is not supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(dialog.isSupported()).not.toBeTruthy();
     });
 
-    it('dialog.update.isSupported should return true if the runtime says dialog is supported', () => {
+    it('dialog.update.isSupported should return true if the runtime says dialog is supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
       expect(dialog.isSupported()).toBeTruthy();
+    });
+    it('dialog.update.isSupported should throw before initialization', () => {
+      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 
@@ -779,24 +793,33 @@ describe('Dialog', () => {
     });
 
     describe('dialog.url.bot.isSupported function', () => {
-      it('dialog.url.bot.isSupported should return false if the runtime says dialog is not supported', () => {
+      it('dialog.url.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(dialog.url.bot.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.url.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', () => {
+      it('dialog.url.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
         expect(dialog.url.bot.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.url.bot.isSupported should return false if the runtime says dialog and dialog.url is supported', () => {
+      it('dialog.url.bot.isSupported should return false if the runtime says dialog and dialog.url is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { url: {} } } });
         expect(dialog.url.bot.isSupported()).toBeFalsy();
       });
 
-      it('dialog.url.bot.isSupported should return true if the runtime says dialog and dialog.url.bot is supported', () => {
+      it('dialog.url.bot.isSupported should return true if the runtime says dialog and dialog.url.bot is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { url: { bot: {} } } } });
         expect(dialog.url.bot.isSupported()).toBeTruthy();
+      });
+
+      it('dialog.url.bot.isSupported should throw before initialization', () => {
+        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        expect(() => dialog.url.bot.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
   });
@@ -1254,12 +1277,14 @@ describe('Dialog', () => {
     });
 
     describe('Testing dialog.adaptiveCard.isSupported function', () => {
-      it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is not supported', () => {
+      it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is not supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
       });
 
-      it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is supported and adaptiveCard is not', () => {
+      it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is supported and adaptiveCard is not', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({
           apiVersion: 1,
           hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1267,13 +1292,20 @@ describe('Dialog', () => {
         });
         expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
       });
-      it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', () => {
+
+      it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', async () => {
+        await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({
           apiVersion: 1,
           hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
           supports: { dialog: { card: {} } },
         });
         expect(dialog.adaptiveCard.isSupported()).toBeTruthy();
+      });
+
+      it('dialog.adaptiveCard.isSupported should throw before initialization', () => {
+        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        expect(() => dialog.adaptiveCard.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
 
@@ -1512,12 +1544,14 @@ describe('Dialog', () => {
       });
 
       describe('Testing dialog.adaptiveCard.bot.isSupported function', () => {
-        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog is not supported', () => {
+        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
-        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', () => {
+        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
             apiVersion: 1,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1526,7 +1560,8 @@ describe('Dialog', () => {
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
-        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', () => {
+        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
             apiVersion: 1,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1535,7 +1570,8 @@ describe('Dialog', () => {
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
-        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', () => {
+        it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
             apiVersion: 1,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1544,13 +1580,19 @@ describe('Dialog', () => {
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
-        it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', () => {
+        it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', async () => {
+          await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
             apiVersion: 1,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: { card: { bot: {} } } },
           });
           expect(dialog.adaptiveCard.bot.isSupported()).toBeTruthy();
+        });
+
+        it('dialog.adaptiveCard.bot.isSupported should throw before initialization', () => {
+          framedMock.setRuntimeConfig(_uninitializedRuntime);
+          expect(() => dialog.adaptiveCard.bot.isSupported()).toThrowError('The library has not yet been initialized');
         });
       });
     });
