@@ -148,7 +148,14 @@ export namespace sharing {
     }
   }
 
+  /**
+   * Checks if the sharing capability is supported by the host
+   * @returns boolean to represent whether the sharing capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.sharing ? true : false;
   }
 }

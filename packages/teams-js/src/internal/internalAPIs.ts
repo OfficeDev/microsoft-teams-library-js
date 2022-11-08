@@ -1,6 +1,10 @@
 import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
-import { defaultSDKVersionForCompatCheck, userOriginUrlValidationRegExp } from './constants';
+import {
+  defaultSDKVersionForCompatCheck,
+  errorLibraryNotInitialized,
+  userOriginUrlValidationRegExp,
+} from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
 import { compareSDKVersions } from './utils';
@@ -24,8 +28,8 @@ const ensureInitializedLogger = internalLogger.extend('ensureInitialized');
  */
 export function ensureInitializeCalled(): void {
   if (!GlobalVars.initializeCalled) {
-    ensureInitializeCalledLogger('The library has not yet been initialized.');
-    throw new Error('The library has not yet been initialized');
+    ensureInitializeCalledLogger(errorLibraryNotInitialized);
+    throw new Error(errorLibraryNotInitialized);
   }
 }
 
@@ -39,10 +43,11 @@ export function ensureInitializeCalled(): void {
 export function ensureInitialized(...expectedFrameContexts: string[]): void {
   if (!GlobalVars.initializeCompleted) {
     ensureInitializedLogger(
-      'The library has not yet been initialized. initializeCalled: %s',
+      '%s. initializeCalled: %s',
+      errorLibraryNotInitialized,
       GlobalVars.initializeCalled.toString(),
     );
-    throw new Error('The library has not yet been initialized');
+    throw new Error(errorLibraryNotInitialized);
   }
 
   if (expectedFrameContexts && expectedFrameContexts.length > 0) {

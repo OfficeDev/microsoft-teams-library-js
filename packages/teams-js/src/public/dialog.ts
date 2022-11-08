@@ -317,9 +317,10 @@ export namespace dialog {
   }
 
   /**
-   * Checks if dialog module is supported by the host
+   * Checks if dialog capability is supported by the host
+   * @returns boolean to represent whether dialog capabilty is supported
    *
-   * @returns boolean to represent whether dialog module is supported
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
@@ -353,8 +354,9 @@ export namespace dialog {
 
     /**
      * Checks if dialog.update capability is supported by the host
+     * @returns boolean to represent whether dialog.update capabilty is supported
      *
-     * @returns boolean to represent whether dialog.update is supported
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      *

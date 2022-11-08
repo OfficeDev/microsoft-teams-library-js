@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
@@ -35,7 +36,7 @@ describe('tasks', () => {
 
     it('should not allow calls before initialization', () => {
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.startTask(taskInfo)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -227,7 +228,7 @@ describe('tasks', () => {
     ];
     it('should not allow calls before initialization', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.updateTask({} as any)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -286,7 +287,7 @@ describe('tasks', () => {
       FrameContexts.meetingStage,
     ];
     it('should not allow calls before initialization', () => {
-      expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
