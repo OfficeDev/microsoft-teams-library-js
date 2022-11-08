@@ -1,3 +1,4 @@
+import { boolean } from 'yargs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -1358,6 +1359,80 @@ describe('meeting', () => {
           );
         });
       }
+    });
+  });
+
+  describe('registerMicStateChangedHandler', () => {
+    it('should fail when called without a handler', () => {
+      expect(() => meeting.registerMicStateChangedHandler(null)).toThrowError(
+        '[registerMicStateChangedHandler] Handler cannot be null',
+      );
+    });
+
+    it('should fail when called before app is initialized', () => {
+      expect(() =>
+        meeting.registerMicStateChangedHandler((micState: meeting.IMicState): boolean => {
+          return false;
+        }),
+      ).toThrowError('The library has not yet been initialized');
+    });
+
+    it('should successfully register a handler for when a micState is received and frameContext=sidePanel', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+      const micState: meeting.IMicState = { isMicMuted: true };
+
+      let handlerCalled = false;
+      let response: meeting.IMicState | null;
+
+      meeting.registerMicStateChangedHandler((micState: meeting.IMicState): boolean => {
+        handlerCalled = true;
+        response = micState;
+        return true;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.micStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.micStateChanged',
+          args: [micState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(micState);
+    });
+
+    it('should successfully register a handler for when a micState is received and frameContext=meetingStage', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+      const micState: meeting.IMicState = { isMicMuted: true };
+
+      let handlerCalled = false;
+      let response: meeting.IMicState;
+
+      meeting.registerMicStateChangedHandler((micState: meeting.IMicState): boolean => {
+        handlerCalled = true;
+        response = micState;
+        return true;
+      });
+
+      const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+      expect(registerHandlerMessage).not.toBeNull();
+      expect(registerHandlerMessage.args.length).toBe(1);
+      expect(registerHandlerMessage.args[0]).toBe('meeting.micStateChanged');
+
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'meeting.micStateChanged',
+          args: [micState],
+        },
+      } as DOMMessageEvent);
+
+      expect(handlerCalled).toBeTruthy();
+      expect(response).toBe(micState);
     });
   });
 });

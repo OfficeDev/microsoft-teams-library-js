@@ -210,6 +210,21 @@ export namespace meeting {
   }
 
   /**
+   * Interface for mic state change
+   *
+   * @beta
+   */
+  export interface IMicState {
+    /** Indicates the mute status of the mic*/
+    isMicMuted: boolean;
+
+    /**
+     * error object in case there is a failure
+     */
+    error?: SdkError;
+  }
+
+  /**
    * Different types of meeting reactions that can be sent/received
    *
    * @beta
@@ -532,5 +547,21 @@ export namespace meeting {
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.letAppHandleAudio', callback);
+  }
+
+  /**
+   * Registers a handler for receiving the Mic state change events.
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   *
+   * @param handler The handler to invoke when the mic state is changed
+   *
+   * @beta
+   */
+  export function registerMicStateChangedHandler(handler: (micState: IMicState) => boolean): void {
+    if (!handler) {
+      throw new Error('[registerMicStateChangedHandler] Handler cannot be null');
+    }
+    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    registerHandler('meeting.micStateChanged', handler);
   }
 }

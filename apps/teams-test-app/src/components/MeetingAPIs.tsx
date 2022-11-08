@@ -200,6 +200,29 @@ const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
     },
   });
 
+const RegisterMicStateChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerMicStateChangedHandler',
+    title: 'Register MicState Changed Handler',
+    onClick: async (setResult) => {
+      const handler = (micState: meeting.IMicState): boolean => {
+        let res, bReturn;
+        if (micState.error) {
+          res = `Receieved error ${JSON.stringify(micState.error)}`;
+          bReturn = false;
+        } else {
+          res = `Mic state changed to ${JSON.stringify(micState.isMicMuted)}`;
+          bReturn = true;
+        }
+        setResult(res);
+        return bReturn;
+      };
+      meeting.registerMicStateChangedHandler(handler);
+
+      return generateRegistrationMsg('the mic state changes');
+    },
+  });
+
 const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerSpeakingStateChangedHandler',
@@ -314,6 +337,7 @@ const MeetingAPIs = (): ReactElement => (
     <RegisterLiveStreamChangedHandler />
     <RegisterRaiseHandStateChangedHandler />
     <RegisterMeetingReactionReceivedHandler />
+    <RegisterMicStateChangedHandler />
     <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
