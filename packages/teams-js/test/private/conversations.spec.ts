@@ -1,7 +1,8 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -27,6 +28,13 @@ describe('conversations', () => {
     }
   });
 
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => conversations.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('openConversation', () => {
     it('should not allow calls before initialization', () => {
       const conversationRequest: OpenConversationRequest = {
@@ -35,7 +43,7 @@ describe('conversations', () => {
         entityId: 'someEntityId',
       };
       return expect(conversations.openConversation(conversationRequest)).rejects.toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -112,7 +120,7 @@ describe('conversations', () => {
 
   describe('closeConversation', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => conversations.closeConversation()).toThrowError('The library has not yet been initialized');
+      expect(() => conversations.closeConversation()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('closeConversation should throw error if conversation capability is not supported in runtime config', async () => {
@@ -136,7 +144,7 @@ describe('conversations', () => {
 
   describe('getChatMembers', () => {
     it('should not allow calls before initialization', () => {
-      return expect(conversations.getChatMembers()).rejects.toThrowError('The library has not yet been initialized');
+      return expect(conversations.getChatMembers()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('getChatMembers should throw error if conversations capability is not supported in runtime config', async () => {

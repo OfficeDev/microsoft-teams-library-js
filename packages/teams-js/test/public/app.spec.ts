@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { authentication, dialog, menus, pages } from '../../src/public';
@@ -340,7 +341,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.getContext should allow calls after initialization called, but before it finished', async () => {
@@ -601,7 +602,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifyAppLoaded should allow calls after initialization called, but before it finished', async () => {
@@ -637,7 +638,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
@@ -678,7 +679,7 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('app.notifyFailure should allow calls after initialization called, but before it finished', async () => {
@@ -737,9 +738,7 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -781,7 +780,7 @@ describe('Testing app capability', () => {
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {
@@ -1188,7 +1187,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1392,7 +1391,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1409,7 +1408,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1431,7 +1430,7 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1468,9 +1467,7 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1508,7 +1505,7 @@ describe('Testing app capability', () => {
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {
