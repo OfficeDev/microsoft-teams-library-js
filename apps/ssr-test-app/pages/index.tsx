@@ -46,7 +46,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
  * @returns prop data
  */
 export const getServerSideProps: GetServerSideProps = async () => {
-  let appContext: microsoftTeams.app.Context = {};
+  let appContext: microsoftTeams.app.Context = null;
 
   microsoftTeams.app
     .initialize()

@@ -36,7 +36,7 @@ export namespace teamsCore {
    * default print handler
    */
   export function print(): void {
-    window.print();
+    typeof window !== undefined ? window.print() : null;
   }
 
   /**
