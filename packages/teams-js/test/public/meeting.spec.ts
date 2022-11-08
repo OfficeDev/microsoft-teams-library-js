@@ -1,4 +1,3 @@
-import { boolean } from 'yargs';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';

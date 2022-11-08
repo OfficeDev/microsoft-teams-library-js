@@ -325,6 +325,23 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
     },
   });
 
+const LetAppHandleAudio = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'letAppHandleAudio',
+    title: 'App Handles the Audio channel',
+    onClick: async (setResult) => {
+      const callback = (error: SdkError | null, result: boolean | null): void => {
+        if (error) {
+          setResult(JSON.stringify(error));
+        } else {
+          setResult('letAppHandleAudio() succeeded: ' + JSON.stringify(result));
+        }
+      };
+      meeting.letAppHandleAudio(callback);
+      return '';
+    },
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -343,6 +360,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
+    <LetAppHandleAudio />
   </ModuleWrapper>
 );
 
