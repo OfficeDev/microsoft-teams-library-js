@@ -358,8 +358,6 @@ export namespace dialog {
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
-     * @throws Error if {@linkcode app.initialize} has not successfully completed
-     *
      * @beta
      */
     export function isSupported(): boolean {
