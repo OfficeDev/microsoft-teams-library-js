@@ -150,3 +150,12 @@ jobs:
       - template: tools/yaml-templates/android-test.yml
         parameters:
           androidAppHostingSdkGitPath: git://$(AndroidAppHostingSdkGitPath)
+
+  - job: E2ETestIOS
+    displayName: 'E2E Test - IOS'
+    pool:
+      vmImage: 'internal-macos-11'
+    steps:
+      - template: tools/yaml-templates/ios-test.yml
+        parameters:
+          iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
