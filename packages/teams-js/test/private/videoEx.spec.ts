@@ -2,7 +2,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { videoEx } from '../../src/private/videoEx';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -620,6 +620,18 @@ describe('videoEx', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.personalizedEffectsChanged');
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(personalizedEffects);
+    });
+  });
+
+  describe('isSupported', () => {
+    it('FRAMED - should not be supported before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
+    });
+
+    it('FRAMELESS - should not be supported before initialization', () => {
+      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 });

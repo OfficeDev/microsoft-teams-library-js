@@ -1,7 +1,8 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ErrorCode } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { stageView } from '../../src/public/stageView';
 import { Utils } from '../utils';
 
@@ -41,9 +42,16 @@ describe('stageView', () => {
     entityId: 'entityId',
   };
 
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => stageView.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('open', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(stageView.open(stageViewParams)).rejects.toThrowError('The library has not yet been initialized');
+      await expect(stageView.open(stageViewParams)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((frameContext) => {

@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
@@ -61,7 +62,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       getContext(() => {
         return;
       }),
-    ).toThrowError('The library has not yet been initialized');
+    ).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should successfully initialize', () => {
@@ -446,7 +447,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -570,7 +571,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -666,7 +667,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -835,7 +836,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerOnLoadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
     it('should successfully register handler', async () => {
       await utils.initializeWithContext(FrameContexts.content);
@@ -890,7 +891,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerBeforeUnloadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a before unload handler', async () => {

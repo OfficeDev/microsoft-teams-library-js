@@ -325,6 +325,31 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
     },
   });
 
+interface ShareInformation {
+  isVisible: boolean;
+  contentUrl?: string;
+}
+
+const SetOptions = (): React.ReactElement =>
+  ApiWithTextInput<ShareInformation>({
+    name: 'setOptions',
+    title: 'Set App Share Button options',
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input.isVisible !== 'boolean') {
+          throw new Error('input.isVisible should be boolean');
+        }
+        if (input.contentUrl) {
+          new URL(input.contentUrl);
+        }
+      },
+      submit: async (input) => {
+        meeting.appShareButton.setOptions(input);
+        return '';
+      },
+    },
+  });
+
 const LetAppHandleAudio = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'letAppHandleAudio',
@@ -360,6 +385,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
+    <SetOptions />
     <LetAppHandleAudio />
   </ModuleWrapper>
 );
