@@ -225,12 +225,16 @@ export namespace conversations {
   }
 
   /**
+   * Checks if the conversations capability is supported by the host
    * @returns boolean to represent whether conversations capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.conversations ? true : false;
   }
 }

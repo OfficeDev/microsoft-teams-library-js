@@ -27,3 +27,6 @@ yarn-error.log
 
 # locally generated docs
 /packages/teams-js/docs
+
+#lerna logs
+lerna-debug.log
