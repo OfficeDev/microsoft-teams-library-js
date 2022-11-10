@@ -250,7 +250,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  function notifyError(errorMessage: string): void {
+  export function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);
   }
 }
