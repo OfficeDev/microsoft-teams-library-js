@@ -104,7 +104,9 @@ export namespace videoEx {
             () => {
               notifyVideoFrameProcessed(timestamp);
             },
-            notifyError,
+            (errorMessage: string) => {
+              notifyError(`[VideoFrameProcessingFailed]: ${errorMessage}`);
+            },
           );
         }
       },
@@ -244,6 +246,9 @@ export namespace videoEx {
   /**
    * @hidden
    * Sending error notification to host
+   *
+   * **Note**: Call this function only when your app meets fatal error and can't continue.
+   * The host will stop the video pipeline and terminate this session, and optionally, show an error message to the user.
    * @beta
    * @param errorMessage - The error message that will be sent to the host
    *
