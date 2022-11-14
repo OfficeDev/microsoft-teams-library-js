@@ -1359,8 +1359,8 @@ describe('meeting', () => {
 
           let callbackCalled = false;
           let returnedSdkError: SdkError | null;
-          let returnedResult: boolean | null;
-          meeting.letAppHandleAudio((error: SdkError, result: boolean) => {
+          let returnedResult: meeting.ILetAppHandleAudioSdkResponse | null;
+          meeting.letAppHandleAudio((error: SdkError, result: meeting.ILetAppHandleAudioSdkResponse) => {
             callbackCalled = true;
             returnedResult = result;
             returnedSdkError = error;
@@ -1385,8 +1385,8 @@ describe('meeting', () => {
 
           let callbackCalled = false;
           let returnedSdkError: SdkError | null;
-          let returnedResult: boolean | null;
-          meeting.letAppHandleAudio((error: SdkError, result: boolean) => {
+          let returnedResult: meeting.ILetAppHandleAudioSdkResponse | null;
+          meeting.letAppHandleAudio((error: SdkError, result: meeting.ILetAppHandleAudioSdkResponse) => {
             callbackCalled = true;
             returnedResult = result;
             returnedSdkError = error;

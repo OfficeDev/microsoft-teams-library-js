@@ -355,11 +355,14 @@ const LetAppHandleAudio = (): React.ReactElement =>
     name: 'letAppHandleAudio',
     title: 'App Handles the Audio channel',
     onClick: async (setResult) => {
-      const callback = (error: SdkError | null, result: boolean | null): void => {
+      const callback = (
+        error: SdkError | null,
+        letAppHandleAudioSdkResponse: meeting.ILetAppHandleAudioSdkResponse | null,
+      ): void => {
         if (error) {
           setResult(JSON.stringify(error));
         } else {
-          setResult('letAppHandleAudio() succeeded: ' + JSON.stringify(result));
+          setResult('letAppHandleAudio() succeeded: ' + JSON.stringify(letAppHandleAudioSdkResponse));
         }
       };
       meeting.letAppHandleAudio(callback);

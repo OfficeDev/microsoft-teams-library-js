@@ -209,6 +209,10 @@ export namespace meeting {
     error?: SdkError;
   }
 
+  export interface ILetAppHandleAudioSdkResponse {
+    isTeamsAudioLess: boolean;
+  }
+
   /**
    * Interface for mic state change
    *
@@ -582,7 +586,9 @@ export namespace meeting {
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    */
-  export function letAppHandleAudio(callback: (error: SdkError | null, result: boolean | null) => void): void {
+  export function letAppHandleAudio(
+    callback: (error: SdkError | null, letAppHandleAudioSdkResponse: ILetAppHandleAudioSdkResponse | null) => void,
+  ): void {
     if (!callback) {
       throw new Error('[letAppHandleAudio] Callback cannot be null');
     }
