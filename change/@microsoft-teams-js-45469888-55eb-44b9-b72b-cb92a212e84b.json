@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "make notifyError function in videoEx public to enable video app notify host when meeting fatal errors",
+  "comment": "add notifyFatalError function in videoEx to enable video app notify host when meeting fatal errors",
   "packageName": "@microsoft/teams-js",
   "email": "Xukai.Wu@microsoft.com",
   "dependentChangeType": "patch"

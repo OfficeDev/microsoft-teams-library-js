@@ -15,6 +15,18 @@ import { video } from '../public/video';
 export namespace videoEx {
   /**
    * @hidden
+   * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum ErrorLevel {
+    Fatal = 'fatal',
+    Warn = 'warn',
+  }
+  /**
+   * @hidden
    * Video frame configuration supplied to the host to customize the generated video frame parameters
    * @beta
    *
@@ -104,9 +116,7 @@ export namespace videoEx {
             () => {
               notifyVideoFrameProcessed(timestamp);
             },
-            (errorMessage: string) => {
-              notifyError(`[VideoFrameProcessingFailed]: ${errorMessage}`);
-            },
+            notifyError,
           );
         }
       },
@@ -246,6 +256,20 @@ export namespace videoEx {
   /**
    * @hidden
    * Sending error notification to host
+   * @beta
+   * @param errorMessage - The error message that will be sent to the host
+   * @param errorLevel - The error level that will be sent to the host
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  function notifyError(errorMessage: string, errorLevel: ErrorLevel = ErrorLevel.Warn): void {
+    sendMessageToParent('video.notifyError', [errorMessage, errorLevel]);
+  }
+
+  /**
+   * @hidden
+   * Sending fatal error notification to host
    *
    * **Note**: Call this function only when your app meets fatal error and can't continue.
    * The host will stop the video pipeline and terminate this session, and optionally, show an error message to the user.
@@ -255,7 +279,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function notifyError(errorMessage: string): void {
-    sendMessageToParent('video.notifyError', [errorMessage]);
+  export function notifyFatalError(errorMessage: string): void {
+    notifyError(errorMessage, ErrorLevel.Fatal);
   }
 }
