@@ -1,8 +1,25 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Mon, 10 Oct 2022 19:09:20 GMT and should not be manually modified.
+This log was last generated on Thu, 03 Nov 2022 17:03:30 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.5.0
+
+Thu, 03 Nov 2022 17:03:30 GMT
+
+### Minor changes
+
+- Updated most APIs to require initialization to be fully finished before they are allowed to be called.
+
+### Patches
+
+- Added Outlook's consumer domain to domains' allowlist
+- Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused
+- Set `PACKAGE_VERSION` to an error value indicating it will be replaced by webpack at build time
+- Fixed `profile.isSupported` and showProfile `TriggerType`
+- Added 'www.microsoft365.com' and '*.www.microsoft365.com' to the `validOrigins` list.
+- Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.
 
 ## 2.4.2
 
