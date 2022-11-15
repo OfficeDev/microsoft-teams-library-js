@@ -588,12 +588,13 @@ export namespace meeting {
    */
   export function letAppHandleAudio(
     callback: (error: SdkError | null, letAppHandleAudioSdkResponse: ILetAppHandleAudioSdkResponse | null) => void,
+    transferAudio: boolean,
   ): void {
     if (!callback) {
       throw new Error('[letAppHandleAudio] Callback cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.letAppHandleAudio', callback);
+    sendMessageToParent('meeting.letAppHandleAudio', [transferAudio], callback);
   }
 
   /**

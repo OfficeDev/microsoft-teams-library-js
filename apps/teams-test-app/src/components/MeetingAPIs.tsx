@@ -365,7 +365,7 @@ const LetAppHandleAudio = (): React.ReactElement =>
           setResult('letAppHandleAudio() succeeded: ' + JSON.stringify(letAppHandleAudioSdkResponse));
         }
       };
-      meeting.letAppHandleAudio(callback);
+      meeting.letAppHandleAudio(callback, true); // TODO
       return '';
     },
   });

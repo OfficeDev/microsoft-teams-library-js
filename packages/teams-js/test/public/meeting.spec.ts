@@ -1364,7 +1364,7 @@ describe('meeting', () => {
             callbackCalled = true;
             returnedResult = result;
             returnedSdkError = error;
-          });
+          }, true);
 
           const letAppHandleAudioMessage = framelessPlatformMock.findMessageByFunc('meeting.letAppHandleAudio');
           expect(letAppHandleAudioMessage).not.toBeNull();
@@ -1390,7 +1390,7 @@ describe('meeting', () => {
             callbackCalled = true;
             returnedResult = result;
             returnedSdkError = error;
-          });
+          }, true);
 
           const letAppHandleAudioMessage = framelessPlatformMock.findMessageByFunc('meeting.letAppHandleAudio');
           expect(letAppHandleAudioMessage).not.toBeNull();
@@ -1410,7 +1410,7 @@ describe('meeting', () => {
         it(`should not allow meeting.letAppHandleAudio calls from ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
-          expect(() => meeting.letAppHandleAudio(emptyCallBack)).toThrowError(
+          expect(() => meeting.letAppHandleAudio(emptyCallBack, true)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
