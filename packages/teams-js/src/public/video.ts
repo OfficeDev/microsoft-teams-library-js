@@ -126,6 +126,67 @@ export namespace video {
   }
 
   /**
+   * MediaStream response
+   */
+  export interface MediaStreamResponse {
+    // getTextureStream: ({streamId: string}) => Promise<MediaStream>;
+    /**
+     * The raw unprocessed MediaStream
+     */
+    mediaStream: MediaStream;
+    // registerTextureStream: ({streamId: string, outputStreamTrack: MediaStreamTrack}) => Promise<void>;
+    /**
+     * register the processed track to te media stream
+     */
+    registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => void;
+
+    /**
+     * Get metadata of the video frame calulated by the native modules
+     */
+    getVideoFrameMetaData: (timestamp: number) => { [key: string]: ArrayBuffer };
+  }
+
+  type IPCInfoT2 = {
+    streamId: string;
+  };
+
+  /**
+   * get video stream in Permissions section
+   * @beta
+   */
+  export function getVideoStream(config: VideoFrameConfig): Promise<MediaStreamResponse> {
+    ensureInitialized(FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    return new Promise((resolve, reject) => {
+      registerHandler(
+        'video.startVideoExtensibilityVideoStream',
+        async (ipcInfo: IPCInfoT2) => {
+          if (ipcInfo) {
+            const { streamId } = ipcInfo;
+            const mediaStream = await window.chrome.webview.getTextureStream(streamId);
+            const mediaStreamResponse: MediaStreamResponse = {
+              mediaStream,
+              registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => {
+                // TODO: calculate fps
+                window.chrome.webview.registerTextureStream(streamId, outputStreamTrack);
+              },
+              getVideoFrameMetaData: (timestamp: number) => {
+                // TODO: add getVideoFrameMetaData: how does the metadata get to the host?
+                return getVideoFrameMetaData(timestamp);
+              },
+            };
+            resolve(mediaStreamResponse);
+          }
+        },
+        false,
+      );
+    });
+  }
+
+  /**
    * Video extension should call this to notify host that the current selected effect parameter changed.
    * If it's pre-meeting, host will call videoEffectCallback immediately then use the videoEffect.
    * If it's the in-meeting scenario, we will call videoEffectCallback when apply button clicked.
