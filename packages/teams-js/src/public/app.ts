@@ -534,11 +534,16 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return runWithTimeout(
-      () => initializeHelper(validMessageOrigins),
-      initializationTimeoutInMs,
-      new Error('SDK initialization timed out.'),
-    );
+    if (typeof window !== 'undefined') {
+      return runWithTimeout(
+        () => initializeHelper(validMessageOrigins),
+        initializationTimeoutInMs,
+        new Error('SDK initialization timed out.'),
+      );
+    } else {
+      console.log('window is undefined');
+      return Promise.resolve();
+    }
   }
 
   const initializeHelperLogger = appLogger.extend('initializeHelper');
