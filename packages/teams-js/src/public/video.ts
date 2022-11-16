@@ -117,6 +117,7 @@ export namespace video {
 
   /**
    * Video effect change call back function definition
+   * Return a Promise which will be resolved when the effect is prepared, or reject with a failure reason
    * @beta
    */
   export type VideoEffectCallBack = (
