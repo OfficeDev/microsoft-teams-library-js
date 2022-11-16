@@ -89,10 +89,39 @@ export namespace video {
   ) => void;
 
   /**
+   * Configuration required by the selected video effect
+   * @beta
+   */
+  export type EffectRequirement = {
+    module?: {
+      name: string;
+      version: string;
+      parameters?: { [key: string]: string };
+    };
+  };
+
+  /**
+   * Predefined failure reasons for preparing the selected video effect
+   * @beta
+   */
+  export enum EffectFailureReason {
+    /**
+     * A wrong effect id is provided
+     */
+    WrongEffectId,
+    /**
+     * The effect can't be initialezed
+     */
+    InitializationFailed,
+  }
+
+  /**
    * Video effect change call back function definition
    * @beta
    */
-  export type VideoEffectCallBack = (effectId: string | undefined) => void;
+  export type VideoEffectCallBack = (
+    effectId: string | undefined,
+  ) => Promise<EffectRequirement | undefined> | undefined;
 
   /**
    * Register to read the video frames in Permissions section
@@ -154,7 +183,24 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('video.effectParameterChange', callback, false);
+
+    const callbackHandler = (effectId: string | undefined) => {
+      const result = callback(effectId);
+      if (result) {
+        result
+          .then((effectRequirement) => {
+            sendMessageToParent('videoEffectReadiness', [true, effectId, effectRequirement]);
+          })
+          .catch((reason) => {
+            // reason could be a string or an EffectFailureReason
+            sendMessageToParent('videoEffectReadiness', [false, effectId, reason]);
+          });
+      } else {
+        sendMessageToParent('videoEffectReadiness', [true, effectId, undefined]);
+      }
+    };
+
+    registerHandler('video.effectParameterChange', callbackHandler, false);
     sendMessageToParent('video.registerForVideoEffect');
   }
 
