@@ -131,7 +131,7 @@ export namespace video {
   export interface MediaStreamResponse {
     // getTextureStream: ({streamId: string}) => Promise<MediaStream>;
     /**
-     * The raw unprocessed MediaStream
+     * The raw MediaStream
      */
     mediaStream: MediaStream;
     // registerTextureStream: ({streamId: string, outputStreamTrack: MediaStreamTrack}) => Promise<void>;
@@ -159,34 +159,71 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+
+    // reuse the event name in registerForVideoFrame
+    sendMessageToParent('video.registerForVideoFrame', [config]);
+
     // When getTextureStream is available, we will use it to get the video stream
     // otherwise, wrap video frames to a MediaStream
-    return new Promise((resolve, reject) => {
+    if (window.chrome.webview.getTextureStream && window.chrome.webview.registerTextureStream) {
+      return new Promise((resolve, reject) => {
+        registerHandler(
+          // new event here
+          'video.startVideoExtensibilityVideoStream',
+          async (ipcInfo: IPCInfoT2) => {
+            if (ipcInfo) {
+              const { streamId } = ipcInfo;
+              // todo: error handling
+              const mediaStream = await window.chrome.webview.getTextureStream(streamId);
+              const mediaStreamResponse: MediaStreamResponse = {
+                mediaStream,
+                registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => {
+                  // TODO: calculate fps
+                  window.chrome.webview.registerTextureStream(streamId, outputStreamTrack);
+                },
+                getVideoFrameMetaData: (timestamp: number) => {
+                  // TODO: add getVideoFrameMetaData: how does the metadata get to the host?
+                  return getVideoFrameMetaData(timestamp);
+                },
+              };
+              resolve(mediaStreamResponse);
+            }
+          },
+          false,
+        );
+      });
+    } else {
+      const mediaStream = new MediaStream();
+      const trackGenerator = new WritableStream(); //should be MediaStreamTrackGenerator({ kind: 'video' })
+      const writter = trackGenerator.getWriter();
+      mediaStream.addTrack(trackGenerator);
       registerHandler(
-        // new event here
-        'video.startVideoExtensibilityVideoStream',
-        async (ipcInfo: IPCInfoT2) => {
-          if (ipcInfo) {
-            const { streamId } = ipcInfo;
-            // todo: error handling
-            const mediaStream = await window.chrome.webview.getTextureStream(streamId);
-            const mediaStreamResponse: MediaStreamResponse = {
-              mediaStream,
-              registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => {
-                // TODO: calculate fps
-                window.chrome.webview.registerTextureStream(streamId, outputStreamTrack);
-              },
-              getVideoFrameMetaData: (timestamp: number) => {
-                // TODO: add getVideoFrameMetaData: how does the metadata get to the host?
-                return getVideoFrameMetaData(timestamp);
-              },
-            };
-            resolve(mediaStreamResponse);
-          }
+        'video.newVideoFrame',
+        (videoFrame: VideoFrame) => {
+          writter.ready.then(() => {
+            writter.write(videoFrame);
+          });
         },
         false,
       );
-    });
+      const mediaStreamResponse: MediaStreamResponse = {
+        mediaStream,
+        registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => {
+          const trackProcessor = new MediaStreamTrackProcessor(outputStreamTrack);
+          const transformer = new TransformStream({
+            async transform(videoFrame, controller) {
+              notifyVideoFrameProcessed(videoFrame.timestamp);
+              controller.enqueue(videoFrame);
+            },
+          });
+          trackProcessor.readable.pipeThrough(transformer);
+        },
+        getVideoFrameMetaData: (timestamp: number) => {
+          // TODO: do we need this in T1?
+          return getVideoFrameMetaData(timestamp);
+        },
+      };
+    }
   }
 
   /**
