@@ -159,13 +159,16 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
+    // When getTextureStream is available, we will use it to get the video stream
+    // otherwise, wrap video frames to a MediaStream
     return new Promise((resolve, reject) => {
       registerHandler(
+        // new event here
         'video.startVideoExtensibilityVideoStream',
         async (ipcInfo: IPCInfoT2) => {
           if (ipcInfo) {
             const { streamId } = ipcInfo;
+            // todo: error handling
             const mediaStream = await window.chrome.webview.getTextureStream(streamId);
             const mediaStreamResponse: MediaStreamResponse = {
               mediaStream,
