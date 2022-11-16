@@ -220,7 +220,7 @@ export namespace meeting {
    */
   export interface IMicState {
     /** Indicates the mute status of the mic*/
-    isMicMuted: boolean;
+    isMicMuted?: boolean;
 
     /**
      * error object in case there is a failure
@@ -605,7 +605,7 @@ export namespace meeting {
    *
    * @beta
    */
-  export function registerMicStateChangedHandler(handler: (micState: IMicState) => boolean): void {
+  export function registerMicStateChangedHandler(handler: (micState: IMicState) => void): void {
     if (!handler) {
       throw new Error('[registerMicStateChangedHandler] Handler cannot be null');
     }
