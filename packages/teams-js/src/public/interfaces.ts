@@ -766,17 +766,17 @@ export interface BaseDialogInfo {
 }
 
 /**
- * Data structure to describe dialog information needed to open an adaptive card-based dialog.
+ * Data structure to describe dialog information needed to open an Adaptive Card-based dialog.
  */
 export interface AdaptiveCardDialogInfo extends BaseDialogInfo {
   /**
-   * JSON defining an adaptive card.
+   * JSON defining an Adaptive Card.
    */
   card: string;
 }
 
 /**
- * Data structure to describe dialog information needed to open a bot based adaptive card dialog.
+ * Data structure to describe dialog information needed to open a bot-based Adaptive Card-based dialog.
  */
 export interface BotAdaptiveCardDialogInfo extends AdaptiveCardDialogInfo {
   /**
