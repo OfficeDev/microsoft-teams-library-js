@@ -1,24 +1,15 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
-
-/* eslint-disable */
-/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
-   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: any[];
+  args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
-}
-
-export interface MessageResponse {
-  id: number;
-  args?: any[];
 }
 
 export class Utils {
@@ -38,18 +29,17 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
-    const that = this;
     this.messages = [];
     this.childMessages = [];
 
     this.parentWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
         if (message.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
-        } else if (message.func !== 'initialize' && targetOrigin !== that.validOrigin) {
-          throw new Error(`messages to parent window must have a targetOrigin of ${that.validOrigin}`);
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
-        that.messages.push(message);
+        this.messages.push(message);
       },
     } as Window;
 
@@ -58,43 +48,43 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
         if (type === 'message') {
-          that.processMessage = listener;
+          this.processMessage = listener;
         }
       },
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: (type: string): void => {
         if (type === 'message') {
-          that.processMessage = null;
+          this.processMessage = null;
         }
       },
       location: {
-        origin: that.tabOrigin,
-        href: that.validOrigin,
-        assign: function (url: string): void {
+        origin: this.tabOrigin,
+        href: this.validOrigin,
+        assign: function (): void {
           return;
         },
       },
       parent: this.parentWindow,
       nativeInterface: {
-        framelessPostMessage: function (message: string): void {
-          that.messages.push(JSON.parse(message));
+        framelessPostMessage: (message: string): void => {
+          this.messages.push(JSON.parse(message));
         },
       },
-      self: null as Window,
-      open: function (url: string, name: string, specs: string): Window {
-        return that.childWindow as Window;
+      self: null as unknown as Window,
+      open: (): Window => {
+        return this.childWindow as Window;
       },
       close: function (): void {
         return;
       },
-      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
+      setInterval: (handler: TimerHandler, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
-        that.childMessages.push(message);
+      postMessage: (message: MessageRequest): void => {
+        this.childMessages.push(message);
       },
       close: function (): void {
         return;
@@ -103,7 +93,7 @@ export class Utils {
     };
   }
 
-  public processMessage: (ev: MessageEvent) => void;
+  public processMessage: null | ((ev: MessageEvent) => void);
 
   public initializeWithContext = async (
     frameContext: string,
@@ -152,7 +142,13 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
+  public respondToMessage = (message: MessageRequest, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -163,7 +159,7 @@ export class Utils {
     } as MessageEvent);
   };
 
-  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
@@ -173,7 +169,13 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = (func: string, ...args: any[]): void => {
+  public sendMessage = (func: string, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -187,14 +189,14 @@ export class Utils {
   /**
    * To be called after initializeWithContext to set the clientSupportedSDKVersion
    */
-  public setClientSupportedSDKVersion = (version: string) => {
+  public setClientSupportedSDKVersion = (version: string): void => {
     GlobalVars.clientSupportedSDKVersion = version;
   };
 
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime) => {
+  public setRuntimeConfig = (runtime: IRuntime): void => {
     applyRuntimeConfig(runtime);
   };
 
@@ -202,5 +204,5 @@ export class Utils {
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-  public flushPromises = () => new Promise((resolve) => setTimeout(resolve));
+  public flushPromises = (): Promise<number> => new Promise((resolve) => setTimeout(resolve));
 }

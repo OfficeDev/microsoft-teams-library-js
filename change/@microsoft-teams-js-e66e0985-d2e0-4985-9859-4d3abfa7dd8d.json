@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Enabled eslint on test files and disabled them in test files with many errors to allow for incremental addressing of issues.",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "none"
-}

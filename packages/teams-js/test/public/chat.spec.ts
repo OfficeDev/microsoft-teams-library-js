@@ -1,7 +1,8 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import {
   validateChatDeepLinkMessage,
   validateChatDeepLinkPrefix,
@@ -33,13 +34,20 @@ describe('chat', () => {
     }
   });
 
+  describe('Testing chat.isSupported function', () => {
+    it('should not be supported before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => chat.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('Testing chat.openChat function', () => {
     it('should not allow calls before initialization', () => {
       const chatRequest: OpenSingleChatRequest = {
         user: 'someUPN',
         message: 'someMessage',
       };
-      return expect(chat.openChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+      return expect(chat.openChat(chatRequest)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls from settings context', async () => {
@@ -102,7 +110,7 @@ describe('chat', () => {
           expect(executeDeepLinkMessage).not.toBeNull();
           expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
           validateChatDeepLinkPrefix(chatDeepLink);
           validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
@@ -120,7 +128,7 @@ describe('chat', () => {
         users: ['someUPN', 'someUPN2'],
         message: 'someMessage',
       };
-      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError('The library has not yet been initialized');
+      return expect(chat.openGroupChat(chatRequest)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls when no members are provided', () => {
@@ -194,7 +202,7 @@ describe('chat', () => {
           expect(executeDeepLinkMessage).not.toBeNull();
           expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+          const chatDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
           validateChatDeepLinkPrefix(chatDeepLink);
           validateDeepLinkUsers(chatDeepLink, chatRequest.users);
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);

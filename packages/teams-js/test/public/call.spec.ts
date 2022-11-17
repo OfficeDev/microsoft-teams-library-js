@@ -1,6 +1,7 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -30,8 +31,13 @@ describe('call', () => {
     }
   });
 
+  it('should throw if called before initialization', () => {
+    utils.setRuntimeConfig(_uninitializedRuntime);
+    expect(() => call.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+  });
+
   it('should not allow calls before initialization', async () => {
-    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError('The library has not yet been initialized');
+    await expect(call.startCall(mockStartCallParams)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should not allow calls if not supported', async () => {
@@ -78,7 +84,7 @@ describe('call', () => {
     expect(executeDeepLinkMsg).toBeTruthy();
     expect(executeDeepLinkMsg.args).toHaveLength(1);
 
-    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
+    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0] as string);
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 

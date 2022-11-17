@@ -235,7 +235,14 @@ export namespace menus {
     }
   }
 
+  /**
+   * Checks if the menus capability is supported by the host
+   * @returns boolean to represent whether the menus capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.menus ? true : false;
   }
 }

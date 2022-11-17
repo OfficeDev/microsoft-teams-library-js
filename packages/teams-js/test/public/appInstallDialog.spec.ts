@@ -1,6 +1,7 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -28,9 +29,14 @@ describe('appInstallDialog', () => {
     }
   });
 
+  it('should throw if called before initialization', () => {
+    utils.setRuntimeConfig(_uninitializedRuntime);
+    expect(() => appInstallDialog.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+  });
+
   it('should not allow openAppInstallDialog before initialization', async () => {
     await expect(appInstallDialog.openAppInstallDialog(mockOpenAppInstallDialogParams)).rejects.toThrowError(
-      'The library has not yet been initialized',
+      new Error(errorLibraryNotInitialized),
     );
   });
 
@@ -80,7 +86,7 @@ describe('appInstallDialog', () => {
     expect(executeDeepLinkMsg).toBeTruthy();
     expect(executeDeepLinkMsg.args).toHaveLength(1);
 
-    const appInstallDialogDeepLink: URL = new URL(executeDeepLinkMsg.args[0]);
+    const appInstallDialogDeepLink: URL = new URL(executeDeepLinkMsg.args[0] as string);
     expect(appInstallDialogDeepLink.pathname).toEqual(
       teamsDeepLinkUrlPathForAppInstall + mockOpenAppInstallDialogParams.appId,
     );
