@@ -342,7 +342,7 @@ export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
 
 /**
  * @hidden
- * Checks if the Adaptive Card schema version is supported by the host.
+ * Checks if the Adaptive Card schema version to check for host support.
  * @param hostAdaptiveCardSchemaVersion Hosts supported Adaptive Card Version in the runtime.
  *
  * @returns true if the Adaptive Card Version is not supported and false if it is supported.

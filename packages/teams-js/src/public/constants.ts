@@ -108,6 +108,6 @@ export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_
 /**
  * @hidden
  *
- * Minimum Adaptive Card version supported by the Hosts.
+ * Minimum Adaptive Card version supported by the host.
  */
 export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };

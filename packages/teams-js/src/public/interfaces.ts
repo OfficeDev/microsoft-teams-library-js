@@ -1015,7 +1015,7 @@ export interface HostVersionsInfo {
 }
 
 /**
- * Represents the major and minor versions of the AdaptiveCard schema in the current host
+ * Represents the major and minor versions of the Adaptive Card schema in the current host
  */
 export interface AdaptiveCardVersion {
   majorVersion: number;
