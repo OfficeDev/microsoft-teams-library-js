@@ -138,18 +138,15 @@ export namespace profile {
   }
 
   /**
-   * An internal representation of the showProfile parameters suitable for sending via postMessage.
-   * The hub expects to receive an object of this type.
-   */
-
-  /**
    * Checks if the profile capability is supported by the host
-   *
    * @returns boolean to represent whether the profile capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.profile ? true : false;
   }
 }
@@ -164,6 +161,12 @@ export type Rectangle = {
   height: number;
 };
 
+/**
+ * @beta
+ * @hidden
+ * An internal representation of the showProfile parameters suitable for sending via postMessage.
+ * The hub expects to receive an object of this type.
+ */
 export interface ShowProfileRequestInternal {
   modality?: profile.Modality;
   persona: profile.Persona;

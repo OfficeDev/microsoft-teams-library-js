@@ -1,9 +1,9 @@
-import { locationAPIsRequiredVersion } from '../../src/internal/constants';
+import { errorLibraryNotInitialized, locationAPIsRequiredVersion } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -41,10 +41,29 @@ describe('location', () => {
     return;
   };
 
+  describe('isSupported API', () => {
+    it('location.isSupported should return false if the runtime says location is not supported', async () => {
+      await framelessPlatform.initializeWithContext(FrameContexts.content);
+      framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(location.isSupported()).not.toBeTruthy();
+    });
+
+    it('location.isSupported should return true if the runtime says location is supported', async () => {
+      await framelessPlatform.initializeWithContext(FrameContexts.content);
+      framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+      expect(location.isSupported()).toBeTruthy();
+    });
+
+    it('should not be supported before initialization', () => {
+      applyRuntimeConfig(_uninitializedRuntime);
+      expect(() => location.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('getLocation API', () => {
     it('should not allow getLocation calls before initialization', () => {
       expect(() => location.getLocation(defaultLocationProps, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     it('getLocation call in default version of platform support fails', () => {
@@ -190,7 +209,7 @@ describe('location', () => {
   describe('Testing showLocation API', () => {
     it('should not allow showLocation calls before initialization', () => {
       expect(() => location.showLocation(defaultLocation, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -329,16 +348,6 @@ describe('location', () => {
         } as DOMMessageEvent);
       });
     });
-  });
-
-  it('location.isSupported should return false if the runtime says location is not supported', () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    expect(location.isSupported()).not.toBeTruthy();
-  });
-
-  it('location.isSupported should return true if the runtime says location is supported', () => {
-    framelessPlatform.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
-    expect(location.isSupported()).toBeTruthy();
   });
 
   it('Frameless - getLocation should throw error when not supported in the runtime config', () => {

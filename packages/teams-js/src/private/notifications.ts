@@ -26,12 +26,17 @@ export namespace notifications {
 
   /**
    * @hidden
+   *
+   * Checks if the notifications capability is supported by the host
    * @returns boolean to represent whether the notifications capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.notifications ? true : false;
   }
 }

@@ -117,9 +117,12 @@ export namespace location {
    *
    * Checks if Location capability is supported by the host
    *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    * @returns boolean to represent whether Location is supported
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.location ? true : false;
   }
 }
