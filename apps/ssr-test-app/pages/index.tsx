@@ -26,21 +26,21 @@ export default function IndexPage(props: SSRProps): ReactElement {
       </Head>
       <div>
         <h1 id="id01">{props.renderString}</h1>
-        <pre>Context: {JSON.stringify(teamsContext, null, 2)}</pre>
+        <pre>
+          <b>Context:</b> {JSON.stringify(teamsContext, null, 2)}
+        </pre>
       </div>
     </div>
   );
 }
 
 /**
- *
- * @param context
  * @returns prop data
  */
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
-      renderString: "SSR'd",
+      renderString: 'This string brought to you by the server',
     },
   };
 };
