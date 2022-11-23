@@ -49,7 +49,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     registerOnLoadHandlerHelper(handler, () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -72,7 +72,7 @@ export namespace teamsCore {
     // allow for registration cleanup even when not finished initializing
     handler && ensureInitialized();
 
-    if (versionSpecificHelper) {
+    if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
 
@@ -90,7 +90,7 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -113,7 +113,7 @@ export namespace teamsCore {
   ): void {
     // allow for registration cleanup even when not finished initializing
     handler && ensureInitialized();
-    if (versionSpecificHelper) {
+    if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);
@@ -121,10 +121,14 @@ export namespace teamsCore {
 
   /**
    * Checks if teamsCore capability is supported by the host
-   * @returns true if the teamsCore capability is enabled in runtime.supports.teamsCore and
-   * false if it is disabled
+   *
+   * @returns boolean to represent whether the teamsCore capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.teamsCore ? true : false;
   }
 }

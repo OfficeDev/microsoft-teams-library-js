@@ -1,4 +1,5 @@
 // import * as communication from '../../src/internal/communication';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts, HostClientType } from '../../src/public';
@@ -103,7 +104,7 @@ describe('Testing authentication capability', () => {
           height: 200,
         };
         expect(() => authentication.authenticate(authenticationParams)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -414,9 +415,7 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.getAuthToken should allow calls after initialization called, but before it finished', async () => {
@@ -573,7 +572,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.getUser should allow calls after initialization called, but before it finished', async () => {
@@ -668,7 +667,7 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.notifySuccess should not close auth window before notify success message has been sent', async () => {
@@ -788,7 +787,7 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('should not close auth window before notify failure message has been sent', async () => {
@@ -1066,9 +1065,7 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1231,7 +1228,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1327,7 +1324,7 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1357,7 +1354,7 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {

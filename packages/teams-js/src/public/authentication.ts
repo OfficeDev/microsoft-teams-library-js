@@ -43,7 +43,7 @@ export namespace authentication {
    *
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    *
-   * @throws if the authentication request fails or is canceled by the user.
+   * @throws Error if the authentication request fails or is canceled by the user.
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
