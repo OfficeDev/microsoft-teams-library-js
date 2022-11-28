@@ -1,8 +1,13 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { FrameContexts } from '../../src/public';
 import { _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('settings', () => {
   // Use to send a mock message from the app.
@@ -91,7 +96,7 @@ describe('settings', () => {
         settings.getSettings((settings) => {
           expect(settings).toBe(expectedSettings);
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -132,7 +137,7 @@ describe('settings', () => {
     it('settings.setSettings should not allow calls before initialization', () => {
       expect(() => {
         settings.setSettings(settingsObj);
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -169,7 +174,7 @@ describe('settings', () => {
         settings.registerOnSaveHandler(() => {
           handlerCalled = true;
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

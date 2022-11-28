@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { appEntity } from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('appEntity', () => {
   // Use to send a mock message from the app.
@@ -24,12 +29,19 @@ describe('appEntity', () => {
     }
   });
 
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => appEntity.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('selectAppEntity', () => {
     const allowedContexts = [FrameContexts.content];
 
     it('appEntity.selectAppEntity should not allow calls before initialization', () => {
       expect(() => appEntity.selectAppEntity('threadID', [], '', () => {})).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 

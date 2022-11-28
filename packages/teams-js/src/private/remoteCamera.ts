@@ -396,12 +396,17 @@ export namespace remoteCamera {
 
   /**
    * @hidden
+   *
+   * Checks if the remoteCamera capability is supported by the host
    * @returns boolean to represent whether the remoteCamera capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.remoteCamera ? true : false;
   }
 }

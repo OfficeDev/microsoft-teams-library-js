@@ -17,13 +17,13 @@ import { runtime } from './runtime';
 
 /**
  * Navigation-specific part of the SDK.
- *
- * @beta
  */
 export namespace pages {
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
+   * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
+   * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
@@ -38,6 +38,8 @@ export namespace pages {
    * @hidden
    *
    * Registers a handler for specifying focus when it passes from the host to the application.
+   * On mobile hosts or hosts where there is no UI notion of "focus" the handler registered with
+   * this function will never be called.
    *
    * @param handler - The handler for placing focus within the application.
    *
@@ -186,6 +188,7 @@ export namespace pages {
 
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   * Please note that this method does yet work on mobile hosts.
    *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
@@ -204,11 +207,13 @@ export namespace pages {
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * On hosts where there is no support for making an app full screen, the handler registered
+   * with this function will never be called.
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
     registerHandlerHelper('fullScreenChange', handler, [], () => {
-      if (!isSupported()) {
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -216,10 +221,12 @@ export namespace pages {
 
   /**
    * Checks if the pages capability is supported by the host
-   * @returns true if the pages capability is enabled in runtime.supports.pages and
-   * false if it is disabled
+   * @returns boolean to represent whether the appEntity capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.pages ? true : false;
   }
 
@@ -309,10 +316,12 @@ export namespace pages {
 
     /**
      * Checks if the pages.tab capability is supported by the host
-     * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.tab capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
     }
   }
@@ -375,7 +384,7 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
       registerOnSaveHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -395,7 +404,8 @@ export namespace pages {
       handler: (evt: SaveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
-      ensureInitialized(FrameContexts.settings);
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -412,7 +422,7 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
       registerOnRemoveHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -432,7 +442,8 @@ export namespace pages {
       handler: (evt: RemoveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
-      ensureInitialized(FrameContexts.remove, FrameContexts.settings);
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -577,10 +588,12 @@ export namespace pages {
 
     /**
      * Checks if the pages.config capability is supported by the host
-     * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.config capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
     }
   }
@@ -619,7 +632,7 @@ export namespace pages {
      */
     export function registerBackButtonHandler(handler: () => boolean): void {
       registerBackButtonHandlerHelper(handler, () => {
-        if (!isSupported()) {
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -636,7 +649,8 @@ export namespace pages {
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
     export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
-      ensureInitialized();
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized();
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -657,10 +671,12 @@ export namespace pages {
 
     /**
      * Checks if the pages.backStack capability is supported by the host
-     * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.backStack capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
     }
   }
@@ -701,13 +717,14 @@ export namespace pages {
     }
     /**
      * @hidden
-     * Hide from docs
-     * ------
+     *
      * Checks if the pages.fullTrust capability is supported by the host
-     * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.fullTrust capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
     }
   }
@@ -757,10 +774,12 @@ export namespace pages {
 
     /**
      * Checks if pages.appButton capability is supported by the host
-     * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.appButton capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
     }
   }
@@ -839,8 +858,9 @@ export namespace pages {
 
     /**
      * Checks if pages.currentApp capability is supported by the host
-     * @returns true if the pages.currentApp capability is enabled in runtime.supports.pages.currentApp and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.currentApp capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully complete
      *
      * @beta
      */

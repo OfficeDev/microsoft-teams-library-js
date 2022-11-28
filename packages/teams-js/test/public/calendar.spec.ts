@@ -1,10 +1,15 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('calendar', () => {
   // Use to send a mock message from the app.
@@ -39,7 +44,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem(openCalendarItemParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -173,7 +178,7 @@ describe('calendar', () => {
 
       await calendar
         .composeMeeting(composeMeetingParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -257,7 +262,7 @@ describe('calendar', () => {
       expect(executeDeepLinkMessage).not.toBeNull();
       expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
       validateCalendarDeepLinkPrefix(calendarDeepLink);
 
       utils.respondToMessage(executeDeepLinkMessage, true);
@@ -297,14 +302,21 @@ describe('calendar', () => {
     });
   });
   describe('isSupported', () => {
-    it('should return false if the runtime says calendar is not supported', () => {
+    it('should return false if the runtime says calendar is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(calendar.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says calendar is supported', () => {
+    it('should return true if the runtime says calendar is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
       expect(calendar.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => calendar.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

@@ -7,15 +7,13 @@ import {
 } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized } from '../internal/internalAPIs';
+import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  *
  * This object is used for starting or completing authentication flows.
- *
- * @beta
  */
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
@@ -45,7 +43,7 @@ export namespace authentication {
    *
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    *
-   * @throws if the authentication request fails or is canceled by the user.
+   * @throws Error if the authentication request fails or is canceled by the user.
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
@@ -167,7 +165,7 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
-    ensureInitialized();
+    ensureInitializeCalled();
     return getAuthTokenHelper(authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
@@ -226,7 +224,7 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
-    ensureInitialized();
+    ensureInitializeCalled();
     return getUserHelper()
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {

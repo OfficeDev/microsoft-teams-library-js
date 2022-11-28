@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
@@ -29,6 +30,10 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('MicrosoftTeams-publicAPIs', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
@@ -57,7 +62,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       getContext(() => {
         return;
       }),
-    ).toThrowError('The library has not yet been initialized');
+    ).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should successfully initialize', () => {
@@ -442,7 +447,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -566,7 +571,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -662,7 +667,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -761,10 +766,8 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
@@ -777,18 +780,16 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
   });
 
-  it('print handler should successfully call default print handler', () => {
+  it('print handler should successfully call default print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
@@ -799,35 +800,31 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Ctrl+P should successfully call print handler', () => {
+  it('Ctrl+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Cmd+P should successfully call print handler', () => {
+  it('Cmd+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);
@@ -839,7 +836,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerOnLoadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
     it('should successfully register handler', async () => {
       await utils.initializeWithContext(FrameContexts.content);
@@ -894,7 +891,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerBeforeUnloadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a before unload handler', async () => {

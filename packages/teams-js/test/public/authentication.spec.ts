@@ -1,4 +1,5 @@
 // import * as communication from '../../src/internal/communication';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts, HostClientType } from '../../src/public';
@@ -6,6 +7,10 @@ import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Testing authentication capability', () => {
   const framelessPostMock = new FramelessPostMocks();
@@ -99,7 +104,7 @@ describe('Testing authentication capability', () => {
           height: 200,
         };
         expect(() => authentication.authenticate(authenticationParams)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -410,9 +415,26 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('authentication.getAuthToken should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        authentication.getAuthToken();
+        let message = utils.findMessageByFunc('authentication.getAuthToken');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('authentication.getAuthToken');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -550,7 +572,26 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('authentication.getUser should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        authentication.getUser();
+        let message = utils.findMessageByFunc('authentication.getUser');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('authentication.getUser');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -626,28 +667,21 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('authentication.notifySuccess should not close auth window before notify success message has been sent', async () => {
-        expect.assertions(5);
+        expect.assertions(3);
         const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
 
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        authentication.notifySuccess(mockResult);
-        let message = utils.findMessageByFunc('authentication.authenticate.success');
-        expect(message).toBeNull();
+        await utils.initializeWithContext(FrameContexts.authentication);
         expect(closeWindowSpy).not.toHaveBeenCalled();
 
-        utils.respondToMessage(initMessage, 'authentication');
-        await initPromise;
-        message = utils.findMessageByFunc('authentication.authenticate.success');
+        authentication.notifySuccess();
+        const message = utils.findMessageByFunc('authentication.authenticate.success');
         expect(message).not.toBeNull();
 
-        // Wait 100ms for the message queue and 200ms for the close delay
+        // Wait 300ms for the close delay
         await new Promise<void>((resolve) =>
           setTimeout(() => {
             expect(closeWindowSpy).toHaveBeenCalled();
@@ -753,28 +787,21 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       it('should not close auth window before notify failure message has been sent', async () => {
-        expect.assertions(5);
+        expect.assertions(3);
         const closeWindowSpy = jest.spyOn(utils.mockWindow, 'close');
 
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        expect(initMessage).not.toBeNull();
-
-        authentication.notifyFailure(errorMessage);
-        let message = utils.findMessageByFunc('authentication.authenticate.failure');
-        expect(message).toBeNull();
+        await utils.initializeWithContext(FrameContexts.authentication);
         expect(closeWindowSpy).not.toHaveBeenCalled();
 
-        utils.respondToMessage(initMessage, 'authentication');
-        await initPromise;
-        message = utils.findMessageByFunc('authentication.authenticate.failure');
+        authentication.notifyFailure(errorMessage);
+        const message = utils.findMessageByFunc('authentication.authenticate.failure');
         expect(message).not.toBeNull();
 
-        // Wait 100ms for the message queue and 200ms for the close delay
+        // Wait 300ms for the close delay
         await new Promise<void>((resolve) =>
           setTimeout(() => {
             expect(closeWindowSpy).toHaveBeenCalled();
@@ -1038,9 +1065,7 @@ describe('Testing authentication capability', () => {
           silent: false,
         };
 
-        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => authentication.getAuthToken(authTokenRequest)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1203,7 +1228,7 @@ describe('Testing authentication capability', () => {
 
     describe('Testing authentication.getUser function', () => {
       it('authentication.getUser should not allow calls before initialization', () => {
-        expect(() => authentication.getUser()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.getUser()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1299,7 +1324,7 @@ describe('Testing authentication capability', () => {
       const allowedContexts = [FrameContexts.authentication];
 
       it('authentication.notifySuccess should not allow calls before initialization', () => {
-        expect(() => authentication.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1329,7 +1354,7 @@ describe('Testing authentication capability', () => {
     describe('Testing authentication.notifyFailure', () => {
       const allowedContexts = [FrameContexts.authentication];
       it('authentication.notifyFailure should not allow calls before initialization', () => {
-        expect(() => authentication.notifyFailure()).toThrowError('The library has not yet been initialized');
+        expect(() => authentication.notifyFailure()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {

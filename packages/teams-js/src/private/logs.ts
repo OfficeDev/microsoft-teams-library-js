@@ -24,8 +24,9 @@ export namespace logs {
    * Limited to Microsoft-internal use
    */
   export function registerGetLogHandler(handler: () => string): void {
-    ensureInitialized();
-    if (!isSupported()) {
+    // allow for registration cleanup even when not finished initializing
+    handler && ensureInitialized();
+    if (handler && !isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
@@ -42,12 +43,16 @@ export namespace logs {
   /**
    * @hidden
    *
+   * Checks if the logs capability is supported by the host
    * @returns boolean to represent whether the logs capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.logs ? true : false;
   }
 }

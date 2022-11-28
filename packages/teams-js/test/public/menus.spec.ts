@@ -1,8 +1,13 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, FrameContexts, menus } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Testing menus capability', () => {
   describe('FRAMED - Testing menus capability', () => {
@@ -23,6 +28,13 @@ describe('Testing menus capability', () => {
       }
     });
 
+    describe('Testing menus.isSupported', () => {
+      it('should throw if called before initialization', () => {
+        applyRuntimeConfig(_uninitializedRuntime);
+        expect(() => menus.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+    });
+
     describe('Testing menus.setUpViews function', () => {
       const viewConfiguration: menus.ViewConfiguration = {
         id: 'some ID',
@@ -31,7 +43,7 @@ describe('Testing menus capability', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -61,9 +73,7 @@ describe('Testing menus capability', () => {
       const menuItem: menus.MenuItem = new menus.MenuItem();
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -96,7 +106,7 @@ describe('Testing menus capability', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -151,7 +161,7 @@ describe('Testing menus capability', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => menus.setUpViews([viewConfiguration], () => true)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -185,9 +195,7 @@ describe('Testing menus capability', () => {
       } = { enabled: true, selected: false };
 
       it('should not allow calls before initialization', () => {
-        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => menus.setNavBarMenu([menuItem], () => true)).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -231,7 +239,7 @@ describe('Testing menus capability', () => {
 
       it('should not allow calls before initialization', () => {
         expect(() => menus.showActionMenu(actionMenuParams, () => true)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 

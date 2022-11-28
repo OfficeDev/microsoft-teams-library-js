@@ -1,28 +1,42 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
+import { ShowProfileRequestInternal } from '../../src/public/profile';
 import { profile } from '../../src/public/profile';
+import { _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 describe('profile', () => {
+  const allowedContexts = [FrameContexts.content];
+  const desktopPlatformMock = new Utils();
+
+  beforeEach(() => {
+    desktopPlatformMock.messages = [];
+    app._initialize(desktopPlatformMock.mockWindow);
+  });
+
+  afterEach(() => {
+    // Reset the object since it's a singleton
+    if (app._uninitialize) {
+      app._uninitialize();
+    }
+  });
+
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      desktopPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => profile.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('showProfile', () => {
-    const allowedContexts = [FrameContexts.content];
-    const desktopPlatformMock = new Utils();
-
-    beforeEach(() => {
-      desktopPlatformMock.messages = [];
-      app._initialize(desktopPlatformMock.mockWindow);
-    });
-
-    afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        app._uninitialize();
-      }
-    });
-
     it('should not allow showProfile calls before initialization', () => {
-      expect(() => profile.showProfile(undefined)).toThrowError('The library has not yet been initialized');
+      expect(() => profile.showProfile(undefined)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -60,7 +74,7 @@ describe('profile', () => {
           expect(message.func).toEqual('profile.showProfile');
           expect(message.args.length).toEqual(1);
 
-          const sentRequest = message.args[0];
+          const sentRequest = message.args[0] as ShowProfileRequestInternal;
           expect(sentRequest.persona).toEqual(request.persona);
           expect(sentRequest.triggerType).toEqual(request.triggerType);
           expect(sentRequest.targetRectangle).toEqual({

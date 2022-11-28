@@ -1,8 +1,13 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { files } from '../../src/private/files';
-import { FileOpenPreference, ErrorCode, SdkError } from '../../src/public';
+import { ErrorCode, FileOpenPreference, SdkError } from '../../src/public';
 import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('files', () => {
   const utils = new Utils();
@@ -32,7 +37,7 @@ describe('files', () => {
   describe('getCloudStorageFolders', () => {
     it('should not allow calls before initialization', async () => {
       await expect(() => files.getCloudStorageFolders('channelId', emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -85,7 +90,7 @@ describe('files', () => {
   describe('addCloudStorageFolder', () => {
     it('should not allow calls before initialization', async () => {
       await expect(() => files.addCloudStorageFolder('channelId', emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -146,7 +151,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', async () => {
       expect(() => files.deleteCloudStorageFolder('channelId', mockCloudStorageFolder, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -223,7 +228,7 @@ describe('files', () => {
     it('should not allow calls before initialization', async () => {
       expect(() =>
         files.getCloudStorageFolderContents(mockCloudStorageFolder, files.CloudStorageProvider.Box, emptyCallback),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -315,7 +320,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.openCloudStorageFile(mockCloudStorageFolderItem, files.CloudStorageProvider.Box)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -436,7 +441,7 @@ describe('files', () => {
           false,
           emptyCallback,
         ),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should trigger callback correctly', async () => {
@@ -463,7 +468,7 @@ describe('files', () => {
 
   describe('getFileDownloads', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.getFileDownloads(emptyCallback)).toThrowError('The library has not yet been initialized');
+      expect(() => files.getFileDownloads(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -504,9 +509,7 @@ describe('files', () => {
 
   describe('openDownloadFolder', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => files.openDownloadFolder(null, emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls with empty callback', async () => {
@@ -522,8 +525,8 @@ describe('files', () => {
     });
 
     // null file path value is interpreted as opening cofigured download preference folder
-    it('should send the message to parent correctly with file path as null', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly with file path as null', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -538,8 +541,8 @@ describe('files', () => {
     });
 
     // non-null file path value is interpreted as opening containing folder for the given file path
-    it('should send the message to parent correctly with non-null file path', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly with non-null file path', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -556,9 +559,7 @@ describe('files', () => {
 
   describe('addCloudStorageProvider', () => {
     it('should not allow calls before initialization', () => {
-      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => files.addCloudStorageProvider(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls with empty callback', async () => {
@@ -573,8 +574,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err, provider) => {
         expect(err).toBeFalsy();
@@ -589,8 +590,8 @@ describe('files', () => {
       expect(callback).toHaveBeenCalled();
     });
 
-    it('should send the message to parent correctly and handle error scenario', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly and handle error scenario', async () => {
+      await utils.initializeWithContext('content');
 
       const sdkError: SdkError = {
         errorCode: ErrorCode.INTERNAL_ERROR,
@@ -609,8 +610,8 @@ describe('files', () => {
       expect(callback).toHaveBeenCalled();
     });
 
-    it('should send the message to parent correctly, handle error scenario and validate provider value', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly, handle error scenario and validate provider value', async () => {
+      await utils.initializeWithContext('content');
 
       const sdkError: SdkError = {
         errorCode: ErrorCode.INTERNAL_ERROR,
@@ -640,7 +641,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.removeCloudStorageProvider(logoutRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -656,8 +657,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -693,7 +694,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.addCloudStorageProviderFile(addNewFileRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -709,8 +710,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -754,7 +755,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.renameCloudStorageProviderFile(renameFileRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -770,8 +771,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -834,7 +835,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.deleteCloudStorageProviderFile(deleteFileRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -873,8 +874,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -919,7 +920,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.downloadCloudStorageProviderFile(downloadFileRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -960,8 +961,8 @@ describe('files', () => {
       );
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();
@@ -1035,7 +1036,7 @@ describe('files', () => {
 
     it('should not allow calls before initialization', () => {
       expect(() => files.uploadCloudStorageProviderFile(uploadFileRequest, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -1081,8 +1082,8 @@ describe('files', () => {
       ).toThrowError('[files.uploadCloudStorageProviderFile] Invalid destination folder details');
     });
 
-    it('should send the message to parent correctly', () => {
-      utils.initializeWithContext('content');
+    it('should send the message to parent correctly', async () => {
+      await utils.initializeWithContext('content');
 
       const callback = jest.fn((err) => {
         expect(err).toBeFalsy();

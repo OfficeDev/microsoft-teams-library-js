@@ -266,12 +266,16 @@ export namespace meetingRoom {
   /**
    * @hidden
    *
+   * Checks if the meetingRoom capability is supported by the host
    * @returns boolean to represent whether the meetingRoom capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.meetingRoom ? true : false;
   }
 }
