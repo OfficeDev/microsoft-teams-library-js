@@ -679,7 +679,7 @@ export namespace authentication {
   }
 
   /**
-   * Limited set of data residencies inforamtion exposed to 1P application developers
+   * Limited set of data residencies information exposed to 1P application developers
    */
   export enum DataResidencySlim {
     /**
