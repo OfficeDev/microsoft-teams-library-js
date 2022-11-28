@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -5,6 +6,10 @@ import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('meeting', () => {
   const framelessPlatformMock = new FramelessPostMocks();
@@ -34,7 +39,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.toggleIncomingClientAudio(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -119,7 +124,7 @@ describe('meeting', () => {
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getIncomingClientAudioState(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -201,7 +206,7 @@ describe('meeting', () => {
       expect(() => meeting.getMeetingDetails(null)).toThrowError('[get meeting details] Callback cannot be null');
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.getMeetingDetails(emptyCallBack)).toThrowError('The library has not yet been initialized');
+      expect(() => meeting.getMeetingDetails(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
     const allowedContexts = [
       FrameContexts.sidePanel,
@@ -306,7 +311,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getAuthenticationTokenForAnonymousUser(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -392,7 +397,7 @@ describe('meeting', () => {
       expect(() => meeting.getLiveStreamState(null)).toThrowError('[get live stream state] Callback cannot be null');
     });
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.getLiveStreamState(emptyCallBack)).toThrowError('The library has not yet been initialized');
+      expect(() => meeting.getLiveStreamState(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -479,7 +484,7 @@ describe('meeting', () => {
 
     it('should fail when called before app is initialized', () => {
       expect(() => meeting.requestStartLiveStreaming(emptyCallBack, 'streamurl', 'streamkey')).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
@@ -571,9 +576,7 @@ describe('meeting', () => {
     });
 
     it('should fail when called before app is initialized', () => {
-      expect(() => meeting.requestStopLiveStreaming(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => meeting.requestStopLiveStreaming(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     const allowedContexts = [FrameContexts.sidePanel];
@@ -657,7 +660,7 @@ describe('meeting', () => {
 
     it('should fail when called before app is initialized', () => {
       expect(() => meeting.registerLiveStreamChangedHandler(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel];
@@ -703,7 +706,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.shareAppContentToStage(emptyCallBack, '')).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -792,7 +795,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getAppContentStageSharingCapabilities(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -884,7 +887,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.stopSharingAppContentToStage(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -969,7 +972,7 @@ describe('meeting', () => {
     });
     it('should not allow calls before initialization', () => {
       expect(() => meeting.getAppContentStageSharingState(emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -1068,11 +1071,11 @@ describe('meeting', () => {
         meeting.registerSpeakingStateChangeHandler(() => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=sidePanel', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
@@ -1099,8 +1102,8 @@ describe('meeting', () => {
       expect(returnedSpeakingState).toBe(speakingState);
     });
 
-    it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when the array of participants speaking changes and frameContext=meetingStage', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const speakingState: meeting.ISpeakingState = { isSpeakingDetected: true };
 
       let handlerCalled = false;
@@ -1140,11 +1143,11 @@ describe('meeting', () => {
         meeting.registerRaiseHandStateChangedHandler(() => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=sidePanel', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
@@ -1173,8 +1176,8 @@ describe('meeting', () => {
       expect(response).toBe(raiseHandState);
     });
 
-    it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when the raiseHandState changes and frameContext=meetingStage', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const raiseHandState: meeting.RaiseHandStateChangedEventData = {
         raiseHandState: { isHandRaised: true },
       };
@@ -1216,11 +1219,11 @@ describe('meeting', () => {
         meeting.registerMeetingReactionReceivedHandler(() => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=sidePanel', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
@@ -1249,8 +1252,8 @@ describe('meeting', () => {
       expect(response).toBe(meetingReaction);
     });
 
-    it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', () => {
-      framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
+    it('should successfully register a handler for when a meetingReaction is received and frameContext=meetingStage', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.meetingStage);
       const meetingReaction: meeting.MeetingReactionReceivedEventData = {
         meetingReactionType: meeting.MeetingReactionType.like,
       };
@@ -1277,6 +1280,65 @@ describe('meeting', () => {
 
       expect(handlerCalled).toBeTruthy();
       expect(response).toBe(meetingReaction);
+    });
+  });
+  describe('setOptions', () => {
+    let contentUrl = 'https://www.test.com';
+    let shareInformation: meeting.appShareButton.ShareInformation = {
+      isVisible: false,
+      contentUrl: contentUrl,
+    };
+    it('meeting.appShareButton.setOptions should not allow calls before initialization', () => {
+      expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(
+        'The library has not yet been initialized',
+      );
+    });
+    const allowedContexts = [FrameContexts.sidePanel];
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`should successfully set shareInformation. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          meeting.appShareButton.setOptions(shareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setOptions',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0]).toStrictEqual(shareInformation);
+        });
+
+        it(`should successfully set false isVisible and contentUrl to be bad Url. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let invalidUrl = 'www.xyz.com';
+          shareInformation.contentUrl = invalidUrl;
+          expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(`Invalid URL: ${invalidUrl}`);
+        });
+
+        it(`should successfully set false isVisible and contentUrl to be undefined. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          let newShareInformation: meeting.appShareButton.ShareInformation = {
+            isVisible: false,
+          };
+          meeting.appShareButton.setOptions(newShareInformation);
+          const toggleAppShareButtonMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.appShareButton.setOptions',
+          );
+          expect(toggleAppShareButtonMessage).not.toBeNull();
+          expect(toggleAppShareButtonMessage.args.length).toBe(1);
+          expect(toggleAppShareButtonMessage.args[0].isVisible).toBe(false);
+          expect(toggleAppShareButtonMessage.args[0].contentUrl).toBe(undefined);
+        });
+      } else {
+        it(`should not successfully shareInformation. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          shareInformation.contentUrl = contentUrl;
+          expect(() => meeting.appShareButton.setOptions(shareInformation)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
     });
   });
 });

@@ -15,29 +15,33 @@ export class FramelessPostMocks {
   public messages: MessageRequest[] = [];
 
   public constructor() {
-    let that = this;
     this.messages = [];
     this.mockWindow = {
       outerWidth: 1024,
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {},
+      addEventListener: (): void => {
+        /* mock does not support event listeners */
+      },
+      removeEventListener: (): void => {
+        /* mock does not support event listeners */
+      },
       nativeInterface: {
-        framelessPostMessage: function (message: string): void {
-          let msg = JSON.parse(message);
-          that.messages.push(msg);
+        framelessPostMessage: (message: string): void => {
+          const msg = JSON.parse(message);
+          this.messages.push(msg);
         },
       },
       location: {
-        origin: that.tabOrigin,
-        href: that.validOrigin,
-        assign: function (url: string): void {
+        origin: this.tabOrigin,
+        href: this.validOrigin,
+        assign: function (): void {
           return;
         },
       },
-      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
+      setInterval: (handler: TimerHandler, timeout?: number, ...args: unknown[]): number =>
+        setInterval(handler, timeout, args),
     };
     this.mockWindow.self = this.mockWindow as ExtendedWindow;
   }
@@ -50,7 +54,8 @@ export class FramelessPostMocks {
     app._initialize(this.mockWindow);
     const initPromise = app.initialize(validMessageOrigins);
     expect(GlobalVars.isFramelessWindow).toBeTruthy();
-    const initMessage = this.findMessageByFunc('initialize');
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */ /* If initMessage is null it will fail the expect call, so it's okay to just assume it's not */
+    const initMessage: MessageRequest = this.findMessageByFunc('initialize')!;
     expect(initMessage).not.toBeNull();
     this.respondToInitMessage(initMessage, frameContext, hostClientType);
     await initPromise;
@@ -71,7 +76,7 @@ export class FramelessPostMocks {
     applyRuntimeConfig(runtime);
   };
 
-  public findMessageByFunc = (func: string): MessageRequest => {
+  public findMessageByFunc = (func: string): MessageRequest | null => {
     for (let i = 0; i < this.messages.length; i++) {
       if (this.messages[i].func === func) {
         return this.messages[i];
@@ -80,9 +85,8 @@ export class FramelessPostMocks {
     return null;
   };
 
-  // tslint:disable-next-line:no-any
-  private respondToInitMessage = (message: MessageRequest, ...args: any[]): void => {
-    let domEvent = {
+  private respondToInitMessage = (message: MessageRequest, ...args: unknown[]): void => {
+    const domEvent = {
       data: {
         id: message.id,
         args: args,

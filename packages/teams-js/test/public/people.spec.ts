@@ -1,11 +1,16 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
-import { _minRuntimeConfigToUninitialize, v1HostClientTypes } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, v1HostClientTypes } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 /**
  * Test cases for selectPeople API
@@ -47,7 +52,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople()).toThrowError('The library has not yet been initialized');
+      expect(() => people.selectPeople()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -151,14 +156,21 @@ describe('people', () => {
   });
 
   describe('Testing people.isSupported function', () => {
-    it('people.isSupported should return false if the runtime says people is not supported', () => {
+    it('people.isSupported should return false if the runtime says people is not supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(people.isSupported()).not.toBeTruthy();
     });
 
-    it('people.isSupported should return true if the runtime says people is supported', () => {
+    it('people.isSupported should return true if the runtime says people is supported', async () => {
+      await framedMock.initializeWithContext(FrameContexts.content);
       framedMock.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
       expect(people.isSupported()).toBeTruthy();
+    });
+
+    it('people.isSupported should throw if called before initialization', () => {
+      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => people.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -169,7 +181,7 @@ describe('people', () => {
      * People Picker tests
      */
     it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople(() => {})).toThrowError('The library has not yet been initialized');
+      expect(() => people.selectPeople(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {

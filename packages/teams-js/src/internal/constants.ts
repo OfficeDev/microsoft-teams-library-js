@@ -136,13 +136,17 @@ export const validOrigins = [
   'outlook-sdf.office.com',
   'outlook.office365.com',
   'outlook-sdf.office365.com',
+  'outlook.live.com',
+  'outlook-sdf.live.com',
   '*.teams.microsoft.com',
+  '*.www.office.com',
   'www.office.com',
   'word.office.com',
   'excel.office.com',
   'powerpoint.office.com',
   'www.officeppe.com',
-  '*.www.office.com',
+  '*.www.microsoft365.com',
+  'www.microsoft365.com',
 ];
 
 /**
@@ -171,3 +175,6 @@ export const teamsDeepLinkProtocol = 'https';
  * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkHost = 'teams.microsoft.com';
+
+/** @hidden */
+export const errorLibraryNotInitialized = 'The library has not yet been initialized';

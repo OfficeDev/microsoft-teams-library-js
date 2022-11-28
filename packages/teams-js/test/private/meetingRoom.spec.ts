@@ -1,10 +1,15 @@
-import { Utils } from '../utils';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { FramelessPostMocks } from '../framelessPostMocks';
+import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('meetingRoom', () => {
   const framelessPlatformMock = new FramelessPostMocks();
@@ -48,11 +53,16 @@ describe('meetingRoom', () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const emptyHandler = (): void => {};
 
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => meetingRoom.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('getPairedMeetingRoomInfo', () => {
     it('should not allow calls before initialization', () => {
-      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      return expect(meetingRoom.getPairedMeetingRoomInfo()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('getPairedMeetingRoomInfo should throw error when meetingRoom is not supported.', async () => {
@@ -119,7 +129,7 @@ describe('meetingRoom', () => {
   describe('sendCommandToPairedMeetingRoom', () => {
     it('should not allow calls before initialization', () => {
       return expect(meetingRoom.sendCommandToPairedMeetingRoom('mute')).rejects.toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -185,7 +195,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler(emptyHandler)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -248,7 +258,7 @@ describe('meetingRoom', () => {
 
     it('should not allow calls before initialization ', () => {
       expect(() => meetingRoom.registerMeetingRoomStatesUpdateHandler(emptyHandler)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     it('registerMeetingRoomStatesUpdateHandler should throw error when meetingRoom is not supported.', async () => {

@@ -7,7 +7,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from './interfaces';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, M365ContentAction, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -18,6 +18,8 @@ import { runtime } from './runtime';
 export namespace dialog {
   /**
    * Data Structure to represent the SDK response when dialog closes
+   *
+   * @beta
    */
   export interface ISdkResponse {
     /**
@@ -33,8 +35,19 @@ export namespace dialog {
      */
     result?: string | object;
   }
+
+  /**
+   * Handler used to receive and process messages sent between a dialog and the app that launched it
+   * @beta
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type PostMessageChannel = (message: any) => void;
+
+  /**
+   * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode submit}
+   * or an error if the dialog was closed by the user.
+   * @beta
+   */
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
   const storedMessages: string[] = [];
 
@@ -46,6 +59,8 @@ export namespace dialog {
    * Function is called during app initialization
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * @beta
    */
   export function initialize(): void {
     registerHandler('messageForChild', handleDialogMessage, false);
@@ -76,6 +91,8 @@ export namespace dialog {
    * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
    *
    * @returns a function that can be used to send messages to the dialog.
+   *
+   * @beta
    */
   export function open(
     urlDialogInfo: UrlDialogInfo,
@@ -100,8 +117,12 @@ export namespace dialog {
   /**
    * Submit the dialog module and close the dialog
    *
-   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it
+   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it,
+   *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
+   *
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
+   *
+   * @beta
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
     ensureInitialized(FrameContexts.content, FrameContexts.task);
@@ -120,6 +141,8 @@ export namespace dialog {
    * This function is only called from inside of a dialog
    *
    * @param message - The message to send to the parent
+   *
+   * @beta
    */
   export function sendMessageToParentFromDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,6 +160,8 @@ export namespace dialog {
    *  Send message to the dialog from the parent
    *
    * @param message - The message to send
+   *
+   * @beta
    */
   export function sendMessageToDialog(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -157,6 +182,8 @@ export namespace dialog {
    * This function is only called from inside of a dialog.
    *
    * @param listener - The listener that will be triggered.
+   *
+   * @beta
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
     ensureInitialized(FrameContexts.task);
@@ -177,22 +204,30 @@ export namespace dialog {
   }
 
   /**
-   * Checks if dialog module is supported by the host
+   * Checks if dialog capability is supported by the host
+   * @returns boolean to represent whether dialog capabilty is supported
    *
-   * @returns boolean to represent whether dialog module is supported
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @beta
    */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.dialog ? true : false;
   }
 
   /**
    * Namespace to update the dialog
+   *
+   * @beta
    */
   export namespace update {
     /**
      * Update dimensions - height/width of a dialog.
      *
      * @param dimensions - An object containing width and height properties.
+     *
+     * @beta
      */
     export function resize(dimensions: DialogSize): void {
       ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
@@ -204,16 +239,22 @@ export namespace dialog {
 
     /**
      * Checks if dialog.update capability is supported by the host
+     * @returns boolean to represent whether dialog.update capabilty is supported
      *
-     * @returns boolean to represent whether dialog.update is supported
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
     }
   }
 
   /**
    * Namespace to open a dialog that sends results to the bot framework
+   *
+   * @beta
    */
   export namespace bot {
     /**
@@ -224,6 +265,8 @@ export namespace dialog {
      * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
      *
      * @returns a function that can be used to send messages to the dialog.
+     *
+     * @beta
      */
     export function open(
       botUrlDialogInfo: BotUrlDialogInfo,
@@ -247,10 +290,14 @@ export namespace dialog {
 
     /**
      * Checks if dialog.bot capability is supported by the host
-     *
      * @returns boolean to represent whether dialog.bot is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
      */
     export function isSupported(): boolean {
+      ensureInitialized();
       return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
     }
   }
@@ -262,6 +309,8 @@ export namespace dialog {
    *
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * @beta
    */
   export function getDialogInfoFromUrlDialogInfo(urlDialogInfo: UrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {
@@ -281,6 +330,8 @@ export namespace dialog {
    *
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * @beta
    */
   export function getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo: BotUrlDialogInfo): DialogInfo {
     const dialogInfo: DialogInfo = {

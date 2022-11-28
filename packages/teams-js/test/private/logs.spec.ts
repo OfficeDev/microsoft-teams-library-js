@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { logs } from '../../src/private/logs';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('logs', () => {
   // Use to send a mock message from the app.
@@ -25,13 +30,24 @@ describe('logs', () => {
     }
   });
 
+  describe('Testings logs.isSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => logs.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('Testing logs.registerGetLogHandler function', () => {
     it('logs.registerGetLogHandler should not allow calls before initialization', () => {
       expect(() =>
         logs.registerGetLogHandler(() => {
           return '';
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('logs.registerGetLogHandler should not throw if called before initialization with no handler', () => {
+      expect(() => logs.registerGetLogHandler(null)).not.toThrow();
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -65,7 +81,7 @@ describe('logs', () => {
         await utils.initializeWithContext(context);
 
         let handlerInvoked = false;
-        const log: string = '1/1/2019 Info - App initialized';
+        const log = '1/1/2019 Info - App initialized';
         logs.registerGetLogHandler(() => {
           handlerInvoked = true;
           return log;

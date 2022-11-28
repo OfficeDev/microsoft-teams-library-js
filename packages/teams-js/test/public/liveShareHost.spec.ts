@@ -1,14 +1,18 @@
-import { 
-    LiveShareHost, 
-    IFluidTenantInfo, 
-    IFluidContainerInfo,
-    INtpTimeInfo,
-    ContainerState,
-    UserMeetingRole
-} from '../../src/public/liveShareHost';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
+import {
+  ContainerState,
+  IFluidContainerInfo,
+  IFluidTenantInfo,
+  INtpTimeInfo,
+  LiveShareHost,
+  UserMeetingRole,
+} from '../../src/public/liveShareHost';
 import { Utils } from '../utils';
-import { resolve } from 'path';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('LiveShareHost', () => {
   const utils = new Utils();
@@ -35,9 +39,7 @@ describe('LiveShareHost', () => {
   describe('create', () => {
     it('should not allow calls before initialization', async () => {
       const result = new Promise((resolve) => resolve(LiveShareHost.create()));
-      await expect(result).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(result).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -57,9 +59,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidTenantInfo', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidTenantInfo()).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.getFluidTenantInfo()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -75,7 +75,7 @@ describe('LiveShareHost', () => {
         tenantId: 'test-tenant',
         ordererEndpoint: 'https://test.azure.com',
         storageEndpoint: 'https://test.azure.com',
-        serviceEndpoint: 'https://test.azure.com'
+        serviceEndpoint: 'https://test.azure.com',
       };
 
       const promise = host.getFluidTenantInfo();
@@ -89,9 +89,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidToken', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidToken('test-container')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.getFluidToken('test-container')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -108,7 +106,7 @@ describe('LiveShareHost', () => {
 
       const getFluidTokenMessage = utils.findMessageByFunc('interactive.getFluidToken');
       expect(getFluidTokenMessage).not.toBeNull();
-      expect(getFluidTokenMessage.args).toStrictEqual(['test-container'])
+      expect(getFluidTokenMessage.args).toStrictEqual(['test-container']);
       utils.respondToMessage(getFluidTokenMessage, false, mockToken);
       await expect(promise).resolves.toStrictEqual(mockToken);
     });
@@ -116,9 +114,7 @@ describe('LiveShareHost', () => {
 
   describe('getFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidContainerId()).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.getFluidContainerId()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -134,7 +130,7 @@ describe('LiveShareHost', () => {
         containerState: ContainerState.notFound,
         containerId: undefined,
         shouldCreate: false,
-        retryAfter: 500
+        retryAfter: 500,
       };
 
       const promise = host.getFluidContainerId();
@@ -149,7 +145,7 @@ describe('LiveShareHost', () => {
   describe('setFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
       await expect(host.setFluidContainerId('test-container')).rejects.toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -166,14 +162,14 @@ describe('LiveShareHost', () => {
         containerState: ContainerState.added,
         containerId: '1234',
         shouldCreate: false,
-        retryAfter: 0
+        retryAfter: 0,
       };
 
       const promise = host.setFluidContainerId('test-container');
 
       const setFluidContainerIdMessage = utils.findMessageByFunc('interactive.setFluidContainerId');
       expect(setFluidContainerIdMessage).not.toBeNull();
-      expect(setFluidContainerIdMessage.args).toStrictEqual(['test-container'])
+      expect(setFluidContainerIdMessage.args).toStrictEqual(['test-container']);
       utils.respondToMessage(setFluidContainerIdMessage, false, mockContainerInfo);
       await expect(promise).resolves.toStrictEqual(mockContainerInfo);
     });
@@ -181,9 +177,7 @@ describe('LiveShareHost', () => {
 
   describe('getNtpTime', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getNtpTime()).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.getNtpTime()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -197,7 +191,7 @@ describe('LiveShareHost', () => {
       await utils.initializeWithContext('meetingStage');
       const mockNtpTime: INtpTimeInfo = {
         ntpTime: 'some-time',
-        ntpTimeInUTC: 12345
+        ntpTimeInUTC: 12345,
       };
 
       const promise = host.getNtpTime();
@@ -211,9 +205,7 @@ describe('LiveShareHost', () => {
 
   describe('registerClientId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.registerClientId('test-client')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.registerClientId('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -230,7 +222,7 @@ describe('LiveShareHost', () => {
 
       const registerClientIdMessage = utils.findMessageByFunc('interactive.registerClientId');
       expect(registerClientIdMessage).not.toBeNull();
-      expect(registerClientIdMessage.args).toStrictEqual(['test-client'])
+      expect(registerClientIdMessage.args).toStrictEqual(['test-client']);
       utils.respondToMessage(registerClientIdMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
     });
@@ -238,9 +230,7 @@ describe('LiveShareHost', () => {
 
   describe('getClientRoles', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getClientRoles('test-client')).rejects.toThrowError(
-        'The library has not yet been initialized',
-      );
+      await expect(host.getClientRoles('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
@@ -257,7 +247,7 @@ describe('LiveShareHost', () => {
 
       const getClientRolesMessage = utils.findMessageByFunc('interactive.getClientRoles');
       expect(getClientRolesMessage).not.toBeNull();
-      expect(getClientRolesMessage.args).toStrictEqual(['test-client'])
+      expect(getClientRolesMessage.args).toStrictEqual(['test-client']);
       utils.respondToMessage(getClientRolesMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
     });

@@ -30,7 +30,14 @@ export namespace mail {
     });
   }
 
+  /**
+   * Checks if the mail capability is supported by the host
+   * @returns boolean to represent whether the mail capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
+    ensureInitialized();
     return runtime.supports.mail ? true : false;
   }
 
