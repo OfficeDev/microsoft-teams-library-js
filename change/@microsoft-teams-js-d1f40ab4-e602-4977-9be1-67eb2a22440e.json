@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added SSR support patch",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
