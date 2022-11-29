@@ -1,7 +1,7 @@
 {
-  "type": "major",
-  "comment": "Added dataResidencySlim interface in teams-js SDK within getUser API. Exposed a limited set of data residencies information to 1P app developers.",
+  "type": "minor",
+  "comment": "Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.",
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "liuella@microsoft.com",
   "dependentChangeType": "patch"
 }

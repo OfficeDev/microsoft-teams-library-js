@@ -670,7 +670,7 @@ export namespace authentication {
     ver: string;
     /**
      * @hidden
-     * Stores the residency of the user.
+     * Stores the data residency of the user.
      *
      * @internal
      * Limited to Microsoft-internal use
