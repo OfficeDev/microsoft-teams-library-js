@@ -123,6 +123,9 @@ describe('AppSDK-privateAPIs', () => {
     'https://www.microsoft365.com',
     'https://tasks.office.com',
     'https://www.example.com',
+    'https://admin-local.teams.microsoft.net',
+    'https://admin-dev.teams.microsoft.net',
+    'https://admin-int.teams.microsoft.net',
   ];
 
   supportedDomains.forEach((supportedDomain) => {

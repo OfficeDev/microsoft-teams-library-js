@@ -147,6 +147,7 @@ export const validOrigins = [
   'www.officeppe.com',
   '*.www.microsoft365.com',
   'www.microsoft365.com',
+  '*.teams.microsoft.net',
 ];
 
 /**
