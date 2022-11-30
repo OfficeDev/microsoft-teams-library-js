@@ -269,9 +269,7 @@ export namespace videoEx {
 
   /**
    * @hidden
-   * Sending fatal error notification to host
-   *
-   * **Note**: Call this function only when your app meets fatal error and can't continue.
+   * Sending fatal error notification to host. Call this function only when your app meets fatal error and can't continue.
    * The host will stop the video pipeline and terminate this session, and optionally, show an error message to the user.
    * @beta
    * @param errorMessage - The error message that will be sent to the host
