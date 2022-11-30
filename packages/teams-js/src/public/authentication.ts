@@ -675,13 +675,13 @@ export namespace authentication {
      * @internal
      * Limited to Microsoft-internal use
      */
-    dataResidency: DataResidencySlim;
+    dataResidency?: DataResidency;
   }
 
   /**
    * Limited set of data residencies information exposed to 1P application developers
    */
-  export enum DataResidencySlim {
+  export enum DataResidency {
     /**
      * Public
      */
