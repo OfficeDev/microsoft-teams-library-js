@@ -634,4 +634,24 @@ describe('videoEx', () => {
       expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
+
+  describe('notifyFatalError', () => {
+    it('FRAMED - should send error to host successfully', async () => {
+      await framedPlatformMock.initializeWithContext('sidePanel');
+      const fakeErrorMsg = 'fake error';
+      videoEx.notifyFatalError(fakeErrorMsg);
+      const message = framedPlatformMock.findMessageByFunc('video.notifyError');
+      expect(message.args.length).toBe(2);
+      expect(message.args[0]).toEqual(fakeErrorMsg);
+    });
+
+    it('FRAMELESS - should send error to host successfully', async () => {
+      await framelessPlatformMock.initializeWithContext('sidePanel');
+      const fakeErrorMsg = 'fake error';
+      videoEx.notifyFatalError(fakeErrorMsg);
+      const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
+      expect(message.args.length).toBe(2);
+      expect(message.args[0]).toEqual(fakeErrorMsg);
+    });
+  });
 });
