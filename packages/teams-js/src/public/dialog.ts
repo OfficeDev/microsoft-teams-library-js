@@ -125,7 +125,10 @@ export namespace dialog {
    * @beta
    */
   export function submit(result?: string | object, appIds?: string | string[]): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+    // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
+    // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
+    // FrameContexts.content will be removed once the bug is fixed.
+    ensureInitialized(FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
