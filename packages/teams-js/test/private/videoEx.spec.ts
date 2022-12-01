@@ -305,7 +305,7 @@ describe('videoEx', () => {
       const message = framedPlatformMock.findMessageByFunc('video.notifyError');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
+      expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
     });
 
@@ -335,7 +335,7 @@ describe('videoEx', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
+      expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
     });
 
