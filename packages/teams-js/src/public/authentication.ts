@@ -679,7 +679,11 @@ export namespace authentication {
   }
 
   /**
+   * @hidden
    * Limited set of data residencies information exposed to 1P application developers
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export enum DataResidency {
     /**
