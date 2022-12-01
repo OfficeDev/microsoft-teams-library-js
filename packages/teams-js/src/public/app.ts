@@ -541,7 +541,8 @@ export namespace app {
         new Error('SDK initialization timed out.'),
       );
     } else {
-      console.log('window is undefined, continuing without initialization');
+      const initializeLogger = appLogger.extend('initialize');
+      initializeLogger('window is undefined, continuing without initialization');
       return Promise.resolve();
     }
   }

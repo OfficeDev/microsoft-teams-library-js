@@ -36,7 +36,11 @@ export namespace teamsCore {
    * default print handler
    */
   export function print(): void {
-    typeof window !== undefined ? window.print() : new Error('window does not exist');
+    if (typeof window !== 'undefined') {
+      window.print();
+    } else {
+      throw new Error('window does not exist');
+    }
   }
 
   /**
