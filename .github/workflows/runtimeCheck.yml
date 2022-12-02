@@ -1,0 +1,36 @@
+name: Check for runtime version changes
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  Get-Changed-Files:
+    runs-on: ubuntu-latest
+    outputs:
+      runtime_changed: ${{ steps.changed_files.outputs.runtime_changed }}
+    steps:
+      - name: Check if runtime.ts has been modified
+        id: changed_files
+        uses: jitterbit/get-changed-files@v1
+        run: |
+          runtime_changed=false
+          for changed_file in ${{ steps.files.outputs.all }}; do
+            if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
+              runtime_changed=true
+            fi
+          done
+          echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
+
+  Comment-On-PR:
+    runs-on: ubuntu-latest
+    needs: Get-Changed-Files
+    if: ${{needs.Get-Changed-Files.output.runtime_changed}}
+    steps:
+      - name: Comment on PR
+        uses: actions/checkout@v2
+        uses: mb2dev/github-action-comment-pull-request@1.0.0
+        with:
+          message: "This is a test"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
