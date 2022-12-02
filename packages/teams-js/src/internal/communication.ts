@@ -3,6 +3,7 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
+import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -91,7 +92,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     Communication.parentOrigin = '*';
     return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
       version,
-      runtimeVersion,
+      latestRuntimeApiVersion,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };

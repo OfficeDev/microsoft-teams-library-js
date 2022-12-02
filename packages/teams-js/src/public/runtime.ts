@@ -14,7 +14,7 @@ interface IBaseRuntime {
 // Latest runtime version
 export type Runtime = IRuntimeV1;
 
-const latestRuntimeApiVersion = 1;
+export const latestRuntimeApiVersion = 1;
 
 function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion && isRuntimeV1(runtime);
