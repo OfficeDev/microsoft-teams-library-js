@@ -248,12 +248,7 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.meetingStage,
-    ];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });
@@ -270,16 +265,6 @@ describe('tasks', () => {
           );
         });
       }
-    });
-
-    it('should successfully pass result and appIds parameters when called from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
-
-      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
-      expect(submitTaskMessage).not.toBeNull();
-      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {
