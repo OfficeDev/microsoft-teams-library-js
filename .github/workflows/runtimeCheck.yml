@@ -9,9 +9,9 @@ jobs:
     outputs:
       runtime_changed: ${{ steps.changed_files.outputs.runtime_changed }}
     steps:
+      - uses: jitterbit/get-changed-files@v1
       - name: Check if runtime.ts has been modified
         id: changed_files
-        uses: jitterbit/get-changed-files@v1
         run: |
           runtime_changed=false
           for changed_file in ${{ steps.files.outputs.all }}; do
@@ -26,9 +26,9 @@ jobs:
     needs: Get-Changed-Files
     if: ${{needs.Get-Changed-Files.output.runtime_changed}}
     steps:
+      - uses: actions/checkout@v2
+      - uses: mb2dev/github-action-comment-pull-request@1.0.0
       - name: Comment on PR
-        uses: actions/checkout@v2
-        uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
           message: "This is a test"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
