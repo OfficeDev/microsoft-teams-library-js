@@ -307,6 +307,7 @@ describe('videoEx', () => {
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
     });
 
     it('FRAMELESS - should invoke video frame event handler and successfully send notifyError', async () => {
@@ -337,6 +338,7 @@ describe('videoEx', () => {
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
     });
 
     it('FRAMED - should not invoke video frame event handler when videoFrame is undefined', async () => {
@@ -636,6 +638,16 @@ describe('videoEx', () => {
   });
 
   describe('notifyFatalError', () => {
+    it('FRAMED - should not be supported before initialization', () => {
+      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
+    });
+
+    it('FRAMELESS - should not be supported before initialization', () => {
+      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
+    });
+
     it('FRAMED - should send error to host successfully', async () => {
       await framedPlatformMock.initializeWithContext('sidePanel');
       const fakeErrorMsg = 'fake error';
@@ -643,6 +655,7 @@ describe('videoEx', () => {
       const message = framedPlatformMock.findMessageByFunc('video.notifyError');
       expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(fakeErrorMsg);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
     });
 
     it('FRAMELESS - should send error to host successfully', async () => {
@@ -652,6 +665,7 @@ describe('videoEx', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
       expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(fakeErrorMsg);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
     });
   });
 });

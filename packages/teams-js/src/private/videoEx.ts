@@ -278,6 +278,10 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function notifyFatalError(errorMessage: string): void {
+    ensureInitialized();
+    if (!video.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     notifyError(errorMessage, ErrorLevel.Fatal);
   }
 }
