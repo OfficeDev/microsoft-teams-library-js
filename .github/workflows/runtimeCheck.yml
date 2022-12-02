@@ -9,6 +9,7 @@ jobs:
     outputs:
       runtime_changed: ${{ steps.detect-runtime-change.outputs.runtime_changed }}
     steps:
+      - uses: actions/checkout@v2
       - uses: jitterbit/get-changed-files@v1
         id: changed_files
       - name: Check if runtime.ts has been modified
@@ -23,17 +24,9 @@ jobs:
             fi
           done
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
-
-  Comment-On-PR:
-    runs-on: ubuntu-latest
-    needs: Get-Changed-Files
-    if: ${{needs.Get-Changed-Files.outputs.runtime_changed}}
-    steps:
-      - uses: actions/checkout@v2
       - name: Comment on PR
+        if: $runtime_changed == true
         uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
           message: "This is a test"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
