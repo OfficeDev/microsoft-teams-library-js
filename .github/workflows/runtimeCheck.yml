@@ -15,7 +15,7 @@ jobs:
         id: detect_runtime_change
         run: |
           runtime_changed=false
-          for changed_file in ${{ steps.files.outputs.all }}; do
+          for changed_file in ${{ steps.changed_files.outputs.all }}; do
             echo "$changed_file"
             if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
               echo "runtime change detected"
