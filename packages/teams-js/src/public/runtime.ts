@@ -11,18 +11,71 @@ interface IBaseRuntime {
   readonly apiVersion: number;
 }
 
-interface IRuntimeV2 extends IBaseRuntime {
-  readonly apiVersion: 2;
+// Latest runtime version
+export type Runtime = IRuntimeV1;
+
+const latestRuntimeApiVersion = 1;
+
+function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
+  return runtime.apiVersion === latestRuntimeApiVersion && isRuntimeV1(runtime);
+}
+
+interface IRuntimeV1 extends IBaseRuntime {
+  readonly apiVersion: 1;
   readonly isLegacyTeams?: boolean;
-  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly supports: {
-    ...
+    readonly appEntity?: {};
+    readonly appInstallDialog?: {};
+    readonly barCode?: {};
+    readonly calendar?: {};
+    readonly call?: {};
+    readonly chat?: {};
+    readonly conversations?: {};
+    readonly dialog?: {
+      readonly bot?: {};
+      readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
+    readonly location?: {};
+    readonly logs?: {};
+    readonly mail?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly monetization?: {};
+    readonly notifications?: {};
+    readonly pages?: {
+      readonly appButton?: {};
+      readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
+      readonly fullTrust?: {};
+      readonly tabs?: {};
+    };
+    readonly people?: {};
+    readonly permissions?: {};
+    readonly profile?: {};
+    readonly remoteCamera?: {};
+    readonly search?: {};
+    readonly sharing?: {};
+    readonly stageView?: {};
+    readonly teams?: {
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
+    };
+    readonly teamsCore?: {};
+    readonly video?: {};
+    readonly webStorage?: {};
   };
 }
 
-type ILegacyRuntime = IRuntime;
+function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
+  return runtime.apiVersion === 1 && 'supports' in runtime;
+}
 
-export let runtime: IRuntime = {
+export let runtime: Runtime = {
   apiVersion: 1,
   supports: {
     appInstallDialog: undefined,
@@ -71,7 +124,7 @@ export let runtime: IRuntime = {
   },
 };
 
-export const teamsRuntimeConfig: IRuntime = {
+export const teamsRuntimeConfig: Runtime = {
   apiVersion: 1,
   isLegacyTeams: true,
   supports: {
@@ -126,38 +179,23 @@ export const v1HostClientTypes = [
 ];
 
 interface IRuntimeUpgrade {
-  version: number;
-  update: (old: IBaseRuntime) => IBaseRuntime;
+  versionToUpgradeFrom: number;
+  upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
 }
 
-function fastForwardRuntime(outdatedRuntime: IBaseRuntime): IRuntimeV3 {
+function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   let runtime = outdatedRuntime;
-  upgradeChain.forEach((upgrade) => {
-    if (runtime.apiVersion === upgrade.version) {
-      runtime = upgrade.update(runtime);
-    }
-  });
-  return runtime;
+  if (runtime.apiVersion < latestRuntimeApiVersion) {
+    upgradeChain.forEach((upgrade) => {
+      if (runtime.apiVersion === upgrade.versionToUpgradeFrom) {
+        runtime = upgrade.upgradeToNextVersion(runtime);
+      }
+    });
+  }
+  return isLatestRuntimeVersion(runtime) && runtime;
 }
 
-const upgradeChain: IRuntimeUpgrade[] = [
-  {
-    version: 1,
-    update: (old: IRuntimeV2) => {
-      return {
-        apiVersion: 2,
-      } as IRuntimeV2;
-    },
-  },
-  {
-    version: 2,
-    update: (old: IRuntimeV2) => {
-      return {
-        apiVersion: 3,
-      };
-    },
-  },
-];
+const upgradeChain: IRuntimeUpgrade[] = [];
 
 export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [
@@ -214,7 +252,7 @@ const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBack
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntimeV1 {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
   let newSupports = { ...teamsRuntimeConfig.supports };
@@ -237,7 +275,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     }
   });
 
-  const backCompatRuntimeConfig: IRuntime = {
+  const backCompatRuntimeConfig: IRuntimeV1 = {
     apiVersion: 1,
     isLegacyTeams: true,
     supports: newSupports,
@@ -248,13 +286,18 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     backCompatRuntimeConfig,
   );
 
-  fastForwardRuntime(backCompatRuntimeConfig);
+  const ffBackCompatRuntimeConfig = fastForwardRuntime(backCompatRuntimeConfig);
 
-  return backCompatRuntimeConfig;
+  generateBackCompatRuntimeConfigLogger(
+    'Runtime config after updating fast-forwarding to latest runtime api version: %o',
+    ffBackCompatRuntimeConfig,
+  );
+
+  return ffBackCompatRuntimeConfig;
 }
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
-export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
+export function applyRuntimeConfig(runtimeConfig: Runtime): void {
   applyRuntimeConfigLogger('Applying runtime %o', runtimeConfig);
   runtime = deepFreeze(runtimeConfig);
 }

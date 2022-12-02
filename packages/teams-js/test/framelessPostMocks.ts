@@ -2,7 +2,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
-import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
+import { applyRuntimeConfig, Runtime } from '../src/public/runtime';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
@@ -71,7 +71,7 @@ export class FramelessPostMocks {
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime): void => {
+  public setRuntimeConfig = (runtime: Runtime): void => {
     applyRuntimeConfig(runtime);
   };
 
