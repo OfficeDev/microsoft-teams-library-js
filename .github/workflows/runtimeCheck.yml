@@ -7,14 +7,15 @@ jobs:
   Get-Changed-Files:
     runs-on: ubuntu-latest
     outputs:
-      runtime_changed: ${{ steps.changed_files.outputs.runtime_changed }}
+      runtime_changed: ${{ steps.detect-runtime-change.outputs.runtime_changed }}
     steps:
       - uses: jitterbit/get-changed-files@v1
-      - name: Check if runtime.ts has been modified
         id: changed_files
+      - name: Check if runtime.ts has been modified
+        id: detect_runtime_change
         run: |
           runtime_changed=false
-          for changed_file in ${{ steps.files.outputs.modified }}; do
+          for changed_file in ${{ steps.files.outputs.all }}; do
             echo "$changed_file"
             if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
               echo "runtime change detected"
