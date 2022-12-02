@@ -27,8 +27,8 @@ jobs:
     if: ${{needs.Get-Changed-Files.output.runtime_changed}}
     steps:
       - uses: actions/checkout@v2
-      - uses: mb2dev/github-action-comment-pull-request@1.0.0
       - name: Comment on PR
+        uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
           message: "This is a test"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
