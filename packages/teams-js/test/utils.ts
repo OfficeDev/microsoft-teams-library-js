@@ -29,19 +29,17 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
-    /* eslint-disable-next-line @typescript-eslint/no-this-alias */ /* Intentionally making a copy of this and using both the old and new instance */
-    const that = this;
     this.messages = [];
     this.childMessages = [];
 
     this.parentWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
         if (message.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
-        } else if (message.func !== 'initialize' && targetOrigin !== that.validOrigin) {
-          throw new Error(`messages to parent window must have a targetOrigin of ${that.validOrigin}`);
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
-        that.messages.push(message);
+        this.messages.push(message);
       },
     } as Window;
 
@@ -50,32 +48,32 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void): void {
+      addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
         if (type === 'message') {
-          that.processMessage = listener;
+          this.processMessage = listener;
         }
       },
-      removeEventListener: function (type: string): void {
+      removeEventListener: (type: string): void => {
         if (type === 'message') {
-          that.processMessage = null;
+          this.processMessage = null;
         }
       },
       location: {
-        origin: that.tabOrigin,
-        href: that.validOrigin,
+        origin: this.tabOrigin,
+        href: this.validOrigin,
         assign: function (): void {
           return;
         },
       },
       parent: this.parentWindow,
       nativeInterface: {
-        framelessPostMessage: function (message: string): void {
-          that.messages.push(JSON.parse(message));
+        framelessPostMessage: (message: string): void => {
+          this.messages.push(JSON.parse(message));
         },
       },
       self: null as unknown as Window,
-      open: function (): Window {
-        return that.childWindow as Window;
+      open: (): Window => {
+        return this.childWindow as Window;
       },
       close: function (): void {
         return;
@@ -85,8 +83,8 @@ export class Utils {
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest): void {
-        that.childMessages.push(message);
+      postMessage: (message: MessageRequest): void => {
+        this.childMessages.push(message);
       },
       close: function (): void {
         return;

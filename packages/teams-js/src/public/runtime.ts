@@ -75,54 +75,20 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
   return runtime.apiVersion === 1 && 'supports' in runtime;
 }
 
-export let runtime: Runtime = {
-  apiVersion: 1,
-  supports: {
-    appInstallDialog: undefined,
-    barCode: undefined,
-    calendar: undefined,
-    call: undefined,
-    chat: undefined,
-    webStorage: undefined,
-    conversations: undefined,
-    dialog: {
-      bot: undefined,
-      update: undefined,
-    },
-    geoLocation: {
-      map: undefined,
-    },
-    location: undefined,
-    logs: undefined,
-    mail: undefined,
-    meetingRoom: undefined,
-    menus: undefined,
-    monetization: undefined,
-    notifications: undefined,
-    pages: {
-      appButton: undefined,
-      backStack: undefined,
-      config: undefined,
-      currentApp: undefined,
-      fullTrust: undefined,
-      tabs: undefined,
-    },
-    people: undefined,
-    permissions: undefined,
-    profile: undefined,
-    remoteCamera: undefined,
-    search: undefined,
-    sharing: undefined,
-    stageView: undefined,
-    teams: {
-      fullTrust: {
-        joinedTeams: undefined,
-      },
-    },
-    teamsCore: undefined,
-    video: undefined,
-  },
+/**
+ * @hidden
+ * Constant used to set the runtime configuration
+ * to its uninitialized state.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const _uninitializedRuntime = {
+  apiVersion: -1,
+  supports: {},
 };
+
+export let runtime: Runtime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 1,
@@ -226,10 +192,6 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     {
       capability: { webStorage: {} },
       hostClientTypes: [HostClientType.desktop],
-    },
-    {
-      capability: { profile: {} },
-      hostClientTypes: [HostClientType.desktop, HostClientType.web],
     },
   ],
   '2.0.5': [

@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
@@ -33,7 +34,7 @@ describe('tasks', () => {
 
     it('should not allow calls before initialization', () => {
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.startTask(taskInfo)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -195,7 +196,7 @@ describe('tasks', () => {
     ];
     it('should not allow calls before initialization', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.updateTask({} as any)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -247,14 +248,9 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.meetingStage,
-    ];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     it('should not allow calls before initialization', () => {
-      expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -269,16 +265,6 @@ describe('tasks', () => {
           );
         });
       }
-    });
-
-    it('should successfully pass result and appIds parameters when called from sidePanel context', async () => {
-      await utils.initializeWithContext('sidePanel');
-
-      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
-
-      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
-      expect(submitTaskMessage).not.toBeNull();
-      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {
