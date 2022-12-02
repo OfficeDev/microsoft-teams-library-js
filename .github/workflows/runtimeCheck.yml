@@ -27,7 +27,7 @@ jobs:
   Comment-On-PR:
     runs-on: ubuntu-latest
     needs: Get-Changed-Files
-    if: ${{needs.Get-Changed-Files.output.runtime_changed}}
+    if: ${{needs.Get-Changed-Files.outputs.runtime_changed}}
     steps:
       - uses: actions/checkout@v2
       - name: Comment on PR
