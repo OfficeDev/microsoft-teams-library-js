@@ -534,7 +534,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    if (typeof window !== 'undefined') {
+    if (!inServerSideRenderingEnvironment()) {
       return runWithTimeout(
         () => initializeHelper(validMessageOrigins),
         initializationTimeoutInMs,
@@ -542,7 +542,9 @@ export namespace app {
       );
     } else {
       const initializeLogger = appLogger.extend('initialize');
-      initializeLogger('window is undefined, continuing without initialization');
+      initializeLogger(
+        'This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments. If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.',
+      );
       return Promise.resolve();
     }
   }
@@ -876,4 +878,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   };
 
   return context;
+}
+
+function inServerSideRenderingEnvironment(): boolean {
+  return typeof window === undefined;
 }
