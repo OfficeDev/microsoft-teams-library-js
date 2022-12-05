@@ -9,6 +9,7 @@ const runtimeLogger = getLogger('runtime');
 
 interface IBaseRuntime {
   readonly apiVersion: number;
+  readonly isLegacyTeams?: boolean;
 }
 
 // Latest runtime version
@@ -83,12 +84,19 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
  * @internal
  * Limited to Microsoft-internal use
  */
-export const _uninitializedRuntime = {
+export const _uninitializedRuntime: IUninitializedRuntime = {
   apiVersion: -1,
   supports: {},
+  isLegacyTeams: false,
 };
 
-export let runtime: Runtime = _uninitializedRuntime;
+interface IUninitializedRuntime {
+  apiVersion: -1;
+  supports: {};
+  isLegacyTeams: false;
+}
+
+export let runtime: Runtime | IUninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 1,

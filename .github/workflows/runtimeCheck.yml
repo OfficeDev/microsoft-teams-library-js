@@ -16,13 +16,10 @@ jobs:
         run: |
           runtime_changed=false
           for changed_file in ${{ steps.changed_files.outputs.all }}; do
-            echo "$changed_file"
             if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
-              echo "runtime change detected"
               runtime_changed=true
             fi
           done
-          echo "runtime_changed=$runtime_changed"
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
 
   Comment-On-PR:
@@ -34,7 +31,7 @@ jobs:
       - name: Comment on PR
         uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
-          message: "This is a test"
+          message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review [PATH_TO_DOCUMENT] to determine if a new runtime version is required."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
