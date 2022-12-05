@@ -881,5 +881,5 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
 }
 
 function inServerSideRenderingEnvironment(): boolean {
-  return typeof window === undefined;
+  return typeof window === 'undefined';
 }
