@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Implement runtime interface versioning",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
