@@ -175,6 +175,7 @@ function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
 }
 
 const upgradeChain: IRuntimeUpgrade[] = [
+  // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
   {
     versionToUpgradeFrom: 0,
     upgradeToNextVersion: (previousVersionRuntime: IRuntimeV0): IRuntimeV1 => {
@@ -280,7 +281,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
 export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
-  applyRuntimeConfigLogger('Fast forwarding runtime %o', runtimeConfig);
+  applyRuntimeConfigLogger('Fast-forwarding runtime %o', runtimeConfig);
   const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
   applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
   runtime = deepFreeze(ffRuntimeConfig);
