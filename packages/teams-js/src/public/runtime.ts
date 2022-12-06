@@ -7,7 +7,7 @@ import { HostClientType } from './constants';
 
 const runtimeLogger = getLogger('runtime');
 
-interface IBaseRuntime {
+export interface IBaseRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
 }
@@ -84,19 +84,13 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
  * @internal
  * Limited to Microsoft-internal use
  */
-export const _uninitializedRuntime: IUninitializedRuntime = {
-  apiVersion: -1,
+export const _uninitializedRuntime: Runtime = {
+  apiVersion: 1,
   supports: {},
   isLegacyTeams: false,
 };
 
-interface IUninitializedRuntime {
-  apiVersion: -1;
-  supports: {};
-  isLegacyTeams: false;
-}
-
-export let runtime: Runtime | IUninitializedRuntime = _uninitializedRuntime;
+export let runtime: Runtime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 1,
@@ -256,20 +250,15 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     backCompatRuntimeConfig,
   );
 
-  const ffBackCompatRuntimeConfig = fastForwardRuntime(backCompatRuntimeConfig);
-
-  generateBackCompatRuntimeConfigLogger(
-    'Runtime config after updating fast-forwarding to latest runtime api version: %o',
-    ffBackCompatRuntimeConfig,
-  );
-
-  return ffBackCompatRuntimeConfig;
+  return backCompatRuntimeConfig;
 }
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
-export function applyRuntimeConfig(runtimeConfig: Runtime): void {
-  applyRuntimeConfigLogger('Applying runtime %o', runtimeConfig);
-  runtime = deepFreeze(runtimeConfig);
+export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
+  applyRuntimeConfigLogger('Fast forwarding runtime %o', runtimeConfig);
+  const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
+  applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
+  runtime = deepFreeze(ffRuntimeConfig);
 }
 
 /**
@@ -280,7 +269,7 @@ export function applyRuntimeConfig(runtimeConfig: Runtime): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export const _minRuntimeConfigToUninitialize = {
+export const _minRuntimeConfigToUninitialize: Runtime = {
   apiVersion: 1,
   supports: {
     pages: {

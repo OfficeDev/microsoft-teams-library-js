@@ -23,7 +23,7 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, Runtime } from './runtime';
+import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, Runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
@@ -567,7 +567,7 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
-              const givenRuntimeConfig: Runtime | null = JSON.parse(runtimeConfig);
+              const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
               initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
               // Check that givenRuntimeConfig is a valid instance of RuntimeConfig
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {

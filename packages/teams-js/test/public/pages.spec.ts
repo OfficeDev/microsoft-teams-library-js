@@ -6,7 +6,11 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  _uninitializedRuntime,
+  latestRuntimeApiVersion,
+} from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import {
@@ -2154,8 +2158,9 @@ describe('Testing pages module', () => {
             expect(initMessage).not.toBeNull();
             expect(initMessage.id).toBe(0);
             expect(initMessage.func).toBe('initialize');
-            expect(initMessage.args.length).toEqual(1);
+            expect(initMessage.args.length).toEqual(2);
             expect(initMessage.args[0]).toEqual(version);
+            expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
             const message = framelessPostMocks.findMessageByFunc('setFrameContext');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
