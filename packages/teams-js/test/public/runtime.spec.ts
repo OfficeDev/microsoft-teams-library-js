@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
-import { generateBackCompatRuntimeConfig, versionConstants } from '../../src/public/runtime';
+import {
+  applyRuntimeConfig,
+  generateBackCompatRuntimeConfig,
+  latestRuntimeApiVersion,
+  Runtime,
+  runtime,
+  versionConstants,
+} from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('runtime', () => {
@@ -17,6 +26,30 @@ describe('runtime', () => {
     if (app._uninitialize) {
       app._uninitialize();
     }
+  });
+
+  describe('runtime versioning', () => {
+    it('latestRuntimeVersion should match Runtine interface apiVersion', () => {
+      const runtime: Runtime = {
+        apiVersion: 1,
+        supports: {},
+      };
+      expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
+    });
+
+    it('applyRuntime fast-forwards v0 runtime config to latest version', () => {
+      const runtimeV0 = {
+        apiVersion: 0,
+        isLegacyTeams: false,
+        supports: {
+          calendarV0: {},
+        },
+      };
+      applyRuntimeConfig(runtimeV0);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+      // eslint-disable-next-line strict-null-checks/all
+      expect(runtime.supports.calendar).toEqual({});
+    });
   });
 
   describe('generateBackCompatRuntimeConfig', () => {

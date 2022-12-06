@@ -26,7 +26,7 @@ import {
   setFrameContext,
   shareDeepLink,
 } from '../../src/public/publicAPIs';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { latestRuntimeApiVersion, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
@@ -75,8 +75,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args.length).toEqual(2);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     expect(initMessage.timestamp).not.toBeNull();
   });
 
@@ -1014,8 +1015,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args.length).toEqual(2);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     const message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);

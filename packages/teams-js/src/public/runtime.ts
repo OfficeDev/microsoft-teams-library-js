@@ -12,7 +12,7 @@ export interface IBaseRuntime {
   readonly isLegacyTeams?: boolean;
 }
 
-// Latest runtime version
+// Latest runtime interface version
 export type Runtime = IRuntimeV1;
 
 export const latestRuntimeApiVersion = 1;
@@ -76,6 +76,18 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
   return runtime.apiVersion === 1 && 'supports' in runtime;
 }
 
+// This interface is included for testing and as an examle of how to implement a runtime version upgrade
+// it may be removed when there is a real version upgrade implemented and tested
+interface IRuntimeV0 extends IBaseRuntime {
+  readonly apiVersion: 0;
+  readonly isLegacyTeams?: boolean;
+  readonly supports: {
+    readonly appEntity?: {};
+    readonly appInstallDialog?: {};
+    readonly calendarV0?: {};
+  };
+}
+
 /**
  * @hidden
  * Constant used to set the runtime configuration
@@ -87,7 +99,6 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
 export const _uninitializedRuntime: Runtime = {
   apiVersion: 1,
   supports: {},
-  isLegacyTeams: false,
 };
 
 export let runtime: Runtime = _uninitializedRuntime;
@@ -163,7 +174,21 @@ function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   return isLatestRuntimeVersion(runtime) && runtime;
 }
 
-const upgradeChain: IRuntimeUpgrade[] = [];
+const upgradeChain: IRuntimeUpgrade[] = [
+  {
+    versionToUpgradeFrom: 0,
+    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV0): IRuntimeV1 => {
+      return {
+        apiVersion: 1,
+        isLegacyTeams: previousVersionRuntime.isLegacyTeams,
+        supports: {
+          ...previousVersionRuntime.supports,
+          calendar: previousVersionRuntime.supports.calendarV0,
+        },
+      };
+    },
+  },
+];
 
 export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [

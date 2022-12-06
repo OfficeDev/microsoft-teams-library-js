@@ -211,7 +211,7 @@ describe('Testing pages module', () => {
             expect(utils.messages.length).toBe(2);
 
             const initMessage = utils.findMessageByFunc('initialize');
-            validateExpectedArgumentsInRequest(initMessage, 'initialize', MatcherType.ToBe, version);
+            validateExpectedArgumentsInRequest(initMessage, 'initialize', MatcherType.ToBe, version, latestRuntimeApiVersion);
             expect(initMessage.id).toBe(0);
             const message = utils.findMessageByFunc('setFrameContext');
             validateExpectedArgumentsInRequest(message, 'setFrameContext', MatcherType.ToBe, frameContext);

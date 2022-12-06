@@ -31,7 +31,7 @@ jobs:
       - name: Comment on PR
         uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
-          message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what change, if any, was made to the runtime object and whether a new runtime version was required."
+          message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
