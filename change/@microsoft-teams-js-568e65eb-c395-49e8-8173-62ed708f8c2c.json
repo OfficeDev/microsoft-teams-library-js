@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Deleted unnecessary support for `meetingRoom` and 'sidePanel` frame contexts in `dialog.submit` API. ",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
