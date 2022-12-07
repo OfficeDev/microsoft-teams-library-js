@@ -25,7 +25,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
         <title>SSR Test App</title>
       </Head>
       <div>
-        <h1 id="id01">{props.renderString}</h1>
+        <h1 id="#string_SSRString">{props.renderString}</h1>
         <pre>
           <b>Context:</b> {JSON.stringify(teamsContext, null, 2)}
         </pre>
