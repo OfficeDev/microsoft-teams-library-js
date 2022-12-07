@@ -5,6 +5,7 @@ import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
   generateBackCompatRuntimeConfig,
+  IBaseRuntime,
   latestRuntimeApiVersion,
   Runtime,
   runtime,
@@ -49,6 +50,16 @@ describe('runtime', () => {
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       // eslint-disable-next-line strict-null-checks/all
       expect(runtime.supports.calendar).toEqual({});
+    });
+
+    it('applyRuntime handles runtime config with string apiVersion', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: '2.0.0',
+        isLegacyTeams: false,
+        supports: {},
+      };
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
     });
   });
 

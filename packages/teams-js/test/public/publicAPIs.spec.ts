@@ -26,7 +26,7 @@ import {
   setFrameContext,
   shareDeepLink,
 } from '../../src/public/publicAPIs';
-import { latestRuntimeApiVersion, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 

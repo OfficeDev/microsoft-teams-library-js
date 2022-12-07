@@ -18,7 +18,12 @@ import {
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig, latestRuntimeApiVersion } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  latestRuntimeApiVersion,
+  runtime,
+  teamsRuntimeConfig,
+} from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';

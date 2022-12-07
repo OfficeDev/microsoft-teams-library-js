@@ -281,6 +281,13 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
 export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
+  // Some hosts that have not adopted runtime versioning send a string for apiVersion, so we should handle those as v1 inputs
+  if (typeof runtimeConfig.apiVersion === 'string') {
+    runtimeConfig = {
+      ...runtimeConfig,
+      apiVersion: 1,
+    };
+  }
   applyRuntimeConfigLogger('Fast-forwarding runtime %o', runtimeConfig);
   const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
   applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
