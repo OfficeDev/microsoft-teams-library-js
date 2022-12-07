@@ -12,7 +12,9 @@ export interface IBaseRuntime {
   readonly isLegacyTeams?: boolean;
 }
 
-// Latest runtime interface version
+/**
+ * Latest runtime interface version
+ */
 export type Runtime = IRuntimeV1;
 
 export const latestRuntimeApiVersion = 1;
@@ -76,7 +78,7 @@ function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
   return runtime.apiVersion === 1 && 'supports' in runtime;
 }
 
-// This interface is included for testing and as an examle of how to implement a runtime version upgrade
+// This interface is included for testing and as an example of how to implement a runtime version upgrade
 // it may be removed when there is a real version upgrade implemented and tested
 interface IRuntimeV0 extends IBaseRuntime {
   readonly apiVersion: 0;
@@ -162,6 +164,15 @@ interface IRuntimeUpgrade {
   upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Uses upgradeChain to transform an outdated runtime object to the latest format.
+ * @param outdatedRuntime - The runtime object to be upgraded
+ * @returns The upgraded runtime object
+ * @throws Error if the runtime object could not be upgraded to the latest version
+ */
 function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   let runtime = outdatedRuntime;
   if (runtime.apiVersion < latestRuntimeApiVersion) {
@@ -171,10 +182,22 @@ function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
       }
     });
   }
-  return isLatestRuntimeVersion(runtime) && runtime;
+  if (isLatestRuntimeVersion(runtime)) {
+    return runtime;
+  } else {
+    throw new Error('Received a runtime that could not be upgraded to the latest version');
+  }
 }
 
-const upgradeChain: IRuntimeUpgrade[] = [
+/**
+ * @hidden
+ * List of transformations required to upgrade a runtime object from a previous version to the next higher version.
+ * This list must be ordered from lowest version to highest version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const upgradeChain: IRuntimeUpgrade[] = [
   // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
   {
     versionToUpgradeFrom: 0,

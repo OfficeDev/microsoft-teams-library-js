@@ -9,6 +9,7 @@ import {
   latestRuntimeApiVersion,
   Runtime,
   runtime,
+  upgradeChain,
   versionConstants,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -60,6 +61,15 @@ describe('runtime', () => {
       };
       applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+    });
+
+    it('upgradeChain is ordered from oldest to newest', () => {
+      expect.assertions(upgradeChain.length - 1);
+      let version = upgradeChain[0].versionToUpgradeFrom;
+      for (let i = 1; i < upgradeChain.length; i++) {
+        expect(upgradeChain[i].versionToUpgradeFrom).toBeGreaterThan(version);
+        version = upgradeChain[i].versionToUpgradeFrom;
+      }
     });
   });
 
