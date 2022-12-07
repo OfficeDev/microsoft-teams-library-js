@@ -542,9 +542,9 @@ export namespace app {
       );
     } else {
       const initializeLogger = appLogger.extend('initialize');
-      initializeLogger(
-        'This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments. If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.',
-      );
+      // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+      // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+      initializeLogger('window object undefined at initialization');
       return Promise.resolve();
     }
   }
