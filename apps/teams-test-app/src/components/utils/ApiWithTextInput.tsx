@@ -6,7 +6,7 @@ import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithTextInputProps<T> {
   title: string;
-  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
+  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces at all
   onClick:
     | ((input: Partial<T>) => Promise<string>)
     | {
