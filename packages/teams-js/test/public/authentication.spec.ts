@@ -20,6 +20,26 @@ describe('Testing authentication capability', () => {
   const mockResult = 'someResult';
   const mockResource = 'https://someresource/';
   const mockClaim = 'some_claim';
+  const mockUser: authentication.UserProfile = {
+    aud: 'test_aud',
+    amr: ['test_amr'],
+    iat: 0,
+    iss: 'test_iss',
+    family_name: 'test_family_name',
+    given_name: 'test_given_name',
+    unique_name: 'test_unique_name',
+    oid: 'test_oid',
+    sub: 'test_sub',
+    tid: 'test_tid',
+    exp: 0,
+    nbf: 0,
+    upn: 'test_upn',
+    ver: 'test_ver',
+  };
+  const mockUserWithDataResidency = {
+    ...mockUser,
+    dataResidency: authentication.DataResidency.Public,
+  };
   const allowedContexts = [
     FrameContexts.content,
     FrameContexts.sidePanel,
@@ -640,6 +660,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile with ${context} context`, async () => {
+          expect.assertions(4);
           await utils.initializeWithContext(context);
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
@@ -651,14 +672,27 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
+          expect.assertions(4);
           await utils.initializeWithContext(context);
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, true, mockResult);
-          await expect(promise).resolves.toEqual(mockResult);
+          utils.respondToMessage(message, true, mockUser);
+          await expect(promise).resolves.toEqual(mockUser);
+        });
+
+        it(`authentication.getUser should successfully get user profile including data residency info with ${context} context if data residency is provided by hosts`, async () => {
+          expect.assertions(4);
+          await utils.initializeWithContext(context);
+          const promise = authentication.getUser();
+          const message = utils.findMessageByFunc('authentication.getUser');
+          expect(message).not.toBeNull();
+          expect(message.id).toBe(1);
+          expect(message.args[0]).toBe(undefined);
+          utils.respondToMessage(message, true, mockUserWithDataResidency);
+          await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
       });
     });
@@ -1287,6 +1321,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile with ${context} context`, async () => {
+          expect.assertions(7);
           await framelessPostMock.initializeWithContext(context);
           const promise = authentication.getUser();
           const message = framelessPostMock.findMessageByFunc('authentication.getUser');
@@ -1303,6 +1338,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
+          expect.assertions(7);
           await framelessPostMock.initializeWithContext(context);
           const promise = authentication.getUser();
           const message = framelessPostMock.findMessageByFunc('authentication.getUser');
@@ -1312,10 +1348,27 @@ describe('Testing authentication capability', () => {
           framelessPostMock.respondToMessage({
             data: {
               id: message.id,
-              args: [false, mockResult],
+              args: [true, mockUser],
             },
           } as DOMMessageEvent);
-          await expect(promise).rejects.toThrow(mockResult);
+          await expect(promise).resolves.toEqual(mockUser);
+        });
+
+        it(`authentication.getUser should successfully get user profile including data residency info with ${context} context if data residency is provided by hosts`, async () => {
+          expect.assertions(7);
+          await framelessPostMock.initializeWithContext(context);
+          const promise = authentication.getUser();
+          const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+          expect(message).not.toBeNull();
+          expect(message.id).toBe(1);
+          expect(message.args[0]).toBe(undefined);
+          framelessPostMock.respondToMessage({
+            data: {
+              id: message.id,
+              args: [true, mockUserWithDataResidency],
+            },
+          } as DOMMessageEvent);
+          await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
       });
     });
