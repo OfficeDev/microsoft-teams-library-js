@@ -534,11 +534,19 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return runWithTimeout(
-      () => initializeHelper(validMessageOrigins),
-      initializationTimeoutInMs,
-      new Error('SDK initialization timed out.'),
-    );
+    if (!inServerSideRenderingEnvironment()) {
+      return runWithTimeout(
+        () => initializeHelper(validMessageOrigins),
+        initializationTimeoutInMs,
+        new Error('SDK initialization timed out.'),
+      );
+    } else {
+      const initializeLogger = appLogger.extend('initialize');
+      // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+      // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+      initializeLogger('window object undefined at initialization');
+      return Promise.resolve();
+    }
   }
 
   const initializeHelperLogger = appLogger.extend('initializeHelper');
@@ -870,4 +878,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   };
 
   return context;
+}
+
+function inServerSideRenderingEnvironment(): boolean {
+  return typeof window === 'undefined';
 }

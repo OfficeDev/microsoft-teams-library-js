@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fixed bugs preventing the use of this library in server-side rendered applications",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
