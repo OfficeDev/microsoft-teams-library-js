@@ -39,9 +39,15 @@ export namespace teamsCore {
     if (typeof window !== 'undefined') {
       window.print();
     } else {
+<<<<<<< HEAD
       throw new Error(
         'This codepath only exists to enable compilation in a server-side redered environment. In standard usage, the window object should never be undefined so this code path should never run. If this error has actually been thrown, something has gone very wrong and it is a bug',
       );
+=======
+      // This codepath only exists to enable compilation in a server-side redered environment. In standard usage, the window object should never be undefined so this code path should never run.
+      // If this error has actually been thrown, something has gone very wrong and it is a bug
+      throw new Error('window object undefined at print call');
+>>>>>>> main
     }
   }
 
