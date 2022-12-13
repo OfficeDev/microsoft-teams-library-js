@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fix incorrect profile.IsSupported check",
-  "packageName": "@microsoft/teams-js",
-  "email": "grhewitt@microsoft.com",
-  "dependentChangeType": "patch"
-}
