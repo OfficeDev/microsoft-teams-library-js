@@ -1,8 +1,17 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 07 Dec 2022 16:39:58 GMT and should not be manually modified.
+This log was last generated on Tue, 13 Dec 2022 21:28:59 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.6.1
+
+Tue, 13 Dec 2022 21:28:59 GMT
+
+### Patches
+
+- Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.
+- Fixed bugs preventing the use of this library in server-side rendered applications
 
 ## 2.6.0
 
