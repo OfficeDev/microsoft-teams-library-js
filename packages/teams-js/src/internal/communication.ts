@@ -227,7 +227,11 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * Limited to Microsoft-internal use
  */
 function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
-  const logger = sendMessageToParentHelperLogger;
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const logger = (...args: any) => {
+    //console.log('sendMessageToParentHelper', ...args);
+    sendMessageToParentHelperLogger(args);
+  };
 
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
@@ -264,6 +268,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
  * Limited to Microsoft-internal use
  */
 export function processMessage(evt: DOMMessageEvent): void {
+  //console.log('processMessage', evt);
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
@@ -357,7 +362,11 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  * Limited to Microsoft-internal use
  */
 function handleParentMessage(evt: DOMMessageEvent): void {
-  const logger = handleParentMessageLogger;
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const logger = (...arg: any) => {
+    //console.log('handleParentMessage', ...arg);
+    handleParentMessageLogger(arg);
+  };
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks

@@ -20,6 +20,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/dom-mediacapture-transform": "^0.1.4",
     "debug": "4.3.3"
   },
   "devDependencies": {

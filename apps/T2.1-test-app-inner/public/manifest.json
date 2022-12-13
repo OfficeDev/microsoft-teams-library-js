@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.13",
+  "version": "0.2",
+  "id": "8142d2d1-4113-411f-868f-8e6e606e8827",
+  "packageName": "sample app",
+  "developer": {
+    "name": "Microsoft",
+    "websiteUrl": "https://localhost:4003/",
+    "privacyUrl": "https://localhost:4003/",
+    "termsOfUseUrl": "https://localhost:4003/"
+  },
+  "name": {
+    "short": "Sample App"
+  },
+  "description": {
+    "short": "Sample App!",
+    "full": "sample app for multi host experience"
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#ff6a00",
+  "staticTabs": [
+    {
+      "entityId": "test-tab",
+      "name": "Test Tab",
+      "contentUrl": "https://localhost:4003/",
+      "websiteUrl": "https://localhost:4003/",
+      "scopes": ["personal"]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://localhost:4003/",
+      "scopes": ["team", "groupchat"],
+      "context": [
+        "channelTab",
+        "privateChatTab",
+        "meetingChatTab",
+        "meetingDetailsTab",
+        "meetingSidePanel",
+        "meetingStage"
+      ]
+    }
+  ],
+  "validDomains": ["localhost:4003"],
+  "permissions": ["identity", "messageTeamMembers"],
+  "devicePermissions": ["media", "geolocation"],
+  "showLoadingIndicator": true
+}

@@ -1,0 +1,33 @@
+.data {
+  text-align: center;
+  align-items: center;
+}
+.mainPageHeader {
+  text-align: center;
+  align-items: center;
+}
+.flex-container {
+  width: 70%;
+  min-height: 25%;
+  max-height: 30%;
+  margin: 0 auto;
+  display: -webkit-flex;
+  display: flex;
+}
+.flex-container .column {
+  text-align: left;
+  padding: 5%;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+.sub-flex-container {
+  align-items: center;
+  display: flex;
+  padding: 5%;
+  flex-direction: column;
+}
+.paddingClass {
+  padding: 5%;
+  text-align: center;
+}

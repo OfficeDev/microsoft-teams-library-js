@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -88,6 +89,17 @@ export namespace video {
     notifyError: (errorMessage: string) => void,
   ) => void;
 
+  export type RecievedVideoFrame = {
+    frame: globalThis.VideoFrame;
+  };
+
+  /**
+   * Video effect change call back function definition.
+   * The video app should resolve the promise to notify a successfully processed video frame.
+   * The video app should reject the promise to notify a failure.
+   */
+  export type VideoFrameCallbackV2 = (receivedVideoFrame: RecievedVideoFrame) => Promise<globalThis.VideoFrame>;
+
   /**
    * Video effect change call back function definition
    * @beta
@@ -111,6 +123,13 @@ export namespace video {
       (videoFrame: VideoFrame) => {
         if (videoFrame) {
           const timestamp = videoFrame.timestamp;
+          const newVideoFrame = new globalThis.VideoFrame(videoFrame.data, {
+            timestamp,
+            format: 'NV12',
+            codedWidth: videoFrame.width,
+            codedHeight: videoFrame.height,
+          });
+
           frameCallback(
             videoFrame,
             () => {
@@ -123,6 +142,18 @@ export namespace video {
       false,
     );
     sendMessageToParent('video.registerForVideoFrame', [config]);
+  }
+
+  export enum ErrorLevel {
+    /**
+     * Error level warning
+     */
+    WARN = 'WARN',
+
+    /**
+     * Error level fatal, the video app will be terminated after this error
+     */
+    FATAL = 'FATAL',
   }
 
   /**
@@ -144,11 +175,154 @@ export namespace video {
      * Get metadata of the video frame calulated by the native modules
      */
     getVideoFrameMetaData: (timestamp: number) => { [key: string]: ArrayBuffer };
+
+    /**
+     * Notify error when processing the video frame
+     */
+    notifyProcessingError: (errorLevel: ErrorLevel, errorMessage?: string) => void;
   }
 
   type IPCInfoT2 = {
     streamId: string;
   };
+
+  function convertVideoFrame(frame: globalThis.VideoFrame): VideoFrame {
+    const buffer = new ArrayBuffer(frame.allocationSize());
+    frame.copyTo(buffer);
+    return {
+      width: frame.codedWidth,
+      height: frame.codedHeight,
+      data: new Uint8ClampedArray(buffer),
+      timestamp: frame.timestamp,
+    };
+  }
+
+  export const registerForVideoFrameV2: (frameCallback: VideoFrameCallbackV2) => void = (() => {
+    const processedStream = new MediaStream();
+
+    return (frameCallback: VideoFrameCallbackV2) =>
+      registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
+        // when a new streamId is ready:
+        const { streamId } = ipcInfo;
+        console.log('video.startVideoExtensibilityVideoStream', streamId);
+        // todo: error handling
+        const videoTrack = await getInputVideoTrack(streamId);
+        console.log('videoTrack', videoTrack);
+        const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
+
+        processedStream.getTracks().forEach((track) => {
+          track.stop();
+          processedStream.removeTrack(track);
+        });
+        processedStream.addTrack(generator);
+        // TODO: remove when code ready:
+        drawCanvas('processed', processedStream);
+        //chrome.webview.postTextureStream(generator);
+        //chrome.webview.registerTextureStream(streamId, generator);
+      });
+  })();
+
+  function videoFrameToFrame(videoFrame: VideoFrame, timestamp: number): globalThis.VideoFrame {
+    const frame = new globalThis.VideoFrame(videoFrame.data.buffer, {
+      format: 'NV12',
+      timestamp: timestamp,
+      codedWidth: videoFrame.width,
+      codedHeight: videoFrame.height,
+    });
+    return frame;
+  }
+
+  function drawCanvas(canvasName: string, stream: MediaStream): void {
+    const video = document.createElement('video');
+    video.title = canvasName;
+    video.width = 480;
+    video.height = 360;
+    document.body.appendChild(video);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    video.srcObject = stream;
+    video.play();
+  }
+
+  async function getInputVideoTrack(streamId: string): Promise<MediaStreamVideoTrack> {
+    // TODO: switch to chrome.webview.getTextureStream(streamId) when it is available
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chrome = window['chrome'] as any;
+    console.log('getting video stream: ', streamId);
+    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true }); // chrome.webview.getTextureStream(streamId);
+    // TODO: remove when code ready:
+    drawCanvas('origin', mediaStream);
+
+    return mediaStream.getVideoTracks()[0];
+  }
+
+  const calculator = {};
+  function calculateFPS(name: string): void {
+    if (!calculator[name]) {
+      calculator[name] = {
+        count: 0,
+        lastTime: Date.now(),
+      };
+    }
+    const now = Date.now();
+    const { count, lastTime } = calculator[name];
+    calculator[name].count = count + 1;
+    if (now - lastTime > 10000) {
+      console.log(`${name} fps: ${count / 10}`);
+      calculator[name].count = 0;
+      calculator[name].lastTime = now;
+    }
+  }
+
+  function createProcessedStreamGenerator(
+    videoTrack: MediaStreamVideoTrack,
+    frameCallback: VideoFrameCallbackV2,
+  ): MediaStreamTrack {
+    const processor = new MediaStreamTrackProcessor({ track: videoTrack as MediaStreamVideoTrack });
+    const source = processor.readable;
+    const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+    const sink = generator.writable;
+
+    source
+      .pipeThrough(
+        new TransformStream({
+          async transform(receivedFrame, controller) {
+            calculateFPS('receivedFrame');
+            const timestamp = receivedFrame.timestamp;
+
+            if (timestamp !== null) {
+              //console.log('got frame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
+              frameCallback({
+                frame: receivedFrame,
+              })
+                .then((frameProcessedByApp) => {
+                  calculateFPS('processedFrame');
+                  receivedFrame.close();
+                  //console.log('receved processed video frame', videoFrame);
+                  const buffer = new ArrayBuffer(frameProcessedByApp.allocationSize());
+                  frameProcessedByApp.copyTo(buffer);
+                  const processedFrame = new globalThis.VideoFrame(buffer, {
+                    codedHeight: frameProcessedByApp.codedHeight,
+                    codedWidth: frameProcessedByApp.codedWidth,
+                    // TODO: how to check format and convert when needed?
+                    format: frameProcessedByApp.format,
+                    timestamp: timestamp,
+                  });
+                  controller.enqueue(processedFrame);
+                  frameProcessedByApp.close();
+
+                  // TODO: timestamp is wrong, video.VideoFrame.timestamp is not the same as globalThis.VideoFrame.timestamp
+                  notifyVideoFrameProcessed(timestamp);
+                })
+                .catch((error) => {
+                  notifyError(error);
+                });
+            }
+          },
+        }),
+      )
+      .pipeTo(sink);
+    return generator;
+  }
 
   /**
    * get video stream in Permissions section
@@ -159,26 +333,68 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+
+    window.addEventListener('metadataprocessed', (metadata) => {
+      // timestamp => {[key: string]: ArrayBuffer}
+      console.log(metadata);
+    });
+
+    sendMessageToParent('video.getVideoStream', [config]);
+
     // When getTextureStream is available, we will use it to get the video stream
     // otherwise, wrap video frames to a MediaStream
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       registerHandler(
         // new event here
         'video.startVideoExtensibilityVideoStream',
         async (ipcInfo: IPCInfoT2) => {
           if (ipcInfo) {
             const { streamId } = ipcInfo;
+            console.log('video.startVideoExtensibilityVideoStream', streamId);
             // todo: error handling
-            const mediaStream = await window.chrome.webview.getTextureStream(streamId);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const chrome = window['chrome'] as any;
+            console.log('getting video stream: ', streamId);
+            const mediaStream = await chrome.webview.getTextureStream(streamId); // navigator.mediaDevices.getUserMedia({ video: true });
+            console.log('got video stream: ', mediaStream);
             const mediaStreamResponse: MediaStreamResponse = {
               mediaStream,
-              registerOutputStreamTrack: (outputStreamTrack: MediaStreamTrack) => {
+              registerOutputStreamTrack: (outputStreamTrack: MediaStreamVideoTrack) => {
+                console.log('registering output stream track: ', outputStreamTrack);
+                let frames = 0;
+                let startTime = 0;
+
                 // TODO: calculate fps
-                window.chrome.webview.registerTextureStream(streamId, outputStreamTrack);
+                //window.chrome.webview.registerTextureStream(streamId, outputStreamTrack);
+                const processor = new MediaStreamTrackProcessor({ track: outputStreamTrack });
+                const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+                const source = processor.readable;
+                const sink = generator.writable;
+                source
+                  .pipeThrough(
+                    new TransformStream({
+                      async transform(frame, controller) {
+                        frames++;
+                        if (frame.timestamp - startTime > 1000 * 10000) {
+                          console.log(`Received fPS: ${frames}, tab active: ${document.hasFocus()}`);
+                          frames = 0;
+                          startTime = frame.timestamp;
+                        }
+                        controller.enqueue(frame);
+                      },
+                    }),
+                  )
+                  .pipeTo(sink);
               },
               getVideoFrameMetaData: (timestamp: number) => {
                 // TODO: add getVideoFrameMetaData: how does the metadata get to the host?
-                return getVideoFrameMetaData(timestamp);
+                //return getVideoFrameMetaData(timestamp);
+                console.log('getVideoFrameMetaData', timestamp);
+                return null;
+              },
+              notifyProcessingError: (errorLevel: ErrorLevel, errorMessage?: string) => {
+                console.log(errorMessage);
+                notifyError(errorLevel);
               },
             };
             resolve(mediaStreamResponse);

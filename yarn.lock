@@ -2717,8 +2717,9 @@
   integrity sha512-iKc5L036hc/wu13DX5kGf//3/WqTAErAPTyYKG6zT3vG070xXaaP7PInODznfyZduhiOvavmrRlQb34ajeDTUA==
 
 "@microsoft/teams-js@file:packages/teams-js":
-  version "2.3.0"
+  version "2.5.0"
   dependencies:
+    "@types/dom-mediacapture-transform" "^0.1.4"
     debug "4.3.3"
 
 "@mixer/webpack-bundle-compare@^0.1.0":
@@ -3033,6 +3034,18 @@
   version "0.1.30"
   resolved "https://registry.yarnpkg.com/@types/detect-indent/-/detect-indent-0.1.30.tgz#dc682bb412b4e65ba098e70edad73b4833fb910d"
   integrity sha1-3GgrtBK05lugmOcO2tc7SDP7kQ0=
+
+"@types/dom-mediacapture-transform@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@types/dom-mediacapture-transform/-/dom-mediacapture-transform-0.1.4.tgz#f77c1b469f4c33513219dbca46201cf5bf0d082f"
+  integrity sha512-G4DI51gU3zp/nCFVP7O5dv3sZ7nVXy3Dqooup8tDhvdzUNeAMiC0XIFGiwH3UHPh/t6L5odMOHwB3BYlY86WKw==
+  dependencies:
+    "@types/dom-webcodecs" "*"
+
+"@types/dom-webcodecs@*":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@types/dom-webcodecs/-/dom-webcodecs-0.1.5.tgz#2252fdb4a3229924d27f054242cc614e2cd5b83b"
+  integrity sha512-dsAE+4ws75W5mmNmIZ7IKZwv4bcz5GgPuA87u+Mk1CeVWB6g7ZwBfizRwBZDeyO12RSxoU3NlRa8jgLYQeSZGg==
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.1"

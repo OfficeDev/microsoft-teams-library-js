@@ -116,6 +116,7 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
  * Limited to Microsoft-internal use
  */
 export const validOrigins = [
+  'localhost:4003',
   'teams.microsoft.com',
   'teams.microsoft.us',
   'gov.teams.microsoft.us',
