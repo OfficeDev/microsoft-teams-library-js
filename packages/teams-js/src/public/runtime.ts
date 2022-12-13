@@ -20,7 +20,7 @@ export type Runtime = IRuntimeV1;
 export const latestRuntimeApiVersion = 1;
 
 function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
-  return runtime.apiVersion === latestRuntimeApiVersion && isRuntimeV1(runtime);
+  return runtime.apiVersion === latestRuntimeApiVersion;
 }
 
 interface IRuntimeV1 extends IBaseRuntime {
@@ -72,10 +72,6 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly video?: {};
     readonly webStorage?: {};
   };
-}
-
-function isRuntimeV1(runtime: IBaseRuntime): runtime is IRuntimeV1 {
-  return runtime.apiVersion === 1 && 'supports' in runtime;
 }
 
 // This interface is included for testing and as an example of how to implement a runtime version upgrade
@@ -159,19 +155,27 @@ export const v1HostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
+/**
+ * @hidden
+ * `upgradeToNextVersion` transforms runtime of version `versionToUpgradeFrom` to the next higher version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 interface IRuntimeUpgrade {
   versionToUpgradeFrom: number;
   upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
 }
 
 /**
- * @internal
- * Limited to Microsoft-internal use
- *
+ * @hidden
  * Uses upgradeChain to transform an outdated runtime object to the latest format.
  * @param outdatedRuntime - The runtime object to be upgraded
  * @returns The upgraded runtime object
  * @throws Error if the runtime object could not be upgraded to the latest version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   let runtime = outdatedRuntime;
@@ -306,6 +310,7 @@ const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
 export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
   // Some hosts that have not adopted runtime versioning send a string for apiVersion, so we should handle those as v1 inputs
   if (typeof runtimeConfig.apiVersion === 'string') {
+    applyRuntimeConfigLogger('Trying to apply runtime with string apiVersion, processing as v1: %o', runtimeConfig);
     runtimeConfig = {
       ...runtimeConfig,
       apiVersion: 1,

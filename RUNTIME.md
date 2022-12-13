@@ -34,11 +34,10 @@ A minor version change is one by which the previous version can be transformed i
 
 ## How do I update the runtime version
 
-1. Determine if a major or minor version change is required.
-2. In Create new interface that extends IBaseRuntime and has apiVersion set to the new version (`IRuntimeVX_Y extends IBaseRuntime { apiVersion: x.y; ... }`)
-3. Write a type guard for the new interface (`isRuntimeVX_Y()`)
+1. Determine if a major or minor version change is required
+2. Update `latestRuntimeApiVersion` in runtime.ts to the new version number
+3. Create new interface that extends IBaseRuntime and has apiVersion set to the new version (`IRuntimeVX_Y extends IBaseRuntime { apiVersion: x.y; ... }`)
 4. Set type alias Runtime to the new runtime interface (`type Runtime = IRuntimeVX_Y`)
-5. Update `isLatestRuntimeVersion` to use the new type guard
-6. Add an `IRuntimeUpgrade` to the `upgradeChain` that will transform the previous runtime version to the new one
-7. Update "runtime versioning" tests in `packages/teams-js/test/public/runtime.spec.ts` to use new version number
-8. Add a test for upgrading from the previous runtime version to the new one
+5. Add an `IRuntimeUpgrade` to the `upgradeChain` that will transform the previous runtime version to the new one
+6. Update "runtime versioning" tests in `packages/teams-js/test/public/runtime.spec.ts` to use new version number
+7. Add a test for upgrading from the previous runtime version to the new one
