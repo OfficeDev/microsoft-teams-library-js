@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `notifyFatalError` function in videoEx to enable video apps to notify the host of fatal errors.",
-  "packageName": "@microsoft/teams-js",
-  "email": "Xukai.Wu@microsoft.com",
-  "dependentChangeType": "patch"
-}
