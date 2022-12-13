@@ -668,6 +668,38 @@ export namespace authentication {
      * Limited to Microsoft-internal use
      */
     ver: string;
+    /**
+     * @hidden
+     * Stores the data residency of the user.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    dataResidency?: DataResidency;
+  }
+
+  /**
+   * @hidden
+   * Limited set of data residencies information exposed to 1P application developers
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum DataResidency {
+    /**
+     * Public
+     */
+    Public = 'public',
+
+    /**
+     * European Union Data Boundary
+     */
+    EUDB = 'eudb',
+
+    /**
+     * Other, stored to cover fields that will not be exposed
+     */
+    Other = 'other',
   }
 
   /**

@@ -1,6 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent, MessageResponse } from '../../src/internal/interfaces';
-// import { uninitializedLibraryError } from '../../src/internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -286,41 +285,6 @@ describe('Testing pages module', () => {
         );
       });
 
-      // Commenting out these tests as url validation is not implemented
-      /*
-      it('should not allow calls with a bad origin', async () => {
-        await expect(pages.navigateCrossDomain('https://badorigin.com')).rejects.toThrowError(
-          new Error(errorLibraryNotInitialized),
-        );
-      });
-  
-      it('should not allow calls with an empty origin', async () => {
-        await expect(pages.navigateCrossDomain('')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
-      });
-  
-      it('should not allow calls with a blank origin', async () => {
-        await expect(pages.navigateCrossDomain(' ')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
-      });
-  
-      it('should not allow calls with an origin without base', async () => {
-        await expect(pages.navigateCrossDomain('blahblah')).rejects.toThrowError(
-          new Error(errorLibraryNotInitialized),
-        );
-      });
-  
-      it('should not allow calls with an origin without suffix', async () => {
-        await expect(pages.navigateCrossDomain('https://blahblah')).rejects.toThrowError(
-          new Error(errorLibraryNotInitialized),
-        );
-      });
-  
-      it('should not allow calls with an origin with invalid base', async () => {
-        await expect(pages.navigateCrossDomain('blah://valid.origin.com')).rejects.toThrowError(
-          new Error(errorLibraryNotInitialized),
-        );
-      });
-      */
-
       Object.keys(FrameContexts).forEach((k) => {
         const context = FrameContexts[k];
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
@@ -328,6 +292,74 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
             expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.navigateCrossDomain should throw error with a bad origin when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('https://badorigin.com');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false);
+
+            await expect(promise).rejects.toThrow(
+              'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+            );
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an empty origin when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with a blank origin when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain(' ');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin without base when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('blahblah');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin without suffix when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('https://blahblah');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin with invalid base when initialized with ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('blah://valid.origin.com');
+            const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
+            validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
+
+            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+
+            await expect(promise).rejects.toThrow('Url is invalid');
           });
 
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
@@ -2246,6 +2278,101 @@ describe('Testing pages module', () => {
             await framelessPostMocks.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
             expect(pages.navigateCrossDomain('https://valid.origin.com')).rejects.toEqual(errorNotSupportedOnPlatform);
+          });
+
+          it(`pages.navigateCrossDomain should throw error with a bad origin when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('https://badorigin.com');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [
+                  false,
+                  'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+                ],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow(
+              'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
+            );
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an empty origin when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [false, 'Url is invalid'],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with a blank origin when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain(' ');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [false, 'Url is invalid'],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin without base when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('blahblah');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [false, 'Url is invalid'],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin without suffix when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('https://blahblah');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [false, 'Url is invalid'],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow('Url is invalid');
+          });
+
+          it(`pages.navigateCrossDomain should not allow calls with an origin with invalid base when initialized with ${context}`, async () => {
+            await framelessPostMocks.initializeWithContext(context);
+            const promise = pages.navigateCrossDomain('blah://valid.origin.com');
+            const navigateCrossDomainMessage = framelessPostMocks.findMessageByFunc('navigateCrossDomain');
+            expect(navigateCrossDomainMessage).not.toBeNull();
+            framelessPostMocks.respondToMessage({
+              data: {
+                id: navigateCrossDomainMessage.id,
+                args: [false, 'Url is invalid'],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrow('Url is invalid');
           });
 
           it(`pages.navigateCrossDomain should allow calls from ${context} context`, async () => {
