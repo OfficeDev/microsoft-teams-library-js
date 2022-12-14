@@ -70,7 +70,7 @@ export namespace location {
       throw new Error('[location.getLocation] Callback cannot be null');
     }
 
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
     if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
       throw { errorCode: ErrorCode.OLD_PLATFORM };
@@ -97,7 +97,7 @@ export namespace location {
     if (!callback) {
       throw new Error('[location.showLocation] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isCurrentSDKVersionAtLeast(locationAPIsRequiredVersion)) {
       throw { errorCode: ErrorCode.OLD_PLATFORM };
     }
@@ -122,7 +122,6 @@ export namespace location {
    * @returns boolean to represent whether Location is supported
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.location ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.location ? true : false;
   }
 }

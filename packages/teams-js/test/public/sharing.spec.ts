@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
 
@@ -371,7 +371,7 @@ describe('sharing_v2', () => {
     });
 
     it('sharing.isSupported should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => sharing.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

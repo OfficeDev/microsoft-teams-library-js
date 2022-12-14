@@ -3,7 +3,7 @@ import { logs } from '../../src/private/logs';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -32,7 +32,7 @@ describe('logs', () => {
 
   describe('Testings logs.isSupported', () => {
     it('should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => logs.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

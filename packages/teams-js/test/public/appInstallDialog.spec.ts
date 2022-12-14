@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -30,7 +30,7 @@ describe('appInstallDialog', () => {
   });
 
   it('should throw if called before initialization', () => {
-    utils.setRuntimeConfig(_uninitializedRuntime);
+    utils.uninitializeRuntimeConfig();
     expect(() => appInstallDialog.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
