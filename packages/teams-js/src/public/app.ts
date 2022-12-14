@@ -530,7 +530,7 @@ export namespace app {
    * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https:www.example.com
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {

@@ -1,8 +1,23 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 03 Nov 2022 17:03:30 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Dec 2022 16:39:58 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.6.0
+
+Wed, 07 Dec 2022 16:39:58 GMT
+
+### Minor changes
+
+- Added `notifyFatalError` function in videoEx to enable video apps to notify the host of fatal errors.
+- Added support for showing and hiding the app share button to the `meeting` capability
+- Fixed bug where some capabilities were being incorrectly marked as supported
+
+### Patches
+
+- Deleted unnecessary support for `meetingRoom` and 'sidePanel` frame contexts in `dialog.submit` API. 
+- Fix incorrect profile.IsSupported check
 
 ## 2.5.0
 

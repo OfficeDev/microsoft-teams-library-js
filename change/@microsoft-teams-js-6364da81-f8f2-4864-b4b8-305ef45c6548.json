@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added support for showing and hiding the app share button to the `meeting` capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "mbhandari@microsoft.com",
-  "dependentChangeType": "patch"
-}
