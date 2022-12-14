@@ -873,6 +873,6 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   return context;
 }
 
-function inServerSideRenderingEnvironment(): boolean {
-  return typeof window === 'undefined';
-}
+// function inServerSideRenderingEnvironment(): boolean {
+//   return typeof window === 'undefined';
+// }
