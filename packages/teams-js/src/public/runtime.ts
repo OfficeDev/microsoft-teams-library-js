@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
@@ -10,6 +11,7 @@ const runtimeLogger = getLogger('runtime');
 export interface IBaseRuntime {
   readonly apiVersion: number;
   readonly isLegacyTeams?: boolean;
+  readonly supports?: {};
 }
 
 /**
@@ -86,20 +88,38 @@ interface IRuntimeV0 extends IBaseRuntime {
   };
 }
 
+// Constant used to set the runtime configuration
+const _uninitializedRuntime: UninitializedRuntime = {
+  apiVersion: -1,
+  supports: {},
+};
+
+interface UninitializedRuntime extends IBaseRuntime {
+  readonly apiVersion: -1;
+  readonly supports: {};
+}
+
 /**
  * @hidden
- * Constant used to set the runtime configuration
- * to its uninitialized state.
+ * Ensures that the runtime has been initialized
+
+ * @returns True if the runtime has been initialized
+ * @throws Error if the runtime has not been initialized
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export const _uninitializedRuntime: Runtime = {
-  apiVersion: 1,
-  supports: {},
-};
+export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime {
+  if (isLatestRuntimeVersion(runtime)) {
+    return true;
+  } else if (runtime.apiVersion === -1) {
+    throw new Error(errorRuntimeNotInitialized);
+  } else {
+    throw new Error(errorRuntimeNotSupported);
+  }
+}
 
-export let runtime: Runtime = _uninitializedRuntime;
+export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 1,
@@ -320,6 +340,10 @@ export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
   const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
   applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
   runtime = deepFreeze(ffRuntimeConfig);
+}
+
+export function setUnitializedRuntime(): void {
+  runtime = deepFreeze(_uninitializedRuntime);
 }
 
 /**

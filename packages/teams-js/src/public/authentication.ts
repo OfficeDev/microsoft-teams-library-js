@@ -9,6 +9,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
+import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
@@ -66,6 +67,7 @@ export namespace authentication {
       throw new Error('No parameters are provided for authentication');
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.settings,
@@ -368,7 +370,7 @@ export namespace authentication {
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
-    ensureInitialized(FrameContexts.authentication);
+    ensureInitialized(runtime, FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
@@ -386,7 +388,7 @@ export namespace authentication {
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
-    ensureInitialized(FrameContexts.authentication);
+    ensureInitialized(runtime, FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));

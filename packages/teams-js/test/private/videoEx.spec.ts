@@ -2,7 +2,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { videoEx } from '../../src/private/videoEx';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -627,24 +627,24 @@ describe('videoEx', () => {
 
   describe('isSupported', () => {
     it('FRAMED - should not be supported before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framedPlatformMock.uninitializeRuntimeConfig();
       expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
     });
 
     it('FRAMELESS - should not be supported before initialization', () => {
-      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framelessPlatformMock.uninitializeRuntimeConfig();
       expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
 
   describe('notifyFatalError', () => {
     it('FRAMED - should not be supported before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framedPlatformMock.uninitializeRuntimeConfig();
       expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
     });
 
     it('FRAMELESS - should not be supported before initialization', () => {
-      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framelessPlatformMock.uninitializeRuntimeConfig();
       expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
     });
 

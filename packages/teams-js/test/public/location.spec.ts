@@ -3,7 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, setUnitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -55,7 +55,7 @@ describe('location', () => {
     });
 
     it('should not be supported before initialization', () => {
-      applyRuntimeConfig(_uninitializedRuntime);
+      setUnitializedRuntime();
       expect(() => location.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

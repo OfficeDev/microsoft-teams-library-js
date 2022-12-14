@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { errorRuntimeNotInitialized } from '../../src/internal/constants';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
   generateBackCompatRuntimeConfig,
   IBaseRuntime,
+  isRuntimeInitialized,
   latestRuntimeApiVersion,
   Runtime,
   runtime,
+  setUnitializedRuntime,
   upgradeChain,
   versionConstants,
 } from '../../src/public/runtime';
@@ -31,7 +34,7 @@ describe('runtime', () => {
   });
 
   describe('runtime versioning', () => {
-    it('latestRuntimeVersion should match Runtine interface apiVersion', () => {
+    it('latestRuntimeVersion should match Runtime interface apiVersion', () => {
       const runtime: Runtime = {
         apiVersion: 1,
         supports: {},
@@ -50,7 +53,7 @@ describe('runtime', () => {
       applyRuntimeConfig(runtimeV0);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       // eslint-disable-next-line strict-null-checks/all
-      expect(runtime.supports.calendar).toEqual({});
+      expect(isRuntimeInitialized(runtime) && runtime.supports.calendar).toEqual({});
     });
 
     it('applyRuntime handles runtime config with string apiVersion', () => {
@@ -70,6 +73,11 @@ describe('runtime', () => {
         expect(upgradeChain[i].versionToUpgradeFrom).toBeGreaterThan(version);
         version = upgradeChain[i].versionToUpgradeFrom;
       }
+    });
+
+    it('isRuntimeInitialized throws errorRuntimeNotInitialized when runtime is not initialized', () => {
+      setUnitializedRuntime();
+      expect(() => isRuntimeInitialized(runtime)).toThrowError(new Error(errorRuntimeNotInitialized));
     });
   });
 

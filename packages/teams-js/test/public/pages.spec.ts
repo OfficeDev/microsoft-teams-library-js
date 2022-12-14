@@ -7,7 +7,6 @@ import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters 
 import { pages } from '../../src/public/pages';
 import {
   _minRuntimeConfigToUninitialize,
-  _uninitializedRuntime,
   latestRuntimeApiVersion,
 } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
@@ -210,7 +209,13 @@ describe('Testing pages module', () => {
             expect(utils.messages.length).toBe(2);
 
             const initMessage = utils.findMessageByFunc('initialize');
-            validateExpectedArgumentsInRequest(initMessage, 'initialize', MatcherType.ToBe, version, latestRuntimeApiVersion);
+            validateExpectedArgumentsInRequest(
+              initMessage,
+              'initialize',
+              MatcherType.ToBe,
+              version,
+              latestRuntimeApiVersion,
+            );
             expect(initMessage.id).toBe(0);
             const message = utils.findMessageByFunc('setFrameContext');
             validateExpectedArgumentsInRequest(message, 'setFrameContext', MatcherType.ToBe, frameContext);
@@ -800,7 +805,7 @@ describe('Testing pages module', () => {
       });
 
       it('should throw if called before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
+        utils.uninitializeRuntimeConfig();
         expect(() => pages.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
@@ -999,7 +1004,7 @@ describe('Testing pages module', () => {
         });
 
         it('pages.tabs.isSupported should throw if called before initialization', async () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => pages.tabs.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -1521,7 +1526,7 @@ describe('Testing pages module', () => {
         });
 
         it('pages.config.isSupported should throw if called before initialization', () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => pages.config.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -1675,7 +1680,7 @@ describe('Testing pages module', () => {
         });
 
         it('pages.backStack.isSupported should throw if called before initialization', () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => pages.backStack.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -1801,7 +1806,7 @@ describe('Testing pages module', () => {
         });
 
         it('pages.fullTrust.isSupported should throw if called before initialization', () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => pages.fullTrust.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -1984,7 +1989,7 @@ describe('Testing pages module', () => {
         });
 
         it('pages.appButton.isSupported should throw if called before initialization', () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => pages.appButton.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -2541,19 +2546,21 @@ describe('Testing pages module', () => {
     });
 
     describe('Testing pages.currentApp.isSupported function', () => {
-      it('pages.currentApp.isSupported should return false if the runtime says pages.currentApp is not supported', () => {
+      it('pages.currentApp.isSupported should return false if the runtime says pages.currentApp is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
         expect(pages.currentApp.isSupported()).not.toBeTruthy();
       });
 
-      it('pages.currentApp.isSupported should return true if the runtime says pages.currentApp is supported', () => {
+      it('pages.currentApp.isSupported should return true if the runtime says pages.currentApp is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
         expect(pages.currentApp.isSupported()).toBeTruthy();
       });
 
-      it('pages.currentApp.isSupported should be false before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
-        expect(pages.currentApp.isSupported()).toBeFalsy();
+      it('pages.currentApp.isSupported should throw before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => pages.currentApp.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
 

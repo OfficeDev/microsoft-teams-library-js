@@ -45,7 +45,7 @@ export namespace teams {
    * Limited to Microsoft-internal use
    */
   export function getTeamChannels(groupId: string, callback: (error: SdkError, channels: ChannelInfo[]) => void): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -74,7 +74,7 @@ export namespace teams {
    * Limited to Microsoft-internal use
    */
   export function refreshSiteUrl(threadId: string, callback: (error: SdkError) => void): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -103,8 +103,7 @@ export namespace teams {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.teams ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.teams ? true : false;
   }
 
   /**
@@ -133,7 +132,7 @@ export namespace teams {
         teamInstanceParameters?: TeamInstanceParameters,
       ): Promise<UserJoinedTeamsInformation> {
         return new Promise<UserJoinedTeamsInformation>((resolve) => {
-          ensureInitialized();
+          ensureInitialized(runtime);
           if (!isSupported()) {
             throw errorNotSupportedOnPlatform;
           }
@@ -165,8 +164,7 @@ export namespace teams {
        * Limited to Microsoft-internal use
        */
       export function isSupported(): boolean {
-        ensureInitialized();
-        return runtime.supports.teams
+        return ensureInitialized(runtime) && runtime.supports.teams
           ? runtime.supports.teams.fullTrust
             ? runtime.supports.teams.fullTrust.joinedTeams
               ? true
@@ -188,7 +186,7 @@ export namespace teams {
      */
     export function getConfigSetting(key: string): Promise<string> {
       return new Promise<string>((resolve) => {
-        ensureInitialized();
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -208,8 +206,11 @@ export namespace teams {
      * Limited to Microsoft-internal use
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.teams ? (runtime.supports.teams.fullTrust ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.teams
+        ? runtime.supports.teams.fullTrust
+          ? true
+          : false
+        : false;
     }
   }
 }
