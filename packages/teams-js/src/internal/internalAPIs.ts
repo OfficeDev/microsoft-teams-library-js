@@ -1,5 +1,6 @@
 import { HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
+import { IBaseRuntime, isRuntimeInitialized, Runtime } from '../public/runtime';
 import {
   defaultSDKVersionForCompatCheck,
   errorLibraryNotInitialized,
@@ -34,13 +35,14 @@ export function ensureInitializeCalled(): void {
 }
 
 /**
- * Ensures `initialize` was called and response from Host was received and processed.
+ * Ensures `initialize` was called and response from Host was received and processed and that `runtime` is initialized.
  * If expected FrameContexts are provided, it also validates that the current FrameContext matches one of the expected ones.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function ensureInitialized(...expectedFrameContexts: string[]): void {
+export function ensureInitialized(runtime: IBaseRuntime, ...expectedFrameContexts: string[]): runtime is Runtime {
+  // This global var can potentially be removed in the future if we use the initialization status of the runtime object as our source of truth
   if (!GlobalVars.initializeCompleted) {
     ensureInitializedLogger(
       '%s. initializeCalled: %s',
@@ -66,6 +68,7 @@ export function ensureInitialized(...expectedFrameContexts: string[]): void {
       );
     }
   }
+  return isRuntimeInitialized(runtime);
 }
 
 /**

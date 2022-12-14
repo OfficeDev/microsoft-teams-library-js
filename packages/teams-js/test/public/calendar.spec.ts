@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { calendar } from '../../src/public/calendar';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -315,7 +315,7 @@ describe('calendar', () => {
     });
 
     it('should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => calendar.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

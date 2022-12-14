@@ -19,7 +19,7 @@ export namespace profile {
    * @beta
    */
   export function showProfile(showProfileRequest: ShowProfileRequest): Promise<void> {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     return new Promise<void>((resolve) => {
       const [isValid, message] = validateShowProfileRequest(showProfileRequest);
@@ -146,8 +146,7 @@ export namespace profile {
    * @beta
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.profile ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.profile ? true : false;
   }
 }
 

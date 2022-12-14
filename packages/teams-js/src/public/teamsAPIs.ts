@@ -15,7 +15,7 @@ export namespace teamsCore {
    */
   export function enablePrintCapability(): void {
     if (!GlobalVars.printCapabilityEnabled) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -76,7 +76,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
 
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
@@ -118,7 +118,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
@@ -134,7 +134,6 @@ export namespace teamsCore {
    *
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.teamsCore ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.teamsCore ? true : false;
   }
 }

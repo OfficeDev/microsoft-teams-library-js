@@ -27,7 +27,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -61,7 +61,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -119,7 +119,13 @@ export namespace pages {
    */
   export function getConfig(): Promise<InstanceConfig> {
     return new Promise<InstanceConfig>((resolve) => {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+      ensureInitialized(
+        runtime,
+        FrameContexts.content,
+        FrameContexts.settings,
+        FrameContexts.remove,
+        FrameContexts.sidePanel,
+      );
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -139,6 +145,7 @@ export namespace pages {
   export function navigateCrossDomain(url: string): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -168,6 +175,7 @@ export namespace pages {
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -193,7 +201,7 @@ export namespace pages {
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -226,8 +234,7 @@ export namespace pages {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.pages ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.pages ? true : false;
   }
 
   /**
@@ -273,7 +280,7 @@ export namespace pages {
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
       return new Promise<void>((resolve) => {
-        ensureInitialized();
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -289,7 +296,7 @@ export namespace pages {
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>((resolve) => {
-        ensureInitialized();
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -305,7 +312,7 @@ export namespace pages {
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return new Promise<TabInformation>((resolve) => {
-        ensureInitialized();
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -321,8 +328,11 @@ export namespace pages {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.tabs
+          ? true
+          : false
+        : false;
     }
   }
   /**
@@ -352,7 +362,7 @@ export namespace pages {
      * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
-      ensureInitialized(FrameContexts.settings, FrameContexts.remove);
+      ensureInitialized(runtime, FrameContexts.settings, FrameContexts.remove);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -367,7 +377,7 @@ export namespace pages {
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
       return new Promise<void>((resolve) => {
-        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -405,7 +415,7 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(FrameContexts.settings);
+      handler && ensureInitialized(runtime, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -443,7 +453,7 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(FrameContexts.remove, FrameContexts.settings);
+      handler && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -593,8 +603,11 @@ export namespace pages {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.config
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -614,7 +627,7 @@ export namespace pages {
      */
     export function navigateBack(): Promise<void> {
       return new Promise<void>((resolve) => {
-        ensureInitialized();
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -650,7 +663,7 @@ export namespace pages {
      */
     export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized();
+      handler && ensureInitialized(runtime);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
@@ -676,8 +689,11 @@ export namespace pages {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.backStack
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -695,7 +711,7 @@ export namespace pages {
      * Place the tab into full-screen mode.
      */
     export function enterFullscreen(): void {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -709,7 +725,7 @@ export namespace pages {
      * Reverts the tab into normal-screen mode.
      */
     export function exitFullscreen(): void {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -724,8 +740,11 @@ export namespace pages {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.fullTrust
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -779,8 +798,11 @@ export namespace pages {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.appButton
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -820,6 +842,7 @@ export namespace pages {
     export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
+          runtime,
           FrameContexts.content,
           FrameContexts.sidePanel,
           FrameContexts.settings,
@@ -842,6 +865,7 @@ export namespace pages {
     export function navigateToDefaultPage(): Promise<void> {
       return new Promise<void>((resolve) => {
         ensureInitialized(
+          runtime,
           FrameContexts.content,
           FrameContexts.sidePanel,
           FrameContexts.settings,
@@ -860,12 +884,16 @@ export namespace pages {
      * Checks if pages.currentApp capability is supported by the host
      * @returns boolean to represent whether the pages.currentApp capability is supported
      *
-     * @throws Error if {@linkcode app.initialize} has not successfully complete
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.currentApp ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.currentApp
+          ? true
+          : false
+        : false;
     }
   }
 }

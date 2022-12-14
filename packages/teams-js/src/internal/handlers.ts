@@ -2,6 +2,7 @@
 
 import { FrameContexts, LoadContext } from '../public';
 import { pages } from '../public/pages';
+import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
@@ -101,7 +102,7 @@ export function registerHandlerHelper(
   registrationHelper?: () => void,
 ): void {
   // allow for registration cleanup even when not finished initializing
-  handler && ensureInitialized(...contexts);
+  handler && ensureInitialized(runtime, ...contexts);
   if (registrationHelper) {
     registrationHelper();
   }

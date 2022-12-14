@@ -42,7 +42,7 @@ export namespace call {
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
     return new Promise((resolve) => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -70,7 +70,6 @@ export namespace call {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.call ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.call ? true : false;
   }
 }

@@ -36,7 +36,7 @@ export namespace barCode {
    */
   export function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
     return new Promise<string>((resolve) => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -56,7 +56,7 @@ export namespace barCode {
    * @beta
    */
   export function hasPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -75,7 +75,7 @@ export namespace barCode {
    * @beta
    */
   export function requestPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -95,7 +95,6 @@ export namespace barCode {
    * @beta
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.barCode && runtime.supports.permissions ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.barCode && runtime.supports.permissions ? true : false;
   }
 }
