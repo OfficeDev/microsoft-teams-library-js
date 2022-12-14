@@ -161,7 +161,7 @@ export namespace menus {
    * @param handler - The handler to invoke when the user selects view configuration.
    */
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -171,7 +171,7 @@ export namespace menus {
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
@@ -184,7 +184,7 @@ export namespace menus {
    * @param handler The handler to invoke when the user selects menu item.
    */
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -194,7 +194,7 @@ export namespace menus {
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
@@ -220,7 +220,7 @@ export namespace menus {
    * @param handler - The handler to invoke when the user selects menu item.
    */
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -230,7 +230,7 @@ export namespace menus {
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
@@ -242,7 +242,6 @@ export namespace menus {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.menus ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.menus ? true : false;
   }
 }

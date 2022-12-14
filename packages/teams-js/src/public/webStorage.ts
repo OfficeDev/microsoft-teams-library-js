@@ -15,7 +15,7 @@ export namespace webStorage {
    * @beta
    */
   export function isWebStorageClearedOnUserLogOut(): boolean {
-    ensureInitialized();
+    ensureInitialized(runtime);
     return isSupported();
   }
 
@@ -28,7 +28,6 @@ export namespace webStorage {
    * @beta
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.webStorage ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.webStorage ? true : false;
   }
 }

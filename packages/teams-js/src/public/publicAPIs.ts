@@ -12,6 +12,7 @@ import {
   TabInstanceParameters,
 } from './interfaces';
 import { pages } from './pages';
+import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 
 /**
@@ -244,7 +245,7 @@ export function getTabInstances(
   callback: (tabInfo: TabInformation) => void,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -263,7 +264,7 @@ export function getMruTabInstances(
   callback: (tabInfo: TabInformation) => void,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getMruTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -295,6 +296,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(
+    runtime,
     FrameContexts.content,
     FrameContexts.sidePanel,
     FrameContexts.settings,

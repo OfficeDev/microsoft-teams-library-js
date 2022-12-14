@@ -2,6 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { pages } from './pages';
+import { runtime } from './runtime';
 
 /**
  * @deprecated
@@ -66,7 +67,13 @@ export namespace settings {
    * @param callback - The callback to invoke when the {@link Settings} object is retrieved.
    */
   export function getSettings(callback: (instanceSettings: Settings) => void): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.sidePanel,
+    );
     pages.getConfig().then((config: pages.InstanceConfig) => {
       callback(config);
     });
@@ -85,7 +92,7 @@ export namespace settings {
     instanceSettings: Settings,
     onComplete?: (status: boolean, reason?: string) => void,
   ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
     onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
     pages.config
       .setConfig(instanceSettings)

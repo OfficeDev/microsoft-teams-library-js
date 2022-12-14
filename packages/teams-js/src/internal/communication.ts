@@ -3,6 +3,7 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
+import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -89,7 +90,10 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+      version,
+      latestRuntimeApiVersion,
+    ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },

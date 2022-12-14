@@ -80,6 +80,7 @@ export namespace sharing {
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.task,
@@ -155,7 +156,6 @@ export namespace sharing {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.sharing ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
   }
 }

@@ -99,7 +99,7 @@ export namespace dialog {
     submitHandler?: DialogSubmitHandler,
     messageFromChildHandler?: PostMessageChannel,
   ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -128,7 +128,7 @@ export namespace dialog {
     // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
     // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
     // FrameContexts.content will be removed once the bug is fixed.
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -151,7 +151,7 @@ export namespace dialog {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: any,
   ): void {
-    ensureInitialized(FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -170,7 +170,7 @@ export namespace dialog {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     message: any,
   ): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -189,7 +189,7 @@ export namespace dialog {
    * @beta
    */
   export function registerOnMessageFromParent(listener: PostMessageChannel): void {
-    ensureInitialized(FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -215,8 +215,7 @@ export namespace dialog {
    * @beta
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.dialog ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.dialog ? true : false;
   }
 
   /**
@@ -233,7 +232,13 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage);
+      ensureInitialized(
+        runtime,
+        FrameContexts.content,
+        FrameContexts.sidePanel,
+        FrameContexts.task,
+        FrameContexts.meetingStage,
+      );
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -249,8 +254,11 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.dialog ? (runtime.supports.dialog.update ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.dialog
+        ? runtime.supports.dialog.update
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -276,7 +284,7 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -300,8 +308,11 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
-      ensureInitialized();
-      return runtime.supports.dialog ? (runtime.supports.dialog.bot ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.dialog
+        ? runtime.supports.dialog.bot
+          ? true
+          : false
+        : false;
     }
   }
 
