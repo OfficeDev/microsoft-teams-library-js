@@ -10,7 +10,7 @@ jobs:
     outputs:
       runtime_changed: ${{ steps.detect-runtime-change.outputs.runtime_changed }}
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - uses: jitterbit/get-changed-files@v1
         id: changed_files
       - name: Check if runtime.ts has been modified
