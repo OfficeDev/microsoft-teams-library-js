@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.",
-  "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
-  "dependentChangeType": "patch"
-}
