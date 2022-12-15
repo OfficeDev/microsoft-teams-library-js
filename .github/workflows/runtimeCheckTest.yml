@@ -20,8 +20,7 @@ jobs:
               runtime_changed='true'
             fi
           done
-          echo "runtime_changed=$runtime_changed\n"
-          echo "runtime_changed=$runtime_changed\n" >> $GITHUB_OUTPUT
+          echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
       - name: Test echo
         run: echo ${{ steps.detect_runtime_change.outputs.runtime_changed }}
       - name: Comment on PR
