@@ -119,6 +119,7 @@ export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime 
   }
 }
 
+// TEST
 export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
