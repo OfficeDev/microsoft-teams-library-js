@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, geoLocation, location } from '../../src/public/index';
 import { DevicePermission } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, setUnitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
 /* eslint-disable */
@@ -44,7 +44,7 @@ describe('geoLocation', () => {
 
   describe('Testing isSupported', () => {
     it('should not be supported before initialization', () => {
-      applyRuntimeConfig(_uninitializedRuntime);
+      setUnitializedRuntime();
       expect(() => geoLocation.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
@@ -331,7 +331,7 @@ describe('geoLocation', () => {
 
   describe('Testing geoLocation.map subcapability', () => {
     it('should not be supported before initialization', () => {
-      applyRuntimeConfig(_uninitializedRuntime);
+      setUnitializedRuntime();
       expect(() => geoLocation.map.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 

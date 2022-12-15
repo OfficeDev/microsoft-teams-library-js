@@ -23,7 +23,7 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
+import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
@@ -530,7 +530,7 @@ export namespace app {
    * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https:www.example.com
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
@@ -575,9 +575,9 @@ export namespace app {
             // After Teams updates its client code, we can remove this default code.
             try {
               initializeHelperLogger('Parsing %s', runtimeConfig);
-              const givenRuntimeConfig: IRuntime | null = JSON.parse(runtimeConfig);
+              const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
               initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
-              // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
+              // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
               }
@@ -593,7 +593,7 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  const givenRuntimeConfig: IRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
                   initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
                   if (!givenRuntimeConfig) {
@@ -765,6 +765,7 @@ export namespace app {
   export function openLink(deepLink: string): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,

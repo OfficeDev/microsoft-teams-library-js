@@ -28,6 +28,7 @@ import {
 import { generateGUID } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 export namespace media {
   /**
@@ -84,7 +85,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[captureImage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
     if (!GlobalVars.isFramelessWindow) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
@@ -134,7 +135,7 @@ export namespace media {
       if (!callback) {
         throw new Error('[get Media] Callback cannot be null');
       }
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
         const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
         /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -403,7 +404,7 @@ export namespace media {
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
     protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
       try {
         throwExceptionIfMobileApiIsNotSupported(nonFullScreenVideoModeAPISupportVersion);
@@ -601,7 +602,7 @@ export namespace media {
       throw new Error('[select Media] Callback cannot be null');
     }
 
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -665,7 +666,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[view images] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
     if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
@@ -710,7 +711,7 @@ export namespace media {
     if (!callback) {
       throw new Error('[media.scanBarCode] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
     if (
       GlobalVars.hostClientType === HostClientType.desktop ||
