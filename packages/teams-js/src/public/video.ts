@@ -171,27 +171,49 @@ export namespace video {
   export const registerForVideoFrameV2: (frameCallback: VideoFrameCallbackV2) => void = (() => {
     const processedStream = new MediaStream();
 
-    return (frameCallback: VideoFrameCallbackV2) =>
-      registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
-        // when a new streamId is ready:
-        const { streamId } = ipcInfo;
-        console.log('video.startVideoExtensibilityVideoStream', streamId);
-        // todo: error handling
-        const videoTrack = await getInputVideoTrack(streamId);
-        console.log('videoTrack', videoTrack);
-        const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
+    return (frameCallback: VideoFrameCallbackV2) => {
+      ensureInitialized(FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
 
-        processedStream.getTracks().forEach((track) => {
-          track.stop();
-          processedStream.removeTrack(track);
+      if (textureStreamAvailable()) {
+        registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
+          // when a new streamId is ready:
+          const { streamId } = ipcInfo;
+          console.log('video.startVideoExtensibilityVideoStream', streamId);
+          // todo: error handling
+          const videoTrack = await getInputVideoTrack(streamId);
+          console.log('videoTrack', videoTrack);
+          const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
+          processedStream.getTracks().forEach((track) => {
+            track.stop();
+            processedStream.removeTrack(track);
+          });
+          processedStream.addTrack(generator);
+          // TODO: remove when code ready:
+          drawCanvas('processed', processedStream);
+          //chrome.webview.postTextureStream(generator);
+          //chrome.webview.registerTextureStream(streamId, generator);
         });
-        processedStream.addTrack(generator);
-        // TODO: remove when code ready:
-        drawCanvas('processed', processedStream);
-        //chrome.webview.postTextureStream(generator);
-        //chrome.webview.registerTextureStream(streamId, generator);
-      });
+      } else {
+        registerHandler('video.newVideoFrame', async (videoFrame: VideoFrame) => {
+          if (videoFrame) {
+            const timestamp = videoFrame.timestamp;
+            const frame = videoFrameToFrame(videoFrame, timestamp || 0);
+            const processedFrame = await frameCallback({ frame });
+            writeToVideoFrame(processedFrame, videoFrame);
+            notifyVideoFrameProcessed(timestamp);
+          }
+        });
+      }
+    };
   })();
+
+  function textureStreamAvailable(): boolean {
+    //return true;
+    return !!(window['chrome'].webview.registerTextureStream && window['chrome'].webview.postTextureStream);
+  }
 
   function videoFrameToFrame(videoFrame: VideoFrame, timestamp: number): globalThis.VideoFrame {
     const frame = new globalThis.VideoFrame(videoFrame.data.buffer, {
@@ -201,6 +223,12 @@ export namespace video {
       codedHeight: videoFrame.height,
     });
     return frame;
+  }
+
+  function writeToVideoFrame(frame: globalThis.VideoFrame, videoFrame: VideoFrame): void {
+    const buffer = new ArrayBuffer(frame.allocationSize());
+    frame.copyTo(buffer);
+    videoFrame.data.set(new Uint8ClampedArray(buffer));
   }
 
   function drawCanvas(canvasName: string, stream: MediaStream): void {
@@ -238,12 +266,28 @@ export namespace video {
     const { count, lastTime } = calculator[name];
     calculator[name].count = count + 1;
     if (now - lastTime > 10000) {
-      console.log(`${name} fps: ${count / 10}`);
+      //console.log(`${name} fps: ${count / 10}`);
       calculator[name].count = 0;
       calculator[name].lastTime = now;
     }
   }
 
+  let start = 0;
+  let frameCount = 0;
+  function startProcessingAFrame(): void {
+    if (start === 0) {
+      start = Date.now();
+    }
+  }
+  function stopProcessingAFrame(): void {
+    frameCount++;
+    const now = Date.now();
+    if (now - start > 10000) {
+      console.log('processing fps: ', frameCount / 10);
+      start = 0;
+      frameCount = 0;
+    }
+  }
   function createProcessedStreamGenerator(
     videoTrack: MediaStreamVideoTrack,
     frameCallback: VideoFrameCallbackV2,
@@ -257,6 +301,7 @@ export namespace video {
       .pipeThrough(
         new TransformStream({
           async transform(receivedFrame, controller) {
+            startProcessingAFrame();
             calculateFPS('receivedFrame');
             const timestamp = receivedFrame.timestamp;
 
@@ -283,6 +328,7 @@ export namespace video {
 
                   // TODO: timestamp is wrong, video.VideoFrame.timestamp is not the same as globalThis.VideoFrame.timestamp
                   notifyVideoFrameProcessed(timestamp);
+                  stopProcessingAFrame();
                 })
                 .catch((error) => {
                   notifyError(error);
