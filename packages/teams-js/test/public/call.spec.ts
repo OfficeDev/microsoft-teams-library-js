@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { validateCallDeepLinkPrefix, validateDeepLinkUsers } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
 
@@ -32,7 +32,7 @@ describe('call', () => {
   });
 
   it('should throw if called before initialization', () => {
-    utils.setRuntimeConfig(_uninitializedRuntime);
+    utils.uninitializeRuntimeConfig();
     expect(() => call.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
   });
 

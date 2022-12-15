@@ -13,6 +13,7 @@ export namespace appInstallDialog {
   export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
     return new Promise((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -44,7 +45,6 @@ export namespace appInstallDialog {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.appInstallDialog ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.appInstallDialog ? true : false;
   }
 }

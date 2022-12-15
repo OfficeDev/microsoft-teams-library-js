@@ -18,7 +18,12 @@ import {
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  latestRuntimeApiVersion,
+  runtime,
+  teamsRuntimeConfig,
+} from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -100,8 +105,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -899,8 +905,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 

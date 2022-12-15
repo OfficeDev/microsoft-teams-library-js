@@ -181,7 +181,7 @@ export namespace meetingRoom {
    */
   export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
     return new Promise<MeetingRoomInfo>((resolve) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -204,7 +204,7 @@ export namespace meetingRoom {
       if (!commandName || commandName.length == 0) {
         throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
       }
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -228,12 +228,12 @@ export namespace meetingRoom {
     if (!handler) {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       handler(capabilities);
     });
   }
@@ -253,12 +253,12 @@ export namespace meetingRoom {
     if (!handler) {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       handler(states);
     });
   }
@@ -275,7 +275,6 @@ export namespace meetingRoom {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.meetingRoom ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.meetingRoom ? true : false;
   }
 }

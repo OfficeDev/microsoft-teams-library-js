@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { conversations, OpenConversationRequest } from '../../src/private/conversations';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -30,7 +30,7 @@ describe('conversations', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => conversations.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

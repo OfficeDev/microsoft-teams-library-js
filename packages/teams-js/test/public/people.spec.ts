@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, v1HostClientTypes } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, v1HostClientTypes } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -169,7 +169,7 @@ describe('people', () => {
     });
 
     it('people.isSupported should throw if called before initialization', () => {
-      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      framedMock.uninitializeRuntimeConfig();
       expect(() => people.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -33,7 +33,7 @@ describe('video', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framedPlatformMock.uninitializeRuntimeConfig();
       expect(() => video.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

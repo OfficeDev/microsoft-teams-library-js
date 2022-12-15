@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, FrameContexts, menus } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, setUnitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -30,7 +30,7 @@ describe('Testing menus capability', () => {
 
     describe('Testing menus.isSupported', () => {
       it('should throw if called before initialization', () => {
-        applyRuntimeConfig(_uninitializedRuntime);
+        setUnitializedRuntime();
         expect(() => menus.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
