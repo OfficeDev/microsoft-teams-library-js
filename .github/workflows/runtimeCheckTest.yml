@@ -1,5 +1,9 @@
 name: Check for runtime version changes
 
+on:
+  pull_request:
+    branches: [main]
+    
 jobs:
   Get-Changed-Files:
     runs-on: ubuntu-latest
