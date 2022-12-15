@@ -3,7 +3,7 @@ name: Check for runtime version changes
 on:
   pull_request:
     branches: [main]
-    
+
 jobs:
   Get-Changed-Files:
     runs-on: ubuntu-latest
@@ -21,6 +21,7 @@ jobs:
               runtime_changed="true"
             fi
           done
+          echo "runtime_changed=$runtime_changed"
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
 
   Comment-On-PR:
@@ -28,6 +29,8 @@ jobs:
     needs: Get-Changed-Files
     if: ${{needs.Get-Changed-Files.outputs.runtime_changed}} == "true"
     steps:
+      - name: Test echo
+        run: echo ${{needs.Get-Changed-Files.outputs.runtime_changed}}
       - uses: actions/checkout@v2
       - name: Comment on PR
         uses: mb2dev/github-action-comment-pull-request@1.0.0
