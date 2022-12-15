@@ -9,6 +9,7 @@ import { ModuleWrapper } from '../utils/ModuleWrapper';
 export const FileUpload: React.FC = () => {
   const fileUploadName = 'fileUpload';
   const [result, setResult] = React.useState<string>('');
+  const [selectMultipleFiles, setSelectMultipleFiles] = React.useState<boolean>(false);
   const onChangeCallback = React.useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setResult(noHostSdkMsg);
@@ -30,13 +31,26 @@ export const FileUpload: React.FC = () => {
 
   return (
     <ApiContainer title="Upload File" result={result} name={fileUploadName}>
-      <input
-        id={`file_${fileUploadName}`}
-        style={{ width: 'fit-content' }}
-        type="file"
-        name={fileUploadName + 'Button'}
-        onChange={onChangeCallback}
-      />
+      <div style={{ textAlign: 'left' }}>
+        <input
+          id={`file_${fileUploadName}`}
+          style={{ width: 'fit-content' }}
+          type="file"
+          name={fileUploadName + 'Button'}
+          onChange={onChangeCallback}
+          multiple={selectMultipleFiles}
+        />
+        <div>
+          <input
+            title="Select multiple files"
+            type="checkbox"
+            style={{ width: 'fit-content' }}
+            name={`selectMultiple_${fileUploadName}`}
+            onChange={(e) => setSelectMultipleFiles(e.target.checked)}
+          />
+          <label htmlFor={`selectMultiple_${fileUploadName}`}>Select multiple files</label>
+        </div>
+      </div>
     </ApiContainer>
   );
 };
