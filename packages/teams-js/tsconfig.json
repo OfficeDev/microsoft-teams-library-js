@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig.common.json",
-  "typeRoots": ["./node_modules/@types"],
   "compilerOptions": {
     "outDir": "./dist",
     "declarationDir": "./dts",
