@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['plugin:react/recommended'],
+  extends: ['plugin:react/recommended', 'plugin:@next/next/recommended'],
   plugins: ['react-hooks'],
   rules: {
     'react-hooks/rules-of-hooks': 'error',
