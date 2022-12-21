@@ -10,8 +10,13 @@
       const mockOAuth = params.get('mockOAuth');
       const authId = params.get('authId');
       const method = params.get('oauthRedirectMethod');
+      const redirectUrl = params.get('hostRedirectUrl')
       const hostName = params.get('hostName');
-      const state = `{"authId":"${authId}","method":"${method}", "hostName":"${hostName}"}`;
+      const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
+
+      if (redirectUrl.trim() !== '') {
+        sessionStorage.setItem('hostRedirectUrl', redirectUrl)
+      }
 
       const getRedirectUri = () => {
         const idx = window.location.href.lastIndexOf('/');
