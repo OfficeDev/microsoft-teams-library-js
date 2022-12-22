@@ -27,6 +27,7 @@ module.exports = {
       type: 'umd',
       umdNamedDefine: true,
     },
+    globalObject: 'this',
   },
   devtool: 'source-map',
   resolve: {
