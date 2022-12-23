@@ -158,57 +158,70 @@ export namespace video {
   };
 
   export const registerForVideoFrameV2: (frameCallback: VideoFrameCallbackV2, config: VideoFrameConfig) => void =
-    (() => {
-      const processedStream = new MediaStream();
+    registerForVideoFrameFuncGenerator<VideoFrameCallbackV2>(
+      (callback) => (frame: globalThis.VideoFrame) => callback({ frame }),
+      (callback) => async (videoFrame: VideoFrame, timestamp?: number) => {
+        const frame = videoFrameToFrame(videoFrame, timestamp || Date.now());
+        const processedFrame = await callback({ frame });
+        await writeToVideoFrame(processedFrame, videoFrame);
+        frame.close();
+        processedFrame.close();
+      },
+    );
 
-      return (frameCallback: VideoFrameCallbackV2, config: VideoFrameConfig) => {
-        ensureInitialized(FrameContexts.sidePanel);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
+  function registerForVideoFrameFuncGenerator<T extends VideoEffectCallBack | VideoFrameCallbackV2>(
+    invokeCallbackForVideoStream: (callback: T) => (frame: globalThis.VideoFrame) => Promise<globalThis.VideoFrame>,
+    invokeCallbackForVideoFrame: (callback: T) => (frame: VideoFrame, timestamp?: number) => Promise<void>,
+  ): (callback: T, config: VideoFrameConfig) => void {
+    const processedStream = new MediaStream();
 
-        if (textureStreamAvailable()) {
-          registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
-            // when a new streamId is ready:
-            const { streamId } = ipcInfo;
-            console.log('video.startVideoExtensibilityVideoStream', streamId);
-            // todo: error handling
-            const videoTrack = await getInputVideoTrack(streamId);
-            console.log('videoTrack', videoTrack);
-            const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
-            processedStream.getTracks().forEach((track) => {
-              track.stop();
-              processedStream.removeTrack(track);
-            });
-            processedStream.addTrack(generator);
-            // TODO: remove when code ready:
-            drawCanvas('processed', processedStream);
-            //chrome.webview.postTextureStream(generator);
-            //chrome.webview.registerTextureStream(streamId, generator);
+    return (frameCallback: T, config: VideoFrameConfig) => {
+      ensureInitialized(FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      if (textureStreamAvailable()) {
+        const callbackForVideoStream = invokeCallbackForVideoStream(frameCallback);
+        registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
+          // when a new streamId is ready:
+          const { streamId } = ipcInfo;
+          console.log('video.startVideoExtensibilityVideoStream', streamId);
+          // todo: error handling
+          const videoTrack = await getInputVideoTrack(streamId);
+          console.log('videoTrack', videoTrack);
+          const generator = createProcessedStreamGenerator(videoTrack, callbackForVideoStream);
+          processedStream.getTracks().forEach((track) => {
+            track.stop();
+            processedStream.removeTrack(track);
           });
-        } else {
-          registerHandler(
-            'video.newVideoFrame',
-            async (videoFrame: VideoFrame) => {
-              if (videoFrame) {
-                const timestamp = videoFrame.timestamp;
-                const frame = videoFrameToFrame(videoFrame, timestamp || Date.now());
-                const processedFrame = await frameCallback({ frame });
-                await writeToVideoFrame(processedFrame, videoFrame);
-                frame.close();
-                processedFrame.close();
-                notifyVideoFrameProcessed(timestamp);
-              }
-            },
-            false,
-          );
-          sendMessageToParent('video.registerForVideoFrame', [config]);
-        }
-      };
-    })();
+          processedStream.addTrack(generator);
+          // TODO: remove when code ready:
+          drawCanvas('processed', processedStream);
+          //chrome.webview.postTextureStream(generator);
+          //chrome.webview.registerTextureStream(streamId, generator);
+        });
+      } else {
+        const callbackForVideoFrame = invokeCallbackForVideoFrame(frameCallback);
+        registerHandler(
+          'video.newVideoFrame',
+          async (videoFrame: VideoFrame) => {
+            if (videoFrame) {
+              const timestamp = videoFrame.timestamp;
+              await callbackForVideoFrame(videoFrame, timestamp);
+              notifyVideoFrameProcessed(timestamp);
+            }
+          },
+          false,
+        );
+        sendMessageToParent('video.registerForVideoFrame', [config]);
+      }
+    };
+  }
 
   function textureStreamAvailable(): boolean {
-    return !!(window['chrome']?.webview?.registerTextureStream && window['chrome']?.webview?.postTextureStream);
+    return true;
+    //return !!(window['chrome']?.webview?.registerTextureStream && window['chrome']?.webview?.postTextureStream);
   }
 
   function videoFrameToFrame(videoFrame: VideoFrame, timestamp: number): globalThis.VideoFrame {
@@ -289,7 +302,7 @@ export namespace video {
   }
   function createProcessedStreamGenerator(
     videoTrack: MediaStreamVideoTrack,
-    frameCallback: VideoFrameCallbackV2,
+    invokeCallback: (frame: globalThis.VideoFrame) => Promise<globalThis.VideoFrame>,
   ): MediaStreamTrack {
     const processor = new MediaStreamTrackProcessor({ track: videoTrack as MediaStreamVideoTrack });
     const source = processor.readable;
@@ -305,10 +318,7 @@ export namespace video {
             const timestamp = receivedFrame.timestamp;
 
             if (timestamp !== null) {
-              //console.log('got frame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
-              frameCallback({
-                frame: receivedFrame,
-              })
+              invokeCallback(receivedFrame)
                 .then((frameProcessedByApp) => {
                   calculateFPS('processedFrame');
                   receivedFrame.close();
