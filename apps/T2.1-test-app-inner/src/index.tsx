@@ -14,7 +14,6 @@ const App: React.FC = () => {
       //console.log('simpleHalfEffect', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
       if (!ctx) {
         console.log('simpleHalfEffect: ctx is null');
-        frame.close();
         return frame;
       }
       const width = frame.codedWidth;
@@ -40,7 +39,7 @@ const App: React.FC = () => {
       const frame = receivedFrame.frame;
       //console.log('receivedFrame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
       return Promise.resolve(simpleHalfEffect(frame));
-    });
+    }, {format: 'NV12'})});
 
     /*
     video.getVideoStream({ format: video.VideoFrameFormat.NV12 }).then((response: video.MediaStreamResponse) => {
