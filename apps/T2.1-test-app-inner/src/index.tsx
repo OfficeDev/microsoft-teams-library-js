@@ -35,46 +35,14 @@ const App: React.FC = () => {
       return Promise.resolve();
     });
 
-    video.registerForVideoFrameV2((receivedFrame) => {
-      const frame = receivedFrame.frame;
-      //console.log('receivedFrame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
-      return Promise.resolve(simpleHalfEffect(frame));
-    }, {format: 'NV12'})});
-
-    /*
-    video.getVideoStream({ format: video.VideoFrameFormat.NV12 }).then((response: video.MediaStreamResponse) => {
-      let frames = 0;
-      let startTime = 0;
-      const { mediaStream, registerOutputStreamTrack } = response;
-      console.log('mediaStream', mediaStream.active);
-      const videoTrack = mediaStream.getVideoTracks()[0];
-      console.log('videoTrack', videoTrack);
-      const processor = new MediaStreamTrackProcessor({ track: videoTrack as MediaStreamVideoTrack });
-      const generator = new MediaStreamTrackGenerator({ kind: 'video' });
-      const source = processor.readable;
-      const sink = generator.writable;
-      source
-        .pipeThrough(
-          new TransformStream({
-            async transform(frame, controller) {
-              frames++;
-              if (frame.timestamp && frame.timestamp - startTime > 1000 * 10000) {
-                console.log(`${new Date()}: FPS: ${frames}, tab active: ${document.hasFocus()}`);
-                frames = 0;
-                startTime = frame.timestamp;
-              }
-              controller.enqueue(frame);
-            },
-          }),
-        )
-        .pipeTo(sink);
-
-      videoTrack.onended = () => console.log('track ended');
-      videoTrack.onmute = () => console.log('track muted');
-
-      registerOutputStreamTrack(generator);
-    });
-    */
+    video.registerForVideoFrameV2(
+      (receivedFrame) => {
+        const frame = receivedFrame.frame;
+        //console.log('receivedFrame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
+        return Promise.resolve(simpleHalfEffect(frame));
+      },
+      { format: video.VideoFrameFormat.NV12 },
+    );
   }, []);
 
   React.useEffect(() => {
