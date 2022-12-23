@@ -214,8 +214,8 @@ export namespace video {
           },
           false,
         );
-        sendMessageToParent('video.registerForVideoFrame', [config]);
       }
+      sendMessageToParent('video.registerForVideoFrame', [config]);
     };
   }
 
