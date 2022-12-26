@@ -106,38 +106,6 @@ export namespace video {
    */
   export type VideoEffectCallBack = (effectId: string | undefined) => void;
 
-  /**
-   * Register to read the video frames in Permissions section
-   * @beta
-   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
-   * @param config - VideoFrameConfig to customize generated video frame parameters
-   */
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(FrameContexts.sidePanel);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    registerHandler(
-      'video.newVideoFrame',
-      (videoFrame: VideoFrame) => {
-        if (videoFrame) {
-          const timestamp = videoFrame.timestamp;
-
-          frameCallback(
-            videoFrame,
-            () => {
-              notifyVideoFrameProcessed(timestamp);
-            },
-            notifyError,
-          );
-        }
-      },
-      false,
-    );
-    sendMessageToParent('video.registerForVideoFrame', [config]);
-  }
-
   export enum ErrorLevel {
     /**
      * Error level warning
@@ -169,7 +137,44 @@ export namespace video {
       },
     );
 
-  function registerForVideoFrameFuncGenerator<T extends VideoEffectCallBack | VideoFrameCallbackV2>(
+  /**
+   * Register to read the video frames in Permissions section
+   * @beta
+   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
+   * @param config - VideoFrameConfig to customize generated video frame parameters
+   */
+  export const registerForVideoFrame: (frameCallback: VideoFrameCallback, config: VideoFrameConfig) => void =
+    registerForVideoFrameFuncGenerator<VideoFrameCallback>(
+      (callback) => async (frame: globalThis.VideoFrame) => {
+        const timestamp = frame.timestamp;
+        const newFrame = {
+          height: frame.codedHeight,
+          width: frame.codedWidth,
+          data: new Uint8ClampedArray(new ArrayBuffer(frame.allocationSize())),
+        };
+        await writeToVideoFrame(frame, newFrame);
+        callback(
+          newFrame,
+          () => {
+            notifyVideoFrameProcessed(timestamp);
+          },
+          notifyError,
+        );
+        frame.close();
+        return videoFrameToFrame(newFrame, timestamp || Date.now());
+      },
+      (callback) => async (videoFrame: VideoFrame, timestamp?: number) => {
+        callback(
+          videoFrame,
+          () => {
+            notifyVideoFrameProcessed(timestamp);
+          },
+          notifyError,
+        );
+      },
+    );
+
+  function registerForVideoFrameFuncGenerator<T extends VideoFrameCallback | VideoFrameCallbackV2>(
     invokeCallbackForVideoStream: (callback: T) => (frame: globalThis.VideoFrame) => Promise<globalThis.VideoFrame>,
     invokeCallbackForVideoFrame: (callback: T) => (frame: VideoFrame, timestamp?: number) => Promise<void>,
   ): (callback: T, config: VideoFrameConfig) => void {
