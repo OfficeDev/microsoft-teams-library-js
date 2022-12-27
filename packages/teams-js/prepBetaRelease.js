@@ -5,7 +5,7 @@ const util = require('util');
 let packageJsonPath = './package.json';
 const EXIT_CODE_FATAL_ERROR = 5;
 
-const exec = util.promisify(cp.exec);
+const execFile = util.promisify(cp.execFile);
 
 /**
  * Finds the package.json for the project based on a declared package.json path and returns the content.
@@ -158,8 +158,8 @@ function prepBetaRelease(devStdout) {
 }
 
 (() => {
-  exec(`cd ../../ && yarn beachball bump`).then(() =>
-    exec(`npm view @microsoft/teams-js version --tag beta`).then(({ stdout, stderr }) =>
+  execFile(`cd ../../ && yarn beachball bump`).then(() =>
+    execFile(`npm view @microsoft/teams-js version --tag beta`).then(({ stdout, stderr }) =>
       prepBetaRelease(stdout.trim()),
     ),
   );
