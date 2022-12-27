@@ -5,6 +5,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 
 export interface SSRProps {
   renderString: string;
+  time: string;
 }
 
 export default function IndexPage(props: SSRProps): ReactElement {
@@ -26,6 +27,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
       </Head>
       <div>
         <h1 id="id01">{props.renderString}</h1>
+        <h1 id="time">The current server time is {props.time}</h1>
         <pre>
           <b>Context:</b> {JSON.stringify(teamsContext, null, 2)}
         </pre>
@@ -38,9 +40,11 @@ export default function IndexPage(props: SSRProps): ReactElement {
  * @returns prop data
  */
 export const getServerSideProps: GetServerSideProps = async () => {
+  const time = JSON.stringify({ time: new Date() });
   return {
     props: {
       renderString: 'This string brought to you by the server',
+      time,
     },
   };
 };
