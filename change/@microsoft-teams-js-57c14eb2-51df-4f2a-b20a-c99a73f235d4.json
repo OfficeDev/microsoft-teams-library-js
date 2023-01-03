@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Removed entityId and title as required fields from openFilePreview parameters",
+  "comment": "Removed `entityId` and `title` as required fields from `openFilePreview` parameters",
   "packageName": "@microsoft/teams-js",
   "email": "sthousto@microsoft.com",
   "dependentChangeType": "patch"
