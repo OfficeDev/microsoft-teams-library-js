@@ -204,7 +204,8 @@ export namespace video {
           // TODO: remove when code ready:
           drawCanvas('processed', processedStream);
           //chrome.webview.postTextureStream(generator);
-          //chrome.webview.registerTextureStream(streamId, generator);
+          window['chrome']?.webview?.registerTextureStream('streamId', generator);
+          drawCanvas('textureStream', await window['chrome']?.webview?.getTextureStream('streamId'));
         });
       } else {
         const callbackForVideoFrame = invokeCallbackForVideoFrame(frameCallback);
@@ -225,8 +226,7 @@ export namespace video {
   }
 
   function textureStreamAvailable(): boolean {
-    return true;
-    //return !!(window['chrome']?.webview?.registerTextureStream && window['chrome']?.webview?.postTextureStream);
+    return !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream);
   }
 
   function videoFrameToFrame(videoFrame: VideoFrame, timestamp: number): globalThis.VideoFrame {
@@ -264,7 +264,7 @@ export namespace video {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chrome = window['chrome'] as any;
     console.log('getting video stream: ', streamId);
-    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true }); // chrome.webview.getTextureStream(streamId);
+    const mediaStream = await chrome.webview.getTextureStream(streamId); // navigator.mediaDevices.getUserMedia({ video: true });
     // TODO: remove when code ready:
     drawCanvas('origin', mediaStream);
 

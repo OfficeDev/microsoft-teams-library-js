@@ -10,7 +10,7 @@ const App: React.FC = () => {
   const videoExtensibilityTest = useCallback((): void => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
-    const simpleHalfEffect = (frame: VideoFrame): VideoFrame => {
+    const simpleCanvasEffect = (frame: VideoFrame): VideoFrame => {
       //console.log('simpleHalfEffect', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
       if (!ctx) {
         console.log('simpleHalfEffect: ctx is null');
@@ -30,6 +30,15 @@ const App: React.FC = () => {
       return new VideoFrame(canvas, { timestamp });
     };
 
+    function simpleHalfEffect(videoFrame): void {
+      const maxLen = (videoFrame.height * videoFrame.width) / Math.max(1, 3) - 4;
+
+      for (let i = 1; i < maxLen; i += 4) {
+        //smaple effect just change the value to 100, which effect some pixel value of video frame
+        videoFrame.data[i + 1] = 100;
+      }
+    }
+
     video.registerForVideoEffect((effectId) => {
       alert(`Video effect ${effectId} is selected`);
       return Promise.resolve();
@@ -39,6 +48,13 @@ const App: React.FC = () => {
       (receivedFrame) => {
         const frame = receivedFrame.frame;
         //console.log('receivedFrame', frame.timestamp, frame.codedHeight, frame.codedWidth, frame.allocationSize());
+        return Promise.resolve(simpleCanvasEffect(frame));
+      },
+      { format: video.VideoFrameFormat.NV12 },
+    );
+
+    video.registerForVideoFrame(
+      (frame) => {
         return Promise.resolve(simpleHalfEffect(frame));
       },
       { format: video.VideoFrameFormat.NV12 },
