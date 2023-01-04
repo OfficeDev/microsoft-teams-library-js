@@ -89,18 +89,6 @@ export namespace video {
   ) => void;
 
   /**
-   * Configuration required by the selected video effect
-   * @beta
-   */
-  export type EffectRequirement = {
-    module?: {
-      name: string;
-      version: string;
-      parameters?: { [key: string]: string };
-    };
-  };
-
-  /**
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
@@ -108,11 +96,11 @@ export namespace video {
     /**
      * A wrong effect id is provided
      */
-    WrongEffectId,
+    InvalidEffectId = 'InvalidEffectId',
     /**
      * The effect can't be initialezed
      */
-    InitializationFailed,
+    InitializationFailure = 'InitializationFailure',
   }
 
   /**
@@ -120,9 +108,7 @@ export namespace video {
    * Return a Promise which will be resolved when the effect is prepared, or reject with a failure reason
    * @beta
    */
-  export type VideoEffectCallBack = (
-    effectId: string | undefined,
-  ) => Promise<EffectRequirement | undefined> | undefined;
+  export type VideoEffectCallBack = (effectId: string | undefined) => Promise<void> | void;
 
   /**
    * Register to read the video frames in Permissions section
@@ -185,20 +171,15 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    const callbackHandler = (effectId: string | undefined) => {
-      const result = callback(effectId);
-      if (result) {
-        result
-          .then((effectRequirement) => {
-            sendMessageToParent('videoEffectReadiness', [true, effectId, effectRequirement]);
-          })
-          .catch((reason) => {
-            // reason could be a string or an EffectFailureReason
-            sendMessageToParent('videoEffectReadiness', [false, effectId, reason]);
-          });
-      } else {
-        sendMessageToParent('videoEffectReadiness', [true, effectId, undefined]);
-      }
+    const callbackHandler = (effectId: string | undefined): void => {
+      Promise.resolve(callback(effectId))
+        .then(() => {
+          sendMessageToParent('videoEffectReadiness', [true, effectId]);
+        })
+        .catch((reason) => {
+          // reason could be a string or an EffectFailureReason
+          sendMessageToParent('videoEffectReadiness', [false, effectId, reason]);
+        });
     };
 
     registerHandler('video.effectParameterChange', callbackHandler, false);
