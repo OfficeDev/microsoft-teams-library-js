@@ -134,6 +134,7 @@ export namespace video {
         await writeToVideoFrame(processedFrame, videoFrame);
         frame.close();
         processedFrame.close();
+        notifyVideoFrameProcessed(timestamp);
       },
     );
 
@@ -156,7 +157,7 @@ export namespace video {
         callback(
           newFrame,
           () => {
-            notifyVideoFrameProcessed(timestamp);
+            // do nothing, there is no need to notifyVideoFrameProcessed
           },
           notifyError,
         );
@@ -215,7 +216,6 @@ export namespace video {
             if (videoFrame) {
               const timestamp = videoFrame.timestamp;
               await callbackForVideoFrame(videoFrame, timestamp);
-              notifyVideoFrameProcessed(timestamp);
             }
           },
           false,
@@ -339,8 +339,6 @@ export namespace video {
                   controller.enqueue(processedFrame);
                   frameProcessedByApp.close();
 
-                  // TODO: timestamp is wrong, video.VideoFrame.timestamp is not the same as globalThis.VideoFrame.timestamp
-                  notifyVideoFrameProcessed(timestamp);
                   stopProcessingAFrame();
                 })
                 .catch((error) => {
