@@ -1,27 +1,29 @@
-# Hello World example
+# SSR Test App
 
-This example shows the most basic idea behind Next. We have 2 pages: `pages/index.tsx` and `pages/about.tsx`. The former responds to `/` requests and the latter to `/about`. Using `next/link` you can add hyperlinks between them with universal routing capabilities. The `day` directory shows that you can have subdirectories.
+The SSR Test App is a React and NextJS app that serves to ensure any future changes to teams-js do not break server-side rendering capabilities. As it is included in the apps workspace, it will also be built when building teams-js.
+If there are any changes made to teams-js that should break server-side rendering capabilities, the build should fail when it attempts to build the SSR Test App.
 
-## Deploy your own
+# Running the Test App on its own
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/hello-world)
+In order to run the SSR Test App on its own, please follow the following steps
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/hello-world&project-name=hello-world&repository-name=hello-world)
+```
+cd {monorepo root}
 
-## How to use
+// Ensuring you have installed and built the Teams JavaScript client SDK
+yarn install
+yarn build
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example hello-world hello-world-app
+yarn start-ssr-app
 ```
 
-```bash
-yarn create next-app --example hello-world hello-world-app
-```
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory ssr-test-app, simply `yarn build` and `yarn start` there.
 
-```bash
-pnpm create next-app --example hello-world hello-world-app
-```
+## Note
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+Running the SSR Test App locally utilizes an http connection. In order to run the app with local host SDK(Orange), an https connection is required. ngrok can be used to generate an https connection.
+
+# Troubleshooting
+
+If your build is succeeding locally, however is failing in the PR, it is possible your local version is building the SSR Test App with a cached version of teams-js without the breaking changes. If this is the case,
+simply delete your node_modules folder in the ssr-test-app directory, then redo the yarn commmands above.

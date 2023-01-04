@@ -23,6 +23,7 @@
     "docs:validate": "yarn workspace @microsoft/teams-js docs:validate",
     "lint": "lerna run lint",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
+    "start-ssr-app": "yarn workspace ssr-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-CDN": "yarn workspace teams-test-app start:CDN",
     "start-test-app-local": "yarn workspace teams-test-app start:local",

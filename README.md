@@ -40,6 +40,10 @@ React application used to locally test the loading times of the library.
 
 Application used to test the functionality of the various library APIs.
 
+### [SSR Test App](./apps/ssr-test-app/README.md)
+
+Application used to ensure library changes do not break server-side rendering capabilities.
+
 ---
 
 ### Locally generating reference documentation

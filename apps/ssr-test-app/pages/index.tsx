@@ -10,6 +10,7 @@ export interface SSRProps {
 
 export default function IndexPage(props: SSRProps): ReactElement {
   const [teamsContext, setTeamsContext] = useState({});
+  const [clientTime, setClientTime] = useState('');
 
   useEffect(() => {
     microsoftTeams.app.initialize().then(() => {
@@ -17,6 +18,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
         setTeamsContext(ctx);
       });
       microsoftTeams.app.notifySuccess();
+      setClientTime(JSON.stringify(new Date()));
     });
   }, []);
 
@@ -27,7 +29,8 @@ export default function IndexPage(props: SSRProps): ReactElement {
       </Head>
       <div>
         <h1 id="id01">{props.renderString}</h1>
-        <h1 id="time">The current server time is {props.time}</h1>
+        <h1 id="stime">The server render time is {props.time.substring(12, 24)}</h1>
+        <h1 id="ctime">The client render time is {clientTime.substring(12, 24)}</h1>
         <pre>
           <b>Context:</b> {JSON.stringify(teamsContext, null, 2)}
         </pre>
@@ -40,7 +43,7 @@ export default function IndexPage(props: SSRProps): ReactElement {
  * @returns prop data
  */
 export const getServerSideProps: GetServerSideProps = async () => {
-  const time = JSON.stringify({ time: new Date() });
+  const time = JSON.stringify(new Date());
   return {
     props: {
       renderString: 'This string brought to you by the server',
