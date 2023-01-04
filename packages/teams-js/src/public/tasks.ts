@@ -6,6 +6,7 @@ import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * @deprecated
@@ -36,7 +37,7 @@ export namespace tasks {
         (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
       dialog.adaptiveCard.bot.open(

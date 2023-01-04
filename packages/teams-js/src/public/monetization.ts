@@ -84,7 +84,7 @@ export namespace monetization {
       });
     };
 
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 
@@ -97,7 +97,6 @@ export namespace monetization {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.monetization ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.monetization ? true : false;
   }
 }

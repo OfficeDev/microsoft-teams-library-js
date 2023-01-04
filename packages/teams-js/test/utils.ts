@@ -2,7 +2,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
-import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
+import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 export interface MessageRequest {
   id: number;
@@ -196,8 +196,15 @@ export class Utils {
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime): void => {
-    applyRuntimeConfig(runtime);
+  public setRuntimeConfig = (runtimeConfig: IBaseRuntime): void => {
+    applyRuntimeConfig(runtimeConfig);
+  };
+
+  /**
+   * Sets runtime to uninitialized state
+   */
+  public uninitializeRuntimeConfig = (): void => {
+    setUnitializedRuntime();
   };
 
   /**

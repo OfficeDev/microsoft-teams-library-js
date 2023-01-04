@@ -55,7 +55,7 @@ export namespace stageView {
    */
   export function open(stageViewParams: StageViewParams): Promise<void> {
     return new Promise((resolve) => {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
 
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -78,7 +78,6 @@ export namespace stageView {
    *
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.stageView ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
   }
 }

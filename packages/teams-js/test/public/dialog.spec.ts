@@ -11,7 +11,7 @@ import {
 import { dialog } from '../../src/public/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -19,14 +19,13 @@ import { Utils } from '../utils';
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
-
 describe('Dialog', () => {
   // Use to send a mock message from the app.
 
   const framedMock = new Utils();
   const framelessMock = new FramelessPostMocks();
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const emptyCallback = (): void => { };
+  const emptyCallback = (): void => {};
 
   beforeEach(() => {
     framedMock.processMessage = null;
@@ -428,7 +427,7 @@ describe('Dialog', () => {
       });
 
       it('dialog.update.isSupported should throw before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        framedMock.uninitializeRuntimeConfig();
         expect(() => dialog.update.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
@@ -543,7 +542,7 @@ describe('Dialog', () => {
       expect(dialog.isSupported()).toBeTruthy();
     });
     it('dialog.update.isSupported should throw before initialization', () => {
-      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      framedMock.uninitializeRuntimeConfig();
       expect(() => dialog.update.isSupported()).toThrowError(errorLibraryNotInitialized);
     });
   });
@@ -788,7 +787,6 @@ describe('Dialog', () => {
       }
     });
 
-
     describe('dialog.url.bot.isSupported function', () => {
       it('dialog.url.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
@@ -815,7 +813,7 @@ describe('Dialog', () => {
       });
 
       it('dialog.url.bot.isSupported should throw before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        framedMock.uninitializeRuntimeConfig();
         expect(() => dialog.url.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
@@ -894,9 +892,7 @@ describe('Dialog', () => {
 
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
-      expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(
-        errorLibraryNotInitialized,
-      );
+      expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.keys(FrameContexts)
@@ -966,9 +962,7 @@ describe('Dialog', () => {
 
     it('should not allow calls before initialization', () => {
       expect.assertions(1);
-      expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(
-        errorLibraryNotInitialized,
-      );
+      expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(errorLibraryNotInitialized);
     });
 
     Object.keys(FrameContexts)
@@ -1073,9 +1067,7 @@ describe('Dialog', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => dialog.adaptiveCard.open(adaptiveCardDialogInfo)).toThrowError(
-          errorLibraryNotInitialized,
-        );
+        expect(() => dialog.adaptiveCard.open(adaptiveCardDialogInfo)).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1301,7 +1293,7 @@ describe('Dialog', () => {
       });
 
       it('dialog.adaptiveCard.isSupported should throw before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        framedMock.uninitializeRuntimeConfig();
         expect(() => dialog.adaptiveCard.isSupported()).toThrowError(errorLibraryNotInitialized);
       });
     });
@@ -1318,9 +1310,7 @@ describe('Dialog', () => {
       };
 
       it('should not allow calls before initialization', () => {
-        expect(() => dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo)).toThrowError(
-          errorLibraryNotInitialized,
-        );
+        expect(() => dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo)).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1588,7 +1578,7 @@ describe('Dialog', () => {
         });
 
         it('dialog.adaptiveCard.bot.isSupported should throw before initialization', () => {
-          framedMock.setRuntimeConfig(_uninitializedRuntime);
+          framedMock.uninitializeRuntimeConfig();
           expect(() => dialog.adaptiveCard.bot.isSupported()).toThrowError(errorLibraryNotInitialized);
         });
       });

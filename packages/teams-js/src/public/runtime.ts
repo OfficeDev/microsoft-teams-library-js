@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
@@ -7,8 +8,78 @@ import { HostClientType } from './constants';
 import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
-export interface IRuntime {
+
+export interface IBaseRuntime {
   readonly apiVersion: number;
+  readonly hostVersionsInfo?: HostVersionsInfo;
+  readonly isLegacyTeams?: boolean;
+  readonly supports?: {};
+}
+
+/**
+ * Latest runtime interface version
+ */
+export type Runtime = IRuntimeV2;
+
+export const latestRuntimeApiVersion = 2;
+
+function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
+  return runtime.apiVersion === latestRuntimeApiVersion;
+}
+
+interface IRuntimeV1 extends IBaseRuntime {
+  readonly apiVersion: 1;
+  readonly isLegacyTeams?: boolean;
+  readonly supports: {
+    readonly appEntity?: {};
+    readonly appInstallDialog?: {};
+    readonly barCode?: {};
+    readonly calendar?: {};
+    readonly call?: {};
+    readonly chat?: {};
+    readonly conversations?: {};
+    readonly dialog?: {
+      readonly bot?: {};
+      readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
+    readonly location?: {};
+    readonly logs?: {};
+    readonly mail?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly monetization?: {};
+    readonly notifications?: {};
+    readonly pages?: {
+      readonly appButton?: {};
+      readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
+      readonly fullTrust?: {};
+      readonly tabs?: {};
+    };
+    readonly people?: {};
+    readonly permissions?: {};
+    readonly profile?: {};
+    readonly remoteCamera?: {};
+    readonly search?: {};
+    readonly sharing?: {};
+    readonly stageView?: {};
+    readonly teams?: {
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
+    };
+    readonly teamsCore?: {};
+    readonly video?: {};
+    readonly webStorage?: {};
+  };
+}
+
+interface IRuntimeV2 extends IBaseRuntime {
+  readonly apiVersion: 2;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
@@ -63,24 +134,42 @@ export interface IRuntime {
     readonly webStorage?: {};
   };
 }
-
-/**
- * @hidden
- * Constant used to set the runtime configuration
- * to its uninitialized state.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export const _uninitializedRuntime = {
+// Constant used to set the runtime configuration
+const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
   supports: {},
 };
 
-export let runtime: IRuntime = _uninitializedRuntime;
+interface UninitializedRuntime extends IBaseRuntime {
+  readonly apiVersion: -1;
+  readonly supports: {};
+}
 
-export const teamsRuntimeConfig: IRuntime = {
-  apiVersion: 1,
+/**
+ * @hidden
+ * Ensures that the runtime has been initialized
+
+ * @returns True if the runtime has been initialized
+ * @throws Error if the runtime has not been initialized
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime {
+  if (isLatestRuntimeVersion(runtime)) {
+    return true;
+  } else if (runtime.apiVersion === -1) {
+    throw new Error(errorRuntimeNotInitialized);
+  } else {
+    throw new Error(errorRuntimeNotSupported);
+  }
+}
+
+export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
+
+export const teamsRuntimeConfig: Runtime = {
+  apiVersion: 2,
+  hostVersionsInfo: undefined,
   isLegacyTeams: true,
   supports: {
     appInstallDialog: {},
@@ -138,6 +227,76 @@ export const v1HostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
+/**
+ * @hidden
+ * `upgradeToNextVersion` transforms runtime of version `versionToUpgradeFrom` to the next higher version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+interface IRuntimeUpgrade {
+  versionToUpgradeFrom: number;
+  upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
+}
+
+/**
+ * @hidden
+ * Uses upgradeChain to transform an outdated runtime object to the latest format.
+ * @param outdatedRuntime - The runtime object to be upgraded
+ * @returns The upgraded runtime object
+ * @throws Error if the runtime object could not be upgraded to the latest version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
+  let runtime = outdatedRuntime;
+  if (runtime.apiVersion < latestRuntimeApiVersion) {
+    upgradeChain.forEach((upgrade) => {
+      if (runtime.apiVersion === upgrade.versionToUpgradeFrom) {
+        runtime = upgrade.upgradeToNextVersion(runtime);
+      }
+    });
+  }
+  if (isLatestRuntimeVersion(runtime)) {
+    return runtime;
+  } else {
+    throw new Error('Received a runtime that could not be upgraded to the latest version');
+  }
+}
+
+/**
+ * @hidden
+ * List of transformations required to upgrade a runtime object from a previous version to the next higher version.
+ * This list must be ordered from lowest version to highest version
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const upgradeChain: IRuntimeUpgrade[] = [
+  // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
+  {
+    versionToUpgradeFrom: 1,
+    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV1): IRuntimeV2 => {
+      return {
+        apiVersion: 2,
+        hostVersionsInfo: undefined,
+        isLegacyTeams: previousVersionRuntime.isLegacyTeams,
+        supports: {
+          ...previousVersionRuntime.supports,
+          dialog: {
+            card: undefined,
+            url: previousVersionRuntime.supports.dialog,
+            // ? { bot: previousVersionRuntime.supports.dialog.bot }
+            // : undefined,
+            update: previousVersionRuntime?.supports?.dialog?.update,
+          },
+        },
+      };
+    },
+  },
+];
+
 export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [
     {
@@ -189,7 +348,7 @@ const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBack
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntime {
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntimeV1 {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
   let newSupports = { ...teamsRuntimeConfig.supports };
@@ -212,7 +371,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     }
   });
 
-  const backCompatRuntimeConfig: IRuntime = {
+  const backCompatRuntimeConfig: IRuntimeV1 = {
     apiVersion: 1,
     isLegacyTeams: true,
     supports: newSupports,
@@ -227,9 +386,23 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 }
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
-export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
-  applyRuntimeConfigLogger('Applying runtime %o', runtimeConfig);
-  runtime = deepFreeze(runtimeConfig);
+export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
+  // Some hosts that have not adopted runtime versioning send a string for apiVersion, so we should handle those as v1 inputs
+  if (typeof runtimeConfig.apiVersion === 'string') {
+    applyRuntimeConfigLogger('Trying to apply runtime with string apiVersion, processing as v1: %o', runtimeConfig);
+    runtimeConfig = {
+      ...runtimeConfig,
+      apiVersion: 1,
+    };
+  }
+  applyRuntimeConfigLogger('Fast-forwarding runtime %o', runtimeConfig);
+  const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
+  applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
+  runtime = deepFreeze(ffRuntimeConfig);
+}
+
+export function setUnitializedRuntime(): void {
+  runtime = deepFreeze(_uninitializedRuntime);
 }
 
 /**
@@ -240,8 +413,8 @@ export function applyRuntimeConfig(runtimeConfig: IRuntime): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export const _minRuntimeConfigToUninitialize = {
-  apiVersion: 1,
+export const _minRuntimeConfigToUninitialize: Runtime = {
+  apiVersion: 2,
   supports: {
     pages: {
       appButton: {},
