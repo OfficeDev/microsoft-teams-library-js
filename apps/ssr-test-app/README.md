@@ -19,7 +19,7 @@ yarn start-ssr-app
 
 or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory ssr-test-app, simply `yarn build` and `yarn start` there.
 
-## Note
+### Note
 
 Running the SSR Test App locally utilizes an http connection. In order to run the app with local host SDK(Orange), an https connection is required. ngrok can be used to generate an https connection.
 
