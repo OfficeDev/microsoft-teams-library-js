@@ -333,8 +333,7 @@ export namespace video {
                   const processedFrame = new globalThis.VideoFrame(buffer, {
                     codedHeight: frameProcessedByApp.codedHeight,
                     codedWidth: frameProcessedByApp.codedWidth,
-                    // TODO: how to check format and convert when needed?
-                    format: 'NV12',
+                    format: frameProcessedByApp.format,
                     timestamp: timestamp,
                   });
                   controller.enqueue(processedFrame);
