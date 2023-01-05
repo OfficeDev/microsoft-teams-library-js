@@ -39,16 +39,9 @@ export namespace tasks {
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
-    } else if (taskInfo.completionBotId !== undefined && taskInfo.card) {
-      dialog.adaptiveCard.bot.open(
-        dialog.adaptiveCard.getBotAdaptiveCardDialogInfoFromTaskInfo(taskInfo),
-        dialogSubmitHandler,
-      );
     } else if (taskInfo.card) {
-      dialog.adaptiveCard.open(
-        dialog.adaptiveCard.getAdaptiveCardDialogInfoFromTaskInfo(taskInfo),
-        dialogSubmitHandler,
-      );
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {

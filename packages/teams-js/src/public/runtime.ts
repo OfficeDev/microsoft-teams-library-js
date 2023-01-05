@@ -178,9 +178,6 @@ export const teamsRuntimeConfig: Runtime = {
     chat: {},
     conversations: {},
     dialog: {
-      card: {
-        bot: {},
-      },
       url: {
         bot: {},
       },
@@ -249,7 +246,7 @@ interface IRuntimeUpgrade {
  * @internal
  * Limited to Microsoft-internal use
  */
-function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
+export function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   let runtime = outdatedRuntime;
   if (runtime.apiVersion < latestRuntimeApiVersion) {
     upgradeChain.forEach((upgrade) => {

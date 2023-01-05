@@ -5,6 +5,7 @@ import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
+  fastForwardRuntime,
   generateBackCompatRuntimeConfig,
   IBaseRuntime,
   isRuntimeInitialized,
@@ -64,6 +65,27 @@ describe('runtime', () => {
         // eslint-disable-next-line strict-null-checks/all
         expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
       }
+    });
+
+    it('applyRuntime fast-forwards v1 to v2 runtime config to latest version', () => {
+      const runtimeV1 = {
+        apiVersion: 1,
+        isLegacyTeams: false,
+        supports: {
+          dialog: {
+            bot: {},
+            update: {},
+          },
+        },
+      };
+
+      const fastForwardConfig = fastForwardRuntime(runtimeV1);
+      expect(fastForwardConfig).toEqual({
+        apiVersion: 2,
+        hostVersionsInfo: undefined,
+        isLegacyTeams: false,
+        supports: { dialog: { card: undefined, url: { bot: {}, update: {} }, update: {} } },
+      });
     });
 
     it('applyRuntime handles runtime config with string apiVersion', () => {

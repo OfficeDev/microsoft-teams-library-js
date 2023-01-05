@@ -225,11 +225,7 @@ export namespace dialog {
      * @beta
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.dialog
-        ? runtime.supports.dialog.url
-          ? true
-          : false
-        : false;
+      return ensureInitialized(runtime) && (runtime.supports.dialog && runtime.supports.dialog.url) !== undefined;
     }
 
     /**

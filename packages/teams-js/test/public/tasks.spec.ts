@@ -58,20 +58,13 @@ describe('tasks', () => {
             url: 'someUrl',
             completionBotId: 'someCompletionBotId',
           };
-          const resultTaskInfo: TaskInfo = {
-            card: 'someCard',
-            height: TaskModuleDimension.Large,
-            width: TaskModuleDimension.Large,
-            title: 'someTitle',
-            completionBotId: 'someCompletionBotId',
-          };
           tasks.startTask(taskInfo, () => {
             return;
           });
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([resultTaskInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
         });
 
         it(`should pass along the taskInfo correctly when URL is not specified. ${context} context`, async () => {
@@ -116,7 +109,7 @@ describe('tasks', () => {
         it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({
-            apiVersion: 1,
+            apiVersion: 2,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: { url: {}, card: {}, update: {} } },
           });
@@ -152,20 +145,14 @@ describe('tasks', () => {
             card: 'someCard',
           };
 
-          const resultTaskInfo: TaskInfo = {
-            height: TaskModuleDimension.Large,
-            card: 'someCard',
-            title: undefined,
-            width: TaskModuleDimension.Small,
-          };
           tasks.startTask(taskInfo, () => {
             return;
           });
-          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(resultTaskInfo);
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
 
           expect(startTaskMessage).not.toBeNull();
-          expect(startTaskMessage.args).toEqual([resultTaskInfo]);
+          expect(startTaskMessage.args).toEqual([taskInfo]);
           expect(startTaskMessage.args).toEqual([taskInfoWithSize]);
         });
 
