@@ -44,7 +44,7 @@ export namespace people {
     param1: PeoplePickerInputs | ((error: SdkError, people: PeoplePickerResult[]) => void) | undefined,
     param2?: PeoplePickerInputs,
   ): Promise<PeoplePickerResult[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let callback: (error: SdkError, people: PeoplePickerResult[]) => void;
@@ -140,7 +140,6 @@ export namespace people {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.people ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.people ? true : false;
   }
 }

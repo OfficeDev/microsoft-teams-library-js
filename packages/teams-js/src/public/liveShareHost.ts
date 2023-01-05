@@ -1,6 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
+import { runtime } from './runtime';
 
 /**
  * @hidden
@@ -145,7 +146,7 @@ export class LiveShareHost {
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
     return new Promise<IFluidTenantInfo>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
@@ -162,7 +163,7 @@ export class LiveShareHost {
    */
   public getFluidToken(containerId?: string): Promise<string> {
     return new Promise<string>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       // eslint-disable-next-line strict-null-checks/all
       resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
@@ -177,7 +178,7 @@ export class LiveShareHost {
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
@@ -197,7 +198,7 @@ export class LiveShareHost {
    */
   public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
@@ -211,7 +212,7 @@ export class LiveShareHost {
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
     return new Promise<INtpTimeInfo>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
@@ -228,7 +229,7 @@ export class LiveShareHost {
    */
   public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
     return new Promise<UserMeetingRole[]>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
@@ -245,7 +246,7 @@ export class LiveShareHost {
    */
   public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
     return new Promise<UserMeetingRole[] | undefined>((resolve) => {
-      ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
@@ -260,7 +261,7 @@ export class LiveShareHost {
    * @beta
    */
   public static create(): LiveShareHost {
-    ensureInitialized(FrameContexts.meetingStage, FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
     return new LiveShareHost();
   }

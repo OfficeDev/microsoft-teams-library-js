@@ -6,7 +6,7 @@ import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../
 import { dialog } from '../../src/public/dialog';
 import { DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -422,7 +422,7 @@ describe('Dialog', () => {
       });
 
       it('should throw before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        framedMock.uninitializeRuntimeConfig();
         expect(() => dialog.update.isSupported()).toThrowError('The library has not yet been initialized');
       });
     });
@@ -431,12 +431,7 @@ describe('Dialog', () => {
     it('should not allow calls before initialization', () => {
       expect(() => dialog.submit()).toThrowError('The library has not yet been initialized');
     });
-    const allowedContexts = [
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.meetingStage,
-    ];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
@@ -543,7 +538,7 @@ describe('Dialog', () => {
     });
 
     it('should not be supported before initialization', () => {
-      framedMock.setRuntimeConfig(_uninitializedRuntime);
+      framedMock.uninitializeRuntimeConfig();
       expect(() => dialog.isSupported()).toThrowError('The library has not yet been initialized');
     });
   });
@@ -808,7 +803,7 @@ describe('Dialog', () => {
       });
 
       it('should not be supported before initialization', () => {
-        framedMock.setRuntimeConfig(_uninitializedRuntime);
+        framedMock.uninitializeRuntimeConfig();
         expect(() => dialog.bot.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });

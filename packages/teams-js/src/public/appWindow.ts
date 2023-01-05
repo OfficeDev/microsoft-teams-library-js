@@ -7,6 +7,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
+import { runtime } from './runtime';
 
 export interface IAppWindow {
   /**
@@ -34,7 +35,7 @@ export class ChildAppWindow implements IAppWindow {
    * @param onComplete - The callback to know if the postMessage has been success/failed.
    */
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
   /**
@@ -44,7 +45,7 @@ export class ChildAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (type === 'message') {
       registerHandler('messageForParent', listener);
     }
@@ -65,7 +66,7 @@ export class ParentAppWindow implements IAppWindow {
    * @param onComplete - The callback to know if the postMessage has been success/failed.
    */
   public postMessage(message: any, onComplete?: (status: boolean, reason?: string) => void): void {
-    ensureInitialized(FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.task);
     sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
@@ -76,7 +77,7 @@ export class ParentAppWindow implements IAppWindow {
    * @param listener - The listener that will be called
    */
   public addEventListener(type: string, listener: (message: any) => void): void {
-    ensureInitialized(FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.task);
     if (type === 'message') {
       registerHandler('messageForChild', listener);
     }

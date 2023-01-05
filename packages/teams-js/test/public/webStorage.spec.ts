@@ -2,11 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import {
-  _minRuntimeConfigToUninitialize,
-  _uninitializedRuntime,
-  generateBackCompatRuntimeConfig,
-} from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, generateBackCompatRuntimeConfig } from '../../src/public/runtime';
 import { webStorage } from '../../src/public/webStorage';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -136,7 +132,7 @@ describe('webStorage', () => {
     });
 
     it('webStorage.isSupported should throw if called before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framedPlatformMock.uninitializeRuntimeConfig();
       expect(() => webStorage.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
@@ -154,7 +150,7 @@ describe('webStorage', () => {
     });
 
     it('webStorage.isSupported should throw if called before initialization', () => {
-      framelessPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framelessPlatformMock.uninitializeRuntimeConfig();
       expect(() => webStorage.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

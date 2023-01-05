@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { runtime } from '../public/runtime';
 
 /**
  * @hidden
@@ -562,7 +563,7 @@ export namespace files {
     channelId: string,
     callback: (error: SdkError, folders: CloudStorageFolder[]) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!channelId || channelId.length === 0) {
       throw new Error('[files.getCloudStorageFolders] channelId name cannot be null or empty');
@@ -590,7 +591,7 @@ export namespace files {
     channelId: string,
     callback: (error: SdkError, isFolderAdded: boolean, folders: CloudStorageFolder[]) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!channelId || channelId.length === 0) {
       throw new Error('[files.addCloudStorageFolder] channelId name cannot be null or empty');
@@ -621,7 +622,7 @@ export namespace files {
     folderToDelete: CloudStorageFolder,
     callback: (error: SdkError, isFolderDeleted: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!channelId) {
       throw new Error('[files.deleteCloudStorageFolder] channelId name cannot be null or empty');
@@ -655,7 +656,7 @@ export namespace files {
     providerCode: CloudStorageProvider,
     callback: (error: SdkError, items: CloudStorageFolderItem[]) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!folder || !providerCode) {
       throw new Error('[files.getCloudStorageFolderContents] folder/providerCode name cannot be null or empty');
@@ -691,7 +692,7 @@ export namespace files {
     providerCode: CloudStorageProvider,
     fileOpenPreference?: FileOpenPreference.Web | FileOpenPreference.Inline,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!file || !providerCode) {
       throw new Error('[files.openCloudStorageFile] file/providerCode cannot be null or empty');
@@ -718,7 +719,7 @@ export namespace files {
     excludeAddedProviders = false,
     callback: (error: SdkError, providers: IExternalProvider[]) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.getExternalProviders] Callback cannot be null');
@@ -743,7 +744,7 @@ export namespace files {
     isMove = false,
     callback: (error?: SdkError) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!selectedFiles || selectedFiles.length === 0) {
       throw new Error('[files.copyMoveFiles] selectedFiles cannot be null or empty');
     }
@@ -778,7 +779,7 @@ export namespace files {
    * Limited to Microsoft-internal use
    */
   export function getFileDownloads(callback: (error?: SdkError, files?: IFileItem[]) => void): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.getFileDownloads] Callback cannot be null');
@@ -799,7 +800,7 @@ export namespace files {
    * Limited to Microsoft-internal use
    */
   export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
@@ -825,7 +826,7 @@ export namespace files {
    * Limited to Microsoft-internal use
    */
   export function addCloudStorageProvider(callback: (error?: SdkError, provider?: CloudStorageProvider) => void): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProvider] callback cannot be null');
@@ -852,7 +853,7 @@ export namespace files {
     logoutRequest: CloudStorageProviderRequest<CloudStorageProviderContent>,
     callback: (error?: SdkError) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.removeCloudStorageProvider] callback cannot be null');
@@ -884,7 +885,7 @@ export namespace files {
     addNewFileRequest: CloudStorageProviderRequest<CloudStorageProviderNewFileContent>,
     callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProviderFile] callback cannot be null');
@@ -916,7 +917,7 @@ export namespace files {
     renameFileRequest: CloudStorageProviderRequest<CloudStorageProviderRenameFileContent>,
     callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.renameCloudStorageProviderFile] callback cannot be null');
@@ -949,7 +950,7 @@ export namespace files {
     deleteFileRequest: CloudStorageProviderRequest<CloudStorageProviderDeleteFileContent>,
     callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.deleteCloudStorageProviderFile] callback cannot be null');
@@ -989,7 +990,7 @@ export namespace files {
     downloadFileRequest: CloudStorageProviderRequest<CloudStorageProviderDownloadFileContent>,
     callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(
@@ -1032,7 +1033,7 @@ export namespace files {
     uploadFileRequest: CloudStorageProviderRequest<CloudStorageProviderUploadFileContent>,
     callback: (error?: SdkError, actionStatus?: boolean) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.uploadCloudStorageProviderFile] callback cannot be null');
@@ -1074,7 +1075,7 @@ export namespace files {
    * @internal Limited to Microsoft-internal use
    */
   export function registerCloudStorageProviderListChangeHandler(handler: () => void): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
 
     if (!handler) {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
@@ -1096,7 +1097,7 @@ export namespace files {
    * Limited to Microsoft-internal use
    */
   export function registerCloudStorageProviderContentChangeHandler(handler: () => void): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
 
     if (!handler) {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');

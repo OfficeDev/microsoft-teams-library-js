@@ -47,7 +47,7 @@ jobs:
   - job: E2ETest2
     displayName: 'E2E Test - Default'
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-20.04'
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
@@ -91,12 +91,6 @@ jobs:
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: Yarn@2
-        displayName: 'Run tests for electron webview'
-        inputs:
-          Arguments: 'run xvfb-maybe mocha'
-          ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
         inputs:
@@ -145,7 +139,7 @@ jobs:
   - job: E2ETestAndroid
     displayName: 'E2E Test - Android'
     pool:
-      vmImage: 'macos-latest'
+      vmImage: 'internal-macos-11'
     steps:
       - template: tools/yaml-templates/android-test.yml
         parameters:

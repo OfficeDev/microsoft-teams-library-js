@@ -15,7 +15,7 @@ export namespace teamsCore {
    */
   export function enablePrintCapability(): void {
     if (!GlobalVars.printCapabilityEnabled) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -36,7 +36,13 @@ export namespace teamsCore {
    * default print handler
    */
   export function print(): void {
-    window.print();
+    if (typeof window !== 'undefined') {
+      window.print();
+    } else {
+      // This codepath only exists to enable compilation in a server-side redered environment. In standard usage, the window object should never be undefined so this code path should never run.
+      // If this error has actually been thrown, something has gone very wrong and it is a bug
+      throw new Error('window object undefined at print call');
+    }
   }
 
   /**
@@ -70,7 +76,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
 
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
@@ -112,7 +118,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
@@ -128,7 +134,6 @@ export namespace teamsCore {
    *
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.teamsCore ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.teamsCore ? true : false;
   }
 }

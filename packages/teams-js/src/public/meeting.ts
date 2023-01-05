@@ -3,6 +3,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 export namespace meeting {
   /**
@@ -281,7 +282,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
@@ -297,7 +298,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
@@ -319,6 +320,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized(
+      runtime,
       FrameContexts.sidePanel,
       FrameContexts.meetingStage,
       FrameContexts.settings,
@@ -344,7 +346,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 
@@ -361,7 +363,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get live stream state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.getLiveStreamState', callback);
   }
 
@@ -383,7 +385,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey], callback);
   }
 
@@ -399,7 +401,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.requestStopLiveStreaming', callback);
   }
 
@@ -415,7 +417,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     registerHandler('meeting.liveStreamChanged', handler);
   }
 
@@ -434,7 +436,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
   }
 
@@ -455,7 +457,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
 
@@ -474,7 +476,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 
@@ -492,7 +494,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
   }
 
@@ -507,7 +509,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
   }
 
@@ -527,7 +529,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.raiseHandStateChanged', handler);
   }
 
@@ -545,7 +547,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
 
@@ -582,7 +584,7 @@ export namespace meeting {
      * @beta
      */
     export function setOptions(shareInformation: ShareInformation): void {
-      ensureInitialized(FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.sidePanel);
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
