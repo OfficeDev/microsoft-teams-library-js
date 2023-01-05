@@ -217,7 +217,7 @@ export namespace meeting {
    */
   export interface IRequestAppAudioHandlingSdkResponse {
     /** Indicates whether host should handle audio*/
-    isHostAudioLess: boolean;
+    isHostAudioless: boolean;
 
     /**
      * error object in case there is a failure

@@ -1363,17 +1363,17 @@ describe('meeting', () => {
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should successfully return isHostAudioLess=true for app audio handling request. context: ${context} context`, async () => {
+        it(`should successfully return isHostAudioless=true for app audio handling request. context: ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
-            isHostAudioLess: true,
+            isHostAudioless: true,
             error: undefined,
           };
 
           let callbackCalled = false;
           let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
-            isHostAudioLess: false,
+            isHostAudioless: false,
             error: undefined,
           };
           meeting.requestAppAudioHandling(
@@ -1404,13 +1404,13 @@ describe('meeting', () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
-            isHostAudioLess: false,
+            isHostAudioless: false,
             error: undefined,
           };
 
           let callbackCalled = false;
           let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
-            isHostAudioLess: false,
+            isHostAudioless: false,
             error: { errorCode: ErrorCode.INTERNAL_ERROR },
           };
 

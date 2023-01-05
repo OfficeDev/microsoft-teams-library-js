@@ -328,7 +328,7 @@ const SetOptions = (): React.ReactElement =>
   });
 
 interface IRequestAppAudioHandlingSdkResponse {
-  isHostAudioLess: boolean;
+  isHostAudioless: boolean;
   error?: SdkError;
 }
 
