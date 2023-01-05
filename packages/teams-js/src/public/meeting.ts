@@ -598,7 +598,7 @@ export namespace meeting {
    * @throws standard parameter validation error
    * @param isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
    *    false - Audio transferred to Teams and Teams to restore the audio.
-   * @param callbackMicMuteStateChangedHandler - Callback contains IMicState param, error or mic mute state.
+   * @param callbackMicMuteStateChangedHandler - Callback contains mic status param.
    * @param callbackResponse - Callback contains IRequestAppAudioHandlingSdkResponse param, error or operation result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
@@ -607,7 +607,7 @@ export namespace meeting {
   export function requestAppAudioHandling(
     isAppHandlingAudio: boolean,
     callbackResponse: (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse) => void,
-    callbackMicMuteStateChangedHandler: (micState: IMicState) => void,
+    callbackMicMuteStateChangedHandler: (micStatus: boolean) => void,
   ): void {
     if (!callbackResponse) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
