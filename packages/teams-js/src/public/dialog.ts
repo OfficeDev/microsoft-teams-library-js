@@ -118,7 +118,7 @@ export namespace dialog {
    * Submit the dialog module and close the dialog
    *
    * @remarks
-   * This function is only called from inside of a dialog
+   * This function is only intended to be called from code running within the dialog. Calling it from from outside the dialog will have no effect.
    *
    * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it,
    *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
@@ -144,7 +144,7 @@ export namespace dialog {
    *  Send message to the parent from dialog
    *
    *  @remarks
-   * This function is only called from inside of a dialog
+   * This function is only intended to be called from code running within the dialog. Calling it from from outside the dialog will have no effect.
    *
    * @param message - The message to send to the parent
    *
@@ -185,7 +185,7 @@ export namespace dialog {
    * Register a listener that will be triggered when a message is received from the app that opened the dialog.
    *
    * @remarks
-   * This function is only called from inside of a dialog.
+   * This function is only intended to be called from code running within the dialog. Calling it from from outside the dialog will have no effect.
    *
    * @param listener - The listener that will be triggered.
    *
