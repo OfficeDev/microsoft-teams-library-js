@@ -9,7 +9,7 @@ describe('Testing Adaptive Cards', () => {
   describe('getAdaptiveCardSchemaVersion', () => {
     it('should return the Adaptive Card Version supported by hosts', () => {
       utils.setRuntimeConfig({
-        apiVersion: 1,
+        apiVersion: 2,
         hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
         supports: {},
       });
@@ -37,5 +37,5 @@ describe('Testing Adaptive Cards', () => {
     it('should return true if the version supported by host is less than minimum adaptive card version', () => {
       expect(isHostAdaptiveCardSchemaVersionUnsupported({ majorVersion: 1, minorVersion: 4 })).toBeTruthy();
     });
-  })
+  });
 });

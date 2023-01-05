@@ -170,7 +170,6 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
@@ -211,12 +210,12 @@ describe('Testing app capability', () => {
           initMessage,
           FrameContexts.content,
           HostClientType.web,
-          '{"apiVersion":1, "supports":{"mail":{}}}',
+          '{"apiVersion":2, "supports":{"mail":{}}}',
         );
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -227,12 +226,12 @@ describe('Testing app capability', () => {
           initMessage,
           FrameContexts.content,
           HostClientType.web,
-          '{"apiVersion":1, "supports":{"mail":{}}}',
+          '{"apiVersion":2, "supports":{"mail":{}}}',
           '1.0.0',
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -245,11 +244,11 @@ describe('Testing app capability', () => {
           FrameContexts.content,
           HostClientType.web,
           '1.0.0',
-          '{"apiVersion":1, "supports":{"mail":{}}}',
+          '{"apiVersion":2, "supports":{"mail":{}}}',
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -973,7 +972,6 @@ describe('Testing app capability', () => {
 
       it('app.initialize should use teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
-
         const initMessage = framelessPostMock.findMessageByFunc('initialize');
 
         framelessPostMock.respondToMessage({
@@ -1037,13 +1035,13 @@ describe('Testing app capability', () => {
         framelessPostMock.respondToMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}'],
+            args: [FrameContexts.content, HostClientType.web, '{"apiVersion":2, "supports":{"mail":{}}}'],
           },
         } as DOMMessageEvent);
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -1053,12 +1051,12 @@ describe('Testing app capability', () => {
         framelessPostMock.respondToMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}', '1.0.0'],
+            args: [FrameContexts.content, HostClientType.web, '{"apiVersion":2, "supports":{"mail":{}}}', '1.0.0'],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -1069,12 +1067,12 @@ describe('Testing app capability', () => {
         framelessPostMock.respondToMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '1.0.0', '{"apiVersion":1, "supports":{"mail":{}}}'],
+            args: [FrameContexts.content, HostClientType.web, '1.0.0', '{"apiVersion":2, "supports":{"mail":{}}}'],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: 2, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 

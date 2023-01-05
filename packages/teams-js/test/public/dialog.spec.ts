@@ -61,7 +61,7 @@ describe('Dialog', () => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
           try {
             dialog.url.open(urlDialogInfo);
@@ -88,7 +88,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(4);
           try {
             dialog.url.open(urlDialogInfo);
@@ -327,7 +327,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               dialog.update.resize(dimensions);
@@ -338,7 +338,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog.update is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(1);
             try {
               dialog.update.resize(dimensions);
@@ -358,7 +358,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(4);
             try {
               dialog.update.resize(dimensions);
@@ -369,7 +369,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog.update is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(4);
             try {
               dialog.update.resize(dimensions);
@@ -410,19 +410,19 @@ describe('Dialog', () => {
     describe('dialog.update.isSupported function', () => {
       it('dialog.update.isSupported should return false if the runtime says dialog is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
         expect(dialog.update.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { update: {} } } });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { update: {} } } });
         expect(dialog.update.isSupported()).toBeTruthy();
       });
 
@@ -441,7 +441,7 @@ describe('Dialog', () => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
           try {
             dialog.url.submit('someResult', ['someAppId', 'someOtherAppId']);
@@ -462,7 +462,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(4);
           try {
             dialog.url.submit('someResult', ['someAppId', 'someOtherAppId']);
@@ -532,13 +532,13 @@ describe('Dialog', () => {
   describe('dialog.isSupported function', () => {
     it('dialog.isSupported should return false if the runtime says dialog is not supported', async () => {
       await framedMock.initializeWithContext(FrameContexts.content);
-      framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect(dialog.isSupported()).not.toBeTruthy();
     });
 
     it('dialog.update.isSupported should return true if the runtime says dialog is supported', async () => {
       await framedMock.initializeWithContext(FrameContexts.content);
-      framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+      framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
       expect(dialog.isSupported()).toBeTruthy();
     });
     it('dialog.update.isSupported should throw before initialization', () => {
@@ -566,7 +566,7 @@ describe('Dialog', () => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
           try {
             dialog.url.bot.open(botUrlDialogInfo);
@@ -577,7 +577,7 @@ describe('Dialog', () => {
 
         it(`FRAMED: should throw error when dialog.url.bot is not supported in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
           expect.assertions(1);
           try {
             dialog.url.bot.open(botUrlDialogInfo);
@@ -588,6 +588,7 @@ describe('Dialog', () => {
 
         it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           const botUrlDialogInfo: BotUrlDialogInfo = {
             url: 'someUrl',
             size: { height: DialogDimension.Large, width: DialogDimension.Large },
@@ -605,7 +606,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(4);
           try {
             dialog.url.bot.open(botUrlDialogInfo);
@@ -616,7 +617,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should throw error when dialog.url.bot is not supported in ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
           expect.assertions(4);
           try {
             dialog.url.bot.open(botUrlDialogInfo);
@@ -627,6 +628,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           const botUrlDialogInfo: BotUrlDialogInfo = {
             url: 'someUrl',
             size: { height: DialogDimension.Large, width: DialogDimension.Large },
@@ -644,6 +646,7 @@ describe('Dialog', () => {
 
         it(`FRAMED: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
           await framedMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           dialog.url.bot.open(botUrlDialogInfo, emptyCallback, emptyCallback);
           const handlerMessage = framedMock.findMessageByFunc('registerHandler');
           expect(handlerMessage).not.toBeNull();
@@ -652,6 +655,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
           await framelessMock.initializeWithContext(context);
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           dialog.url.bot.open(botUrlDialogInfo, emptyCallback, emptyCallback);
           const handlerMessage = framelessMock.findMessageByFunc('registerHandler');
           expect(handlerMessage).not.toBeNull();
@@ -660,11 +664,9 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
           await framelessMock.initializeWithContext(context);
-
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           expect.assertions(5);
-
           const submitString = 'succesfullySubmit';
-
           dialog.url.bot.open(botUrlDialogInfo, undefined, emptyCallback);
           const message = framelessMock.findMessageByFunc('tasks.startTask');
           expect(doesHandlerExist('messageForParent')).toBeTruthy();
@@ -680,7 +682,7 @@ describe('Dialog', () => {
 
         it(`FRAMED: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
           await framedMock.initializeWithContext(context);
-
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
           expect.assertions(2);
 
           const submitString = 'succesfullySubmit';
@@ -694,6 +696,7 @@ describe('Dialog', () => {
 
         it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
             expect.assertions(2);
 
             const submitString = 'succesfullySubmit';
@@ -711,6 +714,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
             const submitString = 'succesfullySubmit';
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
@@ -732,10 +736,9 @@ describe('Dialog', () => {
 
         it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framedMock.initializeWithContext(context).then(() => {
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
             expect.assertions(2);
-
             const error = { errorCode: 500, message: 'Internal Error Occured' };
-
             dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse): void => {
               expect(result.result).toBeFalsy();
               expect(result.err).toBe(error);
@@ -749,6 +752,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
           framelessMock.initializeWithContext(context).then(() => {
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
             dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
               expect(result.result).toBeFalsy();
               expect(result.err).toBe(error);
@@ -790,25 +794,25 @@ describe('Dialog', () => {
     describe('dialog.url.bot.isSupported function', () => {
       it('dialog.url.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
         expect(dialog.url.bot.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.url.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
         expect(dialog.url.bot.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.url.bot.isSupported should return false if the runtime says dialog and dialog.url is supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { url: {} } } });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: {} } } });
         expect(dialog.url.bot.isSupported()).toBeFalsy();
       });
 
       it('dialog.url.bot.isSupported should return true if the runtime says dialog and dialog.url.bot is supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { url: { bot: {} } } } });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
         expect(dialog.url.bot.isSupported()).toBeTruthy();
       });
 
@@ -830,7 +834,7 @@ describe('Dialog', () => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
         it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
           await framedMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
           try {
             dialog.url.sendMessageToDialog('exampleMessage');
@@ -849,7 +853,7 @@ describe('Dialog', () => {
 
         it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
           await framelessMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(4);
           try {
             dialog.url.sendMessageToDialog('exampleMessage');
@@ -901,7 +905,7 @@ describe('Dialog', () => {
         if (frameContext === FrameContexts.task) {
           it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framedMock.initializeWithContext(frameContext);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.sendMessageToParentFromDialog('exampleMessage');
@@ -920,7 +924,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framelessMock.initializeWithContext(frameContext);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(4);
             try {
               dialog.url.sendMessageToParentFromDialog('exampleMessage');
@@ -971,7 +975,7 @@ describe('Dialog', () => {
         if (frameContext === FrameContexts.task) {
           it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framedMock.initializeWithContext(frameContext);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.registerOnMessageFromParent(emptyCallback);
@@ -990,7 +994,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
             await framelessMock.initializeWithContext(frameContext);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(4);
             try {
               dialog.url.registerOnMessageFromParent(emptyCallback);
@@ -1074,7 +1078,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1085,7 +1089,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1097,7 +1101,7 @@ describe('Dialog', () => {
           it(`FRAMED: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({
-              apiVersion: 1,
+              apiVersion: 2,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: {} } },
             });
@@ -1113,7 +1117,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1124,7 +1128,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1136,7 +1140,7 @@ describe('Dialog', () => {
           it(`FRAMELESS: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({
-              apiVersion: 1,
+              apiVersion: 2,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: {} } },
             });
@@ -1153,7 +1157,7 @@ describe('Dialog', () => {
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -1174,7 +1178,7 @@ describe('Dialog', () => {
           it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -1200,7 +1204,7 @@ describe('Dialog', () => {
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -1221,7 +1225,7 @@ describe('Dialog', () => {
           it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -1268,14 +1272,14 @@ describe('Dialog', () => {
     describe('Testing dialog.adaptiveCard.isSupported function', () => {
       it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is not supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
-        framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
         expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is supported and adaptiveCard is not', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({
-          apiVersion: 1,
+          apiVersion: 2,
           hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
           supports: { dialog: {} },
         });
@@ -1285,7 +1289,7 @@ describe('Dialog', () => {
       it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', async () => {
         await framedMock.initializeWithContext(FrameContexts.content);
         framedMock.setRuntimeConfig({
-          apiVersion: 1,
+          apiVersion: 2,
           hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
           supports: { dialog: { card: {} } },
         });
@@ -1317,7 +1321,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1328,7 +1332,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1339,7 +1343,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { card: {} } } });
             expect.assertions(1);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1351,7 +1355,7 @@ describe('Dialog', () => {
           it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await framedMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({
-              apiVersion: 1,
+              apiVersion: 2,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: { bot: {} } } },
             });
@@ -1367,7 +1371,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1378,7 +1382,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog.adaptiveCard is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: {} } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1389,7 +1393,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: { dialog: { card: {} } } });
+            framedMock.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { card: {} } } });
             expect.assertions(4);
             try {
               dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1401,7 +1405,7 @@ describe('Dialog', () => {
           it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await framelessMock.initializeWithContext(context);
             framedMock.setRuntimeConfig({
-              apiVersion: 1,
+              apiVersion: 2,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: { bot: {} } } },
             });
@@ -1418,7 +1422,7 @@ describe('Dialog', () => {
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -1440,7 +1444,7 @@ describe('Dialog', () => {
           it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -1466,7 +1470,7 @@ describe('Dialog', () => {
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framedMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -1488,7 +1492,7 @@ describe('Dialog', () => {
           it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             framelessMock.initializeWithContext(context).then(() => {
               framedMock.setRuntimeConfig({
-                apiVersion: 1,
+                apiVersion: 2,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -1533,14 +1537,14 @@ describe('Dialog', () => {
       describe('Testing dialog.adaptiveCard.bot.isSupported function', () => {
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          framedMock.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
-            apiVersion: 1,
+            apiVersion: 2,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: {} },
           });
@@ -1550,7 +1554,7 @@ describe('Dialog', () => {
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
-            apiVersion: 1,
+            apiVersion: 2,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: {} },
           });
@@ -1560,7 +1564,7 @@ describe('Dialog', () => {
         it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
-            apiVersion: 1,
+            apiVersion: 2,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: {} },
           });
@@ -1570,7 +1574,7 @@ describe('Dialog', () => {
         it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', async () => {
           await framedMock.initializeWithContext(FrameContexts.content);
           framedMock.setRuntimeConfig({
-            apiVersion: 1,
+            apiVersion: 2,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: { card: { bot: {} } } },
           });

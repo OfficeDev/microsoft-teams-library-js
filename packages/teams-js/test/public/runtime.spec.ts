@@ -60,8 +60,10 @@ describe('runtime', () => {
       };
       applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
-      // eslint-disable-next-line strict-null-checks/all
-      expect(isRuntimeInitialized(runtime) && runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
+      if (isRuntimeInitialized(runtime)) {
+        // eslint-disable-next-line strict-null-checks/all
+        expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
+      }
     });
 
     it('applyRuntime handles runtime config with string apiVersion', () => {

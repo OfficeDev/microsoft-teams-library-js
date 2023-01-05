@@ -287,9 +287,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
           dialog: {
             card: undefined,
             url: previousVersionRuntime.supports.dialog,
-            // ? { bot: previousVersionRuntime.supports.dialog.bot }
-            // : undefined,
-            update: previousVersionRuntime?.supports?.dialog?.update,
+            update: previousVersionRuntime.supports.dialog?.update,
           },
         },
       };
@@ -348,7 +346,7 @@ const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBack
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntimeV1 {
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): Runtime {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
   let newSupports = { ...teamsRuntimeConfig.supports };
@@ -371,8 +369,8 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     }
   });
 
-  const backCompatRuntimeConfig: IRuntimeV1 = {
-    apiVersion: 1,
+  const backCompatRuntimeConfig: Runtime = {
+    apiVersion: 2,
     isLegacyTeams: true,
     supports: newSupports,
   };
