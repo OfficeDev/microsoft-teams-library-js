@@ -615,7 +615,7 @@ export namespace meeting {
     if (!callbackMicMuteStateChangedHandler) {
       throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent(
       'meeting.requestAppAudioHandling',
       [isAppHandlingAudio, callbackMicMuteStateChangedHandler],
@@ -630,7 +630,7 @@ export namespace meeting {
    * @beta
    */
   export function sendMicMuteStatusResponse(micState: IMicState): void {
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState]);
   }
 }
