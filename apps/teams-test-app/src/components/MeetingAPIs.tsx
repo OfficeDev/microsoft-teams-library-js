@@ -2,7 +2,7 @@ import { meeting, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
@@ -200,29 +200,6 @@ const RegisterMeetingReactionReceivedHandler = (): React.ReactElement =>
     },
   });
 
-const RegisterMicStateChangedHandler = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'registerMicStateChangedHandler',
-    title: 'Register MicState Changed Handler',
-    onClick: async (setResult) => {
-      const handler = (micState: meeting.IMicState): boolean => {
-        let res, bReturn;
-        if (micState.error) {
-          res = `Receieved error ${JSON.stringify(micState.error)}`;
-          bReturn = false;
-        } else {
-          res = `Mic state changed to ${JSON.stringify(micState.isMicMuted)}`;
-          bReturn = true;
-        }
-        setResult(res);
-        return bReturn;
-      };
-      meeting.registerMicStateChangedHandler(handler);
-
-      return generateRegistrationMsg('the mic state changes');
-    },
-  });
-
 const RegisterSpeakingStateChangedHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerSpeakingStateChangedHandler',
@@ -350,22 +327,47 @@ const SetOptions = (): React.ReactElement =>
     },
   });
 
-const LetAppHandleAudio = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'letAppHandleAudio',
+interface IRequestAppAudioHandlingSdkResponse {
+  isHostAudioLess: boolean;
+  error?: SdkError;
+}
+
+interface IMicState {
+  isMicMuted?: boolean;
+  error?: SdkError;
+}
+
+const RequestAppAudioHandling = (): React.ReactElement =>
+  ApiWithCheckboxInput({
+    name: 'requestAppAudioHandling',
     title: 'App Handles the Audio channel',
-    onClick: async (setResult) => {
-      const callback = (
-        error: SdkError | null,
-        letAppHandleAudioSdkResponse: meeting.ILetAppHandleAudioSdkResponse | null,
-      ): void => {
-        if (error) {
-          setResult(JSON.stringify(error));
+    onClick: async (input: boolean, setResult: (arg0: string) => void) => {
+      const callbackResponse = (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse): void => {
+        if (requestAppAudioHandlingSdkResponse.error) {
+          setResult(JSON.stringify(requestAppAudioHandlingSdkResponse.error));
         } else {
-          setResult('letAppHandleAudio() succeeded: ' + JSON.stringify(letAppHandleAudioSdkResponse));
+          setResult('requestAppAudioHandling() succeeded: ' + JSON.stringify(requestAppAudioHandlingSdkResponse));
         }
       };
-      meeting.letAppHandleAudio(callback, true); // TODO
+      const callbackMicMuteStateChangedHandler = (micState: IMicState): void => {
+        if (micState.error) {
+          setResult(JSON.stringify(micState.error));
+        } else {
+          setResult('requestAppAudioHandling() mic mute state changed: ' + JSON.stringify(micState));
+        }
+      };
+      meeting.requestAppAudioHandling(input, callbackResponse, callbackMicMuteStateChangedHandler);
+      return '';
+    },
+    label: 'App handles audio',
+  });
+
+const SendMicMuteStatusResponse = (): React.ReactElement =>
+  ApiWithTextInput<IMicState>({
+    name: 'sendMicMuteStatusResponse',
+    title: 'Send Mic mute status response acknowledgement',
+    onClick: async (input) => {
+      meeting.sendMicMuteStatusResponse(input);
       return '';
     },
   });
@@ -382,14 +384,14 @@ const MeetingAPIs = (): ReactElement => (
     <RegisterLiveStreamChangedHandler />
     <RegisterRaiseHandStateChangedHandler />
     <RegisterMeetingReactionReceivedHandler />
-    <RegisterMicStateChangedHandler />
     <RegisterSpeakingStateChangedHandler />
     <ShareAppContentToStage />
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
     <SetOptions />
-    <LetAppHandleAudio />
+    <RequestAppAudioHandling />
+    <SendMicMuteStatusResponse />
   </ModuleWrapper>
 );
 

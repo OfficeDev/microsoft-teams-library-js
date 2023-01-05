@@ -209,8 +209,19 @@ export namespace meeting {
     error?: SdkError;
   }
 
-  export interface ILetAppHandleAudioSdkResponse {
-    isTeamsAudioLess: boolean;
+  /**
+   * Interface for audio handling response
+   *
+   * @beta
+   */
+  export interface IRequestAppAudioHandlingSdkResponse {
+    /** Indicates whether host should handle audio*/
+    isHostAudioLess: boolean;
+
+    /**
+     * error object in case there is a failure
+     */
+    error?: SdkError;
   }
 
   /**
@@ -580,36 +591,44 @@ export namespace meeting {
   }
 
   /**
-   * App will handle the Audio - Mic & Speaker. Teams to go Audio less (No Audio)
+   * Ext App will handle the Audio(Mic & Speaker). Teams to go Audio less (No Audio)
    *
-   * @param callback - Callback contains 2 parameters, error and result.
+   * @throws standard parameter validation error
+   * @param isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
+   *    false - Audio transferred to Teams and Teams to restore the audio.
+   * @param callbackMicMuteStateChangedHandler - Callback contains IMicState param, error or mic mute state.
+   * @param callbackResponse - Callback contains IRequestAppAudioHandlingSdkResponse param, error or operation result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   * @beta
    */
-  export function letAppHandleAudio(
-    callback: (error: SdkError | null, letAppHandleAudioSdkResponse: ILetAppHandleAudioSdkResponse | null) => void,
-    transferAudio: boolean,
+  export function requestAppAudioHandling(
+    isAppHandlingAudio: boolean,
+    callbackResponse: (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse) => void,
+    callbackMicMuteStateChangedHandler: (micState: IMicState) => void,
   ): void {
-    if (!callback) {
-      throw new Error('[letAppHandleAudio] Callback cannot be null');
+    if (!callbackResponse) {
+      throw new Error('[requestAppAudioHandling] Callback response cannot be null');
+    }
+    if (!callbackMicMuteStateChangedHandler) {
+      throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     }
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.letAppHandleAudio', [transferAudio], callback);
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [isAppHandlingAudio, callbackMicMuteStateChangedHandler],
+      callbackResponse,
+    );
   }
 
   /**
-   * Registers a handler for receiving the Mic state change events.
-   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * Send Mic mute status response acknowledgement for callbackMicMuteStateChangedHandler
    *
-   * @param handler The handler to invoke when the mic state is changed
-   *
+   * @param micState - Mic mute ack
    * @beta
    */
-  export function registerMicStateChangedHandler(handler: (micState: IMicState) => void): void {
-    if (!handler) {
-      throw new Error('[registerMicStateChangedHandler] Handler cannot be null');
-    }
+  export function sendMicMuteStatusResponse(micState: IMicState): void {
     ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.micStateChanged', handler);
+    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState]);
   }
 }
