@@ -284,11 +284,13 @@ export const upgradeChain: IRuntimeUpgrade[] = [
         isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: {
           ...previousVersionRuntime.supports,
-          dialog: {
-            card: undefined,
-            url: previousVersionRuntime.supports.dialog,
-            update: previousVersionRuntime.supports.dialog?.update,
-          },
+          dialog: previousVersionRuntime.supports.dialog
+            ? {
+                card: undefined,
+                url: previousVersionRuntime.supports.dialog,
+                update: previousVersionRuntime.supports.dialog?.update,
+              }
+            : undefined,
         },
       };
     },
