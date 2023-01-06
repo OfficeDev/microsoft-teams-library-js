@@ -5,7 +5,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
 import { monetization } from '../../src/public/monetization';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -96,7 +96,7 @@ describe('Testing monetization capability', () => {
 
       describe('isSupported', () => {
         it('should throw if called before initialization', () => {
-          utils.setRuntimeConfig(_uninitializedRuntime);
+          utils.uninitializeRuntimeConfig();
           expect(() => monetization.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });

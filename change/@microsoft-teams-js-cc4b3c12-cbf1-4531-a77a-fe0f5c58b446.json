@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Fixed bug where some capabilities were being incorrectly marked as supported",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}

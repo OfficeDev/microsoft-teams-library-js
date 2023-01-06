@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { TeamInstanceParameters, teams } from '../../src/private';
 import { app } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -168,7 +168,7 @@ describe('Testing teams capabillity', () => {
         expect(teams.isSupported()).toBeTruthy();
       });
       it('should throw if called before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
+        utils.uninitializeRuntimeConfig();
         expect(() => teams.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
@@ -275,7 +275,7 @@ describe('Testing teams capabillity', () => {
         expect(teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
       });
       it('joinedTeams.isSupported should be false before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
+        utils.uninitializeRuntimeConfig();
         expect(() => teams.fullTrust.joinedTeams.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
@@ -301,7 +301,7 @@ describe('Testing teams capabillity', () => {
       });
 
       it('teams.fullTrust should be false before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
+        utils.uninitializeRuntimeConfig();
         expect(() => teams.fullTrust.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });

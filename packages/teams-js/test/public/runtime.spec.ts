@@ -1,6 +1,20 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
+import { errorRuntimeNotInitialized } from '../../src/internal/constants';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
-import { generateBackCompatRuntimeConfig, versionConstants } from '../../src/public/runtime';
+import {
+  applyRuntimeConfig,
+  generateBackCompatRuntimeConfig,
+  IBaseRuntime,
+  isRuntimeInitialized,
+  latestRuntimeApiVersion,
+  Runtime,
+  runtime,
+  setUnitializedRuntime,
+  upgradeChain,
+  versionConstants,
+} from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 describe('runtime', () => {
@@ -17,6 +31,54 @@ describe('runtime', () => {
     if (app._uninitialize) {
       app._uninitialize();
     }
+  });
+
+  describe('runtime versioning', () => {
+    it('latestRuntimeVersion should match Runtime interface apiVersion', () => {
+      const runtime: Runtime = {
+        apiVersion: 1,
+        supports: {},
+      };
+      expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
+    });
+
+    it('applyRuntime fast-forwards v0 runtime config to latest version', () => {
+      const runtimeV0 = {
+        apiVersion: 0,
+        isLegacyTeams: false,
+        supports: {
+          calendarV0: {},
+        },
+      };
+      applyRuntimeConfig(runtimeV0);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+      // eslint-disable-next-line strict-null-checks/all
+      expect(isRuntimeInitialized(runtime) && runtime.supports.calendar).toEqual({});
+    });
+
+    it('applyRuntime handles runtime config with string apiVersion', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: '2.0.0',
+        isLegacyTeams: false,
+        supports: {},
+      };
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+    });
+
+    it('upgradeChain is ordered from oldest to newest', () => {
+      expect.assertions(upgradeChain.length - 1);
+      let version = upgradeChain[0].versionToUpgradeFrom;
+      for (let i = 1; i < upgradeChain.length; i++) {
+        expect(upgradeChain[i].versionToUpgradeFrom).toBeGreaterThan(version);
+        version = upgradeChain[i].versionToUpgradeFrom;
+      }
+    });
+
+    it('isRuntimeInitialized throws errorRuntimeNotInitialized when runtime is not initialized', () => {
+      setUnitializedRuntime();
+      expect(() => isRuntimeInitialized(runtime)).toThrowError(new Error(errorRuntimeNotInitialized));
+    });
   });
 
   describe('generateBackCompatRuntimeConfig', () => {

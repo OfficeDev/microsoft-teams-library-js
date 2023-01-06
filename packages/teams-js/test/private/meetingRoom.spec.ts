@@ -3,7 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { meetingRoom } from '../../src/private/meetingRoom';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
@@ -55,7 +55,7 @@ describe('meetingRoom', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      framedPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      framedPlatformMock.uninitializeRuntimeConfig();
       expect(() => meetingRoom.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

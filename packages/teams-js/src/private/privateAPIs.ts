@@ -5,6 +5,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from '../public/constants';
+import { runtime } from '../public/runtime';
 import { FilePreviewParameters, UserSettingTypes } from './interfaces';
 
 /**
@@ -16,7 +17,7 @@ import { FilePreviewParameters, UserSettingTypes } from './interfaces';
  * Limited to Microsoft-internal use
  */
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
 
   sendMessageToParent('uploadCustomApp', [manifestBlob], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
@@ -34,7 +35,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * Limited to Microsoft-internal use
  */
 export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
 
   sendMessageToParent(actionName, args, callback);
 }
@@ -52,7 +53,7 @@ export function sendCustomMessage(actionName: string, args?: any[], callback?: (
  * Limited to Microsoft-internal use
  */
 export function sendCustomEvent(actionName: string, args?: any[]): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
 
   //validate childWindow
   if (!Communication.childWindow) {
@@ -72,7 +73,7 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
  * Limited to Microsoft-internal use
  */
 export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   registerHandler(actionName, (...args: any[]) => {
     return customHandler.apply(this, args);
   });
@@ -92,7 +93,7 @@ export function registerUserSettingsChangeHandler(
   settingTypes: UserSettingTypes[],
   handler: (settingType: UserSettingTypes, value: any) => void,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
 
   registerHandler('userSettingsChange', handler, true, [settingTypes]);
 }
@@ -107,7 +108,7 @@ export function registerUserSettingsChangeHandler(
  * Limited to Microsoft-internal use
  */
 export function openFilePreview(filePreviewParameters: FilePreviewParameters): void {
-  ensureInitialized(FrameContexts.content, FrameContexts.task);
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
   const params = [
     filePreviewParameters.entityId,

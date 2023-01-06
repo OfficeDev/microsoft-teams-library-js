@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { runtime } from '../public/runtime';
 import { video } from '../public/video';
 
 /**
@@ -101,7 +102,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -144,7 +145,7 @@ export namespace videoEx {
     effectId: string | undefined,
     effectParam?: string,
   ): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -171,7 +172,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -215,7 +216,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!video.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -236,7 +237,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    ensureInitialized();
+    ensureInitialized(runtime);
     return video.isSupported();
   }
 
@@ -278,7 +279,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function notifyFatalError(errorMessage: string): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!video.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }

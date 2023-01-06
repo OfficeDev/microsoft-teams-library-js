@@ -83,7 +83,7 @@ export namespace search {
     onExecuteHandler: SearchQueryHandler,
     onChangeHandler?: SearchQueryHandler,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -103,7 +103,7 @@ export namespace search {
    * @beta
    */
   export function unregisterHandlers(): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -125,7 +125,6 @@ export namespace search {
    * @beta
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.search ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.search ? true : false;
   }
 }
