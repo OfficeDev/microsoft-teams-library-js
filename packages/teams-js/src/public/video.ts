@@ -50,7 +50,7 @@ export namespace video {
    * @beta
    */
   export enum VideoFrameFormat {
-    NV12,
+    NV12 = 'NV12',
   }
 
   /**
@@ -125,12 +125,24 @@ export namespace video {
     streamId: string;
   };
 
+  const invokeCallbackForReceivedFrame = async (
+    callback: VideoFrameCallbackV2,
+    frame: globalThis.VideoFrame,
+  ): Promise<globalThis.VideoFrame> => {
+    const processedFrame = await callback({ frame });
+    if (frame.format === processedFrame.format) {
+      return processedFrame;
+    } else {
+      throw new Error(`Format doesn't match, expected: ${frame.format}, actual: ${processedFrame.format}`);
+    }
+  };
+
   export const registerForVideoFrameV2: (frameCallback: VideoFrameCallbackV2, config: VideoFrameConfig) => void =
     registerForVideoFrameFuncGenerator<VideoFrameCallbackV2>(
-      (callback) => (frame: globalThis.VideoFrame) => callback({ frame }),
-      (callback) => async (videoFrame: VideoFrame, timestamp?: number) => {
-        const frame = videoFrameToFrame(videoFrame, timestamp || Date.now());
-        const processedFrame = await callback({ frame });
+      (callback) => (frame: globalThis.VideoFrame) => invokeCallbackForReceivedFrame(callback, frame),
+      (callback, config) => async (videoFrame: VideoFrame, timestamp?: number) => {
+        const frame = videoFrameToFrame(config.format, videoFrame, timestamp || Date.now());
+        const processedFrame = await invokeCallbackForReceivedFrame(callback, frame);
         await writeToVideoFrame(processedFrame, videoFrame);
         frame.close();
         processedFrame.close();
@@ -162,9 +174,9 @@ export namespace video {
           notifyError,
         );
         frame.close();
-        return videoFrameToFrame(newFrame, timestamp || Date.now());
+        return videoFrameToFrame(frame.format, newFrame, timestamp || Date.now());
       },
-      (callback) => async (videoFrame: VideoFrame, timestamp?: number) => {
+      (callback, config) => async (videoFrame: VideoFrame, timestamp?: number) => {
         callback(
           videoFrame,
           () => {
@@ -177,7 +189,10 @@ export namespace video {
 
   function registerForVideoFrameFuncGenerator<T extends VideoFrameCallback | VideoFrameCallbackV2>(
     invokeCallbackForVideoStream: (callback: T) => (frame: globalThis.VideoFrame) => Promise<globalThis.VideoFrame>,
-    invokeCallbackForVideoFrame: (callback: T) => (frame: VideoFrame, timestamp?: number) => Promise<void>,
+    invokeCallbackForVideoFrame: (
+      callback: T,
+      config: VideoFrameConfig,
+    ) => (frame: VideoFrame, timestamp?: number) => Promise<void>,
   ): (callback: T, config: VideoFrameConfig) => void {
     const processedStream = new MediaStream();
 
@@ -209,7 +224,7 @@ export namespace video {
           drawCanvas('textureStream', await window['chrome']?.webview?.getTextureStream('streamId'));
         });
       } else {
-        const callbackForVideoFrame = invokeCallbackForVideoFrame(frameCallback);
+        const callbackForVideoFrame = invokeCallbackForVideoFrame(frameCallback, config);
         registerHandler(
           'video.newVideoFrame',
           async (videoFrame: VideoFrame) => {
@@ -229,9 +244,13 @@ export namespace video {
     return !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream);
   }
 
-  function videoFrameToFrame(videoFrame: VideoFrame, timestamp: number): globalThis.VideoFrame {
+  function videoFrameToFrame(
+    format: globalThis.VideoPixelFormat | null,
+    videoFrame: VideoFrame,
+    timestamp: number,
+  ): globalThis.VideoFrame {
     const frame = new globalThis.VideoFrame(videoFrame.data.slice().buffer, {
-      format: 'NV12',
+      format,
       timestamp: timestamp,
       codedWidth: videoFrame.width,
       codedHeight: videoFrame.height,
