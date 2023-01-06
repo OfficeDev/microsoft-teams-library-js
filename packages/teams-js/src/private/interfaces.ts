@@ -103,7 +103,7 @@ export interface FilePreviewParameters {
    * @internal
    * Limited to Microsoft-internal use
    */
-  entityId: string;
+  entityId?: string;
 
   /**
    * @hidden
@@ -112,7 +112,7 @@ export interface FilePreviewParameters {
    * @internal
    * Limited to Microsoft-internal use
    */
-  title: string;
+  title?: string;
 
   /**
    * @hidden
