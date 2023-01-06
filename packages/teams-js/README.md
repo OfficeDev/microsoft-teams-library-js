@@ -61,9 +61,9 @@ Reference the library inside of your `.html` page using:
 
 Teams client library depends on [`Promise`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) type. If you support older browsers and devices which may not yet provide it natively (e.g. IE 11), you need to provide a global polyfill, such as [es6-promise](https://www.npmjs.com/package/es6-promise), in your bundled application. If you're using a script tag to reference the Teams client library, you need to make sure the polyfill is included and initialized before the Teams client library is initialized.
 
-## Examples
+## Full Documentation and Examples
 
-Stay tuned for examples coming soon.
+While each interface, class, function, etc. includes compact developer documentation, full documentation about library usage include examples can be found [here](https://learn.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 ## Testing
 
