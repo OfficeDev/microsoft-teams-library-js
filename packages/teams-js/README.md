@@ -63,7 +63,7 @@ Teams client library depends on [`Promise`](https://developer.mozilla.org/en-US/
 
 ## Full Documentation and Examples
 
-While each interface, class, function, etc. includes compact developer documentation, full documentation about library usage including examples can be found [here](https://learn.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
+While each interface, class, function, etc. includes compact developer documentation, full documentation about library usage, including examples, can be found [here](https://learn.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 ## Testing
 
