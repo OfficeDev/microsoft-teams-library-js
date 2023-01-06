@@ -1345,17 +1345,17 @@ describe('meeting', () => {
 
   describe('requestAppAudioHandling', () => {
     it('should not allow call with null callback response', () => {
-      expect(() => meeting.requestAppAudioHandling(true, null, null)).toThrowError(
+      expect(() => meeting.requestAppAudioHandling(null, true, null)).toThrowError(
         '[requestAppAudioHandling] Callback response cannot be null',
       );
     });
     it('should not allow call with null callback mic mute handler', () => {
-      expect(() => meeting.requestAppAudioHandling(true, emptyCallBack, null)).toThrowError(
+      expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, null)).toThrowError(
         '[requestAppAudioHandling] Callback Mic mute state handler cannot be null',
       );
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.requestAppAudioHandling(true, emptyCallBack, emptyCallBack)).toThrowError(
+      expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, emptyCallBack)).toThrowError(
         'The library has not yet been initialized',
       );
     });
@@ -1377,11 +1377,11 @@ describe('meeting', () => {
             error: undefined,
           };
           meeting.requestAppAudioHandling(
-            true,
             (result: meeting.IRequestAppAudioHandlingSdkResponse) => {
               callbackCalled = true;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
+            true,
             emptyCallBack,
           );
 
@@ -1415,11 +1415,11 @@ describe('meeting', () => {
           };
 
           meeting.requestAppAudioHandling(
-            true,
             (result: meeting.IRequestAppAudioHandlingSdkResponse) => {
               callbackCalled = true;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
+            true,
             emptyCallBack,
           );
 
@@ -1442,7 +1442,7 @@ describe('meeting', () => {
         it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
-          expect(() => meeting.requestAppAudioHandling(true, emptyCallBack, emptyCallBack)).toThrowError(
+          expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, emptyCallBack)).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,

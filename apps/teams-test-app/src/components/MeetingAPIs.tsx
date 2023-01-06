@@ -342,7 +342,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     name: 'requestAppAudioHandling',
     title: 'App Handles the Audio channel',
     onClick: async (input: boolean, setResult: (arg0: string) => void) => {
-      const callbackResponse = (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse): void => {
+      const callback = (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse): void => {
         if (requestAppAudioHandlingSdkResponse.error) {
           setResult(JSON.stringify(requestAppAudioHandlingSdkResponse.error));
         } else {
@@ -356,7 +356,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() mic mute state changed: ' + micStatus);
         }
       };
-      meeting.requestAppAudioHandling(input, callbackResponse, callbackMicMuteStateChangedHandler);
+      meeting.requestAppAudioHandling(callback, input, callbackMicMuteStateChangedHandler);
       return '';
     },
     label: 'App handles audio',

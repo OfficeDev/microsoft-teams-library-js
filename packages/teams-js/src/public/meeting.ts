@@ -605,11 +605,11 @@ export namespace meeting {
    * @beta
    */
   export function requestAppAudioHandling(
+    callback: (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse) => void,
     isAppHandlingAudio: boolean,
-    callbackResponse: (requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse) => void,
     callbackMicMuteStateChangedHandler: (micStatus: boolean) => void,
   ): void {
-    if (!callbackResponse) {
+    if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
     }
     if (!callbackMicMuteStateChangedHandler) {
@@ -619,7 +619,7 @@ export namespace meeting {
     sendMessageToParent(
       'meeting.requestAppAudioHandling',
       [isAppHandlingAudio, callbackMicMuteStateChangedHandler],
-      callbackResponse,
+      callback,
     );
   }
 
