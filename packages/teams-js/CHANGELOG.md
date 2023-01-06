@@ -1,8 +1,16 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 04 Jan 2023 19:07:09 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jan 2023 04:15:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.7.1
+
+Fri, 06 Jan 2023 04:15:12 GMT
+
+### Patches
+
+- Reverted webpack globalObject: this
 
 ## 2.7.0
 
