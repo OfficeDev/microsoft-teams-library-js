@@ -174,11 +174,11 @@ export namespace video {
     const callbackHandler = (effectId: string | undefined): void => {
       Promise.resolve(callback(effectId))
         .then(() => {
-          sendMessageToParent('videoEffectReadiness', [true, effectId]);
+          sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
         })
         .catch((reason) => {
           // reason could be a string or an EffectFailureReason
-          sendMessageToParent('videoEffectReadiness', [false, effectId, reason]);
+          sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
         });
     };
 
