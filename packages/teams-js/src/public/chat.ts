@@ -14,7 +14,6 @@ interface OpenChatRequest {
    * An optional message used when initiating chat
    */
   message?: string;
-  foo: any;
 }
 
 /**
