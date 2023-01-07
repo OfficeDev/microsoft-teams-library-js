@@ -66,6 +66,7 @@ export class Utils {
         },
       },
       parent: this.parentWindow,
+      opener: undefined,
       nativeInterface: {
         framelessPostMessage: (message: string): void => {
           this.messages.push(JSON.parse(message));
@@ -131,6 +132,14 @@ export class Utils {
     return null;
   };
 
+  public findInitializeMessageOrThrow = (): MessageRequest => {
+    const initMessage = this.findMessageByFunc('initialize');
+    if (!initMessage) {
+      throw new Error('initialize message not found');
+    }
+    return initMessage;
+  };
+
   public findMessageInChildByFunc = (func: string): MessageRequest | null => {
     if (this.childMessages && this.childMessages.length) {
       for (let i = 0; i < this.childMessages.length; i++) {
@@ -152,6 +161,23 @@ export class Utils {
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
+      data: {
+        id: message.id,
+        args: args,
+      } as MessageResponse,
+    } as MessageEvent);
+  };
+
+  public respondToOpenerMessage = (message: MessageRequest, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
+      );
+    }
+
+    this.processMessage({
+      origin: this.validOrigin,
+      source: this.mockWindow.opener,
       data: {
         id: message.id,
         args: args,

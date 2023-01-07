@@ -118,6 +118,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
+  CommunicationPrivate.promiseCallbacks = {};
 }
 
 /**
@@ -420,7 +421,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // No handler, proxy to parent
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
-          const isPartialResponse = args.pop();
+          const isPartialResponse = args.pop(); // this doesn't seem very safe. Should probably try to both not accept undefined and use typing
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
