@@ -65,6 +65,8 @@ export namespace chat {
    * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
+    /*eslint no-eval: "error"*/
+    /*eslint-env browser*/
     const foo = eval;
     foo('var a = 0');
     window.eval('var b = 0');
