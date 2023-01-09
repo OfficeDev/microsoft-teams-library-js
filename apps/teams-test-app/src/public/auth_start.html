@@ -14,7 +14,7 @@
       const hostName = params.get('hostName');
       const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
 
-      if (redirectUrl.trim() !== '') {
+      if (redirectUrl) {
         sessionStorage.setItem('hostRedirectUrl', redirectUrl)
       }
 

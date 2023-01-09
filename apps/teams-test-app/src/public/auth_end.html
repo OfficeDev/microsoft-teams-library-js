@@ -13,7 +13,7 @@
       // Redirect back to Orange host
       if (method === 'deeplink') {
         const storedRedirectUrl = sessionStorage.getItem('hostRedirectUrl')
-        if (storedRedirectUrl && storedRedirectUrl.trim() !== '') {
+        if (storedRedirectUrl) {
           window.location.href = storedRedirectUrl.replace('{result}',result)
         } else if (hostName === 'Orange') {
           window.location.href = `msorange://testapp.com/auth_callback?authId=${authId}&result=${result}`;
