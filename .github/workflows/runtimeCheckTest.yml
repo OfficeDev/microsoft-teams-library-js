@@ -12,8 +12,8 @@ jobs:
   Get-Changed-Files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: tj-actions/changed-files@v34
+      - uses: actions/checkout@v3
+      - uses: tj-actions/changed-files@v35
         id: changed_files
       - name: Check if runtime.ts has been modified
         id: detect_runtime_change
