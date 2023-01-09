@@ -7,7 +7,7 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to open a share dialog for web content.
- * For more info, see {@link https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab}
+ * For more info, see {@link https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab Share to Teams from personal app or tab}
  */
 export namespace sharing {
   export const SharingAPIMessages = {
