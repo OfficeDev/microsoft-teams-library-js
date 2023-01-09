@@ -29,7 +29,6 @@ function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
 
 interface IRuntimeV1 extends IBaseRuntime {
   readonly apiVersion: 1;
-  readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
@@ -80,8 +79,6 @@ interface IRuntimeV1 extends IBaseRuntime {
 
 interface IRuntimeV2 extends IBaseRuntime {
   readonly apiVersion: 2;
-  readonly hostVersionsInfo?: HostVersionsInfo;
-  readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
@@ -271,7 +268,6 @@ export function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
  * Limited to Microsoft-internal use
  */
 export const upgradeChain: IRuntimeUpgrade[] = [
-  // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
   {
     versionToUpgradeFrom: 1,
     upgradeToNextVersion: (previousVersionRuntime: IRuntimeV1): IRuntimeV2 => {
