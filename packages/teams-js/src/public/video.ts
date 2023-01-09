@@ -203,26 +203,30 @@ export namespace video {
       }
 
       if (textureStreamAvailable()) {
-        const callbackForVideoStream = invokeCallbackForVideoStream(frameCallback);
-        registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
-          // when a new streamId is ready:
-          const { streamId } = ipcInfo;
-          console.log('video.startVideoExtensibilityVideoStream', streamId);
-          // todo: error handling
-          const videoTrack = await getInputVideoTrack(streamId);
-          console.log('videoTrack', videoTrack);
-          const generator = createProcessedStreamGenerator(videoTrack, callbackForVideoStream);
-          processedStream.getTracks().forEach((track) => {
-            track.stop();
-            processedStream.removeTrack(track);
+        try {
+          const callbackForVideoStream = invokeCallbackForVideoStream(frameCallback);
+          registerHandler('video.startVideoExtensibilityVideoStream', async (ipcInfo: IPCInfoT2) => {
+            // when a new streamId is ready:
+            const { streamId } = ipcInfo;
+            console.log('video.startVideoExtensibilityVideoStream', streamId);
+            // todo: error handling
+            const videoTrack = await getInputVideoTrack(streamId);
+            console.log('videoTrack', videoTrack);
+            const generator = createProcessedStreamGenerator(videoTrack, callbackForVideoStream);
+            // processedStream.getTracks().forEach((track) => {
+            //   track.stop();
+            //   processedStream.removeTrack(track);
+            // });
+            // processedStream.addTrack(generator);
+            // TODO: remove when code ready:
+            //drawCanvas('processed', processedStream);
+            //chrome.webview.postTextureStream(generator);
+            window['chrome']?.webview?.registerTextureStream(streamId, generator);
+            //drawCanvas('textureStream', await window['chrome']?.webview?.getTextureStream('streamId'));
           });
-          processedStream.addTrack(generator);
-          // TODO: remove when code ready:
-          drawCanvas('processed', processedStream);
-          //chrome.webview.postTextureStream(generator);
-          window['chrome']?.webview?.registerTextureStream('streamId', generator);
-          drawCanvas('textureStream', await window['chrome']?.webview?.getTextureStream('streamId'));
-        });
+        } catch (e) {
+          console.error(`debug: Error in registerForVideoFrameFuncGenerator: ${e}`);
+        }
       } else {
         const callbackForVideoFrame = invokeCallbackForVideoFrame(frameCallback, config);
         registerHandler(
@@ -285,7 +289,7 @@ export namespace video {
     console.log('getting video stream: ', streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId); // navigator.mediaDevices.getUserMedia({ video: true });
     // TODO: remove when code ready:
-    drawCanvas('origin', mediaStream);
+    //drawCanvas('origin', mediaStream);
 
     return mediaStream.getVideoTracks()[0];
   }
@@ -343,12 +347,11 @@ export namespace video {
 
             if (timestamp !== null) {
               invokeCallback(receivedFrame)
-                .then((frameProcessedByApp) => {
+                .then(async (frameProcessedByApp) => {
                   calculateFPS('processedFrame');
-                  receivedFrame.close();
                   //console.log('receved processed video frame', videoFrame);
                   const buffer = new ArrayBuffer(frameProcessedByApp.allocationSize());
-                  frameProcessedByApp.copyTo(buffer);
+                  await frameProcessedByApp.copyTo(buffer);
                   const processedFrame = new globalThis.VideoFrame(buffer, {
                     codedHeight: frameProcessedByApp.codedHeight,
                     codedWidth: frameProcessedByApp.codedWidth,
@@ -356,11 +359,13 @@ export namespace video {
                     timestamp: timestamp,
                   });
                   controller.enqueue(processedFrame);
+                  receivedFrame.close();
                   frameProcessedByApp.close();
 
                   stopProcessingAFrame();
                 })
                 .catch((error) => {
+                  console.log(`debug: error in generator: ${error}`);
                   notifyError(error);
                 });
             }
