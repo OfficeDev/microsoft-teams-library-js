@@ -9,7 +9,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  Get-Changed-Files:
+  Check-For-Changes-To-Runtime-File:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
