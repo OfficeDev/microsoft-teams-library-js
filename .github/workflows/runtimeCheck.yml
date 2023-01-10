@@ -1,37 +1,33 @@
 name: Check for runtime version changes
+
 on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
-  Get-Changed-Files:
+  Check-For-Changes-To-Runtime-File:
     runs-on: ubuntu-latest
-    outputs:
-      runtime_changed: ${{ steps.detect-runtime-change.outputs.runtime_changed }}
     steps:
-      - uses: jitterbit/get-changed-files@v1
+      - uses: actions/checkout@v3
+      - uses: tj-actions/changed-files@v35
         id: changed_files
       - name: Check if runtime.ts has been modified
         id: detect_runtime_change
         run: |
-          runtime_changed=false
-          for changed_file in ${{ steps.changed_files.outputs.all }}; do
+          runtime_changed='false'
+          for changed_file in ${{ steps.changed_files.outputs.all_changed_files }}; do
             if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
-              runtime_changed=true
+              runtime_changed='true'
             fi
           done
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
-
-  Comment-On-PR:
-    runs-on: ubuntu-latest
-    needs: Get-Changed-Files
-    if: ${{needs.Get-Changed-Files.outputs.runtime_changed}} == true
-    steps:
-      - uses: actions/checkout@v2
       - name: Comment on PR
+        if: steps.detect_runtime_change.outputs.runtime_changed == 'true'
         uses: mb2dev/github-action-comment-pull-request@1.0.0
         with:
           message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
