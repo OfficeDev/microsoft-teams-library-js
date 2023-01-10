@@ -1,0 +1,4 @@
+D:\a\_gdn\packages\node_modules\eslint\eslint.cmd --no-eslintrc --config D:\a\_gdn\packages\node_modules\eslint/node_modules/@microsoft/eslint-plugin-sdl/config/required.js --ext .js --ext .ts --ignore-pattern *.d.ts --format D:\a\_gdn\packages\node_modules\eslint\node_modules\@microsoft\eslint-formatter-sarif\sarif.js --no-ignore --output-file D:\a\1\.gdn\.r\eslint\001\eslint.sarif D:\a\1\s/**/*.{js,jsx,ts,tsx} -
+
+
+npm.cmd install eslint@7.32.0 typescript@4.3.2 @microsoft/eslint-plugin-sdl@0.1.7 eslint-plugin-react@7.24.0 eslint-plugin-security@1.4.0 @typescript-eslint/typescript-estree@4.27.0 @typescript-eslint/parser@4.27.0 @typescript-eslint/eslint-plugin@4.27.0 @microsoft/eslint-formatter-sarif@2.1.5 eslint-plugin-node@11.1.0 --prefix D:\a\_gdn\packages\node_modules\eslint --global
