@@ -358,7 +358,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() mic mute state changed: ' + micStatus);
         }
       };
-      meeting.requestAppAudioHandling(input, callback, callbackMicMuteStateChangedHandler);
+      meeting.requestAppAudioHandling(callback, input, callbackMicMuteStateChangedHandler);
       return '';
     },
     label: 'App handles audio',
