@@ -1368,17 +1368,17 @@ describe('meeting', () => {
 
           const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
             isHostAudioless: true,
-            error: undefined,
           };
 
           let callbackCalled = false;
-          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
+          let returnedSdkError: SdkError | null = null;
+          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null = {
             isHostAudioless: false,
-            error: undefined,
           };
           meeting.requestAppAudioHandling(
-            (result: meeting.IRequestAppAudioHandlingSdkResponse) => {
+            (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
+              returnedSdkError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
             true,
@@ -1389,34 +1389,38 @@ describe('meeting', () => {
             'meeting.requestAppAudioHandling',
           );
           expect(requestAppAudioHandlingMessage).not.toBeNull();
+
           const callbackId = requestAppAudioHandlingMessage.id;
           framelessPlatformMock.respondToMessage({
             data: {
               id: callbackId,
-              args: [requestAppAudioHandlingSdkResponse],
+              args: [null, requestAppAudioHandlingSdkResponse],
             },
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
+          expect(returnedSdkError).toBeNull();
+          expect(returnedRequestAppAudioHandlingSdkResponse).not.toBeNull();
           expect(returnedRequestAppAudioHandlingSdkResponse).toBe(requestAppAudioHandlingSdkResponse);
         });
 
         it('should throw if the requestAppAudioHandling message sends and fails', async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
+          let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
           const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
             isHostAudioless: false,
-            error: undefined,
           };
 
           let callbackCalled = false;
-          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
+          let returnedError: SdkError | null = null;
+          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null = {
             isHostAudioless: false,
-            error: { errorCode: ErrorCode.INTERNAL_ERROR },
           };
 
           meeting.requestAppAudioHandling(
-            (result: meeting.IRequestAppAudioHandlingSdkResponse) => {
+            (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
+              returnedError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
             true,
@@ -1427,14 +1431,16 @@ describe('meeting', () => {
             'meeting.requestAppAudioHandling',
           );
           expect(requestAppAudioHandlingMessage).not.toBeNull();
+
           const callbackId = requestAppAudioHandlingMessage.id;
           framelessPlatformMock.respondToMessage({
             data: {
               id: callbackId,
-              args: [requestAppAudioHandlingSdkResponse],
+              args: [requestError, requestAppAudioHandlingSdkResponse],
             },
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
+          expect(returnedError).toBe(requestError);
           expect(returnedRequestAppAudioHandlingSdkResponse).not.toBeNull();
           expect(returnedRequestAppAudioHandlingSdkResponse).toBe(requestAppAudioHandlingSdkResponse);
         });
