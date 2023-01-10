@@ -87,11 +87,10 @@ describe('Testing communication', () => {
         expect(communication.Communication.currentWindow.onNativeMessage).not.toBeUndefined();
       });
 
-      it('if there is a parent window that IS NOT self, no initialization message will be received, we will be in framed mode, and parentWindow will be set to the parent of Communication.currentWindow', async () => {
-        // This is an error scenario, but it is technically possible so documenting in unit test
+      it('if there is a parent window that IS NOT self, we will not send messages using onNativeMessage, will not register onNativeMessage, and Communication.parentWindow will be set to the parent of the curent window', async () => {
         expect.assertions(5);
+        utils.mockWindow.parent = utils.parentWindow;
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
-        utils.mockWindow.parent = { parentWindow: true };
 
         const initPromise = communication.initializeCommunication(undefined);
         try {
@@ -110,12 +109,11 @@ describe('Testing communication', () => {
         expect(communication.Communication.currentWindow.onNativeMessage).toBeUndefined();
       });
 
-      it('if there is a parent window that IS self, no initialization message will be received, we will be in framed mode, and parentWindow will be set to opener', async () => {
-        // This is an error scenario, but it is technically possible so documenting in unit test
+      it('if there is a parent window that IS self, we will not send messages using onNativeMessage, will not register onNativeMessage, and Communication.parentWindow will be set to the opener of the curent window', async () => {
         expect.assertions(5);
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
         utils.mockWindow.parent = utils.mockWindow;
-        utils.mockWindow.opener = { openerWindow: true };
+        utils.mockWindow.opener = utils.parentWindow;
 
         const initPromise = communication.initializeCommunication(undefined);
         try {
@@ -130,6 +128,21 @@ describe('Testing communication', () => {
         expect(GlobalVars.isFramelessWindow).toBeFalsy();
         expect(communication.Communication.parentWindow).toStrictEqual(utils.mockWindow.opener);
         expect(communication.Communication.currentWindow.onNativeMessage).toBeUndefined();
+      });
+
+      it('if there is a parent window that IS self and NO opener, we will send messages using onNativeMessage, will register onNativeMessage, and Communication.parentWindow will be undefined', async () => {
+        expect(utils.mockWindow.onNativeMessage).toBeUndefined();
+        utils.mockWindow.parent = utils.mockWindow;
+
+        const initPromise = communication.initializeCommunication(undefined);
+        const initMessage = utils.findInitializeMessageOrThrow();
+        utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
+
+        await initPromise;
+
+        expect(GlobalVars.isFramelessWindow).toBeTruthy();
+        expect(communication.Communication.parentWindow).toBeUndefined();
+        expect(communication.Communication.currentWindow.onNativeMessage).not.toBeUndefined();
       });
 
       it('should put sdk in frameless window mode', async () => {
@@ -273,6 +286,19 @@ describe('Testing communication', () => {
         expect(GlobalVars.isFramelessWindow).toBeFalsy();
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
         expect(communication.Communication.parentWindow).toStrictEqual(utils.mockWindow.opener);
+      });
+
+      it('should be in frameless mode when the parent window is self and there is no opener, and Communication.parentWindow should be set to undefined', async () => {
+        expect.assertions(3);
+
+        utils.mockWindow.opener = undefined;
+        utils.mockWindow.parent = communication.Communication.currentWindow.self;
+
+        communication.initializeCommunication(undefined);
+
+        expect(GlobalVars.isFramelessWindow).toBeTruthy();
+        expect(utils.mockWindow.onNativeMessage).not.toBeUndefined();
+        expect(communication.Communication.parentWindow).toBeUndefined();
       });
     });
   });
