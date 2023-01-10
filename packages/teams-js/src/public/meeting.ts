@@ -605,7 +605,7 @@ export namespace meeting {
       requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
     ) => void,
     isAppHandlingAudio: boolean,
-    callbackMicMuteStateChangedHandler: (micMuted: boolean) => void,
+    callbackMicMuteStateChangedHandler: (micState: IMicState) => void,
   ): void {
     if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');

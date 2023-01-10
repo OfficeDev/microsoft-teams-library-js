@@ -351,11 +351,13 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() succeeded: ' + JSON.stringify(requestAppAudioHandlingSdkResponse));
         }
       };
-      const callbackMicMuteStateChangedHandler = (micStatus: boolean): void => {
-        if (typeof micStatus !== 'boolean') {
-          throw new Error('micStatus should be boolean');
+      const callbackMicMuteStateChangedHandler = (micState: IMicState): void => {
+        if (!micState) {
+          throw new Error('micStatus should be IMicState');
+        } else if (micState.error) {
+          setResult('requestAppAudioHandling() mic state error: ' + JSON.stringify(micState.error));
         } else {
-          setResult('requestAppAudioHandling() mic mute state changed: ' + micStatus);
+          setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
         }
       };
       meeting.requestAppAudioHandling(callback, input, callbackMicMuteStateChangedHandler);
