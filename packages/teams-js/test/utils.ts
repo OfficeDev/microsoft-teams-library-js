@@ -168,7 +168,7 @@ export class Utils {
     } as MessageEvent);
   };
 
-  public respondToOpenerMessage = (message: MessageRequest, ...args: unknown[]): void => {
+  public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,

@@ -31,7 +31,7 @@ describe('Testing communication', () => {
         await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
       });
 
-      it('should receive valid initialize response from parent', async () => {
+      it('should receive valid initialize response from parent when there is no parent window but the window has a native interface', async () => {
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findInitializeMessageOrThrow();
 
@@ -61,7 +61,7 @@ describe('Testing communication', () => {
         expect(communication.Communication.currentWindow).toStrictEqual(utils.mockWindow);
       });
 
-      it('should set Communication.parentWindow to undefined', async () => {
+      it('should set Communication.parentWindow to undefined when the current window has a parent that is undefined', async () => {
         expect(utils.mockWindow.parent).toBeUndefined();
 
         const initPromise = communication.initializeCommunication(undefined);
@@ -74,7 +74,7 @@ describe('Testing communication', () => {
         expect(communication.Communication.parentWindow).toBeUndefined();
       });
 
-      it('should set window.onNativeMessage for handling responses from the parent', async () => {
+      it('should set window.onNativeMessage for handling responses when the current window has a parent that is undefined', async () => {
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
 
         const initPromise = communication.initializeCommunication(undefined);
@@ -145,7 +145,7 @@ describe('Testing communication', () => {
         expect(communication.Communication.currentWindow.onNativeMessage).not.toBeUndefined();
       });
 
-      it('should put sdk in frameless window mode', async () => {
+      it('should put sdk in frameless window mode when the current window has a parent that is undefined', async () => {
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findInitializeMessageOrThrow();
 
@@ -197,13 +197,15 @@ describe('Testing communication', () => {
         GlobalVars.isFramelessWindow = false;
       });
 
-      it('should reject if no parent window', async () => {
+      it('should reject if no parent window and current window does not have nativeInterface defined', async () => {
+        // In this case, because Communication.currentWindow is being initialized to undefined we fall back to the actual
+        // window object created by jest, which does not have nativeInterface defined on it
         app._initialize(undefined);
         const initPromise = communication.initializeCommunication(undefined);
         await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
       });
 
-      it('should receive valid initialize response from parent', async () => {
+      it('should receive valid initialize response from parent when currentWindow has a parent with postMessage defined', async () => {
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findInitializeMessageOrThrow();
 
@@ -219,7 +221,7 @@ describe('Testing communication', () => {
         expect(initializeResponse).toStrictEqual(expectedResponse);
       });
 
-      it('should set Communication.currentWindow to the value of window', async () => {
+      it('should set Communication.currentWindow to the value that was passed to app._initialize', async () => {
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findInitializeMessageOrThrow();
 
@@ -280,7 +282,7 @@ describe('Testing communication', () => {
 
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findInitializeMessageOrThrow();
-        utils.respondToOpenerMessage(initMessage, FrameContexts.content);
+        utils.respondToMessageAsOpener(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(GlobalVars.isFramelessWindow).toBeFalsy();
