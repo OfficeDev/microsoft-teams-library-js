@@ -1,6 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { FrameContexts } from '../../src/public';
-import { _uninitialize } from '../../src/public/publicAPIs';
+import { app, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
@@ -26,9 +25,9 @@ describe('settings', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
+    if (app._uninitialize) {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-      _uninitialize();
+      app._uninitialize();
     }
   });
 
