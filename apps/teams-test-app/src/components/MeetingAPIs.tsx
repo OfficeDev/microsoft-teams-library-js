@@ -336,6 +336,11 @@ interface IMicState {
   error?: SdkError;
 }
 
+interface RequestAppAudioHandlingParams {
+  isAppHandlingAudio: boolean;
+  callbackMicMuteStateChangedHandler: (micState: IMicState) => void;
+}
+
 const RequestAppAudioHandling = (): React.ReactElement =>
   ApiWithCheckboxInput({
     name: 'requestAppAudioHandling',
@@ -360,7 +365,13 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
         }
       };
-      meeting.requestAppAudioHandling(callback, input, callbackMicMuteStateChangedHandler);
+
+      const requestAppAudioHandlingParams: RequestAppAudioHandlingParams = {
+        isAppHandlingAudio: input,
+        callbackMicMuteStateChangedHandler: callbackMicMuteStateChangedHandler,
+      };
+
+      meeting.requestAppAudioHandling(requestAppAudioHandlingParams, callback);
       return '';
     },
     label: 'App handles audio',

@@ -1345,19 +1345,28 @@ describe('meeting', () => {
 
   describe('requestAppAudioHandling', () => {
     it('should not allow call with null callback response', () => {
-      expect(() => meeting.requestAppAudioHandling(null, true, null)).toThrowError(
-        '[requestAppAudioHandling] Callback response cannot be null',
-      );
+      expect(() =>
+        meeting.requestAppAudioHandling(
+          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+          null,
+        ),
+      ).toThrowError('[requestAppAudioHandling] Callback response cannot be null');
     });
     it('should not allow call with null callback mic mute handler', () => {
-      expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, null)).toThrowError(
-        '[requestAppAudioHandling] Callback Mic mute state handler cannot be null',
-      );
+      expect(() =>
+        meeting.requestAppAudioHandling(
+          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: null },
+          emptyCallBack,
+        ),
+      ).toThrowError('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     });
     it('should not allow calls before initialization', () => {
-      expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, emptyCallBack)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() =>
+        meeting.requestAppAudioHandling(
+          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+          emptyCallBack,
+        ),
+      ).toThrowError('The library has not yet been initialized');
     });
 
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -1376,13 +1385,12 @@ describe('meeting', () => {
             isHostAudioless: false,
           };
           meeting.requestAppAudioHandling(
+            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
             (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
               returnedSdkError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
-            true,
-            emptyCallBack,
           );
 
           const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
@@ -1418,13 +1426,12 @@ describe('meeting', () => {
           };
 
           meeting.requestAppAudioHandling(
+            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
             (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
               returnedError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
             },
-            true,
-            emptyCallBack,
           );
 
           const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
@@ -1448,7 +1455,12 @@ describe('meeting', () => {
         it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
-          expect(() => meeting.requestAppAudioHandling(emptyCallBack, true, emptyCallBack)).toThrowError(
+          expect(() =>
+            meeting.requestAppAudioHandling(
+              { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+              emptyCallBack,
+            ),
+          ).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,

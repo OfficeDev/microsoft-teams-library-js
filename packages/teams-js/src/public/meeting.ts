@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
@@ -233,6 +233,11 @@ export namespace meeting {
      * error object in case there is a failure
      */
     error?: SdkError;
+  }
+
+  export interface RequestAppAudioHandlingParams {
+    isAppHandlingAudio: boolean;
+    callbackMicMuteStateChangedHandler: (micState: IMicState) => void;
   }
 
   /**
@@ -591,44 +596,62 @@ export namespace meeting {
    * Ext App will handle the Audio(Mic & Speaker). Teams to go Audio less (No Audio)
    *
    * @throws standard parameter validation error
-   * @param isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
-   *    false - Audio transferred to Teams and Teams to restore the audio.
-   * @param callbackMicMuteStateChangedHandler - Callback contains mic status param.
+   * @param requestAppAudioHandlingParams - RequestAppAudioHandlingParams interface, and contains
+   *   isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
+   *     false - Audio transferred to Teams and Teams to restore the audio.
+   *   callbackMicMuteStateChangedHandler - Callback contains mic status param.
    * @param callback - Callback contains IRequestAppAudioHandlingSdkResponse param, error or operation result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    * @beta
    */
   export function requestAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
     callback: (
       error: SdkError | null,
       requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
     ) => void,
-    isAppHandlingAudio: boolean,
-    callbackMicMuteStateChangedHandler: (micState: IMicState) => void,
   ): void {
     if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
     }
-    if (!callbackMicMuteStateChangedHandler) {
+    if (!requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler) {
       throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
-    const callbackInternal = (
+    const callbackInternalRequest = (
       error: SdkError | null,
       requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
     ): void => {
-      callback(error, requestAppAudioHandlingSdkResponse);
       if (!error) {
-        registerHandler('meeting.micStateChanged', callbackMicMuteStateChangedHandler);
+        registerHandler('meeting.micStateChanged', requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler);
       }
+      callback(error, requestAppAudioHandlingSdkResponse);
     };
 
-    if (isAppHandlingAudio) {
-      sendMessageToParent('meeting.requestAppAudioHandling', [isAppHandlingAudio], callbackInternal);
+    const callbackInternalStop = (
+      error: SdkError | null,
+      requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
+    ): void => {
+      if (doesHandlerExist('meeting.micStateChanged')) {
+        removeHandler('meeting.micStateChanged');
+      }
+      callback(error, requestAppAudioHandlingSdkResponse);
+    };
+
+    if (requestAppAudioHandlingParams.isAppHandlingAudio) {
+      sendMessageToParent(
+        'meeting.requestAppAudioHandling',
+        [requestAppAudioHandlingParams.isAppHandlingAudio],
+        callbackInternalRequest,
+      );
     } else {
-      sendMessageToParent('meeting.requestAppAudioHandling', [isAppHandlingAudio]);
+      sendMessageToParent(
+        'meeting.requestAppAudioHandling',
+        [requestAppAudioHandlingParams.isAppHandlingAudio],
+        callbackInternalStop,
+      );
     }
   }
 
