@@ -1,8 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
-import { FrameContexts, pages } from '../../src/public';
+import { app, FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
-import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -22,8 +21,8 @@ describe('MicrosoftTeams-Navigation', () => {
   });
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
