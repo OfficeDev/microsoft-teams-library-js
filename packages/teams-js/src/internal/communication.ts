@@ -57,7 +57,10 @@ interface InitializeResponse {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
+export function initializeCommunication(
+  validMessageOrigins: string[] | undefined,
+  runtimeVersion?: number,
+): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
@@ -92,7 +95,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     Communication.parentOrigin = '*';
     return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
       version,
-      latestRuntimeApiVersion,
+      runtimeVersion || latestRuntimeApiVersion,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };

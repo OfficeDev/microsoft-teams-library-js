@@ -23,7 +23,13 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
+import {
+  applyRuntimeConfig,
+  generateBackCompatRuntimeConfig,
+  IBaseRuntime,
+  latestRuntimeApiVersion,
+  runtime,
+} from './runtime';
 import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
@@ -536,7 +542,35 @@ export namespace app {
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
     if (!inServerSideRenderingEnvironment()) {
       return runWithTimeout(
-        () => initializeHelper(validMessageOrigins),
+        () => initializeHelper(validMessageOrigins, latestRuntimeApiVersion),
+        initializationTimeoutInMs,
+        new Error('SDK initialization timed out.'),
+      );
+    } else {
+      const initializeLogger = appLogger.extend('initialize');
+      // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+      // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+      initializeLogger('window object undefined at initialization');
+      return Promise.resolve();
+    }
+  }
+
+  /**
+   * @hidden
+   * Undocumented function used to request a specific runtime version from the host
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function initializeWithRuntimeVersion(runtimeVersion: number, validMessageOrigins?: string[]): Promise<void> {
+    if (runtimeVersion > latestRuntimeApiVersion) {
+      throw new Error(
+        `The runtime version specified is not supported. The latest supported version is ${latestRuntimeApiVersion}.`,
+      );
+    }
+    if (!inServerSideRenderingEnvironment()) {
+      return runWithTimeout(
+        () => initializeHelper(validMessageOrigins, runtimeVersion),
         initializationTimeoutInMs,
         new Error('SDK initialization timed out.'),
       );
@@ -550,7 +584,7 @@ export namespace app {
   }
 
   const initializeHelperLogger = appLogger.extend('initializeHelper');
-  function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
+  function initializeHelper(validMessageOrigins?: string[], runtimeVersion?: number): Promise<void> {
     return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
@@ -558,7 +592,7 @@ export namespace app {
         GlobalVars.initializeCalled = true;
 
         Handlers.initializeHandlers();
-        GlobalVars.initializePromise = initializeCommunication(validMessageOrigins).then(
+        GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, runtimeVersion).then(
           ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
             GlobalVars.frameContext = context;
             GlobalVars.hostClientType = clientType;

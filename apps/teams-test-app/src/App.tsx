@@ -52,6 +52,10 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize();
   } else {
+    if (urlParams.has('runtimeVersion')) {
+      const runtimeVersion = Number(urlParams.get('runtimeVersion'));
+      app.initializeWithRuntimeVersion(runtimeVersion);
+    }
     app.initialize();
   }
 }
