@@ -1,6 +1,6 @@
 # Updating the runtime object
 
-This document refers to the Runtime interface defined in packages/teams-js/src/public/runtime.ts. The runtime object describes the capabilities and configuration of the host and is versioned so that the teams-js library may parse older versions of the runtime. The following information describes when and how the Runtime version should should be updated.
+This document refers to the Runtime interface defined in packages/teams-js/src/public/runtime.ts. The runtime object describes the capabilities and configuration of the host and is versioned so that the teams-js library may parse older versions of the runtime. The following information describes when and how the Runtime version should be updated.
 
 ## What constitutes a major version change?
 
