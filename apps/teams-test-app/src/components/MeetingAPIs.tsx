@@ -327,20 +327,6 @@ const SetOptions = (): React.ReactElement =>
     },
   });
 
-interface IRequestAppAudioHandlingSdkResponse {
-  isHostAudioless: boolean;
-}
-
-interface IMicState {
-  isMicMuted?: boolean;
-  error?: SdkError;
-}
-
-interface RequestAppAudioHandlingParams {
-  isAppHandlingAudio: boolean;
-  callbackMicMuteStateChangedHandler: (micState: IMicState) => void;
-}
-
 const RequestAppAudioHandling = (): React.ReactElement =>
   ApiWithCheckboxInput({
     name: 'requestAppAudioHandling',
@@ -348,7 +334,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     onClick: async (input: boolean, setResult: (arg0: string) => void) => {
       const callback = (
         error: SdkError | null,
-        requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
+        requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null,
       ): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -356,7 +342,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() succeeded: ' + JSON.stringify(requestAppAudioHandlingSdkResponse));
         }
       };
-      const callbackMicMuteStateChangedHandler = (micState: IMicState): void => {
+      const callbackMicMuteStateChangedHandler = (micState: meeting.IMicState): void => {
         if (!micState) {
           throw new Error('micStatus should be IMicState');
         } else if (micState.error) {
@@ -366,7 +352,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         }
       };
 
-      const requestAppAudioHandlingParams: RequestAppAudioHandlingParams = {
+      const requestAppAudioHandlingParams: meeting.RequestAppAudioHandlingParams = {
         isAppHandlingAudio: input,
         callbackMicMuteStateChangedHandler: callbackMicMuteStateChangedHandler,
       };
@@ -378,7 +364,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
   });
 
 const SendMicMuteStatusResponse = (): React.ReactElement =>
-  ApiWithTextInput<IMicState>({
+  ApiWithTextInput<meeting.IMicState>({
     name: 'sendMicMuteStatusResponse',
     title: 'Send Mic mute status response acknowledgement',
     onClick: async (input) => {
