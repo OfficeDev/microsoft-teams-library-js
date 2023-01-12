@@ -1375,18 +1375,18 @@ describe('meeting', () => {
         it(`should successfully return isHostAudioless=true for app audio handling request. context: ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
-          const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
+          const requestAppAudioHandlingSdkResponse: meeting.RequestAppAudioHandlingSdkResponse = {
             isHostAudioless: true,
           };
 
           let callbackCalled = false;
           let returnedSdkError: SdkError | null = null;
-          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null = {
+          let returnedRequestAppAudioHandlingSdkResponse: meeting.RequestAppAudioHandlingSdkResponse | null = {
             isHostAudioless: false,
           };
           meeting.requestAppAudioHandling(
             { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
+            (error: SdkError | null, result: meeting.RequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
               returnedSdkError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
@@ -1415,19 +1415,19 @@ describe('meeting', () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
-          const requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse = {
+          const requestAppAudioHandlingSdkResponse: meeting.RequestAppAudioHandlingSdkResponse = {
             isHostAudioless: false,
           };
 
           let callbackCalled = false;
           let returnedError: SdkError | null = null;
-          let returnedRequestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null = {
+          let returnedRequestAppAudioHandlingSdkResponse: meeting.RequestAppAudioHandlingSdkResponse | null = {
             isHostAudioless: false,
           };
 
           meeting.requestAppAudioHandling(
             { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: meeting.IRequestAppAudioHandlingSdkResponse | null) => {
+            (error: SdkError | null, result: meeting.RequestAppAudioHandlingSdkResponse | null) => {
               callbackCalled = true;
               returnedError = error;
               returnedRequestAppAudioHandlingSdkResponse = result;
@@ -1472,7 +1472,7 @@ describe('meeting', () => {
 
   describe('sendMicMuteStatusResponse', () => {
     it('should not allow calls before initialization', () => {
-      let micState: meeting.IMicState = { isMicMuted: undefined, error: undefined };
+      let micState: meeting.MicState = { isMicMuted: undefined, error: undefined };
       expect(() => meeting.sendMicMuteStatusResponse(micState)).toThrowError(
         'The library has not yet been initialized',
       );

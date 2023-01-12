@@ -215,7 +215,7 @@ export namespace meeting {
    *
    * @beta
    */
-  export interface IRequestAppAudioHandlingSdkResponse {
+  export interface RequestAppAudioHandlingSdkResponse {
     /** Indicates whether host should handle audio*/
     isHostAudioless: boolean;
   }
@@ -225,19 +225,23 @@ export namespace meeting {
    *
    * @beta
    */
-  export interface IMicState {
-    /** Indicates the mute status of the mic*/
+  export interface MicState {
+    /**
+     * Indicates the mute status of the mic.
+     * Null indicates that error had occurred.
+     */
     isMicMuted?: boolean;
 
     /**
-     * error object in case there is a failure
+     * error object in case there is a failure.
+     * Null indicites no error and isMicMuted has boolean value
      */
     error?: SdkError;
   }
 
   export interface RequestAppAudioHandlingParams {
     isAppHandlingAudio: boolean;
-    callbackMicMuteStateChangedHandler: (micState: IMicState) => void;
+    callbackMicMuteStateChangedHandler: (micState: MicState) => void;
   }
 
   /**
@@ -593,14 +597,18 @@ export namespace meeting {
   }
 
   /**
-   * Ext App will handle the Audio(Mic & Speaker). Teams to go Audio less (No Audio)
+   * Have the external application handle audio (mic & speaker) and turn off host audio.
+   * set isAppHandlingAudio=true in params, will set the Host(Teams) audio to go audioless
+   *   Register the mic mute status change events, and App will be receive the events.
+   * set isAppHandlingAudio=false in params, will restore the Host(Teams) audio
+   *   Deregister the mic mute status change events and App will not be receive the events.
    *
    * @throws standard parameter validation error
    * @param requestAppAudioHandlingParams - RequestAppAudioHandlingParams interface, and contains
    *   isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
    *     false - Audio transferred to Teams and Teams to restore the audio.
    *   callbackMicMuteStateChangedHandler - Callback contains mic status param.
-   * @param callback - Callback contains IRequestAppAudioHandlingSdkResponse param, error or operation result.
+   * @param callback - Callback contains RequestAppAudioHandlingSdkResponse param, error or operation result.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    * @beta
@@ -609,7 +617,7 @@ export namespace meeting {
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
     callback: (
       error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
+      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
     ) => void,
   ): void {
     if (!callback) {
@@ -620,9 +628,23 @@ export namespace meeting {
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
 
+    if (requestAppAudioHandlingParams.isAppHandlingAudio) {
+      startAppAudioHandling(requestAppAudioHandlingParams, callback);
+    } else {
+      stopAppAudioHandling(requestAppAudioHandlingParams, callback);
+    }
+  }
+
+  function startAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (
+      error: SdkError | null,
+      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
+    ) => void,
+  ): void {
     const callbackInternalRequest = (
       error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
+      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
     ): void => {
       if (!error) {
         registerHandler('meeting.micStateChanged', requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler);
@@ -630,9 +652,23 @@ export namespace meeting {
       callback(error, requestAppAudioHandlingSdkResponse);
     };
 
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalRequest,
+    );
+  }
+
+  function stopAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (
+      error: SdkError | null,
+      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
+    ) => void,
+  ): void {
     const callbackInternalStop = (
       error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: IRequestAppAudioHandlingSdkResponse | null,
+      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
     ): void => {
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
@@ -640,28 +676,27 @@ export namespace meeting {
       callback(error, requestAppAudioHandlingSdkResponse);
     };
 
-    if (requestAppAudioHandlingParams.isAppHandlingAudio) {
-      sendMessageToParent(
-        'meeting.requestAppAudioHandling',
-        [requestAppAudioHandlingParams.isAppHandlingAudio],
-        callbackInternalRequest,
-      );
-    } else {
-      sendMessageToParent(
-        'meeting.requestAppAudioHandling',
-        [requestAppAudioHandlingParams.isAppHandlingAudio],
-        callbackInternalStop,
-      );
-    }
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalStop,
+    );
   }
 
   /**
    * Send Mic mute status response acknowledgement for callbackMicMuteStateChangedHandler
+   * Required to be sent whenever Mic callback is called by host.
+   * Lets the host know that Mic state change event is successfully handled by app or not
+   * Should be used along with requestAppAudioHandling(), and inside the callback mic state change handler.
    *
-   * @param micState - Mic mute ack
+   * @param micState - Status of Mic operation
+   *   isMicMuted - boolean to indicate the current status of Mic.
+   *     Null indicates an error occurred and 'error' has the details
+   *   error - Error details of Mic mute operation failure.
+   *     Null indicates no error and isMicMuted has the status of Mic.
    * @beta
    */
-  export function sendMicMuteStatusResponse(micState: IMicState): void {
+  export function sendMicMuteStatusResponse(micState: MicState): void {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState]);
   }

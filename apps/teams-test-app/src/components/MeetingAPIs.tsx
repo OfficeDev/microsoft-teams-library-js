@@ -334,7 +334,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     onClick: async (input: boolean, setResult: (arg0: string) => void) => {
       const callback = (
         error: SdkError | null,
-        requestAppAudioHandlingSdkResponse: meeting.IRequestAppAudioHandlingSdkResponse | null,
+        requestAppAudioHandlingSdkResponse: meeting.RequestAppAudioHandlingSdkResponse | null,
       ): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -342,9 +342,9 @@ const RequestAppAudioHandling = (): React.ReactElement =>
           setResult('requestAppAudioHandling() succeeded: ' + JSON.stringify(requestAppAudioHandlingSdkResponse));
         }
       };
-      const callbackMicMuteStateChangedHandler = (micState: meeting.IMicState): void => {
+      const callbackMicMuteStateChangedHandler = (micState: meeting.MicState): void => {
         if (!micState) {
-          throw new Error('micStatus should be IMicState');
+          throw new Error('micStatus should be MicState');
         } else if (micState.error) {
           setResult('requestAppAudioHandling() mic state error: ' + JSON.stringify(micState.error));
         } else {
@@ -364,7 +364,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
   });
 
 const SendMicMuteStatusResponse = (): React.ReactElement =>
-  ApiWithTextInput<meeting.IMicState>({
+  ApiWithTextInput<meeting.MicState>({
     name: 'sendMicMuteStatusResponse',
     title: 'Send Mic mute status response acknowledgement',
     onClick: async (input) => {
