@@ -35,35 +35,6 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app._initialize app._initialize(hostWindow: any): void} instead.
- *
- * @hidden
- * Undocumented function used to set a mock window for unit tests
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-// eslint-disable-next-line
-export function _initialize(hostWindow: any): void {
-  app._initialize(hostWindow);
-}
-
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app._uninitialize app._uninitialize(): void} instead.
- *
- * @hidden
- * Undocumented function used to clear state between unit tests
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function _uninitialize(): void {
-  app._uninitialize();
-}
-
-/**
- * @deprecated
  * As of 2.0.0, please use {@link teamsCore.enablePrintCapability teamsCore.enablePrintCapability(): void} instead.
  *
  * Enable print capability to support printing page using Ctrl+P and cmd+P
