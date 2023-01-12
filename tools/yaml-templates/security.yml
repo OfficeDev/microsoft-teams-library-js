@@ -8,6 +8,7 @@ steps:
       Configuration: 'required'
       TargetType: 'eslint'
       TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      Parser: '@typescript-eslint/parser'
       ParserOptions: |
         sourceType:module
         ecmaVersion:2018
