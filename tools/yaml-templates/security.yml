@@ -9,6 +9,7 @@ steps:
       TargetType: 'eslint'
       TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
       ErrorLevel: 'warn'
+      ExitOnFatalError: true
 
   - task: CredScan@3
     displayName: 'Run Credential Scanner'
