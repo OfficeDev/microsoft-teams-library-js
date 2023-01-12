@@ -8,6 +8,7 @@ steps:
       Configuration: 'required'
       TargetType: 'eslint'
       TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      ParserOptions: 'sourceType:module'
       ErrorLevel: 'warn'
       ExitOnFatalError: true
 
