@@ -5,6 +5,7 @@ import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
+  fastForwardRuntime,
   generateBackCompatRuntimeConfig,
   IBaseRuntime,
   isRuntimeInitialized,
@@ -36,24 +37,55 @@ describe('runtime', () => {
   describe('runtime versioning', () => {
     it('latestRuntimeVersion should match Runtime interface apiVersion', () => {
       const runtime: Runtime = {
-        apiVersion: 1,
+        apiVersion: 2,
         supports: {},
       };
       expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
     });
 
-    it('applyRuntime fast-forwards v0 runtime config to latest version', () => {
-      const runtimeV0 = {
-        apiVersion: 0,
+    it('applyRuntime fast-forwards v2 runtime config to latest version', () => {
+      const runtimeV2 = {
+        apiVersion: 2,
         isLegacyTeams: false,
         supports: {
-          calendarV0: {},
+          dialog: {
+            card: {
+              bot: {},
+            },
+            url: {
+              bot: {},
+            },
+            update: {},
+          },
         },
       };
-      applyRuntimeConfig(runtimeV0);
+      applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
-      // eslint-disable-next-line strict-null-checks/all
-      expect(isRuntimeInitialized(runtime) && runtime.supports.calendar).toEqual({});
+      if (isRuntimeInitialized(runtime)) {
+        // eslint-disable-next-line strict-null-checks/all
+        expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
+      }
+    });
+
+    it('applyRuntime fast-forwards v1 to v2 runtime config to latest version', () => {
+      const runtimeV1 = {
+        apiVersion: 1,
+        isLegacyTeams: false,
+        supports: {
+          dialog: {
+            bot: {},
+            update: {},
+          },
+        },
+      };
+
+      const fastForwardConfig = fastForwardRuntime(runtimeV1);
+      expect(fastForwardConfig).toEqual({
+        apiVersion: 2,
+        hostVersionsInfo: undefined,
+        isLegacyTeams: false,
+        supports: { dialog: { card: undefined, url: { bot: {}, update: {} }, update: {} } },
+      });
     });
 
     it('applyRuntime handles runtime config with string apiVersion', () => {
