@@ -40,6 +40,10 @@ export namespace authentication {
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
+   * @remarks
+   * Be aware that the authentication flow must start and end on the same domain.
+   * If it doesn't, success and failure messages can't be returned to the window that initiated the call.
+   *
    * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
    *
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
@@ -53,6 +57,10 @@ export namespace authentication {
    * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
    * Initiates an authentication request, which opens a new window with the specified settings.
+   *
+   * @remarks
+   * Be aware that the authentication flow must start and end on the same domain.
+   * If it doesn't, success and failure messages can't be returned to the window that initiated the call.
    *
    * @param authenticateParameters - The parameters for the authentication request.
    *
