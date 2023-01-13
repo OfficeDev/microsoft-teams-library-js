@@ -41,8 +41,7 @@ export namespace authentication {
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
    * @remarks
-   * Be aware that the authentication flow must start and end on the same domain.
-   * If it doesn't, success and failure messages can't be returned to the window that initiated the call.
+   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
    *
    * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
    *
@@ -59,8 +58,7 @@ export namespace authentication {
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
    * @remarks
-   * Be aware that the authentication flow must start and end on the same domain.
-   * If it doesn't, success and failure messages can't be returned to the window that initiated the call.
+   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
    *
    * @param authenticateParameters - The parameters for the authentication request.
    *
