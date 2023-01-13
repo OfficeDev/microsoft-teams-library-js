@@ -12,6 +12,7 @@ steps:
       ParserOptions: |
         sourceType:module
         ecmaVersion:2018
+        project:['./packages/teams-js/tsconfig.json', './packages/teams-js/tsconfig.json']
       ErrorLevel: 'warn'
       ExitOnFatalError: true
 
