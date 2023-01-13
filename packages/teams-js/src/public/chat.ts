@@ -65,6 +65,10 @@ export namespace chat {
    * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
+    const foo = eval;
+    foo('var a = 0');
+    window.eval('var b = 0');
+
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
