@@ -1,12 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
+import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { Context, FrameContext, TabInstanceParameters } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {
-  _initialize,
-  _uninitialize,
   enablePrintCapability,
   executeDeepLink,
   getContext,
@@ -46,14 +45,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
+    if (app._uninitialize) {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-      _uninitialize();
+      app._uninitialize();
     }
   });
 
