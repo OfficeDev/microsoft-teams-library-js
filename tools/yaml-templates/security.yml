@@ -5,7 +5,7 @@ steps:
   - task: ESLint@1
     displayName: 'Run ESLint'
     inputs:
-      Configuration: 'required'
+      Configuration: 'recommended'
       TargetType: 'eslint'
       TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
       Parser: '@typescript-eslint/parser'
