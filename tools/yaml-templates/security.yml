@@ -12,7 +12,7 @@ steps:
       ParserOptions: |
         sourceType:module
         ecmaVersion:2018
-        project:['$(Build.SourcesDirectory)/packages/teams-js/tsconfig.json', '$(Build.SourcesDirectory)/packages/teams-js/tsconfig.json']
+        project:['./s/packages/teams-js/tsconfig.json', './s/packages/teams-js/tsconfig.json']
       ErrorLevel: 'warn'
       ExitOnFatalError: true
 
