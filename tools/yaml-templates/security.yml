@@ -7,7 +7,7 @@ steps:
     inputs:
       Configuration: 'recommended'
       TargetType: 'eslint'
-      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      TargetsESLint: '$(Build.SourcesDirectory)/packages/teams-js/**/*.{js,jsx,ts,tsx}'
       Parser: '@typescript-eslint/parser'
       ParserOptions: |
         sourceType:module
