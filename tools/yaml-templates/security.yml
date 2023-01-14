@@ -7,12 +7,11 @@ steps:
     inputs:
       Configuration: 'recommended'
       TargetType: 'eslint'
-      TargetsESLint: '$(Build.SourcesDirectory)/packages/teams-js/**/*.{js,jsx,ts,tsx}'
+      TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
       Parser: '@typescript-eslint/parser'
       ParserOptions: |
         sourceType:module
         ecmaVersion:2018
-        project:['./s/packages/teams-js/tsconfig.json', './s/packages/teams-js/tsconfig.json']
       ErrorLevel: 'warn'
       ExitOnFatalError: true
 
