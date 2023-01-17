@@ -211,16 +211,6 @@ export namespace meeting {
   }
 
   /**
-   * Interface for audio handling response
-   *
-   * @beta
-   */
-  export interface RequestAppAudioHandlingSdkResponse {
-    /** Indicates whether host should handle audio*/
-    isHostAudioless: boolean;
-  }
-
-  /**
    * Interface for mic state change
    *
    * @beta
@@ -615,10 +605,7 @@ export namespace meeting {
    */
   export function requestAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (
-      error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
-    ) => void,
+    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
   ): void {
     if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
@@ -637,19 +624,13 @@ export namespace meeting {
 
   function startAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (
-      error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
-    ) => void,
+    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
   ): void {
-    const callbackInternalRequest = (
-      error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
-    ): void => {
+    const callbackInternalRequest = (error: SdkError | null, isHostAudioless: boolean | null): void => {
       if (!error) {
         registerHandler('meeting.micStateChanged', requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler);
       }
-      callback(error, requestAppAudioHandlingSdkResponse);
+      callback(error, isHostAudioless);
     };
 
     sendMessageToParent(
@@ -661,19 +642,13 @@ export namespace meeting {
 
   function stopAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (
-      error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
-    ) => void,
+    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
   ): void {
-    const callbackInternalStop = (
-      error: SdkError | null,
-      requestAppAudioHandlingSdkResponse: RequestAppAudioHandlingSdkResponse | null,
-    ): void => {
+    const callbackInternalStop = (error: SdkError | null, isHostAudioless: boolean | null): void => {
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
       }
-      callback(error, requestAppAudioHandlingSdkResponse);
+      callback(error, isHostAudioless);
     };
 
     sendMessageToParent(
