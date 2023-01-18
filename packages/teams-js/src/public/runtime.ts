@@ -5,11 +5,13 @@ import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
 
 export interface IBaseRuntime {
   readonly apiVersion: number;
+  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports?: {};
 }
@@ -17,9 +19,9 @@ export interface IBaseRuntime {
 /**
  * Latest runtime interface version
  */
-export type Runtime = IRuntimeV1;
+export type Runtime = IRuntimeV2;
 
-export const latestRuntimeApiVersion = 1;
+export const latestRuntimeApiVersion = 2;
 
 function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion;
@@ -76,18 +78,62 @@ interface IRuntimeV1 extends IBaseRuntime {
   };
 }
 
-// This interface is included for testing and as an example of how to implement a runtime version upgrade
-// it may be removed when there is a real version upgrade implemented and tested
-interface IRuntimeV0 extends IBaseRuntime {
-  readonly apiVersion: 0;
+interface IRuntimeV2 extends IBaseRuntime {
+  readonly apiVersion: 2;
+  readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
-    readonly calendarV0?: {};
+    readonly barCode?: {};
+    readonly calendar?: {};
+    readonly call?: {};
+    readonly chat?: {};
+    readonly conversations?: {};
+    readonly dialog?: {
+      readonly card?: {
+        readonly bot?: {};
+      };
+      readonly url?: {
+        readonly bot?: {};
+      };
+      readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
+    readonly location?: {};
+    readonly logs?: {};
+    readonly mail?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly monetization?: {};
+    readonly notifications?: {};
+    readonly pages?: {
+      readonly appButton?: {};
+      readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
+      readonly fullTrust?: {};
+      readonly tabs?: {};
+    };
+    readonly people?: {};
+    readonly permissions?: {};
+    readonly profile?: {};
+    readonly remoteCamera?: {};
+    readonly search?: {};
+    readonly sharing?: {};
+    readonly stageView?: {};
+    readonly teams?: {
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
+    };
+    readonly teamsCore?: {};
+    readonly video?: {};
+    readonly webStorage?: {};
   };
 }
-
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
@@ -122,7 +168,8 @@ export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime 
 export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
-  apiVersion: 1,
+  apiVersion: 2,
+  hostVersionsInfo: undefined,
   isLegacyTeams: true,
   supports: {
     appInstallDialog: {},
@@ -131,7 +178,9 @@ export const teamsRuntimeConfig: Runtime = {
     chat: {},
     conversations: {},
     dialog: {
-      bot: {},
+      url: {
+        bot: {},
+      },
       update: {},
     },
     logs: {},
@@ -197,7 +246,7 @@ interface IRuntimeUpgrade {
  * @internal
  * Limited to Microsoft-internal use
  */
-function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
+export function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
   let runtime = outdatedRuntime;
   if (runtime.apiVersion < latestRuntimeApiVersion) {
     upgradeChain.forEach((upgrade) => {
@@ -224,14 +273,21 @@ function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
 export const upgradeChain: IRuntimeUpgrade[] = [
   // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
   {
-    versionToUpgradeFrom: 0,
-    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV0): IRuntimeV1 => {
+    versionToUpgradeFrom: 1,
+    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV1): IRuntimeV2 => {
       return {
-        apiVersion: 1,
+        apiVersion: 2,
+        hostVersionsInfo: undefined,
         isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: {
           ...previousVersionRuntime.supports,
-          calendar: previousVersionRuntime.supports.calendarV0,
+          dialog: previousVersionRuntime.supports.dialog
+            ? {
+                card: undefined,
+                url: previousVersionRuntime.supports.dialog,
+                update: previousVersionRuntime.supports.dialog?.update,
+              }
+            : undefined,
         },
       };
     },
@@ -289,7 +345,7 @@ const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBack
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): IRuntimeV1 {
+export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): Runtime {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
   let newSupports = { ...teamsRuntimeConfig.supports };
@@ -312,8 +368,8 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
     }
   });
 
-  const backCompatRuntimeConfig: IRuntimeV1 = {
-    apiVersion: 1,
+  const backCompatRuntimeConfig: Runtime = {
+    apiVersion: 2,
     isLegacyTeams: true,
     supports: newSupports,
   };
@@ -355,7 +411,7 @@ export function setUnitializedRuntime(): void {
  * Limited to Microsoft-internal use
  */
 export const _minRuntimeConfigToUninitialize: Runtime = {
-  apiVersion: 1,
+  apiVersion: 2,
   supports: {
     pages: {
       appButton: {},
