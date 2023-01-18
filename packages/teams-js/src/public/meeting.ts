@@ -241,10 +241,40 @@ export namespace meeting {
     isMicMuted: boolean;
 
     /**
-     * error string in case there is a failure.
+     * error in case there is a failure.
      * Null indicites no error and isMicMuted has boolean value
      */
-    errorMessage?: string;
+    error?: MeetingFailedResponse;
+  }
+
+  export interface MeetingFailedResponse {
+    /**
+     * The reason for the failure
+     */
+    reason: MeetingFailedReason;
+    /**
+     * This property is currently unused.
+     */
+    message?: string;
+  }
+
+  export enum MeetingFailedReason {
+    /**
+     * Mic mute failed
+     */
+    MicMuteFailed = 'MicMuteFailed',
+    /**
+     * Mic unmute failed
+     */
+    MicUnmuteFailed = 'MicUnmuteFailed',
+    /**
+     * The operation timed out
+     */
+    Timeout = 'Timeout',
+    /**
+     * The operation failed for a different reason
+     */
+    Other = 'Other',
   }
 
   export interface RequestAppAudioHandlingParams {

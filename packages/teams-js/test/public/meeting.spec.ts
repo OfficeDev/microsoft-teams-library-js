@@ -1540,7 +1540,7 @@ describe('meeting', () => {
     });
 
     it('should not allow calls before initialization', () => {
-      let micState: meeting.MicStateResponse = { isMicMuted: true, errorMessage: undefined };
+      let micState: meeting.MicStateResponse = { isMicMuted: true, error: undefined };
       expect(() => meeting.sendMicMuteStatusResponse(micState)).toThrowError(
         'The library has not yet been initialized',
       );
