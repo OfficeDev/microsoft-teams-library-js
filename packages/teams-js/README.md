@@ -65,6 +65,19 @@ Teams client library depends on [`Promise`](https://developer.mozilla.org/en-US/
 
 While each interface, class, function, etc. includes compact developer documentation, full documentation about library usage, including examples, can be found [here](https://learn.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
+### Tags in Comments
+
+Across this part of the codebase there are a few different tags on the namespaces and functions. Here is a brief description of what each of them means.
+
+**@beta**
+Namespaces and functions marked as @beta are under active development and you are discouraged from calling or otherwise depending on them in production environments. What functions exist, what they return, and what parameters they require may change with little or no notice. If the @beta tag is applied to a namespace then you should assume that all functions and namespaces within that namespace are also subject to change with no warning.
+
+**@hidden**
+This tag means that no public facing documentation will be generated for the namespace or function. Generally this indicates that developers should not call the function directly.
+
+**@internal**
+This tag means that the function in question should only be used by Microsoft developers and applications. We do not support or guarantee any functionality of these functions when called outside of those parameters.
+
 ## Testing
 
 The [Teams Test App](https://aka.ms/teams-test-app) is used to validate the Teams client library APIs.
