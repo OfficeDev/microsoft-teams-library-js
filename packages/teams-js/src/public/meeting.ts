@@ -218,15 +218,33 @@ export namespace meeting {
   export interface MicState {
     /**
      * Indicates the mute status of the mic.
-     * Null indicates that error had occurred.
      */
-    isMicMuted?: boolean;
+    isMicMuted: boolean;
 
     /**
      * error object in case there is a failure.
-     * Null indicites no error and isMicMuted has boolean value
+     * Null indicates no error and isMicMuted has boolean value
      */
     error?: SdkError;
+  }
+
+  /**
+   * Interface for mic state change response
+   *
+   * @beta
+   */
+  export interface MicStateResponse {
+    /**
+     * Indicates the mute status of the mic.
+     * Null indicates that error had occurred.
+     */
+    isMicMuted: boolean;
+
+    /**
+     * error string in case there is a failure.
+     * Null indicites no error and isMicMuted has boolean value
+     */
+    errorMessage?: string;
   }
 
   export interface RequestAppAudioHandlingParams {
@@ -598,7 +616,7 @@ export namespace meeting {
    *   isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
    *     false - Audio transferred to Teams and Teams to restore the audio.
    *   callbackMicMuteStateChangedHandler - Callback contains mic status param.
-   * @param callback - Callback contains RequestAppAudioHandlingSdkResponse param, error or operation result.
+   * @param callback - Callback contains error and operation result parameters.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    * @beta
@@ -666,13 +684,18 @@ export namespace meeting {
    *
    * @param micState - Status of Mic operation
    *   isMicMuted - boolean to indicate the current status of Mic.
-   *     Null indicates an error occurred and 'error' has the details
-   *   error - Error details of Mic mute operation failure.
+   *   errorMessage - Error details of Mic mute operation failure.
    *     Null indicates no error and isMicMuted has the status of Mic.
+   *     errorMessage can either contain an error string, or null
+   * @example - Mic operation success - { "isMicMuted": "true", "errorMessage": undefined }
+   *  - Mic operation failure - { "isMicMuted": "true", "errorMessage": "Mic mute operation failure" }
    * @beta
    */
-  export function sendMicMuteStatusResponse(micState: MicState): void {
+  export function sendMicMuteStatusResponse(micStateResponse: MicStateResponse): void {
+    if (!micStateResponse) {
+      throw new Error('[sendMicMuteStatusResponse] MicStateResponse cannot be null');
+    }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState]);
+    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micStateResponse]);
   }
 }
