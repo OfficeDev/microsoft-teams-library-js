@@ -70,7 +70,7 @@ While each interface, class, function, etc. includes compact developer documenta
 Across this part of the codebase there are a few different tags on the namespaces and functions. Here is a brief description of what each of them means.
 
 **@beta**
-Namespaces and functions marked as @beta are under active development and you are discouraged from calling or otherwise depending on them in production environments. What functions exist, what they return, and what parameters they require may change with little or no notice. If the @beta tag is applied to a namespace then you should assume that all functions and namespaces within that namespace are also subject to change with no warning.
+Namespaces and functions marked as @beta are under active development and not intended to be called from production environments. What functions exist, what they return, and what parameters they require may change with little or no notice. If the @beta tag is applied to a namespace then you should assume that all functions and namespaces within that namespace are also subject to change with no warning.
 
 **@hidden**
 This tag means that no public facing documentation will be generated for the namespace or function. Generally this indicates that developers should not call the function directly.
