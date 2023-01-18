@@ -1,8 +1,9 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
-import { TaskModuleDimension } from '../../src/public/constants';
+import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
 
@@ -24,6 +25,7 @@ describe('tasks', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
+    utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
     if (app._uninitialize) {
       app._uninitialize();
     }
@@ -41,6 +43,11 @@ describe('tasks', () => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should pass along the taskInfo correctly when card is specified. ${context} context`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: { bot: {} }, update: {} } },
+          });
 
           const taskInfo: TaskInfo = {
             card: 'someCard',
@@ -51,7 +58,6 @@ describe('tasks', () => {
             url: 'someUrl',
             completionBotId: 'someCompletionBotId',
           };
-
           tasks.startTask(taskInfo, () => {
             return;
           });
@@ -80,6 +86,7 @@ describe('tasks', () => {
 
         it(`should pass along the taskInfo correctly when completionBotid is specified. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
 
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
@@ -101,6 +108,11 @@ describe('tasks', () => {
 
         it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
 
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
@@ -121,7 +133,11 @@ describe('tasks', () => {
 
         it(`should Provide default Size if taskInfo doesn't have length or width. ${context} context`, async () => {
           await utils.initializeWithContext(context);
-
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
             height: TaskModuleDimension.Large,
@@ -142,7 +158,11 @@ describe('tasks', () => {
 
         it(`should invoke callback with result. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
-
+          utils.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
           let callbackCalled = false;
           const taskInfo: TaskInfo = {};
           tasks.startTask(taskInfo, (err, result) => {

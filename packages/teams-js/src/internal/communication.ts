@@ -118,6 +118,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
+  CommunicationPrivate.promiseCallbacks = {};
 }
 
 /**
