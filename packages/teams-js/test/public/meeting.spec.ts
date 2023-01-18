@@ -1411,11 +1411,11 @@ describe('meeting', () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
-          const requestIsHostAudioless: boolean | null = false;
+          const requestIsHostAudioless: boolean | null = null;
 
           let callbackCalled = false;
           let returnedError: SdkError | null = null;
-          let returnedIsHostAudioless: boolean | null = false;
+          let returnedIsHostAudioless: boolean | null = null;
 
           meeting.requestAppAudioHandling(
             { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
@@ -1440,7 +1440,6 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
           expect(returnedError).toBe(requestError);
-          expect(returnedIsHostAudioless).not.toBeNull();
           expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
         });
 
@@ -1483,11 +1482,11 @@ describe('meeting', () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
-          const requestIsHostAudioless: boolean | null = false;
+          const requestIsHostAudioless: boolean | null = null;
 
           let callbackCalled = false;
           let returnedError: SdkError | null = null;
-          let returnedIsHostAudioless: boolean | null = false;
+          let returnedIsHostAudioless: boolean | null = null;
 
           meeting.requestAppAudioHandling(
             { isAppHandlingAudio: false, callbackMicMuteStateChangedHandler: emptyCallBack },
@@ -1512,7 +1511,6 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
           expect(returnedError).toBe(requestError);
-          expect(returnedIsHostAudioless).not.toBeNull();
           expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
         });
       } else {
