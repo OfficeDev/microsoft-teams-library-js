@@ -645,6 +645,9 @@ export namespace meeting {
     callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
   ): void {
     const callbackInternalRequest = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
       if (!error) {
         registerHandler('meeting.micStateChanged', requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler);
       }
@@ -663,6 +666,9 @@ export namespace meeting {
     callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
   ): void {
     const callbackInternalStop = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
       }
