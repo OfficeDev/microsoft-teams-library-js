@@ -733,7 +733,7 @@ describe('Testing communication', () => {
     it('calls validateOrigin', () => {
       communication.Communication.currentWindow = window;
       jest.spyOn(utils, 'validateOrigin').mockReturnValue(true);
-      const messageOrigin = 'http://someorigin';
+      const messageOrigin = 'https://someorigin';
       const messageOriginURL = new URL(messageOrigin);
       const result = communication.shouldProcessMessage({} as Window, messageOrigin);
       expect(utils.validateOrigin).toBeCalled();

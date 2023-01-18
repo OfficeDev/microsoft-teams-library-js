@@ -79,7 +79,13 @@ export class Utils {
       close: function (): void {
         return;
       },
-      setInterval: (handler: TimerHandler, timeout: number): number => setInterval(handler, timeout),
+      /* For setInterval, we are intentionally not allowing the TimerHandler type since it allows for either Function or string and string
+         would be insecure (it would be tantamount to allowing eval, which is insecure and not needed here). For our testing usage, there's
+         no need to allow strings.
+         We then are intentionally using Function (and not something more specific) since setInterval can use accept any type of function
+         and we are intentionally mocking the standard setInterval behavior here. As such, the ban-types rule is being intentionally disabled here. */
+      /* eslint-disable-next-line @typescript-eslint/ban-types */
+      setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as Window;
 
