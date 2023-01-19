@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Replacing yarn in package.json",
+  "packageName": "@microsoft/teams-js",
+  "email": "shrshinde@microsoft.com",
+  "dependentChangeType": "patch"
+}
