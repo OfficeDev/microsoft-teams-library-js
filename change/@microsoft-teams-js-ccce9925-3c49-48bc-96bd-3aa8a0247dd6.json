@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Changing user facing documentation associated with `meeting.ts`",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}
