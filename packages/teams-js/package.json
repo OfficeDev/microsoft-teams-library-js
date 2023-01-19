@@ -11,11 +11,11 @@
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
-    "build": "yarn lint && webpack && yarn docs:validate",
+    "build": "pnpm lint && webpack && pnpm docs:validate",
     "clean": "rimraf ./dist",
-    "docs": "yarn typedoc",
-    "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",
-    "lint": "yarn eslint ./src ./test --max-warnings 0 --fix --ext .ts",
+    "docs": "pnpm typedoc",
+    "docs:validate": "pnpm typedoc --treatWarningsAsErrors --emit none",
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },

@@ -5,9 +5,9 @@
   "description": "Sample app leveraging teams js v2 for multi-host experience",
   "version": "0.0.1",
   "scripts": {
-    "build": "yarn lint && webpack",
+    "build": "pnpm lint && webpack",
     "clean": "rimraf ./build",
-    "lint": "yarn eslint ./src --max-warnings 0 --fix --ext .tsx",
+    "lint": "pnpm eslint ./src --max-warnings 0 --fix --ext .tsx",
     "start": "webpack serve"
   },
   "dependencies": {

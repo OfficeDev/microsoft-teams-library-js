@@ -15,7 +15,7 @@ dts/
 .vs/
 
 # Test App gitignore areas
-yarn-error.log
+pnpm-error.log
 
 # bundle analysis folders
 /common/*
