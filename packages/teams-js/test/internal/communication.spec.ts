@@ -668,6 +668,147 @@ describe('Testing communication', () => {
       expect(response2).toStrictEqual([actionName2]);
     });
   });
+  describe('sendAndHandleStatusAndReason', () => {
+    let utils: Utils = new Utils();
+    const actionName = 'test';
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw correct error if first returned value from host is false', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleStatusAndReason(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const errorMessage = 'this message should show up in the error';
+      utils.respondToMessage(sentMessage, false, errorMessage);
+
+      await expect(messagePromise).rejects.toThrowError(errorMessage);
+    });
+
+    it('should not throw an error if first returned value from host is true', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleStatusAndReason(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const errorMessage = 'this message should show up in the error';
+      utils.respondToMessage(sentMessage, true, errorMessage);
+
+      await expect(messagePromise).resolves.toBeUndefined();
+    });
+  });
+  describe('sendAndHandleStatusAndReasonWithDefaultError', () => {
+    let utils: Utils = new Utils();
+    const actionName = 'test';
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw error from host if first returned value from host is false and host provides a custom error', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const defaultErrorMessage = 'This is the default error message';
+      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        actionName,
+        defaultErrorMessage,
+      );
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const errorMessage = 'this message should show up in the error';
+      utils.respondToMessage(sentMessage, false, errorMessage);
+
+      await expect(messagePromise).rejects.toThrowError(errorMessage);
+    });
+
+    it('should throw the default error passed in to the function if first returned value from host is false and host does not provide a custom error', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const defaultErrorMessage = 'This is the default error message';
+      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        actionName,
+        defaultErrorMessage,
+      );
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const errorMessage = 'this message should show up in the error';
+      utils.respondToMessage(sentMessage, false);
+
+      await expect(messagePromise).rejects.toThrowError(defaultErrorMessage);
+    });
+    it('should not throw an error if first returned value from host is true', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(actionName, 'default error');
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const errorMessage = 'this message should show up in the error';
+      utils.respondToMessage(sentMessage, true, errorMessage);
+
+      await expect(messagePromise).resolves.toBeUndefined();
+    });
+    it('should pass all args to host', async () => {
+      expect.assertions(2);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        actionName,
+        'default error',
+        'arg1',
+        'arg2',
+        'arg3',
+        'arg4',
+      );
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      expect(sentMessage?.args?.length).toBe(4);
+      const zero = sentMessage?.args ? sentMessage?.args[0] : 'test';
+      expect(zero).toStrictEqual('arg1');
+    });
+  });
   describe('processMessage', () => {
     it('fail if message has a missing data property', () => {
       const event = { badData: '' } as unknown as DOMMessageEvent;
