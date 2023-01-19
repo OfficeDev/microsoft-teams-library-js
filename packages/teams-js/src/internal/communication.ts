@@ -108,8 +108,11 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
  * Limited to Microsoft-internal use
  */
 export function uninitializeCommunication(): void {
-  Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  if (Communication.currentWindow) {
+    Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  }
 
+  Communication.currentWindow = null;
   Communication.parentWindow = null;
   Communication.parentOrigin = null;
   Communication.childWindow = null;
