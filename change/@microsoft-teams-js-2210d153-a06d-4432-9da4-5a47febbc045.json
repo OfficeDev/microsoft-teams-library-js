@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "V1 getContext() call should call into hub sdk directly",
+  "packageName": "@microsoft/teams-js",
+  "email": "magli@microsoft.com",
+  "dependentChangeType": "patch"
+}
