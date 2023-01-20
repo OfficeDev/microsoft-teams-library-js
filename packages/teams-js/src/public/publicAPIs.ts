@@ -1,3 +1,4 @@
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -63,11 +64,7 @@ export function print(): void {
  */
 export function getContext(callback: (context: Context) => void): void {
   ensureInitializeCalled();
-  app.getContext().then((context: app.Context) => {
-    if (callback) {
-      callback(transformAppContextToLegacyContext(context));
-    }
-  });
+  sendMessageToParent('getContext', callback);
 }
 
 /**
@@ -315,99 +312,4 @@ export function initializeWithFrameContext(
   validMessageOrigins?: string[],
 ): void {
   pages.initializeWithFrameContext(frameContext, callback, validMessageOrigins);
-}
-
-/**
- * Transforms the app.Context object received to the legacy global Context object
- * @param appContext - The app.Context object to be transformed
- * @returns The transformed legacy global Context object
- */
-function transformAppContextToLegacyContext(appContext: app.Context): Context {
-  const context: Context = {
-    // actionInfo
-    actionInfo: appContext.actionInfo,
-
-    // app
-    locale: appContext.app.locale,
-    appSessionId: appContext.app.sessionId,
-    theme: appContext.app.theme,
-    appIconPosition: appContext.app.iconPositionVertical,
-    osLocaleInfo: appContext.app.osLocaleInfo,
-    parentMessageId: appContext.app.parentMessageId,
-    userClickTime: appContext.app.userClickTime,
-    userFileOpenPreference: appContext.app.userFileOpenPreference,
-    appLaunchId: appContext.app.appLaunchId,
-
-    // app.host
-    hostClientType: appContext.app.host.clientType,
-    sessionId: appContext.app.host.sessionId,
-    ringId: appContext.app.host.ringId,
-
-    // page
-    entityId: appContext.page.id,
-    frameContext: appContext.page.frameContext,
-    subEntityId: appContext.page.subPageId,
-    isFullScreen: appContext.page.isFullScreen,
-    isMultiWindow: appContext.page.isMultiWindow,
-    sourceOrigin: appContext.page.sourceOrigin,
-
-    // user
-    userObjectId: appContext.user !== undefined ? appContext.user.id : undefined,
-    isCallingAllowed: appContext.user !== undefined ? appContext.user.isCallingAllowed : undefined,
-    isPSTNCallingAllowed: appContext.user !== undefined ? appContext.user.isPSTNCallingAllowed : undefined,
-    userLicenseType: appContext.user !== undefined ? appContext.user.licenseType : undefined,
-    loginHint: appContext.user !== undefined ? appContext.user.loginHint : undefined,
-    userPrincipalName: appContext.user !== undefined ? appContext.user.userPrincipalName : undefined,
-
-    // user.tenant
-    tid:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.id
-          : undefined
-        : undefined,
-    tenantSKU:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.teamsSku
-          : undefined
-        : undefined,
-
-    // channel
-    channelId: appContext.channel !== undefined ? appContext.channel.id : undefined,
-    channelName: appContext.channel !== undefined ? appContext.channel.displayName : undefined,
-    channelRelativeUrl: appContext.channel !== undefined ? appContext.channel.relativeUrl : undefined,
-    channelType: appContext.channel !== undefined ? appContext.channel.membershipType : undefined,
-    defaultOneNoteSectionId: appContext.channel !== undefined ? appContext.channel.defaultOneNoteSectionId : undefined,
-    hostTeamGroupId: appContext.channel !== undefined ? appContext.channel.ownerGroupId : undefined,
-    hostTeamTenantId: appContext.channel !== undefined ? appContext.channel.ownerTenantId : undefined,
-
-    // chat
-    chatId: appContext.chat !== undefined ? appContext.chat.id : undefined,
-
-    // meeting
-    meetingId: appContext.meeting !== undefined ? appContext.meeting.id : undefined,
-
-    // sharepoint
-    sharepoint: appContext.sharepoint,
-
-    // team
-    teamId: appContext.team !== undefined ? appContext.team.internalId : undefined,
-    teamName: appContext.team !== undefined ? appContext.team.displayName : undefined,
-    teamType: appContext.team !== undefined ? appContext.team.type : undefined,
-    groupId: appContext.team !== undefined ? appContext.team.groupId : undefined,
-    teamTemplateId: appContext.team !== undefined ? appContext.team.templateId : undefined,
-    isTeamArchived: appContext.team !== undefined ? appContext.team.isArchived : undefined,
-    userTeamRole: appContext.team !== undefined ? appContext.team.userRole : undefined,
-
-    // sharepointSite
-    teamSiteUrl: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteUrl : undefined,
-    teamSiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteDomain : undefined,
-    teamSitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSitePath : undefined,
-    teamSiteId: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteId : undefined,
-    mySitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySitePath : undefined,
-    mySiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySiteDomain : undefined,
-  };
-
-  return context;
 }
