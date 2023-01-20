@@ -715,6 +715,7 @@ describe('Testing communication', () => {
 
       await expect(messagePromise).resolves.toBeUndefined();
     });
+
     it('should pass all args to host', async () => {
       expect.assertions(3);
       communication.initializeCommunication(undefined);
@@ -801,6 +802,7 @@ describe('Testing communication', () => {
 
       await expect(messagePromise).resolves.toBeUndefined();
     });
+
     it('should pass all args to host', async () => {
       expect.assertions(3);
       communication.initializeCommunication(undefined);
@@ -816,6 +818,110 @@ describe('Testing communication', () => {
       }
     });
   });
+
+  describe('sendAndHandleSdkError', () => {
+    let utils: Utils = new Utils();
+    const actionName = 'test';
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw SdkError if one is returned from host', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleSdkError(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      const sdkError = { errorCode: 1, message: 'SdkError Message' };
+      utils.respondToMessage(sentMessage, sdkError, 'result value');
+
+      await messagePromise.catch((e) => expect(e).toStrictEqual(sdkError));
+    });
+
+    it('should throw true if first value returned from host is true', async () => {
+      // this is a bug that should be fixed
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleSdkError(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      utils.respondToMessage(sentMessage, true, 'result value');
+
+      await messagePromise.catch((e) => expect(e).toStrictEqual(true));
+    });
+
+    it('should return the second parameter returned from the host if undefined is returned from the host as the first parameter', async () => {
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleSdkError(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      // eslint-disable-next-line strict-null-checks/all
+      utils.respondToMessage(sentMessage, undefined, 'result value');
+
+      await messagePromise.then((value) => expect(value).toBe('result value'));
+    });
+
+    it('should return the second parameter returned from the host if false is returned from the host as the first parameter', async () => {
+      // this is a bug that should be fixed
+      expect.assertions(1);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      const messagePromise = communication.sendAndHandleSdkError(actionName);
+
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+
+      utils.respondToMessage(sentMessage, false, 'result value');
+
+      await messagePromise.then((value) => expect(value).toBe('result value'));
+    });
+
+    it('should pass all args to host', async () => {
+      expect.assertions(3);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      communication.sendAndHandleSdkError(actionName, 'arg1', 'arg2', 'arg3');
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage?.args) {
+        expect(sentMessage?.args[0]).toStrictEqual('arg1');
+        expect(sentMessage?.args[1]).toStrictEqual('arg2');
+        expect(sentMessage?.args[2]).toStrictEqual('arg3');
+      }
+    });
+  });
+
   describe('processMessage', () => {
     it('fail if message has a missing data property', () => {
       const event = { badData: '' } as unknown as DOMMessageEvent;
