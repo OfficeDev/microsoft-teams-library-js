@@ -251,30 +251,11 @@ export namespace meeting {
     /**
      * The reason for the failure
      */
-    reason: MeetingFailedReason;
+    reason: string;
     /**
      * This property is currently unused.
      */
     message?: string;
-  }
-
-  export enum MeetingFailedReason {
-    /**
-     * Mic mute failed
-     */
-    MicMuteFailed = 'MicMuteFailed',
-    /**
-     * Mic unmute failed
-     */
-    MicUnmuteFailed = 'MicUnmuteFailed',
-    /**
-     * The operation timed out
-     */
-    Timeout = 'Timeout',
-    /**
-     * The operation failed for a different reason
-     */
-    Other = 'Other',
   }
 
   export interface RequestAppAudioHandlingParams {
