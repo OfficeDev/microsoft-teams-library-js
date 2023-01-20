@@ -715,6 +715,20 @@ describe('Testing communication', () => {
 
       await expect(messagePromise).resolves.toBeUndefined();
     });
+    it('should pass all args to host', async () => {
+      expect.assertions(3);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
+
+      communication.sendAndHandleStatusAndReason(actionName, 'arg1', 'arg2', 'arg3');
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage?.args) {
+        expect(sentMessage?.args[0]).toStrictEqual('arg1');
+        expect(sentMessage?.args[1]).toStrictEqual('arg2');
+        expect(sentMessage?.args[2]).toStrictEqual('arg3');
+      }
+    });
   });
   describe('sendAndHandleStatusAndReasonWithDefaultError', () => {
     let utils: Utils = new Utils();
@@ -787,17 +801,20 @@ describe('Testing communication', () => {
 
       await expect(messagePromise).resolves.toBeUndefined();
     });
-    // it('should pass all args to host', async () => {
-    //   expect.assertions(1);
-    //   communication.initializeCommunication(undefined);
-    //   const initializeMessage = utils.findInitializeMessageOrThrow();
-    //   utils.respondToMessage(initializeMessage);
+    it('should pass all args to host', async () => {
+      expect.assertions(3);
+      communication.initializeCommunication(undefined);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
 
-    //   const sentMessage = utils.findMessageByFunc(actionName);
-    //   // expect(sentMessage?.args?.length).toBe(4);
-    //   const zero = sentMessage?.args ? sentMessage?.args[0] : 'test';
-    //   expect(zero).toStrictEqual('arg1');
-    // });
+      communication.sendAndHandleStatusAndReasonWithDefaultError(actionName, 'default error', 'arg1', 'arg2', 'arg3');
+      const sentMessage = utils.findMessageByFunc(actionName);
+      if (sentMessage?.args) {
+        expect(sentMessage?.args[0]).toStrictEqual('arg1');
+        expect(sentMessage?.args[1]).toStrictEqual('arg2');
+        expect(sentMessage?.args[2]).toStrictEqual('arg3');
+      }
+    });
   });
   describe('processMessage', () => {
     it('fail if message has a missing data property', () => {
