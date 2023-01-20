@@ -160,7 +160,7 @@ describe('Testing communication', () => {
         /**
          * This is an interesting difference from the framed version.
          * For whatever reason, parentOrigin is not updated as part of handling the initialization response because
-         * {@link communication.processMessage} is never called, which in turn never calls {@link utils.updateRelationships}
+         * communication.processMessage is never called, which in turn never calls communication.updateRelationships
          */
         const initPromise = communication.initializeCommunication(undefined);
         const initMessage = utils.findMessageByFunc('initialize');
@@ -414,24 +414,19 @@ describe('Testing communication', () => {
 
     it('unresolved message callbacks should not be triggered after communication has been uninitialized', () => {
       app._initialize(utils.mockWindow);
-      GlobalVars.isFramelessWindow = false;
-      communication.Communication.parentWindow = utils.mockWindow.parent;
-      communication.Communication.parentOrigin = utils.validOrigin;
-      communication.Communication.currentWindow = utils.mockWindow;
+      communication.initializeCommunication(undefined);
       let callbackWasCalled = false;
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      utils.respondToMessage(initializeMessage);
 
       communication.sendMessageToParent('testAction', () => {
         callbackWasCalled = true;
       });
+      const tempProcessMessage = utils.processMessage;
       communication.uninitializeCommunication();
-      const secondMessage = utils.findMessageByFunc('testAction');
-      communication.processMessage({
-        originalEvent: { originalEvent: {} as DOMMessageEvent, func: '' },
-        func: '',
-        data: { id: secondMessage?.id, args: [] },
-        source: communication.Communication.parentWindow,
-        origin: utils.mockWindow.location.origin,
-      });
+      utils.processMessage = tempProcessMessage;
+
+      utils.respondToMessage({ id: 1, func: 'testAction' }, false);
 
       expect(callbackWasCalled).toBeFalsy();
     });
@@ -439,22 +434,15 @@ describe('Testing communication', () => {
     it('unresolved message promises should not be triggered after communication has been uninitialized', async () => {
       expect.assertions(1);
       app._initialize(utils.mockWindow);
-      GlobalVars.isFramelessWindow = false;
-      communication.Communication.parentWindow = utils.mockWindow.parent;
-      communication.Communication.parentOrigin = utils.validOrigin;
-      communication.Communication.currentWindow = utils.mockWindow;
+      communication.initializeCommunication(undefined);
 
       const messageParent = communication.sendMessageToParentAsync('testAction');
 
+      const tempProcessMessage = utils.processMessage;
       communication.uninitializeCommunication();
-      const secondMessage = utils.findMessageByFunc('testAction');
-      communication.processMessage({
-        originalEvent: { originalEvent: {} as DOMMessageEvent, func: '' },
-        func: '',
-        data: { id: secondMessage?.id, args: [] },
-        source: communication.Communication.parentWindow,
-        origin: utils.mockWindow.location.origin,
-      });
+      utils.processMessage = tempProcessMessage;
+
+      utils.respondToMessage({ id: 1, func: 'testAction' }, false);
 
       messageParent.then(() => expect(true).toBeTruthy());
       expect(true).toBeTruthy();
@@ -1082,49 +1070,6 @@ describe('Testing communication', () => {
       }
     });
   });
-
-  describe('processMessage', () => {
-    it('fail if message has a missing data property', () => {
-      const event = { badData: '' } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if message is empty', () => {
-      const event = {} as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if data property is not an object', () => {
-      const event = { data: '' } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if message has random data', () => {
-      const event = { badData: '', notAnOrigin: 'blah' } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if data is undefined', () => {
-      const event = { data: undefined } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if data is null', () => {
-      const event = { data: null } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if data is undefined', () => {
-      const event = { data: undefined } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-    it('fail if data is null', () => {
-      const event = { data: null } as unknown as DOMMessageEvent;
-      const result = communication.processMessage(event);
-      expect(result).toBeUndefined();
-    });
-  });
   describe('shouldProcessMessage', () => {
     it('fail if message source is same window ', () => {
       communication.Communication.currentWindow = window;
@@ -1144,7 +1089,6 @@ describe('Testing communication', () => {
       const result = communication.shouldProcessMessage({} as Window, messageOrigin);
       expect(result).toBe(true);
     });
-
     it('calls validateOrigin', () => {
       communication.Communication.currentWindow = window;
       jest.spyOn(utils, 'validateOrigin').mockReturnValue(true);
@@ -1154,6 +1098,16 @@ describe('Testing communication', () => {
       expect(utils.validateOrigin).toBeCalled();
       expect(utils.validateOrigin).toBeCalledWith(messageOriginURL);
       expect(result).toBe(utils.validateOrigin(messageOriginURL));
+    });
+  });
+  describe('waitForMessageQueue', () => {
+    it('', () => {
+      return;
+    });
+  });
+  describe('sendMessageEventToChild', () => {
+    it('', () => {
+      return;
     });
   });
 });

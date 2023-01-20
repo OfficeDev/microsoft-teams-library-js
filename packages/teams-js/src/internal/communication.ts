@@ -271,7 +271,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
  * @internal
  * Limited to Microsoft-internal use
  */
-export function processMessage(evt: DOMMessageEvent): void {
+function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
