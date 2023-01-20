@@ -303,7 +303,7 @@ function processMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
