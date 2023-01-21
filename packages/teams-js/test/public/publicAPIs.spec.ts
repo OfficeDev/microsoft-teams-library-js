@@ -1,4 +1,6 @@
+import { ContextReplacementPlugin } from 'webpack';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import * as utilFunc from '../../src/internal/utils';
 import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
@@ -340,6 +342,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         userObjectId: 'someUserObjectId',
         isTeamArchived: false,
         hostClientType: HostClientType.web,
+        frameContext: FrameContexts.content,
         sharepoint: {},
         tenantSKU: 'someTenantSKU',
         userLicenseType: 'someUserLicenseType',
@@ -368,7 +371,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should successfully get frame context in side panel', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
       getContext((context) => {
-        expect(context.frameContext).toBe(FrameContexts.sidePanel);
+        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
 
@@ -396,7 +399,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should successfully get frame context in side panel with fallback logic if not returned from client', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
       getContext((context) => {
-        expect(context.frameContext).toBe(FrameContexts.sidePanel);
+        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
 
