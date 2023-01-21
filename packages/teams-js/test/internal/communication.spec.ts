@@ -1136,8 +1136,57 @@ describe('Testing communication', () => {
     });
   });
   describe('sendMessageEventToChild', () => {
-    it('', () => {
-      return;
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+    });
+    afterAll(() => {
+      communication.uninitializeCommunication();
+    });
+    it('should post message to window if Communication.childWindow is set', () => {
+      communication.Communication.childWindow = utils.childWindow;
+      communication.Communication.childOrigin = utils.validOrigin;
+      expect(utils.childMessages.length).toBe(0);
+      communication.sendMessageEventToChild('testAction', ['arg zero']);
+      expect(utils.childMessages.length).toBe(1);
+      expect(utils.childMessages[0].func).toBe('testAction');
+      if (!utils.childMessages[0].args) {
+        throw new Error('No args found on message');
+      }
+      expect(utils.childMessages[0].args[0]).toBe('arg zero');
+    });
+
+    it('should add message to childWindow message queue if Communication.childOrigin is not set', () => {
+      expect.assertions(1);
+      communication.Communication.childWindow = utils.childWindow;
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.Communication.currentWindow.setInterval = (fn) => {
+        fn();
+      };
+      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
+        expect(false).toBeFalsy();
+      });
+      communication.sendMessageEventToChild('testAction', ['arg zero']);
+      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
+        expect(true).toBeFalsy();
+      });
+    });
+
+    it('should add message to childWindow message queue if Communication.childWindow is not set', () => {
+      expect.assertions(1);
+      communication.Communication.childOrigin = utils.validOrigin;
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.Communication.currentWindow.setInterval = (fn) => {
+        fn();
+      };
+      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
+        expect(false).toBeFalsy();
+      });
+      communication.sendMessageEventToChild('testAction', ['arg zero']);
+      communication.waitForMessageQueue(communication.Communication.childWindow, () => {
+        expect(true).toBeFalsy();
+      });
     });
   });
 });
