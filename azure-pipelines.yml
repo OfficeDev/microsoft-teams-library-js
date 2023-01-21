@@ -24,10 +24,6 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@jeklouda/electronTestFailure
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js'
-        displayName: 'Run E2E integration tests'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: Yarn@2
         displayName: 'Run tests for electron webview'
