@@ -1,7 +1,5 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as utils from '../../src/internal/utils';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
@@ -1071,8 +1069,70 @@ describe('Testing communication', () => {
     });
   });
   describe('waitForMessageQueue', () => {
-    it('', () => {
-      return;
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(window);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = window;
+      communication.uninitializeCommunication();
+    });
+    it('should never call callback if parent message queue is not empty', () => {
+      expect.assertions(0);
+      communication.Communication.childWindow = utils.mockWindow;
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.Communication.parentWindow = utils.mockWindow;
+      communication.Communication.currentWindow.setInterval = (fn) => {
+        fn();
+      };
+
+      // This function inserts a message into the parentMessageQueue
+      communication.sendMessageEventToChild('testMessage');
+      communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
+        // this callback only ever fires if the message queue associated with the passed in window is empty
+        expect(false).toBeTruthy();
+      });
+    });
+    it('should call callback once parent message queue is empty', () => {
+      expect.assertions(1);
+      communication.Communication.childWindow = utils.mockWindow;
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.Communication.parentWindow = utils.mockWindow;
+      communication.Communication.currentWindow.setInterval = (fn) => {
+        fn();
+      };
+
+      communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
+        // this callback only ever fires if the message queue associated with the passed in window is empty
+        expect(true).toBeTruthy();
+      });
+
+      // This function inserts a message into the parentMessageQueue
+      communication.sendMessageEventToChild('testMessage');
+      communication.uninitializeCommunication();
+    });
+    it('should throw if Communication.currentWindow is undefined', () => {
+      expect.assertions(1);
+      communication.Communication.currentWindow = undefined;
+
+      expect(() => {
+        communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
+          expect(false).toBeTruthy();
+        });
+      }).toThrow(TypeError);
+    });
+    it('should throw if Communication.currentWindow does not have setInterval defined', () => {
+      expect.assertions(1);
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.Communication.currentWindow.setInterval = undefined;
+
+      expect(() => {
+        communication.waitForMessageQueue(communication.Communication.parentWindow, () => {
+          expect(false).toBeTruthy();
+        });
+      }).toThrow(TypeError);
     });
   });
   describe('sendMessageEventToChild', () => {
