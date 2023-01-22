@@ -342,8 +342,6 @@ const RequestAppAudioHandling = (): React.ReactElement =>
       const callbackMicMuteStateChangedHandler = (micState: meeting.MicState): void => {
         if (!micState) {
           throw new Error('micStatus should not be null');
-        } else if (micState.error) {
-          setResult('requestAppAudioHandling() mic state error: ' + JSON.stringify(micState.error));
         } else {
           setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
         }
