@@ -216,38 +216,15 @@ export namespace meeting {
    * @beta
    */
   export interface MicState {
+    id: number;
     /**
      * Indicates the mute status of the mic.
      */
     isMicMuted: boolean;
-
-    /**
-     * error object in case there is a failure.
-     * Null indicates no error and isMicMuted has boolean value
-     */
-    error?: SdkError;
-  }
-
-  /**
-   * Interface for mic state change response
-   *
-   * @beta
-   */
-  export interface MicStateResponse {
-    /**
-     * Indicates the mute status of the mic.
-     * Null indicates that error had occurred.
-     */
-    isMicMuted: boolean;
-
-    /**
-     * error in case there is a failure.
-     * Null indicites no error and isMicMuted has boolean value
-     */
-    error?: MeetingFailedResponse;
   }
 
   export interface MeetingFailedResponse {
+    id: number;
     /**
      * The reason for the failure
      */
@@ -260,7 +237,10 @@ export namespace meeting {
 
   export interface RequestAppAudioHandlingParams {
     isAppHandlingAudio: boolean;
-    callbackMicMuteStateChangedHandler: (micState: MicState) => void;
+    callbackMicMuteStateChangedHandler: (
+      micState: MicState,
+      callbackResponse: (error?: MeetingFailedResponse, micState?: MicState) => void,
+    ) => void;
   }
 
   /**
@@ -660,7 +640,18 @@ export namespace meeting {
         throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
       }
       if (!error) {
-        registerHandler('meeting.micStateChanged', requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler);
+        const micStateChangedCallback = (micState: MicState): void => {
+          const callbackResponse = (error?: MeetingFailedResponse, micState?: MicState): void => {
+            if (error) {
+              sendMessageToParent('meeting.micStateChanged.failed', [error]);
+            } else {
+              sendMessageToParent('meeting.micStateChanged.success', [micState]);
+            }
+          };
+          requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState, callbackResponse);
+        };
+
+        registerHandler('meeting.micStateChanged', micStateChangedCallback);
       }
       callback(error, isHostAudioless);
     };
@@ -691,28 +682,5 @@ export namespace meeting {
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalStop,
     );
-  }
-
-  /**
-   * Send Mic mute status response acknowledgement for callbackMicMuteStateChangedHandler
-   * Required to be sent whenever Mic callback is called by host.
-   * Lets the host know that Mic state change event is successfully handled by app or not
-   * Should be used along with requestAppAudioHandling(), and inside the callback mic state change handler.
-   *
-   * @param micState - Status of Mic operation
-   *   isMicMuted - boolean to indicate the current status of Mic.
-   *   errorMessage - Error details of Mic mute operation failure.
-   *     Null indicates no error and isMicMuted has the status of Mic.
-   *     errorMessage can either contain an error string, or null
-   * @example - Mic operation success - { "isMicMuted": "true", "errorMessage": undefined }
-   *  - Mic operation failure - { "isMicMuted": "true", "errorMessage": "Mic mute operation failure" }
-   * @beta
-   */
-  export function sendMicMuteStatusResponse(micStateResponse: MicStateResponse): void {
-    if (!micStateResponse) {
-      throw new Error('[sendMicMuteStatusResponse] MicStateResponse cannot be null');
-    }
-    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micStateResponse]);
   }
 }

@@ -360,16 +360,6 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     label: 'App handles audio',
   });
 
-const SendMicMuteStatusResponse = (): React.ReactElement =>
-  ApiWithTextInput<meeting.MicStateResponse>({
-    name: 'sendMicMuteStatusResponse',
-    title: 'Send Mic mute status response acknowledgement',
-    onClick: async (input) => {
-      meeting.sendMicMuteStatusResponse(input as meeting.MicStateResponse);
-      return '';
-    },
-  });
-
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -389,7 +379,6 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingState />
     <SetOptions />
     <RequestAppAudioHandling />
-    <SendMicMuteStatusResponse />
   </ModuleWrapper>
 );
 

@@ -1531,36 +1531,4 @@ describe('meeting', () => {
       }
     });
   });
-
-  describe('sendMicMuteStatusResponse', () => {
-    it('should not allow call with null parameter', () => {
-      expect(() => meeting.sendMicMuteStatusResponse(null)).toThrowError(
-        '[sendMicMuteStatusResponse] MicStateResponse cannot be null',
-      );
-    });
-
-    it('should not allow calls before initialization', () => {
-      let micState: meeting.MicStateResponse = { isMicMuted: true, error: undefined };
-      expect(() => meeting.sendMicMuteStatusResponse(micState)).toThrowError(
-        'The library has not yet been initialized',
-      );
-    });
-
-    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-    Object.values(FrameContexts).forEach((context) => {
-      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        // scenarios goes here
-      } else {
-        it(`should not allow meeting.sendMicMuteStatusResponse calls from ${context} context`, async () => {
-          await framelessPlatformMock.initializeWithContext(context);
-
-          expect(() => meeting.sendMicMuteStatusResponse({ isMicMuted: true })).toThrowError(
-            `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContexts,
-            )}. Current context: "${context}".`,
-          );
-        });
-      }
-    });
-  });
 });
