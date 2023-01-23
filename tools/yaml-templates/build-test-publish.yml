@@ -1,14 +1,24 @@
 # Specific to validating build/unit tests, creating PR comments on bundle analysis, and then publishing artifacts for release.
 # If this needs to be reused, the parts not specific to building and testing should be extracted.
 
+variables:
+  pnpm_config_cache: $(Pipeline.Workspace)/.pnpm-store
+
 steps:
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
       versionSpec: '14.x'
 
+  - task: Cache@2
+    inputs:
+      key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
+      path: $(pnpm_config_cache)
+    displayName: Cache pnpm
+
   - script: |
       node - add --global pnpm@latest-6
+      pnpm config set store-dir $(pnpm_config_cache)
     displayName: 'Setup pnpm'
 
   - task: Pnpm@3

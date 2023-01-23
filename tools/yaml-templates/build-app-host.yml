@@ -1,5 +1,7 @@
 # This does all the steps for cloning both app sdk and app host sdk repos and building them, then configuring the app host.
 # Can be reused for any additional e2e tests and then paired with a node script with different parameters for which type of e2e test needs to run.
+variables:
+  pnpm_config_cache: $(Pipeline.Workspace)/.pnpm-store
 
 parameters:
   - name: 'appHostGitPath'
@@ -16,8 +18,15 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
+  - task: Cache@2
+    inputs:
+      key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
+      path: $(pnpm_config_cache)
+    displayName: Cache pnpm
+
   - script: |
       node - add --global pnpm@latest-6
+      pnpm config set store-dir $(pnpm_config_cache)
     displayName: 'Setup pnpm'
 
   - task: Pnpm@2
