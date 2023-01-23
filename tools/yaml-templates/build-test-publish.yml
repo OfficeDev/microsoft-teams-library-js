@@ -7,12 +7,9 @@ steps:
     inputs:
       versionSpec: '14.x'
 
-  - uses: pnpm/action-setup@v2
-    name: Install pnpm
-    id: pnpm-install
-    with:
-      version: 6.35.1
-      run_install: false
+  - script: |
+      node - add --global pnpm@latest-6
+    displayName: 'Setup pnpm'
 
   - task: Pnpm@3
     displayName: 'pnpm install'
