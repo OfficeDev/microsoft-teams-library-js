@@ -16,31 +16,29 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@3
-    inputs:
-      versionSpec: '1.x'
+  - script: 'npm install -g pnpm@latest-6'
+    displayName: 'Install pnpm'
 
-  - task: Yarn@2
-    displayName: 'Run yarn on app hosting sdk'
+  - task: Pnpm@2
+    displayName: 'Run pnpm on app hosting sdk'
     inputs:
       Arguments:
       ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-    retryCountOnTaskFailure: 2
 
-  - task: Yarn@2
+  - task: Pnpm@2
     displayName: 'Build app hosting sdk'
     inputs:
       Arguments: 'build'
       ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - task: Yarn@2
-    displayName: 'Run yarn on client sdk'
+  - task: Pnpm@2
+    displayName: 'Run pnpm on client sdk'
     inputs:
       Arguments:
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     retryCountOnTaskFailure: 2
 
-  - task: Yarn@2
+  - task: Pnpm@2
     displayName: 'Build client sdk'
     inputs:
       Arguments: 'build'
@@ -51,5 +49,5 @@ steps:
     inputs:
       script: |
         sudo chmod -R 755 ./ 
-        sudo yarn setup
+        sudo pnpm setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'

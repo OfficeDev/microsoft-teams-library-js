@@ -2,21 +2,18 @@
 # If this needs to be reused, the parts not specific to building and testing should be extracted.
 
 steps:
-  - task: YarnInstaller@3
-    displayName: 'Yarn 1.x'
-    inputs:
-      versionSpec: '1.x'
+  - script: 'npm install -g pnpm@latest-6'
+    displayName: 'Pnpm 6'
 
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
       versionSpec: '14.x'
 
-  - task: Yarn@3
-    displayName: 'yarn install'
+  - task: Pnpm@3
+    displayName: 'pnpm install'
     inputs:
       Arguments: 'install'
-    retryCountOnTaskFailure: 2
 
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
@@ -36,15 +33,15 @@ steps:
       ne(variables['Build.Reason'], 'PullRequest')
       )
 
-  - task: Yarn@3
+  - task: Pnpm@3
     inputs:
       Arguments: 'build'
-    displayName: 'yarn build'
+    displayName: 'pnpm build'
 
-  - task: Yarn@3
+  - task: Pnpm@3
     inputs:
       Arguments: 'test'
-    displayName: 'yarn test'
+    displayName: 'pnpm test'
 
   - task: PublishTestResults@2
     inputs:
@@ -54,7 +51,7 @@ steps:
       testRunTitle: 'Unit Tests'
     condition: succeededOrFailed()
 
-  - task: Yarn@2
+  - task: Pnpm@2
     inputs:
       Arguments: 'bundleAnalyze:collect'
     displayName: 'Run bundle analysis and collect'

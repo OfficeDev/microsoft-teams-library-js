@@ -14,24 +14,22 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@3
-    inputs:
-      versionSpec: '1.x'
+  - script: 'npm install -g pnpm@latest-6'
+    displayName: 'Install pnpm'
 
-  - task: Yarn@2
+  - task: Pnpm@2
     inputs:
       Arguments: 'install'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Run yarn install on TeamsJS'
-    retryCountOnTaskFailure: 2
+    displayName: 'Run pnpm install on TeamsJS'
 
-  - task: Yarn@2
+  - task: Pnpm@2
     inputs:
       Arguments: 'build'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     displayName: 'Build TeamsJS'
 
-  - bash: 'nohup yarn start-test-app &'
+  - bash: 'nohup pnpm start-test-app &'
     displayName: 'Run sample test app in background'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
