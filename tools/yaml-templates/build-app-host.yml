@@ -16,8 +16,12 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - script: 'npm install -g pnpm@latest-6'
-    displayName: 'Install pnpm'
+  - uses: pnpm/action-setup@v2
+    name: Install pnpm
+    id: pnpm-install
+    with:
+      version: 6.35.1
+      run_install: false
 
   - task: Pnpm@2
     displayName: 'Run pnpm on app hosting sdk'

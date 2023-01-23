@@ -7,8 +7,12 @@ steps:
     inputs:
       versionSpec: '14.x'
 
-  - script: 'npm install -g pnpm@latest-6'
-    displayName: 'Pnpm 6'
+  - uses: pnpm/action-setup@v2
+    name: Install pnpm
+    id: pnpm-install
+    with:
+      version: 6.35.1
+      run_install: false
 
   - task: Pnpm@3
     displayName: 'pnpm install'
