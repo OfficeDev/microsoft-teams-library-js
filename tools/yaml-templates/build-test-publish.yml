@@ -2,13 +2,13 @@
 # If this needs to be reused, the parts not specific to building and testing should be extracted.
 
 steps:
-  - script: 'npm install -g pnpm@latest-6'
-    displayName: 'Pnpm 6'
-
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
       versionSpec: '14.x'
+
+  - script: 'npm install -g pnpm@latest-6'
+    displayName: 'Pnpm 6'
 
   - task: Pnpm@3
     displayName: 'pnpm install'
