@@ -20,10 +20,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "debug": "4.3.3"
+    "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "4.1.7"
+    "@types/debug": "^4.1.7"
   },
   "license": "MIT",
   "files": [
