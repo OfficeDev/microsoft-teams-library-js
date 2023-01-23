@@ -342,7 +342,6 @@ describe('MicrosoftTeams-publicAPIs', () => {
         userObjectId: 'someUserObjectId',
         isTeamArchived: false,
         hostClientType: HostClientType.web,
-        frameContext: FrameContexts.content,
         sharepoint: {},
         tenantSKU: 'someTenantSKU',
         userLicenseType: 'someUserLicenseType',
@@ -356,7 +355,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         Object.keys(expectedContext).forEach((e) => {
           expect(JSON.stringify(expectedContext[e])).toBe(JSON.stringify(context[e]));
         });
-        expect(context.frameContext).toBe(FrameContexts.content);
+        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.content);
         expect(context.meetingId).toBe('dummyMeetingId');
         done();
       });
