@@ -44,10 +44,10 @@ steps:
     inputs:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
-    
-   - script: |
+
+  - script: |
       node - add --global pnpm@latest-6
-    displayName: "Setup pnpm"
+    displayName: 'Setup pnpm'
 
   - task: Pnpm@2
     inputs:
