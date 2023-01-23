@@ -1,4 +1,3 @@
-import { ContextReplacementPlugin } from 'webpack';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as utilFunc from '../../src/internal/utils';
