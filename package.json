@@ -76,14 +76,15 @@
     "path": "^0.12.7",
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
-    "shx": "^0.3.3",
     "scheduler": "0.20.0",
+    "shx": "^0.3.3",
     "style-loader": "^2.0.0",
     "ts-jest": "^27.0.5",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.2.1",
     "typedoc": "^0.22.17",
     "typescript": "<= 4.7.0",
+    "uuid": "^9.0.0",
     "webpack": "^5.10.0",
     "webpack-assets-manifest": "^5.0.6",
     "webpack-bundle-analyzer": "^4.3.0",
@@ -104,5 +105,6 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+  }
 }

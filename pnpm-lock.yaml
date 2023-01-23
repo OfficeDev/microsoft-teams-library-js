@@ -74,6 +74,7 @@ importers:
       ts-node: ^10.2.1
       typedoc: ^0.22.17
       typescript: <= 4.7.0
+      uuid: ^9.0.0
       webpack: ^5.10.0
       webpack-assets-manifest: ^5.0.6
       webpack-bundle-analyzer: ^4.3.0
@@ -142,6 +143,7 @@ importers:
       ts-node: 10.9.1_45c533f94194dbe6bbe742a6dc894b44
       typedoc: 0.22.18_typescript@4.6.4
       typescript: 4.6.4
+      uuid: 9.0.0
       webpack: 5.75.0_webpack-cli@4.10.0
       webpack-assets-manifest: 5.1.0_webpack@5.75.0
       webpack-bundle-analyzer: 4.7.0
@@ -6964,6 +6966,7 @@ packages:
 
   /encoding/0.1.13:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    requiresBuild: true
     dependencies:
       iconv-lite: 0.6.3
     dev: true
