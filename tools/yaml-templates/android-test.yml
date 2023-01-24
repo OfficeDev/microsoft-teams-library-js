@@ -14,12 +14,6 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: Cache@2
-    inputs:
-      key: 'pnpm | "$(Agent.OS)" | pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache pnpm
-
   - script: |
       node - add --global pnpm@latest-6
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
