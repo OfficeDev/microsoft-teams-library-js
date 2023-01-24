@@ -27,7 +27,7 @@ module.exports = {
       type: 'umd',
       umdNamedDefine: true,
     },
-    //Prevents 'self' object conflict between nodejs and nextjs
+    //Typically resolves to 'self' unless running in a server side rendered environment
     globalObject: "typeof self !== 'undefined' ? self : this",
   },
   devtool: 'source-map',
