@@ -1,8 +1,29 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 13 Dec 2022 21:28:59 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jan 2023 04:15:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.7.1
+
+Fri, 06 Jan 2023 04:15:12 GMT
+
+### Patches
+
+- Reverted webpack globalObject: this
+
+## 2.7.0
+
+Wed, 04 Jan 2023 19:07:09 GMT
+
+### Minor changes
+
+- Implemented `runtime` interface versioning
+
+### Patches
+
+- Removed `entityId` and `title` as required fields from `openFilePreview` parameters
+- Fixed missing slash in URL in comment on `app.initialize`
 
 ## 2.6.1
 
