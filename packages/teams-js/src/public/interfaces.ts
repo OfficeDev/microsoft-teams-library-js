@@ -811,7 +811,7 @@ export interface UrlDialogInfo extends BaseDialogInfo {
    *
    * @remarks
    * The domain of the url must match at least one of the
-   * valid domains specified in the validDomains block of the manifest
+   * valid domains specified in the [validDomains block](https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema#validdomains) of the app manifest
    */
   url: string;
 
