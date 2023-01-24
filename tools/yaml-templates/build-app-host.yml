@@ -20,25 +20,21 @@ steps:
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
-  - script: |
-      cd $(AppHostingSdkProjectDirectory)
-      pnpm install
+  - bash: 'nohup pnpm install'
     displayName: 'Run pnpm on app hosting sdk'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - script: |
-      cd $(AppHostingSdkProjectDirectory)
-      pnpm build
+  - bash: 'nohup pnpm build'
     displayName: 'Build app hosting sdk'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - script: |
-      cd $(ClientSdkProjectDirectory)
-      pnpm install
+  - bash: 'nohup pnpm install'
     displayName: 'Run pnpm on client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - script: |
-      cd $(ClientSdkProjectDirectory)
-      pnpm build
+  - bash: 'nohup pnpm build'
     displayName: 'Build client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'
