@@ -355,6 +355,20 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     label: 'App handles audio',
   });
 
+const UpdateMicState = (): React.ReactElement =>
+  ApiWithCheckboxInput({
+    name: 'updateMicState',
+    title: 'Send Mic mute status response acknowledgement',
+    onClick: async (input: boolean) => {
+      const micState: meeting.MicState = {
+        isMicMuted: input,
+      };
+      meeting.updateMicState(micState);
+      return `updateMicState() mic state updated: ${input}`;
+    },
+    label: 'Is mic muted',
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -374,6 +388,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingState />
     <SetOptions />
     <RequestAppAudioHandling />
+    <UpdateMicState />
   </ModuleWrapper>
 );
 

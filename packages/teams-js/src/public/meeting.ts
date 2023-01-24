@@ -229,21 +229,15 @@ export namespace meeting {
     reason: string;
   }
 
-  // TODO: comment
   enum MicStateChangeReason {
-    AppRequested,
-    HostRequested,
-  }
-
-  // TODO: comment
-  function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
-    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState, reason]);
+    HostInitiated,
+    AppInitiated,
+    AppDeclinedToChange,
   }
 
   export interface RequestAppAudioHandlingParams {
     isAppHandlingAudio: boolean;
-    callbackMicMuteStateChangedHandler: (micState: MicState) => MicState;
+    callbackMicMuteStateChangedHandler: (micState: MicState) => Promise<MicState>;
   }
 
   /**
@@ -649,9 +643,14 @@ export namespace meeting {
         throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
       }
 
-      const micStateChangedCallback = (micState: MicState): void => {
-        const newMicState = requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
-        setMicStateWithReason(newMicState, MicStateChangeReason.HostRequested);
+      const micStateChangedCallback = async (micState: MicState): Promise<void> => {
+        const newMicState = await requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
+
+        const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
+        setMicStateWithReason(
+          newMicState,
+          micStateDidUpdate ? MicStateChangeReason.HostInitiated : MicStateChangeReason.AppDeclinedToChange,
+        );
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
@@ -693,8 +692,18 @@ export namespace meeting {
     );
   }
 
-  // TODO: comment
+  /**
+   * Notifies the host that the microphone state has changed in the app.
+   * @param micState - The new state that the microphone is in
+   *   isMicMuted - Boolean to indicate the current mute status of the mic.
+   * @beta
+   */
   export function updateMicState(micState: MicState): void {
-    setMicStateWithReason(micState, MicStateChangeReason.AppRequested);
+    setMicStateWithReason(micState, MicStateChangeReason.AppInitiated);
+  }
+
+  function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState, reason]);
   }
 }
