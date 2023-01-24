@@ -222,21 +222,31 @@ export namespace meeting {
     isMicMuted: boolean;
   }
 
-  export interface MeetingFailedResponse {
-    /**
-     * The reason for the failure
-     */
-    reason: string;
-  }
-
+  /**
+   * Reasons for the app's microphone state to change
+   */
   enum MicStateChangeReason {
     HostInitiated,
     AppInitiated,
     AppDeclinedToChange,
   }
 
+  /**
+   * Interface for RequestAppAudioHandling properties
+   *
+   * @beta
+   */
   export interface RequestAppAudioHandlingParams {
+    /**
+     * Indicates whether the app is requesting to start handling audio, or if
+     * it's giving audio back to the host
+     */
     isAppHandlingAudio: boolean;
+    /**
+     * Callback for the host to tell the app to change it's microphone state
+     * @param micState The microphone state for the app to use
+     * @returns A promise with the updated microphone state
+     */
     callbackMicMuteStateChangedHandler: (micState: MicState) => Promise<MicState>;
   }
 
@@ -607,6 +617,7 @@ export namespace meeting {
    * @param callback - Callback contains error and operation result parameters.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   *
    * @beta
    */
   export function requestAppAudioHandling(
@@ -696,6 +707,7 @@ export namespace meeting {
    * Notifies the host that the microphone state has changed in the app.
    * @param micState - The new state that the microphone is in
    *   isMicMuted - Boolean to indicate the current mute status of the mic.
+   *
    * @beta
    */
   export function updateMicState(micState: MicState): void {
