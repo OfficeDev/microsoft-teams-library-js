@@ -1,5 +1,4 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { GlobalVars } from '../../src/internal/globalVars';
 import * as utilFunc from '../../src/internal/utils';
 import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
