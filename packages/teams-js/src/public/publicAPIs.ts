@@ -1,4 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -64,7 +65,13 @@ export function print(): void {
  */
 export function getContext(callback: (context: Context) => void): void {
   ensureInitializeCalled();
-  sendMessageToParent('getContext', callback);
+  sendMessageToParent('getContext', (context: Context) => {
+    if (!context.frameContext) {
+      // Fallback logic for frameContext properties
+      context.frameContext = GlobalVars.frameContext;
+    }
+    callback(context);
+  });
 }
 
 /**

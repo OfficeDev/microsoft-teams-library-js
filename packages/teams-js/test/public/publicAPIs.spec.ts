@@ -354,7 +354,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         Object.keys(expectedContext).forEach((e) => {
           expect(JSON.stringify(expectedContext[e])).toBe(JSON.stringify(context[e]));
         });
-        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.content);
+        expect(context.frameContext).toBe(FrameContexts.content);
         expect(context.meetingId).toBe('dummyMeetingId');
         done();
       });
@@ -369,7 +369,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should successfully get frame context in side panel', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
       getContext((context) => {
-        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.sidePanel);
+        expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
 
@@ -397,7 +397,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should successfully get frame context in side panel with fallback logic if not returned from client', (done) => {
     utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
       getContext((context) => {
-        expect(context.frameContext ? context.frameContext : GlobalVars.frameContext).toBe(FrameContexts.sidePanel);
+        expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
       });
 
