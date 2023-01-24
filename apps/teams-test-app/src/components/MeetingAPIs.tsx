@@ -332,18 +332,15 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     name: 'requestAppAudioHandling',
     title: 'App Handles the Audio channel',
     onClick: async (input: boolean, setResult: (arg0: string) => void) => {
-      const callback = (error: SdkError | null, isHostAudioless: boolean | null): void => {
-        if (error) {
-          setResult(JSON.stringify(error));
-        } else {
-          setResult('requestAppAudioHandling() succeeded: isHostAudioless=' + isHostAudioless);
-        }
+      const callback = (isHostAudioless: boolean | null): void => {
+        setResult('requestAppAudioHandling() succeeded: isHostAudioless=' + isHostAudioless);
       };
-      const callbackMicMuteStateChangedHandler = (micState: meeting.MicState): void => {
+      const callbackMicMuteStateChangedHandler = (micState: meeting.MicState): meeting.MicState => {
         if (!micState) {
           throw new Error('micStatus should not be null');
         } else {
           setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
+          return micState;
         }
       };
 

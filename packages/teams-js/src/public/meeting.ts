@@ -216,7 +216,6 @@ export namespace meeting {
    * @beta
    */
   export interface MicState {
-    id: number;
     /**
      * Indicates the mute status of the mic.
      */
@@ -224,23 +223,27 @@ export namespace meeting {
   }
 
   export interface MeetingFailedResponse {
-    id: number;
     /**
      * The reason for the failure
      */
     reason: string;
-    /**
-     * This property is currently unused.
-     */
-    message?: string;
+  }
+
+  // TODO: comment
+  enum MicStateChangeReason {
+    AppRequested,
+    HostRequested,
+  }
+
+  // TODO: comment
+  function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState, reason]);
   }
 
   export interface RequestAppAudioHandlingParams {
     isAppHandlingAudio: boolean;
-    callbackMicMuteStateChangedHandler: (
-      micState: MicState,
-      callbackResponse: (error?: MeetingFailedResponse, micState?: MicState) => void,
-    ) => void;
+    callbackMicMuteStateChangedHandler: (micState: MicState) => MicState;
   }
 
   /**
@@ -614,7 +617,7 @@ export namespace meeting {
    */
   export function requestAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
+    callback: (isHostAudioless: boolean) => void,
   ): void {
     if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
@@ -633,29 +636,27 @@ export namespace meeting {
 
   function startAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
+    callback: (isHostAudioless: boolean) => void,
   ): void {
     const callbackInternalRequest = (error: SdkError | null, isHostAudioless: boolean | null): void => {
       if (error && isHostAudioless != null) {
         throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
       }
-      if (!error) {
-        const micStateChangedCallback = (micState: MicState): void => {
-          const callbackResponse = (error?: MeetingFailedResponse, micState?: MicState): void => {
-            if (error) {
-              sendMessageToParent('meeting.micStateChanged.failed', [error]);
-            } else {
-              sendMessageToParent('meeting.micStateChanged.success', [micState]);
-            }
-          };
-          requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState, callbackResponse);
-        };
-
-        registerHandler('meeting.micStateChanged', micStateChangedCallback);
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
       }
-      callback(error, isHostAudioless);
-    };
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
 
+      const micStateChangedCallback = (micState: MicState): void => {
+        const newMicState = requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
+        setMicStateWithReason(newMicState, MicStateChangeReason.HostRequested);
+      };
+      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+
+      callback(isHostAudioless);
+    };
     sendMessageToParent(
       'meeting.requestAppAudioHandling',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
@@ -665,16 +666,24 @@ export namespace meeting {
 
   function stopAppAudioHandling(
     requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
-    callback: (error: SdkError | null, isHostAudioless: boolean | null) => void,
+    callback: (isHostAudioless: boolean) => void,
   ): void {
     const callbackInternalStop = (error: SdkError | null, isHostAudioless: boolean | null): void => {
       if (error && isHostAudioless != null) {
         throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
       }
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
+      }
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
+
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
       }
-      callback(error, isHostAudioless);
+
+      callback(isHostAudioless);
     };
 
     sendMessageToParent(
@@ -682,5 +691,10 @@ export namespace meeting {
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalStop,
     );
+  }
+
+  // TODO: comment
+  export function updateMicState(micState: MicState): void {
+    setMicStateWithReason(micState, MicStateChangeReason.AppRequested);
   }
 }
