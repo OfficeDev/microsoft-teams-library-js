@@ -18,10 +18,9 @@ steps:
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
-  - task: Pnpm@3
-    displayName: 'pnpm install'
-    inputs:
-      Arguments: 'install'
+  - script: |
+      pnpm install
+    displayName: 'Install repo dependencies'
 
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
@@ -41,15 +40,10 @@ steps:
       ne(variables['Build.Reason'], 'PullRequest')
       )
 
-  - task: Pnpm@3
-    inputs:
-      Arguments: 'build'
-    displayName: 'pnpm build'
-
-  - task: Pnpm@3
-    inputs:
-      Arguments: 'test'
-    displayName: 'pnpm test'
+  - script: |
+      pnpm build
+      pnpm test
+    displayName: 'pnpm build and test'
 
   - task: PublishTestResults@2
     inputs:
@@ -59,9 +53,8 @@ steps:
       testRunTitle: 'Unit Tests'
     condition: succeededOrFailed()
 
-  - task: Pnpm@2
-    inputs:
-      Arguments: 'bundleAnalyze:collect'
+  - script: |
+      pnpm bundleAnalyze:collect
     displayName: 'Run bundle analysis and collect'
 
   # Bundle analysis comparison : should trigger only by PR against main
