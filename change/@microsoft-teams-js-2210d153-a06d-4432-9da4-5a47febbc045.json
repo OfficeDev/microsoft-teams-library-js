@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Fixed a bug where getContext() was incorrectly dropping propertoes by performing a lossy conversion via app.getContext()",
+  "comment": "Fixed a bug where `getContext()` was incorrectly dropping properties by performing a lossy conversion via `app.getContext()`",
   "packageName": "@microsoft/teams-js",
   "email": "magli@microsoft.com",
   "dependentChangeType": "patch"
