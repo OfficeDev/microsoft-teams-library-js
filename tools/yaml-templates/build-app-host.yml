@@ -16,7 +16,7 @@ steps:
     displayName: 'Install Node.js'
 
   - script: |
-      node - add --global pnpm@latest-6
+      npm install -g pnpm@latest-6
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
