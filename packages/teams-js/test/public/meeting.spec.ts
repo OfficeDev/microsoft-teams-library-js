@@ -1531,4 +1531,36 @@ describe('meeting', () => {
       }
     });
   });
+
+  describe('updateMicState', () => {
+    it('should not allow calls before initialization', () => {
+      let micState: meeting.MicState = { isMicMuted: false };
+      expect(() => meeting.updateMicState(micState)).toThrowError('The library has not yet been initialized');
+    });
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`should call meeting.sendMicMuteStatusResponse with micState from parameter and AppInitiated reason. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          const micState: meeting.MicState = { isMicMuted: false };
+          meeting.updateMicState(micState);
+
+          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
+          expect(updateMicStateMessage).not.toBeNull();
+          expect(updateMicStateMessage?.args[0]).toMatchObject(micState);
+          expect(updateMicStateMessage?.args[1]).toEqual(1 /* MicStateChangeReason.AppInitiated */);
+        });
+      } else {
+        it(`should not allow meeting.updateMicState calls from ${context} context`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+          expect(() => meeting.updateMicState({ isMicMuted: false })).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+  });
 });
