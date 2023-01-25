@@ -264,6 +264,7 @@ export namespace meeting {
     HostInitiated,
     AppInitiated,
     AppDeclinedToChange,
+    AppFailedToChange,
   }
 
   /**
@@ -708,13 +709,17 @@ export namespace meeting {
       }
 
       const micStateChangedCallback = async (micState: MicState): Promise<void> => {
-        const newMicState = await requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
+        try {
+          const newMicState = await requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
 
-        const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
-        setMicStateWithReason(
-          newMicState,
-          micStateDidUpdate ? MicStateChangeReason.HostInitiated : MicStateChangeReason.AppDeclinedToChange,
-        );
+          const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
+          setMicStateWithReason(
+            newMicState,
+            micStateDidUpdate ? MicStateChangeReason.HostInitiated : MicStateChangeReason.AppDeclinedToChange,
+          );
+        } catch {
+          setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
+        }
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 

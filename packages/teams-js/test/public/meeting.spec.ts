@@ -1576,6 +1576,52 @@ describe('meeting', () => {
           expect(sendMicStateMessage.args[0]).toMatchObject({ isMicMuted: !passedInIsMicMuted }); // expect different value than what was passed in
           expect(sendMicStateMessage.args[1]).toEqual(2 /* MicStateChangeReason.AppDeclinedToChange */);
         });
+
+        it(`should call meeting.sendMicMuteStatusResponse with AppFailedToChange reason when mic callback throws. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          const requestIsHostAudioless: boolean | null = true;
+
+          const micStateCallbackThatThrowsError = (_micState: meeting.MicState) => {
+            throw new Error('test error');
+          };
+
+          // call and respond to requestAppAudioHandling
+          meeting.requestAppAudioHandling(
+            {
+              isAppHandlingAudio: requestIsHostAudioless,
+              callbackMicMuteStateChangedHandler: micStateCallbackThatThrowsError,
+            },
+            (_result: boolean) => {},
+          );
+          const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.requestAppAudioHandling',
+          );
+          expect(requestAppAudioHandlingMessage).not.toBeNull();
+
+          const callbackId = requestAppAudioHandlingMessage.id;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [null, requestIsHostAudioless],
+            },
+          } as DOMMessageEvent);
+
+          // respond to the registerHandler
+          const passedInIsMicMuted = false;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              func: 'meeting.micStateChanged',
+              args: [{ isMicMuted: passedInIsMicMuted }],
+            },
+          } as DOMMessageEvent);
+
+          await waitForEventQueue();
+
+          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
+          expect(sendMicStateMessage).not.toBeNull();
+          expect(sendMicStateMessage.args[1]).toEqual(3 /* MicStateChangeReason.AppFailedToChange */);
+        });
       } else {
         it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
