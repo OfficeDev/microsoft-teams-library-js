@@ -105,5 +105,7 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "bundle-size-tools": "workspace:*"
+  }
 }
