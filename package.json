@@ -39,6 +39,7 @@
     "@babel/runtime": "^7.12.5",
     "@microsoft/eslint-plugin-sdl": "^0.1.5",
     "@mixer/webpack-bundle-compare": "^0.1.0",
+    "@next/eslint-plugin-next": "^13.0.7",
     "@octokit/core": "^3.5.1",
     "@types/fs-extra": "^9.0.11",
     "@types/jest": "^27.0.1",
@@ -109,7 +110,5 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {
-    "@next/eslint-plugin-next": "^13.0.7"
-  }
+  "dependencies": {}
 }
