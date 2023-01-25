@@ -252,7 +252,7 @@ export namespace meeting {
    */
   export interface MicState {
     /**
-     * Indicates the mute status of the mic.
+     * Indicates the mute status of the mic
      */
     isMicMuted: boolean;
   }
@@ -279,7 +279,7 @@ export namespace meeting {
      */
     isAppHandlingAudio: boolean;
     /**
-     * Callback for the host to tell the app to change it's microphone state
+     * Callback for the host to tell the app to change its microphone state
      * @param micState The microphone state for the app to use
      * @returns A promise with the updated microphone state
      */
@@ -657,20 +657,21 @@ export namespace meeting {
   }
 
   /**
-   * Have the external application handle audio (mic & speaker) and turn off host audio.
-   * set isAppHandlingAudio=true in params, will set the Host(Teams) audio to go audioless
-   *   Register the mic mute status change events, and App will be receive the events.
-   * set isAppHandlingAudio=false in params, will restore the Host(Teams) audio
-   *   Deregister the mic mute status change events and App will not be receive the events.
+   * Have the app handle audio (mic & speaker) and turn off host audio.
    *
-   * @throws standard parameter validation error
-   * @param requestAppAudioHandlingParams - RequestAppAudioHandlingParams interface, and contains
-   *   isAppHandlingAudio - true - expect App to handle the audio and Teams to go audioless.
-   *     false - Audio transferred to Teams and Teams to restore the audio.
-   *   callbackMicMuteStateChangedHandler - Callback contains mic status param.
-   * @param callback - Callback contains error and operation result parameters.
-   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is true, the host will switch to audioless mode
+   *   Registers for mic mute status change events, which are events that the app can receive from the host asking the app to
+   *   mute or unmute the microphone.
+   *
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is false, the host will switch out of audioless mode
+   *   Unregisters the mic mute status change events so the app will no longer receive these events
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@link RequestAppAudioHandlingParams.callbackMicMuteStateChangedHandler} parameter is not defined
+   *
+   * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
+   * @param callback - Callback with one parameter, the result
+   * result can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
    *
    * @beta
    */
