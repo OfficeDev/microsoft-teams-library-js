@@ -170,15 +170,27 @@ export namespace meeting {
   /**
    * Property bag for the meeting reaction received event
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface MeetingReactionReceivedEventData {
     /**
      * Indicates the type of meeting reaction received
+     *
+     * @hidden
+     * Hide from docs.
      */
     meetingReactionType?: MeetingReactionType;
     /**
      * error object in case there is a failure
+     *
+     * @hidden
+     * Hide from docs.
      */
     error?: SdkError;
   }
@@ -186,26 +198,49 @@ export namespace meeting {
   /**
    * Interface for raiseHandState properties
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface IRaiseHandState {
-    /** Indicates whether the selfParticipant's hand is raised or not*/
+    /** Indicates whether the selfParticipant's hand is raised or not
+     *
+     * @hidden
+     * Hide from docs.
+     */
+
     isHandRaised: boolean;
   }
 
   /**
    * Property bag for the raiseHandState changed event
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface RaiseHandStateChangedEventData {
     /**
      * entire raiseHandState object for the selfParticipant
+     *
+     * @hidden
+     * Hide from docs.
      */
     raiseHandState: IRaiseHandState;
 
     /**
      * error object in case there is a failure
+     *
+     * @hidden
+     * Hide from docs.
      */
     error?: SdkError;
   }
@@ -252,6 +287,12 @@ export namespace meeting {
 
   /**
    * Different types of meeting reactions that can be sent/received
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * @beta
    */
@@ -531,6 +572,12 @@ export namespace meeting {
    *
    * @param handler The handler to invoke when the selfParticipant's (current user's) raiseHandState changes.
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export function registerRaiseHandStateChangedHandler(
@@ -548,6 +595,12 @@ export namespace meeting {
    * at a time. A subsequent registration replaces an existing registration.
    *
    * @param handler The handler to invoke when the selfParticipant (current user) successfully sends a meeting reaction
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * @beta
    */

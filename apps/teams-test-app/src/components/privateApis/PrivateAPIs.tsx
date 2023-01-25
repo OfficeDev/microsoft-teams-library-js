@@ -93,8 +93,8 @@ const PrivateAPIs = (): ReactElement => {
       title: 'Open File Preview',
       onClick: {
         validateInput: (input) => {
-          if (!input.entityId || !input.title || !input.type || !input.objectUrl) {
-            throw new Error('entityId, title, type and objectUrl are all required on the input object.');
+          if (!input.type || !input.objectUrl) {
+            throw new Error('type and objectUrl are all required on the input object.');
           }
         },
         submit: async (input) => {
