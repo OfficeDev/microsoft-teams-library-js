@@ -1344,10 +1344,13 @@ describe('meeting', () => {
   });
 
   describe('requestAppAudioHandling', () => {
+    const emptyMicStateCallback = (micState: meeting.MicState) => Promise.resolve(micState);
+    const waitForEventQueue = () => new Promise((resolve) => setTimeout(resolve, 0));
+
     it('should not allow call with null callback response', () => {
       expect(() =>
         meeting.requestAppAudioHandling(
-          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
           null,
         ),
       ).toThrowError('[requestAppAudioHandling] Callback response cannot be null');
@@ -1363,7 +1366,7 @@ describe('meeting', () => {
     it('should not allow calls before initialization', () => {
       expect(() =>
         meeting.requestAppAudioHandling(
-          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
           emptyCallBack,
         ),
       ).toThrowError('The library has not yet been initialized');
@@ -1378,13 +1381,11 @@ describe('meeting', () => {
           const requestIsHostAudioless: boolean | null = true;
 
           let callbackCalled = false;
-          let returnedSdkError: SdkError | null = null;
           let returnedIsHostAudioless: boolean | null = false;
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: boolean | null) => {
+            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+            (result: boolean) => {
               callbackCalled = true;
-              returnedSdkError = error;
               returnedIsHostAudioless = result;
             },
           );
@@ -1402,44 +1403,7 @@ describe('meeting', () => {
             },
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
-          expect(returnedSdkError).toBeNull();
           expect(returnedIsHostAudioless).not.toBeNull();
-          expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
-        });
-
-        it('should check error if the requestAppAudioHandling message sends and fails for audio handling request', async () => {
-          await framelessPlatformMock.initializeWithContext(context);
-
-          let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
-          const requestIsHostAudioless: boolean | null = null;
-
-          let callbackCalled = false;
-          let returnedError: SdkError | null = null;
-          let returnedIsHostAudioless: boolean | null = null;
-
-          meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: boolean | null) => {
-              callbackCalled = true;
-              returnedError = error;
-              returnedIsHostAudioless = result;
-            },
-          );
-
-          const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
-            'meeting.requestAppAudioHandling',
-          );
-          expect(requestAppAudioHandlingMessage).not.toBeNull();
-
-          const callbackId = requestAppAudioHandlingMessage.id;
-          framelessPlatformMock.respondToMessage({
-            data: {
-              id: callbackId,
-              args: [requestError, requestIsHostAudioless],
-            },
-          } as DOMMessageEvent);
-          expect(callbackCalled).toBe(true);
-          expect(returnedError).toBe(requestError);
           expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
         });
 
@@ -1449,13 +1413,11 @@ describe('meeting', () => {
           const requestIsHostAudioless: boolean | null = false;
 
           let callbackCalled = false;
-          let returnedSdkError: SdkError | null = null;
           let returnedIsHostAudioless: boolean | null = false;
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: false, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: boolean | null) => {
+            { isAppHandlingAudio: false, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+            (result: boolean) => {
               callbackCalled = true;
-              returnedSdkError = error;
               returnedIsHostAudioless = result;
             },
           );
@@ -1473,30 +1435,26 @@ describe('meeting', () => {
             },
           } as DOMMessageEvent);
           expect(callbackCalled).toBe(true);
-          expect(returnedSdkError).toBeNull();
           expect(returnedIsHostAudioless).not.toBeNull();
           expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
         });
 
-        it('should check error if the requestAppAudioHandling message sends and fails for stop audio handling request', async () => {
+        it(`should call meeting.micStateChanged after meeting.requestAppAudioHandling. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
-          let requestError: SdkError | null = { errorCode: ErrorCode.INTERNAL_ERROR };
-          const requestIsHostAudioless: boolean | null = null;
+          const requestIsHostAudioless: boolean | null = true;
 
-          let callbackCalled = false;
-          let returnedError: SdkError | null = null;
-          let returnedIsHostAudioless: boolean | null = null;
+          let micCallbackCalled = false;
+          const testMicStateCallback = (micState: meeting.MicState) => {
+            micCallbackCalled = true;
+            return Promise.resolve(micState);
+          };
 
+          // call and respond to requestAppAudioHandling
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: false, callbackMicMuteStateChangedHandler: emptyCallBack },
-            (error: SdkError | null, result: boolean | null) => {
-              callbackCalled = true;
-              returnedError = error;
-              returnedIsHostAudioless = result;
-            },
+            { isAppHandlingAudio: requestIsHostAudioless, callbackMicMuteStateChangedHandler: testMicStateCallback },
+            (_result: boolean) => {},
           );
-
           const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
             'meeting.requestAppAudioHandling',
           );
@@ -1506,12 +1464,117 @@ describe('meeting', () => {
           framelessPlatformMock.respondToMessage({
             data: {
               id: callbackId,
-              args: [requestError, requestIsHostAudioless],
+              args: [null, requestIsHostAudioless],
             },
           } as DOMMessageEvent);
-          expect(callbackCalled).toBe(true);
-          expect(returnedError).toBe(requestError);
-          expect(returnedIsHostAudioless).toBe(requestIsHostAudioless);
+
+          // check that the registerHandler for mic state was called
+          const registerHandlerMessage = framelessPlatformMock.findMessageByFunc('registerHandler');
+          expect(registerHandlerMessage).not.toBeNull();
+          expect(registerHandlerMessage.args.length).toBe(1);
+          expect(registerHandlerMessage.args[0]).toBe('meeting.micStateChanged');
+
+          // respond to the registerHandler
+          framelessPlatformMock.respondToMessage({
+            data: {
+              func: 'meeting.micStateChanged',
+              args: [{ isMicMuted: true }],
+            },
+          } as DOMMessageEvent);
+          await waitForEventQueue();
+
+          expect(micCallbackCalled).toBe(true);
+        });
+
+        it(`should call meeting.sendMicMuteStatusResponse with HostInitiated reason when mic state matches. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          const requestIsHostAudioless: boolean | null = true;
+
+          const micStateCallbackSameValue = (micState: meeting.MicState) => Promise.resolve(micState);
+
+          // call and respond to requestAppAudioHandling
+          meeting.requestAppAudioHandling(
+            {
+              isAppHandlingAudio: requestIsHostAudioless,
+              callbackMicMuteStateChangedHandler: micStateCallbackSameValue,
+            },
+            (_result: boolean) => {},
+          );
+          const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.requestAppAudioHandling',
+          );
+          expect(requestAppAudioHandlingMessage).not.toBeNull();
+
+          const callbackId = requestAppAudioHandlingMessage.id;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [null, requestIsHostAudioless],
+            },
+          } as DOMMessageEvent);
+
+          // respond to the registerHandler
+          const passedInIsMicMuted = false;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              func: 'meeting.micStateChanged',
+              args: [{ isMicMuted: passedInIsMicMuted }],
+            },
+          } as DOMMessageEvent);
+          await waitForEventQueue();
+
+          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
+          expect(sendMicStateMessage).not.toBeNull();
+          expect(sendMicStateMessage.args.length).toBe(2);
+          expect(sendMicStateMessage.args[0]).toMatchObject({ isMicMuted: passedInIsMicMuted });
+          expect(sendMicStateMessage.args[1]).toEqual(0 /* MicStateChangeReason.HostInitiated */);
+        });
+
+        it(`should call meeting.sendMicMuteStatusResponse with AppDeclinedToChange reason when mic state doesn't match. context: ${context}`, async () => {
+          await framelessPlatformMock.initializeWithContext(context);
+
+          const requestIsHostAudioless: boolean | null = true;
+
+          const micStateCallbackDifferentValue = (micState: meeting.MicState) =>
+            Promise.resolve({ isMicMuted: !micState.isMicMuted });
+
+          // call and respond to requestAppAudioHandling
+          meeting.requestAppAudioHandling(
+            {
+              isAppHandlingAudio: requestIsHostAudioless,
+              callbackMicMuteStateChangedHandler: micStateCallbackDifferentValue,
+            },
+            (_result: boolean) => {},
+          );
+          const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
+            'meeting.requestAppAudioHandling',
+          );
+          expect(requestAppAudioHandlingMessage).not.toBeNull();
+
+          const callbackId = requestAppAudioHandlingMessage.id;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              id: callbackId,
+              args: [null, requestIsHostAudioless],
+            },
+          } as DOMMessageEvent);
+
+          // respond to the registerHandler
+          const passedInIsMicMuted = false;
+          framelessPlatformMock.respondToMessage({
+            data: {
+              func: 'meeting.micStateChanged',
+              args: [{ isMicMuted: passedInIsMicMuted }],
+            },
+          } as DOMMessageEvent);
+          await waitForEventQueue();
+
+          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
+          expect(sendMicStateMessage).not.toBeNull();
+          expect(sendMicStateMessage.args.length).toBe(2);
+          expect(sendMicStateMessage.args[0]).toMatchObject({ isMicMuted: !passedInIsMicMuted }); // expect different value than what was passed in
+          expect(sendMicStateMessage.args[1]).toEqual(2 /* MicStateChangeReason.AppDeclinedToChange */);
         });
       } else {
         it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
@@ -1519,7 +1582,7 @@ describe('meeting', () => {
 
           expect(() =>
             meeting.requestAppAudioHandling(
-              { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyCallBack },
+              { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
               emptyCallBack,
             ),
           ).toThrowError(
