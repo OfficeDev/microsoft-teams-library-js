@@ -21,7 +21,7 @@ or if you have already built the Teams JavaScript client SDK and would like to b
 
 ### Note
 
-Running the SSR Test App locally utilizes an http connection. In order to run the app with local host SDK(Orange), an https connection is required. ngrok can be used to generate an https connection.
+Running the SSR Test App locally defaults to using an unsecure http connection. In order to run the SSR test app in the Orange app, a secure https connection is required. This can be achieved by generating an SSL certificate. Alternatively, ngrok can be used to generate a secure https connection without the need to generate an SSL certificate.
 
 # Troubleshooting
 
