@@ -71,7 +71,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit} instead.
+   * As of 2.0.0, please use {@link dialog.url.submit} instead.
    *
    * Submit the task module.
    *
