@@ -1486,7 +1486,7 @@ describe('meeting', () => {
           expect(micCallbackCalled).toBe(true);
         });
 
-        it(`should call meeting.sendMicMuteStatusResponse with HostInitiated reason when mic state matches. context: ${context}`, async () => {
+        it(`should call meeting.updateMicState with HostInitiated reason when mic state matches. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const requestIsHostAudioless: boolean | null = true;
@@ -1524,14 +1524,14 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           await waitForEventQueue();
 
-          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
-          expect(sendMicStateMessage).not.toBeNull();
-          expect(sendMicStateMessage.args.length).toBe(2);
-          expect(sendMicStateMessage.args[0]).toMatchObject({ isMicMuted: passedInIsMicMuted });
-          expect(sendMicStateMessage.args[1]).toEqual(0 /* MicStateChangeReason.HostInitiated */);
+          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.updateMicState');
+          expect(updateMicStateMessage).not.toBeNull();
+          expect(updateMicStateMessage.args.length).toBe(2);
+          expect(updateMicStateMessage.args[0]).toMatchObject({ isMicMuted: passedInIsMicMuted });
+          expect(updateMicStateMessage.args[1]).toEqual(0 /* MicStateChangeReason.HostInitiated */);
         });
 
-        it(`should call meeting.sendMicMuteStatusResponse with AppDeclinedToChange reason when mic state doesn't match. context: ${context}`, async () => {
+        it(`should call meeting.updateMicState with AppDeclinedToChange reason when mic state doesn't match. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const requestIsHostAudioless: boolean | null = true;
@@ -1570,14 +1570,14 @@ describe('meeting', () => {
           } as DOMMessageEvent);
           await waitForEventQueue();
 
-          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
-          expect(sendMicStateMessage).not.toBeNull();
-          expect(sendMicStateMessage.args.length).toBe(2);
-          expect(sendMicStateMessage.args[0]).toMatchObject({ isMicMuted: !passedInIsMicMuted }); // expect different value than what was passed in
-          expect(sendMicStateMessage.args[1]).toEqual(2 /* MicStateChangeReason.AppDeclinedToChange */);
+          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.updateMicState');
+          expect(updateMicStateMessage).not.toBeNull();
+          expect(updateMicStateMessage.args.length).toBe(2);
+          expect(updateMicStateMessage.args[0]).toMatchObject({ isMicMuted: !passedInIsMicMuted }); // expect different value than what was passed in
+          expect(updateMicStateMessage.args[1]).toEqual(2 /* MicStateChangeReason.AppDeclinedToChange */);
         });
 
-        it(`should call meeting.sendMicMuteStatusResponse with AppFailedToChange reason when mic callback throws. context: ${context}`, async () => {
+        it(`should call meeting.updateMicState with AppFailedToChange reason when mic callback throws. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const requestIsHostAudioless: boolean | null = true;
@@ -1618,9 +1618,9 @@ describe('meeting', () => {
 
           await waitForEventQueue();
 
-          const sendMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
-          expect(sendMicStateMessage).not.toBeNull();
-          expect(sendMicStateMessage.args[1]).toEqual(3 /* MicStateChangeReason.AppFailedToChange */);
+          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.updateMicState');
+          expect(updateMicStateMessage).not.toBeNull();
+          expect(updateMicStateMessage.args[1]).toEqual(3 /* MicStateChangeReason.AppFailedToChange */);
         });
       } else {
         it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
@@ -1649,13 +1649,13 @@ describe('meeting', () => {
     const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should call meeting.sendMicMuteStatusResponse with micState from parameter and AppInitiated reason. context: ${context}`, async () => {
+        it(`should call meeting.updateMicState with micState from parameter and AppInitiated reason. context: ${context}`, async () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           const micState: meeting.MicState = { isMicMuted: false };
           meeting.updateMicState(micState);
 
-          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.sendMicMuteStatusResponse');
+          const updateMicStateMessage = framelessPlatformMock.findMessageByFunc('meeting.updateMicState');
           expect(updateMicStateMessage).not.toBeNull();
           expect(updateMicStateMessage?.args[0]).toMatchObject(micState);
           expect(updateMicStateMessage?.args[1]).toEqual(1 /* MicStateChangeReason.AppInitiated */);

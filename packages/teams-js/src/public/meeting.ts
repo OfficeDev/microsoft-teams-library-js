@@ -774,6 +774,6 @@ export namespace meeting {
 
   function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.sendMicMuteStatusResponse', [micState, reason]);
+    sendMessageToParent('meeting.updateMicState', [micState, reason]);
   }
 }
