@@ -38,7 +38,7 @@ export namespace dialog {
     err?: string;
 
     /**
-     * Value provided in the `result` parameter by the dialog when the {@linkcode submit} function
+     * Value provided in the `result` parameter by the dialog when the {@linkcode url.submit} function
      * was called.
      * If the dialog was closed by the user without submitting (e.g., using a control in the corner
      * of the dialog), this value will be `undefined` here.
@@ -54,7 +54,7 @@ export namespace dialog {
   export type PostMessageChannel = (message: any) => void;
 
   /**
-   * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode submit}
+   * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode url.submit}
    * or an error if the dialog was closed by the user.
    * @beta
    */
@@ -126,6 +126,9 @@ export namespace dialog {
     /**
      * Submit the dialog module and close the dialog
      *
+     * @remarks
+     * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
+     *
      * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it,
      *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
      *
@@ -149,8 +152,8 @@ export namespace dialog {
     /**
      *  Send message to the parent from dialog
      *
-     *  @remarks
-     * This function is only called from inside of a dialog
+     * @remarks
+     * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
      *
      * @param message - The message to send to the parent
      *
@@ -191,7 +194,7 @@ export namespace dialog {
      * Register a listener that will be triggered when a message is received from the app that opened the dialog.
      *
      * @remarks
-     * This function is only called from inside of a dialog.
+     * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
      *
      * @param listener - The listener that will be triggered.
      *
