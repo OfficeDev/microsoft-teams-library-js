@@ -283,7 +283,7 @@ export namespace meeting {
      * @param micState The microphone state for the app to use
      * @returns A promise with the updated microphone state
      */
-    callbackMicMuteStateChangedHandler: (micState: MicState) => Promise<MicState>;
+    micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
   }
 
   /**
@@ -667,7 +667,7 @@ export namespace meeting {
    *   Unregisters the mic mute status change events so the app will no longer receive these events
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
-   * @throws Error if {@link RequestAppAudioHandlingParams.callbackMicMuteStateChangedHandler} parameter is not defined
+   * @throws Error if {@link RequestAppAudioHandlingParams.micMuteStateChangedCallback} parameter is not defined
    *
    * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
    * @param callback - Callback with one parameter, the result
@@ -682,7 +682,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[requestAppAudioHandling] Callback response cannot be null');
     }
-    if (!requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler) {
+    if (!requestAppAudioHandlingParams.micMuteStateChangedCallback) {
       throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -711,7 +711,7 @@ export namespace meeting {
 
       const micStateChangedCallback = async (micState: MicState): Promise<void> => {
         try {
-          const newMicState = await requestAppAudioHandlingParams.callbackMicMuteStateChangedHandler(micState);
+          const newMicState = await requestAppAudioHandlingParams.micMuteStateChangedCallback(micState);
 
           const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
           setMicStateWithReason(

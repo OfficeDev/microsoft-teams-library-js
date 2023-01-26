@@ -335,7 +335,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
       const callback = (isHostAudioless: boolean | null): void => {
         setResult('requestAppAudioHandling() succeeded: isHostAudioless=' + isHostAudioless);
       };
-      const callbackMicMuteStateChangedHandler = (micState: meeting.MicState): Promise<meeting.MicState> =>
+      const micMuteStateChangedCallback = (micState: meeting.MicState): Promise<meeting.MicState> =>
         new Promise((resolve, reject) => {
           if (!micState) {
             reject('micStatus should not be null');
@@ -348,7 +348,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
 
       const requestAppAudioHandlingParams: meeting.RequestAppAudioHandlingParams = {
         isAppHandlingAudio: input,
-        callbackMicMuteStateChangedHandler: callbackMicMuteStateChangedHandler,
+        micMuteStateChangedCallback: micMuteStateChangedCallback,
       };
 
       meeting.requestAppAudioHandling(requestAppAudioHandlingParams, callback);

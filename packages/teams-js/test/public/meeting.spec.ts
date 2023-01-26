@@ -1350,23 +1350,20 @@ describe('meeting', () => {
     it('should not allow call with null callback response', () => {
       expect(() =>
         meeting.requestAppAudioHandling(
-          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+          { isAppHandlingAudio: true, micMuteStateChangedCallback: emptyMicStateCallback },
           null,
         ),
       ).toThrowError('[requestAppAudioHandling] Callback response cannot be null');
     });
     it('should not allow call with null callback mic mute handler', () => {
       expect(() =>
-        meeting.requestAppAudioHandling(
-          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: null },
-          emptyCallBack,
-        ),
+        meeting.requestAppAudioHandling({ isAppHandlingAudio: true, micMuteStateChangedCallback: null }, emptyCallBack),
       ).toThrowError('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
     });
     it('should not allow calls before initialization', () => {
       expect(() =>
         meeting.requestAppAudioHandling(
-          { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+          { isAppHandlingAudio: true, micMuteStateChangedCallback: emptyMicStateCallback },
           emptyCallBack,
         ),
       ).toThrowError('The library has not yet been initialized');
@@ -1383,7 +1380,7 @@ describe('meeting', () => {
           let callbackCalled = false;
           let returnedIsHostAudioless: boolean | null = false;
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+            { isAppHandlingAudio: true, micMuteStateChangedCallback: emptyMicStateCallback },
             (result: boolean) => {
               callbackCalled = true;
               returnedIsHostAudioless = result;
@@ -1415,7 +1412,7 @@ describe('meeting', () => {
           let callbackCalled = false;
           let returnedIsHostAudioless: boolean | null = false;
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: false, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+            { isAppHandlingAudio: false, micMuteStateChangedCallback: emptyMicStateCallback },
             (result: boolean) => {
               callbackCalled = true;
               returnedIsHostAudioless = result;
@@ -1452,7 +1449,7 @@ describe('meeting', () => {
 
           // call and respond to requestAppAudioHandling
           meeting.requestAppAudioHandling(
-            { isAppHandlingAudio: requestIsHostAudioless, callbackMicMuteStateChangedHandler: testMicStateCallback },
+            { isAppHandlingAudio: requestIsHostAudioless, micMuteStateChangedCallback: testMicStateCallback },
             (_result: boolean) => {},
           );
           const requestAppAudioHandlingMessage = framelessPlatformMock.findMessageByFunc(
@@ -1497,7 +1494,7 @@ describe('meeting', () => {
           meeting.requestAppAudioHandling(
             {
               isAppHandlingAudio: requestIsHostAudioless,
-              callbackMicMuteStateChangedHandler: micStateCallbackSameValue,
+              micMuteStateChangedCallback: micStateCallbackSameValue,
             },
             (_result: boolean) => {},
           );
@@ -1543,7 +1540,7 @@ describe('meeting', () => {
           meeting.requestAppAudioHandling(
             {
               isAppHandlingAudio: requestIsHostAudioless,
-              callbackMicMuteStateChangedHandler: micStateCallbackDifferentValue,
+              micMuteStateChangedCallback: micStateCallbackDifferentValue,
             },
             (_result: boolean) => {},
           );
@@ -1590,7 +1587,7 @@ describe('meeting', () => {
           meeting.requestAppAudioHandling(
             {
               isAppHandlingAudio: requestIsHostAudioless,
-              callbackMicMuteStateChangedHandler: micStateCallbackThatThrowsError,
+              micMuteStateChangedCallback: micStateCallbackThatThrowsError,
             },
             (_result: boolean) => {},
           );
@@ -1628,7 +1625,7 @@ describe('meeting', () => {
 
           expect(() =>
             meeting.requestAppAudioHandling(
-              { isAppHandlingAudio: true, callbackMicMuteStateChangedHandler: emptyMicStateCallback },
+              { isAppHandlingAudio: true, micMuteStateChangedCallback: emptyMicStateCallback },
               emptyCallBack,
             ),
           ).toThrowError(
