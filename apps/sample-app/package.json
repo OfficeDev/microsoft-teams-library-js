@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "@microsoft/microsoft-graph-types": "^2.21.0",
-    "@microsoft/teams-js": "file:../../packages/teams-js"
+    "@microsoft/teams-js": "link:../../packages/teams-js"
   }
 }
