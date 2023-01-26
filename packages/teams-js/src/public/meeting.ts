@@ -671,7 +671,7 @@ export namespace meeting {
    *
    * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
    * @param callback - Callback with one parameter, the result
-   * result can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
+   * can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
    *
    * @beta
    */
