@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g pnpm@latest-6
+      - run: npm install -g pnpm
       - run: pnpm install
       - run: pnpm build
       - run: pnpm test
