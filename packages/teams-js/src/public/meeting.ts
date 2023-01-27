@@ -248,6 +248,12 @@ export namespace meeting {
   /**
    * Interface for mic state change
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface MicState {
@@ -269,6 +275,12 @@ export namespace meeting {
 
   /**
    * Interface for RequestAppAudioHandling properties
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * @beta
    */
@@ -673,6 +685,12 @@ export namespace meeting {
    * @param callback - Callback with one parameter, the result
    * can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export function requestAppAudioHandling(
@@ -766,6 +784,12 @@ export namespace meeting {
    * Notifies the host that the microphone state has changed in the app.
    * @param micState - The new state that the microphone is in
    *   isMicMuted - Boolean to indicate the current mute status of the mic.
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * @beta
    */
