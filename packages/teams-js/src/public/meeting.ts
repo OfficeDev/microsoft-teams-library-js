@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
@@ -243,6 +243,47 @@ export namespace meeting {
      * Hide from docs.
      */
     error?: SdkError;
+  }
+
+  /**
+   * Interface for mic state change
+   *
+   * @beta
+   */
+  export interface MicState {
+    /**
+     * Indicates the mute status of the mic
+     */
+    isMicMuted: boolean;
+  }
+
+  /**
+   * Reasons for the app's microphone state to change
+   */
+  enum MicStateChangeReason {
+    HostInitiated,
+    AppInitiated,
+    AppDeclinedToChange,
+    AppFailedToChange,
+  }
+
+  /**
+   * Interface for RequestAppAudioHandling properties
+   *
+   * @beta
+   */
+  export interface RequestAppAudioHandlingParams {
+    /**
+     * Indicates whether the app is requesting to start handling audio, or if
+     * it's giving audio back to the host
+     */
+    isAppHandlingAudio: boolean;
+    /**
+     * Callback for the host to tell the app to change its microphone state
+     * @param micState The microphone state for the app to use
+     * @returns A promise with the updated microphone state
+     */
+    micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
   }
 
   /**
@@ -573,6 +614,7 @@ export namespace meeting {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
+
   /**
    * Nested namespace for functions to control behavior of the app share button
    *
@@ -612,5 +654,127 @@ export namespace meeting {
       }
       sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
     }
+  }
+
+  /**
+   * Have the app handle audio (mic & speaker) and turn off host audio.
+   *
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is true, the host will switch to audioless mode
+   *   Registers for mic mute status change events, which are events that the app can receive from the host asking the app to
+   *   mute or unmute the microphone.
+   *
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is false, the host will switch out of audioless mode
+   *   Unregisters the mic mute status change events so the app will no longer receive these events
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@link RequestAppAudioHandlingParams.micMuteStateChangedCallback} parameter is not defined
+   *
+   * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
+   * @param callback - Callback with one parameter, the result
+   * can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
+   *
+   * @beta
+   */
+  export function requestAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[requestAppAudioHandling] Callback response cannot be null');
+    }
+    if (!requestAppAudioHandlingParams.micMuteStateChangedCallback) {
+      throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
+    }
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+    if (requestAppAudioHandlingParams.isAppHandlingAudio) {
+      startAppAudioHandling(requestAppAudioHandlingParams, callback);
+    } else {
+      stopAppAudioHandling(requestAppAudioHandlingParams, callback);
+    }
+  }
+
+  function startAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    const callbackInternalRequest = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
+      }
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
+
+      const micStateChangedCallback = async (micState: MicState): Promise<void> => {
+        try {
+          const newMicState = await requestAppAudioHandlingParams.micMuteStateChangedCallback(micState);
+
+          const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
+          setMicStateWithReason(
+            newMicState,
+            micStateDidUpdate ? MicStateChangeReason.HostInitiated : MicStateChangeReason.AppDeclinedToChange,
+          );
+        } catch {
+          setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
+        }
+      };
+      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+
+      callback(isHostAudioless);
+    };
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalRequest,
+    );
+  }
+
+  function stopAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    const callbackInternalStop = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
+      }
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
+
+      if (doesHandlerExist('meeting.micStateChanged')) {
+        removeHandler('meeting.micStateChanged');
+      }
+
+      callback(isHostAudioless);
+    };
+
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalStop,
+    );
+  }
+
+  /**
+   * Notifies the host that the microphone state has changed in the app.
+   * @param micState - The new state that the microphone is in
+   *   isMicMuted - Boolean to indicate the current mute status of the mic.
+   *
+   * @beta
+   */
+  export function updateMicState(micState: MicState): void {
+    setMicStateWithReason(micState, MicStateChangeReason.AppInitiated);
+  }
+
+  function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('meeting.updateMicState', [micState, reason]);
   }
 }
