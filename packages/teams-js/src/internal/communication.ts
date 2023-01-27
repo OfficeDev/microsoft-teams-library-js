@@ -271,7 +271,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
  * @internal
  * Limited to Microsoft-internal use
  */
-export function processMessage(evt: DOMMessageEvent): void {
+function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
@@ -303,7 +303,7 @@ export function processMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
