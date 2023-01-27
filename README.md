@@ -44,7 +44,7 @@ Application used to test the functionality of the various library APIs.
 
 ### Locally generating reference documentation
 
-If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `pnpm docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
+If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `pnpm run docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
 
 # Contributing
 
