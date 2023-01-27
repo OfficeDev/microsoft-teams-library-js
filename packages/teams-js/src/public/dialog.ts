@@ -389,7 +389,7 @@ export namespace dialog {
      * This function cannot be called from inside of a dialog
      *
      * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module {@link AdaptiveCardDialogInfo}.
-     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
+     * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode url.submit} function or when the user closes the dialog.
      *
      * @beta
      */

@@ -86,7 +86,7 @@
     "ts-jest": "^27.0.5",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.2.1",
-    "typedoc": "^0.22.17",
+    "typedoc": "^0.23.24",
     "typescript": "4.6.4",
     "webpack": "^5.10.0",
     "webpack-assets-manifest": "^5.0.6",
