@@ -14,7 +14,7 @@
     "build": "yarn lint && webpack && yarn docs:validate",
     "clean": "rimraf ./dist",
     "docs": "yarn typedoc",
-    "docs:validate": "yarn typedoc --treatWarningsAsErrors",
+    "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",
     "lint": "yarn eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
