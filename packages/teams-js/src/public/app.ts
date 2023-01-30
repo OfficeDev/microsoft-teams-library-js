@@ -367,7 +367,8 @@ export namespace app {
     isPSTNCallingAllowed?: boolean;
 
     /**
-     * The license type for the current user.
+     * The license type for the current user. Possible values are:
+     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker"
      */
     licenseType?: string;
 
