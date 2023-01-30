@@ -133,6 +133,19 @@ export interface IFluidTenantInfo {
 }
 
 /**
+ * @hidden
+ * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
+ * particular client in a Live Share session.
+ *
+ * @beta
+ */
+export interface IClientInfo {
+  readonly userId: string;
+  readonly roles: UserMeetingRole[];
+  readonly userIconUrl?: string; // permissions required?
+}
+
+/**
  * Live Share host implementation for O365 and Teams clients.
  *
  * @beta
@@ -249,6 +262,23 @@ export class LiveShareHost {
       ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
+    });
+  }
+
+  /**
+   * @hidden
+   * Returns the `IClientInfo` associated with a client ID.
+   *
+   * @param clientId The Client ID the message was received from.
+   * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
+   *
+   * @beta
+   */
+  public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+    return new Promise<IClientInfo | undefined>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+
+      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
     });
   }
 
