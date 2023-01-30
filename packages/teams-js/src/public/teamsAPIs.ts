@@ -40,12 +40,11 @@ export namespace teamsCore {
   }
 
   /**
-   * @hidden
+   * @beta
    * Registers a handler to be called when the page has been requested to load.
    *
    * @param handler - The handler to invoke when the page is loaded.
    *
-   * @internal
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     ensureInitialized();
@@ -58,13 +57,12 @@ export namespace teamsCore {
   }
 
   /**
-   * @hidden
+   * @beta
    * Registers a handler to be called before the page is unloaded.
    *
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
-   * @internal
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     ensureInitialized();
