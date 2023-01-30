@@ -2,7 +2,7 @@ import { meeting, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
-import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
@@ -360,6 +360,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
       },
     },
   });
+
 const UpdateMicState = (): React.ReactElement =>
   ApiWithTextInput<meeting.MicState>({
     name: 'updateMicState',
