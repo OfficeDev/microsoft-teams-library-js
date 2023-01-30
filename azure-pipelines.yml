@@ -1,5 +1,7 @@
 variables:
   - group: InfoSec-SecurityResults
+  - name: ClientSdkProjectDirectory
+    value: microsoft-teams-library-js
 
 trigger:
   branches:
