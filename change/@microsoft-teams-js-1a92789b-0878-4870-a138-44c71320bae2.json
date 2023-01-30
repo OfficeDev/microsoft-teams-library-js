@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added `@hidden` and `@internal` tags for the meeting `requestAppAudioHandling` and `updateMicState` APIs",
+  "comment": "Added `@hidden` and `@internal` tags for the meeting `requestAppAudioHandling` and `updateMicState` APIs, and improved how the `teams-test-app` app uses the APIs",
   "packageName": "@microsoft/teams-js",
   "email": "tnakagawa@microsoft.com",
   "dependentChangeType": "patch"
