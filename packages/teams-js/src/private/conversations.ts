@@ -144,7 +144,7 @@ export namespace conversations {
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
     return new Promise<void>((resolve) => {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -192,7 +192,7 @@ export namespace conversations {
    * Limited to Microsoft-internal use
    */
   export function closeConversation(): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -216,7 +216,7 @@ export namespace conversations {
    */
   export function getChatMembers(): Promise<ChatMembersInformation> {
     return new Promise<ChatMembersInformation>((resolve) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -225,12 +225,15 @@ export namespace conversations {
   }
 
   /**
+   * Checks if the conversations capability is supported by the host
    * @returns boolean to represent whether conversations capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return runtime.supports.conversations ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.conversations ? true : false;
   }
 }

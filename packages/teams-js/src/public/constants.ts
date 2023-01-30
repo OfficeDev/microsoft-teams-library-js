@@ -17,9 +17,30 @@ export enum HostClientType {
 }
 
 export enum HostName {
+  /**
+   * Office.com and Office Windows App
+   */
   office = 'Office',
+
+  /**
+   * For "desktop" specifically, this refers to the new, pre-release version of Outlook for Windows.
+   * Also used on other platforms that map to a single Outlook client.
+   */
   outlook = 'Outlook',
+
+  /**
+   * Outlook for Windows: the classic, native, desktop client
+   */
+  outlookWin32 = 'OutlookWin32',
+
+  /**
+   * Microsoft-internal test Host
+   */
   orange = 'Orange',
+
+  /**
+   * Teams
+   */
   teams = 'Teams',
 }
 
@@ -65,7 +86,7 @@ export enum DialogDimension {
   Small = 'small',
 }
 
-import { ErrorCode, SdkError } from './interfaces';
+import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0, please use {@link DialogDimension} instead.
@@ -83,3 +104,10 @@ export enum ChannelType {
 }
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+
+/**
+ * @hidden
+ *
+ * Minimum Adaptive Card version supported by the host.
+ */
+export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };

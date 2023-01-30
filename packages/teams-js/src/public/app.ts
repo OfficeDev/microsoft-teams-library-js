@@ -10,10 +10,11 @@ import {
   sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
-import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
 import { authentication } from './authentication';
@@ -22,15 +23,16 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
+import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
+import { version } from './version';
 
 /**
  * Namespace to interact with app initialization and lifecycle.
- *
- * @beta
  */
 export namespace app {
+  const appLogger = getLogger('app');
+
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
   export const Messages = {
@@ -94,7 +96,7 @@ export namespace app {
      */
     reason: FailedReason;
     /**
-     * A message that describes the failure
+     * This property is currently unused.
      */
     message?: string;
   }
@@ -124,7 +126,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme.
+     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
      */
     theme: string;
 
@@ -365,7 +367,8 @@ export namespace app {
     isPSTNCallingAllowed?: boolean;
 
     /**
-     * The license type for the current user.
+     * The license type for the current user. Possible values are:
+     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker"
      */
     licenseType?: string;
 
@@ -483,7 +486,7 @@ export namespace app {
     meeting?: MeetingInfo;
 
     /**
-     * SharePoint context. This is only available when hosted in SharePoint.
+     * When hosted in SharePoint, this is the [SharePoint PageContext](https://learn.microsoft.com/en-us/javascript/api/sp-page-context/pagecontext?view=sp-typescript-latest), else `undefined`
      */
     sharepoint?: any;
 
@@ -505,7 +508,7 @@ export namespace app {
    * @returns whether the Teams client SDK has been initialized.
    */
   export function isInitialized(): boolean {
-    return GlobalVars.initializeCalled;
+    return GlobalVars.initializeCompleted;
   }
 
   /**
@@ -525,21 +528,29 @@ export namespace app {
    * Initializes the library.
    *
    * @remarks
-   * This must be called before any other SDK calls
-   * but after the frame is loaded successfully.
+   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https:www.example.com
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return runWithTimeout(
-      () => initializeHelper(validMessageOrigins),
-      initializationTimeoutInMs,
-      new Error('SDK initialization timed out.'),
-    );
+    if (!inServerSideRenderingEnvironment()) {
+      return runWithTimeout(
+        () => initializeHelper(validMessageOrigins),
+        initializationTimeoutInMs,
+        new Error('SDK initialization timed out.'),
+      );
+    } else {
+      const initializeLogger = appLogger.extend('initialize');
+      // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+      // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+      initializeLogger('window object undefined at initialization');
+      return Promise.resolve();
+    }
   }
 
+  const initializeHelperLogger = appLogger.extend('initializeHelper');
   function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
     return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
@@ -564,8 +575,10 @@ export namespace app {
             // so we assume that if we don't have it, we must be running in Teams.
             // After Teams updates its client code, we can remove this default code.
             try {
-              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
-              // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
+              initializeHelperLogger('Parsing %s', runtimeConfig);
+              const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
+              // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
               }
@@ -573,6 +586,7 @@ export namespace app {
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
+                  initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
                   // if the given runtime config was actually meant to be a SDK version, store it as such.
                   // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
                   // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
@@ -580,8 +594,16 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
-                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                  const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
+
+                  if (!givenRuntimeConfig) {
+                    throw new Error(
+                      'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                    );
+                  } else {
+                    applyRuntimeConfig(givenRuntimeConfig);
+                  }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
@@ -638,19 +660,23 @@ export namespace app {
     }
 
     if (GlobalVars.frameContext) {
+      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
       registerOnThemeChangeHandler(null);
       pages.backStack.registerBackButtonHandler(null);
       pages.registerFullScreenHandler(null);
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null);
+      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
+      /* eslint-enable strict-null-checks/all */
     }
 
     if (GlobalVars.frameContext === FrameContexts.settings) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnSaveHandler(null);
     }
 
     if (GlobalVars.frameContext === FrameContexts.remove) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnRemoveHandler(null);
     }
 
@@ -672,7 +698,7 @@ export namespace app {
    */
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
-      ensureInitialized();
+      ensureInitializeCalled();
       resolve(sendAndUnwrap('getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
@@ -681,7 +707,7 @@ export namespace app {
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.AppLoaded, [version]);
   }
 
@@ -689,7 +715,7 @@ export namespace app {
    * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.Success, [version]);
   }
 
@@ -700,7 +726,7 @@ export namespace app {
    * during initialization as well as an optional message.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.Failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
@@ -713,7 +739,7 @@ export namespace app {
    * @param expectedFailureRequest - The expected failure request containing the reason and an optional message
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
   }
 
@@ -726,7 +752,8 @@ export namespace app {
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
-    ensureInitialized();
+    // allow for registration cleanup even when not called initialize
+    handler && ensureInitializeCalled();
     Handlers.registerOnThemeChangeHandler(handler);
   }
 
@@ -739,6 +766,7 @@ export namespace app {
   export function openLink(deepLink: string): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -852,4 +880,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   };
 
   return context;
+}
+
+function inServerSideRenderingEnvironment(): boolean {
+  return typeof window === 'undefined';
 }

@@ -61,10 +61,12 @@ export namespace chat {
    * @param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
+   *
+   * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>((resolve) => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -92,6 +94,8 @@ export namespace chat {
    * @param openChatRequest: {@link OpenGroupChatRequest} - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
+   *
+   * @beta
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -105,7 +109,7 @@ export namespace chat {
         };
         openChat(chatRequest);
       } else {
-        ensureInitialized(FrameContexts.content, FrameContexts.task);
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -128,7 +132,15 @@ export namespace chat {
     });
   }
 
+  /**
+   * Checks if the chat capability is supported by the host
+   * @returns boolean to represent whether the chat capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @beta
+   */
   export function isSupported(): boolean {
-    return runtime.supports.chat ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.chat ? true : false;
   }
 }

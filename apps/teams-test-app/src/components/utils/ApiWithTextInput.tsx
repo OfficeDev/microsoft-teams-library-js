@@ -6,7 +6,7 @@ import { isTestBackCompat } from './isTestBackCompat';
 
 export interface ApiWithTextInputProps<T> {
   title: string;
-  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces
+  name: string; // system identifiable unique name in context of Teams Client and should contain no spaces at all
   onClick:
     | ((input: Partial<T>) => Promise<string>)
     | {
@@ -62,7 +62,7 @@ export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps
   return (
     <ApiContainer title={title} result={result} name={name}>
       <span>
-        <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} />
+        <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} placeholder={name} />
         <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
       </span>
     </ApiContainer>

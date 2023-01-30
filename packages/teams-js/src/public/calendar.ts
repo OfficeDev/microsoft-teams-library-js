@@ -7,7 +7,7 @@ import { runtime } from './runtime';
 export namespace calendar {
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {
     return new Promise<void>((resolve) => {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');
       }
@@ -21,7 +21,7 @@ export namespace calendar {
   }
   export function composeMeeting(composeMeetingParams: ComposeMeetingParams): Promise<void> {
     return new Promise<void>((resolve) => {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw new Error('Not supported');
       }
@@ -43,8 +43,15 @@ export namespace calendar {
       }
     });
   }
+
+  /**
+   * Checks if the calendar capability is supported by the host
+   * @returns boolean to represent whether the calendar capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.calendar ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.calendar ? true : false;
   }
 
   export interface OpenCalendarItemParams {

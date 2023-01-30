@@ -31,7 +31,7 @@ const GetCurrentLocation = (): React.ReactElement =>
 const ChooseLocation = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'chooseLocationOnMap',
-    title: 'Choose Location',
+    title: 'Choose geoLocation',
     onClick: async () => {
       const result = await geoLocation.map.chooseLocation();
       return JSON.stringify(result);
@@ -41,7 +41,7 @@ const ChooseLocation = (): React.ReactElement =>
 const ShowLocation = (): React.ReactElement =>
   ApiWithTextInput<geoLocation.Location>({
     name: 'showLocationOnMap',
-    title: 'Show Location',
+    title: 'Show geoLocation',
     onClick: {
       validateInput: (input) => {
         if (!input.latitude || !input.longitude) {

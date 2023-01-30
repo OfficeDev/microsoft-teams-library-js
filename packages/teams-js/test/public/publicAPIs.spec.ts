@@ -1,12 +1,11 @@
-import { version } from '../../src/internal/constants';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
+import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { Context, FrameContext, TabInstanceParameters } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {
-  _initialize,
-  _uninitialize,
   enablePrintCapability,
   executeDeepLink,
   getContext,
@@ -26,7 +25,13 @@ import {
   setFrameContext,
   shareDeepLink,
 } from '../../src/public/publicAPIs';
+import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('MicrosoftTeams-publicAPIs', () => {
   // Use to send a mock message from the app.
@@ -40,13 +45,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      app._uninitialize();
     }
   });
 
@@ -55,7 +61,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       getContext(() => {
         return;
       }),
-    ).toThrowError('The library has not yet been initialized');
+    ).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should successfully initialize', () => {
@@ -68,8 +74,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args.length).toEqual(2);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     expect(initMessage.timestamp).not.toBeNull();
   });
 
@@ -141,6 +148,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
+  it('registerChangeSettingsHandler should not throw if pages.config is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerChangeSettingsHandler(() => {})).not.toThrowError();
+  });
+
   it('should successfully register a app button click handler', async () => {
     await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
@@ -151,6 +166,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     utils.sendMessage('appButtonClick', '');
     expect(handlerCalled).toBeTruthy();
+  });
+
+  it('registerAppButtonHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonClickHandler(() => {})).not.toThrowError();
   });
 
   it('should successfully register a app button hover enter handler', async () => {
@@ -166,6 +189,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
+  it('registerAppButtonHoverEnterHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonHoverEnterHandler(() => {})).not.toThrowError();
+  });
+
   it('should successfully register a app button hover leave handler', async () => {
     await utils.initializeWithContext(FrameContexts.content);
     let handlerCalled = false;
@@ -177,6 +208,14 @@ describe('MicrosoftTeams-publicAPIs', () => {
     utils.sendMessage('appButtonHoverLeave', '');
 
     expect(handlerCalled).toBeTruthy();
+  });
+
+  it('registerAppButtonHoverLeaveHandler should not throw if pages.appButton is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    expect(() => registerAppButtonHoverLeaveHandler(() => {})).not.toThrowError();
   });
 
   it('should successfully register a theme change handler', async () => {
@@ -216,17 +255,61 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerInvoked).toBe(true);
   });
 
+  it('registerBackButtonHandler should not throw if pages.backStack is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+    expect(() =>
+      registerBackButtonHandler(() => {
+        return true;
+      }),
+    ).not.toThrowError();
+  });
+
   it('should successfully register a focus enter handler and return true', async () => {
     await utils.initializeWithContext(FrameContexts.content);
 
     let handlerInvoked = false;
-    registerFocusEnterHandler((x: boolean) => {
+    registerFocusEnterHandler((_x: boolean) => {
       handlerInvoked = true;
       return true;
     });
 
     utils.sendMessage('focusEnter');
     expect(handlerInvoked).toBe(true);
+  });
+
+  it('registerFocusEnterHandler should not throw if pages is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const emptyHandler = (x: boolean): boolean => {
+      return true;
+    };
+    expect(() => microsoftTeams.registerFocusEnterHandler(emptyHandler)).not.toThrowError();
+  });
+
+  it('should successfully register a full screen handler', async () => {
+    await utils.initializeWithContext(FrameContexts.content); // this can be used in any context
+
+    let handlerInvoked = false;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    microsoftTeams.registerFullScreenHandler((_x: boolean) => {
+      handlerInvoked = true;
+    });
+
+    utils.sendMessage('fullScreenChange');
+    expect(handlerInvoked).toBe(true);
+  });
+
+  it('registerFullScreenHandler should not throw if pages is not supported', async () => {
+    await utils.initializeWithContext(FrameContexts.content); // this can be used in any context
+    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
+    const emptyHandler = (x: boolean): void => {};
+    expect(() => microsoftTeams.registerFullScreenHandler(emptyHandler)).not.toThrowError();
   });
 
   it('should successfully get context', (done) => {
@@ -364,7 +447,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -488,7 +571,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -584,7 +667,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         executeDeepLink('dummyLink', () => {
           return;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully send a request', (done) => {
@@ -676,41 +759,37 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
   });
 
-  it("Ctrl+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Ctrl+P shouldn't call print handler if printCapability is disabled", () => {
     let handlerCalled = false;
     initialize();
     jest.spyOn(microsoftTeams, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
   });
 
-  it("Cmd+P shouldn't call print handler if printCapabilty is disabled", () => {
+  it("Cmd+P shouldn't call print handler if printCapability is disabled", () => {
     let handlerCalled = false;
     initialize();
     jest.spyOn(microsoftTeams, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeFalsy();
   });
 
-  it('print handler should successfully call default print handler', () => {
+  it('print handler should successfully call default print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
@@ -721,35 +800,31 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Ctrl+P should successfully call print handler', () => {
+  it('Ctrl+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).ctrlKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBeTruthy();
   });
 
-  it('Cmd+P should successfully call print handler', () => {
+  it('Cmd+P should successfully call print handler', async () => {
     let handlerCalled = false;
-    initialize();
+    await utils.initializeWithContext(FrameContexts.content);
     enablePrintCapability();
     jest.spyOn(window, 'print').mockImplementation((): void => {
       handlerCalled = true;
     });
     const printEvent = new Event('keydown');
-    // tslint:disable:no-any
     (printEvent as any).keyCode = 80;
     (printEvent as any).metaKey = true;
-    // tslint:enable:no-any
 
     document.dispatchEvent(printEvent);
     expect(handlerCalled).toBe(true);
@@ -761,7 +836,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerOnLoadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
     it('should successfully register handler', async () => {
       await utils.initializeWithContext(FrameContexts.content);
@@ -775,6 +850,13 @@ describe('MicrosoftTeams-publicAPIs', () => {
       utils.sendMessage('load');
 
       expect(handlerInvoked).toBe(true);
+    });
+    it('registerOnLoadHandler should not throw if teamsCore is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => registerOnLoadHandler(() => {})).not.toThrowError();
     });
   });
 
@@ -809,7 +891,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         registerBeforeUnloadHandler(() => {
           return false;
         }),
-      ).toThrowError('The library has not yet been initialized');
+      ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should successfully register a before unload handler', async () => {
@@ -824,6 +906,17 @@ describe('MicrosoftTeams-publicAPIs', () => {
       utils.sendMessage('beforeUnload');
 
       expect(handlerInvoked).toBe(true);
+    });
+
+    it('registerBeforeUnloadHandler should not throw if teamsCore is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      expect(() =>
+        registerBeforeUnloadHandler(() => {
+          return true;
+        }),
+      ).not.toThrowError();
     });
 
     it('should call readyToUnload automatically when no before unload handler is registered', async () => {
@@ -921,8 +1014,9 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(1);
+    expect(initMessage.args.length).toEqual(2);
     expect(initMessage.args[0]).toEqual(version);
+    expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     const message = utils.findMessageByFunc('setFrameContext');
     expect(message).not.toBeNull();
     expect(message.args.length).toBe(1);

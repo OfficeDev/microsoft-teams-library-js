@@ -15,7 +15,7 @@ export namespace teamsCore {
    */
   export function enablePrintCapability(): void {
     if (!GlobalVars.printCapabilityEnabled) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -36,7 +36,13 @@ export namespace teamsCore {
    * default print handler
    */
   export function print(): void {
-    window.print();
+    if (typeof window !== 'undefined') {
+      window.print();
+    } else {
+      // This codepath only exists to enable compilation in a server-side redered environment. In standard usage, the window object should never be undefined so this code path should never run.
+      // If this error has actually been thrown, something has gone very wrong and it is a bug
+      throw new Error('window object undefined at print call');
+    }
   }
 
   /**
@@ -47,10 +53,32 @@ export namespace teamsCore {
    *
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-    ensureInitialized();
+    registerOnLoadHandlerHelper(handler, () => {
+      if (handler && !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
+  }
 
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+  /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerOnLoadHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - The handler to invoke when the page is loaded.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerOnLoadHandlerHelper(
+    handler: (context: LoadContext) => void,
+    versionSpecificHelper?: () => void,
+  ): void {
+    // allow for registration cleanup even when not finished initializing
+    handler && ensureInitialized(runtime);
+
+    if (handler && versionSpecificHelper) {
+      versionSpecificHelper();
     }
 
     Handlers.registerOnLoadHandler(handler);
@@ -65,19 +93,45 @@ export namespace teamsCore {
    *
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+    registerBeforeUnloadHandlerHelper(handler, () => {
+      if (handler && !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
+  }
+
+  /**
+   * @hidden
+   * Undocumented helper function with shared code between deprecated version and current version of the registerBeforeUnloadHandler API.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @param handler - - The handler to invoke before the page is unloaded. If this handler returns true the page should
+   * invoke the readyToUnload function provided to it once it's ready to be unloaded.
+   * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   */
+  export function registerBeforeUnloadHandlerHelper(
+    handler: (readyToUnload: () => void) => boolean,
+    versionSpecificHelper?: () => void,
+  ): void {
+    // allow for registration cleanup even when not finished initializing
+    handler && ensureInitialized(runtime);
+    if (handler && versionSpecificHelper) {
+      versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);
   }
 
   /**
    * Checks if teamsCore capability is supported by the host
-   * @returns true if the teamsCore capability is enabled in runtime.supports.teamsCore and
-   * false if it is disabled
+   *
+   * @returns boolean to represent whether the teamsCore capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    */
   export function isSupported(): boolean {
-    return runtime.supports.teamsCore ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.teamsCore ? true : false;
   }
 }

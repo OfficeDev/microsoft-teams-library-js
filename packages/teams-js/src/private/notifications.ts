@@ -16,7 +16,7 @@ export namespace notifications {
    * Limited to Microsoft-internal use
    */
   export function showNotification(showNotificationParameters: ShowNotificationParameters): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -26,12 +26,16 @@ export namespace notifications {
 
   /**
    * @hidden
+   *
+   * Checks if the notifications capability is supported by the host
    * @returns boolean to represent whether the notifications capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return runtime.supports.notifications ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.notifications ? true : false;
   }
 }

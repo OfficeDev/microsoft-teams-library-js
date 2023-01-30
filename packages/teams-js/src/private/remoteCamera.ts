@@ -227,7 +227,7 @@ export namespace remoteCamera {
     if (!callback) {
       throw new Error('[remoteCamera.getCapableParticipants] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -257,7 +257,7 @@ export namespace remoteCamera {
     if (!callback) {
       throw new Error('[remoteCamera.requestControl] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -281,7 +281,7 @@ export namespace remoteCamera {
     if (!callback) {
       throw new Error('[remoteCamera.sendControlCommand] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -301,7 +301,7 @@ export namespace remoteCamera {
     if (!callback) {
       throw new Error('[remoteCamera.terminateSession] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -324,7 +324,7 @@ export namespace remoteCamera {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnCapableParticipantsChangeHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -345,7 +345,7 @@ export namespace remoteCamera {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnErrorHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -366,7 +366,7 @@ export namespace remoteCamera {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnDeviceStateChangeHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -387,7 +387,7 @@ export namespace remoteCamera {
     if (!handler) {
       throw new Error('[remoteCamera.registerOnSessionStatusChangeHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -396,12 +396,16 @@ export namespace remoteCamera {
 
   /**
    * @hidden
+   *
+   * Checks if the remoteCamera capability is supported by the host
    * @returns boolean to represent whether the remoteCamera capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return runtime.supports.remoteCamera ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.remoteCamera ? true : false;
   }
 }

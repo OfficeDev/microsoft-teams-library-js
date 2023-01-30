@@ -101,7 +101,7 @@ export namespace video {
    * @param config - VideoFrameConfig to customize generated video frame parameters
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -137,7 +137,7 @@ export namespace video {
     effectChangeType: EffectChangeType,
     effectId: string | undefined,
   ): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -150,7 +150,7 @@ export namespace video {
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -179,10 +179,12 @@ export namespace video {
   /**
    * Checks if video capability is supported by the host
    * @beta
-   * @returns true if the video capability is enabled in runtime.supports.video and
-   * false if it is disabled
+   * @returns boolean to represent whether the video capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
    */
   export function isSupported(): boolean {
-    return runtime.supports.video ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.video ? true : false;
   }
 } //end of video namespace

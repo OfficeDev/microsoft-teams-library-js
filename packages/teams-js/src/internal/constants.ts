@@ -1,6 +1,3 @@
-declare const PACKAGE_VERSION: string;
-export const version = PACKAGE_VERSION;
-
 /**
  * @hidden
  * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
@@ -139,13 +136,17 @@ export const validOrigins = [
   'outlook-sdf.office.com',
   'outlook.office365.com',
   'outlook-sdf.office365.com',
+  'outlook.live.com',
+  'outlook-sdf.live.com',
   '*.teams.microsoft.com',
+  '*.www.office.com',
   'www.office.com',
   'word.office.com',
   'excel.office.com',
   'powerpoint.office.com',
   'www.officeppe.com',
-  '*.www.office.com',
+  '*.www.microsoft365.com',
+  'www.microsoft365.com',
 ];
 
 /**
@@ -174,3 +175,12 @@ export const teamsDeepLinkProtocol = 'https';
  * Limited to Microsoft-internal use
  */
 export const teamsDeepLinkHost = 'teams.microsoft.com';
+
+/** @hidden */
+export const errorLibraryNotInitialized = 'The library has not yet been initialized';
+
+/** @hidden */
+export const errorRuntimeNotInitialized = 'The runtime has not yet been initialized';
+
+/** @hidden */
+export const errorRuntimeNotSupported = 'The runtime version is not supported';

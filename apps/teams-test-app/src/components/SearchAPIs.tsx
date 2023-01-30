@@ -8,7 +8,7 @@ const RegisterHandlers = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'search_registerHandlers',
     title: 'Search Register Handlers',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const onChange = (onChangeHandler: search.SearchQuery): void => {
         console.log(onChangeHandler.searchTerm);
 
@@ -27,8 +27,8 @@ const RegisterHandlers = (): React.ReactElement =>
       };
       setResult('register handlers');
 
-      search.registerHandlers(onChange, onClosed, onExecute);
-      return 'recieved';
+      search.registerHandlers(onClosed, onExecute, onChange);
+      return 'received';
     },
   });
 

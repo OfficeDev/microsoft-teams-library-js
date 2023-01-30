@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { mail } from '../../src/public/mail';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 const dataError = 'Something went wrong...';
 
@@ -39,7 +44,7 @@ describe('mail', () => {
       expect.assertions(1);
       await mail
         .openMailItem(openMailItemParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -168,7 +173,7 @@ describe('mail', () => {
       expect.assertions(1);
       await mail
         .composeMail(composeMailParams)
-        .catch((e) => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
@@ -261,14 +266,21 @@ describe('mail', () => {
   });
 
   describe('isSupported', () => {
-    it('should return false if the runtime says mail is not supported', () => {
+    it('should return false if the runtime says mail is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(mail.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says mail is supported', () => {
+    it('should return true if the runtime says mail is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
       expect(mail.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => mail.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

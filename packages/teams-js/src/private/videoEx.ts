@@ -2,6 +2,7 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { runtime } from '../public/runtime';
 import { video } from '../public/video';
 
 /**
@@ -13,6 +14,18 @@ import { video } from '../public/video';
  * Limited to Microsoft-internal use
  */
 export namespace videoEx {
+  /**
+   * @hidden
+   * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum ErrorLevel {
+    Fatal = 'fatal',
+    Warn = 'warn',
+  }
   /**
    * @hidden
    * Video frame configuration supplied to the host to customize the generated video frame parameters
@@ -89,7 +102,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -132,7 +145,7 @@ export namespace videoEx {
     effectId: string | undefined,
     effectParam?: string,
   ): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -159,7 +172,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -203,7 +216,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!video.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -212,16 +225,19 @@ export namespace videoEx {
 
   /**
    * @hidden
+   *
    * Checks if video capability is supported by the host
    * @beta
    *
-   * @returns true if the video capability is enabled in runtime.supports.video and
-   * false if it is disabled
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @returns boolean to represent whether the video capability is supported
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
+    ensureInitialized(runtime);
     return video.isSupported();
   }
 
@@ -243,11 +259,30 @@ export namespace videoEx {
    * Sending error notification to host
    * @beta
    * @param errorMessage - The error message that will be sent to the host
+   * @param errorLevel - The error level that will be sent to the host
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  function notifyError(errorMessage: string): void {
-    sendMessageToParent('video.notifyError', [errorMessage]);
+  function notifyError(errorMessage: string, errorLevel: ErrorLevel = ErrorLevel.Warn): void {
+    sendMessageToParent('video.notifyError', [errorMessage, errorLevel]);
+  }
+
+  /**
+   * @hidden
+   * Sending fatal error notification to host. Call this function only when your app meets fatal error and can't continue.
+   * The host will stop the video pipeline and terminate this session, and optionally, show an error message to the user.
+   * @beta
+   * @param errorMessage - The error message that will be sent to the host
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function notifyFatalError(errorMessage: string): void {
+    ensureInitialized(runtime);
+    if (!video.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    notifyError(errorMessage, ErrorLevel.Fatal);
   }
 }

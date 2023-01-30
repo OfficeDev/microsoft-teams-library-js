@@ -7,6 +7,10 @@ import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
 /**
  * Test cases for selectPeople API
  */
@@ -301,8 +305,9 @@ describe('videoEx', () => {
       const message = framedPlatformMock.findMessageByFunc('video.notifyError');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
+      expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
     });
 
     it('FRAMELESS - should invoke video frame event handler and successfully send notifyError', async () => {
@@ -331,8 +336,9 @@ describe('videoEx', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
 
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
+      expect(message.args.length).toBe(2);
       expect(message.args[0]).toEqual(errorMessage);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
     });
 
     it('FRAMED - should not invoke video frame event handler when videoFrame is undefined', async () => {
@@ -616,6 +622,50 @@ describe('videoEx', () => {
       const message = framelessPlatformMock.findMessageByFunc('video.personalizedEffectsChanged');
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(personalizedEffects);
+    });
+  });
+
+  describe('isSupported', () => {
+    it('FRAMED - should not be supported before initialization', () => {
+      framedPlatformMock.uninitializeRuntimeConfig();
+      expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
+    });
+
+    it('FRAMELESS - should not be supported before initialization', () => {
+      framelessPlatformMock.uninitializeRuntimeConfig();
+      expect(() => videoEx.isSupported()).toThrowError('The library has not yet been initialized');
+    });
+  });
+
+  describe('notifyFatalError', () => {
+    it('FRAMED - should not be supported before initialization', () => {
+      framedPlatformMock.uninitializeRuntimeConfig();
+      expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
+    });
+
+    it('FRAMELESS - should not be supported before initialization', () => {
+      framelessPlatformMock.uninitializeRuntimeConfig();
+      expect(() => videoEx.notifyFatalError('')).toThrowError('The library has not yet been initialized');
+    });
+
+    it('FRAMED - should send error to host successfully', async () => {
+      await framedPlatformMock.initializeWithContext('sidePanel');
+      const fakeErrorMsg = 'fake error';
+      videoEx.notifyFatalError(fakeErrorMsg);
+      const message = framedPlatformMock.findMessageByFunc('video.notifyError');
+      expect(message.args.length).toBe(2);
+      expect(message.args[0]).toEqual(fakeErrorMsg);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
+    });
+
+    it('FRAMELESS - should send error to host successfully', async () => {
+      await framelessPlatformMock.initializeWithContext('sidePanel');
+      const fakeErrorMsg = 'fake error';
+      videoEx.notifyFatalError(fakeErrorMsg);
+      const message = framelessPlatformMock.findMessageByFunc('video.notifyError');
+      expect(message.args.length).toBe(2);
+      expect(message.args[0]).toEqual(fakeErrorMsg);
+      expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
     });
   });
 });

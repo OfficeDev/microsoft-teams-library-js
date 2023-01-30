@@ -181,7 +181,7 @@ export namespace meetingRoom {
    */
   export function getPairedMeetingRoomInfo(): Promise<MeetingRoomInfo> {
     return new Promise<MeetingRoomInfo>((resolve) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -204,7 +204,7 @@ export namespace meetingRoom {
       if (!commandName || commandName.length == 0) {
         throw new Error('[meetingRoom.sendCommandToPairedMeetingRoom] Command name cannot be null or empty');
       }
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -228,12 +228,12 @@ export namespace meetingRoom {
     if (!handler) {
       throw new Error('[meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler] Handler cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       handler(capabilities);
     });
   }
@@ -253,12 +253,12 @@ export namespace meetingRoom {
     if (!handler) {
       throw new Error('[meetingRoom.registerMeetingRoomStatesUpdateHandler] Handler cannot be null');
     }
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
-      ensureInitialized();
+      ensureInitialized(runtime);
       handler(states);
     });
   }
@@ -266,12 +266,15 @@ export namespace meetingRoom {
   /**
    * @hidden
    *
+   * Checks if the meetingRoom capability is supported by the host
    * @returns boolean to represent whether the meetingRoom capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return runtime.supports.meetingRoom ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.meetingRoom ? true : false;
   }
 }

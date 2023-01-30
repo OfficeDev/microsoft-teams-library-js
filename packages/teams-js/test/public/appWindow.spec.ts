@@ -1,8 +1,13 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ChildAppWindow, ParentAppWindow } from '../../src/public';
 import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('appWindow', () => {
   // Use to send a mock message from the app.
@@ -33,7 +38,7 @@ describe('appWindow', () => {
     describe('ChildAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => childAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
+        expect(() => childAppWindow.postMessage('message')).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -58,7 +63,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => childAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 
@@ -87,7 +92,7 @@ describe('appWindow', () => {
     describe('ParentAppWindow.postMessage', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => parentAppWindow.postMessage('message')).toThrowError('The library has not yet been initialized');
+        expect(() => parentAppWindow.postMessage('message')).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -131,7 +136,7 @@ describe('appWindow', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
         expect(() => parentAppWindow.addEventListener('message', emptyCallback)).toThrowError(
-          'The library has not yet been initialized',
+          new Error(errorLibraryNotInitialized),
         );
       });
 

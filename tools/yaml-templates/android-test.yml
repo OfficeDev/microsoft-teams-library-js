@@ -23,6 +23,7 @@ steps:
       Arguments: 'install'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     displayName: 'Run yarn install on TeamsJS'
+    retryCountOnTaskFailure: 2
 
   - task: Yarn@2
     inputs:
@@ -41,7 +42,6 @@ steps:
   - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
     displayName: 'Run Android E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
-    retryCountOnTaskFailure: 2
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
@@ -51,4 +51,4 @@ steps:
       testRunTitle: 'E2E Tests - Android'
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
       mergeTestResults: true
-    condition: succeededOrFailed()
+    condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))

@@ -1,7 +1,11 @@
-import { version } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { appInitialization } from '../../src/public/appInitialization';
+import { version } from '../../src/public/version';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('appInitialization', () => {
   const utils = new Utils();

@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
-import { ErrorCode } from '../../src/public/interfaces';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { ErrorCode } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('sharing_v1', () => {
   const utils = new Utils();
@@ -346,8 +351,29 @@ describe('sharing_v2', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
       app._uninitialize();
     }
+  });
+
+  describe('Testing sharing.isSupported function', () => {
+    const utils = new Utils();
+    it('sharing.isSupported should return false if the runtime says sharing is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(sharing.isSupported()).not.toBeTruthy();
+    });
+
+    it('sharing.isSupported should return true if the runtime says sharing is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
+      expect(sharing.isSupported()).toBeTruthy();
+    });
+
+    it('sharing.isSupported should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => sharing.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
   });
 
   describe('Testing sharing.shareWebContent v2 function', () => {
@@ -584,18 +610,5 @@ describe('sharing_v2', () => {
           });
         }
       });
-  });
-});
-
-describe('Testing sharing.isSupported function', () => {
-  const utils = new Utils();
-  it('sharing.isSupported should return false if the runtime says sharing is not supported', () => {
-    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-    expect(sharing.isSupported()).not.toBeTruthy();
-  });
-
-  it('sharing.isSupported should return true if the runtime says sharing is supported', () => {
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
-    expect(sharing.isSupported()).toBeTruthy();
   });
 });

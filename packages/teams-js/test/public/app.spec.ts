@@ -1,7 +1,6 @@
-import { version } from '../../src/internal/constants';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as privateAPIs from '../../src/private/privateAPIs';
 import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
@@ -19,9 +18,19 @@ import {
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  latestRuntimeApiVersion,
+  runtime,
+  teamsRuntimeConfig,
+} from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 /**
  * Type guard to determine if an action item is of M365Content Type
@@ -61,8 +70,17 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return true after initialized', () => {
-        app.initialize();
+      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
+        expect.assertions(2);
+
+        const initPromise = app.initialize();
+        expect(app.isInitialized()).toBe(false);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
         expect(app.isInitialized()).toBe(true);
       });
     });
@@ -87,8 +105,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -151,7 +170,6 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
@@ -197,7 +215,7 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -213,7 +231,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -230,7 +248,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -242,6 +260,19 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).toEqual(teamsRuntimeConfig);
+      });
+
+      it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
+        const initPromise = app.initialize();
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
+
+        await expect(initPromise).rejects.toThrowError(
+          'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+        );
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
@@ -315,7 +346,26 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.getContext should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.getContext();
+        let message = utils.findMessageByFunc('getContext');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('getContext');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -557,7 +607,26 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.notifyAppLoaded should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifyAppLoaded();
+        let message = utils.findMessageByFunc('appInitialization.appLoaded');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.appLoaded');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -574,7 +643,26 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifySuccess();
+        let message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -596,7 +684,29 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('app.notifyFailure should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifyFailure({
+          reason: app.FailedReason.AuthFailed,
+          message: 'Failed message',
+        });
+        let message = utils.findMessageByFunc('appInitialization.failure');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.failure');
+        expect(message).not.toBeNull();
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -633,9 +743,7 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -677,7 +785,7 @@ describe('Testing app capability', () => {
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {
@@ -757,8 +865,22 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return true after initialized', () => {
-        app.initialize();
+      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
+        expect.assertions(2);
+
+        const initPromise = app.initialize();
+        expect(app.isInitialized()).toBe(false);
+
+        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        framelessPostMock.respondToMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+
+        await initPromise;
+
         expect(app.isInitialized()).toBe(true);
       });
     });
@@ -782,8 +904,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -849,7 +972,6 @@ describe('Testing app capability', () => {
 
       it('app.initialize should use teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
-
         const initMessage = framelessPostMock.findMessageByFunc('initialize');
 
         framelessPostMock.respondToMessage({
@@ -919,7 +1041,7 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -934,7 +1056,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -950,7 +1072,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -1070,7 +1192,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1274,7 +1396,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1291,7 +1413,7 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1313,7 +1435,7 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1350,9 +1472,7 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -1390,7 +1510,7 @@ describe('Testing app capability', () => {
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {

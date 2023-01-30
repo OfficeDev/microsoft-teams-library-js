@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { remoteCamera } from '../../src/private/remoteCamera';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -5,6 +6,10 @@ import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('remoteCamera', () => {
   const utils = new Utils();
@@ -51,7 +56,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.getCapableParticipants function', () => {
     it('remoteCamera.getCapableParticipants should not allow calls before initialization', () => {
       expect(() => remoteCamera.getCapableParticipants(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -147,7 +152,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.requestControl function', () => {
     it('remoteCamera.requestControl should not allow calls before initialization', () => {
       expect(() => remoteCamera.requestControl(participantMock, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -250,7 +255,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.sendControlCommand function', () => {
     it('remoteCamera.sendControlCommand should not allow calls before initialization', () => {
       expect(() => remoteCamera.sendControlCommand(controlCommandMock, emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -342,9 +347,7 @@ describe('remoteCamera', () => {
 
   describe('Testing remoteCamera.terminateSession function', () => {
     it('remoteCamera.terminateSession should not allow calls before initialization', () => {
-      expect(() => remoteCamera.terminateSession(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => remoteCamera.terminateSession(emptyCallback)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('remoteCamera.terminateSession should throw an error if the callback function is null', () => {
@@ -429,7 +432,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.registerOnCapableParticipantsChangeHandler function', () => {
     it('remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls before initialization ', () => {
       expect(() => remoteCamera.registerOnCapableParticipantsChangeHandler(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
     it('remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls with null handler ', async () => {
@@ -488,7 +491,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.registerOnErrorHandler function', () => {
     it('remoteCamera.registerOnErrorHandler should not allow calls before initialization ', () => {
       expect(() => remoteCamera.registerOnErrorHandler(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -548,7 +551,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.registerOnDeviceStateChangeHandler function', () => {
     it('remoteCamera.registerOnDeviceStateChangeHandler should not allow calls before initialization ', () => {
       expect(() => remoteCamera.registerOnDeviceStateChangeHandler(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -608,7 +611,7 @@ describe('remoteCamera', () => {
   describe('Testing remoteCamera.registerOnSessionStatusChangeHandler function', () => {
     it('remoteCamera.registerOnSessionStatusChangeHandler should not allow calls before initialization ', () => {
       expect(() => remoteCamera.registerOnSessionStatusChangeHandler(emptyCallback)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
 
@@ -666,14 +669,21 @@ describe('remoteCamera', () => {
   });
 
   describe('Testing remoteCamera.isSupported function', () => {
-    it('remoteCamera.isSupported should return false if the runtime says remote camera is not supported', () => {
+    it('remoteCamera.isSupported should return false if the runtime says remote camera is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(remoteCamera.isSupported()).not.toBeTruthy();
     });
 
-    it('remoteCamera.isSupported should return true if the runtime says remote camera is supported', () => {
+    it('remoteCamera.isSupported should return true if the runtime says remote camera is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { remoteCamera: {} } });
       expect(remoteCamera.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => remoteCamera.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

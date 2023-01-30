@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -7,6 +8,10 @@ import { monetization } from '../../src/public/monetization';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 const allowedContexts = [FrameContexts.content];
 
@@ -34,7 +39,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError('The library has not yet been initialized');
+          ).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -89,10 +94,17 @@ describe('Testing monetization capability', () => {
         }
       });
 
+      describe('isSupported', () => {
+        it('should throw if called before initialization', () => {
+          utils.uninitializeRuntimeConfig();
+          expect(() => monetization.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+      });
+
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
           expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 
@@ -164,7 +176,7 @@ describe('Testing monetization capability', () => {
             monetization.openPurchaseExperience(() => {
               return;
             }),
-          ).toThrowError('The library has not yet been initialized');
+          ).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -229,7 +241,7 @@ describe('Testing monetization capability', () => {
       describe('openPurchaseExperience', () => {
         it('should not allow calls before initialization', () => {
           expect(() => monetization.openPurchaseExperience(undefined)).toThrowError(
-            'The library has not yet been initialized',
+            new Error(errorLibraryNotInitialized),
           );
         });
 

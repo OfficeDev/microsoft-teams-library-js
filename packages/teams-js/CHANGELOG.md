@@ -1,8 +1,121 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 03 Aug 2022 19:21:51 GMT and should not be manually modified.
+This log was last generated on Fri, 06 Jan 2023 04:15:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.7.1
+
+Fri, 06 Jan 2023 04:15:12 GMT
+
+### Patches
+
+- Reverted webpack globalObject: this
+
+## 2.7.0
+
+Wed, 04 Jan 2023 19:07:09 GMT
+
+### Minor changes
+
+- Implemented `runtime` interface versioning
+
+### Patches
+
+- Removed `entityId` and `title` as required fields from `openFilePreview` parameters
+- Fixed missing slash in URL in comment on `app.initialize`
+
+## 2.6.1
+
+Tue, 13 Dec 2022 21:28:59 GMT
+
+### Patches
+
+- Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.
+- Fixed bugs preventing the use of this library in server-side rendered applications
+
+## 2.6.0
+
+Wed, 07 Dec 2022 16:39:58 GMT
+
+### Minor changes
+
+- Added `notifyFatalError` function in videoEx to enable video apps to notify the host of fatal errors.
+- Added support for showing and hiding the app share button to the `meeting` capability
+- Fixed bug where some capabilities were being incorrectly marked as supported
+
+### Patches
+
+- Deleted unnecessary support for `meetingRoom` and 'sidePanel` frame contexts in `dialog.submit` API. 
+- Fix incorrect profile.IsSupported check
+
+## 2.5.0
+
+Thu, 03 Nov 2022 17:03:30 GMT
+
+### Minor changes
+
+- Updated most APIs to require initialization to be fully finished before they are allowed to be called.
+
+### Patches
+
+- Added Outlook's consumer domain to domains' allowlist
+- Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused
+- Set `PACKAGE_VERSION` to an error value indicating it will be replaced by webpack at build time
+- Fixed `profile.isSupported` and showProfile `TriggerType`
+- Added 'www.microsoft365.com' and '*.www.microsoft365.com' to the `validOrigins` list.
+- Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.
+
+## 2.4.2
+
+### Patches
+
+- Fixed integrity hash in README
+
+## 2.4.1
+
+Mon, 10 Oct 2022 19:09:20 GMT
+
+### Minor changes
+
+- Added (moved) `version` as a public constant containing the library version
+- Added new sub capability `pages.currentApp.navigateTo` that enables navigation within an application without specifying application ID. `pages.currentApp.navigateToDefaultPage` that navigates to first static page defined in app manifest
+- Added `OutlookWin32` to `HostName` enum
+
+### Patches
+
+- Added one common `registerHandlerHelper` function to replace several helpers.
+- Clarified possible values for `theme` property on `AppInfo` object in docs
+- Updated documentation for `app.initialize` to clarify that it must have completed before calling other library methods.
+- On the `File` interface changed the type of `lastModified` field from `Date` to `number`
+- Fixed `search` API in test file
+- Enabled proxying of window events to child frames if they are unhandled by current frame
+- Added logging to `runtime` and `app` to make it easier to investigate issues surrounding app initialization.
+- Fixed some locations where `undefined` was properly handled but not explicitly in the type declaration
+- Reverted `liveShare` capability
+- Clarified documentation for `sharepoint` property on `Context` object
+- Enabled `strictNullChecks` as lint rule
+- Updated the URLs for docs links.
+- Enabled save and remove events in the `pages.config` capability to be proxied to child windows
+- Fixed more violations of strictNullChecks warning
+
+## 2.3.0
+
+Thu, 08 Sep 2022 17:11:49 GMT
+
+### Minor changes
+
+- Added support for audio-driven avatars to the `video` API, and the ability to upload personalized video effects to the private folder
+- Added `Search` capability to use global search box in the current app in Outlook
+- Added `timestamp` to `VideoFrame`, sent the `timestamp` back to Teams client after the video frame has been processed.
+
+### Patches
+
+- Fixed an issue with the v1 versions of `register*Handler` functions. Previously if the v2 version of the API's capability was not supported, attempts to call the v1 version would throw an exception, breaking backwards compatibility.
+- Updated documentation for many properties on `Context` interface.
+- Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only and removed some `@internal` items from dev documentation. Removed `initializePrivateApis` from the privateAPIs file, an unexported and hidden no-op function.
+- Added missing `HostClientType` values so correct `Runtime` is generated for `teams.fullTrust.joinedTeams` and `webStorage` capabilities.
+- Renamed `filePath` field to `webkitRelativePath`. Removed two validation checks for `destinationFolder` fields. Added an optional field `provider` in callback of `addCloudStorageProvider` API.
 
 ## 2.2.0
 
@@ -333,7 +446,7 @@ Tue, 19 Apr 2022 16:08:56 GMT
 ### Major changes
 
 - Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
-- Change DeepLinkParameters not to use subEntity* anymore
+- Change DeepLinkParameters not to use subEntity\* anymore
 - Added `isSupported` checks to all functions and unit test cases in the following capabilities:
   - `chat`
   - `conversations`

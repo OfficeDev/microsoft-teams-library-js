@@ -16,6 +16,7 @@ steps:
     displayName: 'yarn install'
     inputs:
       Arguments: 'install'
+    retryCountOnTaskFailure: 2
 
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
@@ -70,17 +71,18 @@ steps:
     name: bundleAnalysisTask
     displayName: 'Analyze bundles against main and output result'
 
-  - task: GitHubComment@0
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], 'main'))
-    inputs:
-      gitHubConnection: '$(RepoGitHubConnection)'
-      repositoryName: '$(Build.Repository.Name)'
-      id: '$(System.PullRequest.PullRequestNumber)'
-      comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-    displayName: 'Post bundle analysis result as PR comment on GitHub'
+  # Temporarily disabled due to failures when posting comments to Github
+  # - task: GitHubComment@0
+  #   condition: and(
+  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
+  #     eq(variables['Build.Reason'], 'PullRequest'),
+  #     eq(variables['System.PullRequest.TargetBranch'], 'main'))
+  #   inputs:
+  #     gitHubConnection: '$(RepoGitHubConnection)'
+  #     repositoryName: '$(Build.Repository.Name)'
+  #     id: '$(System.PullRequest.PullRequestNumber)'
+  #     comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
+  #   displayName: 'Post bundle analysis result as PR comment on GitHub'
 
   - task: PublishBuildArtifacts@1
     condition: and(

@@ -1,9 +1,15 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
-import { TaskModuleDimension } from '../../src/public/constants';
+import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { tasks } from '../../src/public/tasks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('tasks', () => {
   // Use to send a mock message from the app.
@@ -19,6 +25,7 @@ describe('tasks', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
+    utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
     if (app._uninitialize) {
       app._uninitialize();
     }
@@ -29,13 +36,18 @@ describe('tasks', () => {
 
     it('should not allow calls before initialization', () => {
       const taskInfo: TaskInfo = {};
-      expect(() => tasks.startTask(taskInfo)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.startTask(taskInfo)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`should pass along the taskInfo correctly when card is specified. ${context} context`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: { bot: {} }, update: {} } },
+          });
 
           const taskInfo: TaskInfo = {
             card: 'someCard',
@@ -46,7 +58,6 @@ describe('tasks', () => {
             url: 'someUrl',
             completionBotId: 'someCompletionBotId',
           };
-
           tasks.startTask(taskInfo, () => {
             return;
           });
@@ -75,6 +86,7 @@ describe('tasks', () => {
 
         it(`should pass along the taskInfo correctly when completionBotid is specified. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
 
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
@@ -96,6 +108,11 @@ describe('tasks', () => {
 
         it(`should pass along the taskInfo correctly when URL is provided without Bot. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
 
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
@@ -116,7 +133,11 @@ describe('tasks', () => {
 
         it(`should Provide default Size if taskInfo doesn't have length or width. ${context} context`, async () => {
           await utils.initializeWithContext(context);
-
+          utils.setRuntimeConfig({
+            apiVersion: 2,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
           const taskInfo: TaskInfo = {
             fallbackUrl: 'someFallbackUrl',
             height: TaskModuleDimension.Large,
@@ -137,7 +158,11 @@ describe('tasks', () => {
 
         it(`should invoke callback with result. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
-
+          utils.setRuntimeConfig({
+            apiVersion: 1,
+            hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+            supports: { dialog: { url: {}, card: {}, update: {} } },
+          });
           let callbackCalled = false;
           const taskInfo: TaskInfo = {};
           tasks.startTask(taskInfo, (err, result) => {
@@ -191,7 +216,7 @@ describe('tasks', () => {
     ];
     it('should not allow calls before initialization', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect(() => tasks.updateTask({} as any)).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.updateTask({} as any)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -243,14 +268,9 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.meetingStage,
-    ];
+    const allowedContexts = [FrameContexts.content, FrameContexts.task];
     it('should not allow calls before initialization', () => {
-      expect(() => tasks.submitTask()).toThrowError('The library has not yet been initialized');
+      expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -265,16 +285,6 @@ describe('tasks', () => {
           );
         });
       }
-    });
-
-    it('should successfully pass result and appIds parameters when called from sidePanel context', () => {
-      utils.initializeWithContext('sidePanel');
-
-      tasks.submitTask('someResult', ['someAppId', 'someOtherAppId']);
-
-      const submitTaskMessage = utils.findMessageByFunc('tasks.completeTask');
-      expect(submitTaskMessage).not.toBeNull();
-      expect(submitTaskMessage.args).toEqual(['someResult', ['someAppId', 'someOtherAppId']]);
     });
 
     it('should successfully pass result and appIds parameters when called from task context', async () => {

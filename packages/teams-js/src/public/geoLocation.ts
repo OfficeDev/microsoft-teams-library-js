@@ -25,7 +25,9 @@ export namespace geoLocation {
       */
     longitude: number;
     /**
-      Accuracy of the coordinates captured
+      Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location
+      @remarks
+      This property is only in scope for mobile
       */
     accuracy?: number;
     /**
@@ -40,7 +42,7 @@ export namespace geoLocation {
    * @beta
    */
   export function getCurrentLocation(): Promise<Location> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -56,7 +58,7 @@ export namespace geoLocation {
    * @beta
    */
   export function hasPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -77,7 +79,7 @@ export namespace geoLocation {
    * @beta
    */
   export function requestPermission(): Promise<boolean> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -90,13 +92,14 @@ export namespace geoLocation {
 
   /**
    * Checks if geoLocation capability is supported by the host
-   *
    * @returns boolean to represent whether geoLocation is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
-    return runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
   }
 
   /**
@@ -113,7 +116,7 @@ export namespace geoLocation {
      * @beta
      */
     export function chooseLocation(): Promise<Location> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -129,7 +132,7 @@ export namespace geoLocation {
      * @beta
      */
     export function showLocation(location: Location): Promise<void> {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -141,13 +144,17 @@ export namespace geoLocation {
 
     /**
      * Checks if geoLocation.map capability is supported by the host
-     *
      * @returns boolean to represent whether geoLocation.map is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
      */
     export function isSupported(): boolean {
-      return runtime.supports.geoLocation && runtime.supports.geoLocation.map && runtime.supports.permissions
+      return ensureInitialized(runtime) &&
+        runtime.supports.geoLocation &&
+        runtime.supports.geoLocation.map &&
+        runtime.supports.permissions
         ? true
         : false;
     }
