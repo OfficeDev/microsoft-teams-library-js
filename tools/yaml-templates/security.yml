@@ -12,6 +12,7 @@ steps:
       ParserOptions: |
         sourceType:module
         ecmaVersion:2018
+        project:"./s/tsconfig.common.json"
       ErrorLevel: 'warn'
       ExitOnFatalError: true
 
