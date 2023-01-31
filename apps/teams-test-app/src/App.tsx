@@ -12,6 +12,9 @@ import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import DialogCardAPIs from './components/DialogCardAPIs';
+import DialogUpdateAPIs from './components/DialogUpdateAPIs';
+import DialogUrlAPIs from './components/DialogUrlAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -24,6 +27,7 @@ import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
+import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
@@ -34,12 +38,14 @@ import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import ProfileAPIs from './components/ProfileAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SearchAPIs from './components/SearchAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
+import Version from './components/Version';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -106,44 +112,52 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <div className="App-container">
-      <AppAPIs />
-      <AppInitializationAPIs />
-      <AppInstallDialogAPIs />
-      <AuthenticationAPIs />
-      <AppEntityAPIs />
-      <BarCodeAPIs />
-      <CalendarAPIs />
-      <CallAPIs />
-      <ChatAPIs />
-      <DialogAPIs />
-      <FilesAPIs />
-      <FullTrustAPIs />
-      <GeoLocationAPIs />
-      <Links />
-      <LocationAPIs />
-      <LogAPIs />
-      <MailAPIs />
-      <MediaAPIs />
-      <MeetingAPIs />
-      <MeetingRoomAPIs />
-      <MenusAPIs />
-      <MonetizationAPIs />
-      <NotificationAPIs />
-      <PagesAPIs />
-      <PagesAppButtonAPIs />
-      <PagesBackStackAPIs />
-      <PagesConfigAPIs />
-      <PagesTabsAPIs />
-      <PeopleAPIs />
-      <PrivateAPIs />
-      <RemoteCameraAPIs />
-      <SearchAPIs />
-      <SharingAPIs />
-      <WebStorageAPIs />
-      <StageViewAPIs />
-      <TeamsCoreAPIs />
-      <TeamsAPIs />
+    <div>
+      <div className="App-container">
+        <AppAPIs />
+        <AppInitializationAPIs />
+        <AppInstallDialogAPIs />
+        <AuthenticationAPIs />
+        <AppEntityAPIs />
+        <BarCodeAPIs />
+        <CalendarAPIs />
+        <CallAPIs />
+        <ChatAPIs />
+        <DialogAPIs />
+        <DialogCardAPIs />
+        <DialogUpdateAPIs />
+        <DialogUrlAPIs />
+        <FilesAPIs />
+        <FullTrustAPIs />
+        <GeoLocationAPIs />
+        <Links />
+        <LocationAPIs />
+        <LogAPIs />
+        <MailAPIs />
+        <MediaAPIs />
+        <MeetingAPIs />
+        <MeetingRoomAPIs />
+        <MenusAPIs />
+        <MonetizationAPIs />
+        <NotificationAPIs />
+        <PagesAPIs />
+        <PagesAppButtonAPIs />
+        <PagesBackStackAPIs />
+        <PagesConfigAPIs />
+        <PagesCurrentAppAPIs />
+        <PagesTabsAPIs />
+        <PeopleAPIs />
+        <PrivateAPIs />
+        <ProfileAPIs />
+        <RemoteCameraAPIs />
+        <SearchAPIs />
+        <SharingAPIs />
+        <WebStorageAPIs />
+        <StageViewAPIs />
+        <TeamsCoreAPIs />
+        <TeamsAPIs />
+      </div>
+      <Version />
     </div>
   );
 };

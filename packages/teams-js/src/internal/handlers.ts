@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { LoadContext } from '../public';
+import { FrameContexts, LoadContext } from '../public';
 import { pages } from '../public/pages';
+import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 
 const handlersLogger = getLogger('handlers');
@@ -43,6 +45,9 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
+  } else if (Communication.childWindow) {
+    sendMessageEventToChild(name, [args]);
+    return [false, undefined];
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
     return [false, undefined];
@@ -70,9 +75,39 @@ export function removeHandler(name: string): void {
   delete HandlersPrivate.handlers[name];
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function doesHandlerExist(name: string): boolean {
   return HandlersPrivate.handlers[name] != null;
+}
+
+/**
+ * @hidden
+ * Undocumented helper function with shared code between deprecated version and current version of register*Handler APIs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @param name - The name of the handler to register.
+ * @param handler - The handler to invoke.
+ * @param contexts - The context within which it is valid to register this handler.
+ * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
+ */
+export function registerHandlerHelper(
+  name: string,
+  handler: Function,
+  contexts: FrameContexts[],
+  registrationHelper?: () => void,
+): void {
+  // allow for registration cleanup even when not finished initializing
+  handler && ensureInitialized(runtime, ...contexts);
+  if (registrationHelper) {
+    registrationHelper();
+  }
+
+  registerHandler(name, handler);
 }
 
 /**
@@ -140,6 +175,10 @@ function handleBeforeUnload(): void {
   };
 
   if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    readyToUnload();
+    if (Communication.childWindow) {
+      sendMessageEventToChild('beforeUnload');
+    } else {
+      readyToUnload();
+    }
   }
 }

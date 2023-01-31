@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -5,6 +6,10 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 /**
  * Test cases for selectPeople API
@@ -25,6 +30,14 @@ describe('video', () => {
       app._uninitialize();
     }
   });
+
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      framedPlatformMock.uninitializeRuntimeConfig();
+      expect(() => video.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('registerForVideoFrame', () => {
     const emptyVideoFrameCallback = (
       _frame: video.VideoFrame,
@@ -119,7 +132,7 @@ describe('video', () => {
       let returnedVideoFrame: video.VideoFrame;
       let handlerInvoked = false;
 
-      let videoFrameCallback = (
+      const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
@@ -333,7 +346,7 @@ describe('video', () => {
     it('FRAMED - should not invoke video frame event handler when videoFrame is undefined', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
-      let videoFrameCallback = (
+      const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
@@ -348,7 +361,7 @@ describe('video', () => {
     it('FRAMELESS - should not invoke video frame event handler when videoFrame is undefined', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
-      let videoFrameCallback = (
+      const videoFrameCallback = (
         _frame: video.VideoFrame,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,

@@ -66,7 +66,8 @@ export namespace monetization {
     param1: ((error: SdkError | null) => void) | PlanInfo | undefined,
     param2?: PlanInfo,
   ): Promise<void> {
-    let callback: (error: SdkError | null) => void;
+    let callback: ((error: SdkError | null) => void) | undefined;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let planInfo: PlanInfo;
     if (typeof param1 === 'function') {
       callback = param1;
@@ -83,11 +84,19 @@ export namespace monetization {
       });
     };
 
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     return callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise(wrappedFunction, callback);
   }
 
+  /**
+   * @hidden
+   *
+   * Checks if the monetization capability is supported by the host
+   * @returns boolean to represent whether the monetization capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.monetization ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.monetization ? true : false;
   }
 }

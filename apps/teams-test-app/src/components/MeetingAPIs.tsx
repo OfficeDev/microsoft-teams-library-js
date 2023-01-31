@@ -2,7 +2,7 @@ import { meeting, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetIncomingClientAudioState = (): React.ReactElement =>
@@ -302,6 +302,75 @@ const GetAppContentStageSharingState = (): React.ReactElement =>
     },
   });
 
+interface ShareInformation {
+  isVisible: boolean;
+  contentUrl?: string;
+}
+
+const SetOptions = (): React.ReactElement =>
+  ApiWithTextInput<ShareInformation>({
+    name: 'setOptions',
+    title: 'Set App Share Button options',
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input.isVisible !== 'boolean') {
+          throw new Error('input.isVisible should be boolean');
+        }
+        if (input.contentUrl) {
+          new URL(input.contentUrl);
+        }
+      },
+      submit: async (input) => {
+        meeting.appShareButton.setOptions(input);
+        return '';
+      },
+    },
+  });
+
+const RequestAppAudioHandling = (): React.ReactElement =>
+  ApiWithCheckboxInput({
+    name: 'requestAppAudioHandling',
+    title: 'App Handles the Audio channel',
+    onClick: async (input: boolean, setResult: (arg0: string) => void) => {
+      const callback = (isHostAudioless: boolean | null): void => {
+        setResult('requestAppAudioHandling() succeeded: isHostAudioless=' + isHostAudioless);
+      };
+      const micMuteStateChangedCallback = (micState: meeting.MicState): Promise<meeting.MicState> =>
+        new Promise((resolve, reject) => {
+          if (!micState) {
+            reject('micStatus should not be null');
+            throw new Error();
+          } else {
+            setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
+            resolve(micState);
+          }
+        });
+
+      const requestAppAudioHandlingParams: meeting.RequestAppAudioHandlingParams = {
+        isAppHandlingAudio: input,
+        micMuteStateChangedCallback: micMuteStateChangedCallback,
+      };
+
+      meeting.requestAppAudioHandling(requestAppAudioHandlingParams, callback);
+      return '';
+    },
+    label: 'App handles audio',
+  });
+
+const UpdateMicState = (): React.ReactElement =>
+  ApiWithCheckboxInput({
+    name: 'updateMicState',
+    title: 'Send Mic mute status response acknowledgement',
+    onClick: async (input: boolean) => {
+      const micState: meeting.MicState = {
+        isMicMuted: input,
+      };
+      meeting.updateMicState(micState);
+      return `updateMicState() mic state updated: ${input}`;
+    },
+    label: 'Is mic muted',
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -319,6 +388,9 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingCapabilities />
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
+    <SetOptions />
+    <RequestAppAudioHandling />
+    <UpdateMicState />
   </ModuleWrapper>
 );
 

@@ -1,19 +1,15 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
-import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
+import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
+
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: any[]; // tslint:disable-line:no-any
+  args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
-}
-
-export interface MessageResponse {
-  id: number;
-  args?: any[]; // tslint:disable-line:no-any
 }
 
 export class Utils {
@@ -33,18 +29,17 @@ export class Utils {
   public parentWindow: Window;
 
   public constructor() {
-    let that = this;
     this.messages = [];
     this.childMessages = [];
 
     this.parentWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
         if (message.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
-        } else if (message.func !== 'initialize' && targetOrigin !== that.validOrigin) {
-          throw new Error(`messages to parent window must have a targetOrigin of ${that.validOrigin}`);
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
-        that.messages.push(message);
+        this.messages.push(message);
       },
     } as Window;
 
@@ -53,43 +48,50 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
         if (type === 'message') {
-          that.processMessage = listener;
+          this.processMessage = listener;
         }
       },
-      removeEventListener: function (type: string, listener: (ev: MessageEvent) => void, useCapture?: boolean): void {
+      removeEventListener: (type: string): void => {
         if (type === 'message') {
-          that.processMessage = null;
+          this.processMessage = null;
         }
       },
       location: {
-        origin: that.tabOrigin,
-        href: that.validOrigin,
-        assign: function (url: string): void {
+        origin: this.tabOrigin,
+        href: this.validOrigin,
+        assign: function (): void {
           return;
         },
       },
       parent: this.parentWindow,
+      opener: undefined,
       nativeInterface: {
-        framelessPostMessage: function (message: string): void {
-          that.messages.push(JSON.parse(message));
+        framelessPostMessage: (message: string): void => {
+          this.messages.push(JSON.parse(message));
         },
       },
-      self: null as Window,
-      open: function (url: string, name: string, specs: string): Window {
-        return that.childWindow as Window;
+      self: null as unknown as Window,
+      open: (): Window => {
+        return this.childWindow as Window;
       },
       close: function (): void {
         return;
       },
+      /* For setInterval, we are intentionally not allowing the TimerHandler type since it allows for either Function or string and string
+         would be insecure (it would be tantamount to allowing eval, which is insecure and not needed here). For our testing usage, there's
+         no need to allow strings.
+         We then are intentionally using Function (and not something more specific) since setInterval can use accept any type of function
+         and we are intentionally mocking the standard setInterval behavior here. As such, the ban-types rule is being intentionally disabled here. */
+      /* eslint-disable-next-line @typescript-eslint/ban-types */
       setInterval: (handler: Function, timeout: number): number => setInterval(handler, timeout),
     };
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: function (message: MessageRequest, targetOrigin: string): void {
-        that.childMessages.push(message);
+      postMessage: (message: MessageRequest): void => {
+        this.childMessages.push(message);
       },
       close: function (): void {
         return;
@@ -98,7 +100,7 @@ export class Utils {
     };
   }
 
-  public processMessage: (ev: MessageEvent) => void;
+  public processMessage: null | ((ev: MessageEvent) => void);
 
   public initializeWithContext = async (
     frameContext: string,
@@ -127,7 +129,7 @@ export class Utils {
     return app.initialize(validMessageOrigins);
   };
 
-  public findMessageByFunc = (func: string): MessageRequest => {
+  public findMessageByFunc = (func: string): MessageRequest | null => {
     for (let i = 0; i < this.messages.length; i++) {
       if (this.messages[i].func === func) {
         return this.messages[i];
@@ -136,7 +138,15 @@ export class Utils {
     return null;
   };
 
-  public findMessageInChildByFunc = (func: string): MessageRequest => {
+  public findInitializeMessageOrThrow = (): MessageRequest => {
+    const initMessage = this.findMessageByFunc('initialize');
+    if (!initMessage) {
+      throw new Error('initialize message not found');
+    }
+    return initMessage;
+  };
+
+  public findMessageInChildByFunc = (func: string): MessageRequest | null => {
     if (this.childMessages && this.childMessages.length) {
       for (let i = 0; i < this.childMessages.length; i++) {
         if (this.childMessages[i].func === func) {
@@ -147,8 +157,13 @@ export class Utils {
     return null;
   };
 
-  // tslint:disable-next-line:no-any
-  public respondToMessage = (message: MessageRequest, ...args: any[]): void => {
+  public respondToMessage = (message: MessageRequest, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -159,7 +174,24 @@ export class Utils {
     } as MessageEvent);
   };
 
-  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: any[]): void => {
+  public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
+      );
+    }
+
+    this.processMessage({
+      origin: this.validOrigin,
+      source: this.mockWindow.opener,
+      data: {
+        id: message.id,
+        args: args,
+      } as MessageResponse,
+    } as MessageEvent);
+  };
+
+  public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
@@ -169,8 +201,13 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  // tslint:disable-next-line:no-any
-  public sendMessage = (func: string, ...args: any[]): void => {
+  public sendMessage = (func: string, ...args: unknown[]): void => {
+    if (this.processMessage === null) {
+      throw Error(
+        `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
+      );
+    }
+
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -184,20 +221,27 @@ export class Utils {
   /**
    * To be called after initializeWithContext to set the clientSupportedSDKVersion
    */
-  public setClientSupportedSDKVersion = (version: string) => {
+  public setClientSupportedSDKVersion = (version: string): void => {
     GlobalVars.clientSupportedSDKVersion = version;
   };
 
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime) => {
-    applyRuntimeConfig(runtime);
+  public setRuntimeConfig = (runtimeConfig: IBaseRuntime): void => {
+    applyRuntimeConfig(runtimeConfig);
+  };
+
+  /**
+   * Sets runtime to uninitialized state
+   */
+  public uninitializeRuntimeConfig = (): void => {
+    setUnitializedRuntime();
   };
 
   /**
    * Uses setImmediate to wait for all resolved Promises on the chain to finish executing.
    * @returns A Promise that will be fulfilled when all other Promises have cleared from the microtask queue.
    */
-  public flushPromises = () => new Promise((resolve) => setTimeout(resolve));
+  public flushPromises = (): Promise<number> => new Promise((resolve) => setTimeout(resolve));
 }

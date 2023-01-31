@@ -18,7 +18,7 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
   if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
     return null;
   }
-  let file: Blob;
+  let file: Blob | undefined;
   let sequence = 1;
   assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
   assembleAttachment.forEach((item) => {

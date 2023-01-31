@@ -3,7 +3,8 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
-import { version } from './constants';
+import { latestRuntimeApiVersion } from '../public/runtime';
+import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
@@ -89,7 +90,10 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+      version,
+      latestRuntimeApiVersion,
+    ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
@@ -104,8 +108,11 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
  * Limited to Microsoft-internal use
  */
 export function uninitializeCommunication(): void {
-  Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  if (Communication.currentWindow) {
+    Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  }
 
+  Communication.currentWindow = null;
   Communication.parentWindow = null;
   Communication.parentOrigin = null;
   Communication.childWindow = null;
@@ -114,6 +121,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
+  CommunicationPrivate.promiseCallbacks = {};
 }
 
 /**
@@ -171,6 +179,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -212,6 +221,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(actionName, args);
   if (callback) {
     CommunicationPrivate.callbacks[request.id] = callback;
@@ -230,10 +240,12 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via framelessPostMessage interface', request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
@@ -243,9 +255,11 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via postMessage', request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Adding message %i to parent message queue', request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
@@ -257,7 +271,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
  * @internal
  * Limited to Microsoft-internal use
  */
-export function processMessage(evt: DOMMessageEvent): void {
+function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
@@ -289,7 +303,7 @@ export function processMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -404,13 +418,14 @@ function handleChildMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageRequest;
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      // tslint:disable-next-line:no-any
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
+          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       });
@@ -453,6 +468,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
     targetWindow.postMessage(request, targetOrigin);
   }
@@ -478,13 +494,9 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(
-  id: number,
-  // tslint:disable-next-line:no-any
-  args?: any[],
-  isPartialResponse?: boolean,
-): void {
+function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
@@ -500,12 +512,9 @@ function sendMessageResponseToChild(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageEventToChild(
-  actionName: string,
-  // tslint:disable-next-line: no-any
-  args?: any[],
-): void {
+export function sendMessageEventToChild(actionName: string, args?: any[]): void {
   const targetWindow = Communication.childWindow;
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const customEvent = createMessageEvent(actionName, args);
   const targetOrigin = getTargetOrigin(targetWindow);
 
@@ -522,7 +531,6 @@ export function sendMessageEventToChild(
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageRequest(func: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
@@ -536,7 +544,6 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
     id: id,
@@ -552,7 +559,6 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
  * @internal
  * Limited to Microsoft-internal use
  */
-// tslint:disable-next-line:no-any
 function createMessageEvent(func: string, args: any[]): MessageRequest {
   return {
     func: func,

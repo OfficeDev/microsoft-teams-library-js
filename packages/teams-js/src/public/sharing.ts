@@ -5,6 +5,10 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to open a share dialog for web content.
+ * For more info, see {@link https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab Share to Teams from personal app or tab}
+ */
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
@@ -80,6 +84,7 @@ export namespace sharing {
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.task,
@@ -112,7 +117,7 @@ export namespace sharing {
   }
 
   function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    let err: SdkError;
+    let err: SdkError | undefined;
     if (shareRequest.content.some((item) => !item.type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
@@ -130,7 +135,7 @@ export namespace sharing {
   }
 
   function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    let err: SdkError;
+    let err: SdkError | undefined;
     if (shareRequest.content[0].type === 'URL') {
       if (shareRequest.content.some((item) => !item.url)) {
         err = {
@@ -148,7 +153,13 @@ export namespace sharing {
     }
   }
 
+  /**
+   * Checks if the sharing capability is supported by the host
+   * @returns boolean to represent whether the sharing capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.sharing ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
   }
 }

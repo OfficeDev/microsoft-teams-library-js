@@ -142,9 +142,9 @@ export namespace menus {
     dropDown = 'dropDown',
     popOver = 'popOver',
   }
-  let navBarMenuItemPressHandler: (id: string) => boolean;
-  let actionMenuItemPressHandler: (id: string) => boolean;
-  let viewConfigItemPressHandler: (id: string) => boolean;
+  let navBarMenuItemPressHandler: ((id: string) => boolean) | undefined;
+  let actionMenuItemPressHandler: ((id: string) => boolean) | undefined;
+  let viewConfigItemPressHandler: ((id: string) => boolean) | undefined;
 
   export function initialize(): void {
     registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
@@ -161,7 +161,7 @@ export namespace menus {
    * @param handler - The handler to invoke when the user selects view configuration.
    */
   export function setUpViews(viewConfig: ViewConfiguration[], handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -171,7 +171,7 @@ export namespace menus {
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('viewConfigItemPress', [id]);
     }
   }
@@ -184,7 +184,7 @@ export namespace menus {
    * @param handler The handler to invoke when the user selects menu item.
    */
   export function setNavBarMenu(items: MenuItem[], handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -194,7 +194,7 @@ export namespace menus {
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('handleNavBarMenuItemPress', [id]);
     }
   }
@@ -220,7 +220,7 @@ export namespace menus {
    * @param handler - The handler to invoke when the user selects menu item.
    */
   export function showActionMenu(params: ActionMenuParameters, handler: (id: string) => boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -230,12 +230,18 @@ export namespace menus {
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       sendMessageToParent('handleActionMenuItemPress', [id]);
     }
   }
 
+  /**
+   * Checks if the menus capability is supported by the host
+   * @returns boolean to represent whether the menus capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.menus ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.menus ? true : false;
   }
 }

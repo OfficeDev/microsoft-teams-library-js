@@ -1,4 +1,7 @@
-import { ensureInitialized } from '../internal/internalAPIs';
+import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
+import { registerHandlerHelper } from '../internal/handlers';
+import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
@@ -11,6 +14,7 @@ import {
   TabInstanceParameters,
 } from './interfaces';
 import { pages } from './pages';
+import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 
 /**
@@ -29,35 +33,6 @@ export function initialize(callback?: () => void, validMessageOrigins?: string[]
       callback();
     }
   });
-}
-
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app._initialize app._initialize(hostWindow: any): void} instead.
- *
- * @hidden
- * Undocumented function used to set a mock window for unit tests
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-// eslint-disable-next-line
-export function _initialize(hostWindow: any): void {
-  app._initialize(hostWindow);
-}
-
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app._uninitialize app._uninitialize(): void} instead.
- *
- * @hidden
- * Undocumented function used to clear state between unit tests
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function _uninitialize(): void {
-  app._uninitialize();
 }
 
 /**
@@ -89,11 +64,13 @@ export function print(): void {
  * @param callback - The callback to invoke when the {@link Context} object is retrieved.
  */
 export function getContext(callback: (context: Context) => void): void {
-  ensureInitialized();
-  app.getContext().then((context: app.Context) => {
-    if (callback) {
-      callback(transformAppContextToLegacyContext(context));
+  ensureInitializeCalled();
+  sendMessageToParent('getContext', (context: Context) => {
+    if (!context.frameContext) {
+      // Fallback logic for frameContext properties
+      context.frameContext = GlobalVars.frameContext;
     }
+    callback(context);
   });
 }
 
@@ -120,7 +97,7 @@ export function registerOnThemeChangeHandler(handler: (theme: string) => void): 
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-  pages.registerFullScreenHandler(handler);
+  registerHandlerHelper('fullScreenChange', handler, []);
 }
 
 /**
@@ -133,7 +110,7 @@ export function registerFullScreenHandler(handler: (isFullScreen: boolean) => vo
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: () => void): void {
-  pages.appButton.onClick(handler);
+  registerHandlerHelper('appButtonClick', handler, [FrameContexts.content]);
 }
 
 /**
@@ -146,7 +123,7 @@ export function registerAppButtonClickHandler(handler: () => void): void {
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-  pages.appButton.onHoverEnter(handler);
+  registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content]);
 }
 
 /**
@@ -159,7 +136,7 @@ export function registerAppButtonHoverEnterHandler(handler: () => void): void {
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-  pages.appButton.onHoverLeave(handler);
+  registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content]);
 }
 
 /**
@@ -174,7 +151,7 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
  * @param handler - The handler to invoke when the user presses their Team client's back button.
  */
 export function registerBackButtonHandler(handler: () => boolean): void {
-  pages.backStack.registerBackButtonHandler(handler);
+  pages.backStack.registerBackButtonHandlerHelper(handler);
 }
 
 /**
@@ -187,7 +164,7 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  * @param handler - The handler to invoke when the page is loaded.
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-  teamsCore.registerOnLoadHandler(handler);
+  teamsCore.registerOnLoadHandlerHelper(handler);
 }
 
 /**
@@ -201,7 +178,7 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
-  teamsCore.registerBeforeUnloadHandler(handler);
+  teamsCore.registerBeforeUnloadHandlerHelper(handler);
 }
 
 /**
@@ -214,7 +191,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  pages.registerFocusEnterHandler(handler);
+  registerHandlerHelper('focusEnter', handler, []);
 }
 
 /**
@@ -226,7 +203,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: () => void): void {
-  pages.config.registerChangeConfigHandler(handler);
+  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
 }
 
 /**
@@ -243,7 +220,7 @@ export function getTabInstances(
   callback: (tabInfo: TabInformation) => void,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -262,7 +239,7 @@ export function getMruTabInstances(
   callback: (tabInfo: TabInformation) => void,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getMruTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -294,6 +271,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  */
 export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(
+    runtime,
     FrameContexts.content,
     FrameContexts.sidePanel,
     FrameContexts.settings,
@@ -341,99 +319,4 @@ export function initializeWithFrameContext(
   validMessageOrigins?: string[],
 ): void {
   pages.initializeWithFrameContext(frameContext, callback, validMessageOrigins);
-}
-
-/**
- * Transforms the app.Context object received to the legacy global Context object
- * @param appContext - The app.Context object to be transformed
- * @returns The transformed legacy global Context object
- */
-function transformAppContextToLegacyContext(appContext: app.Context): Context {
-  const context: Context = {
-    // actionInfo
-    actionInfo: appContext.actionInfo,
-
-    // app
-    locale: appContext.app.locale,
-    appSessionId: appContext.app.sessionId,
-    theme: appContext.app.theme,
-    appIconPosition: appContext.app.iconPositionVertical,
-    osLocaleInfo: appContext.app.osLocaleInfo,
-    parentMessageId: appContext.app.parentMessageId,
-    userClickTime: appContext.app.userClickTime,
-    userFileOpenPreference: appContext.app.userFileOpenPreference,
-    appLaunchId: appContext.app.appLaunchId,
-
-    // app.host
-    hostClientType: appContext.app.host.clientType,
-    sessionId: appContext.app.host.sessionId,
-    ringId: appContext.app.host.ringId,
-
-    // page
-    entityId: appContext.page.id,
-    frameContext: appContext.page.frameContext,
-    subEntityId: appContext.page.subPageId,
-    isFullScreen: appContext.page.isFullScreen,
-    isMultiWindow: appContext.page.isMultiWindow,
-    sourceOrigin: appContext.page.sourceOrigin,
-
-    // user
-    userObjectId: appContext.user !== undefined ? appContext.user.id : undefined,
-    isCallingAllowed: appContext.user !== undefined ? appContext.user.isCallingAllowed : undefined,
-    isPSTNCallingAllowed: appContext.user !== undefined ? appContext.user.isPSTNCallingAllowed : undefined,
-    userLicenseType: appContext.user !== undefined ? appContext.user.licenseType : undefined,
-    loginHint: appContext.user !== undefined ? appContext.user.loginHint : undefined,
-    userPrincipalName: appContext.user !== undefined ? appContext.user.userPrincipalName : undefined,
-
-    // user.tenant
-    tid:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.id
-          : undefined
-        : undefined,
-    tenantSKU:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.teamsSku
-          : undefined
-        : undefined,
-
-    // channel
-    channelId: appContext.channel !== undefined ? appContext.channel.id : undefined,
-    channelName: appContext.channel !== undefined ? appContext.channel.displayName : undefined,
-    channelRelativeUrl: appContext.channel !== undefined ? appContext.channel.relativeUrl : undefined,
-    channelType: appContext.channel !== undefined ? appContext.channel.membershipType : undefined,
-    defaultOneNoteSectionId: appContext.channel !== undefined ? appContext.channel.defaultOneNoteSectionId : undefined,
-    hostTeamGroupId: appContext.channel !== undefined ? appContext.channel.ownerGroupId : undefined,
-    hostTeamTenantId: appContext.channel !== undefined ? appContext.channel.ownerTenantId : undefined,
-
-    // chat
-    chatId: appContext.chat !== undefined ? appContext.chat.id : undefined,
-
-    // meeting
-    meetingId: appContext.meeting !== undefined ? appContext.meeting.id : undefined,
-
-    // sharepoint
-    sharepoint: appContext.sharepoint,
-
-    // team
-    teamId: appContext.team !== undefined ? appContext.team.internalId : undefined,
-    teamName: appContext.team !== undefined ? appContext.team.displayName : undefined,
-    teamType: appContext.team !== undefined ? appContext.team.type : undefined,
-    groupId: appContext.team !== undefined ? appContext.team.groupId : undefined,
-    teamTemplateId: appContext.team !== undefined ? appContext.team.templateId : undefined,
-    isTeamArchived: appContext.team !== undefined ? appContext.team.isArchived : undefined,
-    userTeamRole: appContext.team !== undefined ? appContext.team.userRole : undefined,
-
-    // sharepointSite
-    teamSiteUrl: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteUrl : undefined,
-    teamSiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteDomain : undefined,
-    teamSitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSitePath : undefined,
-    teamSiteId: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteId : undefined,
-    mySitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySitePath : undefined,
-    mySiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySiteDomain : undefined,
-  };
-
-  return context;
 }

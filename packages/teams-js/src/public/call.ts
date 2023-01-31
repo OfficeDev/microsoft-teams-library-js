@@ -42,7 +42,7 @@ export namespace call {
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
     return new Promise((resolve) => {
-      ensureInitialized(FrameContexts.content, FrameContexts.task);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -63,7 +63,13 @@ export namespace call {
     });
   }
 
+  /**
+   * Checks if the call capability is supported by the host
+   * @returns boolean to represent whether the call capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.call ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.call ? true : false;
   }
 }

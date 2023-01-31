@@ -1,8 +1,59 @@
 import { FileOpenPreference, files, SdkError } from '@microsoft/teams-js';
-import React, { ReactElement } from 'react';
+import React, { ChangeEvent, ReactElement } from 'react';
 
+import { noHostSdkMsg } from '../../App';
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ApiContainer } from '../utils/ApiContainer';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
+
+export const FileUpload: React.FC = () => {
+  const fileUploadName = 'fileUpload';
+  const [result, setResult] = React.useState<string>('');
+  const [selectMultipleFiles, setSelectMultipleFiles] = React.useState<boolean>(false);
+  const onChangeCallback = React.useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setResult(noHostSdkMsg);
+      try {
+        const files: FileList | null = event.target.files;
+        if (files !== undefined && files !== null) {
+          const fileList: string[] = [];
+          Array.from(files).forEach((file) => {
+            fileList.push(file.name);
+          });
+          setResult(fileList.join());
+        }
+      } catch (err) {
+        setResult('Error: ' + err);
+      }
+    },
+    [setResult],
+  );
+
+  return (
+    <ApiContainer title="Upload File" result={result} name={fileUploadName}>
+      <div style={{ textAlign: 'left' }}>
+        <input
+          id={`file_${fileUploadName}`}
+          style={{ width: 'fit-content' }}
+          type="file"
+          name={fileUploadName + 'Button'}
+          onChange={onChangeCallback}
+          multiple={selectMultipleFiles}
+        />
+        <div>
+          <input
+            title="Select multiple files"
+            type="checkbox"
+            style={{ width: 'fit-content' }}
+            name={`selectMultiple_${fileUploadName}`}
+            onChange={(e) => setSelectMultipleFiles(e.target.checked)}
+          />
+          <label htmlFor={`selectMultiple_${fileUploadName}`}>Select multiple files</label>
+        </div>
+      </div>
+    </ApiContainer>
+  );
+};
 
 const GetCloudStorageFolders = (): React.ReactElement =>
   ApiWithTextInput<string>({
@@ -218,6 +269,7 @@ const OpenDownloadFolder = (): ReactElement =>
 
 const FilesAPIs = (): ReactElement => (
   <ModuleWrapper title="Files">
+    <FileUpload />
     <GetCloudStorageFolders />
     <AddCloudStorageFolder />
     <DeleteCloudStorageFolder />

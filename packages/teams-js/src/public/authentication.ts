@@ -7,26 +7,25 @@ import {
 } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized } from '../internal/internalAPIs';
+import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, HostClientType } from './constants';
+import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the authentication-specific part of the SDK.
  *
  * This object is used for starting or completing authentication flows.
- *
- * @beta
  */
 export namespace authentication {
-  let authHandlers: { success: (string) => void; fail: (string) => void };
-  let authWindowMonitor: number;
+  let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
+  let authWindowMonitor: number | undefined;
 
   export function initialize(): void {
     registerHandler('authentication.authenticate.success', handleSuccess, false);
     registerHandler('authentication.authenticate.failure', handleFailure, false);
   }
 
-  let authParams: AuthenticateParameters;
+  let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
    * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern.
@@ -41,11 +40,14 @@ export namespace authentication {
   /**
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
+   * @remarks
+   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
+   *
    * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
    *
    * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
    *
-   * @throws if the authentication request fails or is canceled by the user.
+   * @throws Error if the authentication request fails or is canceled by the user.
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
@@ -55,17 +57,23 @@ export namespace authentication {
    *
    * Initiates an authentication request, which opens a new window with the specified settings.
    *
+   * @remarks
+   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
+   *
    * @param authenticateParameters - The parameters for the authentication request.
    *
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void;
   export function authenticate(authenticateParameters?: AuthenticateParameters): Promise<string> {
     const isDifferentParamsInCall: boolean = authenticateParameters !== undefined;
-    const authenticateParams: AuthenticateParameters = isDifferentParamsInCall ? authenticateParameters : authParams;
+    const authenticateParams: AuthenticateParameters | undefined = isDifferentParamsInCall
+      ? authenticateParameters
+      : authParams;
     if (!authenticateParams) {
       throw new Error('No parameters are provided for authentication');
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.settings,
@@ -165,7 +173,7 @@ export namespace authentication {
    */
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
-    ensureInitialized();
+    ensureInitializeCalled();
     return getAuthTokenHelper(authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
@@ -224,7 +232,7 @@ export namespace authentication {
    */
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
-    ensureInitialized();
+    ensureInitializeCalled();
     return getUserHelper()
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {
@@ -368,7 +376,7 @@ export namespace authentication {
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
-    ensureInitialized(FrameContexts.authentication);
+    ensureInitialized(runtime, FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
@@ -386,7 +394,7 @@ export namespace authentication {
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
-    ensureInitialized(FrameContexts.authentication);
+    ensureInitialized(runtime, FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
@@ -668,6 +676,38 @@ export namespace authentication {
      * Limited to Microsoft-internal use
      */
     ver: string;
+    /**
+     * @hidden
+     * Stores the data residency of the user.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    dataResidency?: DataResidency;
+  }
+
+  /**
+   * @hidden
+   * Limited set of data residencies information exposed to 1P application developers
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum DataResidency {
+    /**
+     * Public
+     */
+    Public = 'public',
+
+    /**
+     * European Union Data Boundary
+     */
+    EUDB = 'eudb',
+
+    /**
+     * Other, stored to cover fields that will not be exposed
+     */
+    Other = 'other',
   }
 
   /**

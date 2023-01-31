@@ -15,9 +15,11 @@ export namespace profile {
    * Opens a profile card at a specified position to show profile information about a persona.
    * @param showProfileRequest The parameters to position the card and identify the target user.
    * @returns Promise that will be fulfilled when the operation has completed
+   *
+   * @beta
    */
   export function showProfile(showProfileRequest: ShowProfileRequest): Promise<void> {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     return new Promise<void>((resolve) => {
       const [isValid, message] = validateShowProfileRequest(showProfileRequest);
@@ -46,23 +48,28 @@ export namespace profile {
    * The type of modalities that are supported when showing a profile.
    * Can be provided as an optional hint with the request and will be
    * respected if the hosting M365 application supports it.
+   *
+   * @beta
    */
   export type Modality = 'Card' | 'Expanded';
 
   /**
    * The type of the profile trigger.
    *  - MouseHover: The user hovered a target.
-   *  - MouseClick: The user clicked a target.
-   *  - KeyboardPress: The user initiated the show profile request with their keyboard.
+   *  - Press: The target was pressed with either a mouse click or keyboard key press.
    *  - AppRequest: The show profile request is happening programmatically, without direct user interaction.
+   *
+   * @beta
    */
-  export type TriggerType = 'MouseHover' | 'MouseClick' | 'KeyboardPress' | 'AppRequest';
+  export type TriggerType = 'MouseHover' | 'Press' | 'AppRequest';
 
   /**
    * The set of identifiers that are supported for resolving the persona.
    *
    * At least one is required, and if multiple are provided then only the highest
    * priority one will be used (AadObjectId > Upn > Smtp).
+   *
+   * @beta
    */
   export type PersonaIdentifiers = {
     /**
@@ -70,7 +77,7 @@ export namespace profile {
      *
      * This id is guaranteed to be unique for an object within a tenant,
      * and so if provided will lead to a more performant lookup. It can
-     * be resolved via MS Graph (see https://docs.microsoft.com/en-us/graph/api/resources/users
+     * be resolved via MS Graph (see https://learn.microsoft.com/graph/api/resources/users
      * for examples).
      */
     readonly AadObjectId?: string;
@@ -88,6 +95,8 @@ export namespace profile {
 
   /**
    * The persona to show the profile for.
+   *
+   * @beta
    */
   export interface Persona {
     /**
@@ -103,6 +112,8 @@ export namespace profile {
 
   /**
    * Input parameters provided to the showProfile API.
+   *
+   * @beta
    */
   export interface ShowProfileRequest {
     /**
@@ -127,27 +138,37 @@ export namespace profile {
   }
 
   /**
-   * Internal representation of a DOMRect suitable for sending via postMessage.
+   * Checks if the profile capability is supported by the host
+   * @returns boolean to represent whether the profile capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @beta
    */
-  type Rectangle = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-
-  /**
-   * An internal representation of the showProfile parameters suitable for sending via postMessage.
-   * The hub expects to receive an object of this type.
-   */
-  interface ShowProfileRequestInternal {
-    modality?: Modality;
-    persona: Persona;
-    targetRectangle: Rectangle;
-    triggerType: TriggerType;
-  }
-
   export function isSupported(): boolean {
-    return runtime.supports.profile ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.profile ? true : false;
   }
+}
+
+/**
+ * Internal representation of a DOMRect suitable for sending via postMessage.
+ */
+export type Rectangle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+/**
+ * @beta
+ * @hidden
+ * An internal representation of the showProfile parameters suitable for sending via postMessage.
+ * The hub expects to receive an object of this type.
+ */
+export interface ShowProfileRequestInternal {
+  modality?: profile.Modality;
+  persona: profile.Persona;
+  targetRectangle: Rectangle;
+  triggerType: profile.TriggerType;
 }
