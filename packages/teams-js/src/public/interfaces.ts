@@ -891,7 +891,7 @@ export interface DialogSize {
 }
 /**
  * @beta
- * Data structure to be use with the {@link teamsCore.registerOnLoadHandler} or {@link teamsCore.registerBeforeOnLoadHandler} to pass the context to the app.
+ * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
  */
 export interface LoadContext {
   /**
