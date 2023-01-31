@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated documentation links to avoid using locale in URLs and use markdown format for external links",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
