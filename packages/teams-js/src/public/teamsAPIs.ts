@@ -43,6 +43,9 @@ export namespace teamsCore {
    * @beta
    * Registers a handler to be called when the page has been requested to load.
    *
+   * @see Check out {@link https://learn.microsoft.com/en-us/microsoftteams/platform/apps-in-teams-meetings/build-tabs-for-meeting?tabs=desktop%2Cmeeting-chat-view-desktop%2Cmeeting-stage-view-desktop%2Cchannel-meeting-desktop#app-caching | App Caching in Teams}
+   * for a more detailed explanation about using this API.
+   *
    * @param handler - The handler to invoke when the page is loaded.
    *
    */
@@ -59,6 +62,9 @@ export namespace teamsCore {
   /**
    * @beta
    * Registers a handler to be called before the page is unloaded.
+   *
+   * @see Check out {@link https://learn.microsoft.com/en-us/microsoftteams/platform/apps-in-teams-meetings/build-tabs-for-meeting?tabs=desktop%2Cmeeting-chat-view-desktop%2Cmeeting-stage-view-desktop%2Cchannel-meeting-desktop#app-caching | App Caching in Teams}
+   * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
