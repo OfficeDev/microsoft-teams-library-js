@@ -27,6 +27,8 @@ function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion;
 }
 
+// testing
+
 interface IRuntimeV1 extends IBaseRuntime {
   readonly apiVersion: 1;
   readonly isLegacyTeams?: boolean;
