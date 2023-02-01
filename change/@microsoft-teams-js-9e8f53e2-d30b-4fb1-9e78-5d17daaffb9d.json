@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `requestAppAudioHandling` and `updateMicState` meeting APIs",
-  "packageName": "@microsoft/teams-js",
-  "email": "kiran.pyapali@microsoft.com",
-  "dependentChangeType": "patch"
-}
