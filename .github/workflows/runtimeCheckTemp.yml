@@ -28,11 +28,11 @@ jobs:
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
       - name: 'Comment on PR'
         if: steps.detect_runtime_change.outputs.runtime_changed == 'true'
-        uses: actions/github-script@v3
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            await github.issues.createComment({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
