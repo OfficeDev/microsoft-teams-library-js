@@ -13,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: Check if runtime.ts has been modified
         id: detect_runtime_change
         run: |
-          files=$(git diff-tree --no-commit-id --name-only -r $(Build.SourceVersion))
+          files=$(git diff-tree --no-commit-id --name-only -r HEAD^1 HEAD)
           runtime_changed='false'
           for changed_file in $files; do
             if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
