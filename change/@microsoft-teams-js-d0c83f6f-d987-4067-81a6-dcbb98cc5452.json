@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.",
+  "packageName": "@microsoft/teams-js",
+  "email": "alexneyman@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
