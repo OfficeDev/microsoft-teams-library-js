@@ -26,9 +26,17 @@ jobs:
             fi
           done
           echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
-      - name: Comment on PR
+      - name: 'Comment on PR'
         if: steps.detect_runtime_change.outputs.runtime_changed == 'true'
-        uses: mb2dev/github-action-comment-pull-request@1.0.0
+        uses: actions/github-script@v3
         with:
-          message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required."
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            var fs = require('fs');
+            var issue_number = Number(fs.readFileSync('./NR'));
+            await github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: 'This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required.'
+            });
