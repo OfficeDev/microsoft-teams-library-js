@@ -142,7 +142,7 @@ export interface IFluidTenantInfo {
 export interface IClientInfo {
   readonly userId: string;
   readonly roles: UserMeetingRole[];
-  readonly userIconUrl?: string; // permissions required?
+  readonly displayName?: string;
 }
 
 /**
