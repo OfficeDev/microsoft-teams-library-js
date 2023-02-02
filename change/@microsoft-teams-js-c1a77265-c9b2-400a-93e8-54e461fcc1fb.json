@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated typedoc configuration to treat warnings as errors",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "none"
-}

@@ -1,8 +1,36 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 06 Jan 2023 04:15:12 GMT and should not be manually modified.
+This log was last generated on Wed, 01 Feb 2023 23:22:55 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.8.0
+
+Wed, 01 Feb 2023 23:22:55 GMT
+
+### Minor changes
+
+- Added `requestAppAudioHandling` and `updateMicState` meeting APIs
+- Fixed a bug where `getContext()` was incorrectly dropping properties by performing a lossy conversion via `app.getContext()`
+- Added adaptive card subcapability to `dialog` capability
+
+### Patches
+
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Updated typedoc version and fixed doc issues raised by it
+- Added documentation for `dialog.submit`
+- Changed user facing documentation associated with `meeting.ts`
+- Unpin the version of the debug package; it was originally pinned unintentionally.
+- Removed deprecated `_initialize` and `_uninitialize` methods only used by unit tests
+- Added unit tests for `communication.uninitializeCommunication`, `communication.sendAndUnwrap`, and `communication.sendMessageToParentAsync` and updated `communication.uninitializeCommunication` to handle `currentWindow` correctly.
+- Removed --emit:none from typedoc command so it would actually output errors
+- Updated documentation links to avoid using locale in URLs and use markdown format for external links
+- Added possible values to documentation for `licenseType` property on `UserInfo` interface
+- Added unit tests for `communication.initializeCommunication`
+- Updated `dialog` and `tasks` documentation to add and fix doc links
+- Added remarks to authentication.authenticate() code comments
+- Added `@hidden` and `@internal` tags for the meeting `requestAppAudioHandling` and `updateMicState` APIs, and improved how the `teams-test-app` app uses the APIs
+- Stopped exporting `communication.processMessage` and `communication.shouldProcessMessage`.
 
 ## 2.7.1
 

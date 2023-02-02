@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added adaptive card subcapability to `dialog` capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
