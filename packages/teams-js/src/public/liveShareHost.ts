@@ -139,7 +139,7 @@ export interface IFluidTenantInfo {
  *
  * @beta
  */
-export interface IClientInfo {
+export interface IUserInfo {
   readonly userId: string;
   readonly roles: UserMeetingRole[];
   readonly displayName?: string;
@@ -267,18 +267,18 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Returns the `IClientInfo` associated with a client ID.
+   * Returns the `IUserInfo` associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.
    * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
    *
    * @beta
    */
-  public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
-    return new Promise<IClientInfo | undefined>((resolve) => {
+  public getUserInfo(clientId: string): Promise<IUserInfo | undefined> {
+    return new Promise<IUserInfo | undefined>((resolve) => {
       ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
 
-      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
+      resolve(sendAndHandleSdkError('interactive.getUserInfo', clientId));
     });
   }
 
