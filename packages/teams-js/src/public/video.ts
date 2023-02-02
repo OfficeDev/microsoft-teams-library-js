@@ -103,6 +103,12 @@ export namespace video {
     InitializationFailure = 'InitializationFailure',
   }
 
+  enum EffectSuccessReason {
+    EffectPrepared = 'EffectPrepared',
+
+    DirectReturned = 'DirectReturned',
+  }
+
   /**
    * Video effect change call back function definition
    * Return a Promise which will be resolved when the effect is prepared, or reject with a failure reason
@@ -171,18 +177,23 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    const callbackHandler = (effectId: string | undefined): void => {
-      Promise.resolve(callback(effectId))
-        .then(() => {
-          sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
-        })
-        .catch((reason) => {
-          // reason could be a string or an EffectFailureReason
-          sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
-        });
+    const effectParameterChangeHandler = (effectId: string | undefined): void => {
+      const promise = callback(effectId);
+      if (promise) {
+        promise
+          .then(() => {
+            sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.EffectPrepared]);
+          })
+          .catch((reason) => {
+            // reason could be a string or an EffectFailureReason
+            sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
+          });
+      } else {
+        sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.DirectReturned]);
+      }
     };
 
-    registerHandler('video.effectParameterChange', callbackHandler, false);
+    registerHandler('video.effectParameterChange', effectParameterChangeHandler, false);
     sendMessageToParent('video.registerForVideoEffect');
   }
 
