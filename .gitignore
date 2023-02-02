@@ -30,3 +30,13 @@ yarn-error.log
 
 #lerna logs
 lerna-debug.log
+
+# Blazor Test App
+.vs/
+bin/
+obj/
+*.user
+artifacts/
+.vscode/
+.dotnet/
+*.binlog

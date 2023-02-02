@@ -1,0 +1,668 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder">
+            <summary>Shim type of Microsoft.AspNetCore.Builder.ComponentEndpointConventionBuilder</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.#ctor(Microsoft.AspNetCore.Builder.ComponentEndpointConventionBuilder)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.AddActionOfEndpointBuilder">
+            <summary>Sets the Shim of ComponentEndpointConventionBuilder.Add(ComponentEndpointConventionBuilder this, Action`1 convention)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.AllInstances.AddActionOfEndpointBuilder">
+            <summary>Sets the Shim of ComponentEndpointConventionBuilder.Add(ComponentEndpointConventionBuilder this, Action`1 convention)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.Bind(Microsoft.AspNetCore.Builder.IEndpointConventionBuilder)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.Bind(Microsoft.AspNetCore.Builder.IHubEndpointConventionBuilder)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointConventionBuilder.ConstructorIEndpointConventionBuilderIEndpointConventionBuilderIEndpointConventionBuilder">
+            <summary>Sets the Shim of ComponentEndpointConventionBuilder.ComponentEndpointConventionBuilder(ComponentEndpointConventionBuilder this, IEndpointConventionBuilder hubEndpoint, IEndpointConventionBuilder disconnectEndpoint, IEndpointConventionBuilder jsInitializersEndpoint)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions">
+            <summary>Shim type of Microsoft.AspNetCore.Builder.ComponentEndpointRouteBuilderExtensions</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.MapBlazorHubIEndpointRouteBuilder">
+            <summary>Sets the Shim of ComponentEndpointRouteBuilderExtensions.MapBlazorHub(IEndpointRouteBuilder endpoints)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.MapBlazorHubIEndpointRouteBuilderActionOfHttpConnectionDispatcherOptions">
+            <summary>Sets the Shim of ComponentEndpointRouteBuilderExtensions.MapBlazorHub(IEndpointRouteBuilder endpoints, Action`1 configureOptions)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.MapBlazorHubIEndpointRouteBuilderString">
+            <summary>Sets the Shim of ComponentEndpointRouteBuilderExtensions.MapBlazorHub(IEndpointRouteBuilder endpoints, String path)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Builder.Fakes.ShimComponentEndpointRouteBuilderExtensions.MapBlazorHubIEndpointRouteBuilderStringActionOfHttpConnectionDispatcherOptions">
+            <summary>Sets the Shim of ComponentEndpointRouteBuilderExtensions.MapBlazorHub(IEndpointRouteBuilder endpoints, String path, Action`1 configureOptions)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.Circuits.Circuit</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.#ctor(Microsoft.AspNetCore.Components.Server.Circuits.Circuit)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.AllInstances.IdGet">
+            <summary>Sets the Shim of Circuit.get_Id(Circuit this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuit.IdGet">
+            <summary>Sets the Shim of Circuit.get_Id(Circuit this)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.#ctor(Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances.OnCircuitClosedAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnCircuitClosedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances.OnCircuitOpenedAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnCircuitOpenedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances.OnConnectionDownAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnConnectionDownAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances.OnConnectionUpAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnConnectionUpAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.AllInstances.OrderGet">
+            <summary>Sets the Shim of CircuitHandler.get_Order(CircuitHandler this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.Constructor">
+            <summary>Sets the Shim of CircuitHandler.CircuitHandler(CircuitHandler this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.OnCircuitClosedAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnCircuitClosedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.OnCircuitOpenedAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnCircuitOpenedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.OnConnectionDownAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnConnectionDownAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.OnConnectionUpAsyncCircuitCancellationToken">
+            <summary>Sets the Shim of CircuitHandler.OnConnectionUpAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.ShimCircuitHandler.OrderGet">
+            <summary>Sets the Shim of CircuitHandler.get_Order(CircuitHandler this)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler">
+            <summary>Stub type of Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.InitializeStub">
+            <summary>Initializes a new instance of type StubCircuitHandler</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnCircuitClosedAsync(Microsoft.AspNetCore.Components.Server.Circuits.Circuit,System.Threading.CancellationToken)">
+            <summary>Sets the Stub of CircuitHandler.OnCircuitClosedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnCircuitClosedAsyncCircuitCancellationToken">
+            <summary>Sets the stub of CircuitHandler.OnCircuitClosedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnCircuitOpenedAsync(Microsoft.AspNetCore.Components.Server.Circuits.Circuit,System.Threading.CancellationToken)">
+            <summary>Sets the Stub of CircuitHandler.OnCircuitOpenedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnCircuitOpenedAsyncCircuitCancellationToken">
+            <summary>Sets the stub of CircuitHandler.OnCircuitOpenedAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnConnectionDownAsync(Microsoft.AspNetCore.Components.Server.Circuits.Circuit,System.Threading.CancellationToken)">
+            <summary>Sets the Stub of CircuitHandler.OnConnectionDownAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnConnectionDownAsyncCircuitCancellationToken">
+            <summary>Sets the stub of CircuitHandler.OnConnectionDownAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnConnectionUpAsync(Microsoft.AspNetCore.Components.Server.Circuits.Circuit,System.Threading.CancellationToken)">
+            <summary>Sets the Stub of CircuitHandler.OnConnectionUpAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OnConnectionUpAsyncCircuitCancellationToken">
+            <summary>Sets the stub of CircuitHandler.OnConnectionUpAsync(CircuitHandler this, Circuit circuit, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.Order">
+            <summary>Sets the stub of CircuitHandler.get_Order(CircuitHandler this)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Circuits.Fakes.StubCircuitHandler.OrderGet">
+            <summary>Sets the stub of CircuitHandler.get_Order(CircuitHandler this)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.CircuitOptions</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.#ctor(Microsoft.AspNetCore.Components.Server.CircuitOptions)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DetailedErrorsGet">
+            <summary>Sets the Shim of CircuitOptions.get_DetailedErrors(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DetailedErrorsSetBoolean">
+            <summary>Sets the Shim of CircuitOptions.set_DetailedErrors(CircuitOptions this, Boolean value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DisconnectedCircuitMaxRetainedGet">
+            <summary>Sets the Shim of CircuitOptions.get_DisconnectedCircuitMaxRetained(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DisconnectedCircuitMaxRetainedSetInt32">
+            <summary>Sets the Shim of CircuitOptions.set_DisconnectedCircuitMaxRetained(CircuitOptions this, Int32 value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DisconnectedCircuitRetentionPeriodGet">
+            <summary>Sets the Shim of CircuitOptions.get_DisconnectedCircuitRetentionPeriod(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.DisconnectedCircuitRetentionPeriodSetTimeSpan">
+            <summary>Sets the Shim of CircuitOptions.set_DisconnectedCircuitRetentionPeriod(CircuitOptions this, TimeSpan value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.JSInteropDefaultCallTimeoutGet">
+            <summary>Sets the Shim of CircuitOptions.get_JSInteropDefaultCallTimeout(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.JSInteropDefaultCallTimeoutSetTimeSpan">
+            <summary>Sets the Shim of CircuitOptions.set_JSInteropDefaultCallTimeout(CircuitOptions this, TimeSpan value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.JavaScriptInitializersGet">
+            <summary>Sets the Shim of CircuitOptions.get_JavaScriptInitializers(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.MaxBufferedUnacknowledgedRenderBatchesGet">
+            <summary>Sets the Shim of CircuitOptions.get_MaxBufferedUnacknowledgedRenderBatches(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.MaxBufferedUnacknowledgedRenderBatchesSetInt32">
+            <summary>Sets the Shim of CircuitOptions.set_MaxBufferedUnacknowledgedRenderBatches(CircuitOptions this, Int32 value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.AllInstances.RootComponentsGet">
+            <summary>Sets the Shim of CircuitOptions.get_RootComponents(CircuitOptions this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.Constructor">
+            <summary>Sets the Shim of CircuitOptions.CircuitOptions(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DetailedErrorsGet">
+            <summary>Sets the Shim of CircuitOptions.get_DetailedErrors(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DetailedErrorsSetBoolean">
+            <summary>Sets the Shim of CircuitOptions.set_DetailedErrors(CircuitOptions this, Boolean value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DisconnectedCircuitMaxRetainedGet">
+            <summary>Sets the Shim of CircuitOptions.get_DisconnectedCircuitMaxRetained(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DisconnectedCircuitMaxRetainedSetInt32">
+            <summary>Sets the Shim of CircuitOptions.set_DisconnectedCircuitMaxRetained(CircuitOptions this, Int32 value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DisconnectedCircuitRetentionPeriodGet">
+            <summary>Sets the Shim of CircuitOptions.get_DisconnectedCircuitRetentionPeriod(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.DisconnectedCircuitRetentionPeriodSetTimeSpan">
+            <summary>Sets the Shim of CircuitOptions.set_DisconnectedCircuitRetentionPeriod(CircuitOptions this, TimeSpan value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.JSInteropDefaultCallTimeoutGet">
+            <summary>Sets the Shim of CircuitOptions.get_JSInteropDefaultCallTimeout(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.JSInteropDefaultCallTimeoutSetTimeSpan">
+            <summary>Sets the Shim of CircuitOptions.set_JSInteropDefaultCallTimeout(CircuitOptions this, TimeSpan value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.JavaScriptInitializersGet">
+            <summary>Sets the Shim of CircuitOptions.get_JavaScriptInitializers(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.MaxBufferedUnacknowledgedRenderBatchesGet">
+            <summary>Sets the Shim of CircuitOptions.get_MaxBufferedUnacknowledgedRenderBatches(CircuitOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.MaxBufferedUnacknowledgedRenderBatchesSetInt32">
+            <summary>Sets the Shim of CircuitOptions.set_MaxBufferedUnacknowledgedRenderBatches(CircuitOptions this, Int32 value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitOptions.RootComponentsGet">
+            <summary>Sets the Shim of CircuitOptions.get_RootComponents(CircuitOptions this)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.CircuitRootComponentOptions</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.#ctor(Microsoft.AspNetCore.Components.Server.CircuitRootComponentOptions)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.AllInstances.JSComponentsGet">
+            <summary>Sets the Shim of CircuitRootComponentOptions.get_JSComponents(CircuitRootComponentOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.AllInstances.MaxJSRootComponentsGet">
+            <summary>Sets the Shim of CircuitRootComponentOptions.get_MaxJSRootComponents(CircuitRootComponentOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.AllInstances.MaxJSRootComponentsSetInt32">
+            <summary>Sets the Shim of CircuitRootComponentOptions.set_MaxJSRootComponents(CircuitRootComponentOptions this, Int32 value)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.Bind(Microsoft.AspNetCore.Components.Web.IJSComponentConfiguration)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.Constructor">
+            <summary>Sets the Shim of CircuitRootComponentOptions.CircuitRootComponentOptions(CircuitRootComponentOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.JSComponentsGet">
+            <summary>Sets the Shim of CircuitRootComponentOptions.get_JSComponents(CircuitRootComponentOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.MaxJSRootComponentsGet">
+            <summary>Sets the Shim of CircuitRootComponentOptions.get_MaxJSRootComponents(CircuitRootComponentOptions this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimCircuitRootComponentOptions.MaxJSRootComponentsSetInt32">
+            <summary>Sets the Shim of CircuitRootComponentOptions.set_MaxJSRootComponents(CircuitRootComponentOptions this, Int32 value)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.RevalidatingServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.#ctor(Microsoft.AspNetCore.Components.Server.RevalidatingServerAuthenticationStateProvider)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.AllInstances.DisposeBoolean">
+            <summary>Sets the Shim of RevalidatingServerAuthenticationStateProvider.Dispose(RevalidatingServerAuthenticationStateProvider this, Boolean disposing)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.AllInstances.SystemIDisposableDispose">
+            <summary>Sets the Shim of RevalidatingServerAuthenticationStateProvider.System.IDisposable.Dispose(RevalidatingServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.Bind(Microsoft.AspNetCore.Components.Authorization.IHostEnvironmentAuthenticationStateProvider)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.Bind(System.IDisposable)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.ConstructorILoggerFactory">
+            <summary>Sets the Shim of RevalidatingServerAuthenticationStateProvider.RevalidatingServerAuthenticationStateProvider(RevalidatingServerAuthenticationStateProvider this, ILoggerFactory loggerFactory)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.DisposeBoolean">
+            <summary>Sets the Shim of RevalidatingServerAuthenticationStateProvider.Dispose(RevalidatingServerAuthenticationStateProvider this, Boolean disposing)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimRevalidatingServerAuthenticationStateProvider.SystemIDisposableDispose">
+            <summary>Sets the Shim of RevalidatingServerAuthenticationStateProvider.System.IDisposable.Dispose(RevalidatingServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.ServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.#ctor(Microsoft.AspNetCore.Components.Server.ServerAuthenticationStateProvider)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.AllInstances.GetAuthenticationStateAsync">
+            <summary>Sets the Shim of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.AllInstances.SetAuthenticationStateTaskOfAuthenticationState">
+            <summary>Sets the Shim of ServerAuthenticationStateProvider.SetAuthenticationState(ServerAuthenticationStateProvider this, Task`1 authenticationStateTask)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.Bind(Microsoft.AspNetCore.Components.Authorization.IHostEnvironmentAuthenticationStateProvider)">
+            <summary>Binds the members of the interface to the shim.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.Constructor">
+            <summary>Sets the Shim of ServerAuthenticationStateProvider.ServerAuthenticationStateProvider(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.GetAuthenticationStateAsync">
+            <summary>Sets the Shim of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.ShimServerAuthenticationStateProvider.SetAuthenticationStateTaskOfAuthenticationState">
+            <summary>Sets the Shim of ServerAuthenticationStateProvider.SetAuthenticationState(ServerAuthenticationStateProvider this, Task`1 authenticationStateTask)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions">
+            <summary>Stub type of Microsoft.AspNetCore.Components.Server.CircuitRootComponentOptions</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions.InitializeStub">
+            <summary>Initializes a new instance of type StubCircuitRootComponentOptions</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubCircuitRootComponentOptions.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider">
+            <summary>Stub type of Microsoft.AspNetCore.Components.Server.RevalidatingServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.Dispose(System.Boolean)">
+            <summary>Sets the Stub of RevalidatingServerAuthenticationStateProvider.Dispose(RevalidatingServerAuthenticationStateProvider this, Boolean disposing)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.DisposeBoolean">
+            <summary>Sets the stub of RevalidatingServerAuthenticationStateProvider.Dispose(RevalidatingServerAuthenticationStateProvider this, Boolean disposing)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.GetAuthenticationStateAsync">
+            <summary>Sets the Stub of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.GetAuthenticationStateAsync01">
+            <summary>Sets the stub of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.InitializeStub">
+            <summary>Initializes a new instance of type StubRevalidatingServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.RevalidationInterval">
+            <summary>Sets the stub of RevalidatingServerAuthenticationStateProvider.get_RevalidationInterval(RevalidatingServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.RevalidationIntervalGet">
+            <summary>Sets the stub of RevalidatingServerAuthenticationStateProvider.get_RevalidationInterval(RevalidatingServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.ValidateAuthenticationStateAsync(Microsoft.AspNetCore.Components.Authorization.AuthenticationState,System.Threading.CancellationToken)">
+            <summary>Sets the Stub of RevalidatingServerAuthenticationStateProvider.ValidateAuthenticationStateAsync(RevalidatingServerAuthenticationStateProvider this, AuthenticationState authenticationState, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Fakes.StubRevalidatingServerAuthenticationStateProvider.ValidateAuthenticationStateAsyncAuthenticationStateCancellationToken">
+            <summary>Sets the stub of RevalidatingServerAuthenticationStateProvider.ValidateAuthenticationStateAsync(RevalidatingServerAuthenticationStateProvider this, AuthenticationState authenticationState, CancellationToken cancellationToken)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider">
+            <summary>Stub type of Microsoft.AspNetCore.Components.Server.ServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.#ctor">
+            <summary>Initializes a new instance</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.CallBase">
+            <summary>Gets or sets a value that indicates if the base method should be called instead of the fallback behavior</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.GetAuthenticationStateAsync">
+            <summary>Sets the Stub of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="F:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.GetAuthenticationStateAsync01">
+            <summary>Sets the stub of ServerAuthenticationStateProvider.GetAuthenticationStateAsync(ServerAuthenticationStateProvider this)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.InitializeStub">
+            <summary>Initializes a new instance of type StubServerAuthenticationStateProvider</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.InstanceBehavior">
+            <summary>Gets or sets the instance behavior.</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.Fakes.StubServerAuthenticationStateProvider.InstanceObserver">
+            <summary>Gets or sets the instance observer.</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorage</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.#ctor(Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorage)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances.DeleteAsyncString">
+            <summary>Sets the Shim of ProtectedBrowserStorage.DeleteAsync(ProtectedBrowserStorage this, String key)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances.GetAsyncOf1String``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorage,System.String,System.Threading.Tasks.ValueTask{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorageResult{``0}}})">
+            <summary>Sets the Shim of ProtectedBrowserStorage.GetAsync(ProtectedBrowserStorage this, String key)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances.GetAsyncOf1StringString``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorage,System.String,System.String,System.Threading.Tasks.ValueTask{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorageResult{``0}}})">
+            <summary>Sets the Shim of ProtectedBrowserStorage.GetAsync(ProtectedBrowserStorage this, String purpose, String key)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances.SetAsyncStringObject">
+            <summary>Sets the Shim of ProtectedBrowserStorage.SetAsync(ProtectedBrowserStorage this, String key, Object value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.AllInstances.SetAsyncStringStringObject">
+            <summary>Sets the Shim of ProtectedBrowserStorage.SetAsync(ProtectedBrowserStorage this, String purpose, String key, Object value)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.ConstructorStringIJSRuntimeIDataProtectionProvider">
+            <summary>Sets the Shim of ProtectedBrowserStorage.ProtectedBrowserStorage(ProtectedBrowserStorage this, String storeName, IJSRuntime jsRuntime, IDataProtectionProvider dataProtectionProvider)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.DeleteAsyncString">
+            <summary>Sets the Shim of ProtectedBrowserStorage.DeleteAsync(ProtectedBrowserStorage this, String key)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.GetAsyncOf1String``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{System.String,System.Threading.Tasks.ValueTask{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorageResult{``0}}})">
+            <summary>Sets the Shim of ProtectedBrowserStorage.GetAsync(ProtectedBrowserStorage this, String key)</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.GetAsyncOf1StringString``1(Microsoft.QualityTools.Testing.Fakes.FakesDelegates.Func{System.String,System.String,System.Threading.Tasks.ValueTask{Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorageResult{``0}}})">
+            <summary>Sets the Shim of ProtectedBrowserStorage.GetAsync(ProtectedBrowserStorage this, String purpose, String key)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.SetAsyncStringObject">
+            <summary>Sets the Shim of ProtectedBrowserStorage.SetAsync(ProtectedBrowserStorage this, String key, Object value)</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorage.SetAsyncStringStringObject">
+            <summary>Sets the Shim of ProtectedBrowserStorage.SetAsync(ProtectedBrowserStorage this, String purpose, String key, Object value)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedBrowserStorageResult&lt;TValue&gt;</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedBrowserStorageResult`1.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedLocalStorage</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.#ctor(Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedLocalStorage)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedLocalStorage.ConstructorIJSRuntimeIDataProtectionProvider">
+            <summary>Sets the Shim of ProtectedLocalStorage.ProtectedLocalStorage(ProtectedLocalStorage this, IJSRuntime jsRuntime, IDataProtectionProvider dataProtectionProvider)</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage">
+            <summary>Shim type of Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedSessionStorage</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.#ctor(Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedSessionStorage)">
+            <summary>Initializes a new shim for the given instance</summary>
+        </member>
+        <member name="T:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.AllInstances">
+            <summary>Define shims for all instances members</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.Fakes.ShimProtectedSessionStorage.ConstructorIJSRuntimeIDataProtectionProvider">
+            <summary>Sets the Shim of ProtectedSessionStorage.ProtectedSessionStorage(ProtectedSessionStorage this, IJSRuntime jsRuntime, IDataProtectionProvider dataProtectionProvider)</summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions">
+            <summary>Shim type of Microsoft.Extensions.DependencyInjection.ComponentServiceCollectionExtensions</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions.AddServerSideBlazorIServiceCollectionActionOfCircuitOptions">
+            <summary>Sets the Shim of ComponentServiceCollectionExtensions.AddServerSideBlazor(IServiceCollection services, Action`1 configure)</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.ShimComponentServiceCollectionExtensions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions">
+            <summary>Shim type of Microsoft.Extensions.DependencyInjection.ServerSideBlazorBuilderExtensions</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.#ctor">
+            <summary>Initializes a new shim instance</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.AddCircuitOptionsIServerSideBlazorBuilderActionOfCircuitOptions">
+            <summary>Sets the Shim of ServerSideBlazorBuilderExtensions.AddCircuitOptions(IServerSideBlazorBuilder builder, Action`1 configure)</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.AddHubOptionsIServerSideBlazorBuilderActionOfHubOptions">
+            <summary>Sets the Shim of ServerSideBlazorBuilderExtensions.AddHubOptions(IServerSideBlazorBuilder builder, Action`1 configure)</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.BehaveAsCurrent">
+            <summary>Assigns the &apos;Current&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.BehaveAsNotImplemented">
+            <summary>Assigns the &apos;NotImplemented&apos; behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.ShimServerSideBlazorBuilderExtensions.Behavior">
+            <summary>Assigns the behavior for all methods of the shimmed type</summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.Fakes.StubIServerSideBlazorBuilder">
+            <summary>Stub type of Microsoft.Extensions.DependencyInjection.IServerSideBlazorBuilder</summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.Fakes.StubIServerSideBlazorBuilder.#ctor">
+            <summary>Initializes a new instance of type StubIServerSideBlazorBuilder</summary>
+        </member>
+        <member name="P:Microsoft.Extensions.DependencyInjection.Fakes.StubIServerSideBlazorBuilder.Microsoft#Extensions#DependencyInjection#IServerSideBlazorBuilder#Services">
+            <summary>Sets the stub of IServerSideBlazorBuilder.get_Services(IServerSideBlazorBuilder this)</summary>
+        </member>
+        <member name="F:Microsoft.Extensions.DependencyInjection.Fakes.StubIServerSideBlazorBuilder.ServicesGet">
+            <summary>Sets the stub of IServerSideBlazorBuilder.get_Services(IServerSideBlazorBuilder this)</summary>
+        </member>
+    </members>
+</doc>

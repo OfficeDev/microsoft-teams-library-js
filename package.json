@@ -8,8 +8,9 @@
     "tools/**/*"
   ],
   "scripts": {
-    "build": "lerna run build --stream",
+    "build": "lerna run build --stream && yarn build-blazor-app",
     "build:clean": "yarn clean && yarn build",
+    "build-blazor-app": "yarn workspace blazor-test-app compile",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "build-test-app-CDN": "yarn workspace teams-test-app build:CDN",
@@ -22,6 +23,7 @@
     "docs": "yarn workspace @microsoft/teams-js docs",
     "docs:validate": "yarn workspace @microsoft/teams-js docs:validate",
     "lint": "lerna run lint",
+    "start-blazor-app": "yarn workspace blazor-test-app start",
     "start-perf-app": "yarn workspace teams-perf-test-app start",
     "start-test-app": "yarn workspace teams-test-app start",
     "start-test-app-CDN": "yarn workspace teams-test-app start:CDN",
