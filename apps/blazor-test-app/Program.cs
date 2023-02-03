@@ -42,7 +42,5 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-IdentityModelEventSource.ShowPII = true;
-
 app.Run();
 

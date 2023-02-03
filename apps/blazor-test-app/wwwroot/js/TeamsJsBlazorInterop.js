@@ -49,13 +49,8 @@ export function registerOnSaveHandler(settings) {
 }
 
 // Come from here: https://github.com/wictorwilen/msteams-react-base-component/blob/master/src/useTeams.ts
-export function inTeams() {
-  if (
-    (window.parent === window.self && window.nativeInterface) ||
-    window.navigator.userAgent.includes('Teams/') ||
-    window.name === 'embedded-page-container' ||
-    window.name === 'extension-tab-frame'
-  ) {
+export function inOrange() {
+  if (window.parent[0]) {
     return true;
   }
   return false;

@@ -28,6 +28,8 @@ else
 @code {
     bool isLoading = true; 
 
+    bool IsInOrange = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -37,8 +39,13 @@ else
             isLoading = false;
             StateHasChanged();
 
-            await MicrosoftTeams.InitializeAsync();
-            await MicrosoftTeams.notifySuccess();            
+            IsInOrange = await MicrosoftTeams.IsInOrange();
+
+            if (IsInOrange) {
+                await MicrosoftTeams.InitializeAsync();
+                await MicrosoftTeams.notifySuccess();
+            }
+
         }
     }
 }

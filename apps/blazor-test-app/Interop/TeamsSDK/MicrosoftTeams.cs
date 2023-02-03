@@ -23,11 +23,11 @@ public class MicrosoftTeams : InteropModuleBase
         return InvokeVoidAsync("registerOnSaveHandler", settings);
     }
 
-    public Task<bool> IsInTeams()
+    public Task<bool> IsInOrange()
     {
         try
         {
-            return InvokeAsync<bool>("inTeams");
+            return InvokeAsync<bool>("inOrange");
         }
         catch (JSException)
         {
