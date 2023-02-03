@@ -14,7 +14,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install yarn
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
         run: pnpm install
 
       - name: Make changes to pull request
