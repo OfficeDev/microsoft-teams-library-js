@@ -20,26 +20,12 @@ else
         <div class="narrow page-padding">
             <img src="hello.png" />
             <h1 class="center">Congratulations!</h1>
-            <p class="center">Your app is running in your @(GetEnvironmentName())</p>
-            <FluentTabs style="width: 80%; justify-content: space-between; margin: 4rem auto;">
-                <FluentTab style="font-size: 14px; min-height: 32px;">1. Build your app locally</FluentTab>
-                <FluentTab>2. Provision and Deploy to the Cloud</FluentTab>
-                <FluentTab>3. Publish to Teams</FluentTab>
-                <FluentTabPanel>
-                    <Deploy/>
-                </FluentTabPanel>
-                <FluentTabPanel>
-                    <Publish/>
-                </FluentTabPanel>
-            </FluentTabs>
+            <p class="center">The Blazor Test App is working!</p>
         </div>
     </div>
 }
 
 @code {
-    string userName;
-    string errorMessage;
-    bool isInTeams;
     bool isLoading = true; 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,29 +34,12 @@ else
 
         if(firstRender)
         {
-            isInTeams = await MicrosoftTeams.IsInTeams();
-
-            if (isInTeams)
-            { 
-               var user = await teamsUserCredential.GetUserInfoAsync();
-               userName = user.DisplayName;
-            }
-            else
-            {
-                errorMessage = "Not running in Microsoft Teams.";
-            }
-
             isLoading = false;
             StateHasChanged();
 
             await MicrosoftTeams.InitializeAsync();
             await MicrosoftTeams.notifySuccess();            
         }
-    }
-
-    private string GetEnvironmentName()
-    {
-        return HostEnvironment.IsDevelopment() ? "local environment" : "Azure environment";
     }
 }
 
