@@ -106,7 +106,7 @@ export namespace video {
   enum EffectSuccessReason {
     EffectPrepared = 'EffectPrepared',
 
-    DirectReturned = 'DirectReturned',
+    NoPromiseReturned = 'NoPromiseReturned',
   }
 
   /**
@@ -189,7 +189,7 @@ export namespace video {
             sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
           });
       } else {
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.DirectReturned]);
+        sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.NoPromiseReturned]);
       }
     };
 

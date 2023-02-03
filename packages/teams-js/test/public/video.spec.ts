@@ -622,11 +622,10 @@ describe('video', () => {
       video.registerForVideoEffect(videoEffectDirectReturnCallBack);
       const effectId = 'sampleEffectId';
       framedPlatformMock.sendMessage('video.effectParameterChange', effectId);
-      //await new Promise((resolve) => setTimeout(resolve, 0));
       const messageForRegister = framedPlatformMock.findMessageByFunc('video.videoEffectReadiness');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister?.args?.length).toBe(3);
-      expect(messageForRegister?.args).toEqual([true, effectId, 'DirectReturned']);
+      expect(messageForRegister?.args).toEqual([true, effectId, 'NoPromiseReturned']);
     });
 
     it('FRAMEDLESS - should invoke videoEffectReadiness handler on callback  directly returned', async () => {
@@ -640,11 +639,10 @@ describe('video', () => {
           args: [effectId],
         },
       } as DOMMessageEvent);
-      //await new Promise((resolve) => setTimeout(resolve, 0));
       const messageForRegister = framelessPlatformMock.findMessageByFunc('video.videoEffectReadiness');
       expect(messageForRegister).not.toBeNull();
       expect(messageForRegister?.args?.length).toBe(3);
-      expect(messageForRegister?.args).toEqual([true, effectId, 'DirectReturned']);
+      expect(messageForRegister?.args).toEqual([true, effectId, 'NoPromiseReturned']);
     });
 
     it('FRAMED - should invoke videoEffectReadiness handler on callback rejects', async () => {
