@@ -1,5 +1,6 @@
 using Blazor_Test_App;
 using Blazor_Test_App.Interop.TeamsSDK;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +32,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
@@ -40,6 +41,8 @@ app.UseEndpoints(endpoints =>
     endpoints.MapFallbackToPage("/_Host");
     endpoints.MapControllers();
 });
+
+IdentityModelEventSource.ShowPII = true;
 
 app.Run();
 
