@@ -21,7 +21,7 @@ steps:
       versionSpec: '1.x'
 
   - task: Yarn@2
-    displayName: 'Run yarn on app hosting sdk'
+    displayName: 'Run pnpm on app hosting sdk'
     inputs:
       Arguments:
       ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -34,7 +34,7 @@ steps:
       ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - task: Yarn@2
-    displayName: 'Run yarn on client sdk'
+    displayName: 'Run pnpm on client sdk'
     inputs:
       Arguments:
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
@@ -51,5 +51,5 @@ steps:
     inputs:
       script: |
         sudo chmod -R 755 ./ 
-        sudo yarn setup
+        sudo pnpm setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'

@@ -2,31 +2,26 @@
   "name": "teams-js-monorepo",
   "private": true,
   "author": "Microsoft Teams",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "tools/**/*"
-  ],
   "scripts": {
     "build": "lerna run build --stream",
-    "build:clean": "yarn clean && yarn build",
-    "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
-    "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
-    "build-test-app-CDN": "yarn workspace teams-test-app build:CDN",
-    "build-test-app-local": "yarn workspace teams-test-app build:local",
-    "build-test-app-V1": "yarn workspace teams-test-app build:CDNV1",
-    "changefile": "yarn beachball",
+    "build:clean": "pnpm clean && pnpm build",
+    "bundleAnalyze": "pnpm --filter @microsoft/bundle-analysis-app webpack:profile",
+    "bundleAnalyze:collect": "pnpm bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
+    "build-test-app-CDN": "pnpm --filter teams-test-app build:CDN",
+    "build-test-app-local": "pnpm --filter teams-test-app build:local",
+    "build-test-app-V1": "pnpm --filter teams-test-app build:CDNV1",
+    "changefile": "pnpm beachball",
     "clean": "lerna run clean --stream",
-    "clean:full": "yarn clean && yarn clean:modules",
+    "clean:full": "pnpm clean && pnpm clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
-    "docs": "yarn workspace @microsoft/teams-js docs",
-    "docs:validate": "yarn workspace @microsoft/teams-js docs:validate",
+    "docs": "pnpm --filter @microsoft/teams-js docs",
+    "docs:validate": "pnpm --filter @microsoft/teams-js docs:validate",
     "lint": "lerna run lint",
-    "start-perf-app": "yarn workspace teams-perf-test-app start",
-    "start-test-app": "yarn workspace teams-test-app start",
-    "start-test-app-CDN": "yarn workspace teams-test-app start:CDN",
-    "start-test-app-local": "yarn workspace teams-test-app start:local",
-    "start-test-app-V1": "yarn workspace teams-test-app start:CDNV1",
+    "start-perf-app": "pnpm --filter teams-perf-test-app start",
+    "start-test-app": "pnpm --filter teams-test-app start",
+    "start-test-app-CDN": "pnpm --filter teams-test-app start:CDN",
+    "start-test-app-local": "pnpm --filter teams-test-app start:local",
+    "start-test-app-V1": "pnpm --filter teams-test-app start:CDNV1",
     "test": "lerna run test --stream"
   },
   "devDependencies": {
@@ -76,7 +71,7 @@
     "html-webpack-plugin": "^5.5.0",
     "jest": "^27.1.0",
     "jest-junit": "^12.0.0",
-    "lerna": "^3.22.1",
+    "lerna": "^5.6.2",
     "merge2": "1.0.2",
     "path": "^0.12.7",
     "prettier": "^2.7.1",
@@ -91,10 +86,10 @@
     "webpack": "^5.10.0",
     "webpack-assets-manifest": "^5.0.6",
     "webpack-bundle-analyzer": "^4.3.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.1",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1",
     "webpack-merge": "^5.8.0",
-    "webpack-subresource-integrity": "^5.0.0",
+    "webpack-subresource-integrity": "^5.1.0",
     "yargs": "^8.0.1"
   },
   "resolutions": {
@@ -108,5 +103,7 @@
     "url-parse": "^1.5.0",
     "y18n": "^4.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
 }

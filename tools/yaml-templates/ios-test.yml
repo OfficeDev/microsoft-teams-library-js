@@ -33,27 +33,27 @@ steps:
 
   - bash: |
       brew install xctesthtmlreport
-    displayName: "Install XCTestHtmlReport for publishing result"
+    displayName: 'Install XCTestHtmlReport for publishing result'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - bash : 'sh build_ios_host_sdk.sh'
-    displayName: "Build iOS Host SDK"
+  - bash: 'sh build_ios_host_sdk.sh'
+    displayName: 'Build iOS Host SDK'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
-  
+
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
-    displayName: "Install Node.js"
+      versionSpec: '14.x'
+    displayName: 'Install Node.js'
 
   - task: YarnInstaller@3
     inputs:
-      versionSpec: "1.x"
+      versionSpec: '1.x'
 
   - task: Yarn@2
     inputs:
       Arguments: 'install'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Run yarn install on TeamsJS using task instead of bash'
+    displayName: 'Run pnpm install on TeamsJS using task instead of bash'
     retryCountOnTaskFailure: 2
 
   - task: Yarn@2
@@ -62,8 +62,8 @@ steps:
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     displayName: 'Build TeamsJS'
 
-  - bash: 'nohup yarn start-test-app &'
-    displayName: "Run sample test app in background"
+  - bash: 'nohup pnpm start-test-app &'
+    displayName: 'Run sample test app in background'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - bash: 'sh disable_slow_animation.sh'
@@ -71,11 +71,11 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
   - bash: 'sh parallel_ui_testing_for_publishing.sh'
-    displayName: "iOS UI/E2E Tests"
+    displayName: 'iOS UI/E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
 
   - bash: 'sh generate_junit_report.sh'
-    displayName: "Generate E2E test report"
+    displayName: 'Generate E2E test report'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
     condition: succeededOrFailed()
 

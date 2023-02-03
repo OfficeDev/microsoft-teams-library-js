@@ -22,7 +22,7 @@ steps:
     inputs:
       Arguments: 'install'
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Run yarn install on TeamsJS'
+    displayName: 'Run pnpm install on TeamsJS'
     retryCountOnTaskFailure: 2
 
   - task: Yarn@2
@@ -31,7 +31,7 @@ steps:
       ProjectDirectory: '$(ClientSdkProjectDirectory)'
     displayName: 'Build TeamsJS'
 
-  - bash: 'nohup yarn start-test-app &'
+  - bash: 'nohup pnpm start-test-app &'
     displayName: 'Run sample test app in background'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 

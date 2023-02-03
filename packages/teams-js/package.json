@@ -11,11 +11,11 @@
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
-    "build": "yarn lint && webpack && yarn docs:validate",
+    "build": "pnpm lint && pnpm webpack  && pnpm docs:validate",
     "clean": "rimraf ./dist",
-    "docs": "yarn typedoc",
-    "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",
-    "lint": "yarn eslint ./src ./test --max-warnings 0 --fix --ext .ts",
+    "docs": "pnpm typedoc",
+    "docs:validate": "pnpm typedoc --treatWarningsAsErrors --emit none",
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },
@@ -23,7 +23,21 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
+    "@types/debug": "^4.1.7",
+    "@webpack-cli/generators": "^3.0.1",
+    "autoprefixer": "^10.4.13",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.0.1",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.7.2",
+    "postcss": "^8.4.21",
+    "postcss-loader": "^7.0.2",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
   },
   "license": "MIT",
   "files": [

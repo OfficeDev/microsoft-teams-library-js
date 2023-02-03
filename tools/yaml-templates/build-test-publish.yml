@@ -13,7 +13,7 @@ steps:
       versionSpec: '14.x'
 
   - task: Yarn@3
-    displayName: 'yarn install'
+    displayName: 'pnpm install'
     inputs:
       Arguments: 'install'
     retryCountOnTaskFailure: 2
@@ -39,12 +39,12 @@ steps:
   - task: Yarn@3
     inputs:
       Arguments: 'build'
-    displayName: 'yarn build'
+    displayName: 'pnpm build'
 
   - task: Yarn@3
     inputs:
       Arguments: 'test'
-    displayName: 'yarn test'
+    displayName: 'pnpm test'
 
   - task: PublishTestResults@2
     inputs:
