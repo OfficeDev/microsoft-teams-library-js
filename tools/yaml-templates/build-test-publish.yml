@@ -11,9 +11,11 @@ steps:
       npm install -g pnpm
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
+
   - script: |
       pnpm install
     displayName: 'Install repo dependencies'
+
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
     condition: and(
@@ -34,8 +36,12 @@ steps:
 
   - script: |
       pnpm build
+    displayName: 'pnpm build'
+
+  - script: |
       pnpm test
-    displayName: 'pnpm build and test'
+    displayName: 'pnpm test'
+
   - task: PublishTestResults@2
     inputs:
       searchFolder: '$(System.DefaultWorkingDirectory)\packages'
