@@ -108,7 +108,7 @@ export namespace video {
    * Return a Promise which will be resolved when the effect is prepared, or throw an {@link EffectFailureReason} on error.
    * @beta
    */
-  export type VideoEffectCallBack = (effectId: string | undefined) => Promise<void>;
+  export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
 
   /**
    * Register to read the video frames in Permissions section
@@ -165,7 +165,7 @@ export namespace video {
    * @beta
    * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
    */
-  export function registerForVideoEffect(callback: VideoEffectCallBack): void {
+  export function registerForVideoEffect(callback: VideoEffectCallback): void {
     ensureInitialized(FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
