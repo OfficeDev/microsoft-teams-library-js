@@ -811,7 +811,7 @@ export interface UrlDialogInfo extends BaseDialogInfo {
    *
    * @remarks
    * The domain of the url must match at least one of the
-   * valid domains specified in the validDomains block of the manifest
+   * valid domains specified in the [validDomains block](https://learn.microsoft.com/microsoftteams/platform/resources/schema/manifest-schema#validdomains) of the app manifest
    */
   url: string;
 
@@ -890,20 +890,16 @@ export interface DialogSize {
   width: DialogDimension | number;
 }
 /**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
+ * @beta
+ * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
  */
 export interface LoadContext {
   /**
-   * @hidden
    * The entity that is requested to be loaded
    */
   entityId: string;
 
   /**
-   * @hidden
    * The content URL that is requested to be loaded
    */
   contentUrl: string;

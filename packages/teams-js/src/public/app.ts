@@ -367,7 +367,8 @@ export namespace app {
     isPSTNCallingAllowed?: boolean;
 
     /**
-     * The license type for the current user.
+     * The license type for the current user. Possible values are:
+     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker"
      */
     licenseType?: string;
 
@@ -485,7 +486,7 @@ export namespace app {
     meeting?: MeetingInfo;
 
     /**
-     * When hosted in SharePoint, this is the [SharePoint PageContext](https://learn.microsoft.com/en-us/javascript/api/sp-page-context/pagecontext?view=sp-typescript-latest), else `undefined`
+     * When hosted in SharePoint, this is the [SharePoint PageContext](https://learn.microsoft.com/javascript/api/sp-page-context/pagecontext?view=sp-typescript-latest), else `undefined`
      */
     sharepoint?: any;
 

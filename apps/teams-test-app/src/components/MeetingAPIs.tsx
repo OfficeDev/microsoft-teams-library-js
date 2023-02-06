@@ -327,6 +327,58 @@ const SetOptions = (): React.ReactElement =>
     },
   });
 
+const RequestAppAudioHandling = (): React.ReactElement =>
+  ApiWithTextInput<meeting.MicState>({
+    name: 'requestAppAudioHandling',
+    title: 'App Handles the Audio channel',
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input.isMicMuted !== 'boolean') {
+          throw new Error('input.isMicMuted should be boolean');
+        }
+      },
+      submit: async (input, setResult) => {
+        const callback = (isHostAudioless: boolean | null): void => {
+          setResult('requestAppAudioHandling() succeeded: isHostAudioless=' + isHostAudioless);
+        };
+        const micMuteStateChangedCallback = (micState: meeting.MicState): Promise<meeting.MicState> =>
+          new Promise((resolve, reject) => {
+            if (!micState) {
+              reject('micStatus should not be null');
+              throw new Error();
+            } else {
+              setResult('requestAppAudioHandling() mic mute state changed: ' + micState.isMicMuted);
+              resolve(micState);
+            }
+          });
+        const requestAppAudioHandlingParams: meeting.RequestAppAudioHandlingParams = {
+          isAppHandlingAudio: input.isMicMuted,
+          micMuteStateChangedCallback: micMuteStateChangedCallback,
+        };
+        meeting.requestAppAudioHandling(requestAppAudioHandlingParams, callback);
+        return '';
+      },
+    },
+  });
+
+const UpdateMicState = (): React.ReactElement =>
+  ApiWithTextInput<meeting.MicState>({
+    name: 'updateMicState',
+    title: 'Send Mic mute status response acknowledgement',
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input.isMicMuted !== 'boolean') {
+          throw new Error('input.isMicMuted should be boolean');
+        }
+      },
+      submit: async (input, setResult) => {
+        meeting.updateMicState(input);
+        setResult('updateMicState() succeeded');
+        return `updateMicState called with micState: isMicMuted:${input}`;
+      },
+    },
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -345,6 +397,8 @@ const MeetingAPIs = (): ReactElement => (
     <StopSharingAppContentToStage />
     <GetAppContentStageSharingState />
     <SetOptions />
+    <RequestAppAudioHandling />
+    <UpdateMicState />
   </ModuleWrapper>
 );
 
