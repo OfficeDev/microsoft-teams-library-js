@@ -597,7 +597,7 @@ describe('video', () => {
       expect(messageForRegister?.args).toEqual([true, effectId, 'EffectPrepared']);
     });
 
-    it('FRAMEDLESS - should invoke videoEffectReadiness handler on callback resolved', async () => {
+    it('FRAMELESS - should invoke videoEffectReadiness handler on callback resolved', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       video.registerForVideoEffect(videoEffectSuccessCallBack);
@@ -628,7 +628,7 @@ describe('video', () => {
       expect(messageForRegister?.args).toEqual([true, effectId, 'NoPromiseReturned']);
     });
 
-    it('FRAMEDLESS - should invoke videoEffectReadiness handler on callback  directly returned', async () => {
+    it('FRAMELESS - should invoke videoEffectReadiness handler on callback  directly returned', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       video.registerForVideoEffect(videoEffectDirectReturnCallBack);
@@ -659,7 +659,7 @@ describe('video', () => {
       expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId']);
     });
 
-    it('FRAMEDLESS - should invoke videoEffectReadiness handler on callback rejects', async () => {
+    it('FRAMELESS - should invoke videoEffectReadiness handler on callback rejects', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
 
       video.registerForVideoEffect(videoEffectFailedCallBack);

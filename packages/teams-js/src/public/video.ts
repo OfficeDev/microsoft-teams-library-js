@@ -98,7 +98,7 @@ export namespace video {
      */
     InvalidEffectId = 'InvalidEffectId',
     /**
-     * The effect can't be initialezed
+     * The effect can't be initialized
      */
     InitializationFailure = 'InitializationFailure',
   }
@@ -111,7 +111,7 @@ export namespace video {
 
   /**
    * Video effect change call back function definition
-   * Return a Promise which will be resolved when the effect is prepared, or reject with a failure reason
+   * Return a Promise which will be resolved when the effect is prepared, or throw an {@link EffectFailureReason} on error.
    * @beta
    */
   export type VideoEffectCallBack = (effectId: string | undefined) => Promise<void> | void;
@@ -185,8 +185,15 @@ export namespace video {
             sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.EffectPrepared]);
           })
           .catch((reason) => {
-            // reason could be a string or an EffectFailureReason
-            sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
+            if (reason in EffectFailureReason) {
+              sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
+            } else {
+              sendMessageToParent('video.videoEffectReadiness', [
+                false,
+                effectId,
+                EffectFailureReason.InitializationFailure,
+              ]);
+            }
           });
       } else {
         sendMessageToParent('video.videoEffectReadiness', [true, effectId, EffectSuccessReason.NoPromiseReturned]);
