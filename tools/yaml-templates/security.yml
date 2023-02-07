@@ -8,7 +8,12 @@ steps:
       Configuration: 'required'
       TargetType: 'eslint'
       TargetsESLint: '$(Build.SourcesDirectory)/**/*.{js,jsx,ts,tsx}'
+      Parser: '@typescript-eslint/parser'
+      ParserOptions: |
+        sourceType:module
+        ecmaVersion:2018
       ErrorLevel: 'warn'
+      ExitOnFatalError: true
 
   - task: CredScan@3
     displayName: 'Run Credential Scanner'

@@ -7,7 +7,7 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 const libraryName = 'microsoftTeams';
-const expect = require('expect');
+const { expect } = require('expect');
 const path = require('path');
 const { DefinePlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
@@ -27,6 +27,8 @@ module.exports = {
       type: 'umd',
       umdNamedDefine: true,
     },
+    //Prevents 'self' object conflict between nodejs and nextjs
+    //globalObject: 'this',
   },
   devtool: 'source-map',
   resolve: {

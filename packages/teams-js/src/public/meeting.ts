@@ -1,8 +1,9 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
+import { runtime } from './runtime';
 
 export namespace meeting {
   /**
@@ -169,15 +170,27 @@ export namespace meeting {
   /**
    * Property bag for the meeting reaction received event
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface MeetingReactionReceivedEventData {
     /**
      * Indicates the type of meeting reaction received
+     *
+     * @hidden
+     * Hide from docs.
      */
     meetingReactionType?: MeetingReactionType;
     /**
      * error object in case there is a failure
+     *
+     * @hidden
+     * Hide from docs.
      */
     error?: SdkError;
   }
@@ -185,32 +198,114 @@ export namespace meeting {
   /**
    * Interface for raiseHandState properties
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface IRaiseHandState {
-    /** Indicates whether the selfParticipant's hand is raised or not*/
+    /** Indicates whether the selfParticipant's hand is raised or not
+     *
+     * @hidden
+     * Hide from docs.
+     */
+
     isHandRaised: boolean;
   }
 
   /**
    * Property bag for the raiseHandState changed event
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export interface RaiseHandStateChangedEventData {
     /**
      * entire raiseHandState object for the selfParticipant
+     *
+     * @hidden
+     * Hide from docs.
      */
     raiseHandState: IRaiseHandState;
 
     /**
      * error object in case there is a failure
+     *
+     * @hidden
+     * Hide from docs.
      */
     error?: SdkError;
   }
 
   /**
+   * Interface for mic state change
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export interface MicState {
+    /**
+     * Indicates the mute status of the mic
+     */
+    isMicMuted: boolean;
+  }
+
+  /**
+   * Reasons for the app's microphone state to change
+   */
+  enum MicStateChangeReason {
+    HostInitiated,
+    AppInitiated,
+    AppDeclinedToChange,
+    AppFailedToChange,
+  }
+
+  /**
+   * Interface for RequestAppAudioHandling properties
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export interface RequestAppAudioHandlingParams {
+    /**
+     * Indicates whether the app is requesting to start handling audio, or if
+     * it's giving audio back to the host
+     */
+    isAppHandlingAudio: boolean;
+    /**
+     * Callback for the host to tell the app to change its microphone state
+     * @param micState The microphone state for the app to use
+     * @returns A promise with the updated microphone state
+     */
+    micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
+  }
+
+  /**
    * Different types of meeting reactions that can be sent/received
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * @beta
    */
@@ -251,7 +346,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('getIncomingClientAudioState', callback);
   }
 
@@ -267,7 +362,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('toggleIncomingClientAudio', callback);
   }
 
@@ -289,6 +384,7 @@ export namespace meeting {
       throw new Error('[get meeting details] Callback cannot be null');
     }
     ensureInitialized(
+      runtime,
       FrameContexts.sidePanel,
       FrameContexts.meetingStage,
       FrameContexts.settings,
@@ -314,7 +410,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 
@@ -331,7 +427,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get live stream state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.getLiveStreamState', callback);
   }
 
@@ -353,7 +449,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey], callback);
   }
 
@@ -369,7 +465,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     sendMessageToParent('meeting.requestStopLiveStreaming', callback);
   }
 
@@ -385,7 +481,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     registerHandler('meeting.liveStreamChanged', handler);
   }
 
@@ -404,7 +500,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
   }
 
@@ -425,7 +521,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
   }
 
@@ -444,7 +540,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
   }
 
@@ -462,7 +558,7 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     sendMessageToParent('meeting.getAppContentStageSharingState', callback);
   }
 
@@ -477,7 +573,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.speakingStateChanged', handler);
   }
 
@@ -489,6 +585,12 @@ export namespace meeting {
    *
    * @param handler The handler to invoke when the selfParticipant's (current user's) raiseHandState changes.
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export function registerRaiseHandStateChangedHandler(
@@ -497,7 +599,7 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.raiseHandStateChanged', handler);
   }
 
@@ -507,6 +609,12 @@ export namespace meeting {
    *
    * @param handler The handler to invoke when the selfParticipant (current user) successfully sends a meeting reaction
    *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
    * @beta
    */
   export function registerMeetingReactionReceivedHandler(
@@ -515,9 +623,10 @@ export namespace meeting {
     if (!handler) {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
-    ensureInitialized(FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
+
   /**
    * Nested namespace for functions to control behavior of the app share button
    *
@@ -551,11 +660,145 @@ export namespace meeting {
      * @beta
      */
     export function setOptions(shareInformation: ShareInformation): void {
-      ensureInitialized(FrameContexts.sidePanel);
+      ensureInitialized(runtime, FrameContexts.sidePanel);
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
       sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
     }
+  }
+
+  /**
+   * Have the app handle audio (mic & speaker) and turn off host audio.
+   *
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is true, the host will switch to audioless mode
+   *   Registers for mic mute status change events, which are events that the app can receive from the host asking the app to
+   *   mute or unmute the microphone.
+   *
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is false, the host will switch out of audioless mode
+   *   Unregisters the mic mute status change events so the app will no longer receive these events
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@link RequestAppAudioHandlingParams.micMuteStateChangedCallback} parameter is not defined
+   *
+   * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
+   * @param callback - Callback with one parameter, the result
+   * can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export function requestAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    if (!callback) {
+      throw new Error('[requestAppAudioHandling] Callback response cannot be null');
+    }
+    if (!requestAppAudioHandlingParams.micMuteStateChangedCallback) {
+      throw new Error('[requestAppAudioHandling] Callback Mic mute state handler cannot be null');
+    }
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+
+    if (requestAppAudioHandlingParams.isAppHandlingAudio) {
+      startAppAudioHandling(requestAppAudioHandlingParams, callback);
+    } else {
+      stopAppAudioHandling(requestAppAudioHandlingParams, callback);
+    }
+  }
+
+  function startAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    const callbackInternalRequest = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
+      }
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
+
+      const micStateChangedCallback = async (micState: MicState): Promise<void> => {
+        try {
+          const newMicState = await requestAppAudioHandlingParams.micMuteStateChangedCallback(micState);
+
+          const micStateDidUpdate = newMicState.isMicMuted === micState.isMicMuted;
+          setMicStateWithReason(
+            newMicState,
+            micStateDidUpdate ? MicStateChangeReason.HostInitiated : MicStateChangeReason.AppDeclinedToChange,
+          );
+        } catch {
+          setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
+        }
+      };
+      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+
+      callback(isHostAudioless);
+    };
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalRequest,
+    );
+  }
+
+  function stopAppAudioHandling(
+    requestAppAudioHandlingParams: RequestAppAudioHandlingParams,
+    callback: (isHostAudioless: boolean) => void,
+  ): void {
+    const callbackInternalStop = (error: SdkError | null, isHostAudioless: boolean | null): void => {
+      if (error && isHostAudioless != null) {
+        throw new Error('[requestAppAudioHandling] Callback response - both parameters cannot be set');
+      }
+      if (error) {
+        throw new Error(`[requestAppAudioHandling] Callback response - SDK error ${error.errorCode} ${error.message}`);
+      }
+      if (typeof isHostAudioless !== 'boolean') {
+        throw new Error('[requestAppAudioHandling] Callback response - isHostAudioless must be a boolean');
+      }
+
+      if (doesHandlerExist('meeting.micStateChanged')) {
+        removeHandler('meeting.micStateChanged');
+      }
+
+      callback(isHostAudioless);
+    };
+
+    sendMessageToParent(
+      'meeting.requestAppAudioHandling',
+      [requestAppAudioHandlingParams.isAppHandlingAudio],
+      callbackInternalStop,
+    );
+  }
+
+  /**
+   * Notifies the host that the microphone state has changed in the app.
+   * @param micState - The new state that the microphone is in
+   *   isMicMuted - Boolean to indicate the current mute status of the mic.
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export function updateMicState(micState: MicState): void {
+    setMicStateWithReason(micState, MicStateChangeReason.AppInitiated);
+  }
+
+  function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    sendMessageToParent('meeting.updateMicState', [micState, reason]);
   }
 }

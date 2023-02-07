@@ -118,7 +118,7 @@ export namespace video {
    * @param config - VideoFrameConfig to customize generated video frame parameters
    */
   export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -154,7 +154,7 @@ export namespace video {
     effectChangeType: EffectChangeType,
     effectId: string | undefined,
   ): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -167,7 +167,7 @@ export namespace video {
    * @param callback - Function to be called when new video effect is applied.
    */
   export function registerForVideoEffect(callback: VideoEffectCallback): void {
-    ensureInitialized(FrameContexts.sidePanel);
+    ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -221,7 +221,6 @@ export namespace video {
    *
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.video ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.video ? true : false;
   }
 } //end of video namespace

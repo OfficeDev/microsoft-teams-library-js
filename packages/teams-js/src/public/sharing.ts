@@ -5,6 +5,10 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to open a share dialog for web content.
+ * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
+ */
 export namespace sharing {
   export const SharingAPIMessages = {
     shareWebContent: 'sharing.shareWebContent',
@@ -80,6 +84,7 @@ export namespace sharing {
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.task,
@@ -155,7 +160,6 @@ export namespace sharing {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.sharing ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
   }
 }

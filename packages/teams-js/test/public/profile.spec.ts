@@ -4,7 +4,6 @@ import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import { ShowProfileRequestInternal } from '../../src/public/profile';
 import { profile } from '../../src/public/profile';
-import { _uninitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -29,7 +28,7 @@ describe('profile', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      desktopPlatformMock.setRuntimeConfig(_uninitializedRuntime);
+      desktopPlatformMock.uninitializeRuntimeConfig();
       expect(() => profile.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

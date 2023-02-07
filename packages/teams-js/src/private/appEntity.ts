@@ -88,7 +88,7 @@ export namespace appEntity {
     subEntityId: string,
     callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -117,7 +117,6 @@ export namespace appEntity {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.appEntity ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.appEntity ? true : false;
   }
 }

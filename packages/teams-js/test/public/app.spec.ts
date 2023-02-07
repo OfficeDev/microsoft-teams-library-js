@@ -18,7 +18,12 @@ import {
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
+import {
+  _minRuntimeConfigToUninitialize,
+  latestRuntimeApiVersion,
+  runtime,
+  teamsRuntimeConfig,
+} from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -100,8 +105,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -164,7 +170,6 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
@@ -210,7 +215,7 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -226,7 +231,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -243,7 +248,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -899,8 +904,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -966,7 +972,6 @@ describe('Testing app capability', () => {
 
       it('app.initialize should use teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
-
         const initMessage = framelessPostMock.findMessageByFunc('initialize');
 
         framelessPostMock.respondToMessage({
@@ -1036,7 +1041,7 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -1051,7 +1056,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -1067,7 +1072,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 

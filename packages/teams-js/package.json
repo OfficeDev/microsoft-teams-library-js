@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.5.0",
+  "version": "2.8.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",
@@ -20,10 +20,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "debug": "4.3.3"
+    "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "4.1.7"
+    "@types/debug": "^4.1.7"
   },
   "license": "MIT",
   "files": [

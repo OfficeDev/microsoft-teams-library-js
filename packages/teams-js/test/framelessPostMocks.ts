@@ -2,7 +2,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from '../src/internal/interfaces';
 import { app } from '../src/public/app';
-import { applyRuntimeConfig, IRuntime } from '../src/public/runtime';
+import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 export class FramelessPostMocks {
   public tabOrigin = 'https://example.com';
@@ -40,7 +40,13 @@ export class FramelessPostMocks {
           return;
         },
       },
-      setInterval: (handler: TimerHandler, timeout?: number, ...args: unknown[]): number =>
+      /* For setInterval, we are intentionally not allowing the TimerHandler type since it allows for either Function or string and string
+         would be insecure (it would be tantamount to allowing eval, which is insecure and not needed here). For our testing usage, there's
+         no need to allow strings.
+         We then are intentionally using Function (and not something more specific) since setInterval can use accept any type of function
+         and we are intentionally mocking the standard setInterval behavior here. As such, the ban-types rule is being intentionally disabled here. */
+      /* eslint-disable-next-line @typescript-eslint/ban-types */
+      setInterval: (handler: Function, timeout?: number, ...args: unknown[]): number =>
         setInterval(handler, timeout, args),
     };
     this.mockWindow.self = this.mockWindow as ExtendedWindow;
@@ -72,8 +78,15 @@ export class FramelessPostMocks {
   /**
    * To be called after initializeWithContext to set the runtimeConfig
    */
-  public setRuntimeConfig = (runtime: IRuntime): void => {
+  public setRuntimeConfig = (runtime: IBaseRuntime): void => {
     applyRuntimeConfig(runtime);
+  };
+
+  /**
+   * To be called to reset runtime config to unitialized state
+   */
+  public uninitializeRuntimeConfig = (): void => {
+    setUnitializedRuntime();
   };
 
   public findMessageByFunc = (func: string): MessageRequest | null => {
