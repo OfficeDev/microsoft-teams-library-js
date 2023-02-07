@@ -61,7 +61,7 @@ jobs:
       - task: Yarn@2
         displayName: 'Run tests for electron webview'
         inputs:
-          Arguments: 'run xvfb-maybe playwright'
+          Arguments: 'run xvfb-maybe playwright test'
           ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - task: PublishTestResults@2
