@@ -94,7 +94,8 @@ export namespace video {
    */
   export enum EffectFailureReason {
     /**
-     * A wrong effect id is provided
+     * A wrong effect id is provide.
+     * Use this reason when the effect id is not found or empty, this may indicate a mismatch between the app and its manifest or a bug of the hub.
      */
     InvalidEffectId = 'InvalidEffectId',
     /**
@@ -167,9 +168,9 @@ export namespace video {
   }
 
   /**
-   * Register the video effect callback, host uses this to notify the video extension the new video effect will by applied
+   * Register a callback to be notified when a new video effect is applied.
    * @beta
-   * @param callback - The VideoEffectCallback to invoke when registerForVideoEffect has completed
+   * @param callback - Function to be called when new video effect is applied.
    */
   export function registerForVideoEffect(callback: VideoEffectCallBack): void {
     ensureInitialized(FrameContexts.sidePanel);
