@@ -28,7 +28,7 @@ module.exports = {
       umdNamedDefine: true,
     },
     //Prevents 'self' object conflict between nodejs and nextjs
-    globalObject: "typeof self !== 'undefined' ? self : this",
+    //globalObject: "typeof self !== 'undefined' ? self : this",
   },
   devtool: 'source-map',
   resolve: {
