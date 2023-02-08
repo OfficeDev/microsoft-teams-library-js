@@ -178,15 +178,8 @@ export namespace video {
           sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
         })
         .catch((reason) => {
-          if (reason in EffectFailureReason) {
-            sendMessageToParent('video.videoEffectReadiness', [false, effectId, reason]);
-          } else {
-            sendMessageToParent('video.videoEffectReadiness', [
-              false,
-              effectId,
-              EffectFailureReason.InitializationFailure,
-            ]);
-          }
+          const validReason = reason in EffectFailureReason ? reason: EffectFailureReason.InitializationFailure;
+          sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason]);
         });
     };
 
