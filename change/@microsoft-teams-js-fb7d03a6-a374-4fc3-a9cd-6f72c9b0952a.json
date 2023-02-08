@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated typedoc version and fixed doc issues raised by it",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

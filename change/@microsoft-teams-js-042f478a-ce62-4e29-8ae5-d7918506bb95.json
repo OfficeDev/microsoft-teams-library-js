@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Stopped exporting `communication.processMessage` and `communication.shouldProcessMessage`.",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}

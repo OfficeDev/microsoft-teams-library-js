@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added documentation for `dialog.submit`",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
