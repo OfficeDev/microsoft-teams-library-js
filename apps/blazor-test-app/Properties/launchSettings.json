@@ -3,7 +3,7 @@
     "Microsoft Teams (browser)": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://teams.microsoft.com/l/app/0794bd56-95ae-4835-9588-d81b26ec3d8d?installAppPackage=true&webjoin=true&appTenantId=72f988bf-86f1-41af-91ab-2d7cd011db47&login_hint=noahdarveau@microsoft.com",
+      "launchUrl": "https://teams.microsoft.com/l/app/0794bd56-95ae-4835-9588-d81b26ec3d8d?installAppPackage=true&webjoin=true&appTenantId=72f988bf-86f1-41af-91ab-2d7cd011db47",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -14,7 +14,7 @@
     "WSL": {
       "commandName": "WSL2",
       "launchBrowser": true,
-      "launchUrl": "https://teams.microsoft.com/l/app/0794bd56-95ae-4835-9588-d81b26ec3d8d?installAppPackage=true&webjoin=true&appTenantId=72f988bf-86f1-41af-91ab-2d7cd011db47&login_hint=noahdarveau@microsoft.com",
+      "launchUrl": "https://teams.microsoft.com/l/app/0794bd56-95ae-4835-9588-d81b26ec3d8d?installAppPackage=true&webjoin=true&appTenantId=72f988bf-86f1-41af-91ab-2d7cd011db47",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "https://localhost:44302;http://localhost:2544"
