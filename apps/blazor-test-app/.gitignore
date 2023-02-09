@@ -10,3 +10,4 @@ build
 .fx/states/state.local.json
 appsettings.Development.json
 FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.xml
+FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.messages
