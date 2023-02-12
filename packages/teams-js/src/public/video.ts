@@ -13,7 +13,7 @@ export namespace video {
    * Represents a video frame
    * @beta
    */
-  export interface VideoFrame {
+  export interface VideoFrameData {
     /**
      * Video frame width
      */
@@ -25,7 +25,7 @@ export namespace video {
     /**
      * Video frame buffer
      */
-    data: Uint8ClampedArray;
+    videoFrameBuffer: Uint8ClampedArray;
     /**
      * NV12 luma stride, valid only when video frame format is NV12
      */
@@ -83,7 +83,7 @@ export namespace video {
    * @beta
    */
   export type VideoFrameCallback = (
-    frame: VideoFrame,
+    frame: VideoFrameData,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
   ) => void;
@@ -108,7 +108,7 @@ export namespace video {
 
     registerHandler(
       'video.newVideoFrame',
-      (videoFrame: VideoFrame) => {
+      (videoFrame: VideoFrameData) => {
         if (videoFrame) {
           const timestamp = videoFrame.timestamp;
           frameCallback(
@@ -186,5 +186,16 @@ export namespace video {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.video ? true : false;
+  }
+
+  export namespace MediaStream {
+    export function isSupported(): boolean {
+      return video.isSupported() && runtime.supports.videoMediaStream;
+    }
+
+    export type ReceivedVideoFrame = {
+      videoFrame: VideoFrame;
+    }
+
   }
 } //end of video namespace
