@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { appEntity, conversations, logs, meetingRoom, notifications } from './private';
+import { appEntity, conversations, logs, meetingRoom, notifications, remoteCamera, teams } from './private';
 import {
   appInstallDialog,
   barCode,
@@ -15,6 +15,13 @@ import {
   monetization,
   pages,
   people,
+  profile,
+  search,
+  sharing,
+  stageView,
+  teamsCore,
+  video,
+  webStorage,
 } from './public';
 import { Runtime } from './public/runtime';
 
@@ -39,8 +46,17 @@ const capabilityToSupportsNameMapV2 = new Map([
   ['monetization', monetization as Object],
   ['notifications', notifications as Object],
   ['pages', pages as Object],
-  ['people', pages as Object],
+  ['people', people as Object],
   ['permissions', undefined], // permissions doesn't map to a capability
+  ['profile', profile as Object],
+  ['remoteCamera', remoteCamera as Object],
+  ['search', search as Object],
+  ['sharing', sharing as Object],
+  ['stageView', stageView as Object],
+  ['teams', teams as Object],
+  ['teamsCore', teamsCore as Object],
+  ['video', video as Object],
+  ['webStorage', webStorage as Object],
 ]);
 
 // TODO: The top-level capability comments get stripped out of this. These comments may need to live here or be copied here
@@ -65,6 +81,15 @@ export interface SupportedCapabilities {
   readonly notifications: typeof notifications;
   readonly pages: typeof pages;
   readonly people: typeof people;
+  readonly profile: typeof profile;
+  readonly remoteCamera: typeof remoteCamera;
+  readonly search: typeof search;
+  readonly sharing: typeof sharing;
+  readonly stageView: typeof stageView;
+  readonly teams: typeof teams;
+  readonly teamsCore: typeof teamsCore;
+  readonly video: typeof video;
+  readonly webStorage: typeof webStorage;
 }
 
 export function getSupportedCapabilities(runtime: Runtime): SupportedCapabilities {
@@ -74,16 +99,12 @@ export function getSupportedCapabilities(runtime: Runtime): SupportedCapabilitie
   Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
     if (capabilityToSupportsNameMapV2.has(capabilityName)) {
       const capability = capabilityToSupportsNameMapV2.get(capabilityName);
+      // Check if capability is undefined so we don't generate an entry for runtime objects
+      // that don't map to capabilities
       if (capability && Object.values(runtime.supports)[capabilityIndex]) {
         supportedCapabilities = fillOutSupportedCapability(capabilityName, supportedCapabilities, capability);
       }
     }
-
-    // if (capabilityName === 'geoLocation' && Object.values(runtime.supports)[capabilityIndex]) {
-    //   supportedCapabilities = fillOutSupportedCapability(capabilityName, supportedCapabilities, geoLocation);
-    // } else if (capabilityName === 'dialog' && Object.values(runtime.supports)[capabilityIndex]) {
-    //   supportedCapabilities = fillOutSupportedCapability(capabilityName, supportedCapabilities, dialog);
-    // }
   });
 
   return supportedCapabilities as SupportedCapabilities;

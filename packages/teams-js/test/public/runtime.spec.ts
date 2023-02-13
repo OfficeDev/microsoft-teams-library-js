@@ -144,6 +144,16 @@ describe('runtime', () => {
           },
           people: {},
           permissions: {},
+          profile: {},
+          remoteCamera: {},
+          search: {},
+          sharing: {},
+          stageView: {},
+          teams: {
+            fullTrust: {
+              joinedTeams: {},
+            },
+          },
         },
       };
 
@@ -154,6 +164,7 @@ describe('runtime', () => {
       const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
 
       expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.geoLocation.getCurrentLocation).toBeDefined();
       expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
       // Unsupported subcapabilities have all non-isSupported functions set to undefined
       expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
@@ -190,6 +201,15 @@ describe('runtime', () => {
       expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
 
       expect(supportedCapabilities.people.isSupported).toBeTruthy();
+      expect(supportedCapabilities.profile.isSupported).toBeTruthy();
+      expect(supportedCapabilities.remoteCamera.isSupported).toBeTruthy();
+      expect(supportedCapabilities.search.isSupported).toBeTruthy();
+      expect(supportedCapabilities.sharing.isSupported).toBeTruthy();
+      expect(supportedCapabilities.stageView.isSupported).toBeTruthy();
+
+      expect(supportedCapabilities.teams.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.teams.fullTrust.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
     });
 
     it('upgradeChain is ordered from oldest to newest', () => {
