@@ -171,10 +171,12 @@ describe('runtime', () => {
 
       expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
       expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.open).toBeDefined();
       expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
       expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
       expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
       expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.open).toBeDefined();
       expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
 
       expect(supportedCapabilities.appEntity.isSupported()).toBeTruthy();

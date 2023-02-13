@@ -28,7 +28,8 @@ import { Runtime } from './public/runtime';
 // Some entries in supports don't match exactly to a capability name, this map can help keep track of those inconsistencies
 // Should only be needed if top level capability doesn't match name OR if there's a top level supports value with no matching
 // capability (like permissions)
-const capabilityToSupportsNameMapV2 = new Map([
+// This will need to be updated anytime *new* top level capability breaking changes are made
+const capabilityToSupportsNameMapCurrent = new Map([
   ['appEntity', appEntity as Object],
   ['appInstallDialog', appInstallDialog as Object],
   ['barCode', barCode as Object],
@@ -94,11 +95,12 @@ export interface SupportedCapabilities {
 
 export function getSupportedCapabilities(runtime: Runtime): SupportedCapabilities {
   let supportedCapabilities = {};
+  const runtimeMap = getMapForPassedInRuntimeVersion(runtime);
 
   // Go through each value in the list of capabilities that the host supports, capturing the name and index of each
   Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
-    if (capabilityToSupportsNameMapV2.has(capabilityName)) {
-      const capability = capabilityToSupportsNameMapV2.get(capabilityName);
+    if (runtimeMap.has(capabilityName)) {
+      const capability = runtimeMap.get(capabilityName);
       // Check if capability is undefined so we don't generate an entry for runtime objects
       // that don't map to capabilities
       if (capability && Object.values(runtime.supports)[capabilityIndex]) {
@@ -133,4 +135,12 @@ function fillOutSupportedCapability(capabilityName: string, supportedCapabilitie
     }
   });
   return supportedCapabilities;
+}
+
+function getMapForPassedInRuntimeVersion(runtime: Runtime): Map<string, Object> {
+  if (runtime.apiVersion <= 2) {
+    return capabilityToSupportsNameMapCurrent;
+  }
+
+  throw new Error(`Unsupported runtime version: ${runtime.apiVersion}`);
 }
