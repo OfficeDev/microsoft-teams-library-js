@@ -8,10 +8,10 @@ import {
   applyRuntimeConfig,
   fastForwardRuntime,
   generateBackCompatRuntimeConfig,
+  getSupportedCapabilities,
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
-  getSupportedCapabilities,
   Runtime,
   runtime,
   setUnitializedRuntime,
@@ -105,28 +105,45 @@ describe('runtime', () => {
 
       const runtimeWithStringVersion = {
         apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
         isLegacyTeams: false,
         supports: {
           geoLocation: {},
           permissions: {},
+          dialog: {
+            card: {},
+            // url: {
+            //   bot: {},
+            // },
+            // update: {},
+          },
         },
       };
 
+      // Ignore this, random initialization needed for various isSupports checks
       applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
       GlobalVars.initializeCompleted = true;
 
       const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
 
-      if (supportedCapabilities.geoLocation && supportedCapabilities.geoLocation.isSupported()) {
+      if (supportedCapabilities.geoLocation.isSupported()) {
         expect(true).toBeTruthy();
       }
 
-      if (supportedCapabilities.geoLocation.map && supportedCapabilities.geoLocation.map.isSupported()) {
+      if (supportedCapabilities.geoLocation.map.isSupported()) {
         expect(false).toBeTruthy();
       }
 
-      expect(supportedCapabilities.geoLocation).toBeDefined();
-      expect(supportedCapabilities.geoLocation.map).toBeUndefined();
+      if (supportedCapabilities.dialog.isSupported()) {
+        expect(true).toBeTruthy();
+      }
+
+      expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
     });
 
     it('upgradeChain is ordered from oldest to newest', () => {

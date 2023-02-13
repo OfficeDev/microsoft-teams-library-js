@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import * as debug from 'debug';
 import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { dialog } from './dialog';
 import { geoLocation } from './geoLocation';
 import { HostVersionsInfo } from './interfaces';
 
@@ -399,7 +401,13 @@ export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
   runtime = deepFreeze(ffRuntimeConfig);
 }
 
+// Some entries in supports don't match exactly to a capability name, this map can help keep track of those inconsistencies
+// Should only be needed if top level capability doesn't match name OR if there's a top level supports value with no matching
+// capability (like permissions)
+// const capabilityToSupportsNameMap: Map<Object, string> = new Map([[dialog.adaptiveCard, 'card']]);
+
 export interface SupportedCapabilities {
+  readonly dialog: typeof dialog;
   readonly geoLocation: typeof geoLocation;
 }
 
@@ -410,6 +418,8 @@ export function getSupportedCapabilities(runtime: IRuntimeV2): SupportedCapabili
   Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
     if (capabilityName === 'geoLocation' && Object.values(runtime.supports)[capabilityIndex]) {
       supportedCapabilities = checkIfCapabilityIsSupportedAndExport(capabilityName, supportedCapabilities, geoLocation);
+    } else if (capabilityName === 'dialog' && Object.values(runtime.supports)[capabilityIndex]) {
+      supportedCapabilities = checkIfCapabilityIsSupportedAndExport(capabilityName, supportedCapabilities, dialog);
     }
   });
 
@@ -422,14 +432,26 @@ function checkIfCapabilityIsSupportedAndExport(
   capability: Object,
 ): Object {
   supportedCapabilities[capabilityName] = capability;
-  // this will need to be made recursive for capabilities like dialog with multiple levels of nesting (dialog)
   // Also, think about how to handle things like exported interfaces (which don't show up here)
-  Object.values(geoLocation).forEach((value, index) => {
-    if (!(value instanceof Function)) {
-      // if a top level subcapability is not supported, remove it from supportedCapabilities
+  Object.values(capability).forEach((value, index) => {
+    if (value && !(value instanceof Function)) {
       if (!value.isSupported()) {
-        supportedCapabilities[capabilityName][Object.keys(capability)[index]] = undefined;
+        // if a subcapability is not supported, remove all entries from it other than isSupported and namespaces
+        const subCapability = supportedCapabilities[capabilityName][Object.keys(capability)[index]];
+        Object.values(subCapability).forEach((subCapabilityEntry) => {
+          if (subCapabilityEntry instanceof Function && subCapabilityEntry.name !== 'isSupported') {
+            subCapability[subCapabilityEntry.name] = undefined;
+          }
+        });
+        supportedCapabilities[capabilityName][Object.keys(capability)[index]] = subCapability;
       }
+
+      // recursively check subcapability for more subcapabilities
+      checkIfCapabilityIsSupportedAndExport(
+        Object.keys(capability)[index],
+        supportedCapabilities[capabilityName],
+        value,
+      );
     }
   });
   return supportedCapabilities;
