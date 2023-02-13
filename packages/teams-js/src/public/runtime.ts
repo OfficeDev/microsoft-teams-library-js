@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import * as debug from 'debug';
 import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';

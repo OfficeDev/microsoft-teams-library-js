@@ -101,8 +101,6 @@ describe('runtime', () => {
     });
 
     it('shenanigans', () => {
-      expect.assertions(3);
-
       const runtimeWithStringVersion = {
         apiVersion: 2,
         hostVersionsInfo: {
@@ -117,10 +115,10 @@ describe('runtime', () => {
           permissions: {},
           dialog: {
             card: {},
-            // url: {
-            //   bot: {},
-            // },
-            // update: {},
+            url: {
+              bot: {},
+            },
+            update: {},
           },
         },
       };
@@ -131,19 +129,18 @@ describe('runtime', () => {
 
       const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
 
-      if (supportedCapabilities.geoLocation.isSupported()) {
-        expect(true).toBeTruthy();
-      }
+      expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
+      // Unsupported subcapabilities have all non-isSupported functions set to undefined
+      expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
 
-      if (supportedCapabilities.geoLocation.map.isSupported()) {
-        expect(false).toBeTruthy();
-      }
-
-      if (supportedCapabilities.dialog.isSupported()) {
-        expect(true).toBeTruthy();
-      }
-
+      expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
       expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
+      expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
     });
 
     it('upgradeChain is ordered from oldest to newest', () => {
