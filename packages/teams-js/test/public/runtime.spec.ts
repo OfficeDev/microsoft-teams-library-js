@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { errorRuntimeNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
@@ -10,6 +11,7 @@ import {
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
+  getSupportedCapabilities,
   Runtime,
   runtime,
   setUnitializedRuntime,
@@ -96,6 +98,35 @@ describe('runtime', () => {
       };
       applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+    });
+
+    it('shenanigans', () => {
+      expect.assertions(3);
+
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        isLegacyTeams: false,
+        supports: {
+          geoLocation: {},
+          permissions: {},
+        },
+      };
+
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
+
+      if (supportedCapabilities.geoLocation && supportedCapabilities.geoLocation.isSupported()) {
+        expect(true).toBeTruthy();
+      }
+
+      if (supportedCapabilities.geoLocation.map && supportedCapabilities.geoLocation.map.isSupported()) {
+        expect(false).toBeTruthy();
+      }
+
+      expect(supportedCapabilities.geoLocation).toBeDefined();
+      expect(supportedCapabilities.geoLocation.map).toBeUndefined();
     });
 
     it('upgradeChain is ordered from oldest to newest', () => {

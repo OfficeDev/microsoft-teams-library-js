@@ -5,6 +5,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
 import { HostClientType } from './constants';
+import { geoLocation } from './geoLocation';
 import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
@@ -396,6 +397,42 @@ export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
   const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
   applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
   runtime = deepFreeze(ffRuntimeConfig);
+}
+
+export interface SupportedCapabilities {
+  readonly geoLocation: typeof geoLocation;
+}
+
+export function getSupportedCapabilities(runtime: IRuntimeV2): SupportedCapabilities {
+  let supportedCapabilities = {};
+
+  // Go through each value in the list of capabilities that the host supports, capturing the name and index of each
+  Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
+    if (capabilityName === 'geoLocation' && Object.values(runtime.supports)[capabilityIndex]) {
+      supportedCapabilities = checkIfCapabilityIsSupportedAndExport(capabilityName, supportedCapabilities, geoLocation);
+    }
+  });
+
+  return supportedCapabilities as SupportedCapabilities;
+}
+
+function checkIfCapabilityIsSupportedAndExport(
+  capabilityName: string,
+  supportedCapabilities: Object,
+  capability: Object,
+): Object {
+  supportedCapabilities[capabilityName] = capability;
+  // this will need to be made recursive for capabilities like dialog with multiple levels of nesting (dialog)
+  // Also, think about how to handle things like exported interfaces (which don't show up here)
+  Object.values(geoLocation).forEach((value, index) => {
+    if (!(value instanceof Function)) {
+      // if a top level subcapability is not supported, remove it from supportedCapabilities
+      if (!value.isSupported()) {
+        supportedCapabilities[capabilityName][Object.keys(capability)[index]] = undefined;
+      }
+    }
+  });
+  return supportedCapabilities;
 }
 
 export function setUnitializedRuntime(): void {
