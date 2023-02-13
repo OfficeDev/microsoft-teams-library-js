@@ -8,7 +8,7 @@ import {
   applyRuntimeConfig,
   fastForwardRuntime,
   generateBackCompatRuntimeConfig,
-  getSupportedCapabilities,
+  // getSupportedCapabilities,
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
@@ -18,6 +18,7 @@ import {
   upgradeChain,
   versionConstants,
 } from '../../src/public/runtime';
+import { getSupportedCapabilities } from '../../src/supportedCapabilities';
 import { Utils } from '../utils';
 
 describe('runtime', () => {
@@ -111,8 +112,13 @@ describe('runtime', () => {
         },
         isLegacyTeams: false,
         supports: {
-          geoLocation: {},
-          permissions: {},
+          appEntity: {},
+          appInstallDialog: {},
+          barCode: {},
+          calendar: {},
+          call: {},
+          chat: {},
+          conversations: {},
           dialog: {
             card: {},
             url: {
@@ -120,6 +126,24 @@ describe('runtime', () => {
             },
             update: {},
           },
+          geoLocation: {},
+          location: {},
+          logs: {},
+          mail: {},
+          meetingRoom: {},
+          menus: {},
+          monetization: {},
+          notifications: {},
+          pages: {
+            appButton: {},
+            backStack: {},
+            config: {},
+            currentApp: {},
+            fullTrust: {},
+            tabs: {},
+          },
+          people: {},
+          permissions: {},
         },
       };
 
@@ -141,6 +165,31 @@ describe('runtime', () => {
       expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
       expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
       expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
+
+      expect(supportedCapabilities.appEntity.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.appInstallDialog.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.calendar.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.call.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.chat.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.conversations.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.location.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.logs.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.mail.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.meetingRoom.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.menus.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.notifications.isSupported()).toBeTruthy();
+
+      expect(supportedCapabilities.pages.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.appButton.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.backStack.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.config.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.currentApp.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.fullTrust.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
+
+      expect(supportedCapabilities.people.isSupported).toBeTruthy();
     });
 
     it('upgradeChain is ordered from oldest to newest', () => {
