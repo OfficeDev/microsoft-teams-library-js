@@ -190,11 +190,99 @@ export namespace video {
 
   export namespace MediaStream {
     export function isSupported(): boolean {
-      return video.isSupported() && runtime.supports.videoMediaStream;
+      return video.isSupported() && textureStreamAvailable() && runtime.supports.videoMediaStream;
+    }
+
+    
+    function textureStreamAvailable(): boolean {
+      return !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream);
     }
 
     export type ReceivedVideoFrame = {
       videoFrame: VideoFrame;
+    }
+
+    /**
+     * Video effect change call back function definition.
+     * The video app should resolve the promise to notify a successfully processed video frame.
+     * The video app should reject the promise to notify a failure.
+     */
+    export type VideoFrameCallback = (receivedVideoFrame: ReceivedVideoFrame) => Promise<VideoFrame>;
+
+    type MediaStreamInfo = {
+      streamId: string;
+    };
+
+    export function registerForVideoFrame(frameCallback: VideoFrameCallback): void {
+      ensureInitialized(runtime, FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      try {
+        registerHandler('video.startVideoExtensibilityVideoStream', async (mediaStreamInfo: MediaStreamInfo) => {
+          // when a new streamId is ready:
+          const { streamId } = mediaStreamInfo;
+          const videoTrack = await getInputVideoTrack(streamId);
+          const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
+          window['chrome']?.webview?.registerTextureStream(streamId, generator);
+        })
+      } catch (error) {
+        // throw error;
+      }
+      
+    }
+
+    async function getInputVideoTrack(streamId: string): Promise<MediaStreamVideoTrack> {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const chrome = window['chrome'] as any;
+      const mediaStream = await chrome.webview.getTextureStream(streamId);
+      
+      return mediaStream.getVideoTracks()[0];
+    }
+
+    function createProcessedStreamGenerator(
+      videoTrack: MediaStreamVideoTrack,
+      invokeCallback: VideoFrameCallback,
+    ): MediaStreamTrack {
+      const processor = new MediaStreamTrackProcessor({ track: videoTrack as MediaStreamVideoTrack });
+      const source = processor.readable;
+      const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+      const sink = generator.writable;
+  
+      source
+        .pipeThrough(
+          new TransformStream({
+            async transform(receivedFrame, controller) {
+              const timestamp = receivedFrame.timestamp;
+  
+              if (timestamp !== null) {
+                invokeCallback({videoFrame: receivedFrame})
+                  .then(async (frameProcessedByApp) => {
+                    //console.log('receved processed video frame', videoFrame);
+                    const buffer = new ArrayBuffer(frameProcessedByApp.allocationSize());
+                    await frameProcessedByApp.copyTo(buffer);
+                    const processedFrame = new VideoFrame(buffer, {
+                      codedHeight: frameProcessedByApp.codedHeight,
+                      codedWidth: frameProcessedByApp.codedWidth,
+                      format: frameProcessedByApp.format,
+                      timestamp: timestamp,
+                    });
+                    controller.enqueue(processedFrame);
+                    receivedFrame.close();
+                    frameProcessedByApp.close();
+  
+                  })
+                  .catch((error) => {
+                    console.log(`debug: error in generator: ${error}`);
+                    notifyError(error);
+                  });
+              }
+            },
+          }),
+        )
+        .pipeTo(sink);
+      return generator;
     }
 
   }
