@@ -188,9 +188,12 @@ export namespace video {
     return ensureInitialized(runtime) && runtime.supports.video ? true : false;
   }
 
-  export namespace MediaStream {
+  /**
+   * Namespace to get video frames from a media stream
+   */
+  export namespace mediaStream {
     export function isSupported(): boolean {
-      return video.isSupported() && textureStreamAvailable(); // && runtime.supports.videoMediaStream;
+      return textureStreamAvailable() && ensureInitialized(runtime) && !!runtime.supports.video.mediaStream;
     }
 
     function textureStreamAvailable(): boolean {
