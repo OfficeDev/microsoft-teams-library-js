@@ -2,6 +2,7 @@
 
 import { errorRuntimeNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { getSupportedCapabilities } from '../../src/internal/supportedCapabilities';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app, HostClientType } from '../../src/public';
 import {
@@ -17,7 +18,6 @@ import {
   upgradeChain,
   versionConstants,
 } from '../../src/public/runtime';
-import { getSupportedCapabilities } from '../../src/supportedCapabilities';
 import { Utils } from '../utils';
 
 describe('runtime', () => {
@@ -100,7 +100,148 @@ describe('runtime', () => {
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
     });
 
-    it('shenanigans', () => {
+    it('supportedCapabilities with private functions', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          appEntity: {},
+          appInstallDialog: {},
+          barCode: {},
+          calendar: {},
+          call: {},
+          chat: {},
+          conversations: {},
+          dialog: {
+            card: {},
+            url: {
+              bot: {},
+            },
+            update: {},
+          },
+          geoLocation: {},
+          location: {},
+          logs: {},
+          mail: {},
+          meetingRoom: {},
+          menus: {},
+          monetization: {},
+          notifications: {},
+          pages: {
+            appButton: {},
+            backStack: {},
+            config: {},
+            currentApp: {},
+            fullTrust: {},
+            tabs: {},
+          },
+          people: {},
+          permissions: {},
+          profile: {},
+          remoteCamera: {},
+          search: {},
+          sharing: {},
+          stageView: {},
+          teams: {
+            fullTrust: {
+              joinedTeams: {},
+            },
+          },
+        },
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime, true);
+
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly).toBeDefined();
+
+      expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.geoLocation.getCurrentLocation).toBeDefined();
+      expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
+      // Unsupported subcapabilities have all non-isSupported functions set to undefined
+      expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
+
+      expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.open).toBeDefined();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
+      expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.open).toBeDefined();
+      expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
+
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.appEntity.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.appInstallDialog.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.calendar.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.call.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.chat.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.conversations.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.location.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.logs.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.mail.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.meetingRoom.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.menus.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.notifications.isSupported(),
+      ).toBeTruthy();
+
+      expect(supportedCapabilities.pages.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.appButton.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.backStack.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.config.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.currentApp.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.fullTrust.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
+
+      expect(supportedCapabilities.people.isSupported).toBeTruthy();
+      expect(supportedCapabilities.profile.isSupported).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.remoteCamera.isSupported,
+      ).toBeTruthy();
+      expect(supportedCapabilities.search.isSupported).toBeTruthy();
+      expect(supportedCapabilities.sharing.isSupported).toBeTruthy();
+      expect(supportedCapabilities.stageView.isSupported).toBeTruthy();
+
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.teams.isSupported(),
+      ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.teams.fullTrust.isSupported(),
+      ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.teams.fullTrust.joinedTeams.isSupported(),
+      ).toBeTruthy();
+    });
+
+    it('supportedCapabilities without private functions', () => {
       const runtimeWithStringVersion = {
         apiVersion: 2,
         hostVersionsInfo: {
@@ -162,55 +303,8 @@ describe('runtime', () => {
 
       const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
 
-      expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.geoLocation.getCurrentLocation).toBeDefined();
-      expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
-      // Unsupported subcapabilities have all non-isSupported functions set to undefined
-      expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
-
-      expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.dialog.adaptiveCard.open).toBeDefined();
-      expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
-      expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
-      expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.dialog.url.bot.open).toBeDefined();
-      expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
-
-      expect(supportedCapabilities.appEntity.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.appInstallDialog.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.calendar.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.call.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.chat.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.conversations.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.location.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.logs.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.mail.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.meetingRoom.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.menus.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.notifications.isSupported()).toBeTruthy();
-
-      expect(supportedCapabilities.pages.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.appButton.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.backStack.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.config.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.currentApp.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.fullTrust.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
-
-      expect(supportedCapabilities.people.isSupported).toBeTruthy();
-      expect(supportedCapabilities.profile.isSupported).toBeTruthy();
-      expect(supportedCapabilities.remoteCamera.isSupported).toBeTruthy();
-      expect(supportedCapabilities.search.isSupported).toBeTruthy();
-      expect(supportedCapabilities.sharing.isSupported).toBeTruthy();
-      expect(supportedCapabilities.stageView.isSupported).toBeTruthy();
-
-      expect(supportedCapabilities.teams.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.teams.fullTrust.isSupported()).toBeTruthy();
-      expect(supportedCapabilities.teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly).toBeUndefined();
     });
 
     it('shenanigans: throw if runtime version is not yet supported', () => {
