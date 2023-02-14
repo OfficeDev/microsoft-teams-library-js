@@ -28,26 +28,39 @@ export namespace authentication {
   let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
-   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern.
-   * Registers the authentication Communication.handlers
+   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *
-   * @param authenticateParameters - A set of values that configure the authentication pop-up.
+   * Registers handlers to be called with the result of an authentication flow triggered using {@link authentication.authenticate authentication.authenticate(authenticateParameters?: AuthenticateParameters): void}
+   *
+   * @param authenticateParameters - Configuration for authentication flow pop-up result communication
    */
   export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
     authParams = authenticateParameters;
   }
 
   /**
-   * Initiates an authentication request, which opens a new window with the specified settings.
+   * Initiates an authentication flow which requires a new window.
+   * There are two primary uses for this function:
+   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Azure Active Directory)
+   * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Azure Active Directory consent prompts)
+   * You can learn more details about this flow [here](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
+   *
+   * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case (learn more
+   * [here](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
    *
    * @remarks
    * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
+   * As described on the [3rd party OAuth provider documentation](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab), the
+   * authentication flow starts and ends at an endpoint on your own service (with a redirect round-trip to the 3rd party IdP in the middle).
    *
-   * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
-   * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
+   * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful. The string in this result is provided in the parameter
+   * passed by your app when it calls {@link notifySuccess} in the pop-up window after returning from the identity provider redirect.
    *
-   * @throws Error if the authentication request fails or is canceled by the user.
+   * @throws Error if the authentication request fails or is canceled by the user. This error is provided in the parameter passed by your app when it calls
+   * {@link notifyFailure} in the pop-up window after returning from the identity provider redirect. However, it come cases it can also be provided by
+   * the infrastructure depending on the failure (e.g., a user cancelation)
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
@@ -506,7 +519,13 @@ export namespace authentication {
      */
     height?: number;
     /**
-     * The flag which indicates whether the auth page should be opened in an external browser. This flag has no effect on the web client.
+     * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
+     * If the identity provider you are using prevents embedded browser usage, this flag should be set to 'true' to enable the authentication page specified in
+     * the {@link url} property to be opened in an external browser.
+     * If this flag is false, the page will be opened directly within the current hosting application.
+     *
+     * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
+     * environment without an embedded browser.
      */
     isExternal?: boolean;
   }
