@@ -21,6 +21,7 @@ export namespace authentication {
   let authWindowMonitor: number | undefined;
 
   /**
+   * @hidden
    * @internal
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
@@ -386,13 +387,17 @@ export namespace authentication {
   }
 
   /**
-   * Notifies the frame that initiated this authentication request that the request was successful.
+   * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
+   * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
+   * authentication request was successful.
    *
    * @remarks
-   * This function is usable only on the authentication window.
+   * This function is usable only from the authentication window.
    * This call causes the authentication window to be closed.
    *
-   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
+   * this value in its callback or via the `Promise` return value
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
@@ -404,13 +409,18 @@ export namespace authentication {
   }
 
   /**
-   * Notifies the frame that initiated this authentication request that the request failed.
+   * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
+   * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
+   * authentication request failed.
+
    *
    * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
    *
-   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
+   * this value in its callback or via the `Promise` return value
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
@@ -491,7 +501,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+   * As of 2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *-------------------------
    * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
@@ -540,7 +550,10 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link AuthenticatePopUpParameters} instead.
+   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
+   * the associated {@link AuthenticatePopUpParameters} instead.
+   *
+   * @see {@link LegacyCallBacks}
    */
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
@@ -549,7 +562,9 @@ export namespace authentication {
    */
   export interface AuthTokenRequestParameters {
     /**
-     * An optional list of resource for which to acquire the access token; only used for full trust apps.
+     * @hidden
+     * @internal
+     * An list of resources for which to acquire the access token; only for internal Microsoft usage
      */
     resources?: string[];
     /**
