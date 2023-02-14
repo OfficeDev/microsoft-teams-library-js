@@ -4,22 +4,8 @@ import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../interna
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
-import { appEntity, conversations, logs, meetingRoom, notifications } from '../private';
-import { appInstallDialog } from './appInstallDialog';
-import { barCode } from './barCode';
-import { calendar } from './calendar';
-import { call } from './call';
-import { chat } from './chat';
 import { HostClientType } from './constants';
-import { dialog } from './dialog';
-import { geoLocation } from './geoLocation';
 import { HostVersionsInfo } from './interfaces';
-import { location } from './location';
-import { mail } from './mail';
-import { menus } from './menus';
-import { monetization } from './monetization';
-import { pages } from './pages';
-import { people } from './people';
 
 const runtimeLogger = getLogger('runtime');
 

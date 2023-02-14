@@ -214,6 +214,24 @@ describe('runtime', () => {
       expect(supportedCapabilities.teams.fullTrust.joinedTeams.isSupported()).toBeTruthy();
     });
 
+    it('shenanigans: throw if runtime version is not yet supported', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 99,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {},
+      };
+
+      expect(() => getSupportedCapabilities(runtimeWithStringVersion as Runtime)).toThrowError(
+        `Unsupported runtime version: ${runtimeWithStringVersion.apiVersion}`,
+      );
+    });
+
     it('upgradeChain is ordered from oldest to newest', () => {
       expect.assertions(upgradeChain.length - 1);
       let version = upgradeChain[0].versionToUpgradeFrom;
