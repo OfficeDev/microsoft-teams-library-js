@@ -8,7 +8,6 @@ import {
   applyRuntimeConfig,
   fastForwardRuntime,
   generateBackCompatRuntimeConfig,
-  // getSupportedCapabilities,
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,

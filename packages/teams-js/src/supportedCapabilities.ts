@@ -60,6 +60,16 @@ const capabilityToSupportsNameMapCurrent = new Map([
   ['webStorage', webStorage as Object],
 ]);
 
+export type MicrosoftOnlyCapabilities = {
+  readonly appEntity: typeof appEntity;
+  readonly conversations: typeof conversations;
+  readonly logs: typeof logs;
+  readonly meetingRoom: typeof meetingRoom;
+  readonly notifications: typeof notifications;
+  readonly remoteCamera: typeof remoteCamera;
+  readonly teams: typeof teams;
+};
+
 // TODO: The top-level capability comments get stripped out of this. These comments may need to live here or be copied here
 // for now
 // I wonder if there's some typedoc fanciness that will let me link to the other comments
@@ -78,6 +88,7 @@ export interface SupportedCapabilities {
   readonly mail: typeof mail;
   readonly meetingRoom: typeof meetingRoom;
   readonly menus: typeof menus;
+  readonly microsoftOnly?: MicrosoftOnlyCapabilities;
   readonly monetization: typeof monetization;
   readonly notifications: typeof notifications;
   readonly pages: typeof pages;
@@ -93,6 +104,9 @@ export interface SupportedCapabilities {
   readonly webStorage: typeof webStorage;
 }
 
+// TODO: take in a value that says whether or not to generate the microsoft only functions
+// pass in from app.initialize
+// make a separate map for private functions
 export function getSupportedCapabilities(runtime: Runtime): SupportedCapabilities {
   let supportedCapabilities = {};
   const runtimeMap = getMapForPassedInRuntimeVersion(runtime);
