@@ -20,6 +20,10 @@ export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
   let authWindowMonitor: number | undefined;
 
+  /**
+   * @internal
+   * Limited to Microsoft-internal use; automatically called when library is initialized
+   */
   export function initialize(): void {
     registerHandler('authentication.authenticate.success', handleSuccess, false);
     registerHandler('authentication.authenticate.failure', handleFailure, false);
@@ -68,12 +72,12 @@ export namespace authentication {
    * @deprecated
    * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
-   * Initiates an authentication request, which opens a new window with the specified settings.
+   * The documentation for {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} applies
+   * to this function. Please see that documentation.
+   * The one difference is that instead of the result being returned via the `Promise`, the result is returned to the callback functions provided in the
+   * `authenticateParameters` parameter.
    *
-   * @remarks
-   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
-   *
-   * @param authenticateParameters - The parameters for the authentication request.
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow and callbacks used for indicating the result
    *
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void;
@@ -166,8 +170,11 @@ export namespace authentication {
   }
 
   /**
-   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
-   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   * Requests an Azure AD token to be issued on behalf of the app in an SSO flow.
+   * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Azure AD to
+   * obtain a new token.
+   * This function is used to enable SSO scenarios. Please see [this page](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
+   * for more detail.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
    *
@@ -178,8 +185,9 @@ export namespace authentication {
    * @deprecated
    * As of 2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
    *
-   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
-   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   * The documentation {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} applies to this
+   * function as well. The one difference when using this function is that the result is provided in the callbacks provided in the `authTokenRequest` parameter
+   * instead of as a `Promise`.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
    * It contains callbacks to call in case of success/failure
@@ -520,7 +528,7 @@ export namespace authentication {
     height?: number;
     /**
      * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
-     * If the identity provider you are using prevents embedded browser usage, this flag should be set to 'true' to enable the authentication page specified in
+     * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page specified in
      * the {@link url} property to be opened in an external browser.
      * If this flag is false, the page will be opened directly within the current hosting application.
      *
