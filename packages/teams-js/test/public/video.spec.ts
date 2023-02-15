@@ -1,3 +1,4 @@
+import './mediaStreamApiMock';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
@@ -40,7 +41,7 @@ describe('video', () => {
 
   describe('registerForVideoFrame', () => {
     const emptyVideoFrameCallback = (
-      _frame: video.VideoFrame,
+      _frame: video.VideoFrameData,
       _notifyVideoFrameProcessed: () => void,
       _notifyError: (errorMessage: string) => void,
     ): void => {};
@@ -129,11 +130,11 @@ describe('video', () => {
 
     it('FRAMED - should successfully invoke video frame event handler', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      let returnedVideoFrame: video.VideoFrame;
+      let returnedVideoFrame: video.VideoFrameData;
       let handlerInvoked = false;
 
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -154,11 +155,11 @@ describe('video', () => {
 
     it('FRAMELESS - should successfully invoke video frame event handler', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
-      let returnedVideoFrame: video.VideoFrame;
+      let returnedVideoFrame: video.VideoFrameData;
       let handlerInvoked = false;
       //callback
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -184,7 +185,7 @@ describe('video', () => {
     it('FRAMED - should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -208,7 +209,7 @@ describe('video', () => {
     it('FRAMED - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -233,7 +234,7 @@ describe('video', () => {
     it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -261,7 +262,7 @@ describe('video', () => {
     it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -292,7 +293,7 @@ describe('video', () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const errorMessage = 'Error occurs when processing the video frame';
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -317,7 +318,7 @@ describe('video', () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const errorMessage = 'Error occurs when processing the video frame';
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -347,7 +348,7 @@ describe('video', () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -362,7 +363,7 @@ describe('video', () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let handlerInvoked = false;
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -558,6 +559,94 @@ describe('video', () => {
       } as DOMMessageEvent);
       expect(returnedEffectId).toEqual(effectId);
       expect(handlerInvoked).toBeTruthy();
+    });
+  });
+
+  describe('video.mediaStream', () => {
+    it.each([() => framedPlatformMock.uninitializeRuntimeConfig(), () => framelessPlatformMock.uninitializeRuntimeConfig()])
+    ('should throw if called before initialization', (uninitializeRuntime) => {
+      uninitializeRuntime();
+      expect(() => video.mediaStream.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it.each([() => framedPlatformMock.initializeWithContext(FrameContexts.content), () => framelessPlatformMock.initializeWithContext(FrameContexts.content)])
+    ('should return false if texture stream is not supported', async (initializeWithContext) => {
+      await initializeWithContext();
+      expect(video.mediaStream.isSupported()).toBeFalsy();
+    });
+
+    describe.each([{
+      init: () => framedPlatformMock.initializeWithContext(FrameContexts.sidePanel),
+      postMessage: (func: string, ...args: any) => framedPlatformMock.sendMessage(func, ...args),
+      findMessageByFunc: (func: string) => framedPlatformMock.findMessageByFunc(func),
+    },{
+      init: () => framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel),
+      postMessage: (func: string, ...args: any) => framelessPlatformMock.respondToMessage({
+        data: {
+          func,
+          args,
+        }
+      } as DOMMessageEvent),
+      findMessageByFunc: (func: string) => framelessPlatformMock.findMessageByFunc(func),
+    }])('when initialized', ({init, postMessage, findMessageByFunc}) => {
+      let targetStreamId;
+      let registeredStreamId;
+      let videoTrack = new MediaStreamTrack();
+      let videoStream = new MediaStream([videoTrack]);
+
+      beforeEach(() => {
+        window['chrome'] = {
+          webview: {
+            getTextureStream: (streamId: string) => {
+              targetStreamId = streamId;
+              return Promise.resolve(videoStream);
+            },
+            registerTextureStream: (streamId: string, track: MediaStreamTrack) => {
+              registeredStreamId = streamId;
+            }
+          }
+        };
+      });
+
+      it('isSupported should return false if texture stream is not supported', async () => {
+        await init();
+        window['chrome'] = undefined;
+        expect(video.mediaStream.isSupported()).toBeFalsy();
+      });
+
+      it('should get and register stream on video.startVideoExtensibilityVideoStream', async () => {
+        await init();
+        const streamId = 'testStreamId';
+        video.mediaStream.registerForVideoFrame(() => Promise.resolve({close: () => {}} as VideoFrame));
+        postMessage('video.startVideoExtensibilityVideoStream', {streamId});
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(targetStreamId).toEqual(streamId);
+        expect(registeredStreamId).toEqual(streamId);
+      });
+
+      it('should invoke callback', async () => {
+        await init();
+        let callbackInvoked = false;
+        video.mediaStream.registerForVideoFrame(() => {
+          callbackInvoked = true;
+          return Promise.resolve({close: () => {}} as VideoFrame);
+        });
+        postMessage('video.startVideoExtensibilityVideoStream', {streamId: 'streamId'});
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(callbackInvoked).toBeTruthy();
+      });
+
+      it('should notify error when callback rejects', async () => {
+        const errorMessage = 'error';
+        await init();
+        video.mediaStream.registerForVideoFrame(() => Promise.reject(errorMessage));
+        postMessage('video.startVideoExtensibilityVideoStream', {streamId: 'streamId'});
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        const message = findMessageByFunc('video.notifyError');
+        expect(message).not.toBeNull();
+        expect(message?.args.length).toBe(1);
+        expect(message?.args[0]).toEqual(errorMessage);
+      });
     });
   });
 });

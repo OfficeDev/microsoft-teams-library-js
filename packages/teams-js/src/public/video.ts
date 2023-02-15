@@ -193,7 +193,7 @@ export namespace video {
    */
   export namespace mediaStream {
     export function isSupported(): boolean {
-      return textureStreamAvailable() && ensureInitialized(runtime) && !!runtime.supports.video?.mediaStream;
+      return ensureInitialized(runtime) && textureStreamAvailable() && !!runtime.supports.video?.mediaStream;
     }
 
     function textureStreamAvailable(): boolean {
@@ -242,7 +242,7 @@ export namespace video {
       videoTrack: MediaStreamVideoTrack,
       videoFrameCallback: VideoFrameCallback,
     ): MediaStreamTrack {
-      const processor = new MediaStreamTrackProcessor({ track: videoTrack as MediaStreamVideoTrack });
+      const processor = new MediaStreamTrackProcessor({ track: videoTrack });
       const source = processor.readable;
       const generator = new MediaStreamTrackGenerator({ kind: 'video' });
       const sink = generator.writable;
