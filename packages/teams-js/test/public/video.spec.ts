@@ -458,7 +458,7 @@ describe('video', () => {
           await framedPlatformMock.initializeWithContext(context);
 
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          expect(() => video.registerForVideoEffect(() => {})).toThrowError(
+          expect(() => video.registerForVideoEffect(() => Promise.resolve())).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
@@ -469,7 +469,7 @@ describe('video', () => {
           await framelessPlatformMock.initializeWithContext(context);
 
           // eslint-disable-next-line @typescript-eslint/no-empty-function
-          expect(() => video.registerForVideoEffect(() => {})).toThrowError(
+          expect(() => video.registerForVideoEffect(() => Promise.resolve())).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,
@@ -483,7 +483,7 @@ describe('video', () => {
       framedPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(1);
       try {
-        video.registerForVideoEffect(() => {});
+        video.registerForVideoEffect(() => Promise.resolve());
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -494,7 +494,7 @@ describe('video', () => {
       framelessPlatformMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect.assertions(4);
       try {
-        video.registerForVideoEffect(() => {});
+        video.registerForVideoEffect(() => Promise.resolve());
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -504,7 +504,7 @@ describe('video', () => {
       await framedPlatformMock.initializeWithContext('sidePanel');
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      video.registerForVideoEffect(() => {});
+      video.registerForVideoEffect(() => Promise.resolve());
 
       expect(framedPlatformMock.findMessageByFunc('registerHandler')).toBeNull();
       const messageForRegister = framedPlatformMock.findMessageByFunc('video.registerForVideoEffect');
@@ -516,7 +516,7 @@ describe('video', () => {
       await framelessPlatformMock.initializeWithContext('sidePanel');
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      video.registerForVideoEffect(() => {});
+      video.registerForVideoEffect(() => Promise.resolve());
 
       expect(framelessPlatformMock.findMessageByFunc('registerHandler')).toBeNull();
       const messageForRegister = framelessPlatformMock.findMessageByFunc('video.registerForVideoEffect');
@@ -528,9 +528,10 @@ describe('video', () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let returnedEffectId: string;
       let handlerInvoked = false;
-      const videoEffectCallBack = (effectId: string): void => {
+      const videoEffectCallBack = (effectId: string): Promise<void> => {
         handlerInvoked = true;
         returnedEffectId = effectId;
+        return Promise.resolve();
       };
 
       video.registerForVideoEffect(videoEffectCallBack);
@@ -544,9 +545,10 @@ describe('video', () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       let returnedEffectId: string;
       let handlerInvoked = false;
-      const videoEffectCallBack = (effectId: string): void => {
+      const videoEffectCallBack = (effectId: string): Promise<void> => {
         handlerInvoked = true;
         returnedEffectId = effectId;
+        return Promise.resolve();
       };
 
       video.registerForVideoEffect(videoEffectCallBack);
@@ -559,6 +561,94 @@ describe('video', () => {
       } as DOMMessageEvent);
       expect(returnedEffectId).toEqual(effectId);
       expect(handlerInvoked).toBeTruthy();
+    });
+
+    let handlerInvoked;
+    const invokeHanlderPromise = new Promise((resolve) => {
+      handlerInvoked = resolve;
+    });
+
+    const videoEffectSuccessCallBack = (): Promise<void> => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+          handlerInvoked();
+        }, 0);
+      });
+    };
+    const videoEffectFailedCallBack = (): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject(video.EffectFailureReason.InvalidEffectId);
+          handlerInvoked();
+        }, 0);
+      });
+    };
+
+    it('FRAMED - should invoke videoEffectReadiness handler on callback resolved', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+      video.registerForVideoEffect(videoEffectSuccessCallBack);
+      const effectId = 'sampleEffectId';
+      framedPlatformMock.sendMessage('video.effectParameterChange', effectId);
+      await invokeHanlderPromise;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const messageForRegister = framedPlatformMock.findMessageByFunc('video.videoEffectReadiness');
+      expect(messageForRegister).not.toBeNull();
+      expect(messageForRegister?.args?.length).toBe(2);
+      expect(messageForRegister?.args).toEqual([true, effectId]);
+    });
+
+    it('FRAMELESS - should invoke videoEffectReadiness handler on callback resolved', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+      video.registerForVideoEffect(videoEffectSuccessCallBack);
+      const effectId = 'sampleEffectId';
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'video.effectParameterChange',
+          args: [effectId],
+        },
+      } as DOMMessageEvent);
+      await invokeHanlderPromise;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const messageForRegister = framelessPlatformMock.findMessageByFunc('video.videoEffectReadiness');
+      expect(messageForRegister).not.toBeNull();
+      expect(messageForRegister?.args?.length).toBe(2);
+      expect(messageForRegister?.args).toEqual([true, effectId]);
+    });
+
+    it('FRAMED - should invoke videoEffectReadiness handler on callback rejects', async () => {
+      await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+      video.registerForVideoEffect(videoEffectFailedCallBack);
+      const effectId = 'sampleEffectId';
+      framedPlatformMock.sendMessage('video.effectParameterChange', effectId);
+      await invokeHanlderPromise;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const messageForRegister = framedPlatformMock.findMessageByFunc('video.videoEffectReadiness');
+      expect(messageForRegister).not.toBeNull();
+      expect(messageForRegister?.args?.length).toBe(3);
+      expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId']);
+    });
+
+    it('FRAMELESS - should invoke videoEffectReadiness handler on callback rejects', async () => {
+      await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
+
+      video.registerForVideoEffect(videoEffectFailedCallBack);
+      const effectId = 'sampleEffectId';
+      framelessPlatformMock.respondToMessage({
+        data: {
+          func: 'video.effectParameterChange',
+          args: [effectId],
+        },
+      } as DOMMessageEvent);
+      await invokeHanlderPromise;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const messageForRegister = framelessPlatformMock.findMessageByFunc('video.videoEffectReadiness');
+      expect(messageForRegister).not.toBeNull();
+      expect(messageForRegister?.args?.length).toBe(3);
+      expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId']);
     });
   });
 
