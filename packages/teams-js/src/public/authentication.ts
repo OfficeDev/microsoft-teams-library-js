@@ -49,15 +49,15 @@ export namespace authentication {
    * 1. When your app needs to authenticate using a 3rd-party identity provider (not Azure Active Directory)
    * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Azure Active Directory consent prompts)
    *
-   * You can learn more details about this flow [here](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
+   * For more details, see [Enable authentication using third-party OAuth provider](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
    *
-   * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case (learn more
-   * [here](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
+   * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case. For more, see
+   * [Enable SSO for tab apps](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
    *
    * @remarks
    * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
-   * As described on the [3rd party OAuth provider documentation](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab), the
-   * authentication flow starts and ends at an endpoint on your own service (with a redirect round-trip to the 3rd party identity provider in the middle).
+   * The [Teams authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
+   * your own service (with a redirect round-trip to the 3rd party identity provider in the middle).
    *
    * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
