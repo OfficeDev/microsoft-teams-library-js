@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:44302;http://localhost:2544",
+      "applicationUrl": "https://localhost:44302",
       "hotReloadProfile": "aspnetcore"
     },
     "WSL": {
@@ -17,7 +17,7 @@
       "launchUrl": "https://teams.microsoft.com/l/app/0794bd56-95ae-4835-9588-d81b26ec3d8d?installAppPackage=true&webjoin=true&appTenantId=72f988bf-86f1-41af-91ab-2d7cd011db47",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:44302;http://localhost:2544"
+        "ASPNETCORE_URLS": "https://localhost:44302"
       },
       "distributionName": ""
     }
