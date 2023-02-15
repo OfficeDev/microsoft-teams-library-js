@@ -11,7 +11,7 @@
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
-    "build": "yarn lint && webpack && yarn docs:validate && node updateBlazorApp.js",
+    "build": "yarn lint && webpack && yarn docs:validate",
     "clean": "rimraf ./dist",
     "docs": "yarn typedoc",
     "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",

@@ -73,6 +73,7 @@
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-strict-null-checks": "^0.0.19",
+    "filemanager-webpack-plugin": "^8.0.0",
     "fs-extra": "^9.1.0",
     "fs-jetpack": "^2.2.2",
     "html-webpack-plugin": "^5.5.0",
