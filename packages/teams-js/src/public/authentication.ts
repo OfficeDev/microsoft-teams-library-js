@@ -52,7 +52,7 @@ export namespace authentication {
    * For more details, see [Enable authentication using third-party OAuth provider](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
    *
    * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case. For more, see
-   * [Enable SSO for tab apps](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
+   * [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
    *
    * @remarks
    * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
@@ -175,7 +175,7 @@ export namespace authentication {
    * Requests an Azure AD token to be issued on behalf of your app in an SSO flow.
    * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Azure AD to
    * obtain a new token.
-   * This function is used to enable SSO scenarios. See [Enable SSO for tab apps](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
+   * This function is used to enable SSO scenarios. See [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
    * for more details.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
