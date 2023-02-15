@@ -1,9 +1,44 @@
+import { Capability } from '../internal/capability';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * @hidden
+ */
+export class BarcodeInstance extends Capability {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [barCode.scanBarCode as unknown, [FrameContexts.content, FrameContexts.task]],
+      [barCode.hasPermission as unknown, [FrameContexts.content, FrameContexts.task]],
+      [barCode.requestPermission as unknown, [FrameContexts.content, FrameContexts.task]],
+    ]);
+
+    super(map);
+  }
+
+  public scanBarCode(barCodeConfig: barCode.BarCodeConfig): Promise<string> {
+    this.ensureInitialized(this.getFrameContextsForFunction(barCode.scanBarCode));
+    return barCode.scanBarCode(barCodeConfig);
+  }
+
+  public hasPermission(): Promise<boolean> {
+    this.ensureInitialized(this.getFrameContextsForFunction(barCode.hasPermission));
+    return barCode.hasPermission();
+  }
+
+  public requestPermission(): Promise<boolean> {
+    this.ensureInitialized(this.getFrameContextsForFunction(barCode.requestPermission));
+    return barCode.requestPermission();
+  }
+
+  public isSupported(): boolean {
+    return barCode.isSupported();
+  }
+}
 
 /**
  * Namespace to interact with the barcode scanning-specific part of the SDK.

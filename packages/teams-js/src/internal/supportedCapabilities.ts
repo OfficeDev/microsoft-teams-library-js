@@ -25,44 +25,6 @@ import {
 } from '../public';
 import { Runtime } from '../public/runtime';
 
-// Some entries in supports don't match exactly to a capability name, this map can help keep track of those inconsistencies
-// Should only be needed if top level capability doesn't match name OR if there's a top level supports value with no matching
-// capability (like permissions)
-// This will need to be updated anytime *new* top level capability breaking changes are made
-const capabilityToSupportsNameMapCurrent = new Map([
-  ['appInstallDialog', appInstallDialog as Object],
-  ['barCode', barCode as Object],
-  ['calendar', calendar as Object],
-  ['call', call as Object],
-  ['chat', chat as Object],
-  ['dialog', dialog as Object],
-  ['geoLocation', geoLocation as Object],
-  ['location', location as Object],
-  ['mail', mail as Object],
-  ['menus', menus as Object],
-  ['monetization', monetization as Object],
-  ['pages', pages as Object],
-  ['people', people as Object],
-  ['permissions', undefined], // permissions doesn't map to a capability
-  ['profile', profile as Object],
-  ['search', search as Object],
-  ['sharing', sharing as Object],
-  ['stageView', stageView as Object],
-  ['teamsCore', teamsCore as Object],
-  ['video', video as Object],
-  ['webStorage', webStorage as Object],
-]);
-
-const privateCapabilityToSupportsNameMapCurrent = new Map([
-  ['appEntity', appEntity as Object],
-  ['conversations', conversations as Object],
-  ['logs', logs as Object],
-  ['meetingRoom', meetingRoom as Object],
-  ['notifications', notifications as Object],
-  ['remoteCamera', remoteCamera as Object],
-  ['teams', teams as Object],
-]);
-
 export type MicrosoftOnlyCapabilities = {
   readonly appEntity: typeof appEntity;
   readonly conversations: typeof conversations;
@@ -100,45 +62,49 @@ export interface SupportedCapabilities {
   readonly webStorage: typeof webStorage;
 }
 
-// TODO: take in a value that says whether or not to generate the microsoft only functions
-// pass in from app.initialize
-// make a separate map for private functions
 export function getSupportedCapabilities(runtime: Runtime, getPrivateFunctions = false): SupportedCapabilities {
-  let supportedCapabilities = getPrivateFunctions ? { microsoftOnly: {} } : {};
+  const supportedCapabilities = { microsoftOnly: getPrivateFunctions ? {} : undefined };
   const runtimeMap = getMapForPassedInRuntimeVersion(runtime);
   const privateRuntimeMap = getPrivateMapForPassedInRuntimeVersion(runtime);
 
-  // Go through each value in the list of capabilities that the host supports, capturing the name and index of each
-  Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
-    if (runtimeMap.has(capabilityName)) {
-      const capability = runtimeMap.get(capabilityName);
-      // Check if capability is undefined so we don't generate an entry for runtime objects
-      // that don't map to capabilities
-      if (capability && Object.values(runtime.supports)[capabilityIndex]) {
-        supportedCapabilities = fillOutSupportedCapability(capabilityName, supportedCapabilities, capability);
+  addTopLevelCapabilities(supportedCapabilities, runtimeMap);
+
+  if (getPrivateFunctions && supportedCapabilities.microsoftOnly !== undefined) {
+    addTopLevelCapabilities(supportedCapabilities.microsoftOnly, privateRuntimeMap);
+  }
+
+  return supportedCapabilities as unknown as SupportedCapabilities;
+}
+
+function addTopLevelCapabilities(supportedCapabilities: Object, map: Map<string, Object>): Object {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  map.forEach((capability: any, capabilityName) => {
+    if (!capability) {
+      return;
+    }
+
+    if (capability && capability.isSupported) {
+      if (capability.isSupported()) {
+        if (map.has(capabilityName)) {
+          capability = map.get(capabilityName);
+          supportedCapabilities = fillOutSupportedCapability(capabilityName, supportedCapabilities, capability);
+        }
+      } else {
+        supportedCapabilities[capabilityName] = removeAllUnsupportedFunctions(capability);
       }
     }
   });
 
-  if (getPrivateFunctions && supportedCapabilities.microsoftOnly !== undefined) {
-    // Go through each value in the list of capabilities that the host supports, capturing the name and index of each
-    Object.keys(runtime.supports).forEach((capabilityName, capabilityIndex) => {
-      if (privateRuntimeMap.has(capabilityName)) {
-        const capability = privateRuntimeMap.get(capabilityName);
-        // Check if capability is undefined so we don't generate an entry for runtime objects
-        // that don't map to capabilities
-        if (capability && Object.values(runtime.supports)[capabilityIndex]) {
-          supportedCapabilities.microsoftOnly = fillOutSupportedCapability(
-            capabilityName,
-            supportedCapabilities.microsoftOnly ? supportedCapabilities.microsoftOnly : {},
-            capability,
-          );
-        }
-      }
-    });
-  }
+  return supportedCapabilities;
+}
 
-  return supportedCapabilities as SupportedCapabilities;
+function removeAllUnsupportedFunctions(capability: Object): Object {
+  Object.values(capability).forEach((entry) => {
+    if (entry instanceof Function && entry.name !== 'isSupported') {
+      capability[entry.name] = undefined;
+    }
+  });
+  return capability;
 }
 
 function fillOutSupportedCapability(capabilityName: string, supportedCapabilities: Object, capability: Object): Object {
@@ -168,7 +134,7 @@ function fillOutSupportedCapability(capabilityName: string, supportedCapabilitie
 
 function getMapForPassedInRuntimeVersion(runtime: Runtime): Map<string, Object> {
   if (runtime.apiVersion <= 2) {
-    return capabilityToSupportsNameMapCurrent;
+    return createPublicRuntimeMap();
   }
 
   throw new Error(`Unsupported runtime version: ${runtime.apiVersion}`);
@@ -176,8 +142,50 @@ function getMapForPassedInRuntimeVersion(runtime: Runtime): Map<string, Object> 
 
 function getPrivateMapForPassedInRuntimeVersion(runtime: Runtime): Map<string, Object> {
   if (runtime.apiVersion <= 2) {
-    return privateCapabilityToSupportsNameMapCurrent;
+    return createPrivateRuntimeMap();
   }
 
   throw new Error(`Unsupported runtime version: ${runtime.apiVersion}`);
+}
+
+// Some entries in supports don't match exactly to a capability name, this map can help keep track of those inconsistencies
+// Should only be needed if top level capability doesn't match name OR if there's a top level supports value with no matching
+// capability (like permissions)
+// This will need to be updated anytime *new* top level capability breaking changes are made
+function createPublicRuntimeMap(): Map<string, Object> {
+  return new Map([
+    ['appInstallDialog', { ...appInstallDialog }], // Use the spread operator to make a copy of the capability
+    ['barCode', { ...barCode }],
+    ['calendar', { ...calendar }],
+    ['call', { ...call }],
+    ['chat', { ...chat }],
+    ['dialog', { ...dialog }],
+    ['geoLocation', { ...geoLocation }],
+    ['location', { ...location }],
+    ['mail', { ...mail }],
+    ['menus', { ...menus }],
+    ['monetization', { ...monetization }],
+    ['pages', { ...pages }],
+    ['people', { ...people }],
+    ['permissions', undefined], // permissions doesn't map to a capability
+    ['profile', { ...profile }],
+    ['search', { ...search }],
+    ['sharing', { ...sharing }],
+    ['stageView', { ...stageView }],
+    ['teamsCore', { ...teamsCore }],
+    ['video', { ...video }],
+    ['webStorage', { ...webStorage }],
+  ]);
+}
+
+function createPrivateRuntimeMap(): Map<string, Object> {
+  return new Map([
+    ['appEntity', { ...appEntity }],
+    ['conversations', { ...conversations }],
+    ['logs', { ...logs }],
+    ['meetingRoom', { ...meetingRoom }],
+    ['notifications', { ...notifications }],
+    ['remoteCamera', { ...remoteCamera }],
+    ['teams', { ...teams }],
+  ]);
 }

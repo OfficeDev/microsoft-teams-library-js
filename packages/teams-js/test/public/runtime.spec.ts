@@ -100,7 +100,113 @@ describe('runtime', () => {
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
     });
 
-    it('supportedCapabilities with private functions', () => {
+    it('Unsupported top level capabilities return unsupported and other functions are undefined', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {},
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
+
+      expect(supportedCapabilities.barCode.isSupported()).toBeFalsy();
+      expect(supportedCapabilities.barCode.requestPermission).toBeUndefined();
+    });
+
+    it('Supported top level capabilities return supported and other functions are defined', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          barCode: {},
+          permissions: {},
+        },
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
+
+      expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.barCode.requestPermission).toBeDefined();
+    });
+
+    it('private capabilities container is not generated if not asked for', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          barCode: {},
+          permissions: {},
+        },
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
+
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly).toBeUndefined();
+    });
+
+    it('private capabilities are generated if asked for', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          appEntity: {},
+        },
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime, true);
+
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.appEntity.isSupported()).toBeTruthy();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.appEntity.selectAppEntity).toBeDefined();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.logs.isSupported()).toBeFalsy();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.logs.registerGetLogHandler).toBeUndefined();
+    });
+
+    it('supportedCapabilities with nested capabilities are generated correctly', () => {
       const runtimeWithStringVersion = {
         apiVersion: 2,
         hostVersionsInfo: {
@@ -239,72 +345,6 @@ describe('runtime', () => {
         supportedCapabilities.microsoftOnly !== undefined &&
           supportedCapabilities.microsoftOnly.teams.fullTrust.joinedTeams.isSupported(),
       ).toBeTruthy();
-    });
-
-    it('supportedCapabilities without private functions', () => {
-      const runtimeWithStringVersion = {
-        apiVersion: 2,
-        hostVersionsInfo: {
-          adaptiveCardSchemaVersion: {
-            majorVersion: 1,
-            minorVersion: 5,
-          },
-        },
-        isLegacyTeams: false,
-        supports: {
-          appEntity: {},
-          appInstallDialog: {},
-          barCode: {},
-          calendar: {},
-          call: {},
-          chat: {},
-          conversations: {},
-          dialog: {
-            card: {},
-            url: {
-              bot: {},
-            },
-            update: {},
-          },
-          geoLocation: {},
-          location: {},
-          logs: {},
-          mail: {},
-          meetingRoom: {},
-          menus: {},
-          monetization: {},
-          notifications: {},
-          pages: {
-            appButton: {},
-            backStack: {},
-            config: {},
-            currentApp: {},
-            fullTrust: {},
-            tabs: {},
-          },
-          people: {},
-          permissions: {},
-          profile: {},
-          remoteCamera: {},
-          search: {},
-          sharing: {},
-          stageView: {},
-          teams: {
-            fullTrust: {
-              joinedTeams: {},
-            },
-          },
-        },
-      };
-
-      // Ignore this, random initialization needed for various isSupports checks
-      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
-      GlobalVars.initializeCompleted = true;
-
-      const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime);
-
-      // eslint-disable-next-line strict-null-checks/all
-      expect(supportedCapabilities.microsoftOnly).toBeUndefined();
     });
 
     it('shenanigans: throw if runtime version is not yet supported', () => {
