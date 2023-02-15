@@ -75,7 +75,7 @@ export namespace authentication {
    * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
    * The documentation for {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} applies
-   * to this function. Please see that documentation.
+   * to this function.
    * The one difference is that instead of the result being returned via the `Promise`, the result is returned to the callback functions provided in the
    * `authenticateParameters` parameter.
    *
@@ -175,8 +175,8 @@ export namespace authentication {
    * Requests an Azure AD token to be issued on behalf of your app in an SSO flow.
    * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Azure AD to
    * obtain a new token.
-   * This function is used to enable SSO scenarios. Please see [this page](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
-   * for more detail.
+   * This function is used to enable SSO scenarios. See [Enable SSO for tab apps](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
+   * for more details.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
    *
