@@ -32,11 +32,11 @@ yarn-error.log
 lerna-debug.log
 
 # Blazor Test App
+*.binlog
+*.user
+.dotnet/
 .vs/
+.vscode/
+artifacts/
 bin/
 obj/
-*.user
-artifacts/
-.vscode/
-.dotnet/
-*.binlog
