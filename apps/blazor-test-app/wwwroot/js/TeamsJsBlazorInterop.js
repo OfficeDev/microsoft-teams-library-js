@@ -48,8 +48,7 @@ export function registerOnSaveHandler(settings) {
   microsoftTeams.pages.config.setValidityState(true);
 }
 
-// Come from here: https://github.com/wictorwilen/msteams-react-base-component/blob/master/src/useTeams.ts
-export function inOrange() {
+export function isHostedInM365() {
   if (window.parent[0]) {
     return true;
   }

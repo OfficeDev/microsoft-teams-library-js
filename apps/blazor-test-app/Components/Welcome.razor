@@ -26,7 +26,7 @@ else
 @code {
     bool isLoading = true; 
 
-    bool IsInOrange = false;
+    bool IsHostedInM365 = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -37,9 +37,9 @@ else
             isLoading = false;
             StateHasChanged();
 
-            IsInOrange = await MicrosoftTeams.IsInOrange();
+            IsHostedInM365 = await MicrosoftTeams.IsHostedInM365();
 
-            if (IsInOrange) {
+            if (IsHostedInM365) {
                 await MicrosoftTeams.InitializeAsync();
                 await MicrosoftTeams.notifySuccess();
             }
