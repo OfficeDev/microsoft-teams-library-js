@@ -18,7 +18,7 @@ yarn build
 yarn start-blazor-app
 ```
 
-or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory blazor-test-app, simply `yarn compile` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory blazor-test-app, simply `yarn build` and `yarn start` there.
 
 Once starting the app, it will run on https://localhost:44302. Upon visiting the page, the text `Congratulations` on the page indicates the c# app is working properly, otherwise an error will be thrown in the console and the webpage will not render.
 
