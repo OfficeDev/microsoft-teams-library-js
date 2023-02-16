@@ -8,9 +8,8 @@
     "tools/**/*"
   ],
   "scripts": {
-    "build": "lerna run build --stream && yarn build-blazor-app",
+    "build": "lerna run build --stream",
     "build:clean": "yarn clean && yarn build",
-    "build-blazor-app": "yarn workspace blazor-test-app compile",
     "bundleAnalyze": "yarn workspace @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "yarn bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
     "build-test-app-CDN": "yarn workspace teams-test-app build:CDN",
