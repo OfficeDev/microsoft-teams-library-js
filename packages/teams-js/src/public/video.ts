@@ -236,7 +236,10 @@ export namespace video {
     }
 
     function textureStreamAvailable(): boolean {
-      return !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream);
+      return (
+        typeof window !== 'undefined' &&
+        !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
+      );
     }
 
     /**
@@ -290,7 +293,7 @@ export namespace video {
         const videoTrack = await getInputVideoTrack(streamId);
         const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
         // register the video track with processed frames back to the stream:
-        window['chrome']?.webview?.registerTextureStream(streamId, generator);
+        typeof window !== 'undefined' && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       });
     }
 
@@ -298,6 +301,9 @@ export namespace video {
      * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
      */
     async function getInputVideoTrack(streamId: string): Promise<MediaStreamVideoTrack> {
+      if (typeof window === 'undefined') {
+        throw errorNotSupportedOnPlatform;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const chrome = window['chrome'] as any;
       try {
