@@ -1,9 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+export class MonetizationMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [monetization.openPurchaseExperience, [FrameContexts.content]],
+    ]);
+    super(map);
+  }
+}
 
 export namespace monetization {
   /**

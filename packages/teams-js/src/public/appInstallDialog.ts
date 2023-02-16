@@ -1,9 +1,30 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class AppInstallDialogMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [
+        appInstallDialog.openAppInstallDialog as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+    ]);
+
+    super(map);
+  }
+}
 
 export namespace appInstallDialog {
   export interface OpenAppInstallDialogParams {

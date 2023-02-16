@@ -1,26 +1,20 @@
-import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public';
-import { runtime } from '../public/runtime';
 
-export abstract class Capability {
+export abstract class CapabilityMetadata {
   public readonly functionNameToFrameContextMap: Map<unknown, FrameContexts[]>;
 
+  // TODO throw if someone tries to add something to the map more than once
   // eslint-disable-next-line @typescript-eslint/ban-types
   public constructor(map: Map<unknown, FrameContexts[]>) {
     this.functionNameToFrameContextMap = map;
   }
 
-  public getFrameContextsForFunction(fn: unknown): FrameContexts[] {
-    if (this.functionNameToFrameContextMap.has(fn)) {
-      return this.functionNameToFrameContextMap.get(fn);
+  public isFrameContextValidForFunction(frameContext: FrameContexts, fn: unknown): boolean {
+    const frameContexts = this.functionNameToFrameContextMap.get(fn);
+    if (!frameContexts) {
+      return false;
     }
-
-    return [];
+    // Empty array of framecontexts is how we represent *all* frame contexts
+    return frameContexts.length === 0 || frameContexts.includes(frameContext);
   }
-
-  public ensureInitialized(frameContexts: FrameContexts[]): void {
-    ensureInitialized(runtime, ...frameContexts);
-  }
-
-  public abstract isSupported(): boolean;
 }

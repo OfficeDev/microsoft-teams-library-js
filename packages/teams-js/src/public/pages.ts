@@ -1,3 +1,4 @@
+import { CapabilityMetadata } from '../internal/capability';
 import {
   Communication,
   sendAndHandleSdkError,
@@ -14,6 +15,90 @@ import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
+
+export class PagesMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [pages.returnFocus as unknown, []],
+      [pages.registerFocusEnterHandler as unknown, []],
+      [pages.setCurrentFrame as unknown, [FrameContexts.content]],
+      [pages.initializeWithFrameContext as unknown, []],
+      [
+        pages.getConfig as unknown,
+        [FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel],
+      ],
+      [
+        pages.navigateCrossDomain as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.remove,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+      [
+        pages.navigateToApp as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+      [pages.shareDeepLink as unknown, [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage]],
+      [pages.registerFullScreenHandler as unknown, []],
+      [pages.tabs.navigateToTab as unknown, []],
+      [pages.tabs.getTabInstances as unknown, []],
+      [pages.tabs.getMruTabInstances as unknown, []],
+      [pages.config.initialize as unknown, []],
+      [pages.config.setValidityState as unknown, [FrameContexts.settings, FrameContexts.remove]],
+      [pages.config.setConfig as unknown, [FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel]],
+      [pages.config.registerOnSaveHandler as unknown, [FrameContexts.settings]],
+      [pages.config.registerOnSaveHandlerHelper as unknown, [FrameContexts.settings]],
+      [pages.config.registerOnRemoveHandler as unknown, [FrameContexts.remove, FrameContexts.settings]],
+      [pages.config.registerOnRemoveHandlerHelper as unknown, [FrameContexts.remove, FrameContexts.settings]],
+      [pages.config.registerChangeConfigHandler as unknown, [FrameContexts.content]],
+      [pages.backStack._initialize as unknown, []],
+      [pages.backStack.navigateBack as unknown, []],
+      [pages.backStack.registerBackButtonHandler as unknown, []],
+      [pages.backStack.registerBackButtonHandlerHelper as unknown, []],
+      [pages.fullTrust.enterFullscreen as unknown, [FrameContexts.content]],
+      [pages.fullTrust.exitFullscreen as unknown, [FrameContexts.content]],
+      [pages.appButton.onClick as unknown, [FrameContexts.content]],
+      [pages.appButton.onHoverEnter as unknown, [FrameContexts.content]],
+      [pages.appButton.onHoverLeave as unknown, [FrameContexts.content]],
+      [
+        pages.currentApp.navigateTo as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+      [
+        pages.currentApp.navigateToDefaultPage as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+    ]);
+
+    super(map);
+  }
+}
 
 /**
  * Navigation-specific part of the SDK.
