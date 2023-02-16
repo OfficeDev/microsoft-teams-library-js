@@ -178,7 +178,7 @@ export namespace video {
           sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
         })
         .catch((reason) => {
-          const validReason = reason in EffectFailureReason ? reason: EffectFailureReason.InitializationFailure;
+          const validReason = reason in EffectFailureReason ? reason : EffectFailureReason.InitializationFailure;
           sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason]);
         });
     };
@@ -218,9 +218,19 @@ export namespace video {
   }
 
   /**
-   * Namespace to get video frames from a media stream
+   * @beta
+   * Namespace to get video frames from a media stream.
+   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link registerForVideoFrame} to get the video frames, callback of {@link registerforvideoFrame} will be ignored when the host supports this capability.
    */
   export namespace mediaStream {
+    /**
+     * @beta
+     * Checks if video.mediaStream capability is supported by the host
+     * @returns boolean to represent whether the video.medisStream capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     */
     export function isSupported(): boolean {
       return ensureInitialized(runtime) && textureStreamAvailable() && !!runtime.supports.video?.mediaStream;
     }
@@ -229,21 +239,45 @@ export namespace video {
       return !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream);
     }
 
-    export type ReceivedVideoFrame = {
+    /**
+     * @beta
+     * Video frame data extracted from the media stream. More properties may be added in the future.
+     */
+    export type MediaStreamFrameData = {
+      /**
+       * The video frame from the media stream.
+       */
       videoFrame: VideoFrame;
     };
 
     /**
+     * @beta
      * Video effect change call back function definition.
      * The video app should resolve the promise to notify a successfully processed video frame.
      * The video app should reject the promise to notify a failure.
      */
-    export type VideoFrameCallback = (receivedVideoFrame: ReceivedVideoFrame) => Promise<VideoFrame>;
+    export type VideoFrameCallback = (receivedVideoFrame: MediaStreamFrameData) => Promise<VideoFrame>;
 
     type MediaStreamInfo = {
       streamId: string;
     };
 
+    /**
+     * @beta
+     * Register to read the video frames from the media stream provided by the host.
+     * @param frameCallback - The callback to invoke when recieve a video frame from the media stream.
+     * @example
+     * ```typescript
+     * video.mediaStream.registerForVideoFrame(async (receivedVideoFrame) => {
+     *  const { videoFrame } = receivedVideoFrame;
+     *  try {
+     *    return await processVideoFrame(videoFrame);
+     *  } catch (error) {
+     *   throw error;
+     *  }
+     * });
+     * ```
+     */
     export function registerForVideoFrame(frameCallback: VideoFrameCallback): void {
       ensureInitialized(runtime, FrameContexts.sidePanel);
       if (!isSupported()) {
@@ -255,18 +289,37 @@ export namespace video {
         const { streamId } = mediaStreamInfo;
         const videoTrack = await getInputVideoTrack(streamId);
         const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
+        // register the video track with processed frames back to the stream:
         window['chrome']?.webview?.registerTextureStream(streamId, generator);
       });
     }
 
+    /**
+     * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
+     */
     async function getInputVideoTrack(streamId: string): Promise<MediaStreamVideoTrack> {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const chrome = window['chrome'] as any;
-      const mediaStream = await chrome.webview.getTextureStream(streamId);
-
-      return mediaStream.getVideoTracks()[0];
+      try {
+        const mediaStream = await chrome.webview.getTextureStream(streamId);
+        const tracks = mediaStream.getVideoTracks();
+        if (tracks.length === 0) {
+          throw new Error(`No video track in stream ${streamId}`);
+        }
+        return mediaStream.getVideoTracks()[0];
+      } catch (error) {
+        const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
+        notifyError(errorMsg);
+        throw new Error(errorMsg);
+      }
     }
 
+    /**
+     * The function to create a processed video track from the original video track.
+     * It reads frames from the video track and pipes them to the video frame callback to process the frames.
+     * The processed frames are then enqueued to the generator.
+     * The generator can be registered back to the media stream so that the host can get the processed frames.
+     */
     function createProcessedStreamGenerator(
       videoTrack: MediaStreamVideoTrack,
       videoFrameCallback: VideoFrameCallback,
@@ -281,21 +334,23 @@ export namespace video {
           new TransformStream({
             async transform(originalFrame, controller) {
               const timestamp = originalFrame.timestamp;
-
               if (timestamp !== null) {
-                videoFrameCallback({ videoFrame: originalFrame })
-                  .then(async (frameProcessedByApp) => {
-                    // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
-                    const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
-                      timestamp: timestamp,
-                    });
-                    controller.enqueue(processedFrame);
-                    originalFrame.close();
-                    frameProcessedByApp.close();
-                  })
-                  .catch((error) => {
-                    notifyError(error);
+                try {
+                  const frameProcessedByApp = await videoFrameCallback({ videoFrame: originalFrame });
+                  // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
+                  const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
+                    // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
+                    timestamp: timestamp,
                   });
+                  controller.enqueue(processedFrame);
+                  originalFrame.close();
+                  frameProcessedByApp.close();
+                } catch (error) {
+                  // TODO: do we need to pass the original back? what happens if a frame is dropped?
+                  notifyError(error);
+                }
+              } else {
+                notifyError('timestamp of the original video frame is null');
               }
             },
           }),

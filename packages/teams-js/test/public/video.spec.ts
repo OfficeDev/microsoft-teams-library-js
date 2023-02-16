@@ -3,7 +3,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
+import { IBaseRuntime, _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
 import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
@@ -667,10 +667,12 @@ describe('video', () => {
 
     describe.each([{
       init: () => framedPlatformMock.initializeWithContext(FrameContexts.sidePanel),
+      setRuntimeConfig: (config: IBaseRuntime) => framedPlatformMock.setRuntimeConfig(config),
       postMessage: (func: string, ...args: any) => framedPlatformMock.sendMessage(func, ...args),
       findMessageByFunc: (func: string) => framedPlatformMock.findMessageByFunc(func),
     },{
       init: () => framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel),
+      setRuntimeConfig: (config: IBaseRuntime) => framelessPlatformMock.setRuntimeConfig(config),
       postMessage: (func: string, ...args: any) => framelessPlatformMock.respondToMessage({
         data: {
           func,
@@ -678,7 +680,7 @@ describe('video', () => {
         }
       } as DOMMessageEvent),
       findMessageByFunc: (func: string) => framelessPlatformMock.findMessageByFunc(func),
-    }])('when initialized', ({init, postMessage, findMessageByFunc}) => {
+    }])('when initialized', ({init, setRuntimeConfig, postMessage, findMessageByFunc}) => {
       let targetStreamId;
       let registeredStreamId;
       let videoTrack = new MediaStreamTrack();
@@ -701,6 +703,12 @@ describe('video', () => {
       it('isSupported should return false if texture stream is not supported', async () => {
         await init();
         window['chrome'] = undefined;
+        expect(video.mediaStream.isSupported()).toBeFalsy();
+      });
+
+      it('isSupport should return false if the runtime doesn\'t support video.medisStream capability', async () => {
+        await init();
+        setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect(video.mediaStream.isSupported()).toBeFalsy();
       });
 
