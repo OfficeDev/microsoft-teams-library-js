@@ -232,10 +232,10 @@ export namespace video {
      *
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && textureStreamAvailable() && !!runtime.supports.video?.mediaStream;
+      return ensureInitialized(runtime) && isTextureStreamAvailable() && !!runtime.supports.video?.mediaStream;
     }
 
-    function textureStreamAvailable(): boolean {
+    function isTextureStreamAvailable(): boolean {
       return (
         typeof window !== 'undefined' &&
         !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
