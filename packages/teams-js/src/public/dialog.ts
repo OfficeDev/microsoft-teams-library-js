@@ -21,7 +21,15 @@ import {
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the dialog module-specific part of the SDK.
+ * This group of capabilities enables apps to show dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
+ * Both types of dialogs are shown in a modal dialog on top of your app.
+ * - URL-based dialogs allow you to specify a URL for which the contents will be shown inside the dialog.
+ *   - For URL dialogs, you should use the functions and interfaces in the {@link dialog.url} namespace.
+ * - Adaptive Card-based dialogs allow you to provide JSON describing an Adaptive Card that will be shown inside the dialog.
+ *   - For Adaptive Card dialogs, you should use the functions and interfaces in the {@link dialog.adaptiveCard} namespace.
+ *
+ * @remarks Note that dialogs were previously called "task modules". While they have been renamed for clarity, the functionality has been maintained.
+ * For more details about dialogs, see [Taks Modules](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
  * @beta
  */
@@ -56,6 +64,9 @@ export namespace dialog {
   /**
    * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode url.submit}
    * or an error if the dialog was closed by the user.
+   *
+   * @see {@linkcode ISdkResponse}
+   *
    * @beta
    */
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
