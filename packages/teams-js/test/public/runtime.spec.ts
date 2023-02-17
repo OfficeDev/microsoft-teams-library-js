@@ -4,7 +4,7 @@ import { errorRuntimeNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { getSupportedCapabilities } from '../../src/internal/supportedCapabilities';
 import { compareSDKVersions } from '../../src/internal/utils';
-import { app, FrameContexts, HostClientType } from '../../src/public';
+import { app, FrameContexts, HostClientType, monetization } from '../../src/public';
 import {
   applyRuntimeConfig,
   fastForwardRuntime,
@@ -211,6 +211,34 @@ describe('runtime', () => {
       expect(supportedCapabilities.monetization.openPurchaseExperience).toBeUndefined();
     });
 
+    it('should throw if a capability function is not in the capability metadata', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          monetization: {},
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const foo = monetization;
+      monetization['foo'] = function foo(): void {
+        alert('hi');
+      };
+
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
+
+      expect(() => getSupportedCapabilities(runtimeWithStringVersion as Runtime, FrameContexts.settings)).toThrow();
+    });
+
     it('Supported top level capabilities return supported but functions undefined if invalid framecontext passed in', () => {
       const runtimeWithStringVersion = {
         apiVersion: 2,
@@ -269,36 +297,40 @@ describe('runtime', () => {
       expect(supportedCapabilities.microsoftOnly).toBeUndefined();
     });
 
-    // it('private capabilities are generated if asked for', () => {
-    //   const runtimeWithStringVersion = {
-    //     apiVersion: 2,
-    //     hostVersionsInfo: {
-    //       adaptiveCardSchemaVersion: {
-    //         majorVersion: 1,
-    //         minorVersion: 5,
-    //       },
-    //     },
-    //     isLegacyTeams: false,
-    //     supports: {
-    //       appEntity: {},
-    //     },
-    //   };
+    it('private capabilities are generated if asked for', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 2,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {
+          appEntity: {},
+        },
+      };
 
-    //   // Ignore this, random initialization needed for various isSupports checks
-    //   applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
-    //   GlobalVars.initializeCompleted = true;
+      // Ignore this, random initialization needed for various isSupports checks
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
+      GlobalVars.initializeCompleted = true;
 
-    //   const supportedCapabilities = getSupportedCapabilities(runtimeWithStringVersion as Runtime, true);
+      const supportedCapabilities = getSupportedCapabilities(
+        runtimeWithStringVersion as Runtime,
+        FrameContexts.content,
+        true,
+      );
 
-    //   // eslint-disable-next-line strict-null-checks/all
-    //   expect(supportedCapabilities.microsoftOnly?.appEntity.isSupported()).toBeTruthy();
-    //   // eslint-disable-next-line strict-null-checks/all
-    //   expect(supportedCapabilities.microsoftOnly?.appEntity.selectAppEntity).toBeDefined();
-    //   // eslint-disable-next-line strict-null-checks/all
-    //   expect(supportedCapabilities.microsoftOnly?.logs.isSupported()).toBeFalsy();
-    //   // eslint-disable-next-line strict-null-checks/all
-    //   expect(supportedCapabilities.microsoftOnly?.logs.registerGetLogHandler).toBeUndefined();
-    // });
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.appEntity.isSupported()).toBeTruthy();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.appEntity.selectAppEntity).toBeDefined();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.logs.isSupported()).toBeFalsy();
+      // eslint-disable-next-line strict-null-checks/all
+      expect(supportedCapabilities.microsoftOnly?.logs.registerGetLogHandler).toBeUndefined();
+    });
 
     // TODO: Something about pages is causing this to break in a weird async way
     // It's because pages.config is used in the afterEach and those functions have been accidentally erased
@@ -457,23 +489,23 @@ describe('runtime', () => {
       ).toBeTruthy();
     });
 
-    // it('throw if runtime version is not yet supported', () => {
-    //   const runtimeWithStringVersion = {
-    //     apiVersion: 99,
-    //     hostVersionsInfo: {
-    //       adaptiveCardSchemaVersion: {
-    //         majorVersion: 1,
-    //         minorVersion: 5,
-    //       },
-    //     },
-    //     isLegacyTeams: false,
-    //     supports: {},
-    //   };
+    it('throw if runtime version is not yet supported', () => {
+      const runtimeWithStringVersion = {
+        apiVersion: 99,
+        hostVersionsInfo: {
+          adaptiveCardSchemaVersion: {
+            majorVersion: 1,
+            minorVersion: 5,
+          },
+        },
+        isLegacyTeams: false,
+        supports: {},
+      };
 
-    //   expect(() => getSupportedCapabilities(runtimeWithStringVersion as Runtime)).toThrowError(
-    //     `Unsupported runtime version: ${runtimeWithStringVersion.apiVersion}`,
-    //   );
-    // });
+      expect(() => getSupportedCapabilities(runtimeWithStringVersion as Runtime, FrameContexts.content)).toThrowError(
+        `Unsupported runtime version: ${runtimeWithStringVersion.apiVersion}`,
+      );
+    });
 
     it('upgradeChain is ordered from oldest to newest', () => {
       expect.assertions(upgradeChain.length - 1);

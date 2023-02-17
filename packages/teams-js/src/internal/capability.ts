@@ -3,8 +3,6 @@ import { FrameContexts } from '../public';
 export abstract class CapabilityMetadata {
   public readonly functionNameToFrameContextMap: Map<unknown, FrameContexts[]>;
 
-  // TODO throw if someone tries to add something to the map more than once
-  // eslint-disable-next-line @typescript-eslint/ban-types
   public constructor(map: Map<unknown, FrameContexts[]>) {
     this.functionNameToFrameContextMap = map;
   }
