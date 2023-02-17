@@ -1,8 +1,8 @@
 import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts, SdkError } from '../public';
-import { errorNotSupportedOnPlatform } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 export class AppEntityMetadata extends CapabilityMetadata {

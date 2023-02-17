@@ -1,6 +1,7 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
+import { SupportedCapabilities } from '../src/internal/supportedCapabilities';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -124,7 +125,7 @@ export class Utils {
     }
   };
 
-  public initializeAsFrameless = (validMessageOrigins?: string[]): Promise<void> => {
+  public initializeAsFrameless = (validMessageOrigins?: string[]): Promise<SupportedCapabilities> => {
     this.mockWindow.parent = null;
     return app.initialize(validMessageOrigins);
   };

@@ -228,7 +228,7 @@ describe('runtime', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const foo = monetization;
-      monetization['foo'] = function foo(): void {
+      monetization['foo'] = function notInMetadata(): void {
         alert('hi');
       };
 
@@ -237,6 +237,8 @@ describe('runtime', () => {
       GlobalVars.initializeCompleted = true;
 
       expect(() => getSupportedCapabilities(runtimeWithStringVersion as Runtime, FrameContexts.settings)).toThrow();
+
+      monetization['foo'] = undefined;
     });
 
     it('Supported top level capabilities return supported but functions undefined if invalid framecontext passed in', () => {

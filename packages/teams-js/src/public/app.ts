@@ -14,6 +14,7 @@ import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { getSupportedCapabilities, SupportedCapabilities } from '../internal/supportedCapabilities';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -23,7 +24,14 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
+import {
+  applyRuntimeConfig,
+  emptyRuntimeConfig,
+  generateBackCompatRuntimeConfig,
+  IBaseRuntime,
+  Runtime,
+  runtime,
+} from './runtime';
 import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
@@ -534,10 +542,47 @@ export namespace app {
    * https: protocol otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
-  export function initialize(validMessageOrigins?: string[]): Promise<void> {
+  // export function initialize(validMessageOrigins?: string[]): Promise<void> {
+  //   if (!inServerSideRenderingEnvironment()) {
+  //     runWithTimeout(
+  //       () => initializeHelper(true, validMessageOrigins),
+  //       initializationTimeoutInMs,
+  //       new Error('SDK initialization timed out.'),
+  //     ).then(() => {
+  //       return new Promise<void>((resolve) => {
+  //         resolve();
+  //       });
+  //     });
+  //   } else {
+  //     const initializeLogger = appLogger.extend('initialize');
+  //     // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+  //     // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+  //     initializeLogger('window object undefined at initialization');
+  //     return Promise.resolve();
+  //   }
+
+  //   return Promise.reject();
+  // }
+
+  /**
+   * @beta
+   * Initializes the library and returns an object containing all capabilities and functions you can call in the current host and from the current
+   * FrameContexts.
+   *
+   * @remarks
+   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
+   *
+   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
+   * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
+   */
+  export function initialize(
+    validMessageOrigins?: string[],
+    retrieveMicrosoftOnlyFunctions = false,
+  ): Promise<SupportedCapabilities> {
     if (!inServerSideRenderingEnvironment()) {
       return runWithTimeout(
-        () => initializeHelper(validMessageOrigins),
+        () => initializeHelper(retrieveMicrosoftOnlyFunctions, validMessageOrigins),
         initializationTimeoutInMs,
         new Error('SDK initialization timed out.'),
       );
@@ -546,19 +591,25 @@ export namespace app {
       // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
       // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
       initializeLogger('window object undefined at initialization');
-      return Promise.resolve();
+      return Promise.resolve(
+        getSupportedCapabilities(emptyRuntimeConfig, FrameContexts.content, retrieveMicrosoftOnlyFunctions),
+      );
     }
   }
 
   const initializeHelperLogger = appLogger.extend('initializeHelper');
-  function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
-    return new Promise<void>((resolve) => {
+  function initializeHelper(
+    retrieveMicrosoftOnlyFunctions: boolean,
+    validMessageOrigins?: string[],
+  ): Promise<SupportedCapabilities> {
+    return new Promise<SupportedCapabilities>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
       if (!GlobalVars.initializeCalled) {
         GlobalVars.initializeCalled = true;
 
         Handlers.initializeHandlers();
+
         GlobalVars.initializePromise = initializeCommunication(validMessageOrigins).then(
           ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
             GlobalVars.frameContext = context;
@@ -618,6 +669,7 @@ export namespace app {
             }
 
             GlobalVars.initializeCompleted = true;
+            return getSupportedCapabilities(runtime as Runtime, context, retrieveMicrosoftOnlyFunctions);
           },
         );
 

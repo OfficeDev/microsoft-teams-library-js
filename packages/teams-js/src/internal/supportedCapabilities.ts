@@ -1,57 +1,34 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { appEntity, conversations, logs, meetingRoom, notifications, remoteCamera, teams } from '../private';
-import { AppEntityMetadata } from '../private/appEntity';
-import { ConversationsMetadata } from '../private/conversations';
-import { LogsMetadata } from '../private/logs';
-import { MeetingRoomMetadata } from '../private/meetingRoom';
-import { NotificationsMetadata } from '../private/notifications';
-import { RemoteCameraMetadata } from '../private/remoteCamera';
-import { TeamsMetadata } from '../private/teams';
-import {
-  appInstallDialog,
-  barCode,
-  calendar,
-  call,
-  chat,
-  dialog,
-  FrameContexts,
-  geoLocation,
-  location,
-  mail,
-  menus,
-  monetization,
-  pages,
-  people,
-  profile,
-  search,
-  sharing,
-  stageView,
-  teamsCore,
-  video,
-  webStorage,
-} from '../public';
-import { AppInstallDialogMetadata } from '../public/appInstallDialog';
-import { BarcodeMetadata } from '../public/barCode';
-import { CalendarMetadata } from '../public/calendar';
-import { CallMetadata } from '../public/call';
-import { ChatMetadata } from '../public/chat';
-import { DialogMetadata } from '../public/dialog';
-import { GeoLocationMetadata } from '../public/geoLocation';
-import { LocationMetadata } from '../public/location';
-import { MailMetadata } from '../public/mail';
-import { MenusMetadata } from '../public/menus';
-import { MonetizationMetadata } from '../public/monetization';
-import { PagesMetadata } from '../public/pages';
-import { PeopleMetadata } from '../public/people';
-import { ProfileMetadata } from '../public/profile';
+import { appEntity, AppEntityMetadata } from '../private/appEntity';
+import { conversations, ConversationsMetadata } from '../private/conversations';
+import { logs, LogsMetadata } from '../private/logs';
+import { meetingRoom, MeetingRoomMetadata } from '../private/meetingRoom';
+import { notifications, NotificationsMetadata } from '../private/notifications';
+import { remoteCamera, RemoteCameraMetadata } from '../private/remoteCamera';
+import { teams, TeamsMetadata } from '../private/teams';
+import { appInstallDialog, AppInstallDialogMetadata } from '../public/appInstallDialog';
+import { barCode, BarcodeMetadata } from '../public/barCode';
+import { calendar, CalendarMetadata } from '../public/calendar';
+import { call, CallMetadata } from '../public/call';
+import { chat, ChatMetadata } from '../public/chat';
+import { FrameContexts } from '../public/constants';
+import { dialog, DialogMetadata } from '../public/dialog';
+import { geoLocation, GeoLocationMetadata } from '../public/geoLocation';
+import { location, LocationMetadata } from '../public/location';
+import { mail, MailMetadata } from '../public/mail';
+import { menus, MenusMetadata } from '../public/menus';
+import { monetization, MonetizationMetadata } from '../public/monetization';
+import { pages, PagesMetadata } from '../public/pages';
+import { people, PeopleMetadata } from '../public/people';
+import { profile, ProfileMetadata } from '../public/profile';
 import { Runtime } from '../public/runtime';
-import { SearchMetadata } from '../public/search';
-import { SharingMetadata } from '../public/sharing';
-import { StageViewMetadata } from '../public/stageView';
-import { TeamsCoreMetadata } from '../public/teamsAPIs';
-import { VideoMetadata } from '../public/video';
-import { WebStorageMetadata } from '../public/webStorage';
+import { search, SearchMetadata } from '../public/search';
+import { sharing, SharingMetadata } from '../public/sharing';
+import { stageView, StageViewMetadata } from '../public/stageView';
+import { teamsCore, TeamsCoreMetadata } from '../public/teamsAPIs';
+import { video, VideoMetadata } from '../public/video';
+import { webStorage, WebStorageMetadata } from '../public/webStorage';
 import { CapabilityMetadata } from './capability';
 
 export type MicrosoftOnlyCapabilities = {
