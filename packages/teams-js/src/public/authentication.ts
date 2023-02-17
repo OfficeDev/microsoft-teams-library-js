@@ -20,6 +20,11 @@ export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
   let authWindowMonitor: number | undefined;
 
+  /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use; automatically called when library is initialized
+   */
   export function initialize(): void {
     registerHandler('authentication.authenticate.success', handleSuccess, false);
     registerHandler('authentication.authenticate.failure', handleFailure, false);
@@ -28,26 +33,40 @@ export namespace authentication {
   let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
-   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern.
-   * Registers the authentication Communication.handlers
+   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *
-   * @param authenticateParameters - A set of values that configure the authentication pop-up.
+   * Registers handlers to be called with the result of an authentication flow triggered using {@link authentication.authenticate authentication.authenticate(authenticateParameters?: AuthenticateParameters): void}
+   *
+   * @param authenticateParameters - Configuration for authentication flow pop-up result communication
    */
   export function registerAuthenticationHandlers(authenticateParameters: AuthenticateParameters): void {
     authParams = authenticateParameters;
   }
 
   /**
-   * Initiates an authentication request, which opens a new window with the specified settings.
+   * Initiates an authentication flow which requires a new window.
+   * There are two primary uses for this function:
+   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Azure Active Directory)
+   * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Azure Active Directory consent prompts)
+   *
+   * For more details, see [Enable authentication using third-party OAuth provider](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
+   *
+   * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case. For more, see
+   * [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
    *
    * @remarks
    * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
+   * The [Teams authentication flow](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab) starts and ends at an endpoint on
+   * your own service (with a redirect round-trip to the 3rd party identity provider in the middle).
    *
-   * @param authenticateParameters - The parameters for the authentication request. It is a required parameter since v2 upgrade
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
-   * @returns Promise that will be fulfilled with the result from the authentication pop-up if successful.
+   * @returns `Promise` that will be fulfilled with the result from the authentication pop-up, if successful. The string in this result is provided in the parameter
+   * passed by your app when it calls {@link notifySuccess} in the pop-up window after returning from the identity provider redirect.
    *
-   * @throws Error if the authentication request fails or is canceled by the user.
+   * @throws `Error` if the authentication request fails or is canceled by the user. This error is provided in the parameter passed by your app when it calls
+   * {@link notifyFailure} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
+   * the infrastructure depending on the failure (e.g., a user cancelation)
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
@@ -55,12 +74,12 @@ export namespace authentication {
    * @deprecated
    * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
-   * Initiates an authentication request, which opens a new window with the specified settings.
+   * The documentation for {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} applies
+   * to this function.
+   * The one difference is that instead of the result being returned via the `Promise`, the result is returned to the callback functions provided in the
+   * `authenticateParameters` parameter.
    *
-   * @remarks
-   * The authentication flow must start and end from the same domain, otherwise success and failure messages won't be returned to the window that initiated the call.
-   *
-   * @param authenticateParameters - The parameters for the authentication request.
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow and callbacks used for indicating the result
    *
    */
   export function authenticate(authenticateParameters?: AuthenticateParameters): void;
@@ -153,20 +172,26 @@ export namespace authentication {
   }
 
   /**
-   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
-   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   * Requests an Azure AD token to be issued on behalf of your app in an SSO flow.
+   * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Azure AD to
+   * obtain a new token.
+   * This function is used to enable SSO scenarios. See [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
+   * for more details.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
    *
-   * @returns Promise that will be fulfilled with the token if successful.
+   * @returns `Promise` that will be resolved with the token, if successful.
+   *
+   * @throws `Error` if the request fails in some way
    */
   export function getAuthToken(authTokenRequest?: AuthTokenRequestParameters): Promise<string>;
   /**
    * @deprecated
    * As of 2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
    *
-   * Requests an Azure AD token to be issued on behalf of the app. The token is acquired from the cache
-   * if it is not expired. Otherwise a request is sent to Azure AD to obtain a new token.
+   * The documentation {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} applies to this
+   * function as well. The one difference when using this function is that the result is provided in the callbacks in the `authTokenRequest` parameter
+   * instead of as a `Promise`.
    *
    * @param authTokenRequest - An optional set of values that configure the token request.
    * It contains callbacks to call in case of success/failure
@@ -365,13 +390,17 @@ export namespace authentication {
   }
 
   /**
-   * Notifies the frame that initiated this authentication request that the request was successful.
+   * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
+   * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
+   * authentication request was successful.
    *
    * @remarks
-   * This function is usable only on the authentication window.
+   * This function is usable only from the authentication window.
    * This call causes the authentication window to be closed.
    *
-   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
+   * this value in its callback or via the `Promise` return value
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifySuccess(result?: string, callbackUrl?: string): void {
@@ -383,13 +412,18 @@ export namespace authentication {
   }
 
   /**
-   * Notifies the frame that initiated this authentication request that the request failed.
+   * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
+   * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
+   * {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} that the
+   * authentication request failed.
+
    *
    * @remarks
    * This function is usable only on the authentication window.
    * This call causes the authentication window to be closed.
    *
-   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives this value in its callback.
+   * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
+   * this value in its callback or via the `Promise` return value
    * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
@@ -470,7 +504,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+   * As of 2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *-------------------------
    * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
@@ -478,12 +512,14 @@ export namespace authentication {
     /**
      * @deprecated
      * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     *
      * A function that is called if the request succeeds.
      */
     successCallback?: (result: string) => void;
     /**
      * @deprecated
      * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     *
      * A function that is called if the request fails, with the reason for the failure.
      */
     failureCallback?: (reason: string) => void;
@@ -506,14 +542,23 @@ export namespace authentication {
      */
     height?: number;
     /**
-     * The flag which indicates whether the auth page should be opened in an external browser. This flag has no effect on the web client.
+     * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
+     * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page specified in
+     * the {@link url} property to be opened in an external browser.
+     * If this flag is `false`, the page will be opened directly within the current hosting application.
+     *
+     * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
+     * environment without an embedded browser.
      */
     isExternal?: boolean;
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link AuthenticatePopUpParameters} instead.
+   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
+   * the associated {@link AuthenticatePopUpParameters} instead.
+   *
+   * @see {@link LegacyCallBacks}
    */
   export type AuthenticateParameters = AuthenticatePopUpParameters & LegacyCallBacks;
 
@@ -522,7 +567,9 @@ export namespace authentication {
    */
   export interface AuthTokenRequestParameters {
     /**
-     * An optional list of resource for which to acquire the access token; only used for full trust apps.
+     * @hidden
+     * @internal
+     * An list of resources for which to acquire the access token; only for internal Microsoft usage
      */
     resources?: string[];
     /**
