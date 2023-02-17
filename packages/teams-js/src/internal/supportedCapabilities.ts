@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { appEntity, conversations, logs, meetingRoom, notifications, remoteCamera, teams } from '../private';
+import { AppEntityMetadata } from '../private/appEntity';
+import { ConversationsMetadata } from '../private/conversations';
+import { LogsMetadata } from '../private/logs';
+import { MeetingRoomMetadata } from '../private/meetingRoom';
+import { NotificationsMetadata } from '../private/notifications';
+import { RemoteCameraMetadata } from '../private/remoteCamera';
+import { TeamsMetadata } from '../private/teams';
 import {
   appInstallDialog,
-  AppInstallDialogMetadata,
   barCode,
-  BarcodeMetadata,
   calendar,
   call,
   chat,
@@ -26,9 +31,27 @@ import {
   video,
   webStorage,
 } from '../public';
+import { AppInstallDialogMetadata } from '../public/appInstallDialog';
+import { BarcodeMetadata } from '../public/barCode';
+import { CalendarMetadata } from '../public/calendar';
+import { CallMetadata } from '../public/call';
+import { ChatMetadata } from '../public/chat';
+import { DialogMetadata } from '../public/dialog';
+import { GeoLocationMetadata } from '../public/geoLocation';
+import { LocationMetadata } from '../public/location';
+import { MailMetadata } from '../public/mail';
+import { MenusMetadata } from '../public/menus';
 import { MonetizationMetadata } from '../public/monetization';
 import { PagesMetadata } from '../public/pages';
+import { PeopleMetadata } from '../public/people';
+import { ProfileMetadata } from '../public/profile';
 import { Runtime } from '../public/runtime';
+import { SearchMetadata } from '../public/search';
+import { SharingMetadata } from '../public/sharing';
+import { StageViewMetadata } from '../public/stageView';
+import { TeamsCoreMetadata } from '../public/teamsAPIs';
+import { VideoMetadata } from '../public/video';
+import { WebStorageMetadata } from '../public/webStorage';
 import { CapabilityMetadata } from './capability';
 
 export type MicrosoftOnlyCapabilities = {
@@ -191,52 +214,95 @@ function getPrivateMapForPassedInRuntimeVersion(runtime: Runtime): Map<string, I
   throw new Error(`Unsupported runtime version: ${runtime.apiVersion}`);
 }
 
-interface ICapability {
-  capabilityMetadata: CapabilityMetadata;
-  capabilityContents: Object;
-}
-
 // Some entries in supports don't match exactly to a capability name, this map can help keep track of those inconsistencies
 // Should only be needed if top level capability doesn't match name OR if there's a top level supports value with no matching
 // capability (like permissions)
 // This will need to be updated anytime *new* top level capability breaking changes are made
 function createPublicRuntimeMap(): Map<string, ICapability> {
   return new Map([
-    [
-      'appInstallDialog',
-      { capabilityMetadata: new AppInstallDialogMetadata(), capabilityContents: { ...appInstallDialog } },
-    ], // Use the spread operator to make a copy of the capability
-    ['barCode', { capabilityMetadata: new BarcodeMetadata(), capabilityContents: { ...barCode } }],
-    // ['calendar', { ...calendar }],
-    // ['call', { ...call }],
-    // ['chat', { ...chat }],
-    // ['dialog', { ...dialog }],
-    // ['geoLocation', { ...geoLocation }],
-    // ['location', { ...location }],
-    // ['mail', { ...mail }],
-    // ['menus', { ...menus }],
-    ['monetization', { capabilityMetadata: new MonetizationMetadata(), capabilityContents: { ...monetization } }],
-    ['pages', { capabilityMetadata: new PagesMetadata(), capabilityContents: { ...pages } }],
-    // ['people', { ...people }],
+    ['appInstallDialog', createCapability(new AppInstallDialogMetadata(), appInstallDialog)],
+    ['barCode', createCapability(new BarcodeMetadata(), barCode)],
+    ['calendar', createCapability(new CalendarMetadata(), calendar)],
+    ['call', createCapability(new CallMetadata(), call)],
+    ['chat', createCapability(new ChatMetadata(), chat)],
+    ['dialog', createCapability(new DialogMetadata(), dialog)],
+    ['geoLocation', createCapability(new GeoLocationMetadata(), geoLocation)],
+    ['location', createCapability(new LocationMetadata(), location)],
+    ['mail', createCapability(new MailMetadata(), mail)],
+    ['menus', createCapability(new MenusMetadata(), menus)],
+    ['monetization', createCapability(new MonetizationMetadata(), monetization)],
+    ['pages', createCapability(new PagesMetadata(), pages)],
+    ['people', createCapability(new PeopleMetadata(), people)],
     ['permissions', undefined], // permissions doesn't map to a capability
-    // ['profile', { ...profile }],
-    // ['search', { ...search }],
-    // ['sharing', { ...sharing }],
-    // ['stageView', { ...stageView }],
-    // ['teamsCore', { ...teamsCore }],
-    // ['video', { ...video }],
-    // ['webStorage', { ...webStorage }],
+    ['profile', createCapability(new ProfileMetadata(), profile)],
+    ['search', createCapability(new SearchMetadata(), search)],
+    ['sharing', createCapability(new SharingMetadata(), sharing)],
+    ['stageView', createCapability(new StageViewMetadata(), stageView)],
+    ['teamsCore', createCapability(new TeamsCoreMetadata(), teamsCore)],
+    ['video', createCapability(new VideoMetadata(), video)],
+    ['webStorage', createCapability(new WebStorageMetadata(), webStorage)],
   ]);
 }
 
 function createPrivateRuntimeMap(): Map<string, ICapability> {
   return new Map([
-    // ['appEntity', { ...appEntity }],
-    // ['conversations', { ...conversations }],
-    // ['logs', { ...logs }],
-    // ['meetingRoom', { ...meetingRoom }],
-    // ['notifications', { ...notifications }],
-    // ['remoteCamera', { ...remoteCamera }],
-    // ['teams', { ...teams }],
+    ['appEntity', createCapability(new AppEntityMetadata(), appEntity)],
+    ['conversations', createCapability(new ConversationsMetadata(), conversations)],
+    ['logs', createCapability(new LogsMetadata(), logs)],
+    ['meetingRoom', createCapability(new MeetingRoomMetadata(), meetingRoom)],
+    ['notifications', createCapability(new NotificationsMetadata(), notifications)],
+    ['remoteCamera', createCapability(new RemoteCameraMetadata(), remoteCamera)],
+    ['teams', createCapability(new TeamsMetadata(), teams)],
   ]);
+}
+
+interface ICapability {
+  capabilityMetadata: CapabilityMetadata;
+  capabilityContents: Object;
+}
+
+function createCapability(capabilityMetadata: CapabilityMetadata, capabilityContents: unknown): ICapability {
+  return {
+    capabilityMetadata,
+    capabilityContents: deepCopy(capabilityContents),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deepCopy(obj: any): any {
+  // Handle the 3 simple types, and null or undefined
+  if (null == obj || 'object' != typeof obj) {
+    return obj;
+  }
+
+  // Handle Date
+  if (obj instanceof Date) {
+    const copy = new Date();
+    copy.setTime(obj.getTime());
+    return copy;
+  }
+
+  // Handle Array
+  if (obj instanceof Array) {
+    const copy = [];
+    for (let i = 0, len = obj.length; i < len; i++) {
+      copy[i] = deepCopy(obj[i]);
+    }
+    return copy;
+  }
+
+  // Handle Object
+  if (obj instanceof Object) {
+    const copy = {};
+    for (const attr in obj) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (obj.hasOwnProperty(attr)) {
+        const foo = deepCopy(obj[attr]);
+        copy[attr] = foo;
+      }
+    }
+    return copy;
+  }
+
+  throw new Error("Unable to copy obj! Its type isn't supported.");
 }

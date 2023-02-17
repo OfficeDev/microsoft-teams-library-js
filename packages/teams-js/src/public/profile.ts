@@ -1,9 +1,17 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateShowProfileRequest } from '../internal/profileUtil';
 import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+export class ProfileMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([[profile.showProfile as unknown, [FrameContexts.content]]]);
+    super(map);
+  }
+}
 
 /**
  * Namespace for profile related APIs.

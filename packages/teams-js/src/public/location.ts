@@ -1,9 +1,20 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+export class LocationMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [location.getLocation as unknown, [FrameContexts.content, FrameContexts.task]],
+      [location.showLocation as unknown, [FrameContexts.content, FrameContexts.task]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * @deprecated

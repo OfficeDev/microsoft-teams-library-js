@@ -1,3 +1,4 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
@@ -6,6 +7,15 @@ import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../int
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+export class PeopleMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [people.selectPeople as unknown, [FrameContexts.content, FrameContexts.task, FrameContexts.settings]],
+    ]);
+    super(map);
+  }
+}
 
 export namespace people {
   /**

@@ -1,9 +1,28 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+export class SharingMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [
+        sharing.shareWebContent as unknown,
+        [
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        ],
+      ],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to open a share dialog for web content.

@@ -1,8 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class CalendarMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [calendar.openCalendarItem as unknown, [FrameContexts.content]],
+      [calendar.composeMeeting as unknown, [FrameContexts.content]],
+    ]);
+    super(map);
+  }
+}
 
 export namespace calendar {
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {

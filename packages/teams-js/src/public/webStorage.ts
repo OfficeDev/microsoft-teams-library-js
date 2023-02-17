@@ -1,5 +1,14 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class WebStorageMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([[webStorage.isWebStorageClearedOnUserLogOut as unknown, []]]);
+    super(map);
+  }
+}
 
 /**
  * Contains functionality to allow web apps to store data in webview cache

@@ -1,7 +1,18 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class MailMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [mail.openMailItem as unknown, [FrameContexts.content]],
+      [mail.composeMail as unknown, [FrameContexts.content]],
+    ]);
+    super(map);
+  }
+}
 
 export namespace mail {
   export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {

@@ -1,9 +1,26 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
+
+export class RemoteCameraMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [remoteCamera.getCapableParticipants as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.requestControl as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.sendControlCommand as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.terminateSession as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.registerOnCapableParticipantsChangeHandler as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.registerOnErrorHandler as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.registerOnDeviceStateChangeHandler as unknown, [FrameContexts.sidePanel]],
+      [remoteCamera.registerOnSessionStatusChangeHandler as unknown, [FrameContexts.sidePanel]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * @hidden

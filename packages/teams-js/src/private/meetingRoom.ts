@@ -1,8 +1,21 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+export class MeetingRoomMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [meetingRoom.getPairedMeetingRoomInfo as unknown, []],
+      [meetingRoom.sendCommandToPairedMeetingRoom as unknown, []],
+      [meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler as unknown, []],
+      [meetingRoom.registerMeetingRoomStatesUpdateHandler as unknown, []],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * @hidden

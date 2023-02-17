@@ -313,48 +313,51 @@ describe('runtime', () => {
         },
         isLegacyTeams: false,
         supports: {
-          // appEntity: {},
+          appEntity: {},
           appInstallDialog: {},
           barCode: {},
-          // calendar: {},
-          // call: {},
-          // chat: {},
-          // conversations: {},
-          // dialog: {
-          //   card: {},
-          //   url: {
-          //     bot: {},
-          //   },
-          //   update: {},
-          // },
-          // geoLocation: {},
-          // location: {},
-          // logs: {},
-          // mail: {},
-          // meetingRoom: {},
-          // menus: {},
-          monetization: {},
-          // notifications: {},
-          pages: {
-            // appButton: {},
-            // backStack: {},
-            // config: {},
-            // currentApp: {},
-            // fullTrust: {},
-            // tabs: {},
+          calendar: {},
+          call: {},
+          chat: {},
+          conversations: {},
+          dialog: {
+            card: {},
+            url: {
+              bot: {},
+            },
+            update: {},
           },
-          // people: {},
+          geoLocation: {},
+          location: {},
+          logs: {},
+          mail: {},
+          meetingRoom: {},
+          menus: {},
+          monetization: {},
+          notifications: {},
+          pages: {
+            appButton: {},
+            backStack: {},
+            config: {},
+            currentApp: {},
+            fullTrust: {},
+            tabs: {},
+          },
+          people: {},
           permissions: {},
-          // profile: {},
-          // remoteCamera: {},
-          // search: {},
-          // sharing: {},
-          // stageView: {},
-          // teams: {
-          //   fullTrust: {
-          //     joinedTeams: {},
-          //   },
-          // },
+          profile: {},
+          remoteCamera: {},
+          search: {},
+          sharing: {},
+          stageView: {},
+          teams: {
+            fullTrust: {
+              joinedTeams: {},
+            },
+          },
+          teamsCore: {},
+          video: {},
+          webStorage: {},
         },
       };
 
@@ -371,80 +374,87 @@ describe('runtime', () => {
       // eslint-disable-next-line strict-null-checks/all
       expect(supportedCapabilities.microsoftOnly).toBeDefined();
 
-      // expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.geoLocation.getCurrentLocation).toBeDefined();
-      // expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
-      // // Unsupported subcapabilities have all non-isSupported functions set to undefined
-      // expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
+      expect(supportedCapabilities.geoLocation.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.geoLocation.getCurrentLocation).toBeDefined();
+      expect(supportedCapabilities.geoLocation.map.isSupported()).toBeFalsy();
+      // Unsupported subcapabilities have all non-isSupported functions set to undefined
+      expect(supportedCapabilities.geoLocation.map.chooseLocation).toBeUndefined();
 
-      // expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.dialog.adaptiveCard.open).toBeDefined();
-      // expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
-      // expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
-      // expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.dialog.url.bot.open).toBeDefined();
-      // expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.adaptiveCard.open).toBeDefined();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.isSupported()).toBeFalsy();
+      expect(supportedCapabilities.dialog.adaptiveCard.bot.open).toBeUndefined();
+      expect(supportedCapabilities.dialog.url.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.dialog.url.bot.open).toBeDefined();
+      expect(supportedCapabilities.dialog.update.isSupported()).toBeTruthy();
 
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.appEntity.isSupported(),
-      // ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.appEntity.isSupported(),
+      ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.appEntity.selectAppEntity,
+      ).toBeDefined();
       expect(supportedCapabilities.appInstallDialog.isSupported()).toBeTruthy();
       expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.calendar.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.call.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.chat.isSupported()).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.conversations.isSupported(),
-      // ).toBeTruthy();
-      // expect(supportedCapabilities.location.isSupported()).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.logs.isSupported(),
-      // ).toBeTruthy();
-      // expect(supportedCapabilities.mail.isSupported()).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.meetingRoom.isSupported(),
-      // ).toBeTruthy();
-      // expect(supportedCapabilities.menus.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.notifications.isSupported(),
-      // ).toBeTruthy();
+      expect(supportedCapabilities.calendar.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.call.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.chat.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.conversations.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.location.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.logs.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.mail.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.meetingRoom.isSupported(),
+      ).toBeTruthy();
+      expect(supportedCapabilities.menus.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.notifications.isSupported(),
+      ).toBeTruthy();
 
       expect(supportedCapabilities.pages.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.appButton.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.backStack.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.config.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.currentApp.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.fullTrust.isSupported()).toBeTruthy();
-      // expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.appButton.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.backStack.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.config.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.currentApp.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.fullTrust.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.pages.tabs.isSupported()).toBeTruthy();
 
-      // expect(supportedCapabilities.people.isSupported).toBeTruthy();
-      // expect(supportedCapabilities.profile.isSupported).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.remoteCamera.isSupported,
-      // ).toBeTruthy();
-      // expect(supportedCapabilities.search.isSupported).toBeTruthy();
-      // expect(supportedCapabilities.sharing.isSupported).toBeTruthy();
-      // expect(supportedCapabilities.stageView.isSupported).toBeTruthy();
+      expect(supportedCapabilities.people.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.profile.isSupported()).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.remoteCamera.isSupported,
+      ).toBeTruthy();
+      expect(supportedCapabilities.search.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.sharing.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.stageView.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.teamsCore.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.video.isSupported()).toBeTruthy();
+      expect(supportedCapabilities.webStorage.isSupported()).toBeTruthy();
 
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.teams.isSupported(),
-      // ).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.teams.fullTrust.isSupported(),
-      // ).toBeTruthy();
-      // expect(
-      //   supportedCapabilities.microsoftOnly !== undefined &&
-      //     supportedCapabilities.microsoftOnly.teams.fullTrust.joinedTeams.isSupported(),
-      // ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined && supportedCapabilities.microsoftOnly.teams.isSupported(),
+      ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.teams.fullTrust.isSupported(),
+      ).toBeTruthy();
+      expect(
+        supportedCapabilities.microsoftOnly !== undefined &&
+          supportedCapabilities.microsoftOnly.teams.fullTrust.joinedTeams.isSupported(),
+      ).toBeTruthy();
     });
 
     // it('throw if runtime version is not yet supported', () => {

@@ -1,3 +1,4 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
@@ -6,6 +7,18 @@ import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../p
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces';
+
+export class TeamsMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [teams.getTeamChannels as unknown, [FrameContexts.content]],
+      [teams.refreshSiteUrl as unknown, []],
+      [teams.fullTrust.getConfigSetting as unknown, []],
+      [teams.fullTrust.joinedTeams.getUserJoinedTeams as unknown, []],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * @hidden

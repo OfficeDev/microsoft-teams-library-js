@@ -1,9 +1,24 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
+
+export class TeamsCoreMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [teamsCore.enablePrintCapability as unknown, []],
+      [teamsCore.print as unknown, []],
+      [teamsCore.registerOnLoadHandler as unknown, []],
+      [teamsCore.registerOnLoadHandlerHelper as unknown, []],
+      [teamsCore.registerBeforeUnloadHandler as unknown, []],
+      [teamsCore.registerBeforeUnloadHandlerHelper as unknown, []],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.

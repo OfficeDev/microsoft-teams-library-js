@@ -1,8 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class SearchMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [search.registerHandlers as unknown, [FrameContexts.content]],
+      [search.unregisterHandlers as unknown, [FrameContexts.content]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Allows your application to interact with the host M365 application's search box.

@@ -1,8 +1,22 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+export class GeoLocationMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [geoLocation.getCurrentLocation as unknown, [FrameContexts.content]],
+      [geoLocation.hasPermission as unknown, [FrameContexts.content, FrameContexts.task]],
+      [geoLocation.requestPermission as unknown, [FrameContexts.content, FrameContexts.task]],
+      [geoLocation.map.chooseLocation as unknown, [FrameContexts.content, FrameContexts.task]],
+      [geoLocation.map.showLocation as unknown, [FrameContexts.content, FrameContexts.task]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.

@@ -1,8 +1,16 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform } from '../public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+export class LogsMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([[logs.registerGetLogHandler as unknown, []]]);
+    super(map);
+  }
+}
 
 /**
  * @hidden

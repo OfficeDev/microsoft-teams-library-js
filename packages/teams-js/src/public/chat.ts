@@ -1,8 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+export class ChatMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [chat.openChat as unknown, [FrameContexts.content, FrameContexts.task]],
+      [chat.openGroupChat as unknown, [FrameContexts.content, FrameContexts.task]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Describes information needed to start a chat

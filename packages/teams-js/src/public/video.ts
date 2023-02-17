@@ -1,8 +1,20 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class VideoMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [video.registerForVideoFrame as unknown, [FrameContexts.sidePanel]],
+      [video.notifySelectedVideoEffectChanged as unknown, [FrameContexts.sidePanel]],
+      [video.registerForVideoEffect as unknown, [FrameContexts.sidePanel]],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to video extensibility of the SDK

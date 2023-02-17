@@ -1,8 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+export class AppEntityMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [appEntity.selectAppEntity as unknown, [FrameContexts.content]],
+    ]);
+    super(map);
+  }
+}
+
 /**
  * @hidden
  * Namespace to interact with the application entities specific part of the SDK.

@@ -1,9 +1,19 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class CallMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [call.startCall as unknown, [FrameContexts.content, FrameContexts.task]],
+    ]);
+    super(map);
+  }
+}
 
 export namespace call {
   export enum CallModalities {

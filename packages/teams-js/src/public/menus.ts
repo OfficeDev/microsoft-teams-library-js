@@ -1,8 +1,22 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
-import { errorNotSupportedOnPlatform } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+
+export class MenusMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [menus.initialize as unknown, []],
+      [menus.setUpViews as unknown, []],
+      [menus.setNavBarMenu as unknown, []],
+      [menus.showActionMenu as unknown, []],
+      [menus.MenuItem as unknown, []],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.

@@ -1,7 +1,15 @@
+import { CapabilityMetadata } from '../internal/capability';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+export class StageViewMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([[stageView.open as unknown, [FrameContexts.content]]]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to interact with the stage view specific part of the SDK.

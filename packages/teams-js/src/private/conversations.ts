@@ -1,3 +1,4 @@
+import { CapabilityMetadata } from '../internal/capability';
 import {
   sendAndHandleStatusAndReason as sendAndHandleError,
   sendAndUnwrap,
@@ -8,6 +9,17 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
+
+export class ConversationsMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [conversations.openConversation as unknown, [FrameContexts.content]],
+      [conversations.closeConversation as unknown, [FrameContexts.content]],
+      [conversations.getChatMembers as unknown, []],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * @hidden

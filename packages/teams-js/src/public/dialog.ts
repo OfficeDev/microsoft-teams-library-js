@@ -2,11 +2,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { CapabilityMetadata } from '../internal/capability';
 import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { isHostAdaptiveCardSchemaVersionUnsupported } from '../internal/utils';
+import { app } from './app';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import {
   AdaptiveCardDialogInfo,
@@ -19,6 +21,42 @@ import {
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
+
+export class DialogMetadata extends CapabilityMetadata {
+  public constructor() {
+    const map: Map<unknown, FrameContexts[]> = new Map([
+      [dialog.initialize as unknown, []],
+      [dialog.url.open as unknown, [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage]],
+      [dialog.url.submit as unknown, [FrameContexts.content, FrameContexts.task]],
+      [dialog.url.sendMessageToParentFromDialog as unknown, [FrameContexts.task]],
+      [
+        dialog.url.sendMessageToDialog as unknown,
+        [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage],
+      ],
+      [dialog.url.registerOnMessageFromParent as unknown, [FrameContexts.task]],
+      [dialog.url.bot.open as unknown, [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage]],
+      [dialog.url.getDialogInfoFromUrlDialogInfo as unknown, []],
+      [dialog.url.getDialogInfoFromBotUrlDialogInfo as unknown, []],
+      [
+        dialog.update.resize as unknown,
+        [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task, FrameContexts.meetingStage],
+      ],
+      [
+        dialog.adaptiveCard.open as unknown,
+        [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage],
+      ],
+      [dialog.adaptiveCard.getDialogInfoFromAdaptiveCardDialogInfo as unknown, []],
+      [dialog.adaptiveCard.getDialogInfoFromBotAdaptiveCardDialogInfo as unknown, []],
+      [dialog.adaptiveCard.getAdaptiveCardDialogInfoFromTaskInfo as unknown, []],
+      [dialog.adaptiveCard.getBotAdaptiveCardDialogInfoFromTaskInfo as unknown, []],
+      [
+        dialog.adaptiveCard.bot.open as unknown,
+        [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage],
+      ],
+    ]);
+    super(map);
+  }
+}
 
 /**
  * Namespace to interact with the dialog module-specific part of the SDK.
