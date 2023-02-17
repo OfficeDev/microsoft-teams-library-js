@@ -220,7 +220,7 @@ export namespace video {
   /**
    * @beta
    * Namespace to get video frames from a media stream.
-   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link registerForVideoFrame} to get the video frames, callback of {@link registerforvideoFrame} will be ignored when the host supports this capability.
+   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link registerForVideoFrame} to get the video frames, callback of {@link registerForVideoFrame} will be ignored when the host supports this capability.
    */
   export namespace mediaStream {
     /**
@@ -295,6 +295,12 @@ export namespace video {
         // register the video track with processed frames back to the stream:
         typeof window !== 'undefined' && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       });
+
+      sendMessageToParent('video.registerForVideoFrame', [
+        {
+          format: VideoFrameFormat.NV12,
+        },
+      ]);
     }
 
     /**
@@ -312,7 +318,7 @@ export namespace video {
         if (tracks.length === 0) {
           throw new Error(`No video track in stream ${streamId}`);
         }
-        return mediaStream.getVideoTracks()[0];
+        return tracks[0];
       } catch (error) {
         const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
         notifyError(errorMsg);
@@ -352,7 +358,7 @@ export namespace video {
                   originalFrame.close();
                   frameProcessedByApp.close();
                 } catch (error) {
-                  // TODO: do we need to pass the original back? what happens if a frame is dropped?
+                  originalFrame.close();
                   notifyError(error);
                 }
               } else {
