@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { authentication, dialog, menus, pages } from '../../src/public';
+import { authentication, dialog, menus, monetization, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
@@ -341,6 +341,222 @@ describe('Testing app capability', () => {
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
         expect(GlobalVars.additionalValidOrigins[0]).toBe(validOrigin);
+      });
+
+      it('Unsupported top level capabilities return unsupported and other functions are undefined', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {},
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.content, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        expect(supportedCapabilities.barCode.isSupported()).toBeFalsy();
+        expect(supportedCapabilities.barCode.requestPermission).toBeUndefined();
+      });
+
+      it('Supported top level capabilities return supported and other functions are defined', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            barCode: {},
+            permissions: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.content, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
+        expect(supportedCapabilities.barCode.requestPermission).toBeDefined();
+      });
+
+      it('Supported top level capabilities return supported and other functions are defined in capabilities with overloaded function signatures', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            monetization: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.content, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
+        expect(supportedCapabilities.monetization.openPurchaseExperience).toBeDefined();
+      });
+
+      it('Supported top level capabilities return supported but functions undefined if invalid framecontext passed in', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            barCode: {},
+            permissions: {},
+          },
+        };
+
+        utils.respondToMessage(
+          initMessage,
+          FrameContexts.meetingStage,
+          'test',
+          JSON.stringify(runtimeWithStringVersion),
+        );
+        const supportedCapabilities = await initPromise;
+
+        expect(supportedCapabilities.barCode.isSupported()).toBeTruthy();
+        expect(supportedCapabilities.barCode.requestPermission).toBeUndefined();
+      });
+
+      it('Supported top level capabilities return supported but other functions are undefined in capabilities with overloaded signatures when using invalid FrameContext', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            monetization: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.settings, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        expect(supportedCapabilities.monetization.isSupported()).toBeTruthy();
+        expect(supportedCapabilities.monetization.openPurchaseExperience).toBeUndefined();
+      });
+
+      it('should throw if a capability function is not in the capability metadata', async () => {
+        monetization['foo'] = function notInMetadata(): void {
+          alert('hi');
+        };
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            monetization: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.settings, 'test', JSON.stringify(runtimeWithStringVersion));
+
+        await expect(initPromise).rejects.toThrow();
+
+        monetization['foo'] = undefined;
+      });
+
+      it('private capabilities container is not generated if not asked for', async () => {
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            barCode: {},
+            permissions: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.content, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        // eslint-disable-next-line strict-null-checks/all
+        expect(supportedCapabilities.microsoftOnly).toBeUndefined();
+      });
+
+      it('private capabilities are generated if asked for', async () => {
+        const initPromise = app.initialize([], true);
+        const initMessage = utils.findMessageByFunc('initialize');
+
+        const runtimeWithStringVersion = {
+          apiVersion: 2,
+          hostVersionsInfo: {
+            adaptiveCardSchemaVersion: {
+              majorVersion: 1,
+              minorVersion: 5,
+            },
+          },
+          isLegacyTeams: false,
+          supports: {
+            appEntity: {},
+          },
+        };
+
+        utils.respondToMessage(initMessage, FrameContexts.content, 'test', JSON.stringify(runtimeWithStringVersion));
+        const supportedCapabilities = await initPromise;
+
+        // eslint-disable-next-line strict-null-checks/all
+        expect(supportedCapabilities.microsoftOnly?.appEntity.isSupported()).toBeTruthy();
+        // eslint-disable-next-line strict-null-checks/all
+        expect(supportedCapabilities.microsoftOnly?.appEntity.selectAppEntity).toBeDefined();
+        // eslint-disable-next-line strict-null-checks/all
+        expect(supportedCapabilities.microsoftOnly?.logs.isSupported()).toBeFalsy();
+        // eslint-disable-next-line strict-null-checks/all
+        expect(supportedCapabilities.microsoftOnly?.logs.registerGetLogHandler).toBeUndefined();
       });
     });
 

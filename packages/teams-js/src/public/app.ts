@@ -532,40 +532,9 @@ export namespace app {
    */
   const initializationTimeoutInMs = 5000;
 
+  // TODO: Need to figure out a good way to not have the same signature for this and the "older" version of initialize. Would like to mark the new version with beta
+  // Maybe generics for what the promise returns?
   /**
-   * Initializes the library.
-   *
-   * @remarks
-   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
-   *
-   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https://www.example.com
-   * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
-   */
-  // export function initialize(validMessageOrigins?: string[]): Promise<void> {
-  //   if (!inServerSideRenderingEnvironment()) {
-  //     runWithTimeout(
-  //       () => initializeHelper(true, validMessageOrigins),
-  //       initializationTimeoutInMs,
-  //       new Error('SDK initialization timed out.'),
-  //     ).then(() => {
-  //       return new Promise<void>((resolve) => {
-  //         resolve();
-  //       });
-  //     });
-  //   } else {
-  //     const initializeLogger = appLogger.extend('initialize');
-  //     // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
-  //     // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
-  //     initializeLogger('window object undefined at initialization');
-  //     return Promise.resolve();
-  //   }
-
-  //   return Promise.reject();
-  // }
-
-  /**
-   * @beta
    * Initializes the library and returns an object containing all capabilities and functions you can call in the current host and from the current
    * FrameContexts.
    *
