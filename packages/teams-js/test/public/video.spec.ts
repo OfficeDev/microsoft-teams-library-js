@@ -653,99 +653,96 @@ describe('video', () => {
     });
   });
 
-  describe('video.mediaStream', () => {
-    it.each([() => framedPlatformMock.uninitializeRuntimeConfig(), () => framelessPlatformMock.uninitializeRuntimeConfig()])
-    ('should throw if called before initialization', (uninitializeRuntime) => {
-      uninitializeRuntime();
-      expect(() => video.mediaStream.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-    });
-
-    it.each([() => framedPlatformMock.initializeWithContext(FrameContexts.content), () => framelessPlatformMock.initializeWithContext(FrameContexts.content)])
-    ('should return false if texture stream is not supported', async (initializeWithContext) => {
-      await initializeWithContext();
-      expect(video.mediaStream.isSupported()).toBeFalsy();
-    });
-
-    describe.each([{
+  describe.each([
+    {
       init: () => framedPlatformMock.initializeWithContext(FrameContexts.sidePanel),
       setRuntimeConfig: (config: IBaseRuntime) => framedPlatformMock.setRuntimeConfig(config),
       postMessage: (func: string, ...args: any) => framedPlatformMock.sendMessage(func, ...args),
       findMessageByFunc: (func: string) => framedPlatformMock.findMessageByFunc(func),
-    },{
+    },
+    {
       init: () => framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel),
       setRuntimeConfig: (config: IBaseRuntime) => framelessPlatformMock.setRuntimeConfig(config),
-      postMessage: (func: string, ...args: any) => framelessPlatformMock.respondToMessage({
-        data: {
-          func,
-          args,
-        }
-      } as DOMMessageEvent),
+      postMessage: (func: string, ...args: any) =>
+        framelessPlatformMock.respondToMessage({
+          data: {
+            func,
+            args,
+          },
+        } as DOMMessageEvent),
       findMessageByFunc: (func: string) => framelessPlatformMock.findMessageByFunc(func),
-    }])('when initialized', ({init, setRuntimeConfig, postMessage, findMessageByFunc}) => {
-      let targetStreamId;
-      let registeredStreamId;
-      let videoTrack = new MediaStreamTrack();
-      let videoStream = new MediaStream([videoTrack]);
+    },
+  ])('video.mediaStream', ({ init, setRuntimeConfig, postMessage, findMessageByFunc }) => {
+    let targetStreamId;
+    let registeredStreamId;
+    let videoTrack = new MediaStreamTrack();
+    let videoStream = new MediaStream([videoTrack]);
 
-      beforeEach(() => {
-        window['chrome'] = {
-          webview: {
-            getTextureStream: (streamId: string) => {
-              targetStreamId = streamId;
-              return Promise.resolve(videoStream);
-            },
-            registerTextureStream: (streamId: string, track: MediaStreamTrack) => {
-              registeredStreamId = streamId;
-            }
-          }
-        };
-      });
+    beforeEach(() => {
+      window['chrome'] = {
+        webview: {
+          getTextureStream: (streamId: string) => {
+            targetStreamId = streamId;
+            return Promise.resolve(videoStream);
+          },
+          registerTextureStream: (streamId: string, track: MediaStreamTrack) => {
+            registeredStreamId = streamId;
+          },
+        },
+      };
+    });
 
-      it('isSupported should return false if texture stream is not supported', async () => {
-        await init();
-        window['chrome'] = undefined;
-        expect(video.mediaStream.isSupported()).toBeFalsy();
-      });
+    it('isSupported should throw if called before initialization', () => {
+      expect(() => video.mediaStream.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
 
-      it('isSupport should return false if the runtime doesn\'t support video.medisStream capability', async () => {
-        await init();
-        setRuntimeConfig({ apiVersion: 1, supports: {} });
-        expect(video.mediaStream.isSupported()).toBeFalsy();
-      });
+    it('isSupported should return false if texture stream is not supported', async () => {
+      await init();
+      window['chrome'] = undefined;
+      expect(video.mediaStream.isSupported()).toBeFalsy();
+    });
 
-      it('should get and register stream on video.startVideoExtensibilityVideoStream', async () => {
-        await init();
-        const streamId = 'testStreamId';
-        video.mediaStream.registerForVideoFrame(() => Promise.resolve({close: () => {}} as VideoFrame));
-        postMessage('video.startVideoExtensibilityVideoStream', {streamId});
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        expect(targetStreamId).toEqual(streamId);
-        expect(registeredStreamId).toEqual(streamId);
-      });
+    it("isSupport should return false if the runtime doesn't support video.medisStream capability", async () => {
+      await init();
+      setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(video.mediaStream.isSupported()).toBeFalsy();
+    });
 
-      it('should invoke callback', async () => {
-        await init();
-        let callbackInvoked = false;
-        video.mediaStream.registerForVideoFrame(() => {
-          callbackInvoked = true;
-          return Promise.resolve({close: () => {}} as VideoFrame);
-        });
-        postMessage('video.startVideoExtensibilityVideoStream', {streamId: 'streamId'});
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        expect(callbackInvoked).toBeTruthy();
-      });
+    it('should get and register stream on video.startVideoExtensibilityVideoStream', async () => {
+      await init();
+      setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
+      const streamId = 'testStreamId';
+      video.mediaStream.registerForVideoFrame(() => Promise.resolve({ close: () => {} } as VideoFrame));
+      postMessage('video.startVideoExtensibilityVideoStream', { streamId });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(targetStreamId).toEqual(streamId);
+      expect(registeredStreamId).toEqual(streamId);
+    });
 
-      it('should notify error when callback rejects', async () => {
-        const errorMessage = 'error';
-        await init();
-        video.mediaStream.registerForVideoFrame(() => Promise.reject(errorMessage));
-        postMessage('video.startVideoExtensibilityVideoStream', {streamId: 'streamId'});
-        await new Promise((resolve) => setTimeout(resolve, 0));
-        const message = findMessageByFunc('video.notifyError');
-        expect(message).not.toBeNull();
-        expect(message?.args.length).toBe(1);
-        expect(message?.args[0]).toEqual(errorMessage);
+    it('should invoke callback', async () => {
+      await init();
+      setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
+      let callbackInvoked = false;
+      video.mediaStream.registerForVideoFrame(() => {
+        callbackInvoked = true;
+        return Promise.resolve({ close: () => {} } as VideoFrame);
       });
+      postMessage('video.startVideoExtensibilityVideoStream', { streamId: 'streamId' });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(callbackInvoked).toBeTruthy();
+    });
+
+    it('should notify error when callback rejects', async () => {
+      const errorMessage = 'error';
+      await init();
+      setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
+      video.mediaStream.registerForVideoFrame(() => Promise.reject(errorMessage));
+      postMessage('video.startVideoExtensibilityVideoStream', { streamId: 'streamId' });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const message = findMessageByFunc('video.notifyError');
+      expect(message).not.toBeNull();
+      expect(message?.args.length).toBe(1);
+      expect(message?.args[0]).toEqual(errorMessage);
     });
   });
 });
