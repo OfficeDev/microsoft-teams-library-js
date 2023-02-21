@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "`app.initialize` now returns an object that only contains functions that can be called legally by the app developer.",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}
