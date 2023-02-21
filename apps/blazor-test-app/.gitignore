@@ -1,0 +1,14 @@
+# TeamsFx files
+node_modules
+.DS_Store
+.env.teamsfx.local
+.fx/configs/config.local.json
+.fx/configs/localSettings.json
+.fx/states/*.userdata
+.fx/states/state.local.json
+appsettings.Development.json
+build
+FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.messages
+FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.xml
+subscriptionInfo.json
+wwwroot/js/MicrosoftTeams.min.js

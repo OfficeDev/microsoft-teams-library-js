@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Added Blazor Test App to the monorepo",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "none"
+}
