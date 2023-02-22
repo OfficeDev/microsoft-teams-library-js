@@ -114,6 +114,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <GeoLocationAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
@@ -129,7 +130,6 @@ const App = (): ReactElement => {
         <DialogUrlAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
-        <GeoLocationAPIs />
         <Links />
         <LocationAPIs />
         <LogAPIs />

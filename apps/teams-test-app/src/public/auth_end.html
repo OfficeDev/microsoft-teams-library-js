@@ -16,7 +16,7 @@
         if (storedRedirectUrl) {
           window.location.href = storedRedirectUrl.replace('{result}',result)
         } else if (hostName === 'Orange') {
-          window.location.href = `msorange://testapp.com/auth_callback?authId=${authId}&result=${result}`;
+          window.location.href = `msorange://testapp.com/auth_callback`;
         }
       }
       document.getElementById('errorMessage').textContent = 'Unable to redirect back to the App';

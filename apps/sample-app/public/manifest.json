@@ -6,9 +6,9 @@
   "packageName": "sample app",
   "developer": {
     "name": "Microsoft",
-    "websiteUrl": "https://localhost:4003/",
-    "privacyUrl": "https://localhost:4003/",
-    "termsOfUseUrl": "https://localhost:4003/"
+    "websiteUrl": "https://localhost:4000/",
+    "privacyUrl": "https://localhost:4000/",
+    "termsOfUseUrl": "https://localhost:4000/"
   },
   "name": {
     "short": "Sample App"
@@ -26,14 +26,14 @@
     {
       "entityId": "test-tab",
       "name": "Test Tab",
-      "contentUrl": "https://localhost:4003/",
-      "websiteUrl": "https://localhost:4003/",
+      "contentUrl": "https://localhost:4000/?runtimeVersion=2",
+      "websiteUrl": "https://localhost:4000/?runtimeVersion=2",
       "scopes": ["personal"]
     }
   ],
   "configurableTabs": [
     {
-      "configurationUrl": "https://localhost:4003/",
+      "configurationUrl": "https://localhost:4000/",
       "scopes": ["team", "groupchat"],
       "context": [
         "channelTab",
@@ -45,7 +45,7 @@
       ]
     }
   ],
-  "validDomains": ["localhost:4003"],
+  "validDomains": ["localhost:4000"],
   "permissions": ["identity", "messageTeamMembers"],
   "devicePermissions": ["media", "geolocation"],
   "showLoadingIndicator": true

@@ -51,7 +51,7 @@ const SetConfig = (): React.ReactElement =>
 const RegisterOnSaveHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'config_registerOnSaveHandler',
-    title: 'Set RegisterOnSaveHandler',
+    title: 'Set  RegisterOnSaveHandler',
     onClick: {
       withPromise: async (setResult) => {
         pages.config.registerOnSaveHandler((saveEvent: pages.config.SaveEvent): void => {
