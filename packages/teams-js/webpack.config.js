@@ -11,6 +11,7 @@ const { expect } = require('expect');
 const path = require('path');
 const { DefinePlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -28,7 +29,7 @@ module.exports = {
       umdNamedDefine: true,
     },
     //Prevents 'self' object conflict between nodejs and nextjs
-    //globalObject: 'this',
+    //globalObject: "typeof self !== 'undefined' ? self : this",
   },
   devtool: 'source-map',
   resolve: {
@@ -85,6 +86,7 @@ module.exports = {
       integrityHashes: ['sha384'],
       output: 'MicrosoftTeams-manifest.json',
     }),
+
     {
       apply: (compiler) => {
         compiler.hooks.done.tap('wsi-test', () => {
@@ -94,5 +96,18 @@ module.exports = {
         });
       },
     },
+
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          copy: [
+            {
+              source: './dist/MicrosoftTeams.min.js',
+              destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
+            },
+          ],
+        },
+      },
+    }),
   ],
 };
