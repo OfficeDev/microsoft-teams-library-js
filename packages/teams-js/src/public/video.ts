@@ -49,7 +49,7 @@ export namespace video {
    * @beta
    */
   export enum VideoFrameFormat {
-    NV12,
+    NV12 = 'NV12',
   }
 
   /**
