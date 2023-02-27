@@ -29,7 +29,7 @@ import { runtime } from './runtime';
  *   - For Adaptive Card dialogs, you should use the functions and interfaces in the {@link dialog.adaptiveCard} namespace.
  *
  * @remarks Note that dialogs were previously called "task modules". While they have been renamed for clarity, the functionality has been maintained.
- * For more details about dialogs, see [Taks Modules](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
+ * For more details about dialogs, see [Task Modules](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
  * @beta
  */
