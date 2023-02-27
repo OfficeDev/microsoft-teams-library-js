@@ -127,12 +127,12 @@ export namespace video {
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (videoFrame: any) => {
-        // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
-        const videoFrameData = {
-          ...videoFrame,
-          videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
-        } as VideoFrameData;
-        if (videoFrameData) {
+        if (videoFrame) {
+          // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
+          const videoFrameData = {
+            ...videoFrame,
+            videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
+          } as VideoFrameData;
           const timestamp = videoFrameData.timestamp;
           frameCallback(
             videoFrameData,

@@ -148,6 +148,7 @@ describe('video', () => {
         width: 30,
         height: 40,
         data: 101,
+        "videoFrameBuffer": 101,
       };
       framedPlatformMock.sendMessage('video.newVideoFrame', videoFrameMock);
       expect(returnedVideoFrame).toEqual(videoFrameMock);
@@ -172,6 +173,7 @@ describe('video', () => {
         width: 30,
         height: 40,
         data: 101,
+        "videoFrameBuffer": 101,
       };
       framelessPlatformMock.respondToMessage({
         data: {
