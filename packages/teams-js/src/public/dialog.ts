@@ -22,7 +22,7 @@ import { runtime } from './runtime';
 
 /**
  * This group of capabilities enables apps to show dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
- * Both types of dialogs are shown in a modal dialog on top of your app.
+ * Both types of dialogs are shown on top of your app, preventing interaction with your app while they are displayed.
  * - URL-based dialogs allow you to specify a URL for which the contents will be shown inside the dialog.
  *   - For URL dialogs, you should use the functions and interfaces in the {@link dialog.url} namespace.
  * - Adaptive Card-based dialogs allow you to provide JSON describing an Adaptive Card that will be shown inside the dialog.
@@ -331,14 +331,11 @@ export namespace dialog {
   }
 
   /**
-   * Checks if dialog capability is supported by the host
-   * @returns boolean to represent whether dialog capabilty is supported
+   * This function currently serves no purpose and should not be used. All functionality that used
+   * to be covered by this method is now in subcapabilities and those isSupported methods should be
+   * used directly.
    *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @beta
+   * @hidden
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.dialog ? true : false;
