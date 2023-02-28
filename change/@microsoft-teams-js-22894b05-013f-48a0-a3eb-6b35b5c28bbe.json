@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "added new sub-namespace video.mediaStream and new API video.mediaStream.registerForVideoFrame",
+  "comment": "Added new sub-namespace `video.mediaStream` and new API `video.mediaStream.registerForVideoFrame`",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"
