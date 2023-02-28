@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added remarks to authentication.authenticate() code comments",
+  "packageName": "@microsoft/teams-js",
+  "email": "joshuapa@microsoft.com",
+  "dependentChangeType": "patch"
+}

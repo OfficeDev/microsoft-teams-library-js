@@ -1,7 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { files } from '../../src/private/files';
-import { ErrorCode, FileOpenPreference, SdkError } from '../../src/public';
-import { _initialize, _uninitialize } from '../../src/public/publicAPIs';
+import { app, ErrorCode, FileOpenPreference, SdkError } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -23,14 +22,14 @@ describe('files', () => {
     utils.mockWindow.parent = utils.parentWindow;
 
     // Set a mock window for testing
-    _initialize(utils.mockWindow);
+    app._initialize(utils.mockWindow);
   });
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
+    if (app._uninitialize) {
       utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-      _uninitialize();
+      app._uninitialize();
     }
   });
 
