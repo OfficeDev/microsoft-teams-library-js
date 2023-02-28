@@ -1,0 +1,50 @@
+﻿@using Microsoft.Extensions.Configuration
+@using Microsoft.AspNetCore.Hosting
+@inject TeamsFx teamsfx
+@inject MicrosoftTeams MicrosoftTeams
+@inject IWebHostEnvironment HostEnvironment
+@inject IConfiguration Configuration
+@inject NavigationManager MyNavigationManager
+
+@if(isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+		<FluentProgressRing/>
+	</div>
+}
+else
+{
+    <div class="welcome page">
+        <div class="narrow page-padding">
+            <img src="hello.png" />
+            <h1 id="success" class="center">Congratulations!</h1>
+            <p class="center">If you can read this, it means the SDK is not breaking Blazor app support capabilities!</p>
+        </div>
+    </div>
+}
+
+@code {
+    bool isLoading = true; 
+
+    bool IsHostedInM365 = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if(firstRender)
+        {
+            isLoading = false;
+            StateHasChanged();
+
+            IsHostedInM365 = await MicrosoftTeams.IsHostedInM365();
+
+            if (IsHostedInM365) {
+                await MicrosoftTeams.InitializeAsync();
+                await MicrosoftTeams.notifySuccess();
+            }
+
+        }
+    }
+}
+

@@ -19,7 +19,7 @@ import { runtime } from './runtime';
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
+   * As of 2.8.0, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
    * and {@link dialog.url.bot.open dialog.url.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot-based dialogs. In Teams,
    * this function can be used for Adaptive Card-based dialogs. Support for Adaptive Card-based dialogs is coming to other hosts in the future.
    *
@@ -71,7 +71,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit} instead.
+   * As of 2.8.0, please use {@link dialog.url.submit} instead.
    *
    * Submit the task module.
    *

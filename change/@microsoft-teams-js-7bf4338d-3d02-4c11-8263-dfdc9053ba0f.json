@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Adding comments",
+  "comment": "Added Blazor Test App to the monorepo",
   "packageName": "@microsoft/teams-js",
-  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "email": "noahdarveau@microsoft.com",
   "dependentChangeType": "none"
 }
