@@ -21,7 +21,7 @@ import {
 import { runtime } from './runtime';
 
 /**
- * This group of capabilities enables apps to show dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
+ * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
  * Both types of dialogs are shown on top of your app, preventing interaction with your app while they are displayed.
  * - URL-based dialogs allow you to specify a URL from which the contents will be shown inside the dialog.
  *   - For URL dialogs, use the functions and interfaces in the {@link dialog.url} namespace.
