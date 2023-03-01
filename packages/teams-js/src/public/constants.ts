@@ -44,7 +44,7 @@ export enum HostName {
   teams = 'Teams',
 
   /**
-   * Teams 2.1
+   * Modern Teams
    */
   teamsModern = 'TeamsModern',
 }
