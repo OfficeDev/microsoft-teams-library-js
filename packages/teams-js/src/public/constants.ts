@@ -42,6 +42,11 @@ export enum HostName {
    * Teams
    */
   teams = 'Teams',
+
+  /**
+   * Teams 2.1
+   */
+  teamsModern = 'TeamsModern',
 }
 
 // Ensure these declarations stay in sync with the framework.

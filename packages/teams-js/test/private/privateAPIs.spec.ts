@@ -229,10 +229,17 @@ describe('AppSDK-privateAPIs', () => {
 
     const getContextMessage3 = utils.messages[utils.messages.length - 1];
 
+    const contextPromise4 = app.getContext();
+
+    const getContextMessage4 = utils.messages[utils.messages.length - 1];
+
     // They're all distinct utils.messages
+    expect(getContextMessage4).not.toBe(getContextMessage1);
     expect(getContextMessage3).not.toBe(getContextMessage1);
     expect(getContextMessage2).not.toBe(getContextMessage1);
+    expect(getContextMessage4).not.toBe(getContextMessage2);
     expect(getContextMessage3).not.toBe(getContextMessage2);
+    expect(getContextMessage4).not.toBe(getContextMessage3);
 
     const contextBridge1: Context = {
       locale: 'someLocale1',
@@ -321,7 +328,37 @@ describe('AppSDK-privateAPIs', () => {
       },
     };
 
+    const contextBridge4: Context = {
+      locale: 'someLocale4',
+      channelId: 'someChannelId4',
+      entityId: 'someEntityId4',
+      userObjectId: 'someUserObjectId4',
+    };
+    const expectedContext4: app.Context = {
+      app: {
+        locale: 'someLocale4',
+        sessionId: '',
+        theme: 'default',
+        host: {
+          name: HostName.teamsModern,
+          clientType: HostClientType.web,
+          sessionId: '',
+        },
+      },
+      page: {
+        id: 'someEntityId4',
+        frameContext: FrameContexts.content,
+      },
+      user: {
+        id: 'someUserObjectId4',
+      },
+      channel: {
+        id: 'someChannelId4',
+      },
+    };
+
     // respond in the wrong order
+    utils.respondToMessage(getContextMessage4, contextBridge4);
     utils.respondToMessage(getContextMessage3, contextBridge3);
     utils.respondToMessage(getContextMessage1, contextBridge1);
     utils.respondToMessage(getContextMessage2, contextBridge2);
@@ -331,6 +368,7 @@ describe('AppSDK-privateAPIs', () => {
       expect(contextPromise1).resolves.toEqual(expectedContext1),
       expect(contextPromise2).resolves.toEqual(expectedContext2),
       expect(contextPromise3).resolves.toEqual(expectedContext3),
+      expect(contextPromise4).resolves.toEqual(expectedContext4),
     ]);
   });
 
