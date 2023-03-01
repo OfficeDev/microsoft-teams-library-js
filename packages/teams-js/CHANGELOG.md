@@ -1,8 +1,22 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Feb 2023 23:22:55 GMT and should not be manually modified.
+This log was last generated on Wed, 01 Mar 2023 19:13:08 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.9.0
+
+Wed, 01 Mar 2023 19:13:08 GMT
+
+### Minor changes
+
+- Changed return type of the callback of `registerForVideoEffect` to return a Promise
+- Added new sub-namespace `video.mediaStream` and new API `video.mediaStream.registerForVideoFrame`
+
+### Patches
+
+- Elaborated on various areas of `authentication` documentation
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 
 ## 2.8.0
 
