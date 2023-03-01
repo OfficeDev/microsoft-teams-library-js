@@ -5,9 +5,8 @@
   "description": "Blazor test app to ensure teams-js changes don't break Blazor app functionality",
   "version": "1.0.0",
   "scripts": {
-    "build": "yarn install-dotnet && dotnet build",
-    "start": "dotnet run",
-    "install-dotnet": "node install-dotnet.js"
+    "build": "node install-and-build.js",
+    "start": "dotnet run"
   },
   "devDependencies": {
     "@microsoft/teams-js": "file:../../packages/teams-js"
