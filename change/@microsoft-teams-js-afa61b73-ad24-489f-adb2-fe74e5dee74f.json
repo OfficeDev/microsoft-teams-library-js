@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added new value to HostName enum for T21",
+  "comment": "Added a new value to HostName enum for Teams2.1 i.e. `TeamsModern`",
   "packageName": "@microsoft/teams-js",
   "email": "jainharsh@microsoft.com",
   "dependentChangeType": "patch"
