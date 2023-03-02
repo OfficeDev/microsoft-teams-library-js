@@ -368,7 +368,7 @@ export namespace app {
 
     /**
      * The license type for the current user. Possible values are:
-     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker"
+     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker", "Anonymous"
      */
     licenseType?: string;
 
