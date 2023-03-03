@@ -21,7 +21,15 @@ import {
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the dialog module-specific part of the SDK.
+ * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
+ * Both types of dialogs are shown on top of your app, preventing interaction with your app while they are displayed.
+ * - URL-based dialogs allow you to specify a URL from which the contents will be shown inside the dialog.
+ *   - For URL dialogs, use the functions and interfaces in the {@link dialog.url} namespace.
+ * - Adaptive Card-based dialogs allow you to provide JSON describing an Adaptive Card that will be shown inside the dialog.
+ *   - For Adaptive Card dialogs, use the functions and interfaces in the {@link dialog.adaptiveCard} namespace.
+ *
+ * @remarks Note that dialogs were previously called "task modules". While they have been renamed for clarity, the functionality has been maintained.
+ * For more details, see [Dialogs](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
  * @beta
  */
@@ -56,6 +64,9 @@ export namespace dialog {
   /**
    * Handler used for receiving results when a dialog closes, either the value passed by {@linkcode url.submit}
    * or an error if the dialog was closed by the user.
+   *
+   * @see {@linkcode ISdkResponse}
+   *
    * @beta
    */
   export type DialogSubmitHandler = (result: ISdkResponse) => void;
@@ -320,14 +331,11 @@ export namespace dialog {
   }
 
   /**
-   * Checks if dialog capability is supported by the host
-   * @returns boolean to represent whether dialog capabilty is supported
+   * This function currently serves no purpose and should not be used. All functionality that used
+   * to be covered by this method is now in subcapabilities and those isSupported methods should be
+   * used directly.
    *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @beta
+   * @hidden
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.dialog ? true : false;
