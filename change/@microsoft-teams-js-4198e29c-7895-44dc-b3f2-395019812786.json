@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Reverted addition of new sub-namespace `video.mediaStream` and new API `video.mediaStream.registerForVideoFrame",
+  "packageName": "@microsoft/teams-js",
+  "email": "jdahiya8719@outlook.com",
+  "dependentChangeType": "patch"
+}
