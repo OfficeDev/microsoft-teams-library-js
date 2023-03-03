@@ -90,7 +90,7 @@ Wed, 07 Dec 2022 16:39:58 GMT
 
 ### Patches
 
-- Deleted unnecessary support for `meetingRoom` and 'sidePanel`frame contexts in`dialog.submit` API.
+- Deleted unnecessary support for `meetingRoom` and `sidePanel` frame contexts in `dialog.submit` API.
 - Fix incorrect profile.IsSupported check
 
 ## 2.5.0
