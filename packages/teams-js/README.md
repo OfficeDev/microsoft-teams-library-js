@@ -46,7 +46,7 @@ Reference the library inside of your `.html` page using:
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script
   src="https://res.cdn.office.net/teams-js/2.9.1/js/MicrosoftTeams.min.js"
-  integrity="sha384-OKvZlKG/LgRBCwy0KgPIMa9vJf/7LXIdXC1IaEsbHjDe7jnJSRCOGP1by1fKPXRc"
+  integrity="sha384-xnsUQ1tUqsrutBJl0vuf4/hufzLFWW8ZhGnhItfpQ0/BtWgM2uw6YT6BQ5YaKBSM"
   crossorigin="anonymous"
 ></script>
 

@@ -11,10 +11,10 @@ Fri, 03 Mar 2023 19:57:31 GMT
 ### Minor changes
 
 - Changed return type of the callback of `registerForVideoEffect` to return a Promise
+- Added a new value to `HostName` enum, `TeamsModern`
 
 ### Patches
 
-- Added a new value to `HostName` enum, `TeamsModern`
 - Updated documentation for `dialog` and `tasks` capabilities
 - Elaborated on various areas of `authentication` documentation
 - Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
