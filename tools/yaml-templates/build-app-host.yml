@@ -36,12 +36,12 @@ steps:
   - script: |
       pnpm install
     displayName: 'Install client sdk dependencies'
-    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - script: |
       pnpm build
     displayName: 'Build client sdk'
-    ProjectDirectory: '$(ClientSdkProjectDirectory)'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'
