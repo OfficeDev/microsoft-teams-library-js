@@ -16,6 +16,12 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
+  - script: |
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm config set store-dir $(pnpm_config_cache)
+    displayName: 'Setup pnpm'
+
   - task: YarnInstaller@3
     inputs:
       versionSpec: '1.x'
