@@ -49,18 +49,21 @@ steps:
     inputs:
       versionSpec: '1.x'
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'install'
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Run pnpm install on TeamsJS using task instead of bash'
-    retryCountOnTaskFailure: 2
+  - script: |
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm config set store-dir $(pnpm_config_cache)
+    displayName: 'Setup pnpm'
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'build'
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Build TeamsJS'
+  - script: |
+      pnpm install
+    displayName: 'Install client sdk dependencies'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - script: |
+      pnpm build
+    displayName: 'Build client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - bash: 'nohup pnpm start-test-app &'
     displayName: 'Run sample test app in background'
