@@ -2,6 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import {
   ContainerState,
+  IClientUserInfo,
   IFluidContainerInfo,
   IFluidTenantInfo,
   INtpTimeInfo,
@@ -250,6 +251,35 @@ describe('LiveShareHost', () => {
       expect(getClientRolesMessage.args).toStrictEqual(['test-client']);
       utils.respondToMessage(getClientRolesMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
+    });
+  });
+
+  describe('getUserInfo', () => {
+    it('should not allow calls before initialization', async () => {
+      await expect(host.getUserInfo('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      await expect(host.getUserInfo('test-client')).rejects.toThrowError(
+        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+      );
+    });
+
+    it('should resolve promise correctly', async () => {
+      await utils.initializeWithContext('meetingStage');
+      const userInfo: IClientUserInfo = {
+        userId: 'test userId',
+        roles: [UserMeetingRole.presenter],
+        displayName: 'test name',
+      };
+      const promise = host.getUserInfo('test-client');
+
+      const getUserInfoMessage = utils.findMessageByFunc('interactive.getUserInfo');
+      expect(getUserInfoMessage).not.toBeNull();
+      expect(getUserInfoMessage.args).toStrictEqual(['test-client']);
+      utils.respondToMessage(getUserInfoMessage, false, userInfo);
+      await expect(promise).resolves.toStrictEqual(userInfo);
     });
   });
 });
