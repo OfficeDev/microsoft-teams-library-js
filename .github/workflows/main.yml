@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
@@ -60,8 +60,7 @@ jobs:
 
       - name: Upload Unit Test Results
         if: always()
-        using: 'node16'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Unit Test Results (Jest ${{ matrix.node-version }})
           path: packages/*/test-results/unit/unit-tests-report.xml
@@ -74,7 +73,7 @@ jobs:
 
     steps:
       - name: Download Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: artifacts
 
