@@ -22,15 +22,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install -g pnpm
+          cache: 'pnpm'
+      - name: Install dependencies
       - run: pnpm install
+      - name: Build TeamsJS
       - run: pnpm build
+      - name: Unit Tests
       - run: pnpm test
+      - name: Check for lint errors
       - run: pnpm lint
 
       - name: Upload Unit Test Results
