@@ -20,11 +20,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/dom-mediacapture-transform": "0.1.2",
+    "@types/dom-webcodecs": "0.1.3",
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/dom-mediacapture-transform": "0.1.2",
-    "@types/dom-webcodecs": "0.1.3",
     "@types/debug": "^4.1.7"
   },
   "license": "MIT",
