@@ -31,13 +31,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - name: Install dependencies
       - run: pnpm install
-      - name: Build TeamsJS
       - run: pnpm build
-      - name: Unit Tests
       - run: pnpm test
-      - name: Check for lint errors
       - run: pnpm lint
 
       - name: Upload Unit Test Results
