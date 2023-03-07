@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added getUserInfo to LiveShareHost",
+  "packageName": "@microsoft/teams-js",
+  "email": "jameshunt@microsoft.com",
+  "dependentChangeType": "patch"
+}
