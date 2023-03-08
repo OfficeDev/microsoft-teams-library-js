@@ -1,8 +1,23 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Feb 2023 23:22:55 GMT and should not be manually modified.
+This log was last generated on Fri, 03 Mar 2023 19:57:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.9.1
+
+Fri, 03 Mar 2023 19:57:31 GMT
+
+### Minor changes
+
+- Changed return type of the callback of `registerForVideoEffect` to return a Promise
+- Added a new value to `HostName` enum, `TeamsModern`
+
+### Patches
+
+- Updated documentation for `dialog` and `tasks` capabilities
+- Elaborated on various areas of `authentication` documentation
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 
 ## 2.8.0
 
@@ -13,6 +28,7 @@ Wed, 01 Feb 2023 23:22:55 GMT
 - Added `requestAppAudioHandling` and `updateMicState` meeting APIs
 - Fixed a bug where `getContext()` was incorrectly dropping properties by performing a lossy conversion via `app.getContext()`
 - Added adaptive card subcapability to `dialog` capability
+- Restructured `dialog.ts`. Moved all functions previously under `dialog` and `dialog.bot` to be under namespace `url`. Function calls are now `dialog.url.open` and `dialog.url.bot.open` as an example.
 
 ### Patches
 
@@ -74,7 +90,7 @@ Wed, 07 Dec 2022 16:39:58 GMT
 
 ### Patches
 
-- Deleted unnecessary support for `meetingRoom` and 'sidePanel` frame contexts in `dialog.submit` API. 
+- Deleted unnecessary support for `meetingRoom` and `sidePanel` frame contexts in `dialog.submit` API.
 - Fix incorrect profile.IsSupported check
 
 ## 2.5.0
@@ -91,7 +107,7 @@ Thu, 03 Nov 2022 17:03:30 GMT
 - Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused
 - Set `PACKAGE_VERSION` to an error value indicating it will be replaced by webpack at build time
 - Fixed `profile.isSupported` and showProfile `TriggerType`
-- Added 'www.microsoft365.com' and '*.www.microsoft365.com' to the `validOrigins` list.
+- Added 'www.microsoft365.com' and '\*.www.microsoft365.com' to the `validOrigins` list.
 - Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.
 
 ## 2.4.2
