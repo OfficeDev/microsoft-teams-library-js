@@ -30,7 +30,7 @@ You can reference these files directly [from here](https://res.cdn.office.net/te
 
 ### As a package
 
-Install either using npm or yarn.
+Install either using npm or pnpm.
 
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
