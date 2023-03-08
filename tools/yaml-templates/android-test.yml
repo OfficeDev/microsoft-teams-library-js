@@ -27,7 +27,7 @@ steps:
   - task: Cache@2
     inputs:
       key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(pnpm_config_cache)
+      path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache pnpm
 
   - script: |

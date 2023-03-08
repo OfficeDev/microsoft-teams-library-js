@@ -1,5 +1,6 @@
 variables:
   - group: InfoSec-SecurityResults
+  - pnpm_config_cache: $(Pipeline.Workspace)/.pnpm-store
 
 trigger:
   branches:
