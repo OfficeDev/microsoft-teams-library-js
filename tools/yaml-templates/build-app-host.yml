@@ -31,7 +31,7 @@ steps:
   - script: |
       corepack enable
       corepack prepare pnpm@latest --activate
-      pnpm config set store-dir $(pnpm_config_cache)
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
   - task: YarnInstaller@3
