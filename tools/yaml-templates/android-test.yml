@@ -26,7 +26,7 @@ steps:
   # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
   - task: Cache@2
     inputs:
-      key: 'pnpm | "$(Agent.OS)" | "$(ClientSdkProjectDirectory)"/pnpm-lock.yaml'
+      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
       path: $(pnpm_config_cache)
     displayName: Cache pnpm
 
