@@ -86,7 +86,7 @@ function getNewerPrefix(currBetaVer, currPkgJsonVer) {
   }
   //If we complete the loop and haven't returned, then their is an error in prefix comparisons
   throw new Error(
-    `Error in compaison between Current Beta Version ${currBetaVer} with prefix ${currBetaPrefix} and Current Package Version ${currPkgJsonVer} with prefix ${currPkgPrefix}`,
+    `Error in comparing Current Beta Version: ${currBetaVer} with prefix ${currBetaPrefix} to Current Package Version: ${currPkgJsonVer} with prefix ${currPkgPrefix}`,
   );
 }
 
