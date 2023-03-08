@@ -196,7 +196,6 @@ export const teamsRuntimeConfig: Runtime = {
       fullTrust: {},
     },
     remoteCamera: {},
-    sharing: {},
     stageView: {},
     teams: {
       fullTrust: {},
@@ -323,6 +322,10 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     {
       capability: { webStorage: {} },
       hostClientTypes: [HostClientType.desktop],
+    },
+    {
+      capability: { sharing: {} },
+      hostClientTypes: [HostClientType.desktop, HostClientType.web],
     },
   ],
   '2.0.5': [
