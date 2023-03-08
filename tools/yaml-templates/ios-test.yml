@@ -52,12 +52,12 @@ steps:
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
   # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
   #   'command_name | operating_system | lockfile'
-  # in our case it is 'pnpm | "$(Agent.OS)" | metaos-hub-sdk/pnpm-lock.yaml'
+  # in our case it is 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
   # and for the path is the directory which needs to be cached.
   # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
   - task: Cache@2
     inputs:
-      key: 'pnpm | "$(Agent.OS)" | metaos-hub-sdk/pnpm-lock.yaml'
+      key: 'pnpm | "$(Agent.OS)" | "$(ClientSdkProjectDirectory)"/pnpm-lock.yaml'
       path: $(pnpm_config_cache)
     displayName: Cache pnpm
 
