@@ -81,7 +81,7 @@ describe('sharing_v1', () => {
           it(`sharing.shareWebContent should successfully call the callback function when given the share web content in correct format when initialized with ${frameContext} context- success scenario`, (done) => {
             utils.initializeWithContext(frameContext).then(() => {
               // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { sharing: {} } });
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
               const callback = () => {
                 done();
               };
@@ -258,7 +258,7 @@ describe('sharing_v1', () => {
                 errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
                 message: 'Feature is not supported.',
               };
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { sharing: {} } });
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
               sharing.shareWebContent(shareRequest, (response) => {
                 expect(response).toEqual(error);
                 done();
@@ -403,7 +403,7 @@ describe('sharing_v2', () => {
         } else {
           it(`sharing.shareWebContent should successfully resolves when given the share web content in correct format when initialized with ${frameContext} context - success scenario`, async () => {
             await utils.initializeWithContext(FrameContexts.content);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { sharing: {} } });
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
             const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
               content: [
                 {
@@ -544,7 +544,7 @@ describe('sharing_v2', () => {
 
           it(`sharing.shareWebContent should throw a SdkError when other errors occur when initialized with ${frameContext} context`, async () => {
             await utils.initializeWithContext(FrameContexts.content);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { sharing: {} } });
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
             const shareRequest: sharing.IShareRequest<sharing.IURLContent> = {
               content: [
                 {
