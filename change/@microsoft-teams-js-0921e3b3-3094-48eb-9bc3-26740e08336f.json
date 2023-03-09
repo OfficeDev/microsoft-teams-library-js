@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added a bug fix for sharing.isSupported which returns true while not supported on mobile",
+  "comment": "`sharing.isSupported` now returns the correct value on mobile platforms",
   "packageName": "@microsoft/teams-js",
   "email": "magli@microsoft.com",
   "dependentChangeType": "patch"
