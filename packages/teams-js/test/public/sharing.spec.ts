@@ -393,7 +393,7 @@ describe('sharing_v2', () => {
               expect(sharing.isSupported()).toBeTruthy();
             });
           } else {
-            it(`sharing.isSupported() should return false for web and desktop when version is greater than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
+            it(`sharing.isSupported() should return false for web and desktop when version is lower than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
               await utils.initializeWithContext(FrameContexts.content, clientType);
               utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
               expect(sharing.isSupported()).toBeFalsy();
@@ -401,7 +401,7 @@ describe('sharing_v2', () => {
           }
         });
       } else {
-        it(`sharing.isSupported() should return false for platforms other than desktop and web regardless version`, async () => {
+        it(`sharing.isSupported() should return false for platforms other than desktop and web, regardless version`, async () => {
           await utils.initializeWithContext(FrameContexts.content, clientType);
           expect(sharing.isSupported()).toBeFalsy();
         });
