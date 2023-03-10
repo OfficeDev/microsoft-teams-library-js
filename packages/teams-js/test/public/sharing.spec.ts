@@ -1,7 +1,9 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
+import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
@@ -374,6 +376,36 @@ describe('sharing_v2', () => {
     it('sharing.isSupported should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
       expect(() => sharing.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
+  const testVersions = ['1.8.0', '1.9.0', '2.0.2'];
+  const minDesktopAndWebVersionForSharing = '2.0.0';
+  const supportedClientTypes = [HostClientType.web, HostClientType.desktop];
+  describe('Testing sharing.isSupported() on different platforms', () => {
+    Object.values(HostClientType).forEach((clientType) => {
+      if (supportedClientTypes.some((supportedClientTypes) => supportedClientTypes == clientType)) {
+        Object.values(testVersions).forEach((version) => {
+          if (compareSDKVersions(version, minDesktopAndWebVersionForSharing) >= 0) {
+            it(`sharing.isSupported() should return true for web and desktop when version is greater than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              expect(sharing.isSupported()).toBeTruthy();
+            });
+          } else {
+            it(`sharing.isSupported() should return false for web and desktop when version is greater than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              expect(sharing.isSupported()).toBeFalsy();
+            });
+          }
+        });
+      } else {
+        it(`sharing.isSupported() should return false for platforms other than desktop and web regardless version`, async () => {
+          await utils.initializeWithContext(FrameContexts.content, clientType);
+          expect(sharing.isSupported()).toBeFalsy();
+        });
+      }
     });
   });
 

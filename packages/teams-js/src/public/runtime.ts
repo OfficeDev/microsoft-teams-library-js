@@ -307,6 +307,10 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
       capability: { people: {} },
       hostClientTypes: v1HostClientTypes,
     },
+    {
+      capability: { sharing: {} },
+      hostClientTypes: [HostClientType.desktop, HostClientType.web],
+    },
   ],
   '2.0.1': [
     {
@@ -324,10 +328,6 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
     {
       capability: { webStorage: {} },
       hostClientTypes: [HostClientType.desktop],
-    },
-    {
-      capability: { sharing: {} },
-      hostClientTypes: [HostClientType.desktop, HostClientType.web],
     },
   ],
   '2.0.5': [
