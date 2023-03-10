@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Remove legacy AFR endpoints",
+  "packageName": "@microsoft/teams-js",
+  "email": "pradan@microsoft.com",
+  "dependentChangeType": "patch"
+}
