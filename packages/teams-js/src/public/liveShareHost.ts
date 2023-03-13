@@ -115,21 +115,7 @@ export interface IFluidTenantInfo {
   /**
    * The Fluid service endpoint Live Share should use.
    */
-  serviceEndpoint?: string;
-
-  /**
-   * @deprecated
-   * As of Fluid 1.0 this configuration information has been deprecated in favor of
-   * `serviceEndpoint`.
-   */
-  ordererEndpoint: string;
-
-  /**
-   * @deprecated
-   * As of Fluid 1.0 this configuration information has been deprecated in favor of
-   * `serviceEndpoint`.
-   */
-  storageEndpoint: string;
+  serviceEndpoint: string;
 }
 
 /**
