@@ -38,6 +38,10 @@ steps:
     inputs:
       versionSpec: '1.x'
 
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
+
   - script: |
       pnpm install
     displayName: 'Install app hosting sdk dependencies'
