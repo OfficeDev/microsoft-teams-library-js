@@ -16,22 +16,41 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
+  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
+  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
+  #   'command_name | operating_system | lockfile'
+  # in our case it is 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+  # and for the path is the directory which needs to be cached.
+  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
+  - task: Cache@2
+    inputs:
+      key: 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache pnpm
+
+  - script: |
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    displayName: 'Setup pnpm'
+
   - task: YarnInstaller@3
     inputs:
       versionSpec: '1.x'
 
-  - task: Yarn@2
-    displayName: 'Run yarn on app hosting sdk'
+  - task: npmAuthenticate@0
     inputs:
-      Arguments:
-      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-    retryCountOnTaskFailure: 2
+      workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
 
-  - task: Yarn@2
+  - script: |
+      pnpm install
+    displayName: 'Install app hosting sdk dependencies'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - script: |
+      pnpm build
     displayName: 'Build app hosting sdk'
-    inputs:
-      Arguments: 'build'
-      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - task: Yarn@2
     displayName: 'Run yarn on client sdk'
@@ -51,5 +70,5 @@ steps:
     inputs:
       script: |
         sudo chmod -R 755 ./ 
-        sudo yarn setup
+        pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
