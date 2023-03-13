@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Fix bug that when calling both video.registerForVideoFrame and video.mediaStream.registerForVideoStream an error happens: \"stream id is already registered\"",
+  "comment": "Updated message sent to host by `video.registerForVideoFrame` to avoid duplication with message sent by `video.mediaStream.registerForVideoStream` (bug would manifest in \"stream id is already registered\" error message)",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"

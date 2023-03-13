@@ -721,7 +721,7 @@ describe('video', () => {
       expect(registeredStreamId).toEqual(streamId);
     });
 
-    it('should send event to parent to inform the registeration', async () => {
+    it('should send event to parent to inform the registration', async () => {
       await init();
       setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
       const streamId = 'testStreamId';
