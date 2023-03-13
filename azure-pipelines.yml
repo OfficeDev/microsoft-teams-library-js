@@ -29,7 +29,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRefTest)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
@@ -51,7 +51,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRefTest)
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
@@ -79,7 +79,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRefTest)
 
       - task: Yarn@2
         displayName: 'Build Test App Local'
@@ -114,7 +114,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRefTest)
 
       - task: Yarn@2
         displayName: 'Build Test App CDN'
