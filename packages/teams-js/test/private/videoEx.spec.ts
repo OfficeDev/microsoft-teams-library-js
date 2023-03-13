@@ -204,7 +204,7 @@ describe('videoEx', () => {
     it('FRAMED - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {
@@ -257,7 +257,7 @@ describe('videoEx', () => {
     it('FRAMELESS - should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       const videoFrameCallback = (
-        _frame: video.VideoFrame,
+        _frame: video.VideoFrameData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {

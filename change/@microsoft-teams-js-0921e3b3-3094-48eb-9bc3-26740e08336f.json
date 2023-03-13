@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "`sharing.isSupported` now returns the correct value on mobile platforms",
+  "packageName": "@microsoft/teams-js",
+  "email": "magli@microsoft.com",
+  "dependentChangeType": "patch"
+}
