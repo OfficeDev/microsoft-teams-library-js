@@ -210,11 +210,15 @@ importers:
   packages/teams-js:
     specifiers:
       '@types/debug': ^4.1.7
+      '@types/dom-mediacapture-transform': 0.1.2
+      '@types/dom-webcodecs': 0.1.3
       debug: ^4.3.3
     dependencies:
+      '@types/dom-webcodecs': 0.1.3
       debug: 4.3.4
     devDependencies:
       '@types/debug': 4.1.7
+      '@types/dom-mediacapture-transform': 0.1.2
 
   tools/bundle-size-tools:
     specifiers:
@@ -3720,6 +3724,15 @@ packages:
   /@types/detect-indent/0.1.30:
     resolution: {integrity: sha1-3GgrtBK05lugmOcO2tc7SDP7kQ0=}
     dev: true
+
+  /@types/dom-mediacapture-transform/0.1.2:
+    resolution: {integrity: sha1-XjvhYMH3K8hbpxepmTxMNqj9AdI=}
+    dependencies:
+      '@types/dom-webcodecs': 0.1.3
+    dev: true
+
+  /@types/dom-webcodecs/0.1.3:
+    resolution: {integrity: sha1-yqXZ221YFxmYREpYGYgp06M+9Is=}
 
   /@types/eslint-scope/3.7.4:
     resolution: {integrity: sha1-N/wSI/B4bDlicGihLpTW5vxh3hY=}
@@ -12985,8 +12998,9 @@ packages:
   file:packages/teams-js:
     resolution: {directory: packages/teams-js, type: directory}
     name: '@microsoft/teams-js'
-    version: 2.8.0
+    version: 2.9.1
     dependencies:
+      '@types/dom-webcodecs': 0.1.3
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
