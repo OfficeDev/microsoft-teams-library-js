@@ -14,10 +14,6 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@3
-    inputs:
-      versionSpec: '1.x'
-
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
   # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
   #   'command_name | operating_system | lockfile'
