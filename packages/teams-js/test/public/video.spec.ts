@@ -721,6 +721,20 @@ describe('video', () => {
       expect(registeredStreamId).toEqual(streamId);
     });
 
+    it('should send event to parent to inform the registration', async () => {
+      await init();
+      setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
+      const streamId = 'testStreamId';
+      video.mediaStream.registerForVideoFrame(() => Promise.resolve({ close: () => {} } as VideoFrame));
+      postMessage('video.startVideoExtensibilityVideoStream', { streamId });
+      const msg = findMessageByFunc('video.mediaStream.registerForVideoFrame');
+      expect(msg).not.toBeNull();
+      expect(msg.args.length).toBe(1);
+      expect(msg.args).toEqual([{
+        format: video.VideoFrameFormat.NV12,
+      }]);
+    });
+
     it('should invoke callback', async () => {
       await init();
       setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
