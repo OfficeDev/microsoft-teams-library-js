@@ -83,7 +83,7 @@ jobs:
           appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
 
       - task: CmdLine@2
-        displayName: 'Build Test App CDN'
+        displayName: 'Build Test App local'
         inputs:
           script: |
             pnpm build-test-app-local
