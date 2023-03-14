@@ -40,14 +40,34 @@ steps:
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
+  # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
+  # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
+  # The below task caches the Cypress binary.
+  - task: Cache@2
+    inputs:
+      key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+      path: /home/vsts/.cache/Cypress
+      cacheHitVar: CYPRESS_CACHE_RESTORED
+    displayName: 'Cache Cypress binary'
+
   - task: npmAuthenticate@0
     inputs:
       workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
 
+  # Below script task checks if Cypress cache is hit or not.
+  # If Cypress cache is found skip cypress install.
   - script: |
-      pnpm install
-    displayName: 'Install app hosting sdk dependencies'
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+    displayName: Install app hosting dependencies (skip Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
+
+  # If Cypress cache is not found include cypress install.
+  - script: |
+      pnpm install --frozen-lockfile
+    displayName: Install app hosting dependencies (include Cypress install)
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
 
   - script: |
       pnpm build
