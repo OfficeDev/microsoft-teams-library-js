@@ -186,6 +186,7 @@ export const teamsRuntimeConfig: Runtime = {
       },
       update: {},
     },
+    interactive: {},
     logs: {},
     meetingRoom: {},
     menus: {},
