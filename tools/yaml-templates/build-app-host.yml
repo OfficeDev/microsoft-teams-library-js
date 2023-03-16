@@ -22,11 +22,11 @@ steps:
   # in our case it is 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
   # and for the path is the directory which needs to be cached.
   # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
-  - task: Cache@2
-    inputs:
-      key: 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache pnpm
+  # - task: Cache@2
+  #   inputs:
+  #     key: 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+  #     path: $(Pipeline.Workspace)/.pnpm-store
+  #   displayName: Cache pnpm
 
   - script: |
       corepack enable
