@@ -159,7 +159,7 @@ export class LiveShareHost {
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
     return new Promise<IFluidTenantInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
@@ -176,7 +176,7 @@ export class LiveShareHost {
    */
   public getFluidToken(containerId?: string): Promise<string> {
     return new Promise<string>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       // eslint-disable-next-line strict-null-checks/all
       resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
@@ -191,7 +191,7 @@ export class LiveShareHost {
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
@@ -211,7 +211,7 @@ export class LiveShareHost {
    */
   public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
@@ -225,7 +225,7 @@ export class LiveShareHost {
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
     return new Promise<INtpTimeInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
@@ -242,7 +242,7 @@ export class LiveShareHost {
    */
   public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
     return new Promise<UserMeetingRole[]>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
@@ -259,7 +259,7 @@ export class LiveShareHost {
    */
   public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
     return new Promise<UserMeetingRole[] | undefined>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
@@ -276,7 +276,7 @@ export class LiveShareHost {
    */
   public getUserInfo(clientId: string): Promise<IClientUserInfo | undefined> {
     return new Promise<IClientUserInfo | undefined>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+      ensureSupported();
 
       resolve(sendAndHandleSdkError('interactive.getUserInfo', clientId));
     });
@@ -291,8 +291,20 @@ export class LiveShareHost {
    * @beta
    */
   public static create(): LiveShareHost {
-    ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+    ensureSupported();
 
     return new LiveShareHost();
+  }
+}
+
+export function isSupported(): boolean {
+  return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) && runtime.supports.interactive
+    ? true
+    : false;
+}
+
+function ensureSupported(): void {
+  if (!isSupported()) {
+    throw new Error('LiveShareHost Not supported');
   }
 }

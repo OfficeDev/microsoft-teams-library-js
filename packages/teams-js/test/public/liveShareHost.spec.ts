@@ -6,9 +6,11 @@ import {
   IFluidContainerInfo,
   IFluidTenantInfo,
   INtpTimeInfo,
+  isSupported,
   LiveShareHost,
   UserMeetingRole,
 } from '../../src/public/liveShareHost';
+import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -280,6 +282,13 @@ describe('LiveShareHost', () => {
       expect(getUserInfoMessage.args).toStrictEqual(['test-client']);
       utils.respondToMessage(getUserInfoMessage, false, userInfo);
       await expect(promise).resolves.toStrictEqual(userInfo);
+    });
+  });
+
+  describe('Testing isSupported', () => {
+    it('should not be supported before initialization', () => {
+      setUnitializedRuntime();
+      expect(() => isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });
