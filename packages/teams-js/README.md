@@ -18,7 +18,7 @@ To install the stable [version](https://learn.microsoft.com/javascript/api/overv
 
 `npm install --save @microsoft/teams-js`
 
-### yarn
+### pnpm
 
 `pnpm add @microsoft/teams-js`
 
