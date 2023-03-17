@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added getClientInfo to LiveShareHost",
+  "comment": "Added `getClientInfo` to LiveShareHost",
   "packageName": "@microsoft/teams-js",
   "email": "jameshunt@microsoft.com",
   "dependentChangeType": "patch"
