@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Move from Yarn to Pnpm",
+  "comment": "Migrated from `yarn` to `pnpm` for repository package management",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "none"
