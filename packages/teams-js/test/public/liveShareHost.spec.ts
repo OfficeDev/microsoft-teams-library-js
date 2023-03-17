@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import {
   ContainerState,
-  IClientUserInfo,
+  IClientInfo,
   IFluidContainerInfo,
   IFluidTenantInfo,
   INtpTimeInfo,
@@ -256,31 +256,31 @@ describe('LiveShareHost', () => {
     });
   });
 
-  describe('getUserInfo', () => {
+  describe('getClientInfo', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getUserInfo('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      await expect(host.getClientInfo('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getUserInfo('test-client')).rejects.toThrowError(
+      await expect(host.getClientInfo('test-client')).rejects.toThrowError(
         'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
       );
     });
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const userInfo: IClientUserInfo = {
+      const userInfo: IClientInfo = {
         userId: 'test userId',
         roles: [UserMeetingRole.presenter],
         displayName: 'test name',
       };
-      const promise = host.getUserInfo('test-client');
+      const promise = host.getClientInfo('test-client');
 
-      const getUserInfoMessage = utils.findMessageByFunc('interactive.getUserInfo');
-      expect(getUserInfoMessage).not.toBeNull();
-      expect(getUserInfoMessage.args).toStrictEqual(['test-client']);
-      utils.respondToMessage(getUserInfoMessage, false, userInfo);
+      const getClientInfoMessage = utils.findMessageByFunc('interactive.getClientInfo');
+      expect(getClientInfoMessage).not.toBeNull();
+      expect(getClientInfoMessage.args).toStrictEqual(['test-client']);
+      utils.respondToMessage(getClientInfoMessage, false, userInfo);
       await expect(promise).resolves.toStrictEqual(userInfo);
     });
   });

@@ -134,12 +134,12 @@ export interface IFluidTenantInfo {
 
 /**
  * @hidden
- * Returned from `LiveShareHost.getUserInfo()` to specify the client info for a
+ * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
  * particular client in a Live Share session.
  *
  * @beta
  */
-export interface IClientUserInfo {
+export interface IClientInfo {
   userId: string;
   roles: UserMeetingRole[];
   displayName?: string;
@@ -274,11 +274,11 @@ export class LiveShareHost {
    *
    * @beta
    */
-  public getUserInfo(clientId: string): Promise<IClientUserInfo | undefined> {
-    return new Promise<IClientUserInfo | undefined>((resolve) => {
+  public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+    return new Promise<IClientInfo | undefined>((resolve) => {
       ensureSupported();
 
-      resolve(sendAndHandleSdkError('interactive.getUserInfo', clientId));
+      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
     });
   }
 
