@@ -267,7 +267,7 @@ export class LiveShareHost {
 
   /**
    * @hidden
-   * Returns the `IUserInfo` associated with a client ID.
+   * Returns the `IClientInfo` associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.
    * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
