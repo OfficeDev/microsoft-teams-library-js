@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated `dialog.url.submit` to work only from frameContext `task`. ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
