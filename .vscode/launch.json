@@ -5,13 +5,9 @@
       "type": "pwa-node",
       "request": "launch",
       "name": "Debug compare bundle analysis",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\tools\\cli\\compareBundleAnalysis.js",
-      "outFiles": [
-        "${workspaceFolder}/tools/**/*.js"
-      ]
+      "outFiles": ["${workspaceFolder}/tools/**/*.js"]
     },
     {
       "type": "node",
@@ -23,12 +19,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch yarn command",
-      "runtimeExecutable": "yarn",
+      "name": "Launch pnpm command",
+      "runtimeExecutable": "pnpm",
       "cwd": "${workspaceFolder}",
-      "runtimeArgs": [
-        "build-sdk"
-      ]
+      "runtimeArgs": ["build-sdk"]
     },
     {
       "type": "node",
@@ -38,14 +32,8 @@
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "yarn",
-      "args": [
-        "test",
-        "--",
-        "--",
-        "--runInBand",
-        "--watchAll=false"
-      ]
-    },
+      "runtimeExecutable": "pnpm",
+      "args": ["test", "--", "--", "--runInBand", "--watchAll=false"]
+    }
   ]
 }

@@ -36,12 +36,14 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    contentBase: path.join(__dirname, 'build'),
-    publicPath: '/',
+    static: {
+      directory: path.join(__dirname, 'build'),
+      publicPath: '/',
+    },
     compress: true,
     port: 4002,
     https: true,
-    disableHostCheck: true,
+    allowedHosts: 'all',
   },
   performance: { hints: false },
   plugins: [new HtmlWebPackPlugin({ template: './index.html', filename: 'index.html' })],

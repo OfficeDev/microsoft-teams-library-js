@@ -12,13 +12,13 @@ If you would like to run this app on its own locally, please follow the steps be
 cd {monorepo root}
 
 // Ensuring you have installed and built the Teams JavaScript client SDK
-yarn install
-yarn build
+pnpm install
+pnpm build
 
-yarn start-blazor-app
+pnpm start-blazor-app
 ```
 
-or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory blazor-test-app, simply `yarn build` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory blazor-test-app, simply `pnpm build` and `pnpm start` there.
 
 Once starting the app, it will run on https://localhost:44302. Upon visiting the page, the text `Congratulations` on the page indicates the c# app is working properly, otherwise an error will be thrown in the console and the webpage will not render.
 
