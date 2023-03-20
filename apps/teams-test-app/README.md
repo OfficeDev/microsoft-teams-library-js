@@ -12,17 +12,17 @@ If you would like to run this app on its own locally, please follow the steps be
 cd {monorepo root}
 
 // Ensuring you have installed and built the Teams JavaScript client SDK
-yarn install
-yarn build
+pnpm install
+pnpm build
 
-yarn start-test-app
+pnpm start-test-app
 ```
 
-or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory teams-test-app, simply `yarn build` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory teams-test-app, simply `pnpm build` and `pnpm start` there.
 
 ## Troubleshooting
 
-- If you see a directory view of some files after starting the app rather than the test app itself (which should simply be some boxes and buttons), please try removing all three node_modules folders from the repo (you can utilize our yarn clean:all command at the monorepo root) then redoing the yarn commands above.
+- If you see a directory view of some files after starting the app rather than the test app itself (which should simply be some boxes and buttons), please try removing all three node_modules folders from the repo (you can utilize our pnpm clean:all command at the monorepo root) then redoing the pnpm commands above.
 
 - Due to Windows loopback security features, you may see a warning from your browser when running the test app saying that your connection is not private. Click Advanced -> Continue to localhost to proceed to the app.
 

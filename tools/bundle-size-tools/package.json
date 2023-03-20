@@ -7,9 +7,9 @@
   "main": "./dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "yarn clean && yarn lint && yarn tsc",
+    "build": "pnpm clean && pnpm lint && pnpm tsc",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "lint": "yarn eslint --max-warnings 0 --fix --ext .tsx"
+    "lint": "pnpm eslint --max-warnings 0 --fix --ext .tsx"
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.2",
