@@ -414,8 +414,6 @@ export namespace meeting {
       runtime,
       FrameContexts.sidePanel,
       FrameContexts.meetingStage,
-      FrameContexts.settings,
-      FrameContexts.content,
       FrameContexts.task,
     );    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
