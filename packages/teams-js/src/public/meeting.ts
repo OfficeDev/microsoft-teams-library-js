@@ -410,8 +410,14 @@ export namespace meeting {
     if (!callback) {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
-    ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
+    ensureInitialized(
+      runtime,
+      FrameContexts.sidePanel,
+      FrameContexts.meetingStage,
+      FrameContexts.settings,
+      FrameContexts.content,
+      FrameContexts.task,
+    );    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
   }
 
   /**
