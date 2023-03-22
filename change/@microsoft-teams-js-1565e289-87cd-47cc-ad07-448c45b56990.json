@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Changed return type of the callback of `registerForVideoEffect` to return a Promise",
-  "packageName": "@microsoft/teams-js",
-  "email": "wenghe@microsoft.com",
-  "dependentChangeType": "patch"
-}

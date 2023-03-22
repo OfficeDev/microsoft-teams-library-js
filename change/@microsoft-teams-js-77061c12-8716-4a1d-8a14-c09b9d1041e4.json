@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed legacy endpoints from `IFluidTenantInfo` interface",
+  "packageName": "@microsoft/teams-js",
+  "email": "pradan@microsoft.com",
+  "dependentChangeType": "patch"
+}

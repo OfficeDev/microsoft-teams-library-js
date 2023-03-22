@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Released v2.8.0",
+  "comment": "Modified prepBetaRelease script",
   "packageName": "@microsoft/teams-js",
   "email": "jdahiya8719@outlook.com",
   "dependentChangeType": "none"

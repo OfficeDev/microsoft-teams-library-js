@@ -12,7 +12,7 @@ Please review the [architectural guidelines](https://github.com/OfficeDev/micros
 2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
 3. Create a branch off the `main` branch in your fork. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
 4. Commit your changes.
-5. Run `yarn changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Change Log section.
+5. Run `pnpm changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Change Log section.
 6. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
 7. A user with write access to the upstream repo will need to trigger the checks that run on pull requests in the repo.
 8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch and/or fork.
@@ -46,7 +46,7 @@ the PR.
 
 [Beachball](https://microsoft.github.io/beachball/) is a semantic version bumper that also has an automated tool to ask contributors to log changes in a simple CLI manner.
 
-The TeamsJS Client library contains a [Change Log](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `yarn changefile` from the monorepo root to generate change files.
+The TeamsJS Client library contains a [Change Log](./packages/teams-js/CHANGELOG.md) for substantial changes in the `<root>/packages/teams-js` directory. If you make any changes to the `<root>/packages/teams-js` directory (you can see the exception files and directories in [beachball.config.js](./beachball.config.js`)), you must run `pnpm changefile` from the monorepo root to generate change files.
 
 Beachball generates JSON change files based on a few simple answers from you:
 
@@ -61,7 +61,7 @@ Beachball generates JSON change files based on a few simple answers from you:
   - Please use past tense (e.g., "Added comments to \`app.initialize\`")
   - Enclose function/interface/enum/etc. names in backticks
 
-And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run `yarn changefile` in the monorepo root to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you generated a change file and will fail if you forgot. If they do, please create the change file as per the steps listed and update the content accordingly.
+And that's it! As easy as hitting 'enter' twice. Beachball will automatically commit the change file you've created. All you have to do is run `pnpm changefile` in the monorepo root to do the above change file generation as the last step in your branch to make sure your PR is ready for review. Our pipelines will check to see if you generated a change file and will fail if you forgot. If they do, please create the change file as per the steps listed and update the content accordingly.
 
 ## Contributor License
 
