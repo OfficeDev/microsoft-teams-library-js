@@ -8,6 +8,6 @@
     "start": "dotnet run"
   },
   "devDependencies": {
-    "@microsoft/teams-js": "file:../../packages/teams-js"
+    "@microsoft/teams-js": "workspace:*"
   }
 }
