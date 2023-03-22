@@ -92,7 +92,7 @@ describe('videoEx', () => {
     it('FRAMED - should successfully send registerForVideoFrame message', async () => {
       await framedPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
-      const message = framedPlatformMock.findMessageByFunc('video.sharedFrame.registerForVideoFrame');
+      const message = framedPlatformMock.findMessageByFunc('video.registerForVideoFrame');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toEqual(videoFrameConfig);
@@ -101,7 +101,7 @@ describe('videoEx', () => {
     it('FRAMELESS - should successfully send registerForVideoFrame message', async () => {
       await framelessPlatformMock.initializeWithContext(FrameContexts.sidePanel);
       videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
-      const message = framelessPlatformMock.findMessageByFunc('video.sharedFrame.registerForVideoFrame');
+      const message = framelessPlatformMock.findMessageByFunc('video.registerForVideoFrame');
       expect(message).not.toBeNull();
       expect(message.args.length).toBe(1);
       expect(message.args[0]).toHaveProperty('audioInferenceModel');
