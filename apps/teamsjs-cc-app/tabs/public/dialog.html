@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
+</head>
+<title>Dialog</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+            "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #eeeeee;
+    }
+
+</style>
+</head>
+
+<body class="ms-Fabric">
+    <script src="https://res.cdn.office.net/teams-js/2.0.0/js/MicrosoftTeams.min.js"
+        integrity="sha384-QtTBFeFlfRDZBfwHJHYQp7MdLJ2C3sfAEB1Qpy+YblvjavBye+q87TELpTnvlXw4"
+        crossorigin="anonymous"></script>
+    <form id="myForm">
+        <div>
+            <input type="text" id="notes" name="notes" />
+        </div>
+        <div>
+            <button class="" type="submit" tabindex="2">Save</button>
+        </div>
+    </form>
+    <script type="text/javascript">
+        microsoftTeams.app.initialize().then(() => {
+            microsoftTeams.app.getContext().then(async (context) => {
+                document.getElementById('myForm').addEventListener('submit', async (e) => {
+                    let myFormInfo = {
+                        notes: document.forms["myForm"]["notes"].value,
+                    };
+                    await microsoftTeams.dialog.submit(myFormInfo, 'c939f284-fdf2-4024-b38f-dece4ca29914');
+                    return true;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

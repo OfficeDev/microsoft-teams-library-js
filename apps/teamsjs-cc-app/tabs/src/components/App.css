@@ -1,0 +1,110 @@
+.center {
+    text-align: center
+}
+
+.ui_action .ui-flex {
+    width: max-content;
+}
+
+.ui-icon {
+    padding-right: 0.2rem;
+}
+
+.ui_action .ui-table__cell__content {
+    display: flex;
+    align-items: center;
+}
+
+.ui-pagessegment {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.1rem;
+}
+
+.ui-pagestext {
+    margin: 0.5rem 0 1.5rem 0;
+}
+
+.ui-pagesbtn {
+    max-width: fit-content !important;
+}
+
+.ui-table__row:nth-child(2) {
+    height: auto;
+    min-height: 46.4px;
+}
+
+.tableFixHead {
+    margin-top: 4px;
+    padding-top: unset !important;
+
+}
+
+.tableFixHead .ui-table__header {
+    position: sticky;
+    /* make the table heads sticky */
+    top: 0px;
+    /* table head will be placed from the top of the table and sticks to it */
+    z-index: 1;
+}
+
+.ui-table {
+    border-collapse: collapse;
+    /* make the table borders collapse to each other */
+    width: 100%;
+}
+
+.ui_deprecated {
+    right: 0px;
+    position: absolute;
+}
+
+@media screen and (min-width: 700px) {
+    .ui-table__cell:not(:last-child) {
+        max-width: 10%;
+    }
+
+    .ui-table__cell:first-child {
+        max-width: 10%;
+    }
+
+    .ui_action .ui-table__cell__content textarea {
+        height: 100px;
+        width: 600px;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .ui-table__cell:not(:last-child) {
+        max-width: 6%;
+    }
+
+    .ui-table__cell:first-child {
+        max-width: 9%;
+    }
+
+    .ui_action .ui-table__cell__content textarea {
+        height: 100px;
+        width: 600px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .ui-table__cell:not(:last-child) {
+        max-width: 15%;
+    }
+
+    .ui-table__cell:first-child {
+        max-width: 20%;
+    }
+}
+
+.ui_teamscore {
+    height: unset !important;
+    width: 200px !important;
+}
+
+.ui_location {
+    height: unset !important;
+    width: 300px !important;
+}

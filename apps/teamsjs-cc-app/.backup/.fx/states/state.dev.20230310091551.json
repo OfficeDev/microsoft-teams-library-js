@@ -1,0 +1,16 @@
+{
+    "solution": {
+        "provisionSucceeded": false,
+        "teamsAppTenantId": "e0b2b44e-bb1c-40e9-a84c-e295bafd326a",
+        "subscriptionId": "4d656246-b703-4454-873d-58670b9489ad",
+        "subscriptionName": "O365 SM",
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "needCreateResourceGroup": true,
+        "resourceGroupName": "TeamJSCapabilityChecker-dev-rg",
+        "location": "West US",
+        "resourceNameSuffix": "75983e"
+    },
+    "fx-resource-appstudio": {
+        "tenantId": "e0b2b44e-bb1c-40e9-a84c-e295bafd326a"
+    }
+}
