@@ -158,9 +158,9 @@ importers:
 
   apps/blazor-test-app:
     specifiers:
-      '@microsoft/teams-js': file:../../packages/teams-js
+      '@microsoft/teams-js': workspace:*
     devDependencies:
-      '@microsoft/teams-js': file:packages/teams-js
+      '@microsoft/teams-js': link:../../packages/teams-js
 
   apps/sample-app:
     specifiers:
@@ -3301,7 +3301,7 @@ packages:
     dev: true
 
   /@nrwl/nx-darwin-arm64/15.8.2:
-    resolution: {integrity: sha1-CjMWO3Gi2QwYSccDPy4TQI0OlvQ=}
+    resolution: {integrity: sha512-H9geHEI6+9Ww58OH351QpnuuaKIMltG/So58xerVlPK3PHylHpp/f8G+7Ui78TV1Hqvm2mpVIrP46lPS4a46EQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -3310,7 +3310,7 @@ packages:
     optional: true
 
   /@nrwl/nx-darwin-x64/15.8.2:
-    resolution: {integrity: sha1-q7hcN53hBxmjnCRZF0P2dw7ACvY=}
+    resolution: {integrity: sha512-wZdrldpbWOAOwrwS+bbhGuFR7bUYfuOc3BInLn5xhVhT5oGw5s6W08c/wK5ZcM2osROAbb7GZFVRCn2e9NlFyw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -3319,7 +3319,7 @@ packages:
     optional: true
 
   /@nrwl/nx-linux-arm-gnueabihf/15.8.2:
-    resolution: {integrity: sha1-OLsdRI1aZtxJqnN/yd3oGNTe/RA=}
+    resolution: {integrity: sha512-Lsc6eLjS8bqFSqZBA3a+7RQk/HAXP3SsTlhaTAqxk4QPlOQXHnDhkcwIeycjzumkDz5HRDvDOwh2TMSYTpALag==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -3328,7 +3328,7 @@ packages:
     optional: true
 
   /@nrwl/nx-linux-arm64-gnu/15.8.2:
-    resolution: {integrity: sha1-9ie8pBZhTmOC21bPDSfzr0Ma1TM=}
+    resolution: {integrity: sha512-EKO9u2nox8r7Z6Tjttm36C8z2uTe2/LGPtTb5fHmkG9uStXaWEHaqMMs5Gqd03V6BzO0TypbwrdTwIMmQ1ICQw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -3338,7 +3338,7 @@ packages:
     optional: true
 
   /@nrwl/nx-linux-arm64-musl/15.8.2:
-    resolution: {integrity: sha1-eWnN3Wi6+Z92Bsq3CLfor2JIH5A=}
+    resolution: {integrity: sha512-MQk3LydQZFz4vRGEEEeyB6XjAJVOyYdwDB/3WVylS5iyZPWhKKdcoaXYvdz38fDcU9bqFyrpRlTAistr2A64iA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -3348,7 +3348,7 @@ packages:
     optional: true
 
   /@nrwl/nx-linux-x64-gnu/15.8.2:
-    resolution: {integrity: sha1-afHRBvRfG6kEDxZjvYtnr+H42uE=}
+    resolution: {integrity: sha512-BEyH2OBBdFMWqjaCX/rtPgrGxngafeg4160u0lAqV2nexyvdLHwxIT/266bF+loICmAwPWlUNvW963/Xl4f0iA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -3358,7 +3358,7 @@ packages:
     optional: true
 
   /@nrwl/nx-linux-x64-musl/15.8.2:
-    resolution: {integrity: sha1-V/5lPmx8KD2RGMrLljWBqrHWf6A=}
+    resolution: {integrity: sha512-8I0a4bruF6ESATk0Q4dOBXeXZ1w9BFkP3DJ0iZltHu1YgbNC0btuBFVg7n2p9SNqIvxzigxyYlfqE+BPGKm01w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -3368,7 +3368,7 @@ packages:
     optional: true
 
   /@nrwl/nx-win32-arm64-msvc/15.8.2:
-    resolution: {integrity: sha1-uKiNUPiAo7tVaYTJOThkQRoVIT0=}
+    resolution: {integrity: sha512-E8WAbC/wI/7Px7r0EEREy+UD7LLNhlIEVC+OQUt1mthBxyKuci5l6NkNghpAxcCtFl9353aZ4AlWy8EtuT1i4Q==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -3377,7 +3377,7 @@ packages:
     optional: true
 
   /@nrwl/nx-win32-x64-msvc/15.8.2:
-    resolution: {integrity: sha1-dCSA/pnaNtwgSJASk9nLJkgWUC4=}
+    resolution: {integrity: sha512-QKCNmOyQSxFtwxxEGGohIwYr1QXFyUVyQtsNIhB3g/nJ62IDjuURffnDFi92UeWyfyvLJLMEWrKwYehegRnezw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -6274,7 +6274,7 @@ packages:
     dev: true
 
   /encoding/0.1.13:
-    resolution: {integrity: sha1-VldK/deR9UqOmyeFwFgqLSYhD6k=}
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
     requiresBuild: true
     dependencies:
       iconv-lite: 0.6.3
@@ -7112,7 +7112,7 @@ packages:
     dev: true
 
   /fsevents/2.3.2:
-    resolution: {integrity: sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro=}
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -12196,7 +12196,7 @@ packages:
     dev: true
 
   /uglify-js/3.17.4:
-    resolution: {integrity: sha1-YWeM9fo/W363ibs0XfKa+4JXwiw=}
+    resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
@@ -12993,15 +12993,4 @@ packages:
       archiver-utils: 2.1.0
       compress-commons: 4.1.1
       readable-stream: 3.6.1
-    dev: true
-
-  file:packages/teams-js:
-    resolution: {directory: packages/teams-js, type: directory}
-    name: '@microsoft/teams-js'
-    version: 2.9.1
-    dependencies:
-      '@types/dom-webcodecs': 0.1.3
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
     dev: true
