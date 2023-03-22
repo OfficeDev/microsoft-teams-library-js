@@ -35,7 +35,7 @@ steps:
       )
 
   - script: |
-      pnpm build
+      pnpm build-force-blazor
     displayName: 'pnpm build'
 
   - script: |
