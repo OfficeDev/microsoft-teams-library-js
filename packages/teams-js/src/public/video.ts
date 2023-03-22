@@ -293,6 +293,18 @@ export namespace video {
    */
   export namespace sharedFrame {
     /**
+     * Checks if video.sharedFrame capability is supported by the host
+     * @beta
+     * @returns boolean to represent whether the video capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.video?.sharedFrame ? true : false;
+    }
+
+    /**
      * Represents a video frame
      * @beta
      */

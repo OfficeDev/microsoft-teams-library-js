@@ -204,7 +204,9 @@ export const teamsRuntimeConfig: Runtime = {
       fullTrust: {},
     },
     teamsCore: {},
-    video: {},
+    video: {
+      sharedFrame: {},
+    },
   },
 };
 
