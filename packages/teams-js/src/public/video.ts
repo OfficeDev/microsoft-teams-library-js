@@ -134,7 +134,7 @@ export namespace video {
   /**
    * @beta
    * Namespace to get video frames from a media stream.
-   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link registerForVideoFrame} to get the video frames, callback of {@link registerForVideoFrame} will be ignored when the host supports this capability.
+   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link sharedFrame.registerForVideoFrame}, callback of {@link sharedFrame.registerForVideoFrame} will be ignored when the host supports this capability.
    */
   export namespace mediaStream {
     /**
@@ -286,6 +286,11 @@ export namespace video {
     }
   }
 
+  /**
+   * @beta
+   * Namespace to get shared video framed.
+   * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames instead of {@link mediaStream.registerForVideoFrame}, callback of {@link mediaStream.registerForVideoFrame} will be ignored when the host supports this capability.
+   */
   export namespace sharedFrame {
     /**
      * Represents a video frame
