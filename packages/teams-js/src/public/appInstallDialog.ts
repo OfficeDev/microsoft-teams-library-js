@@ -45,6 +45,6 @@ export namespace appInstallDialog {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.appInstallDialog ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.appInstallDialog);
   }
 }

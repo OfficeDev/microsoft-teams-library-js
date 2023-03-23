@@ -103,7 +103,7 @@ export namespace teams {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.teams ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.teams);
   }
 
   /**

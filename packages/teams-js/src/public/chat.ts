@@ -141,6 +141,6 @@ export namespace chat {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.chat ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.chat);
   }
 }

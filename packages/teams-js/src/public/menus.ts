@@ -242,6 +242,6 @@ export namespace menus {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.menus ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.menus);
   }
 }

@@ -37,7 +37,7 @@ export namespace mail {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.mail ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.mail);
   }
 
   export interface OpenMailItemParams {

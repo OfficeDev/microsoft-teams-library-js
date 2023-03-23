@@ -125,6 +125,6 @@ export namespace search {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.search ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.search);
   }
 }

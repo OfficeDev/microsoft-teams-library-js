@@ -338,7 +338,7 @@ export namespace dialog {
    * @hidden
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.dialog ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.dialog);
   }
 
   /**

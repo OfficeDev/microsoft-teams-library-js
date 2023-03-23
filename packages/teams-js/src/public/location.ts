@@ -122,6 +122,6 @@ export namespace location {
    * @returns boolean to represent whether Location is supported
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.location ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.location);
   }
 }

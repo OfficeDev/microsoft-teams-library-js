@@ -234,7 +234,7 @@ export namespace pages {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.pages ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.pages);
   }
 
   /**

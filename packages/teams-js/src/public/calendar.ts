@@ -51,7 +51,7 @@ export namespace calendar {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.calendar ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.calendar);
   }
 
   export interface OpenCalendarItemParams {

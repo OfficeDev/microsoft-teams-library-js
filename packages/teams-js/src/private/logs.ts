@@ -52,6 +52,6 @@ export namespace logs {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.logs ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.logs);
   }
 }

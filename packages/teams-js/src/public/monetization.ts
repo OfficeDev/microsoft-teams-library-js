@@ -97,6 +97,6 @@ export namespace monetization {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.monetization ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.monetization);
   }
 }

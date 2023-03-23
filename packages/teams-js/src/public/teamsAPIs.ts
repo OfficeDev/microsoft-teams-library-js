@@ -138,6 +138,6 @@ export namespace teamsCore {
    *
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.teamsCore ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.teamsCore);
   }
 }

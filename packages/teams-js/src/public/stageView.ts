@@ -78,6 +78,6 @@ export namespace stageView {
    *
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.stageView);
   }
 }

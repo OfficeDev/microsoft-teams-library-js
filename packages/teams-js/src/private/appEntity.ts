@@ -117,6 +117,6 @@ export namespace appEntity {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.appEntity ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.appEntity);
   }
 }

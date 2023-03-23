@@ -220,7 +220,7 @@ export namespace video {
    *
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.video ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.video);
   }
 
   /**

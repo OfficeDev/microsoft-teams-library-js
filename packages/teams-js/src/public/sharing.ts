@@ -160,6 +160,6 @@ export namespace sharing {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.sharing);
   }
 }

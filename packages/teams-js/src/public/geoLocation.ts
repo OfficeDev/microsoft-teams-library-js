@@ -99,7 +99,7 @@ export namespace geoLocation {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.geoLocation && runtime.supports.permissions ? true : false;
+    return !!(ensureInitialized(runtime) && runtime.supports.geoLocation && runtime.supports.permissions);
   }
 
   /**
@@ -151,12 +151,12 @@ export namespace geoLocation {
      * @beta
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) &&
+      return !!(
+        ensureInitialized(runtime) &&
         runtime.supports.geoLocation &&
         runtime.supports.geoLocation.map &&
         runtime.supports.permissions
-        ? true
-        : false;
+      );
     }
   }
 }
