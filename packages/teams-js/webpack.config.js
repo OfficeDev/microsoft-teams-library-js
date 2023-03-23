@@ -30,6 +30,7 @@ module.exports = {
     },
     //Prevents 'self' object conflict between nodejs and nextjs
     //globalObject: "typeof self !== 'undefined' ? self : this",
+    globalObject: 'this',
   },
   devtool: 'source-map',
   resolve: {
