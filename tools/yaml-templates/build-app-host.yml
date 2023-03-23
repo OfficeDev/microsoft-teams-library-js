@@ -80,7 +80,7 @@ steps:
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - script: |
-      pnpm build
+      pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
