@@ -173,6 +173,11 @@ export namespace videoEx {
     notifyError(errorMessage, ErrorLevel.Fatal);
   }
 
+  /**
+   * @beta
+   * Namespace to get shared video framed.
+   * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames.
+   */
   export namespace sharedFrame {
     /**
      * @hidden
