@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added documentation to interfaces in mail capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
