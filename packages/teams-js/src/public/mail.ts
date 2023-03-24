@@ -53,7 +53,7 @@ export namespace mail {
 
   /**
    * Foundational interface for all other mail compose interfaces
-   * Used to holding the type of mail item being composed
+   * Used for holding the type of mail item being composed
    *
    * @see {@link ComposeMailType}
    */
@@ -101,7 +101,7 @@ export namespace mail {
   }
 
   /**
-   * Parameters supplied to {@link composeMail} to compose a new mail item
+   * Parameters supplied to {@link composeMail} when composing a new mail item
    *
    * @see {@link ComposeNewParams}
    * @see {@link ComposeReplyOrForwardParams}
