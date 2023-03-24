@@ -2,11 +2,16 @@
   "name": "teams-js-monorepo",
   "private": true,
   "author": "Microsoft Teams",
+  "engines": {
+    "pnpm": "7.30.1"
+  },
   "scripts": {
     "build": "lerna run build --stream",
+    "build-force-blazor": "pnpm build && pnpm build-blazor-app",
     "build:clean": "pnpm clean && pnpm build",
     "bundleAnalyze": "pnpm --filter @microsoft/bundle-analysis-app webpack:profile",
     "bundleAnalyze:collect": "pnpm bundleAnalyze && node tools/cli/collectBundleAnalysis.js --folderName bundleAnalysis",
+    "build-blazor-app": "pnpm --filter blazor-test-app blazor-build",
     "build-test-app-CDN": "pnpm --filter teams-test-app build:CDN",
     "build-test-app-local": "pnpm --filter teams-test-app build:local",
     "build-test-app-V1": "pnpm --filter teams-test-app build:CDNV1",
