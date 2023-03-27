@@ -8,11 +8,11 @@ import { dialog } from "@microsoft/teams-js";
  */
 export const Dialog = () => {
     // check to see if capability is supported
-    if (dialog.isSupported()) {
+    if (dialog.url.isSupported()) {
         // return buttons to open dialog
         return (
             <Button onClick={() => {
-                const baseUrl = `https://${window.location.hostname}:${window.location.port}`;
+                const baseUrl = `https://${window.location.host}`;
 
                 dialog.url.open({
                     title: 'Dialog Example',
@@ -33,10 +33,8 @@ export const Dialog = () => {
             </Button>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const DialogUrlIsSupported = () => booleanToString(dialog.url.isSupported());
-export const DialogAdaptivecardIsSupported = () => booleanToString(dialog.adaptiveCard.isSupported());
-

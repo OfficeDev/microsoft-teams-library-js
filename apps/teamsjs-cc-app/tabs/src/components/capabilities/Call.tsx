@@ -28,8 +28,8 @@ export const Call = () => {
             </Button>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const CallIsSupported = () => booleanToString(call.isSupported());

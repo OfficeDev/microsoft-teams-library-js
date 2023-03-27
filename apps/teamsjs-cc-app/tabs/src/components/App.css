@@ -25,10 +25,6 @@
     margin: 0.5rem 0 1.5rem 0;
 }
 
-.ui-pagesbtn {
-    max-width: fit-content !important;
-}
-
 .ui-table__row:nth-child(2) {
     height: auto;
     min-height: 46.4px;
@@ -36,7 +32,6 @@
 
 .tableFixHead {
     margin-top: 4px;
-    padding-top: unset !important;
 
 }
 
@@ -54,9 +49,13 @@
     width: 100%;
 }
 
-.ui_deprecated {
-    right: 0px;
-    position: absolute;
+.ui_action .ui-table__cell__content .ui_app {
+    height: 100px;
+    width: 600px;
+}
+
+.ui_location {
+    width: 300px;
 }
 
 @media screen and (min-width: 700px) {
@@ -66,11 +65,6 @@
 
     .ui-table__cell:first-child {
         max-width: 10%;
-    }
-
-    .ui_action .ui-table__cell__content textarea {
-        height: 100px;
-        width: 600px;
     }
 }
 
@@ -82,11 +76,6 @@
     .ui-table__cell:first-child {
         max-width: 9%;
     }
-
-    .ui_action .ui-table__cell__content textarea {
-        height: 100px;
-        width: 600px;
-    }
 }
 
 @media screen and (max-width: 700px) {
@@ -97,14 +86,4 @@
     .ui-table__cell:first-child {
         max-width: 20%;
     }
-}
-
-.ui_teamscore {
-    height: unset !important;
-    width: 200px !important;
-}
-
-.ui_location {
-    height: unset !important;
-    width: 300px !important;
 }

@@ -14,7 +14,7 @@ export const Chat = () => {
                 <Button onClick={async () => {
                     await chat.openChat({
                         user: 'AdeleV@6plbfs.onmicrosoft.com',
-                        message: "Chat with one person"
+                        message: "This is the first message you are sending to AdeleV"
                     })
                 }}>
                     Start Chat
@@ -25,7 +25,7 @@ export const Chat = () => {
                             'AdeleV@6plbfs.onmicrosoft.com',
                             'AlexW@6plbfs.onmicrosoft.com'
                         ],
-                        message: "Chat with more than one person",
+                        message: "This is the first message you are sending to Group Chat",
                         topic: "Group Chat"
                     })}>
                     Start Group Chat
@@ -33,8 +33,8 @@ export const Chat = () => {
             </Flex>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const ChatIsSupported = () => booleanToString(chat.isSupported());

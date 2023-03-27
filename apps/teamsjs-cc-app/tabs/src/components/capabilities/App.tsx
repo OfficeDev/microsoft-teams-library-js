@@ -28,12 +28,12 @@ export const App = () => {
                 }}> Get Context
                 </Button>
                 {showText &&
-                    <TextArea fluid inverted value={text} />}
+                    <TextArea className="ui_app" fluid inverted value={text} />}
             </Flex>
         )
     }
-    // return empty fragment if app has not been initialized
-    return (<></>);
+    // return empty fragment if capability is not supported
+    return (<>Capability is not supported</>);
 }
 
 export const AppIsSupported = () => booleanToString(true);

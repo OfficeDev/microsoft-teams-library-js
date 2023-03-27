@@ -1,3 +1,5 @@
+import { developersPortalAppId, developersPortalThreadId } from "../../helpers/constants";
+
 import { Button } from "@fluentui/react-northstar";
 import { booleanToString } from "../../helpers";
 import { stageView } from "@microsoft/teams-js";
@@ -12,9 +14,9 @@ export const StageView = () => {
             <Button onClick={async () => {
                 // open Developer Portal app in stage view
                 await stageView.open({
-                    appId: "14072831-8a2a-4f76-9294-057bf0b42a68",
+                    appId: developersPortalAppId,
                     contentUrl: 'https://dev.teams.microsoft.com/home?host=teams',
-                    threadId: '28:0c5cfdbb-596f-4d39-b557-5d9516c94107',
+                    threadId: developersPortalThreadId,
                     title: 'Developer Portal'
                 })
             }}>
@@ -22,8 +24,8 @@ export const StageView = () => {
             </Button>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const StageViewIsSupported = () => booleanToString(stageView.isSupported());

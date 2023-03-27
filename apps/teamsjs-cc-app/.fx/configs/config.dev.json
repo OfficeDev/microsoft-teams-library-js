@@ -4,10 +4,10 @@
     "manifest": {
         "appName": {
             "short": "TeamsJSCapabilityChecker",
-            "full": "Teams JS Capability Checker"
+            "full": "Full name for TeamsJSCapabilityChecker"
         },
         "description": {
-            "short": "Sample application to demonstrate the capabilities of Teams JS SDK v2",
+            "short": "Capabilities Matrix Sample App",
             "full": "Sample application to demonstrate the capabilities of Teams JS SDK v2 in Microsoft Teams apps extended across Outlook and Microsoft 365. For more information visit [SDK documentation page](https://learn.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-latest&tabs=npm) "
         },
         "icons": {

@@ -1,19 +1,26 @@
 import { utils, write, writeFile } from "xlsx";
 
-export function createCsv(jsonString: string, client: string) {
+import { ICapabilityStatus } from "../components/Tab";
+
+/**
+ * Creates a .csv file
+ * @param defaultRowList, type of ICapabilityStatus[]
+ * @param client, type of string 
+ */
+export function createCsv(defaultRowList: ICapabilityStatus[], client: string) {
     try {
-        const jsonData = JSON.parse(jsonString);
-        const worksheet = utils.json_to_sheet(jsonData);
+        //creates a worksheet using json data
+        const worksheet = utils.json_to_sheet(defaultRowList);
+        //creates a new workbook
         const workBook = utils.book_new();
-
+        //Apend worksheet to workbook
         utils.book_append_sheet(workBook, worksheet, client);
-
+        // writes woorkbook 
         write(workBook, { bookType: 'xlsx', type: 'buffer' });
-
         write(workBook, { bookType: 'xlsx', type: 'binary' });
 
-        writeFile(workBook, "Capabilities.csv");
+        writeFile(workBook, `Capabilities_${client}.csv`);
     } catch (error) {
-        console.log("Error:", error);
+        console.error("Something went wrong:", error);
     }
 }

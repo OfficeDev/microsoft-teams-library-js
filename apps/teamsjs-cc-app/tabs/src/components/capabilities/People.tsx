@@ -34,10 +34,10 @@ export const People = () => {
                 </Button>
                 <Button onClick={async () => {
                     try {
-                        const { user } = await app.getContext();
-                        if (!user?.id) { throw new Error("No user ID"); }
+                        const context = await app.getContext() as app.Context;
+                        if (context.user?.id) { throw new Error("No user ID"); }
                         const picked = await people.selectPeople({
-                            setSelected: [user.id]
+                            setSelected: [context.user ? context.user.id : ""]
                         });
                         console.log(picked);
                     } catch {
@@ -73,8 +73,8 @@ export const People = () => {
             </Flex>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const PeopleIsSupported = () => booleanToString(people.isSupported());

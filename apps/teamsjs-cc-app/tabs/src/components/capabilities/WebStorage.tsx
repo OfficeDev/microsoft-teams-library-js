@@ -17,8 +17,8 @@ export const WebStorage = () => {
             </Button>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const WebStorageIsSupported = () => booleanToString(webStorage.isSupported());

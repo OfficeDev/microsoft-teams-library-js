@@ -1,43 +1,43 @@
 import * as Fluent from "@fluentui/react-northstar";
 
-import { App, AppIsSupported } from "./capabilities/App";
-import { AppInstallDialog, AppInstallDialogIsSupported } from "./capabilities/AppInstallDialog";
-import { BarCode, BarCodeIsSupported } from "./capabilities/BarCode";
-import { Calendar, CalendarIsSupported } from "./capabilities/Calendar";
-import { Call, CallIsSupported } from "./capabilities/Call";
-import { Chat, ChatIsSupported } from "./capabilities/Chat";
-import { Dialog, DialogAdaptivecardIsSupported, DialogUrlIsSupported } from "./capabilities/Dialog";
-import { GeoLocation, GeoLocationIsSupported } from "./capabilities/GeoLocation";
-import { IsPagesCurrentAppSupported, PagesCurrent } from "./capabilities/Pages.Current";
-import { Mail, MailIsSupported } from "./capabilities/Mail";
-import { Menus, MenusIsSupported } from "./capabilities/Menus";
-import { Monetization, MonetizationIsSupported } from "./capabilities/Monetization";
-import { Pages, PagesIsSupported } from "./capabilities/Pages";
-import { PagesDeprecated, PagesTabsIsSupported } from "./capabilities/Pages.deprecated";
-import { People, PeopleIsSupported } from "./capabilities/People";
-import { Profile, ProfileIsSupported } from "./capabilities/Profile";
-import { Search, SearchIsSupported } from "./capabilities/Search";
-import { Sharing, SharingIsSupported } from "./capabilities/Sharing";
-import { StageView, StageViewIsSupported } from "./capabilities/StageView";
-import { TeamsCore, TeamsCoreIsSupported } from "./capabilities/TeamsCore";
-import { Video, VideoIsSupported } from "./capabilities/Video";
-import { WebStorage, WebStorageIsSupported } from "./capabilities/WebStorage";
+import { App, AppInstallDialog, AppInstallDialogIsSupported, AppIsSupported, BarCode, BarCodeIsSupported, Calendar, CalendarIsSupported, Call, CallIsSupported, Chat, ChatIsSupported, Dialog, DialogAdaptiveCard, DialogAdaptiveCardIsSupported, DialogUrlIsSupported, GeoLocation, GeoLocationIsSupported, GeoLocationMap, GeoLocationMapIsSupported, IsPagesCurrentAppSupported, Mail, MailIsSupported, Menus, MenusIsSupported, Monetization, MonetizationIsSupported, Pages, PagesCurrent, PagesIsSupported, PagesTabs, PagesTabsIsSupported, People, PeopleIsSupported, Profile, ProfileIsSupported, Search, SearchIsSupported, Sharing, SharingIsSupported, StageView, StageViewIsSupported, TeamsCore, TeamsCoreIsSupported, Video, VideoIsSupported, WebStorage, WebStorageIsSupported } from "./capabilities";
 import { useContext, useEffect, useState } from "react";
 
 import { Button } from "@fluentui/react-northstar";
 import { Hub } from "./Host";
 import { TeamsFxContext } from "./Context";
+import { app } from "@microsoft/teams-js";
 import { createCsv } from "../helpers/writetoexcel";
 import { isMobile } from 'react-device-detect';
 import packageJSON from "../../package.json";
 
+export interface ICapabilityStatus {
+  capabilityName?: string;
+  supported: string;
+}
+
+export type Table = ICapabilityTable[];
+
+export interface ICapabilityTable {
+  key: number;
+  items: Item[];
+}
+
+export interface Item {
+  key: string;
+  content: JSX.Element | string;
+  value?: string;
+  className?: string;
+}
+
 const Tab = () => {
+  const [defaultTableRows, setDefaultTableRows] = useState([] as Table);
   const { themeString } = useContext(TeamsFxContext);
 
   const header: Fluent.ShorthandValue<Fluent.TableRowProps> = {
     key: 'header',
     items: [
-      { key: 'capability', content: <Fluent.Text size={"medium"} weight="bold" content="Capabilities" />, },
+      { key: 'capability', content: <Fluent.Text size={"medium"} weight="bold" content="Capabilities" /> },
       { key: 'supported', content: <Fluent.Text size={"medium"} weight="bold" content="Supported" /> },
       { key: 'actions', content: <Fluent.Text size={"medium"} weight="bold" content="Actions" />, className: 'ui_action' }
     ]
@@ -47,8 +47,8 @@ const Tab = () => {
   const [tableRows, setTableRows] = useState([] as Fluent.ShorthandCollection<Fluent.TableRowProps, Record<string, {}>>);
 
   async function setData() {
-    const appInstallDialog = await AppInstallDialog();
-    const barCode = await BarCode();
+    // Initialize the Microsoft Teams SDK
+    await app.initialize();
     return [
       {
         key: 0,
@@ -63,7 +63,7 @@ const Tab = () => {
         items: [
           { key: '1-1', content: <><Fluent.DownloadIcon />App Install Dialog</>, value: 'App Install Dialog' },
           { key: '1-2', content: AppInstallDialogIsSupported() },
-          { key: '1-3', content: appInstallDialog, className: 'ui_action' }
+          { key: '1-3', content: <AppInstallDialog />, className: 'ui_action' }
         ]
       },
       {
@@ -71,7 +71,7 @@ const Tab = () => {
         items: [
           { key: '2-1', content: 'Bar Code', value: 'Bar Code' },
           { key: '2-2', content: BarCodeIsSupported() },
-          { key: '2-3', content: barCode, className: 'ui_action' }
+          { key: '2-3', content: <BarCode />, className: 'ui_action' }
         ],
       },
       {
@@ -110,8 +110,8 @@ const Tab = () => {
         key: 22,
         items: [
           { key: '22-1', content: <><Fluent.CustomerHubIcon />Dialog AdaptiveCard</>, value: 'Dialog AdaptiveCard' },
-          { key: '22-2', content: DialogAdaptivecardIsSupported() },
-          { key: '22-3', content: <Dialog />, className: 'ui_action' }
+          { key: '22-2', content: DialogAdaptiveCardIsSupported() },
+          { key: '22-3', content: <DialogAdaptiveCard />, className: 'ui_action' }
         ],
       },
       {
@@ -120,6 +120,14 @@ const Tab = () => {
           { key: '7-1', content: <><Fluent.LocationIcon />Geo Location</>, value: 'Geo Location' },
           { key: '7-2', content: GeoLocationIsSupported() },
           { key: '7-3', content: <GeoLocation />, className: 'ui_action' }
+        ],
+      },
+      {
+        key: 23,
+        items: [
+          { key: '23-1', content: <><Fluent.LocationIcon />Geo Location Map</>, value: 'Geo Location Map' },
+          { key: '23-2', content: GeoLocationMapIsSupported() },
+          { key: '23-3', content: <GeoLocationMap />, className: 'ui_action' }
         ],
       },
       {
@@ -149,9 +157,9 @@ const Tab = () => {
       {
         key: 11,
         items: [
-          { key: '11-1', content: <><Fluent.FilesErrorIcon />Pages.tabs</>, value: 'Pages.tabs' },
+          { key: '11-1', content: <><Fluent.FilesErrorIcon />Pages.Tabs</>, value: 'Pages.Tabs' },
           { key: '11-2', content: PagesTabsIsSupported() },
-          { key: '11-3', content: <PagesDeprecated />, className: 'ui_action' }
+          { key: '11-3', content: <PagesTabs />, className: 'ui_action' }
         ],
       },
       {
@@ -234,28 +242,56 @@ const Tab = () => {
           { key: '21-3', content: <WebStorage />, className: 'ui_action' }
         ],
       }
-    ];
+    ] as Table;
   }
 
-  const updateCapabilityOnchange = (text: string) => {
-    setData().then((defaultRows) => {
+  /**
+   * This is used to update capability table based on user search text.
+   */
+  const updateCapabilityOnChange = (searchText: string) => {
+    try {
+      // setting supported content to false 
       if (showSupportedOnly) setShowSupportedOnly(false);
 
-      const rows = defaultRows.filter((defaultRow) => {
-        if (defaultRow.items[0].value?.toLowerCase()?.search(text.toLowerCase()) !== -1) {
+      // searching for the capability based on user search text
+      const rows = defaultTableRows.filter((defaultRow) => {
+        if (defaultRow.items[0].value?.toLowerCase()?.search(searchText.toLowerCase()) !== -1) {
           return defaultRow;
         }
+        return undefined;
       });
       setTableRows(rows);
-    }, (error) => {
-      console.log("Error", error);
-    })
+    } catch (error) {
+      console.log("Something went wrong", error);
+    }
+  }
+
+  /**
+   * This is used to download .csv file with supported and non supported capabilities
+   */
+  const downloadCapabilitiesCSV = () => {
+    try {
+      const defaultRowList: ICapabilityStatus[] = defaultTableRows.map(defaultRow => {
+        const capabilityName = defaultRow.items[0].value;
+        const supported = defaultRow.items[1].content.toString();
+
+        return { capabilityName: capabilityName, supported: supported };
+      });
+      const client = isMobile ? "Mobile" : "Desktop";
+      // creates .csv file 
+      createCsv(defaultRowList, client);
+    } catch (error) {
+      console.log("Something went wrong", error);
+    }
   }
 
   useEffect(() => {
+    //Setting rows in the table for the very first time
     setData().then((defaultRows) => {
+      setDefaultTableRows(defaultRows);
+
       if (showSupportedOnly) {
-        const rows = defaultRows.filter((r) => { return r.items[1].content === 'Yes' });
+        const rows = defaultRows.filter((r) => { return r.items[1].content === "Yes" });
         setTableRows(rows);
       } else {
         setTableRows(defaultRows);
@@ -289,27 +325,11 @@ const Tab = () => {
             <Fluent.Flex.Item>
               <Fluent.Input icon={<Fluent.SearchIcon />} placeholder="Search capability" onChange={(e: any) => {
                 const event = e as React.SyntheticEvent<HTMLInputElement, Event>;
-                updateCapabilityOnchange(event.currentTarget.value);
+                updateCapabilityOnChange(event.currentTarget.value);
               }} />
             </Fluent.Flex.Item>
             <Fluent.Flex.Item>
-              <Fluent.Button onClick={() => {
-                setData().then((defaultRows) => {
-                  const defaultRowsString = JSON.stringify(defaultRows.map(x => {
-                    const arr1 = x.items.map((y, i) => {
-                      if (i === 2) return undefined;
-                      if (i === 1) return y.content.toString();
-                      if (i === 0) return y.value;
-                    });
-                    return { Capability: arr1[0], Supported: arr1[1] };
-                  }));
-                  const client = isMobile ? "Mobile" : "Desktop";
-
-                  createCsv(defaultRowsString, client);
-                }, (error) => {
-                  console.log("Error", error);
-                })
-              }}>Download .csv</Fluent.Button>
+              <Fluent.Button onClick={() => downloadCapabilitiesCSV()}>Download .csv</Fluent.Button>
             </Fluent.Flex.Item>
           </Fluent.Flex>
         </Fluent.Segment>
@@ -320,7 +340,9 @@ const Tab = () => {
             rows={tableRows} />
         </Fluent.Segment>
         <Fluent.Segment>
-          <a href="https://forms.office.com/r/Jxh7rqrmMr"><Button> Suggestions </Button></a>
+          <a href="https://forms.office.com/r/Jxh7rqrmMr">
+            <Button> Suggestions </Button>
+          </a>
         </Fluent.Segment>
       </Fluent.Flex >
     </div >

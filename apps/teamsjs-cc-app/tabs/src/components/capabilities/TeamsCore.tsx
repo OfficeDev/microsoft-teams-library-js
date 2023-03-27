@@ -29,7 +29,7 @@ export const TeamsCore = () => {
             <Flex gap="gap.small" vAlign="center">
                 <Button onClick={() => {
                     teamsCore.enablePrintCapability();
-                    setText("Use Ctrl+P and cmd+P");
+                    setText("Use ctrl+p and cmd+p");
                     setShowText(true);
 
                 }}>
@@ -46,8 +46,8 @@ export const TeamsCore = () => {
             </Flex>
         )
     };
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's  if capability is not supported.
+    return (<>Capability is not supported</>);
 }
 
 export const TeamsCoreIsSupported = () => booleanToString(teamsCore.isSupported());

@@ -6,25 +6,36 @@ import { booleanToString } from "../../helpers";
 /**
  * This component returns button to scan barcode
  */
-export const BarCode = async () => {
-    // Initialize the Microsoft Teams SDK
-    await app.initialize();
+export const BarCode = () => {
     // Check if app is initialized
     if (app.isInitialized()) {
         // check to see if capability is supported
         if (barCode.isSupported()) {
             // return button to scan barcode
             return (
-                <Button onClick={async () => {
-                    await barCode.scanBarCode({})
-                }}>
-                    Scan Bar Code
-                </Button>
+                <>
+                    <Button onClick={async () => {
+                        await barCode.hasPermission();
+                    }}>
+                        Bar code has permission
+                    </Button>
+                    <Button onClick={async () => {
+                        await barCode.requestPermission();
+                    }}>
+                        Bar code requests permission
+                    </Button>
+                    <Button onClick={async () => {
+                        const scanString = await barCode.scanBarCode({ timeOutIntervalInSec: 30000 });
+                        console.log("Scan string", scanString);
+                    }}>
+                        Scan Bar Code
+                    </Button>
+                </>
             )
         };
     }
-    // return empty fragment if capability is not supported
-    return (<></>);
+    // return's if capability is not supported
+    return (<>Capability is not supported</>);
 }
 
 export const BarCodeIsSupported = () => booleanToString(barCode.isSupported());
