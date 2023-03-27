@@ -40,33 +40,10 @@ const RegisterForVideoEffect = (): React.ReactElement =>
     },
   });
 
-// const RegisterForVideoFrame = (): React.ReactElement =>
-//   ApiWithoutInput({
-//     name: 'registerForVideoFrame',
-//     title: 'registerForVideoFrame',
-//     onClick: async (setResult) => {
-//       if (video.mediaStream.isSupported()) {
-//         const onVideoFrame = async (frame: video.mediaStream.MediaStreamFrameData): Promise<void> => {
-//           const { videoFrame } = frame;
-//           setResult('video frame received');
-//           return videoFrame;
-//         };
-//         video.mediaStream.registerForVideoFrame(onVideoFrame);
-//       } else if (video.sharedFrame.isSupported()) {
-//         const onNewVideoFrame = async (): Promise<void> => {
-//           setResult('video frame received');
-//         };
-//         video.sharedFrame.registerForVideoFrame(onNewVideoFrame, { format: video.VideoFrameFormat.NV12 });
-//       }
-//       return generateRegistrationMsg('it is invoked on video frame received');
-//     },
-//   });
-
 const VideoAPIs = (): React.ReactElement => (
   <ModuleWrapper title="Video">
     <NotifySelectedVideoEffectChanged />
     <RegisterForVideoEffect />
-    {/* <RegisterForVideoFrame /> */}
   </ModuleWrapper>
 );
 
