@@ -12,6 +12,8 @@ Welcome to the Teams client library monorepo! For breaking changes, please refer
 3. Run `pnpm build` from repo root
 4. To run Unit tests, run `pnpm test`
 
+NOTE: Make sure `pnpm@7.30.1` is installed as a global tool, by running `npm install -g pnpm@7.30.1`.  
+
 TIP: whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the `packages/teams-js` directory.
 
 See also: [Contributing](CONTRIBUTING.md)
