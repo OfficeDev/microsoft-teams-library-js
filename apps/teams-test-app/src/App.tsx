@@ -46,6 +46,8 @@ import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
+import VideoAPIs from './components/VideoAPIs';
+import VideoExAPIs from './components/privateApis/VideoExAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -156,6 +158,8 @@ const App = (): ReactElement => {
         <StageViewAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
+        <VideoAPIs />
+        <VideoExAPIs />
       </div>
       <Version />
     </div>
