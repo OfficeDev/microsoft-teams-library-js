@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "add ipados check for auth flow",
+  "comment": "added ipados host client type check for auth flow",
   "packageName": "@microsoft/teams-js",
   "email": "magli@microsoft.com",
   "dependentChangeType": "patch"
