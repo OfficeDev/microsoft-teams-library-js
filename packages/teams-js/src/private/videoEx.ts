@@ -16,6 +16,36 @@ import { video } from '../public/video';
 export namespace videoEx {
   /**
    * @hidden
+   * Video frame configuration supplied to the host to customize the generated video frame parameters
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export interface VideoFrameConfig extends video.VideoFrameConfig {
+    /**
+     * @hidden
+     * Flag to indicate use camera stream to synthesize video frame or not.
+     * Default value is true.
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    requireCameraStream?: boolean;
+    /**
+     * @hidden
+     * Machine learning model to run in the host to do audio inference for you
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    audioInferenceModel?: ArrayBuffer;
+  }
+
+  /**
+   * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
    * @beta
    *
@@ -174,6 +204,8 @@ export namespace videoEx {
   }
 
   /**
+   * @hidden
+   * @internal
    * @beta
    * Namespace to get shared video framed.
    * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames.
@@ -195,36 +227,6 @@ export namespace videoEx {
     export function isSupported(): boolean {
       ensureInitialized(runtime);
       return video.sharedFrame.isSupported();
-    }
-
-    /**
-     * @hidden
-     * Video frame configuration supplied to the host to customize the generated video frame parameters
-     * @beta
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    export interface VideoFrameConfig extends video.VideoFrameConfig {
-      /**
-       * @hidden
-       * Flag to indicate use camera stream to synthesize video frame or not.
-       * Default value is true.
-       * @beta
-       *
-       * @internal
-       * Limited to Microsoft-internal use
-       */
-      requireCameraStream?: boolean;
-      /**
-       * @hidden
-       * Machine learning model to run in the host to do audio inference for you
-       * @beta
-       *
-       * @internal
-       * Limited to Microsoft-internal use
-       */
-      audioInferenceModel?: ArrayBuffer;
     }
 
     /**
