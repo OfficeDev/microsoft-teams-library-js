@@ -40,10 +40,20 @@ const RegisterForVideoEffect = (): React.ReactElement =>
     },
   });
 
+const CheckIsSupported = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'videoIsSupported',
+    title: 'video - isSupported',
+    onClick: async () => {
+      return `video is ${video.isSupported() ? 'supported' : 'not supported'}`;
+    },
+  });
+
 const VideoAPIs = (): React.ReactElement => (
   <ModuleWrapper title="Video">
     <NotifySelectedVideoEffectChanged />
     <RegisterForVideoEffect />
+    <CheckIsSupported />
   </ModuleWrapper>
 );
 
