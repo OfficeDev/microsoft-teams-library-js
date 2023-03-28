@@ -396,7 +396,7 @@ export namespace meeting {
   /**
    * @hidden
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
-   *
+   * Is valid for side panel, meeting stage and task module
    * @param callback - Callback contains 2 parameters, error and authenticationTokenOfAnonymousUser.
    * error can either contain an error of type SdkError, incase of an error, or null when get is successful
    * authenticationTokenOfAnonymousUser can either contain a string value, incase of a successful get or null when the get fails
