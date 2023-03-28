@@ -29,7 +29,8 @@ module.exports = {
       umdNamedDefine: true,
     },
     //Typically resolves to 'self' unless running in a server side rendered environment
-    globalObject: "typeof self !== 'undefined' ? self : this",
+    //globalObject: "typeof self !== 'undefined' ? self : this",
+    globalObject: 'this',
   },
   devtool: 'source-map',
   resolve: {
