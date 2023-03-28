@@ -16,6 +16,7 @@ dts/
 
 # Test App gitignore areas
 yarn-error.log
+*.log
 
 # bundle analysis folders
 /common/*
@@ -30,3 +31,13 @@ yarn-error.log
 
 #lerna logs
 lerna-debug.log
+
+# Blazor Test App
+*.binlog
+*.user
+.dotnet/
+.vs/
+.vscode/
+artifacts/
+bin/
+obj/

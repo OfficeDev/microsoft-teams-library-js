@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Unpin the version of the debug package; it was originally pinned unintentionally.",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -2,21 +2,19 @@
 # If this needs to be reused, the parts not specific to building and testing should be extracted.
 
 steps:
-  - task: YarnInstaller@3
-    displayName: 'Yarn 1.x'
-    inputs:
-      versionSpec: '1.x'
-
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
       versionSpec: '14.x'
 
-  - task: Yarn@3
-    displayName: 'yarn install'
-    inputs:
-      Arguments: 'install'
-    retryCountOnTaskFailure: 2
+  - script: |
+      npm install -g pnpm@7.30.1
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    displayName: 'Setup pnpm'
+
+  - script: |
+      pnpm install
+    displayName: 'Install repo dependencies'
 
   - script: 'node enforceBeachball.js'
     displayName: 'Check that changefile was created if needed'
@@ -36,15 +34,13 @@ steps:
       ne(variables['Build.Reason'], 'PullRequest')
       )
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'build'
-    displayName: 'yarn build'
+  - script: |
+      pnpm build-force-blazor
+    displayName: 'pnpm build'
 
-  - task: Yarn@3
-    inputs:
-      Arguments: 'test'
-    displayName: 'yarn test'
+  - script: |
+      pnpm test
+    displayName: 'pnpm test'
 
   - task: PublishTestResults@2
     inputs:
@@ -54,9 +50,8 @@ steps:
       testRunTitle: 'Unit Tests'
     condition: succeededOrFailed()
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'bundleAnalyze:collect'
+  - script: |
+      pnpm bundleAnalyze:collect
     displayName: 'Run bundle analysis and collect'
 
   # Bundle analysis comparison : should trigger only by PR against main
@@ -98,7 +93,6 @@ steps:
       Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
     name: package
     displayName: 'Set package.version Variable'
-
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'apps/teams-test-app/build'

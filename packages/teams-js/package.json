@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.7.1",
+  "version": "2.9.1",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",
@@ -11,18 +11,20 @@
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
-    "build": "yarn lint && webpack && yarn docs:validate",
+    "build": "pnpm lint && pnpm webpack  && pnpm docs:validate",
     "clean": "rimraf ./dist",
-    "docs": "yarn typedoc",
-    "docs:validate": "yarn typedoc --treatWarningsAsErrors --emit none",
-    "lint": "yarn eslint ./src ./test --max-warnings 0 --fix --ext .ts",
+    "docs": "pnpm typedoc",
+    "docs:validate": "pnpm typedoc --treatWarningsAsErrors --emit none",
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest"
   },
   "dependencies": {
+    "@types/dom-webcodecs": "0.1.3",
     "debug": "^4.3.3"
   },
   "devDependencies": {
+    "@types/dom-mediacapture-transform": "0.1.2",
     "@types/debug": "^4.1.7"
   },
   "license": "MIT",

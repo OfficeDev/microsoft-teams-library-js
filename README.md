@@ -8,11 +8,13 @@ Welcome to the Teams client library monorepo! For breaking changes, please refer
 ## Getting Started
 
 1. Fork the repo
-2. Run `yarn install` from repo root
-3. Run `yarn build` from repo root
-4. To run Unit tests, run `yarn test`
+2. Run `pnpm install` from repo root
+3. Run `pnpm build` from repo root
+4. To run Unit tests, run `pnpm test`
 
-TIP: whenever building or testing the Teams client library, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
+NOTE: Make sure `pnpm@7.30.1` is installed as a global tool, by running `npm install -g pnpm@7.30.1`.  
+
+TIP: whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the `packages/teams-js` directory.
 
 See also: [Contributing](CONTRIBUTING.md)
 
@@ -48,7 +50,7 @@ Application used to ensure library changes do not break server-side rendering ca
 
 ### Locally generating reference documentation
 
-If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `yarn docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
+If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `pnpm run docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
 
 # Contributing
 
