@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Changed `video.EffectChangeType` to string enum",
+  "packageName": "@microsoft/teams-js",
+  "email": "wenghe@microsoft.com",
+  "dependentChangeType": "patch"
+}
