@@ -49,6 +49,9 @@ import Version from './components/Version';
 import VideoAPIs from './components/VideoAPIs';
 import VideoExAPIs from './components/privateApis/VideoExAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
+import VideoMediaStreamAPIs from './components/VideoMediaStreamAPIs';
+import VideoSharedFrameAPIs from './components/VideoSharedFrameAPIs';
+import VideoExSharedFrameAPIs from './components/privateApis/VideoExSharedFrameAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -159,7 +162,10 @@ const App = (): ReactElement => {
         <TeamsCoreAPIs />
         <TeamsAPIs />
         <VideoAPIs />
+        <VideoMediaStreamAPIs />
+        <VideoSharedFrameAPIs />
         <VideoExAPIs />
+        <VideoExSharedFrameAPIs />
       </div>
       <Version />
     </div>
