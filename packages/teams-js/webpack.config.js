@@ -30,7 +30,7 @@ module.exports = {
     },
     //Typically resolves to 'self' unless running in a server side rendered environment
     //globalObject: "typeof self !== 'undefined' ? self : this",
-    globalObject: 'this',
+    globalObject: 'self',
   },
   devtool: 'source-map',
   resolve: {
