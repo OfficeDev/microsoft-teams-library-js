@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added task module context to allow getAuthenticationTokenForAnonymousUser API to be called in task modules",
+  "comment": "`meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs",
   "packageName": "@microsoft/teams-js",
   "email": "melu@microsoft.com",
   "dependentChangeType": "patch"
