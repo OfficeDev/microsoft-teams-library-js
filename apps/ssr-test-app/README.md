@@ -11,13 +11,13 @@ In order to run the SSR Test App on its own, please follow the following steps
 cd {monorepo root}
 
 // Ensuring you have installed and built the Teams JavaScript client SDK
-yarn install
-yarn build
+pnpm install
+pnpm build
 
-yarn start-ssr-app
+pnpm start-ssr-app
 ```
 
-or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory ssr-test-app, simply `yarn build` and `yarn start` there.
+or if you have already built the Teams JavaScript client SDK and would like to build and run directly from the project directory ssr-test-app, simply `pnpm build` and `pnpm start` there.
 
 ### Note
 
@@ -26,4 +26,4 @@ Running the SSR Test App locally defaults to using an unsecure http connection. 
 # Troubleshooting
 
 If your build is succeeding locally, however is failing in the PR, it is possible your local version is building the SSR Test App with a cached version of teams-js without the breaking changes. If this is the case,
-simply delete your node_modules folder in the ssr-test-app directory, then redo the yarn commmands above.
+simply delete your node_modules folder in the ssr-test-app directory, then redo the pnpm commmands above.
