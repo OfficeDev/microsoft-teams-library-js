@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed unnecessary (and outdated) docs on various `enum` properties",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
