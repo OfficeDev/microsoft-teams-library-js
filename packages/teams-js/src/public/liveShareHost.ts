@@ -1,3 +1,4 @@
+import * as uuid from 'uuid';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -146,6 +147,7 @@ export interface IClientInfo {
 }
 
 /**
+ * @hidden
  * Live Share host implementation for O365 and Teams clients.
  *
  * @beta
@@ -158,9 +160,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
+    ensureSupported();
     return new Promise<IFluidTenantInfo>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
   }
@@ -175,9 +176,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidToken(containerId?: string): Promise<string> {
+    ensureSupported();
     return new Promise<string>((resolve) => {
-      ensureSupported();
-
       // eslint-disable-next-line strict-null-checks/all
       resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
     });
@@ -190,9 +190,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
+    ensureSupported();
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
   }
@@ -210,9 +209,8 @@ export class LiveShareHost {
    * @beta
    */
   public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
+    ensureSupported();
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
   }
@@ -224,9 +222,8 @@ export class LiveShareHost {
    * @beta
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
+    ensureSupported();
     return new Promise<INtpTimeInfo>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
   }
@@ -241,9 +238,8 @@ export class LiveShareHost {
    * @beta
    */
   public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
+    ensureSupported();
     return new Promise<UserMeetingRole[]>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
   }
@@ -258,9 +254,8 @@ export class LiveShareHost {
    * @beta
    */
   public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
+    ensureSupported();
     return new Promise<UserMeetingRole[] | undefined>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
   }
@@ -275,9 +270,8 @@ export class LiveShareHost {
    * @beta
    */
   public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+    ensureSupported();
     return new Promise<IClientInfo | undefined>((resolve) => {
-      ensureSupported();
-
       resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
     });
   }
@@ -296,7 +290,17 @@ export class LiveShareHost {
     return new LiveShareHost();
   }
 }
-
+/**
+ * @hidden
+ *
+ * Checks if the interactive capability is supported by the host
+ * @returns boolean to represent whether the interactive capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function isSupported(): boolean {
   return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) && runtime.supports.interactive
     ? true
