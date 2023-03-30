@@ -9,8 +9,6 @@ import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
 
-// test
-
 export interface IBaseRuntime {
   readonly apiVersion: number;
   readonly hostVersionsInfo?: HostVersionsInfo;
