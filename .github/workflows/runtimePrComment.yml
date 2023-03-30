@@ -2,7 +2,7 @@ name: Runtime comment on PR
 
 on:
   workflow_run:
-    workflows: [Check for runtime version changes temp]
+    workflows: ["Check for runtime version changes temp"]
     types: [completed]
 
 jobs:
