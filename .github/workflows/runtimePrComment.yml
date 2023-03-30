@@ -1,9 +1,10 @@
 name: Runtime comment on PR
 
 on:
-  pull_request:
-    branches: [main]
-
+  workflow_run:
+    workflows: ["Check for runtime version changes temp"]
+    types:
+      - completed
 jobs:
   download:
     runs-on: ubuntu-latest
