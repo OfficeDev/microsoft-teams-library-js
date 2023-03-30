@@ -890,20 +890,16 @@ export interface DialogSize {
   width: DialogDimension | number;
 }
 /**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
+ * @beta
+ * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
  */
 export interface LoadContext {
   /**
-   * @hidden
    * The entity that is requested to be loaded
    */
   entityId: string;
 
   /**
-   * @hidden
    * The content URL that is requested to be loaded
    */
   contentUrl: string;

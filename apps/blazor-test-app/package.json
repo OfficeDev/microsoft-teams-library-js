@@ -1,0 +1,14 @@
+{
+  "name": "blazor-test-app",
+  "private": true,
+  "author": "Microsoft Teams",
+  "description": "Blazor test app to ensure teams-js changes don't break Blazor app functionality",
+  "version": "1.0.0",
+  "scripts": {
+    "blazor-build": "dotnet build",
+    "start": "dotnet run"
+  },
+  "devDependencies": {
+    "@microsoft/teams-js": "workspace:*"
+  }
+}

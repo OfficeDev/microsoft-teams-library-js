@@ -58,7 +58,7 @@ const ShowLocation = (): React.ReactElement =>
 const HasGeoLocationPermission = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'hasGeoLocationPermission',
-    title: 'Has Permission',
+    title: 'Has GeoLocation Permission',
     onClick: async () => {
       const result = await geoLocation.hasPermission();
       return JSON.stringify(result);
@@ -68,7 +68,7 @@ const HasGeoLocationPermission = (): React.ReactElement =>
 const RequestGeoLocationPermission = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'requestGeoLocationPermission',
-    title: 'Request Permission',
+    title: 'Request GeoLocation Permission',
     onClick: async () => {
       const result = await geoLocation.requestPermission();
       return JSON.stringify(result);
