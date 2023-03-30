@@ -36,7 +36,7 @@ describe('videoEx', () => {
       _notifyVideoFrameProcessed: () => void,
       _notifyError: (errorMessage: string) => void,
     ): void => {};
-    const videoFrameConfig: videoEx.sharedFrame.VideoFrameConfig = {
+    const videoFrameConfig: videoEx.VideoFrameConfig = {
       format: video.VideoFrameFormat.NV12,
       requireCameraStream: false,
       audioInferenceModel: new ArrayBuffer(100),
