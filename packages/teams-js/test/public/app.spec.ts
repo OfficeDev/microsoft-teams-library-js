@@ -40,8 +40,6 @@ function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction
   return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
 }
 
-// change
-
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
   describe('Framed - Testing app capability', () => {

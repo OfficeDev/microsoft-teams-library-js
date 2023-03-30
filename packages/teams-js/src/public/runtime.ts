@@ -429,5 +429,3 @@ export const _minRuntimeConfigToUninitialize: Runtime = {
     logs: {},
   },
 };
-
-// test test
