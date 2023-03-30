@@ -1,4 +1,4 @@
-name: Check for runtime version changes [temp]
+name: Check for runtime version changes temp
 
 on:
   pull_request:
