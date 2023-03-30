@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "`meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs",
+  "packageName": "@microsoft/teams-js",
+  "email": "melu@microsoft.com",
+  "dependentChangeType": "patch"
+}
