@@ -1,0 +1,42 @@
+name: Check for runtime version changes temp 2
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  Check-For-Changes-To-Runtime-File:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: 'Save PR number'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+      - name: Check if runtime.ts has been modified
+        id: detect_runtime_change
+        run: |
+          files=$(git diff-tree --no-commit-id --name-only -r HEAD^1 HEAD)
+          runtime_changed='false'
+          for changed_file in $files; do
+            if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
+              runtime_changed='true'
+            fi
+          done
+          echo $runtime_changed > ./pr/pr_changes_runtime
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr_number
+          path: pr/
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pr_changes_runtime
+          path: pr/
