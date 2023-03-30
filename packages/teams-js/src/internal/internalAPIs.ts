@@ -91,13 +91,17 @@ export function isCurrentSDKVersionAtLeast(requiredVersion: string = defaultSDKV
 
 /**
  * @hidden
- * Helper function to identify if host client is either android or ios
+ * Helper function to identify if host client is either android, ios, or ipados
  *
  * @internal
  * Limited to Microsoft-internal use
  */
 export function isHostClientMobile(): boolean {
-  return GlobalVars.hostClientType == HostClientType.android || GlobalVars.hostClientType == HostClientType.ios;
+  return (
+    GlobalVars.hostClientType == HostClientType.android ||
+    GlobalVars.hostClientType == HostClientType.ios ||
+    GlobalVars.hostClientType == HostClientType.ipados
+  );
 }
 
 /**
