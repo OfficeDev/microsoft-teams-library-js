@@ -10,41 +10,6 @@ import { runtime } from './runtime';
  */
 export namespace video {
   /**
-   * Represents a video frame
-   * @beta
-   */
-  export interface VideoFrameData {
-    /**
-     * Video frame width
-     */
-    width: number;
-    /**
-     * Video frame height
-     */
-    height: number;
-    /**
-     * Video frame buffer
-     */
-    videoFrameBuffer: Uint8ClampedArray;
-    /**
-     * NV12 luma stride, valid only when video frame format is NV12
-     */
-    lumaStride?: number;
-    /**
-     * NV12 chroma stride, valid only when video frame format is NV12
-     */
-    chromaStride?: number;
-    /**
-     * RGB stride, valid only when video frame format is RGB
-     */
-    stride?: number;
-    /**
-     * The time stamp of the current video frame
-     */
-    timestamp?: number;
-  }
-
-  /**
    * Video frame format enum, currently only support NV12
    * @beta
    */
@@ -71,22 +36,12 @@ export namespace video {
     /**
      * Current video effect changed
      */
-    EffectChanged,
+    EffectChanged = 'EffectChanged',
     /**
      * Disable the video effect
      */
-    EffectDisabled,
+    EffectDisabled = 'EffectDisabled',
   }
-
-  /**
-   * Video frame call back function definition
-   * @beta
-   */
-  export type VideoFrameCallback = (
-    frame: VideoFrameData,
-    notifyVideoFrameProcessed: () => void,
-    notifyError: (errorMessage: string) => void,
-  ) => void;
 
   /**
    * Predefined failure reasons for preparing the selected video effect
@@ -110,43 +65,6 @@ export namespace video {
    * @beta
    */
   export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
-
-  /**
-   * Register to read the video frames in Permissions section
-   * @beta
-   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
-   * @param config - VideoFrameConfig to customize generated video frame parameters
-   */
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    registerHandler(
-      'video.newVideoFrame',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (videoFrame: any) => {
-        if (videoFrame) {
-          // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
-          const videoFrameData = {
-            ...videoFrame,
-            videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
-          } as VideoFrameData;
-          const timestamp = videoFrameData.timestamp;
-          frameCallback(
-            videoFrameData,
-            () => {
-              notifyVideoFrameProcessed(timestamp);
-            },
-            notifyError,
-          );
-        }
-      },
-      false,
-    );
-    sendMessageToParent('video.registerForVideoFrame', [config]);
-  }
 
   /**
    * Video extension should call this to notify host that the current selected effect parameter changed.
@@ -194,15 +112,6 @@ export namespace video {
   }
 
   /**
-   * Sending notification to host finished the video frame processing, now host can render this video frame
-   * or pass the video frame to next one in video pipeline
-   * @beta
-   */
-  function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
-  }
-
-  /**
    * Sending error notification to host
    * @beta
    * @param errorMessage - The error message that will be sent to the host
@@ -210,7 +119,6 @@ export namespace video {
   function notifyError(errorMessage: string): void {
     sendMessageToParent('video.notifyError', [errorMessage]);
   }
-
   /**
    * Checks if video capability is supported by the host
    * @beta
@@ -226,7 +134,7 @@ export namespace video {
   /**
    * @beta
    * Namespace to get video frames from a media stream.
-   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames instead of {@link registerForVideoFrame} to get the video frames, callback of {@link registerForVideoFrame} will be ignored when the host supports this capability.
+   * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames.
    */
   export namespace mediaStream {
     /**
@@ -375,6 +283,116 @@ export namespace video {
         )
         .pipeTo(sink);
       return generator;
+    }
+  }
+
+  /**
+   * @beta
+   * Namespace to get shared video framed.
+   * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames.
+   */
+  export namespace sharedFrame {
+    /**
+     * Checks if video.sharedFrame capability is supported by the host
+     * @beta
+     * @returns boolean to represent whether the video capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.video?.sharedFrame ? true : false;
+    }
+
+    /**
+     * Represents a video frame
+     * @beta
+     */
+    export interface VideoFrameData {
+      /**
+       * Video frame width
+       */
+      width: number;
+      /**
+       * Video frame height
+       */
+      height: number;
+      /**
+       * Video frame buffer
+       */
+      videoFrameBuffer: Uint8ClampedArray;
+      /**
+       * NV12 luma stride, valid only when video frame format is NV12
+       */
+      lumaStride?: number;
+      /**
+       * NV12 chroma stride, valid only when video frame format is NV12
+       */
+      chromaStride?: number;
+      /**
+       * RGB stride, valid only when video frame format is RGB
+       */
+      stride?: number;
+      /**
+       * The time stamp of the current video frame
+       */
+      timestamp?: number;
+    }
+
+    /**
+     * Video frame call back function definition
+     * @beta
+     */
+    export type VideoFrameCallback = (
+      frame: VideoFrameData,
+      notifyVideoFrameProcessed: () => void,
+      notifyError: (errorMessage: string) => void,
+    ) => void;
+
+    /**
+     * Sending notification to host finished the video frame processing, now host can render this video frame
+     * or pass the video frame to next one in video pipeline
+     * @beta
+     */
+    function notifyVideoFrameProcessed(timestamp?: number): void {
+      sendMessageToParent('video.videoFrameProcessed', [timestamp]);
+    }
+
+    /**
+     * Register to read the video frames in Permissions section
+     * @beta
+     * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
+     * @param config - VideoFrameConfig to customize generated video frame parameters
+     */
+    export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+      ensureInitialized(runtime, FrameContexts.sidePanel);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      registerHandler(
+        'video.newVideoFrame',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (videoFrame: any) => {
+          if (videoFrame) {
+            // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
+            const videoFrameData = {
+              ...videoFrame,
+              videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
+            } as VideoFrameData;
+            const timestamp = videoFrameData.timestamp;
+            frameCallback(
+              videoFrameData,
+              () => {
+                notifyVideoFrameProcessed(timestamp);
+              },
+              notifyError,
+            );
+          }
+        },
+        false,
+      );
+      sendMessageToParent('video.registerForVideoFrame', [config]);
     }
   }
 } //end of video namespace
