@@ -3,7 +3,7 @@ import { appEntity } from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -31,7 +31,7 @@ describe('appEntity', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => appEntity.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

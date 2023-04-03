@@ -73,8 +73,6 @@ describe('LiveShareHost', () => {
       await utils.initializeWithContext('meetingStage');
       const mockTenantInfo: IFluidTenantInfo = {
         tenantId: 'test-tenant',
-        ordererEndpoint: 'https://test.azure.com',
-        storageEndpoint: 'https://test.azure.com',
         serviceEndpoint: 'https://test.azure.com',
       };
 

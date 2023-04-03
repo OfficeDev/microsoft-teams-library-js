@@ -6,6 +6,7 @@ import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
 import { dialog } from './dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
+import { runtime } from './runtime';
 
 /**
  * @deprecated
@@ -18,9 +19,13 @@ import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } fro
 export namespace tasks {
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.open dialog.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for url based dialogs
-   * and {@link dialog.bot.open dialog.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} for bot based dialogs. In Teams,
-   * this function can be used for adaptive card based dialogs. Support for adaptive card based dialogs is coming to other hosts in the future.
+   * As of 2.8.0:
+   * - For url-based dialogs, please use {@link dialog.url.open dialog.url.open(urlDialogInfo: UrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void} .
+   * - For url-based dialogs with bot interaction, please use {@link dialog.url.bot.open dialog.url.bot.open(botUrlDialogInfo: BotUrlDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void}
+   * - For Adaptive Card-based dialogs:
+   *   - In Teams, please continue to use this function until the new functions in {@link dialog.adaptiveCard} have been fully implemented. You can tell at runtime when they are implemented in Teams by checking
+   *     the return value of the {@link dialog.adaptiveCard.isSupported} function. This documentation line will also be removed once they have been fully implemented in Teams.
+   *   - In all other hosts, please use {@link dialog.adaptiveCard.open dialog.adaptiveCard.open(cardDialogInfo: CardDialogInfo, submitHandler?: DialogSubmitHandler, messageFromChildHandler?: PostMessageChannel): void}
    *
    * Allows an app to open the task module.
    *
@@ -35,13 +40,16 @@ export namespace tasks {
       ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
         (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
-    if (taskInfo.card !== undefined || taskInfo.url === undefined) {
-      ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (taskInfo.card === undefined && taskInfo.url === undefined) {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+    } else if (taskInfo.card) {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      dialog.url.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -67,7 +75,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.submit} instead.
+   * As of 2.8.0, please use {@link dialog.url.submit} instead.
    *
    * Submit the task module.
    *
@@ -75,7 +83,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    dialog.submit(result, appIds);
+    dialog.url.submit(result, appIds);
   }
 
   /**
@@ -119,7 +127,7 @@ export namespace tasks {
 
   /**
    * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
-   * otherwise uses the height and width values corresponding to {@link TaskModuleDimension | TaskModuleDimension.Small}
+   * otherwise uses the height and width values corresponding to {@link DialogDimension | TaskModuleDimension.Small}
    * @param taskInfo TaskInfo object from which to extract size info, if specified
    * @returns TaskInfo with height and width specified
    */

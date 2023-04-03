@@ -15,7 +15,7 @@ export namespace teamsCore {
    */
   export function enablePrintCapability(): void {
     if (!GlobalVars.printCapabilityEnabled) {
-      ensureInitialized();
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -46,12 +46,14 @@ export namespace teamsCore {
   }
 
   /**
-   * @hidden
    * Registers a handler to be called when the page has been requested to load.
+   *
+   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/microsoftteams/platform/apps-in-teams-meetings/build-tabs-for-meeting?tabs=desktop%2Cmeeting-chat-view-desktop%2Cmeeting-stage-view-desktop%2Cchannel-meeting-desktop#app-caching)
+   * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke when the page is loaded.
    *
-   * @internal
+   * @beta
    */
   export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
     registerOnLoadHandlerHelper(handler, () => {
@@ -76,7 +78,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
 
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
@@ -86,13 +88,15 @@ export namespace teamsCore {
   }
 
   /**
-   * @hidden
    * Registers a handler to be called before the page is unloaded.
+   *
+   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/microsoftteams/platform/apps-in-teams-meetings/build-tabs-for-meeting?tabs=desktop%2Cmeeting-chat-view-desktop%2Cmeeting-stage-view-desktop%2Cchannel-meeting-desktop#app-caching)
+   * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
-   * @internal
+   * @beta
    */
   export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
@@ -118,7 +122,7 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized();
+    handler && ensureInitialized(runtime);
     if (handler && versionSpecificHelper) {
       versionSpecificHelper();
     }
@@ -134,7 +138,6 @@ export namespace teamsCore {
    *
    */
   export function isSupported(): boolean {
-    ensureInitialized();
-    return runtime.supports.teamsCore ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.teamsCore ? true : false;
   }
 }

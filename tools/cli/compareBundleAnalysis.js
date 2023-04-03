@@ -28,10 +28,10 @@ const { argv } = require('yargs')
   .option('baseBranchName', {
     string: true,
     demandOption: true,
-    description: 'Destination branch against which current Pull request\'s bundle size is compared',
+    description: "Destination branch against which current Pull request's bundle size is compared",
   });
 
-const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = require('bundle-size-tools');
+const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = require('../bundle-size-tools');
 
 /**
  * This script compares the bundle analysis between the base commit from which PR was branched off and current commit
@@ -82,5 +82,4 @@ const { ADOSizeComparator, getAzureDevopsApi, bundlesContainNoChanges } = requir
   }
   // Sets result in Azure devops pipeline output variable 'bundleAnalysisComment'
   console.log(`##vso[task.setvariable variable=bundleAnalysisComment;isOutput=true]${prCommentMsg}`);
- 
 })();

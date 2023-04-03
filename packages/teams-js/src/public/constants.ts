@@ -42,6 +42,11 @@ export enum HostName {
    * Teams
    */
   teams = 'Teams',
+
+  /**
+   * Modern Teams
+   */
+  teamsModern = 'TeamsModern',
 }
 
 // Ensure these declarations stay in sync with the framework.
@@ -86,7 +91,7 @@ export enum DialogDimension {
   Small = 'small',
 }
 
-import { ErrorCode, SdkError } from './interfaces';
+import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
  * As of 2.0.0, please use {@link DialogDimension} instead.
@@ -104,3 +109,10 @@ export enum ChannelType {
 }
 
 export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+
+/**
+ * @hidden
+ *
+ * Minimum Adaptive Card version supported by the host.
+ */
+export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };

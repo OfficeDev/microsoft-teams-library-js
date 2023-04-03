@@ -4,7 +4,7 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { SdkError } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -682,7 +682,7 @@ describe('remoteCamera', () => {
     });
 
     it('should throw if called before initialization', () => {
-      utils.setRuntimeConfig(_uninitializedRuntime);
+      utils.uninitializeRuntimeConfig();
       expect(() => remoteCamera.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

@@ -16,40 +16,78 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@3
+  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
+  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
+  #   'command_name | operating_system | lockfile'
+  # in our case it is 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+  # and for the path is the directory which needs to be cached.
+  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
+  - task: Cache@2
     inputs:
-      versionSpec: '1.x'
+      key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache app host node_modules pnpm
 
-  - task: Yarn@2
-    displayName: 'Run yarn on app hosting sdk'
+  - task: Cache@2
     inputs:
-      Arguments:
-      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
-    retryCountOnTaskFailure: 2
+      key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache client sdk node_modules pnpm
 
-  - task: Yarn@2
+  - script: |
+      corepack enable
+      corepack prepare pnpm@7.30.1 --activate
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    displayName: 'Setup pnpm'
+
+  # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
+  # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
+  # The below task caches the Cypress binary.
+  - task: Cache@2
+    inputs:
+      key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+      path: /home/vsts/.cache/Cypress
+      cacheHitVar: CYPRESS_CACHE_RESTORED
+    displayName: 'Cache Cypress binary'
+
+  - task: npmAuthenticate@0
+    inputs:
+      workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
+
+  # Below script task checks if Cypress cache is hit or not.
+  # If Cypress cache is found skip cypress install.
+  - script: |
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+    displayName: Install app hosting dependencies (skip Cypress install)
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
+
+  # If Cypress cache is not found include cypress install.
+  - script: |
+      pnpm install --frozen-lockfile
+    displayName: Install app hosting dependencies (include Cypress install)
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
+
+  - script: |
+      pnpm build
     displayName: 'Build app hosting sdk'
-    inputs:
-      Arguments: 'build'
-      ProjectDirectory: '$(AppHostingSdkProjectDirectory)'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - task: Yarn@2
-    displayName: 'Run yarn on client sdk'
-    inputs:
-      Arguments:
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    retryCountOnTaskFailure: 2
+  - script: |
+      pnpm install
+    displayName: 'Install client sdk dependencies'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - task: Yarn@2
+  - script: |
+      pnpm build-force-blazor
     displayName: 'Build client sdk'
-    inputs:
-      Arguments: 'build'
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: CmdLine@2
     displayName: 'Configure host machine'
     inputs:
       script: |
         sudo chmod -R 755 ./ 
-        sudo yarn setup
+        pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'

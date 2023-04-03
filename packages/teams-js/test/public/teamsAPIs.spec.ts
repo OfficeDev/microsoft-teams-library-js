@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { teamsCore } from '../../src/public/teamsAPIs';
 import { Utils } from '../utils';
 
@@ -34,7 +34,7 @@ describe('Testing TeamsCore Capability', () => {
 
     describe('Testing teamsCore.isSupported function', () => {
       it('should throw if called before initialization', () => {
-        utils.setRuntimeConfig(_uninitializedRuntime);
+        utils.uninitializeRuntimeConfig();
         expect(() => teamsCore.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });

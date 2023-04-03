@@ -4,7 +4,7 @@ import { app } from '../../src/public/app';
 import { barCode } from '../../src/public/barCode';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, _uninitializedRuntime, applyRuntimeConfig } from '../../src/public/runtime';
+import { _minRuntimeConfigToUninitialize, setUnitializedRuntime } from '../../src/public/runtime';
 import { FramelessPostMocks } from '../framelessPostMocks';
 
 /* eslint-disable */
@@ -41,7 +41,7 @@ describe('barCode', () => {
 
   describe('isSupported', () => {
     it('should throw if called before initialization', () => {
-      applyRuntimeConfig(_uninitializedRuntime);
+      setUnitializedRuntime();
       expect(() => barCode.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });

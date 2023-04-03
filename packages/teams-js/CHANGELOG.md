@@ -1,8 +1,82 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 07 Dec 2022 16:39:58 GMT and should not be manually modified.
+This log was last generated on Fri, 03 Mar 2023 19:57:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.9.1
+
+Fri, 03 Mar 2023 19:57:31 GMT
+
+### Minor changes
+
+- Changed return type of the callback of `registerForVideoEffect` to return a Promise
+- Added a new value to `HostName` enum, `TeamsModern`
+
+### Patches
+
+- Updated documentation for `dialog` and `tasks` capabilities
+- Elaborated on various areas of `authentication` documentation
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+
+## 2.8.0
+
+Wed, 01 Feb 2023 23:22:55 GMT
+
+### Minor changes
+
+- Added `requestAppAudioHandling` and `updateMicState` meeting APIs
+- Fixed a bug where `getContext()` was incorrectly dropping properties by performing a lossy conversion via `app.getContext()`
+- Added adaptive card subcapability to `dialog` capability
+- Restructured `dialog.ts`. Moved all functions previously under `dialog` and `dialog.bot` to be under namespace `url`. Function calls are now `dialog.url.open` and `dialog.url.bot.open` as an example.
+
+### Patches
+
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Updated typedoc version and fixed doc issues raised by it
+- Added documentation for `dialog.submit`
+- Changed user facing documentation associated with `meeting.ts`
+- Unpin the version of the debug package; it was originally pinned unintentionally.
+- Removed deprecated `_initialize` and `_uninitialize` methods only used by unit tests
+- Added unit tests for `communication.uninitializeCommunication`, `communication.sendAndUnwrap`, and `communication.sendMessageToParentAsync` and updated `communication.uninitializeCommunication` to handle `currentWindow` correctly.
+- Removed --emit:none from typedoc command so it would actually output errors
+- Updated documentation links to avoid using locale in URLs and use markdown format for external links
+- Added possible values to documentation for `licenseType` property on `UserInfo` interface
+- Added unit tests for `communication.initializeCommunication`
+- Updated `dialog` and `tasks` documentation to add and fix doc links
+- Added remarks to authentication.authenticate() code comments
+- Added `@hidden` and `@internal` tags for the meeting `requestAppAudioHandling` and `updateMicState` APIs, and improved how the `teams-test-app` app uses the APIs
+- Stopped exporting `communication.processMessage` and `communication.shouldProcessMessage`.
+
+## 2.7.1
+
+Fri, 06 Jan 2023 04:15:12 GMT
+
+### Patches
+
+- Reverted webpack globalObject: this
+
+## 2.7.0
+
+Wed, 04 Jan 2023 19:07:09 GMT
+
+### Minor changes
+
+- Implemented `runtime` interface versioning
+
+### Patches
+
+- Removed `entityId` and `title` as required fields from `openFilePreview` parameters
+- Fixed missing slash in URL in comment on `app.initialize`
+
+## 2.6.1
+
+Tue, 13 Dec 2022 21:28:59 GMT
+
+### Patches
+
+- Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.
+- Fixed bugs preventing the use of this library in server-side rendered applications
 
 ## 2.6.0
 
@@ -16,7 +90,7 @@ Wed, 07 Dec 2022 16:39:58 GMT
 
 ### Patches
 
-- Deleted unnecessary support for `meetingRoom` and 'sidePanel` frame contexts in `dialog.submit` API. 
+- Deleted unnecessary support for `meetingRoom` and `sidePanel` frame contexts in `dialog.submit` API.
 - Fix incorrect profile.IsSupported check
 
 ## 2.5.0
@@ -33,7 +107,7 @@ Thu, 03 Nov 2022 17:03:30 GMT
 - Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused
 - Set `PACKAGE_VERSION` to an error value indicating it will be replaced by webpack at build time
 - Fixed `profile.isSupported` and showProfile `TriggerType`
-- Added 'www.microsoft365.com' and '*.www.microsoft365.com' to the `validOrigins` list.
+- Added 'www.microsoft365.com' and '\*.www.microsoft365.com' to the `validOrigins` list.
 - Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.
 
 ## 2.4.2

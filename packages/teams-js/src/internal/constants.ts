@@ -174,3 +174,9 @@ export const teamsDeepLinkHost = 'teams.microsoft.com';
 
 /** @hidden */
 export const errorLibraryNotInitialized = 'The library has not yet been initialized';
+
+/** @hidden */
+export const errorRuntimeNotInitialized = 'The runtime has not yet been initialized';
+
+/** @hidden */
+export const errorRuntimeNotSupported = 'The runtime version is not supported';

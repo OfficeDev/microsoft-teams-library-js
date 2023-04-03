@@ -3,6 +3,7 @@
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
+import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -89,7 +90,10 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [version]).then(
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+      version,
+      latestRuntimeApiVersion,
+    ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
@@ -104,8 +108,11 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
  * Limited to Microsoft-internal use
  */
 export function uninitializeCommunication(): void {
-  Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  if (Communication.currentWindow) {
+    Communication.currentWindow.removeEventListener('message', CommunicationPrivate.messageListener, false);
+  }
 
+  Communication.currentWindow = null;
   Communication.parentWindow = null;
   Communication.parentOrigin = null;
   Communication.childWindow = null;
@@ -114,6 +121,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
+  CommunicationPrivate.promiseCallbacks = {};
 }
 
 /**
@@ -263,7 +271,7 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
  * @internal
  * Limited to Microsoft-internal use
  */
-export function processMessage(evt: DOMMessageEvent): void {
+function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     return;
@@ -295,7 +303,7 @@ export function processMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
