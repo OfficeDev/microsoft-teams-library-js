@@ -50,6 +50,13 @@ steps:
     displayName: 'Install Emulator'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
 
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '11'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Set default Java to x64'
+
   - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
     displayName: 'Run Android E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
