@@ -25,6 +25,12 @@ steps:
       Arguments: 'test'
     displayName: 'yarn test'
 
+  - powershell: |
+      $npmVer=$(node -p "require('./package.json').version")
+      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+    name: package
+    displayName: 'Set package.version Variable'
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'dist'
