@@ -38,6 +38,8 @@ import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import VideoExAPIs from './components/privateApis/VideoExAPIs';
+import VideoExSharedFrameAPIs from './components/privateApis/VideoExSharedFrameAPIs';
 import ProfileAPIs from './components/ProfileAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SearchAPIs from './components/SearchAPIs';
@@ -47,11 +49,9 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoAPIs';
-import VideoExAPIs from './components/privateApis/VideoExAPIs';
-import WebStorageAPIs from './components/WebStorageAPIs';
 import VideoMediaStreamAPIs from './components/VideoMediaStreamAPIs';
 import VideoSharedFrameAPIs from './components/VideoSharedFrameAPIs';
-import VideoExSharedFrameAPIs from './components/privateApis/VideoExSharedFrameAPIs';
+import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
