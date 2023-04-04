@@ -1,11 +1,18 @@
 import { App, AppIsSupported } from "./App";
-import { AppInstallDialog, AppInstallDialogIsSupported } from "./AppInstallDialog";
+import {
+  AppInstallDialog,
+  AppInstallDialogIsSupported,
+} from "./AppInstallDialog";
 import { BarCode, BarCodeIsSupported } from "./BarCode";
 import { Calendar, CalendarIsSupported } from "./Calendar";
 import { Call, CallIsSupported } from "./Call";
 import { Chat, ChatIsSupported } from "./Chat";
 import { Dialog, DialogUrlIsSupported } from "./Dialog";
-import { DialogAdaptiveCard, DialogAdaptiveCardIsSupported } from "./Dialog.AdaptiveCard";
+import {
+  DialogAdaptiveCard,
+  DialogAdaptiveCardIsSupported,
+} from "./Dialog.AdaptiveCard";
+import { DialogBot, DialogUrlBotIsSupported } from "./DialogBot";
 import { GeoLocation, GeoLocationIsSupported } from "./GeoLocation";
 import { GeoLocationMap, GeoLocationMapIsSupported } from "./GeoLocation.map";
 import { IsPagesCurrentAppSupported, PagesCurrent } from "./Pages.Current";
@@ -24,27 +31,54 @@ import { Video, VideoIsSupported } from "./Video";
 import { WebStorage, WebStorageIsSupported } from "./WebStorage";
 
 export {
-    App, AppIsSupported,
-    AppInstallDialog, AppInstallDialogIsSupported,
-    BarCode, BarCodeIsSupported,
-    Calendar, CalendarIsSupported,
-    Call, CallIsSupported,
-    Chat, ChatIsSupported,
-    Dialog, DialogAdaptiveCard, DialogAdaptiveCardIsSupported, DialogUrlIsSupported,
-    GeoLocation, GeoLocationIsSupported,
-    GeoLocationMap, GeoLocationMapIsSupported,
-    IsPagesCurrentAppSupported, PagesCurrent,
-    Mail, MailIsSupported,
-    Menus, MenusIsSupported,
-    Monetization, MonetizationIsSupported,
-    Pages, PagesIsSupported,
-    PagesTabs, PagesTabsIsSupported,
-    People, PeopleIsSupported,
-    Profile, ProfileIsSupported,
-    Search, SearchIsSupported,
-    Sharing, SharingIsSupported,
-    StageView, StageViewIsSupported,
-    TeamsCore, TeamsCoreIsSupported,
-    Video, VideoIsSupported,
-    WebStorage, WebStorageIsSupported
-}
+  App,
+  AppIsSupported,
+  AppInstallDialog,
+  AppInstallDialogIsSupported,
+  BarCode,
+  BarCodeIsSupported,
+  Calendar,
+  CalendarIsSupported,
+  Call,
+  CallIsSupported,
+  Chat,
+  ChatIsSupported,
+  Dialog,
+  DialogBot,
+  DialogUrlBotIsSupported,
+  DialogAdaptiveCard,
+  DialogAdaptiveCardIsSupported,
+  DialogUrlIsSupported,
+  GeoLocation,
+  GeoLocationIsSupported,
+  GeoLocationMap,
+  GeoLocationMapIsSupported,
+  IsPagesCurrentAppSupported,
+  PagesCurrent,
+  Mail,
+  MailIsSupported,
+  Menus,
+  MenusIsSupported,
+  Monetization,
+  MonetizationIsSupported,
+  Pages,
+  PagesIsSupported,
+  PagesTabs,
+  PagesTabsIsSupported,
+  People,
+  PeopleIsSupported,
+  Profile,
+  ProfileIsSupported,
+  Search,
+  SearchIsSupported,
+  Sharing,
+  SharingIsSupported,
+  StageView,
+  StageViewIsSupported,
+  TeamsCore,
+  TeamsCoreIsSupported,
+  Video,
+  VideoIsSupported,
+  WebStorage,
+  WebStorageIsSupported,
+};

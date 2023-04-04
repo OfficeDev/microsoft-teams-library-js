@@ -1,10 +1,13 @@
 import "./App.css";
 
+import * as Fluent from "@fluentui/react-northstar";
+
 // https://fluentsite.z22.web.core.windows.net/quick-start
 import { Loader, Provider, teamsTheme } from "@fluentui/react-northstar";
-import { Redirect, Route, HashRouter as Router } from "react-router-dom";
+import { Route, HashRouter as Router, Routes } from "react-router-dom";
 
 import DialogPage from "./DialogPage";
+import { Nav } from "./Nav";
 import PagesTab from "./PagesTab";
 import Privacy from "./Privacy";
 import Tab from "./Tab";
@@ -22,27 +25,29 @@ const App = () => {
 
   return (
     <TeamsFxContext.Provider value={{ theme, themeString, teamsfx }}>
-      <Provider theme={theme || teamsTheme} styles={{ backgroundColor: "#eeeeee" }}>
+      <Provider
+        theme={theme || teamsTheme}
+        styles={{ backgroundColor: "#eeeeee" }}
+      >
         <Router>
-          <Route exact path="/">
-            <Redirect to="/tab" />
-          </Route>
+          <Fluent.Segment>
+            {/* <Nav />  Uncomment this HTML component to enable react router toggle (Experimental) */}
+          </Fluent.Segment>
           {loading ? (
             <Loader style={{ margin: 100 }} />
           ) : (
-            <>
-              <Route exact path="/privacy" component={Privacy} />
-              <Route exact path="/termsofuse" component={TermsOfUse} />
-              <Route exact path="/tab" component={Tab} />
-              <Route exact path="/config" component={TabConfig} />
-              <Route exact path="/dialog" component={DialogPage} />
-              <Route exact path="/pagesTab" component={PagesTab} />
-            </>
+            <Routes>
+              <Route path="/privacy" Component={Privacy} />
+              <Route path="/termsofuse" Component={TermsOfUse} />
+              <Route path="/tab" Component={Tab} />
+              <Route path="/config" Component={TabConfig} />
+              <Route path="/dialog" Component={DialogPage} />
+              <Route path="/pagesTab" Component={PagesTab} />
+            </Routes>
           )}
         </Router>
       </Provider>
     </TeamsFxContext.Provider>
   );
-}
-
+};
 export default App;

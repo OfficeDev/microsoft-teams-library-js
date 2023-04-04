@@ -14,7 +14,9 @@ class TermsOfUse extends React.Component {
     return (
       <Fluent.Segment>
         <Header as="h3" content="Terms of use" />
-        <Text size={"small"} content={`
+        <Text
+          size={"small"}
+          content={`
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc pharetra augue dolor, eu mollis ex porta vitae. Nam hendrerit arcu eget quam dapibus tincidunt. Donec molestie elementum nulla, eget tincidunt eros ultricies sed. Nulla aliquam vel mi eu cursus. Aenean facilisis, eros sit amet vulputate congue, libero tellus auctor tellus, sed aliquet mauris mauris eu leo. Donec bibendum est et lorem porta ornare. Duis et nunc dolor. Sed luctus, turpis eu blandit lobortis, quam massa mattis neque, ut pharetra justo orci sit amet tortor. Vestibulum eu euismod felis. Sed pellentesque mattis nibh, eget accumsan elit congue a. Proin laoreet arcu et volutpat efficitur. Sed sagittis sodales ipsum id accumsan.
 
           Cras dui orci, vehicula vel odio sed, congue sollicitudin nunc. Vivamus a convallis magna. Nulla metus ante, accumsan sed dui sit amet, malesuada consequat tellus. In vitae fringilla dolor. Vivamus a porttitor massa. Morbi eu tortor lacus. Ut eu sodales arcu. Proin nulla dolor, congue ut laoreet nec, sagittis ac dui. Ut sed imperdiet mauris. Aliquam elementum et lacus sed vulputate. Curabitur id lacus in dui scelerisque aliquet vitae sed odio. Sed non semper quam. Morbi in velit a leo auctor convallis vel tincidunt diam. Etiam a sapien pharetra ligula venenatis lacinia iaculis eu lacus.

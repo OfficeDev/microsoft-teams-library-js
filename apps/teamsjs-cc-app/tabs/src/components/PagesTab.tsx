@@ -11,18 +11,18 @@ import { useContext } from "react";
  * This component contains all the supported pages capability.
  */
 const PagesTab = () => {
-    const { themeString } = useContext(TeamsFxContext);
+  const { themeString } = useContext(TeamsFxContext);
 
-    return (
-        <div className={themeString === "default" ? "" : "dark"}>
-            <NavigateBack />
-            <NavigateToApp />
-            <ReturnFocusToAppBar />
-            <ReturnFocusToSearchBar />
-            <SetCurrentFrame />
-            <ShareDeepLink />
-        </div>
-    );
-}
+  return (
+    <div className={themeString === "default" ? "" : "dark"}>
+      <NavigateBack />
+      <NavigateToApp />
+      <ReturnFocusToAppBar />
+      <ReturnFocusToSearchBar />
+      <SetCurrentFrame />
+      <ShareDeepLink />
+    </div>
+  );
+};
 
 export default PagesTab;
