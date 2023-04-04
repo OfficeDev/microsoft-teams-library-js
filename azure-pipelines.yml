@@ -4,7 +4,7 @@ variables:
 trigger:
   branches:
     include:
-      - 'release-1.13.*'
+      - 'release/1.*'
 
 jobs:
   - job: Build
