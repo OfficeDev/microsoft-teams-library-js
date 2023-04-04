@@ -178,12 +178,12 @@ export namespace app {
    */
   export interface AppHostInfo {
     /**
-     * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
+     * Identifies which host is running your app
      */
     name: HostName;
 
     /**
-     * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+     * The client type on which the host is running
      */
     clientType: HostClientType;
 
