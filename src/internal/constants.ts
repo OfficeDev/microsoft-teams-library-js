@@ -74,10 +74,6 @@ export const validOrigins = [
   'https://local.teams.live.com:8080', // local development
   'https://local.teams.office.com', // local development
   'https://local.teams.office.com:8080', // local development
-  'https://msft.spoppe.com',
-  'https://*.sharepoint.com',
-  'https://*.sharepoint-df.com',
-  'https://*.sharepointonline.com',
   'https://outlook.office.com',
   'https://outlook-sdf.office.com',
   'https://*.teams.microsoft.com',

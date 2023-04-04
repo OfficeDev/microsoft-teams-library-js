@@ -1,0 +1,83 @@
+steps:
+  - task: YarnInstaller@3
+    displayName: 'Yarn 1.x'
+    inputs:
+      versionSpec: '1.x'
+
+  - task: NodeTool@0
+    displayName: 'Install Node.js'
+    inputs:
+      versionSpec: '14.x'
+
+  - task: Yarn@3
+    displayName: 'yarn install'
+    inputs:
+      Arguments: 'install'
+    retryCountOnTaskFailure: 2
+
+  - task: Yarn@3
+    inputs:
+      Arguments: 'build'
+    displayName: 'yarn build'
+
+  - task: Yarn@3
+    inputs:
+      Arguments: 'test'
+    displayName: 'yarn test'
+
+  - powershell: |
+      $npmVer=$(node -p "require('./package.json').version")
+      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+    name: package
+    displayName: 'Set package.version Variable'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'dist'
+      contents: '**\?(*.js|*.ts|*.map)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
+    displayName: 'Copy TeamsJS Content for CDN'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        package.json
+        README.md
+        LICENSE
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+      flattenFolders: true
+    displayName: 'Copy TeamsJS Content for NPM'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        dist\**\?(*.js|*.ts|*.map)
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
+      flattenFolders: true
+    displayName: 'Copy JS Content for NPM'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
+      ArtifactName: 'CDNFeed'
+    displayName: 'Publish CDN feed to build Artifacts'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+      ArtifactName: 'NPMFeed'
+    displayName: 'Publish NPM feed to Build Artifacts'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        tools\scripts\*.ps1
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+      flattenFolders: true
+    displayName: 'Copy Power Shell scripts to scripts'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
+      ArtifactName: 'scripts'
+    displayName: 'Publish Powershell Scripts to Build Artifacts'

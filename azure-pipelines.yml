@@ -1,0 +1,15 @@
+variables:
+  - group: InfoSec-SecurityResults
+
+trigger:
+  branches:
+    include:
+      - 'release-1.13.*'
+
+jobs:
+  - job: Build
+    displayName: 'Build Test Publish'
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - template: tools/yaml-templates/build-test-publish.yml
