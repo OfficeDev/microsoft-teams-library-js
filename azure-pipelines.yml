@@ -7,13 +7,6 @@ trigger:
       - 'release-1.13.*'
 
 jobs:
-  - job: Security
-    displayName: 'Security Tasks'
-    pool:
-      vmImage: 'windows-latest'
-    steps:
-      - template: tools/yaml-templates/security.yml
-
   - job: Build
     displayName: 'Build Test Publish'
     pool:
