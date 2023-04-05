@@ -333,6 +333,7 @@ export namespace app {
 
     /**
      * The user's role in the team.
+
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to the user's role, and never as proof of her role.
      */
@@ -345,8 +346,13 @@ export namespace app {
   export interface UserInfo {
     /**
      * The Azure AD object id of the current user.
-     * Because a malicious party run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
+     *
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
+     *
      * This field is available only when the identity permission is requested in the manifest.
      */
     id: string;
@@ -373,18 +379,26 @@ export namespace app {
     licenseType?: string;
 
     /**
-     * A value suitable for use as a login_hint when authenticating with Azure AD.
+     * A value suitable for use when providing a login_hint to Azure Active Directory for authentication purposes.
+     * See [Provide optional claims to your app](https://learn.microsoft.com/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set)
+     * for more information about the use of login_hint
+     *
      * Because a malicious party can run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     loginHint?: string;
 
     /**
      * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
-     * Because a malicious party run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     userPrincipalName?: string;
 
@@ -400,9 +414,12 @@ export namespace app {
   export interface TenantInfo {
     /**
      * The Azure AD tenant ID of the current user.
+
      * Because a malicious party can run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     id: string;
 

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Removed some valid origins",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}

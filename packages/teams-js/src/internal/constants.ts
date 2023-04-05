@@ -128,10 +128,6 @@ export const validOrigins = [
   'local.teams.live.com:8080', // local development
   'local.teams.office.com', // local development
   'local.teams.office.com:8080', // local development
-  'msft.spoppe.com',
-  '*.sharepoint.com',
-  '*.sharepoint-df.com',
-  '*.sharepointonline.com',
   'outlook.office.com',
   'outlook-sdf.office.com',
   'outlook.office365.com',
