@@ -1,8 +1,32 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 03 Mar 2023 19:57:31 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Apr 2023 18:01:24 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.10.0
+
+Wed, 05 Apr 2023 18:01:24 GMT
+
+### Minor changes
+
+- Removed some valid origins
+- Added new sub-namespace `video.mediaStream` and new API `video.mediaStream.registerForVideoFrame`
+
+### Patches
+
+- Changed `video.EffectChangeType` to string enum
+- Updated message sent to host by `video.registerForVideoFrame` to avoid duplication with message sent by `video.mediaStream.registerForVideoStream` (bug would manifest in "stream id is already registered" error message)
+- Added `ipados` host client type check for auth flow
+- Fixed broken documentation link and invalid markdown.
+- Added documentation to interfaces in `mail` capability
+- Removed legacy endpoints from `IFluidTenantInfo` interface
+- Moved `video.registerForVideoFrame` to `video.sharedFrame.registerForVideoFrame`
+- `meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs
+- Removed unnecessary (and outdated) docs on various `enum` properties
+- Added documentation for "Anonymous" as possible value for `UserInfo.licenseType`
+- `sharing.isSupported` now returns the correct value on mobile platforms
+- Clarified documentation on proper use of various user identity properties
 
 ## 2.9.1
 
