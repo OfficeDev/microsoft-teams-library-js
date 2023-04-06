@@ -302,7 +302,7 @@ export namespace video {
         typeof window !== 'undefined' && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       });
 
-      sendMessageToParent('video.mediaStream.registerForVideoFrame', [
+      sendMessageToParent('video.registerForVideoFrame', [
         {
           format: VideoFrameFormat.NV12,
         },
