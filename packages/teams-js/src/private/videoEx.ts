@@ -16,6 +16,18 @@ import { video } from '../public/video';
 export namespace videoEx {
   /**
    * @hidden
+   * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum ErrorLevel {
+    Fatal = 'fatal',
+    Warn = 'warn',
+  }
+  /**
+   * @hidden
    * Video frame configuration supplied to the host to customize the generated video frame parameters
    * @beta
    *
@@ -46,15 +58,73 @@ export namespace videoEx {
 
   /**
    * @hidden
-   * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
+   * Represents a video frame
    * @beta
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum ErrorLevel {
-    Fatal = 'fatal',
-    Warn = 'warn',
+  export interface VideoFrame extends video.VideoFrame {
+    /**
+     * @hidden
+     * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    audioInferenceResult?: Uint8Array;
+  }
+
+  /**
+   * @hidden
+   * Video frame call back function
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type VideoFrameCallback = (
+    frame: VideoFrame,
+    notifyVideoFrameProcessed: () => void,
+    notifyError: (errorMessage: string) => void,
+  ) => void;
+
+  /**
+   * @hidden
+   * Register to process video frames
+   * @beta
+   *
+   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
+   * @param config - VideoFrameConfig to customize generated video frame parameters
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler(
+      'video.newVideoFrame',
+      (videoFrame: VideoFrame) => {
+        if (videoFrame) {
+          const timestamp = videoFrame.timestamp;
+          frameCallback(
+            videoFrame,
+            () => {
+              notifyVideoFrameProcessed(timestamp);
+            },
+            notifyError,
+          );
+        }
+      },
+      false,
+    );
+
+    sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
   /**
@@ -173,6 +243,19 @@ export namespace videoEx {
 
   /**
    * @hidden
+   * Sending notification to host finished the video frame processing, now host can render this video frame
+   * or pass the video frame to next one in video pipeline
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  function notifyVideoFrameProcessed(timestamp?: number): void {
+    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
+  }
+
+  /**
+   * @hidden
    * Sending error notification to host
    * @beta
    * @param errorMessage - The error message that will be sent to the host
@@ -201,116 +284,5 @@ export namespace videoEx {
       throw errorNotSupportedOnPlatform;
     }
     notifyError(errorMessage, ErrorLevel.Fatal);
-  }
-
-  /**
-   * @hidden
-   * @internal
-   * @beta
-   * Namespace to get shared video framed.
-   * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames.
-   */
-  export namespace sharedFrame {
-    /**
-     * @hidden
-     *
-     * Checks if video.sharedFrame capability is supported by the host
-     * @beta
-     *
-     * @throws Error if {@linkcode app.initialize} has not successfully completed
-     *
-     * @returns boolean to represent whether the video.sharedFrame capability is supported
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    export function isSupported(): boolean {
-      ensureInitialized(runtime);
-      return video.sharedFrame.isSupported();
-    }
-
-    /**
-     * @hidden
-     * Represents a video frame
-     * @beta
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    export interface VideoFrame extends video.sharedFrame.VideoFrameData {
-      /**
-       * @hidden
-       * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
-       * @beta
-       *
-       * @internal
-       * Limited to Microsoft-internal use
-       */
-      audioInferenceResult?: Uint8Array;
-    }
-
-    /**
-     * @hidden
-     * Video frame call back function
-     * @beta
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    export type VideoFrameCallback = (
-      frame: VideoFrame,
-      notifyVideoFrameProcessed: () => void,
-      notifyError: (errorMessage: string) => void,
-    ) => void;
-
-    /**
-     * @hidden
-     * Register to process video frames
-     * @beta
-     *
-     * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
-     * @param config - VideoFrameConfig to customize generated video frame parameters
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
-      ensureInitialized(runtime, FrameContexts.sidePanel);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      registerHandler(
-        'video.newVideoFrame',
-        (videoFrame: VideoFrame) => {
-          if (videoFrame) {
-            const timestamp = videoFrame.timestamp;
-            frameCallback(
-              videoFrame,
-              () => {
-                notifyVideoFrameProcessed(timestamp);
-              },
-              notifyError,
-            );
-          }
-        },
-        false,
-      );
-
-      sendMessageToParent('video.registerForVideoFrame', [config]);
-    }
-
-    /**
-     * @hidden
-     * Sending notification to host finished the video frame processing, now host can render this video frame
-     * or pass the video frame to next one in video pipeline
-     * @beta
-     *
-     * @internal
-     * Limited to Microsoft-internal use
-     */
-    function notifyVideoFrameProcessed(timestamp?: number): void {
-      sendMessageToParent('video.videoFrameProcessed', [timestamp]);
-    }
   }
 }
