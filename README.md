@@ -48,7 +48,7 @@ Reference the SDK inside of your `.html` page using:
 ```html
 <!-- Microsoft Teams JavaScript API (via CDN) -->
 <script 
-  src="https://res.cdn.office.net/teams-js/1.13.1/js/MicrosoftTeams.min.js" 
+  src="https://statics.teams.cdn.office.net/sdk/v1.13.1/js/MicrosoftTeams.min.js" 
   integrity="sha384-GHbMxT9Jo1adhuCC3q3ckui3fF7o5Yfwa5rrZG5tlQk9lfW1scSDUr8fkmtn0a//" 
   crossorigin="anonymous">
 </script>
