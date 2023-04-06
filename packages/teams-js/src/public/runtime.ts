@@ -132,7 +132,6 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly teamsCore?: {};
     readonly video?: {
       readonly mediaStream?: {};
-      readonly sharedFrame?: {};
     };
     readonly webStorage?: {};
   };
@@ -204,9 +203,7 @@ export const teamsRuntimeConfig: Runtime = {
       fullTrust: {},
     },
     teamsCore: {},
-    video: {
-      sharedFrame: {},
-    },
+    video: {},
   },
 };
 
