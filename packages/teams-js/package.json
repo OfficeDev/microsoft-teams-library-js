@@ -11,7 +11,7 @@
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
   "scripts": {
-    "build": "pnpm lint && pnpm webpack  && pnpm docs:validate",
+    "build": "pnpm lint && webpack && pnpm docs:validate",
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --treatWarningsAsErrors --emit none",
