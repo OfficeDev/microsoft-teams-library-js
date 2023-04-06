@@ -640,7 +640,7 @@ Tue, 01 Mar 2022 19:50:49 GMT
   Organized top-level library functions under a core namespace. For example, `shareDeepLink` has been moved under `core` namespace. <br> Using `import * as ... from ...` will now fail. Importing now follows the following convention: <br>
 
   ```ts
-  import { value core } from '@microsoft/teams-js';
+  import { core } from '@microsoft/teams-js';
   ```
 
   For more detailed API organization, please refer to the **Capabilities organization introduced** section below.
