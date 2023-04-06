@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Fixed compilation errors in `video` capability",
+  "comment": "Fixed errors in `video` capability",
   "packageName": "@microsoft/teams-js",
   "email": "trharris@microsoft.com",
   "dependentChangeType": "patch"
