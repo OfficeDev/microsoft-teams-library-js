@@ -71,11 +71,11 @@ export namespace video {
     /**
      * Current video effect changed
      */
-    EffectChanged = 'EffectChanged',
+    EffectChanged,
     /**
      * Disable the video effect
      */
-    EffectDisabled = 'EffectDisabled',
+    EffectDisabled,
   }
 
   /**
