@@ -137,6 +137,64 @@ export namespace video {
    * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames.
    */
   export namespace mediaStream {
+    type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
+    type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
+    type AlphaOption = 'discard' | 'keep';
+    interface PlaneLayout {
+      offset: number;
+      stride: number;
+    }
+    interface VideoFrameCopyToOptions {
+      layout?: PlaneLayout[] | undefined;
+      rect?: DOMRectInit | undefined;
+    }
+
+    interface VideoFrameInit {
+      alpha?: AlphaOption | undefined;
+      displayHeight?: number | undefined;
+      displayWidth?: number | undefined;
+      duration?: number | undefined;
+      timestamp?: number | undefined;
+      visibleRect?: DOMRectInit | undefined;
+    }
+
+    interface VideoFrameBufferInit {
+      codedHeight: number;
+      codedWidth: number;
+      colorSpace?: VideoColorSpaceInit | undefined;
+      displayHeight?: number | undefined;
+      displayWidth?: number | undefined;
+      duration?: number | undefined;
+      format: VideoPixelFormat;
+      layout?: PlaneLayout[] | undefined;
+      timestamp: number;
+      visibleRect?: DOMRectInit | undefined;
+    }
+
+    export interface VideoFrame {
+      readonly codedHeight: number;
+      readonly codedRect: DOMRectReadOnly | null;
+      readonly codedWidth: number;
+      readonly colorSpace: VideoColorSpace;
+      readonly displayHeight: number;
+      readonly displayWidth: number;
+      readonly duration: number | null;
+      readonly format: VideoPixelFormat | null;
+      readonly timestamp: number | null;
+      readonly visibleRect: DOMRectReadOnly | null;
+      allocationSize(options?: VideoFrameCopyToOptions): number;
+      clone(): VideoFrame;
+      close(): void;
+      copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
+    }
+
+    // eslint-disable-next-line no-var, strict-null-checks/all
+    declare var VideoFrame: {
+      prototype: VideoFrame;
+      new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
+      new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
+    };
+
     /**
      * @beta
      * Checks if video.mediaStream capability is supported by the host
