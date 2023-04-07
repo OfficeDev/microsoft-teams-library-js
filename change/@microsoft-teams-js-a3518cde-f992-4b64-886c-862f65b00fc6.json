@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added `ipados` host client type check for auth flow",
-  "packageName": "@microsoft/teams-js",
-  "email": "magli@microsoft.com",
-  "dependentChangeType": "patch"
-}

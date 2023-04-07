@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed broken documentation link and invalid markdown.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erika.doyle@microsoft.com",
-  "dependentChangeType": "patch"
-}
