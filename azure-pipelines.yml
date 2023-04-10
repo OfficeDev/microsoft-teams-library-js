@@ -1,5 +1,7 @@
 variables:
   - group: InfoSec-SecurityResults
+  - name: Codeql.Enabled
+    value: true
 
 trigger:
   branches:
