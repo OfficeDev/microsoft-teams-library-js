@@ -102,10 +102,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://local.teams.live.com:8080',
     'https://local.teams.office.com',
     'https://local.teams.office.com:8080',
-    'https://msft.spoppe.com',
-    'https://microsoft.sharepoint.com',
-    'https://microsoft.sharepoint-df.com',
-    'https://microsoft.sharepointonline.com',
     'https://outlook.office.com',
     'https://outlook-sdf.office.com',
     'https://outlook-sdf.live.com',
@@ -440,9 +436,9 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('Proxy messages to child window', async () => {
-    await utils.initializeWithContext('content', null, ['https://contoso.sharepoint.com']);
+    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
     utils.processMessage({
-      origin: 'https://securebroker.sharepointonline.com',
+      origin: 'https://outlook.office.com',
       source: utils.childWindow,
       data: {
         id: 100,
