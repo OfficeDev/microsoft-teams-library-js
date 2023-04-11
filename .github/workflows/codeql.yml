@@ -13,7 +13,7 @@ name: 'CodeQL'
 
 on:
   push:
-    branches: ['main', archive/*, main*, release-*, release/*]
+    branches: ['main', archive/*, main*, release-1\.(1[3-9]|[2-9]\d|\d{3,})\.+.*, release/*]
   pull_request:
     # The branches below must be a subset of the branches above
     branches: ['main']
