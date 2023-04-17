@@ -27,11 +27,6 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash: |
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    displayName: Install Homebrew
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
-
-  - bash: |
       brew install xctesthtmlreport
     displayName: 'Install XCTestHtmlReport for publishing result'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
@@ -80,7 +75,7 @@ steps:
 
   - bash: /usr/bin/xcodebuild \
       -configuration Release \
-      $(parameters.IOSSdkLocalWorkspaceAndScheme) \
+      ${{ parameters.IOSSdkLocalWorkspaceAndScheme }} \
       -sdk iphonesimulator \
       -parallel-testing-enabled YES \
       -parallel-testing-worker-count 2 \
