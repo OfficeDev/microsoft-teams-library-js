@@ -8,6 +8,9 @@ steps:
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
     persistCredentials: true
+  - checkout: ${{ parameters.IOSSdkLocalWorkspaceAndScheme}}
+    path: workspaceAndSchemePath
+    persistCredetials: true
 
   - task: InstallSSHKey@0
     displayName: 'Install an SSH key for OneDSTelemetry'
@@ -75,7 +78,7 @@ steps:
 
   - bash: /usr/bin/xcodebuild \
       -configuration Release \
-      ${{parameters.IOSSdkLocalWorkspaceAndScheme}} \
+      workspaceAndSchemePath \
       -sdk iphonesimulator \
       -parallel-testing-enabled YES \
       -parallel-testing-worker-count 2 \
