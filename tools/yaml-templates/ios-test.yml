@@ -10,7 +10,7 @@ steps:
     persistCredentials: true
   - checkout: ${{ parameters.IOSSdkLocalWorkspaceAndScheme}}
     path: workspaceAndSchemePath
-    persistCredetials: true
+    persistCredentials: true
 
   - task: InstallSSHKey@0
     displayName: 'Install an SSH key for OneDSTelemetry'
