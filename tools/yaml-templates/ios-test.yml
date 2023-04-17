@@ -8,8 +8,11 @@ steps:
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
     persistCredentials: true
-  - checkout: ${{ parameters.IOSSdkLocalWorkspaceAndScheme}}
-    path: workspaceAndSchemePath
+  - checkout: ${{ parameters.IOSSdkWorkspace}}
+    path: workspaceName
+    persistCredentials: true
+  - checkout: ${{ parameters.IOSSdkScheme}}
+    path: schemeName
     persistCredentials: true
 
   - task: InstallSSHKey@0
@@ -78,7 +81,8 @@ steps:
 
   - bash: /usr/bin/xcodebuild \
       -configuration Release \
-      workspaceAndSchemePath \
+      -workspace /Users/runner/work/1/iOSHost/workspaceName.xcworkspace \
+      -scheme schemeName \
       -sdk iphonesimulator \
       -parallel-testing-enabled YES \
       -parallel-testing-worker-count 2 \
