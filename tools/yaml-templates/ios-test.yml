@@ -79,17 +79,18 @@ steps:
     displayName: 'Disable Slow Animation'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - bash: /usr/bin/xcodebuild \
-      -configuration Release \
-      -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace \
-      -scheme $(IOSSdkScheme) \
-      -sdk iphonesimulator \
-      -parallel-testing-enabled YES \
-      -parallel-testing-worker-count 2 \
-      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \
-      -quiet \
-      -resultBundlePath TestResults \
+  - bash: /usr/bin/xcodebuild
+      -configuration Release
+      -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace
+      -scheme $(IOSSdkScheme)
+      -sdk iphonesimulator
+      -parallel-testing-enabled YES
+      -parallel-testing-worker-count 2
+      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2'
+      -quiet
+      -resultBundlePath TestResults
       test > report.out 2>&1
+
       if [[ $? == 0 ]]
       then
       echo "E2E Test passes successfully"
