@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Moved `video.registerForVideoFrame` to `video.sharedFrame.registerForVideoFrame`",
-  "packageName": "@microsoft/teams-js",
-  "email": "wenghe@microsoft.com",
-  "dependentChangeType": "patch"
-}
