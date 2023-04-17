@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["./src/index.ts"],
+  "entryPoints": ["./src/public/constants.ts"],
   "out": "docs",
   "treatWarningsAsErrors": true,
   "validation": {

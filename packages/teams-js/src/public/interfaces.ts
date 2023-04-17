@@ -923,6 +923,7 @@ export interface FrameInfo {
  */
 export type FrameContext = FrameInfo;
 
+/** Represents an error that occurs during the execution of an app or integration. */
 export interface SdkError {
   /**
   error code
