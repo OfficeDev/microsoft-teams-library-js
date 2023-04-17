@@ -26,12 +26,14 @@ steps:
     inputs:
       key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
       path: $(Pipeline.Workspace)/.pnpm-store
+      cacheHitVar: PNPM_CACHE_RESTORED
     displayName: Cache app host node_modules pnpm
 
   - task: Cache@2
     inputs:
       key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
       path: $(Pipeline.Workspace)/.pnpm-store
+      condition: eq(variables.PNPM_CACHE_RESTORED, 'true')
     displayName: Cache client sdk node_modules pnpm
 
   - script: |
