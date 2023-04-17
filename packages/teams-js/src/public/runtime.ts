@@ -131,9 +131,7 @@ interface IRuntimeV2 extends IBaseRuntime {
       };
     };
     readonly teamsCore?: {};
-    readonly video?: {
-      readonly mediaStream?: {};
-    };
+    readonly video?: {};
     readonly webStorage?: {};
   };
 }

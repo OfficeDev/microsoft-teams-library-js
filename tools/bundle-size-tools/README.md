@@ -10,7 +10,7 @@ This is a package which is responsible for comparing the bundle analysis of two 
 ## Building package
 
 ```
-yarn build
+pnpm build
 ```
 
 Reference:

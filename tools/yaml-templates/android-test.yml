@@ -14,30 +14,48 @@ steps:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
 
-  - task: YarnInstaller@3
+  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
+  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
+  #   'command_name | operating_system | lockfile'
+  # in our case it is 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+  # and for the path is the directory which needs to be cached.
+  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
+  - task: Cache@2
     inputs:
-      versionSpec: '1.x'
+      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache pnpm
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'install'
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Run yarn install on TeamsJS'
-    retryCountOnTaskFailure: 2
+  - script: |
+      corepack enable
+      corepack prepare pnpm@7.30.1 --activate
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    displayName: 'Setup pnpm'
 
-  - task: Yarn@2
-    inputs:
-      Arguments: 'build'
-      ProjectDirectory: '$(ClientSdkProjectDirectory)'
-    displayName: 'Build TeamsJS'
+  - script: |
+      pnpm install
+    displayName: 'Install client sdk dependencies'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - bash: 'nohup yarn start-test-app &'
+  - script: |
+      pnpm build-force-blazor
+    displayName: 'Build client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - bash: 'nohup pnpm start-test-app &'
     displayName: 'Run sample test app in background'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
     displayName: 'Install Emulator'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '11'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Set default Java to x64'
 
   - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
     displayName: 'Run Android E2E Tests'

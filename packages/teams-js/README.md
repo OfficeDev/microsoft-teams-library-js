@@ -8,7 +8,7 @@ This JavaScript library is part of the [Microsoft Teams developer platform](http
 
 See [instructions](../../README.md#Getting-Started) in the monorepo root for how to clone and build the repository.
 
-Whenever building or testing the Teams client library, you can run `yarn build` or `yarn test` from the packages/teams-js directory.
+Whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the packages/teams-js directory.
 
 ## Installation
 
@@ -18,9 +18,9 @@ To install the stable [version](https://learn.microsoft.com/javascript/api/overv
 
 `npm install --save @microsoft/teams-js`
 
-### yarn
+### pnpm
 
-`yarn add @microsoft/teams-js`
+`pnpm add @microsoft/teams-js`
 
 ### Production
 
@@ -30,7 +30,7 @@ You can reference these files directly [from here](https://res.cdn.office.net/te
 
 ### As a package
 
-Install either using npm or yarn.
+Install either using npm or pnpm.
 
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 

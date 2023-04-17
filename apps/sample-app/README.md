@@ -19,11 +19,11 @@ The sample app leverages TeamsJS v2 SDK for creating a multi host app experience
 
 1. Clone the TeamsJS v2 repository on your local machine using the following command in the terminal:
    `git clone https://github.com/OfficeDev/microsoft-teams-library-js.git`
-2. Run `yarn install` from the repository root
-3. Run `yarn build` form repository root
+2. Run `pnpm install` from the repository root
+3. Run `pnpm build` form repository root
 4. Change directory to the sample app by running the following command
    `cd apps/sample-app`
-5. Run `yarn start`
+5. Run `pnpm start`
    - Open https://localhost:4003 window in your browser.
    - Proceed to 'continue to localhost' upon receiving 'Your Connection isn't private' warning.
    - An alert will pop up stating the app must be sideloaded onto a host (Teams).
