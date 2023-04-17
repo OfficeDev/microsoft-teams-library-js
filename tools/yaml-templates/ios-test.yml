@@ -75,7 +75,7 @@ steps:
 
   - bash: /usr/bin/xcodebuild \
       -configuration Release \
-      ${{ parameters.IOSSdkLocalWorkspaceAndScheme }} \
+      ${{parameters.IOSSdkLocalWorkspaceAndScheme}} \
       -sdk iphonesimulator \
       -parallel-testing-enabled YES \
       -parallel-testing-worker-count 2 \
