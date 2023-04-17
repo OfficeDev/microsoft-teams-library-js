@@ -36,10 +36,6 @@ steps:
     displayName: 'Install XCTestHtmlReport for publishing result'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - bash: 'sh build_ios_host_sdk.sh'
-    displayName: 'Build iOS Host SDK'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
-
   - task: NodeTool@0
     inputs:
       versionSpec: '14.x'
@@ -77,17 +73,43 @@ steps:
     displayName: 'Run sample test app in background'
     workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - bash: 'sh disable_slow_animation.sh'
+  - bash: cd ~/Library/Preferences
+      defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
     displayName: 'Disable Slow Animation'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - bash: 'sh parallel_ui_testing_for_publishing.sh'
+  - bash: /usr/bin/xcodebuild \
+      -configuration Release \
+      $(parameters.IOSSdkLocalWorkspaceAndScheme) \
+      -sdk iphonesimulator \
+      -parallel-testing-enabled YES \
+      -parallel-testing-worker-count 2 \
+      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \
+      -quiet \
+      -resultBundlePath TestResults \
+      test > report.out 2>&1
+      if [[ $? == 0 ]]
+      then
+      echo "E2E Test passes successfully"
+      exit 0
+      else
+      echo "E2E Test failed"
+      exit 1
+      fi
     displayName: 'iOS UI/E2E Tests'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - bash: 'sh generate_junit_report.sh'
+  - bash: xchtmlreport -r TestResults -j > /dev/null
+      if [[ $? == 0 ]]
+      then
+      echo "Test report has been generated successfully."
+      exit 0
+      else
+      echo "Test report generating process failed for some reasons."
+      exit 1
+      fi
     displayName: 'Generate E2E test report'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost/jobs/ciDevTools'
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
     condition: succeededOrFailed()
 
   - task: PublishTestResults@2
