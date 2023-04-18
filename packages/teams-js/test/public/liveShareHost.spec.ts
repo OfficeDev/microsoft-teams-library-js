@@ -1,5 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
+import { Guid } from '../../src/public/guid';
 import {
   ContainerState,
   IClientInfo,
@@ -347,7 +348,7 @@ describe('LiveShareHost', () => {
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
       const userInfo: IClientInfo = {
-        userId: 'test userId',
+        userId: '00000000-0000-0000-0000-000000000000' as Guid,
         roles: [UserMeetingRole.presenter],
         displayName: 'test name',
       };

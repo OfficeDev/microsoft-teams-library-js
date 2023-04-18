@@ -92,3 +92,4 @@ export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from '.
 export { settings } from './settings';
 export { tasks } from './tasks';
 export * from './liveShareHost';
+export { Guid } from './guid';
