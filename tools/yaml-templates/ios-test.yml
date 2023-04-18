@@ -84,10 +84,28 @@ steps:
       -quiet
       -resultBundlePath TestResults
       test > report.out 2>&1
+
+      if [[ $? == 0 ]];
+      then
+      echo "E2E Test passes successfully"
+      exit 0;
+      else
+      echo "E2E Test failed"
+      exit 1;
+      fi;
     displayName: 'iOS UI/E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash: xchtmlreport -r TestResults -j > /dev/null
+
+      if [[ $? == 0 ]];
+      then
+      echo "Test report has been generated successfully."
+      exit 0;
+      else
+      echo "Test report generating process failed for some reasons."
+      exit 1;
+      fi;
     displayName: 'Generate E2E test report'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
     condition: succeededOrFailed()
