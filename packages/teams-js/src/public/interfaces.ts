@@ -774,7 +774,7 @@ export interface DeepLinkParameters {
  * Shared Dialog Properties
  */
 export interface BaseDialogInfo {
-  /*
+  /**
    * The requested size of the dialog
    */
   size: DialogSize;

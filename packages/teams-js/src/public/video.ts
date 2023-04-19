@@ -49,6 +49,7 @@ export namespace video {
    * @beta
    */
   export enum VideoFrameFormat {
+    /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
     NV12,
   }
 

@@ -6,14 +6,21 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 export namespace call {
+  /** Modalities that can be associated with a call. */
   export enum CallModalities {
+    /** Indicates that the modality is unknown or undefined. */
     Unknown = 'unknown',
+    /** Indicates that the call includes audio. */
     Audio = 'audio',
+    /** Indicates that the call includes video. */
     Video = 'video',
+    /** Indicates that the call includes video-based screen sharing. */
     VideoBasedScreenSharing = 'videoBasedScreenSharing',
+    /** Indicates that the call includes data sharing or messaging. */
     Data = 'data',
   }
 
+  /** Represents parameters for StartCall. */
   export interface StartCallParams {
     /**
      * Comma-separated list of user IDs representing the participants of the call.
