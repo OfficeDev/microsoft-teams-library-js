@@ -1,4 +1,3 @@
-import * as uuid from 'uuid';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
