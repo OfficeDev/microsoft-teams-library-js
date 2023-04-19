@@ -47,7 +47,13 @@ export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
-export { ChildAppWindow, IAppWindow, ParentAppWindow, addEventListnerFunctionType, onCompleteFunctionType } from './appWindow';
+export {
+  ChildAppWindow,
+  IAppWindow,
+  ParentAppWindow,
+  addEventListnerFunctionType,
+  onCompleteFunctionType,
+} from './appWindow';
 export { menus } from './menus';
 export { media } from './media';
 export { location } from './location';

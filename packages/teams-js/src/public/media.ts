@@ -634,10 +634,7 @@ export namespace media {
    * @param mediaInputs - The input params to customize the media to be selected
    * @param callback - The callback to invoke after fetching the media
    */
-  export function selectMedia(
-    mediaInputs: MediaInputs,
-    callback: selectMediaCallbackFunctionType,
-  ): void {
+  export function selectMedia(mediaInputs: MediaInputs, callback: selectMediaCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[select Media] Callback cannot be null');
     }

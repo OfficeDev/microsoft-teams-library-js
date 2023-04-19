@@ -24,7 +24,7 @@ export namespace pages {
   /** Full screen function */
   export type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
   /** Back button handler function */
-  export type backButtonHandlerFunctionType = () => boolean
+  export type backButtonHandlerFunctionType = () => boolean;
   /** Save event function */
   export type saveEventType = (evt: pages.config.SaveEvent) => void;
   /** Remove event function */
@@ -488,7 +488,7 @@ export namespace pages {
      * Registers a handler for when the tab configuration is changed by the user
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
-    export function registerChangeConfigHandler(handler: handlerFunctionType ): void {
+    export function registerChangeConfigHandler(handler: handlerFunctionType): void {
       registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;

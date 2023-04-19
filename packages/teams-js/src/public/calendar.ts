@@ -72,7 +72,7 @@ export namespace calendar {
   }
 
   /** Compose meeting parameters */
-  
+
   export interface ComposeMeetingParams {
     /** An array of email addresses of the attendees to invite to the meeting. */
     attendees?: string[];
