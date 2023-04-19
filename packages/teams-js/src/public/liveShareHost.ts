@@ -1,7 +1,7 @@
+import * as uuid from 'uuid';
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
-import { Guid } from './guid';
 import { runtime } from './runtime';
 
 /**
@@ -127,7 +127,7 @@ export interface IFluidTenantInfo {
  * @beta
  */
 export interface IClientInfo {
-  userId: Guid;
+  userId: string;
   roles: UserMeetingRole[];
   displayName?: string;
 }
