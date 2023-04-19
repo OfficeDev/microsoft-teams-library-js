@@ -31,6 +31,17 @@ import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace media {
+  /** Capture image callback function type. */
+  export type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
+  /** Select media callback function type. */
+  export type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
+  /** Error callback function type. */
+  export type errorCallbackFunctionType = (error?: SdkError) => void;
+  /** Scan BarCode callback function type. */
+  export type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
+  /** Get media callback function type. */
+  export type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
+
   /**
    * Enum for file formats supported
    */
@@ -83,7 +94,7 @@ export namespace media {
    * Note: For desktop, this API is not supported. Callback will be resolved with ErrorCode.NotSupported.
    *
    */
-  export function captureImage(callback: (error: SdkError, files: File[]) => void): void {
+  export function captureImage(callback: captureImageCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[captureImage] Callback cannot be null');
     }
@@ -133,7 +144,7 @@ export namespace media {
      * @param callback - callback is called with the @see SdkError if there is an error
      * If error is null or undefined, the callback will be called with @see Blob.
      */
-    public getMedia(callback: (error: SdkError, blob: Blob) => void): void {
+    public getMedia(callback: getMediaCallbackFunctionType): void {
       if (!callback) {
         throw new Error('[get Media] Callback cannot be null');
       }
@@ -159,7 +170,7 @@ export namespace media {
     }
 
     /** Function to retrieve media content, such as images or videos via callback. */
-    private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
+    private getMediaViaCallback(callback: getMediaCallbackFunctionType): void {
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
         assembleAttachment: [],
@@ -193,7 +204,7 @@ export namespace media {
     }
 
     /** Function to retrieve media content, such as images or videos via handler. */
-    private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
+    private getMediaViaHandler(callback: getMediaCallbackFunctionType): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
@@ -408,7 +419,7 @@ export namespace media {
      * @param mediaEvent indicates what the event that needs to be signaled to the host client
      * Optional; @param callback is used to send app if host client has successfully handled the notification event or not
      */
-    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: (err?: SdkError) => void): void {
+    protected notifyEventToHost(mediaEvent: MediaControllerEvent, callback?: errorCallbackFunctionType): void {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
 
       try {
@@ -432,7 +443,7 @@ export namespace media {
      * Function to programatically stop the ongoing media event
      * Optional; @param callback is used to send app if host client has successfully stopped the event or not
      */
-    public stop(callback?: (err?: SdkError) => void): void {
+    public stop(callback?: errorCallbackFunctionType): void {
       this.notifyEventToHost(MediaControllerEvent.StopRecording, callback);
     }
   }
@@ -625,7 +636,7 @@ export namespace media {
    */
   export function selectMedia(
     mediaInputs: MediaInputs,
-    callback: (error: SdkError, attachments: Media[]) => void,
+    callback: selectMediaCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[select Media] Callback cannot be null');
@@ -691,7 +702,7 @@ export namespace media {
    * @param uriList - list of URIs for images to be viewed - can be content URI or server URL. Supports up to 10 Images in a single call
    * @param callback - returns back error if encountered, returns null in case of success
    */
-  export function viewImages(uriList: ImageUri[], callback: (error?: SdkError) => void): void {
+  export function viewImages(uriList: ImageUri[], callback: errorCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[view images] Callback cannot be null');
     }
@@ -736,7 +747,7 @@ export namespace media {
    * @param callback - callback to invoke after scanning the barcode
    * @param config - optional input configuration to customize the barcode scanning experience
    */
-  export function scanBarCode(callback: (error: SdkError, decodedText: string) => void, config?: BarCodeConfig): void {
+  export function scanBarCode(callback: scanBarCodeCallbackFunctionType, config?: BarCodeConfig): void {
     if (!callback) {
       throw new Error('[media.scanBarCode] Callback cannot be null');
     }
