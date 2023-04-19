@@ -6,19 +6,27 @@ import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace meeting {
-
   /** Error callback function type */
   export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
   /** Get live stream state callback function type */
-  export type getLiveStreamStateCallbackFunctionType = (error: SdkError | null, liveStreamState: LiveStreamState | null) => void;
+  export type getLiveStreamStateCallbackFunctionType = (
+    error: SdkError | null,
+    liveStreamState: LiveStreamState | null,
+  ) => void;
   /** Live stream error callback function type */
   export type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
   /** Register live stream changed handler function type */
   export type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
   /** Get app content stage sharing capabilities callback function type */
-  export type getAppContentCallbackFunctionType = (error: SdkError | null, appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null) => void;
+  export type getAppContentCallbackFunctionType = (
+    error: SdkError | null,
+    appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
+  ) => void;
   /** Get app content stage sharing state callback function type */
-  export type getAppContentStageCallbackFunctionType = (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void;
+  export type getAppContentStageCallbackFunctionType = (
+    error: SdkError | null,
+    appContentStageSharingState: IAppContentStageSharingState | null,
+  ) => void;
   /** Register speaking state change handler function type */
   export type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
   /**
@@ -368,9 +376,7 @@ export namespace meeting {
    * result can either contain the true/false value, incase of a successful fetch or null when the fetching fails
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
-  export function getIncomingClientAudioState(
-    callback: errorCallbackFunctionType,
-  ): void {
+  export function getIncomingClientAudioState(callback: errorCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
@@ -449,9 +455,7 @@ export namespace meeting {
    * error can either contain an error of type SdkError, in case of an error, or null when get is successful
    * liveStreamState can either contain a LiveStreamState value, or null when operation fails
    */
-  export function getLiveStreamState(
-    callback: getLiveStreamStateCallbackFunctionType,
-  ): void {
+  export function getLiveStreamState(callback: getLiveStreamStateCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[get live stream state] Callback cannot be null');
     }
@@ -521,10 +525,7 @@ export namespace meeting {
    * result can either contain a true value, incase of a successful share or null when the share fails
    * @param appContentUrl - is the input URL which needs to be shared on to the stage
    */
-  export function shareAppContentToStage(
-    callback: errorCallbackFunctionType,
-    appContentUrl: string,
-  ): void {
+  export function shareAppContentToStage(callback: errorCallbackFunctionType, appContentUrl: string): void {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
@@ -540,9 +541,7 @@ export namespace meeting {
    * appContentStageSharingCapabilities can either contain an IAppContentStageSharingCapabilities object
    * (indication of successful retrieval), or null (indication of failed retrieval)
    */
-  export function getAppContentStageSharingCapabilities(
-    callback: getAppContentCallbackFunctionType,
-  ): void {
+  export function getAppContentStageSharingCapabilities(callback: getAppContentCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
@@ -559,9 +558,7 @@ export namespace meeting {
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    */
-  export function stopSharingAppContentToStage(
-    callback: errorCallbackFunctionType,
-  ): void {
+  export function stopSharingAppContentToStage(callback: errorCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
@@ -577,9 +574,7 @@ export namespace meeting {
    * appContentStageSharingState can either contain an IAppContentStageSharingState object
    * (indication of successful retrieval), or null (indication of failed retrieval)
    */
-  export function getAppContentStageSharingState(
-    callback: getAppContentStageCallbackFunctionType,
-  ): void {
+  export function getAppContentStageSharingState(callback: getAppContentStageCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
