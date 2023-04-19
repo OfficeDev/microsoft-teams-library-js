@@ -6,6 +6,21 @@ import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace meeting {
+
+  /** Error callback function type */
+  export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
+  /** Get live stream state callback function type */
+  export type getLiveStreamStateCallbackFunctionType = (error: SdkError | null, liveStreamState: LiveStreamState | null) => void;
+  /** Live stream error callback function type */
+  export type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
+  /** Register live stream changed handler function type */
+  export type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
+  /** Get app content stage sharing capabilities callback function type */
+  export type getAppContentCallbackFunctionType = (error: SdkError | null, appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null) => void;
+  /** Get app content stage sharing state callback function type */
+  export type getAppContentStageCallbackFunctionType = (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void;
+  /** Register speaking state change handler function type */
+  export type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
   /**
    * @hidden
    * Data structure to represent meeting details
@@ -354,7 +369,7 @@ export namespace meeting {
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
   export function getIncomingClientAudioState(
-    callback: (error: SdkError | null, result: boolean | null) => void,
+    callback: errorCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[get incoming client audio state] Callback cannot be null');
@@ -371,7 +386,7 @@ export namespace meeting {
    * result can either contain the true/false value, incase of a successful toggle or null when the toggling fails
    * result: True means incoming audio is muted and false means incoming audio is unmuted
    */
-  export function toggleIncomingClientAudio(callback: (error: SdkError | null, result: boolean | null) => void): void {
+  export function toggleIncomingClientAudio(callback: errorCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
@@ -435,7 +450,7 @@ export namespace meeting {
    * liveStreamState can either contain a LiveStreamState value, or null when operation fails
    */
   export function getLiveStreamState(
-    callback: (error: SdkError | null, liveStreamState: LiveStreamState | null) => void,
+    callback: getLiveStreamStateCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[get live stream state] Callback cannot be null');
@@ -455,7 +470,7 @@ export namespace meeting {
    * @param callback - Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
    */
   export function requestStartLiveStreaming(
-    callback: (error: SdkError | null) => void,
+    callback: liveStreamErrorCallbackFunctionType,
     streamUrl: string,
     streamKey?: string,
   ): void {
@@ -474,7 +489,7 @@ export namespace meeting {
    *
    * @param callback - Callback contains error parameter which can be of type SdkError in case of an error, or null when operation is successful
    */
-  export function requestStopLiveStreaming(callback: (error: SdkError | null) => void): void {
+  export function requestStopLiveStreaming(callback: liveStreamErrorCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
@@ -490,7 +505,7 @@ export namespace meeting {
    *
    * @param handler - The handler to invoke when the live stream state changes
    */
-  export function registerLiveStreamChangedHandler(handler: (liveStreamState: LiveStreamState) => void): void {
+  export function registerLiveStreamChangedHandler(handler: registerLiveStreamChangedHandlerFunctionType): void {
     if (!handler) {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
@@ -507,7 +522,7 @@ export namespace meeting {
    * @param appContentUrl - is the input URL which needs to be shared on to the stage
    */
   export function shareAppContentToStage(
-    callback: (error: SdkError | null, result: boolean | null) => void,
+    callback: errorCallbackFunctionType,
     appContentUrl: string,
   ): void {
     if (!callback) {
@@ -526,10 +541,7 @@ export namespace meeting {
    * (indication of successful retrieval), or null (indication of failed retrieval)
    */
   export function getAppContentStageSharingCapabilities(
-    callback: (
-      error: SdkError | null,
-      appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
-    ) => void,
+    callback: getAppContentCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
@@ -548,7 +560,7 @@ export namespace meeting {
    * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
    */
   export function stopSharingAppContentToStage(
-    callback: (error: SdkError | null, result: boolean | null) => void,
+    callback: errorCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
@@ -566,7 +578,7 @@ export namespace meeting {
    * (indication of successful retrieval), or null (indication of failed retrieval)
    */
   export function getAppContentStageSharingState(
-    callback: (error: SdkError | null, appContentStageSharingState: IAppContentStageSharingState | null) => void,
+    callback: getAppContentStageCallbackFunctionType,
   ): void {
     if (!callback) {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
@@ -582,7 +594,7 @@ export namespace meeting {
    *
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    */
-  export function registerSpeakingStateChangeHandler(handler: (speakingState: ISpeakingState) => void): void {
+  export function registerSpeakingStateChangeHandler(handler: registerSpeakingStateChangeHandlerFunctionType): void {
     if (!handler) {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
