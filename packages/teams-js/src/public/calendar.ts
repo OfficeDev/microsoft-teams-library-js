@@ -5,6 +5,11 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 export namespace calendar {
+  /**
+   * Opens a calendar item in the native calendar app
+   *
+   * @param openCalendarItemParams - object containing unique ID of the calendar item to be opened.
+   */
   export function openCalendarItem(openCalendarItemParams: OpenCalendarItemParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
@@ -19,6 +24,12 @@ export namespace calendar {
       resolve(sendAndHandleError('calendar.openCalendarItem', openCalendarItemParams));
     });
   }
+
+  /**
+   * Compose a new meeting in the user's calendar.
+   *
+   * @param composeMeetingParams - object containing various properties to set up the meeting details.
+   */
   export function composeMeeting(composeMeetingParams: ComposeMeetingParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
@@ -54,15 +65,24 @@ export namespace calendar {
     return ensureInitialized(runtime) && runtime.supports.calendar ? true : false;
   }
 
+  /** Open calendar item parameters. */
   export interface OpenCalendarItemParams {
+    /** A string representing the unique ID of the calendar item to be opened. */
     itemId: string;
   }
 
+  /** Compose meeting parameters */
+  
   export interface ComposeMeetingParams {
+    /** An array of email addresses of the attendees to invite to the meeting. */
     attendees?: string[];
+    /** The start time of the meeting in ISO 8601 format. */
     startTime?: string;
+    /** The end time of the meeting in ISO 8601 format. */
     endTime?: string;
+    /** The subject line of the meeting. */
     subject?: string;
+    /** The body content of the meeting. */
     content?: string;
   }
 }

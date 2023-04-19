@@ -35,7 +35,9 @@ export namespace media {
    * Enum for file formats supported
    */
   export enum FileFormat {
+    /** Base64 encoding */
     Base64 = 'base64',
+    /** File id */
     ID = 'id',
   }
 
@@ -156,6 +158,7 @@ export namespace media {
       }
     }
 
+    /** Function to retrieve media content, such as images or videos via callback. */
     private getMediaViaCallback(callback: (error: SdkError, blob: Blob) => void): void {
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
@@ -189,6 +192,7 @@ export namespace media {
       sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
     }
 
+    /** Function to retrieve media content, such as images or videos via handler. */
     private getMediaViaHandler(callback: (error: SdkError, blob: Blob) => void): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
@@ -377,6 +381,7 @@ export namespace media {
    * Base class which holds the callback and notifies events to the host client
    */
   abstract class MediaController<T> {
+    /** Callback that can be registered to handle events related to the playback and control of video content. */
     protected controllerCallback: T;
 
     public constructor(controllerCallback?: T) {
@@ -436,6 +441,7 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   export interface VideoControllerCallback {
+    /** The event is a type of callback that can be enlisted to handle various events linked to the playback and management of video content. */
     onRecordingStarted?(): void;
   }
 
@@ -443,10 +449,11 @@ export namespace media {
    * VideoController class is used to communicate between the app and the host client during the video capture flow
    */
   export class VideoController extends MediaController<VideoControllerCallback> {
+    /** Gets media type video. */
     protected getMediaType(): MediaType {
       return MediaType.Video;
     }
-
+    /** Notify or send an event related to the playback and control of video content to a registered application. */
     public notifyEventToApp(mediaEvent: MediaControllerEvent): void {
       if (!this.controllerCallback) {
         // Early return as app has not registered with the callback
@@ -468,7 +475,9 @@ export namespace media {
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
   export enum MediaControllerEvent {
+    /** Start recording. */
     StartRecording = 1,
+    /** Stop recording. */
     StopRecording = 2,
   }
 
@@ -494,9 +503,13 @@ export namespace media {
    * The modes in which camera can be launched in select Media API
    */
   export enum CameraStartMode {
+    /** Photo mode. */
     Photo = 1,
+    /** Document mode. */
     Document = 2,
+    /** Whiteboard mode. */
     Whiteboard = 3,
+    /** Business card mode. */
     BusinessCard = 4,
   }
 
@@ -504,7 +517,9 @@ export namespace media {
    * Specifies the image source
    */
   export enum Source {
+    /** Image source is camera. */
     Camera = 1,
+    /** Image source is gallery. */
     Gallery = 2,
   }
 
@@ -512,9 +527,13 @@ export namespace media {
    * Specifies the type of Media
    */
   export enum MediaType {
+    /** Media type photo or image */
     Image = 1,
+    /** Media type video. */
     Video = 2,
+    /** Media type video and image. */
     VideoAndImage = 3,
+    /** Media type audio. */
     Audio = 4,
   }
 
@@ -522,7 +541,9 @@ export namespace media {
    * Input for view images API
    */
   export interface ImageUri {
+    /** Image location */
     value: string;
+    /** Image Uri type */
     type: ImageUriType;
   }
 
@@ -530,7 +551,9 @@ export namespace media {
    * ID contains a mapping for content uri on platform's side, URL is generic
    */
   export enum ImageUriType {
+    /** Image Id. */
     ID = 1,
+    /** Image URL. */
     URL = 2,
   }
 
@@ -538,7 +561,9 @@ export namespace media {
    * Specifies the image output formats.
    */
   export enum ImageOutputFormats {
+    /** Outputs image.  */
     IMAGE = 1,
+    /** Outputs pdf. */
     PDF = 2,
   }
 
@@ -576,7 +601,9 @@ export namespace media {
    * Helper object to assembled media chunks
    */
   export interface AssembleAttachment {
+    /** A number representing the sequence of the attachment in the media chunks. */
     sequence: number;
+    /** A Blob object representing the data of the media chunks. */
     file: Blob;
   }
 
@@ -584,7 +611,9 @@ export namespace media {
    * Helper class for assembling media
    */
   interface MediaHelper {
+    /** A string representing the MIME type of the media file */
     mediaMimeType: string;
+    /** An array of {@link media.AssembleAttachment | AssembleAttachment} objects representing the media files to be sent as attachment */
     assembleAttachment: AssembleAttachment[];
   }
 

@@ -7,6 +7,7 @@ import { FrameContexts } from './constants';
  * Represents information about tabs for an app
  */
 export interface TabInformation {
+  /** Represents the tabs associated with a Microsoft Teams team */
   teamTabs: TabInstance[];
 }
 
@@ -153,11 +154,17 @@ export interface TeamInformation {
  * Represents OS locale info used for formatting date and time data
  */
 export interface LocaleInfo {
+  /** Represents the platform on which the app is running. */
   platform: 'windows' | 'macos';
+  /** Represents the regional format used by the user's locale. */
   regionalFormat: string;
+  /** A string representing the short date format used by the user's locale. */
   shortDate: string;
+  /** A string representing the long date format used by the user's locale. */
   longDate: string;
+  /** A string representing the short time format used by the user's locale. */
   shortTime: string;
+  /** A string representing the long time format used by the user's locale. */
   longTime: string;
 }
 
@@ -165,8 +172,11 @@ export interface LocaleInfo {
  * Allowed user file open preferences
  */
 export enum FileOpenPreference {
+  /** Indicates that the user should be prompted to open the file in inline. */
   Inline = 'inline',
+  /** Indicates that the user should be prompted to open the file in the native desktop application associated with the file type. */
   Desktop = 'desktop',
+  /** Indicates that the user should be prompted to open the file in a web browser. */
   Web = 'web',
 }
 
@@ -176,6 +186,7 @@ export enum FileOpenPreference {
  * @beta
  */
 export enum ActionObjectType {
+  /** Represents content within a Microsoft 365 application. */
   M365Content = 'm365content',
 }
 
@@ -187,6 +198,7 @@ export enum ActionObjectType {
  * @beta
  */
 export interface BaseActionObject<T extends ActionObjectType> {
+  /** Represents action type. */
   type: T;
 }
 
@@ -202,6 +214,7 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
    * to query the Microsoft graph for more details.
    */
   itemId: string;
+  /** Represents an optional secondary identifier for an action in a Microsoft 365 content item. */
   secondaryId?: SecondaryId;
 }
 
@@ -211,7 +224,9 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
  * @beta
  */
 export interface SecondaryId {
+  /** Action name. */
   name: SecondaryM365ContentIdName;
+  /** Value for the action. */
   value: string;
 }
 
@@ -221,9 +236,13 @@ export interface SecondaryId {
  * @beta
  */
 export enum SecondaryM365ContentIdName {
+  /** One drive ID */
   DriveId = 'driveId',
+  /** Teams Group ID */
   GroupId = 'groupId',
+  /** SharePoint ID */
   SiteId = 'siteId',
+  /** User ID */
   UserId = 'userId',
 }
 
@@ -707,6 +726,7 @@ export interface Context {
   mySitePath?: string;
 }
 
+/** Represents the parameters used to share a deep link. */
 export interface ShareDeepLinkParameters {
   /**
    * The developer-defined unique ID for the sub-page to which this deep link points in the current page.
@@ -885,10 +905,6 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
-export interface DialogSize {
-  height: DialogDimension | number;
-  width: DialogDimension | number;
-}
 /**
  * @beta
  * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
@@ -905,6 +921,7 @@ export interface LoadContext {
   contentUrl: string;
 }
 
+/** Represents information about a frame within a tab or task module. */
 export interface FrameInfo {
   /**
    * The current URL that needs to be used in the iframe if the tab is reloaded
@@ -937,6 +954,7 @@ export interface SdkError {
   message?: string;
 }
 
+/** Error codes used to identify different types of errors that can occur while developing apps. */
 export enum ErrorCode {
   /**
    * API not supported in the current platform.
@@ -1015,6 +1033,8 @@ export interface HostVersionsInfo {
  * Represents the major and minor versions of the Adaptive Card schema in the current host
  */
 export interface AdaptiveCardVersion {
+  /** Represents the major version number. */
   majorVersion: number;
+  /** Represents the minor version number. */
   minorVersion: number;
 }

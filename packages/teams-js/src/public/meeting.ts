@@ -119,6 +119,7 @@ export namespace meeting {
     tenantId?: string;
   }
 
+  /** Represents the current live streaming state of a meeting */
   export interface LiveStreamState {
     /**
      * indicates whether meeting is streaming
@@ -136,6 +137,7 @@ export namespace meeting {
     };
   }
 
+  /** Represents app permission to share contents to meeting. */
   export interface IAppContentStageSharingCapabilities {
     /**
      * indicates whether app has permission to share contents to meeting stage
@@ -143,6 +145,7 @@ export namespace meeting {
     doesAppHaveSharePermission: boolean;
   }
 
+  /** Represents app being shared to stage. */
   export interface IAppContentStageSharingState {
     /**
      * indicates whether app is currently being shared to stage
@@ -317,17 +320,27 @@ export namespace meeting {
     applause = 'applause',
   }
 
+  /** Represents the type of a meeting */
   export enum MeetingType {
+    /** Used when the meeting type is not known. */
     Unknown = 'Unknown',
+    /** Used for ad hoc meetings that are created on the fly. */
     Adhoc = 'Adhoc',
+    /** Used for meetings that have been scheduled in advance. */
     Scheduled = 'Scheduled',
+    /** Used for meetings that occur on a recurring basis. */
     Recurring = 'Recurring',
+    /** Used for live events or webinars. */
     Broadcast = 'Broadcast',
+    /** Used for meetings that are created on the fly, but with a more polished experience than ad hoc meetings. */
     MeetNow = 'MeetNow',
   }
 
+  /** Represents the type of a call. */
   export enum CallType {
+    /** Represents a call between two people. */
     OneOnOneCall = 'oneOnOneCall',
+    /** Represents a call between more than two people. */
     GroupCall = 'groupCall',
   }
 

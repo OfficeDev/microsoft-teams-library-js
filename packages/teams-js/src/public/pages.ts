@@ -617,6 +617,13 @@ export namespace pages {
   export namespace backStack {
     let backButtonPressHandler: (() => boolean) | undefined;
 
+    /**
+     * @hidden
+     * Register backButtonPress handler.
+     *
+     * @internal
+     * Limited to Microsoft-internal use.
+     */
     export function _initialize(): void {
       registerHandler('backButtonPress', handleBackButtonPress, false);
     }

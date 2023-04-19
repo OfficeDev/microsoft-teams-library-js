@@ -9,6 +9,7 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/** Represents a window or frame within the host app. */
 export interface IAppWindow {
   /**
    * Send a message to the AppWindow.
@@ -27,6 +28,9 @@ export interface IAppWindow {
   addEventListener(type: string, listener: Function): void;
 }
 
+/**
+ * Child app window object that can be used to send messages to and fro from parent window.
+ */
 export class ChildAppWindow implements IAppWindow {
   /**
    * Send a message to the ChildAppWindow.
@@ -52,8 +56,13 @@ export class ChildAppWindow implements IAppWindow {
   }
 }
 
+/**
+ * Parent app window object that can be used to send messages to and fro from child window.
+ */
 export class ParentAppWindow implements IAppWindow {
+  /** Represents a parent window or frame. */
   private static _instance: ParentAppWindow;
+  /** Get the parent window instance. */
   public static get Instance(): IAppWindow {
     // Do you need arguments? Make it a regular method instead.
     return this._instance || (this._instance = new this());

@@ -35,10 +35,15 @@ export namespace app {
 
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
+  /** App Initialization Messages */
   export const Messages = {
+    /** App loaded. */
     AppLoaded: 'appInitialization.appLoaded',
+    /** App initialized successfully. */
     Success: 'appInitialization.success',
+    /** App initialization failed. */
     Failure: 'appInitialization.failure',
+    /** App initialization expected failure. */
     ExpectedFailure: 'appInitialization.expectedFailure',
   };
 
@@ -429,6 +434,7 @@ export namespace app {
     teamsSku?: string;
   }
 
+  /** Represents information about a SharePoint site */
   export interface SharePointSiteInfo {
     /**
      * The root SharePoint site associated with the team.

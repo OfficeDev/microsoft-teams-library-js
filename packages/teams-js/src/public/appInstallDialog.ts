@@ -6,10 +6,17 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 export namespace appInstallDialog {
+  /** Represents set of parameters for appInstallDialog. */
   export interface OpenAppInstallDialogParams {
+    /** A unique identifier for the app being installed. */
     appId: string;
   }
 
+  /**
+   * Displays a dialog box that allows users to install a specific app within the host environment.
+   *
+   * @param openAPPInstallDialogParams - An object containing the parameters of the appInstallDialog module including appId.
+   */
   export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
     return new Promise((resolve) => {
       ensureInitialized(
