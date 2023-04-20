@@ -12,7 +12,7 @@ const RegisterForVideoFrame = (): React.ReactElement =>
     onClick: async (setResult) => {
       const onFrameCallback: video.mediaStream.VideoFrameCallback = async (frame) => {
         setResult('video frame received');
-        return frame;
+        return frame.videoFrame;
       };
       try {
         video.mediaStream.registerForVideoFrame(onFrameCallback);
