@@ -2,12 +2,15 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
 import {
   ContainerState,
+  IClientInfo,
   IFluidContainerInfo,
   IFluidTenantInfo,
   INtpTimeInfo,
+  isSupported,
   LiveShareHost,
   UserMeetingRole,
 } from '../../src/public/liveShareHost';
+import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -59,14 +62,24 @@ describe('LiveShareHost', () => {
 
   describe('getFluidTenantInfo', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidTenantInfo()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.getFluidTenantInfo();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getFluidTenantInfo()).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.getFluidTenantInfo();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -87,14 +100,24 @@ describe('LiveShareHost', () => {
 
   describe('getFluidToken', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidToken('test-container')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.getFluidToken('test-container');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getFluidToken('test-container')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.getFluidToken('test-container');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -112,14 +135,24 @@ describe('LiveShareHost', () => {
 
   describe('getFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getFluidContainerId()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.getFluidContainerId();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getFluidContainerId()).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.getFluidContainerId();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -142,16 +175,24 @@ describe('LiveShareHost', () => {
 
   describe('setFluidContainerId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.setFluidContainerId('test-container')).rejects.toThrowError(
-        new Error(errorLibraryNotInitialized),
-      );
+      try {
+        host.setFluidContainerId('test-container');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.setFluidContainerId('test-container')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.setFluidContainerId('test-container');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -175,14 +216,24 @@ describe('LiveShareHost', () => {
 
   describe('getNtpTime', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getNtpTime()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.getNtpTime();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getNtpTime()).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.getNtpTime();
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -203,14 +254,24 @@ describe('LiveShareHost', () => {
 
   describe('registerClientId', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.registerClientId('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.registerClientId('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.registerClientId('test-client')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.registerClientId('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -228,14 +289,24 @@ describe('LiveShareHost', () => {
 
   describe('getClientRoles', () => {
     it('should not allow calls before initialization', async () => {
-      await expect(host.getClientRoles('test-client')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      try {
+        host.getClientRoles('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
     });
 
     it('should not allow calls without frame context initialization', async () => {
       await utils.initializeWithContext('settings');
-      await expect(host.getClientRoles('test-client')).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
-      );
+      try {
+        host.getClientRoles('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
     });
 
     it('should resolve promise correctly', async () => {
@@ -248,6 +319,52 @@ describe('LiveShareHost', () => {
       expect(getClientRolesMessage.args).toStrictEqual(['test-client']);
       utils.respondToMessage(getClientRolesMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
+    });
+  });
+
+  describe('getClientInfo', () => {
+    it('should not allow calls before initialization', async () => {
+      try {
+        host.getClientInfo('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(errorLibraryNotInitialized);
+      }
+    });
+
+    it('should not allow calls without frame context initialization', async () => {
+      await utils.initializeWithContext('settings');
+      try {
+        host.getClientInfo('test-client');
+        expect(true).toBe(false);
+      } catch (e) {
+        expect(e.message).toBe(
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        );
+      }
+    });
+
+    it('should resolve promise correctly', async () => {
+      await utils.initializeWithContext('meetingStage');
+      const userInfo: IClientInfo = {
+        userId: 'test userId',
+        roles: [UserMeetingRole.presenter],
+        displayName: 'test name',
+      };
+      const promise = host.getClientInfo('test-client');
+
+      const getClientInfoMessage = utils.findMessageByFunc('interactive.getClientInfo');
+      expect(getClientInfoMessage).not.toBeNull();
+      expect(getClientInfoMessage.args).toStrictEqual(['test-client']);
+      utils.respondToMessage(getClientInfoMessage, false, userInfo);
+      await expect(promise).resolves.toStrictEqual(userInfo);
+    });
+  });
+
+  describe('Testing isSupported', () => {
+    it('should not be supported before initialization', () => {
+      setUnitializedRuntime();
+      expect(() => isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });
