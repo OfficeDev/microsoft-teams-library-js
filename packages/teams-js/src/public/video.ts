@@ -93,7 +93,7 @@ export namespace video {
    * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
    */
   // eslint-disable-next-line no-var, strict-null-checks/all
-  export declare var VideoFrame: {
+  declare var VideoFrame: {
     prototype: VideoFrame;
     new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
     new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
