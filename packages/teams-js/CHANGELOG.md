@@ -1,8 +1,29 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 03 Mar 2023 19:57:31 GMT and should not be manually modified.
+This log was last generated on Thu, 06 Apr 2023 23:07:12 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.10.1
+
+Thu, 06 Apr 2023 23:07:12 GMT
+
+### Minor changes
+
+- Fixed errors in `video` capability
+- Removed some valid origins
+
+### Patches
+
+- Fixed broken documentation link and invalid markdown.
+- Added `ipados` host client type check for auth flow
+- Removed legacy endpoints from `IFluidTenantInfo` interface
+- Added documentation to interfaces in `mail` capability
+- Removed unnecessary (and outdated) docs on various `enum` properties
+- `meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs
+- Added documentation for "Anonymous" as possible value for `UserInfo.licenseType`
+- `sharing.isSupported` now returns the correct value on mobile platforms
+- Clarified documentation on proper use of various user identity properties
 
 ## 2.9.1
 

@@ -64,6 +64,7 @@ steps:
 
   # If Cypress cache is not found include cypress install.
   - script: |
+      rm -rf $(pnpm store path)
       pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (include Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
