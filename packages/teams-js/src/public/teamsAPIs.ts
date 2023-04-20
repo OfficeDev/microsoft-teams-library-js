@@ -10,6 +10,12 @@ import { runtime } from './runtime';
  */
 
 export namespace teamsCore {
+  /** Ready to unload function type */
+  export type readyToUnloadFunctionType = () => void;
+  /** Register on load handler function type */
+  export type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
+  /** Register before unload handler function type */
+  export type registerBeforeUnloadHandlerFunctionType = (readyToUnload: readyToUnloadFunctionType) => boolean;
   /**
    * Enable print capability to support printing page using Ctrl+P and cmd+P
    */
@@ -55,7 +61,7 @@ export namespace teamsCore {
    *
    * @beta
    */
-  export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+  export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
     registerOnLoadHandlerHelper(handler, () => {
       if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -74,7 +80,7 @@ export namespace teamsCore {
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
    */
   export function registerOnLoadHandlerHelper(
-    handler: (context: LoadContext) => void,
+    handler: registerOnLoadHandlerFunctionType,
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
@@ -98,7 +104,7 @@ export namespace teamsCore {
    *
    * @beta
    */
-  export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+  export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
       if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -118,7 +124,7 @@ export namespace teamsCore {
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
    */
   export function registerBeforeUnloadHandlerHelper(
-    handler: (readyToUnload: () => void) => boolean,
+    handler: registerBeforeUnloadHandlerFunctionType,
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing

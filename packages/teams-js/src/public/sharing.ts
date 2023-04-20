@@ -10,8 +10,12 @@ import { runtime } from './runtime';
  * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
  */
 export namespace sharing {
+  /** shareWebContent callback function type */
+  export type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
+
   /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
+    /** Share web content message */
     shareWebContent: 'sharing.shareWebContent',
   };
 
@@ -75,11 +79,11 @@ export namespace sharing {
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback: (err?: SdkError) => void,
+    callback: shareWebContentCallbackFunctionType,
   ): void;
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
+    callback?: shareWebContentCallbackFunctionType,
   ): Promise<void> {
     // validate the given input (synchronous check)
     try {

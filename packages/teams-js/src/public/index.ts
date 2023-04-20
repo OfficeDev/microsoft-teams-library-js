@@ -73,28 +73,41 @@ export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
 export {
+  callbackFunctionType,
   enablePrintCapability,
   executeDeepLink,
+  executeDeepLinkOnCompleteFunctionType,
   getContext,
+  getContextCallbackFunctionType,
   getMruTabInstances,
   getTabInstances,
+  getTabInstancesCallbackFunctionType,
   initialize,
   initializeWithFrameContext,
   print,
   registerBackButtonHandler,
+  registerBackButtonHandlerFunctionType,
   registerBeforeUnloadHandler,
   registerFocusEnterHandler,
   registerChangeSettingsHandler,
   registerFullScreenHandler,
+  registerFullScreenHandlerFunctionType,
   registerOnLoadHandler,
   registerOnThemeChangeHandler,
+  registerOnThemeChangeHandlerFunctionType,
   registerAppButtonClickHandler,
   registerAppButtonHoverEnterHandler,
   registerAppButtonHoverLeaveHandler,
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
-export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
+export {
+  returnFocus,
+  navigateBack,
+  navigateCrossDomain,
+  navigateToTab,
+  onCompleteHandlerFunctionType,
+} from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export * from './liveShareHost';
