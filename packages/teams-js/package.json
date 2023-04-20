@@ -23,7 +23,6 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/dom-mediacapture-transform": "0.1.2",
     "@types/debug": "^4.1.7"
   },
   "license": "MIT",

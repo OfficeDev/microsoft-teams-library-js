@@ -9,19 +9,42 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
-  type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
-  type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
-  type AlphaOption = 'discard' | 'keep';
-  interface PlaneLayout {
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
+
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
+
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+
+  export type AlphaOption = 'discard' | 'keep';
+
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export interface PlaneLayout {
     offset: number;
     stride: number;
   }
-  interface VideoFrameCopyToOptions {
+
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export interface VideoFrameCopyToOptions {
     layout?: PlaneLayout[] | undefined;
     rect?: DOMRectInit | undefined;
   }
 
-  interface VideoFrameInit {
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export interface VideoFrameInit {
     alpha?: AlphaOption | undefined;
     displayHeight?: number | undefined;
     displayWidth?: number | undefined;
@@ -30,7 +53,10 @@ export namespace video {
     visibleRect?: DOMRectInit | undefined;
   }
 
-  interface VideoFrameBufferInit {
+  /**
+   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export interface VideoFrameBufferInit {
     codedHeight: number;
     codedWidth: number;
     colorSpace?: VideoColorSpaceInit | undefined;
@@ -43,6 +69,9 @@ export namespace video {
     visibleRect?: DOMRectInit | undefined;
   }
 
+  /**
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
   export interface VideoFrame {
     readonly codedHeight: number;
     readonly codedRect: DOMRectReadOnly | null;
@@ -60,8 +89,11 @@ export namespace video {
     copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
   }
 
+  /**
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
   // eslint-disable-next-line no-var, strict-null-checks/all
-  declare var VideoFrame: {
+  export declare var VideoFrame: {
     prototype: VideoFrame;
     new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
     new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
@@ -278,7 +310,7 @@ export namespace video {
     /**
      * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
      */
-    async function getInputVideoTrack(streamId: string): Promise<MediaStreamVideoTrack> {
+    async function getInputVideoTrack(streamId: string): Promise<unknown> {
       if (typeof window === 'undefined') {
         throw errorNotSupportedOnPlatform;
       }
@@ -305,11 +337,13 @@ export namespace video {
      * The generator can be registered back to the media stream so that the host can get the processed frames.
      */
     function createProcessedStreamGenerator(
-      videoTrack: MediaStreamVideoTrack,
+      videoTrack: unknown,
       videoFrameCallback: VideoFrameCallback,
     ): MediaStreamTrack {
+      const MediaStreamTrackProcessor = typeof window !== 'undefined' && window['MediaStreamTrackProcessor'];
       const processor = new MediaStreamTrackProcessor({ track: videoTrack });
       const source = processor.readable;
+      const MediaStreamTrackGenerator = typeof window !== 'undefined' && window['MediaStreamTrackGenerator'];
       const generator = new MediaStreamTrackGenerator({ kind: 'video' });
       const sink = generator.writable;
 
