@@ -119,6 +119,20 @@ export interface IFluidTenantInfo {
 }
 
 /**
+ * @hidden
+ * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
+ * particular client in a Live Share session.
+ *
+ * @beta
+ */
+export interface IClientInfo {
+  userId: string;
+  roles: UserMeetingRole[];
+  displayName?: string;
+}
+
+/**
+ * @hidden
  * Live Share host implementation for O365 and Teams clients.
  *
  * @beta
@@ -131,9 +145,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
+    ensureSupported();
     return new Promise<IFluidTenantInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
   }
@@ -148,9 +161,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidToken(containerId?: string): Promise<string> {
+    ensureSupported();
     return new Promise<string>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       // eslint-disable-next-line strict-null-checks/all
       resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
     });
@@ -163,9 +175,8 @@ export class LiveShareHost {
    * @beta
    */
   public getFluidContainerId(): Promise<IFluidContainerInfo> {
+    ensureSupported();
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
   }
@@ -183,9 +194,8 @@ export class LiveShareHost {
    * @beta
    */
   public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
+    ensureSupported();
     return new Promise<IFluidContainerInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
   }
@@ -197,9 +207,8 @@ export class LiveShareHost {
    * @beta
    */
   public getNtpTime(): Promise<INtpTimeInfo> {
+    ensureSupported();
     return new Promise<INtpTimeInfo>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
   }
@@ -214,9 +223,8 @@ export class LiveShareHost {
    * @beta
    */
   public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
+    ensureSupported();
     return new Promise<UserMeetingRole[]>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
   }
@@ -231,10 +239,25 @@ export class LiveShareHost {
    * @beta
    */
   public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
+    ensureSupported();
     return new Promise<UserMeetingRole[] | undefined>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
-
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
+    });
+  }
+
+  /**
+   * @hidden
+   * Returns the `IClientInfo` associated with a client ID.
+   *
+   * @param clientId The Client ID the message was received from.
+   * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
+   *
+   * @beta
+   */
+  public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+    ensureSupported();
+    return new Promise<IClientInfo | undefined>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
     });
   }
 
@@ -247,8 +270,30 @@ export class LiveShareHost {
    * @beta
    */
   public static create(): LiveShareHost {
-    ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel);
+    ensureSupported();
 
     return new LiveShareHost();
+  }
+}
+/**
+ * @hidden
+ *
+ * Checks if the interactive capability is supported by the host
+ * @returns boolean to represent whether the interactive capability is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) && runtime.supports.interactive
+    ? true
+    : false;
+}
+
+function ensureSupported(): void {
+  if (!isSupported()) {
+    throw new Error('LiveShareHost Not supported');
   }
 }
