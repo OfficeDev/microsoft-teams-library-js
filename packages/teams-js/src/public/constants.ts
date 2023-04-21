@@ -61,23 +61,32 @@ export enum HostName {
   teamsModern = 'TeamsModern',
 }
 
-/** FrameContexts provides information about the context in which the app is running within the host. */
+/**
+ * FrameContexts provides information about the context in which the app is running within the host.
+ * Developers can use FrameContexts to determine how their app should behave in different contexts,
+ * and can use the information provided by the context to adapt the app to the user's needs.
+ * 
+ * @example 
+ * If the app is running in the settings context, the developer may want to display options for the 
+ * user to configure their preferences. If the app is running in the content context, the developer 
+ * may want to display information relevant to the content the user is currently viewing. 
+ */
 export enum FrameContexts {
-  /** Allows developers to access and modify the configuration settings of a host. */
+  /** App's frame context from where settings page can be accessed. */
   settings = 'settings',
-  /** Provides access to the content of the current page or tab within the host. */
+  /** The default context for the app where all the content of the app is displayed. */
   content = 'content',
-  /** Provides methods for authenticating users and obtaining authentication tokens for host app. */
+  /** Sets app's frame context to authentication flow for the app. */
   authentication = 'authentication',
-  /** Removes the app's iframe and any associated UI elements from the current page or tab within the host. */
+  /** The page shown when the user uninstalls the app. */
   remove = 'remove',
   /** A task module is a pop-up window that can be used to display a form, a dialog, or other interactive content within the host. */
   task = 'task',
-  /** The side panel is a persistent panel that is displayed on the right side of the host and can be used to display content or UI that is relevant to the current page or tab. The FrameContext.sidePanel property provides methods for opening and closing the side panel, as well as for resizing or updating its content. */
+  /** The side panel is a persistent panel that is displayed on the right side of the host and can be used to display content or UI that is relevant to the current page or tab. */
   sidePanel = 'sidePanel',
-  /** The stage is a large area that is displayed at the center of the host and can be used to display content or UI that requires a lot of space, such as a video player or a document editor. The FrameContext.stage property provides methods for updating or resizing the stage, as well as for setting its title and subtitle. */
+  /** The stage is a large area that is displayed at the center of the host and can be used to display content or UI that requires a lot of space, such as a video player or a document editor. */
   stage = 'stage',
-  /** Provides access to the stage in a meeting session, which is the primary area where video and presentation content is displayed during a meeting. */
+  /** App's fram context from where meetingStage can be accessed in a meeting session, which is the primary area where video and presentation content is displayed during a meeting. */
   meetingStage = 'meetingStage',
 }
 
