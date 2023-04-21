@@ -10,96 +10,6 @@ import { runtime } from './runtime';
  */
 export namespace video {
   /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-
-  export type AlphaOption = 'discard' | 'keep';
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export interface PlaneLayout {
-    offset: number;
-    stride: number;
-  }
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export interface VideoFrameCopyToOptions {
-    layout?: PlaneLayout[] | undefined;
-    rect?: DOMRectInit | undefined;
-  }
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export interface VideoFrameInit {
-    alpha?: AlphaOption | undefined;
-    displayHeight?: number | undefined;
-    displayWidth?: number | undefined;
-    duration?: number | undefined;
-    timestamp?: number | undefined;
-    visibleRect?: DOMRectInit | undefined;
-  }
-
-  /**
-   * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export interface VideoFrameBufferInit {
-    codedHeight: number;
-    codedWidth: number;
-    colorSpace?: VideoColorSpaceInit | undefined;
-    displayHeight?: number | undefined;
-    displayWidth?: number | undefined;
-    duration?: number | undefined;
-    format: VideoPixelFormat;
-    layout?: PlaneLayout[] | undefined;
-    timestamp: number;
-    visibleRect?: DOMRectInit | undefined;
-  }
-
-  /**
-   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  export interface VideoFrame {
-    readonly codedHeight: number;
-    readonly codedRect: DOMRectReadOnly | null;
-    readonly codedWidth: number;
-    readonly colorSpace: VideoColorSpace;
-    readonly displayHeight: number;
-    readonly displayWidth: number;
-    readonly duration: number | null;
-    readonly format: VideoPixelFormat | null;
-    readonly timestamp: number | null;
-    readonly visibleRect: DOMRectReadOnly | null;
-    allocationSize(options?: VideoFrameCopyToOptions): number;
-    clone(): VideoFrame;
-    close(): void;
-    copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
-  }
-
-  /**
-   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  // eslint-disable-next-line no-var, strict-null-checks/all
-  declare var VideoFrame: {
-    prototype: VideoFrame;
-    new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
-    new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
-  };
-
-  /**
    * Video frame format enum, currently only support NV12
    * @beta
    */
@@ -227,6 +137,96 @@ export namespace video {
    * When the host supports this capability, developer should call {@link mediaStream.registerForVideoFrame} to get the video frames.
    */
   export namespace mediaStream {
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+
+    export type AlphaOption = 'discard' | 'keep';
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export interface PlaneLayout {
+      offset: number;
+      stride: number;
+    }
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export interface VideoFrameCopyToOptions {
+      layout?: PlaneLayout[] | undefined;
+      rect?: DOMRectInit | undefined;
+    }
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export interface VideoFrameInit {
+      alpha?: AlphaOption | undefined;
+      displayHeight?: number | undefined;
+      displayWidth?: number | undefined;
+      duration?: number | undefined;
+      timestamp?: number | undefined;
+      visibleRect?: DOMRectInit | undefined;
+    }
+
+    /**
+     * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export interface VideoFrameBufferInit {
+      codedHeight: number;
+      codedWidth: number;
+      colorSpace?: VideoColorSpaceInit | undefined;
+      displayHeight?: number | undefined;
+      displayWidth?: number | undefined;
+      duration?: number | undefined;
+      format: VideoPixelFormat;
+      layout?: PlaneLayout[] | undefined;
+      timestamp: number;
+      visibleRect?: DOMRectInit | undefined;
+    }
+
+    /**
+     * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    export interface VideoFrame {
+      readonly codedHeight: number;
+      readonly codedRect: DOMRectReadOnly | null;
+      readonly codedWidth: number;
+      readonly colorSpace: VideoColorSpace;
+      readonly displayHeight: number;
+      readonly displayWidth: number;
+      readonly duration: number | null;
+      readonly format: VideoPixelFormat | null;
+      readonly timestamp: number | null;
+      readonly visibleRect: DOMRectReadOnly | null;
+      allocationSize(options?: VideoFrameCopyToOptions): number;
+      clone(): VideoFrame;
+      close(): void;
+      copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
+    }
+
+    /**
+     * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+     */
+    // eslint-disable-next-line strict-null-checks/all
+    declare const VideoFrame: {
+      prototype: VideoFrame;
+      new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
+      new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
+    };
+
     /**
      * @beta
      * Checks if video.mediaStream capability is supported by the host

@@ -371,7 +371,9 @@ describe('video', () => {
       await init();
       setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
       const streamId = 'testStreamId';
-      video.mediaStream.registerForVideoFrame(() => Promise.resolve({ close: () => {} } as video.VideoFrame));
+      video.mediaStream.registerForVideoFrame(() =>
+        Promise.resolve({ close: () => {} } as video.mediaStream.VideoFrame),
+      );
       postMessage('video.startVideoExtensibilityVideoStream', { streamId });
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(targetStreamId).toEqual(streamId);
@@ -382,7 +384,9 @@ describe('video', () => {
       await init();
       setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: {} } } });
       const streamId = 'testStreamId';
-      video.mediaStream.registerForVideoFrame(() => Promise.resolve({ close: () => {} } as video.VideoFrame));
+      video.mediaStream.registerForVideoFrame(() =>
+        Promise.resolve({ close: () => {} } as video.mediaStream.VideoFrame),
+      );
       postMessage('video.startVideoExtensibilityVideoStream', { streamId });
       const msg = findMessageByFunc('video.mediaStream.registerForVideoFrame');
       expect(msg).not.toBeNull();
@@ -400,7 +404,7 @@ describe('video', () => {
       let callbackInvoked = false;
       video.mediaStream.registerForVideoFrame(() => {
         callbackInvoked = true;
-        return Promise.resolve({ close: () => {} } as video.VideoFrame);
+        return Promise.resolve({ close: () => {} } as video.mediaStream.VideoFrame);
       });
       postMessage('video.startVideoExtensibilityVideoStream', { streamId: 'streamId' });
       await new Promise((resolve) => setTimeout(resolve, 0));
