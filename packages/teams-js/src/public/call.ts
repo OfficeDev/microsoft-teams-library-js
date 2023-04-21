@@ -20,7 +20,7 @@ export namespace call {
     Data = 'data',
   }
 
-  /** Represents parameters for StartCall. */
+  /** Represents parameters for {@link startCall | StartCall}. */
   export interface StartCallParams {
     /**
      * Comma-separated list of user IDs representing the participants of the call.

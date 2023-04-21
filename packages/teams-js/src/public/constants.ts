@@ -17,13 +17,13 @@ export enum HostClientType {
   rigel = 'rigel',
   /** Represents the client of host, which runs on surface hub devices. */
   surfaceHub = 'surfaceHub',
-  /** Represents the client of host, which runs on Teams Rooms on Windows devices. More information on Microsoft Teams Rooms on Windows can be found [here](https://support.microsoft.com/en-us/office/microsoft-teams-rooms-windows-help-e667f40e-5aab-40c1-bd68-611fe0002ba2)*/
+  /** Represents the client of host, which runs on Teams Rooms on Windows devices. More information on Microsoft Teams Rooms on Windows can be found [Microsoft Teams Rooms (Windows)](https://support.microsoft.com/office/microsoft-teams-rooms-windows-help-e667f40e-5aab-40c1-bd68-611fe0002ba2)*/
   teamsRoomsWindows = 'teamsRoomsWindows',
-  /** Represents the client of host, which runs on Teams Rooms on Android devices. More information on Microsoft Teams Rooms on Android can be found [here].(https://support.microsoft.com/en-us/office/get-started-with-teams-rooms-on-android-68517298-d513-46be-8d6d-d41db5e6b4b2)*/
+  /** Represents the client of host, which runs on Teams Rooms on Android devices. More information on Microsoft Teams Rooms on Android can be found [Microsoft Teams Rooms (Android)].(https://support.microsoft.com/office/get-started-with-teams-rooms-on-android-68517298-d513-46be-8d6d-d41db5e6b4b2)*/
   teamsRoomsAndroid = 'teamsRoomsAndroid',
-  /** Represents the client of host, which runs on Teams phones. More information can be found [here](https://support.microsoft.com/en-us/office/get-started-with-teams-phones-694ca17d-3ecf-40ca-b45e-d21b2c442412) */
+  /** Represents the client of host, which runs on Teams phones. More information can be found [Microsoft Teams Phones](https://support.microsoft.com/office/get-started-with-teams-phones-694ca17d-3ecf-40ca-b45e-d21b2c442412) */
   teamsPhones = 'teamsPhones',
-  /** Represents the client of host, which runs on Teams displays devices. More information can be found [here](https://support.microsoft.com/en-us/office/get-started-with-teams-displays-ff299825-7f13-4528-96c2-1d3437e6d4e6) */
+  /** Represents the client of host, which runs on Teams displays devices. More information can be found [Microsoft Teams Displays](https://support.microsoft.com/office/get-started-with-teams-displays-ff299825-7f13-4528-96c2-1d3437e6d4e6) */
   teamsDisplays = 'teamsDisplays',
 }
 

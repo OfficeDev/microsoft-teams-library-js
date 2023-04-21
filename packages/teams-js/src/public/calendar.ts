@@ -6,7 +6,7 @@ import { runtime } from './runtime';
 
 export namespace calendar {
   /**
-   * Opens a calendar item in the native calendar app
+   * Opens a calendar item.
    *
    * @param openCalendarItemParams - object containing unique ID of the calendar item to be opened.
    */
@@ -67,7 +67,7 @@ export namespace calendar {
 
   /** Open calendar item parameters. */
   export interface OpenCalendarItemParams {
-    /** A string representing the unique ID of the calendar item to be opened. */
+    /** An unique base64-encoded string id that represents the event's unique identifier of the calendar item to be opened. */
     itemId: string;
   }
 
@@ -76,9 +76,9 @@ export namespace calendar {
   export interface ComposeMeetingParams {
     /** An array of email addresses of the attendees to invite to the meeting. */
     attendees?: string[];
-    /** The start time of the meeting in ISO 8601 format. */
+    /** The start time of the meeting in MM/DD/YYYY HH:MM:SS format. */
     startTime?: string;
-    /** The end time of the meeting in ISO 8601 format. */
+    /** The end time of the meeting in MM/DD/YYYY HH:MM:SS format. */
     endTime?: string;
     /** The subject line of the meeting. */
     subject?: string;

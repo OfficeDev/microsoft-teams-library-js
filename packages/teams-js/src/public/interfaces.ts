@@ -154,13 +154,22 @@ export interface TeamInformation {
  * Represents OS locale info used for formatting date and time data
  */
 export interface LocaleInfo {
-  /** Represents the platform on which the app is running. */
+  /** Represents the user's platform on which the app is running. */
   platform: 'windows' | 'macos';
-  /** Represents the regional format used by the user's locale. */
+  /** 
+   * Represents the regional format used by the user's locale. 
+   * @example `en-us`.
+   */
   regionalFormat: string;
-  /** A string representing the short date format used by the user's locale. */
+  /** 
+   * Displays date values, as specified by the short date format M/DD/YYY in user's regional settings.
+   * @example 4/21/2023 or 4-21-2023 
+   */
   shortDate: string;
-  /** A string representing the long date format used by the user's locale. */
+  /** 
+   * Displays only date values, as specified by the Long Date format in user's regional settings.
+   * @example Friday, April 21, 2023 
+   */
   longDate: string;
   /** A string representing the short time format used by the user's locale. */
   shortTime: string;
@@ -236,13 +245,13 @@ export interface SecondaryId {
  * @beta
  */
 export enum SecondaryM365ContentIdName {
-  /** One drive ID */
+  /** OneDrive ID */
   DriveId = 'driveId',
   /** Teams Group ID */
   GroupId = 'groupId',
   /** SharePoint ID */
   SiteId = 'siteId',
-  /** User ID */
+  /** A string defining user ID */
   UserId = 'userId',
 }
 
@@ -921,7 +930,7 @@ export interface LoadContext {
   contentUrl: string;
 }
 
-/** Represents information about a frame within a tab or task module. */
+/** Represents information about a frame within a tab or dialog module. */
 export interface FrameInfo {
   /**
    * The current URL that needs to be used in the iframe if the tab is reloaded

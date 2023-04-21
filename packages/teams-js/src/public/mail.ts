@@ -5,7 +5,7 @@ import { runtime } from './runtime';
 
 export namespace mail {
   /**
-   * Opens a mail message in Outlook.
+   * Opens a mail message in the host.
    *
    * @param openMailItemParams - Object which specifies the ID of the mail message.
    */
@@ -53,7 +53,7 @@ export namespace mail {
 
   /** Defines the parameters used to open a mail item in the user's mailbox */
   export interface OpenMailItemParams {
-    /** Indicates itemId or messageId */
+    /** An unique base64-encoded string id that represents the itemId or messageId. */
     itemId: string;
   }
 
@@ -117,7 +117,7 @@ export namespace mail {
    * @see {@link ComposeMailType}
    */
   export interface ComposeReplyOrForwardParams<T extends ComposeMailType> extends ComposeMailBase<T> {
-    /** ID of the mail message. */
+    /** An unique base64-encoded string id that represents the mail message. */
     itemid: string;
   }
 

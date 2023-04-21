@@ -452,7 +452,7 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   export interface VideoControllerCallback {
-    /** The event is a type of callback that can be enlisted to handle various events linked to the playback and management of video content. */
+    /** The event is a type of callback that can be enlisted to handle various events linked to `onRecordingStarted` helps with playback of video content. */
     onRecordingStarted?(): void;
   }
 

@@ -34,7 +34,7 @@ export interface IAppWindow {
 }
 
 /**
- * Child app window object that can be used to send messages to and fro from parent window.
+ * Child app window object that can be used to communicate with parent window.
  */
 export class ChildAppWindow implements IAppWindow {
   /**
@@ -62,7 +62,7 @@ export class ChildAppWindow implements IAppWindow {
 }
 
 /**
- * Parent app window object that can be used to send messages to and fro from child window.
+ * Parent app window object that can be used to communicate with child window.
  */
 export class ParentAppWindow implements IAppWindow {
   /** Represents a parent window or frame. */
