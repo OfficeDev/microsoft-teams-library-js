@@ -225,7 +225,6 @@ export namespace videoEx {
      * Limited to Microsoft-internal use
      */
     export function isSupported(): boolean {
-      ensureInitialized(runtime);
       return video.sharedFrame.isSupported();
     }
 

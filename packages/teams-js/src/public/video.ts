@@ -393,7 +393,7 @@ export namespace video {
      *
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.video?.sharedFrame ? true : false;
+      return ensureInitialized(runtime) && !!runtime.supports.video?.sharedFrame;
     }
 
     /**
