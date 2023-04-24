@@ -26,8 +26,8 @@ const buildAndGetIntegrityHash = async () => {
   const absolutePathToManifestJson = path.resolve(__dirname, relativePathToManifestJson);
 
   console.log('Building @microsoft/teams-js');
-  await execShellCommand('pnpm workspace @microsoft/teams-js install');
-  await execShellCommand('pnpm workspace @microsoft/teams-js build');
+  await execShellCommand('pnpm install');
+  await execShellCommand('pnpm build');
 
   if (!fs.existsSync(absolutePathToManifestJson)) {
     throw `ERROR: MicrosoftTeams-manifest.json at ${absolutePathToManifestJson} was not found.`;

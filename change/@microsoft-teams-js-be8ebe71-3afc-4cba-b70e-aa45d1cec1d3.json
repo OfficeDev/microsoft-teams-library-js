@@ -1,7 +1,7 @@
 {
   "type": "minor",
-  "comment": "Fixed errors in `video` capability",
+  "comment": "Added `getClientInfo` to LiveShareHost",
   "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
+  "email": "jameshunt@microsoft.com",
   "dependentChangeType": "patch"
 }

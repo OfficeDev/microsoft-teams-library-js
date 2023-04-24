@@ -102,6 +102,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly geoLocation?: {
       readonly map?: {};
     };
+    readonly interactive?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -183,6 +184,7 @@ export const teamsRuntimeConfig: Runtime = {
       },
       update: {},
     },
+    interactive: {},
     logs: {},
     meetingRoom: {},
     menus: {},
