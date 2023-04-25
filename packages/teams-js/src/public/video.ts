@@ -139,22 +139,26 @@ export namespace video {
    */
   export namespace mediaStream {
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
 
     export type AlphaOption = 'discard' | 'keep';
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export interface PlaneLayout {
@@ -163,6 +167,7 @@ export namespace video {
     }
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export interface VideoFrameCopyToOptions {
@@ -171,6 +176,7 @@ export namespace video {
     }
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export interface VideoFrameInit {
@@ -183,6 +189,7 @@ export namespace video {
     }
 
     /**
+     * @beta
      * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export interface VideoFrameBufferInit {
@@ -199,6 +206,7 @@ export namespace video {
     }
 
     /**
+     * @beta
      * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
      */
     export interface VideoFrame {

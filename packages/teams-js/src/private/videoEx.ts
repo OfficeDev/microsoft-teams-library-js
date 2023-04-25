@@ -207,19 +207,16 @@ export namespace videoEx {
    * @hidden
    * @internal
    * @beta
-   * Namespace to get shared video framed.
+   * Namespace to get shared video frames.
    * When the host supports this capability, developer should call {@link sharedFrame.registerForVideoFrame} to get the video frames.
    */
   export namespace sharedFrame {
     /**
      * @hidden
-     *
      * Checks if video.sharedFrame capability is supported by the host
-     * @beta
-     *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
-     *
      * @returns boolean to represent whether the video.sharedFrame capability is supported
+     * @beta
      *
      * @internal
      * Limited to Microsoft-internal use
