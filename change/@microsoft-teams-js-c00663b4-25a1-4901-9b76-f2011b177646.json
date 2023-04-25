@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Migrated from `yarn` to `pnpm` for repository package management",
+  "comment": "Update webpack command",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "none"

@@ -314,7 +314,7 @@ describe('meeting', () => {
         new Error(errorLibraryNotInitialized),
       );
     });
-    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.task];
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {

@@ -1265,9 +1265,9 @@ describe('Testing pages module', () => {
             });
 
             it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               utils.processMessage({
-                origin: 'https://securebroker.sharepointonline.com',
+                origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
                   id: 100,
@@ -1281,7 +1281,7 @@ describe('Testing pages module', () => {
             });
 
             it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               let handlerCalled = false;
               pages.config.registerOnSaveHandler((saveEvent) => {
                 saveEvent.notifySuccess();
@@ -1289,7 +1289,7 @@ describe('Testing pages module', () => {
               });
               expect(handlerCalled).toBe(false);
               utils.processMessage({
-                origin: 'https://securebroker.sharepointonline.com',
+                origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
                   id: 100,
@@ -1364,10 +1364,10 @@ describe('Testing pages module', () => {
             });
 
             it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               pages.config.registerOnRemoveHandler(undefined);
               utils.processMessage({
-                origin: 'https://securebroker.sharepointonline.com',
+                origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
                   id: 100,
@@ -1381,14 +1381,14 @@ describe('Testing pages module', () => {
             });
 
             it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://contoso.sharepoint.com']);
+              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               let handlerCalled = false;
               pages.config.registerOnRemoveHandler(() => {
                 handlerCalled = true;
               });
               expect(handlerCalled).toBe(false);
               utils.processMessage({
-                origin: 'https://securebroker.sharepointonline.com',
+                origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
                   id: 100,

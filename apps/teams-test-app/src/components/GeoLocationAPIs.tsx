@@ -107,4 +107,5 @@ const GeoLocationAPIs = (): ReactElement => (
   </ModuleWrapper>
 );
 
+
 export default GeoLocationAPIs;
