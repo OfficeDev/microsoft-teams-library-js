@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment } from '../internal/serverSideRendering';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -241,7 +242,7 @@ export namespace video {
 
     function isTextureStreamAvailable(): boolean {
       return (
-        typeof window !== 'undefined' &&
+        !inServerSideRenderingEnvironment() &&
         !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
       );
     }
@@ -297,7 +298,7 @@ export namespace video {
         const videoTrack = await getInputVideoTrack(streamId);
         const generator = createProcessedStreamGenerator(videoTrack, frameCallback);
         // register the video track with processed frames back to the stream:
-        typeof window !== 'undefined' && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+        !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       });
 
       sendMessageToParent('video.mediaStream.registerForVideoFrame', [
@@ -311,7 +312,7 @@ export namespace video {
      * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
      */
     async function getInputVideoTrack(streamId: string): Promise<unknown> {
-      if (typeof window === 'undefined') {
+      if (inServerSideRenderingEnvironment()) {
         throw errorNotSupportedOnPlatform;
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -340,10 +341,10 @@ export namespace video {
       videoTrack: unknown,
       videoFrameCallback: VideoFrameCallback,
     ): MediaStreamTrack {
-      const MediaStreamTrackProcessor = typeof window !== 'undefined' && window['MediaStreamTrackProcessor'];
+      const MediaStreamTrackProcessor = !inServerSideRenderingEnvironment() && window['MediaStreamTrackProcessor'];
       const processor = new MediaStreamTrackProcessor({ track: videoTrack });
       const source = processor.readable;
-      const MediaStreamTrackGenerator = typeof window !== 'undefined' && window['MediaStreamTrackGenerator'];
+      const MediaStreamTrackGenerator = !inServerSideRenderingEnvironment() && window['MediaStreamTrackGenerator'];
       const generator = new MediaStreamTrackGenerator({ kind: 'video' });
       const sink = generator.writable;
 

@@ -14,6 +14,7 @@ import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment } from '../internal/serverSideRendering';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { logs } from '../private/logs';
@@ -897,8 +898,4 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   };
 
   return context;
-}
-
-function inServerSideRenderingEnvironment(): boolean {
-  return typeof window === 'undefined';
 }
