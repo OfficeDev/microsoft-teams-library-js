@@ -31,8 +31,7 @@ import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the media-specific part of the SDK.
- * This namespace is used to capture image, select media, and view images.
+ * Interact with media, including capturing and viewing images.
  */
 export namespace media {
   /** Capture image callback function type. */
