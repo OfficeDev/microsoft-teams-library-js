@@ -6,8 +6,8 @@ import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the meeting-specific part of the SDK.
- * This namespace is used to handle meeting related functionality like 
+ * Interact with meetings, including retrieving meeting details, getting mic status, and sharing app content.
+ * This namespace is used to handle meeting related functionality like
  * get meeting details, get/update state of mic, sharing app content and more.
  */
 export namespace meeting {

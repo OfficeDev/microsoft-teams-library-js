@@ -8,7 +8,6 @@ import { runtime } from './runtime';
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
  */
-
 export namespace teamsCore {
   /** Ready to unload function type */
   type readyToUnloadFunctionType = () => void;

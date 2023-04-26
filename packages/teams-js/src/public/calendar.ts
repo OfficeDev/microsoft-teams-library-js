@@ -5,8 +5,7 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the calendar-specific part of the SDK.
- * This namespace is used to open calendar item and compose meeting.
+ * Interact with the user's calendar, including opening calendar items and composing meetings.
  */
 export namespace calendar {
   /**

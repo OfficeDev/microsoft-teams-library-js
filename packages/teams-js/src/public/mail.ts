@@ -4,8 +4,7 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the mail-specific part of the SDK.
- * This namespace is used to open mail item and compose mail.
+ * Used to interact with mail capability, including opening and composing mail.
  */
 export namespace mail {
   /**

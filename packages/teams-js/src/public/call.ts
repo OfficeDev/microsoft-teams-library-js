@@ -6,8 +6,7 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the call-specific part of the SDK.
- * This object is used to start a call.
+ * Used to interact with call functionality, including starting calls with other users.
  */
 export namespace call {
   /** Modalities that can be associated with a call. */
