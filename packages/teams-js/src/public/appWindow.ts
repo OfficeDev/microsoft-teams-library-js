@@ -34,7 +34,8 @@ export interface IAppWindow {
 }
 
 /**
- * Child app window object that can be used to communicate with parent window.
+ * An object that application can utilize to establish communication 
+ * with the child window it opened, which contains the corresponding task.
  */
 export class ChildAppWindow implements IAppWindow {
   /**
@@ -62,7 +63,9 @@ export class ChildAppWindow implements IAppWindow {
 }
 
 /** 
- * Parent app window object that can be used to communicate with child window.
+ * An object that is utilized to facilitate communication with a parent window 
+ * that initiated the opening of current window. For instance, a dialog or task 
+ * module would utilize it to transmit messages to the application that launched it.
  */
 export class ParentAppWindow implements IAppWindow {
   /** Represents a parent window or frame. */

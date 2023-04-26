@@ -171,9 +171,15 @@ export interface LocaleInfo {
    * @example Friday, April 21, 2023 
    */
   longDate: string;
-  /** A string representing the short time format used by the user's locale. */
+  /**
+   * A string representing the short time format used by the user's locale. 
+   * @example 10:10
+   */
   shortTime: string;
-  /** A string representing the long time format used by the user's locale. */
+  /** 
+   * A string representing the long time format used by the user's locale. 
+   * @example 10:10:42 AM
+   */
   longTime: string;
 }
 
