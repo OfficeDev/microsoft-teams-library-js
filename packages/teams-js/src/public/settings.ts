@@ -13,13 +13,13 @@ import { runtime } from './runtime';
  */
 export namespace settings {
   /** Register on remove handler function type */
-  export type registerOnRemoveHandlerFunctionType = (evt: RemoveEvent) => void;
+  type registerOnRemoveHandlerFunctionType = (evt: RemoveEvent) => void;
   /** Register on save handler function type */
-  export type registerOnSaveHandlerFunctionType = (evt: SaveEvent) => void;
+  type registerOnSaveHandlerFunctionType = (evt: SaveEvent) => void;
   /** Set settings on complete function type */
-  export type setSettingsOnCompleteFunctionType = (status: boolean, reason?: string) => void;
+  type setSettingsOnCompleteFunctionType = (status: boolean, reason?: string) => void;
   /** Get settings callback function type */
-  export type getSettingsCallbackFunctionType = (instanceSettings: Settings) => void;
+  type getSettingsCallbackFunctionType = (instanceSettings: Settings) => void;
 
   /**
    * @deprecated

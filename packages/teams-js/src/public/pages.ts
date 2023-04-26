@@ -20,15 +20,15 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /** Callback function */
-  export type handlerFunctionType = () => void;
+  type handlerFunctionType = () => void;
   /** Full screen function */
-  export type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
+  type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
   /** Back button handler function */
-  export type backButtonHandlerFunctionType = () => boolean;
+  type backButtonHandlerFunctionType = () => boolean;
   /** Save event function */
-  export type saveEventType = (evt: pages.config.SaveEvent) => void;
+  type saveEventType = (evt: pages.config.SaveEvent) => void;
   /** Remove event function */
-  export type removeEventType = (evt: pages.config.RemoveEvent) => void;
+  type removeEventType = (evt: pages.config.RemoveEvent) => void;
 
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in

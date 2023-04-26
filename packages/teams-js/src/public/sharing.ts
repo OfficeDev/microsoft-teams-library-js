@@ -11,7 +11,7 @@ import { runtime } from './runtime';
  */
 export namespace sharing {
   /** shareWebContent callback function type */
-  export type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
+  type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
 
   /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
@@ -22,7 +22,9 @@ export namespace sharing {
   // More types can be added as we expand share capability
   type ContentType = 'URL';
 
+  /** Represents parameters for base shared content. */
   interface IBaseSharedContent {
+    /** Shared content type  */
     type: ContentType;
   }
 

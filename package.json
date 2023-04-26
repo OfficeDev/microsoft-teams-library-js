@@ -114,6 +114,7 @@
     "y18n": "^4.0.1"
   },
   "dependencies": {
+    "typedoc-plugin-missing-exports": "^2.0.0",
     "uuid": "^9.0.0"
   }
 }

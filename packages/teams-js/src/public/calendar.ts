@@ -4,6 +4,10 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to interact with the calendar-specific part of the SDK.
+ * This namespace is used to open calendar item and compose meeting.
+ */
 export namespace calendar {
   /**
    * Opens a calendar item.
@@ -74,7 +78,7 @@ export namespace calendar {
   /** Compose meeting parameters */
 
   export interface ComposeMeetingParams {
-    /** An array of email addresses of the attendees to invite to the meeting. */
+    /** An array of email addresses, user name, or user id of the attendees to invite to the meeting. */
     attendees?: string[];
     /** The start time of the meeting in MM/DD/YYYY HH:MM:SS format. */
     startTime?: string;

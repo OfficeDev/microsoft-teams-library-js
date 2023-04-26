@@ -18,19 +18,19 @@ import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 
 /** Execute deep link on complete function type */
-export type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
+type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** Callback function type */
-export type callbackFunctionType = () => void;
+type callbackFunctionType = () => void;
 /** Get context callback function type */
-export type getContextCallbackFunctionType = (context: Context) => void;
+type getContextCallbackFunctionType = (context: Context) => void;
 /** Get tab instances callback function type */
-export type getTabInstancesCallbackFunctionType = (tabInfo: TabInformation) => void;
+type getTabInstancesCallbackFunctionType = (tabInfo: TabInformation) => void;
 /** Register back button handler function type */
-export type registerBackButtonHandlerFunctionType = () => boolean;
+type registerBackButtonHandlerFunctionType = () => boolean;
 /** Register full screen handler function type */
-export type registerFullScreenHandlerFunctionType = (isFullScreen: boolean) => void;
+type registerFullScreenHandlerFunctionType = (isFullScreen: boolean) => void;
 /** Register on theme change handler function type */
-export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
+type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
 /**
  * @deprecated
  * As of 2.0.0, please use {@link app.initialize app.initialize(validMessageOrigins?: string[]): Promise\<void\>} instead.

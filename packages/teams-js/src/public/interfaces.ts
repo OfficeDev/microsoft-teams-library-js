@@ -7,7 +7,7 @@ import { FrameContexts } from './constants';
  * Represents information about tabs for an app
  */
 export interface TabInformation {
-  /** Represents the tabs associated with a Microsoft Teams team */
+  /** Represents the tabs associated with a Microsoft Teams app */
   teamTabs: TabInstance[];
 }
 
@@ -155,14 +155,14 @@ export interface TeamInformation {
  */
 export interface LocaleInfo {
   /** Represents the user's platform on which the app is running. */
-  platform: 'windows' | 'macos';
+  platform: HostClientType.android | HostClientType.ios | 'macos' | 'windows';
   /** 
    * Represents the regional format used by the user's locale. 
    * @example `en-us`.
    */
   regionalFormat: string;
   /** 
-   * Displays date values, as specified by the short date format M/DD/YYY in user's regional settings.
+   * Displays date values, as specified by the short date format MM/DD/YYYY in user's regional settings.
    * @example 4/21/2023 or 4-21-2023 
    */
   shortDate: string;
@@ -233,9 +233,9 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
  * @beta
  */
 export interface SecondaryId {
-  /** Action name. */
+  /** Name of the secondary id that should be used. */
   name: SecondaryM365ContentIdName;
-  /** Value for the action. */
+  /** The secondary id value that can be used to retrieve M365 content. */
   value: string;
 }
 
@@ -251,7 +251,7 @@ export enum SecondaryM365ContentIdName {
   GroupId = 'groupId',
   /** SharePoint ID */
   SiteId = 'siteId',
-  /** A string defining user ID */
+  /** A guid string defining user ID */
   UserId = 'userId',
 }
 

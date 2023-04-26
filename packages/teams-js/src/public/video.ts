@@ -10,9 +10,9 @@ import { runtime } from './runtime';
  */
 export namespace video {
   /** Notify video frame processed function type */
-  export type notifyVideoFrameProcessedFunctionType = () => void;
+  type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
-  export type notifyErrorFunctionType = (errorMessage: string) => void;
+  type notifyErrorFunctionType = (errorMessage: string) => void;
   /**
    * Represents a video frame
    * @beta

@@ -10,9 +10,9 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /** onComplete function type */
-export type onCompleteFunctionType = (status: boolean, reason?: string) => void;
+type onCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** addEventListner function type */
-export type addEventListnerFunctionType = (message: any) => void;
+type addEventListnerFunctionType = (message: any) => void;
 
 /** Represents a window or frame within the host app. */
 export interface IAppWindow {
@@ -61,7 +61,7 @@ export class ChildAppWindow implements IAppWindow {
   }
 }
 
-/**
+/** 
  * Parent app window object that can be used to communicate with child window.
  */
 export class ParentAppWindow implements IAppWindow {
@@ -75,7 +75,7 @@ export class ParentAppWindow implements IAppWindow {
 
   /**
    * Send a message to the ParentAppWindow.
-   *
+   * 
    * @param message - The message to send
    * @param onComplete - The callback to know if the postMessage has been success/failed.
    */

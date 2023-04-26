@@ -27,7 +27,7 @@ export enum HostClientType {
   teamsDisplays = 'teamsDisplays',
 }
 
-/** HostName indicates the host under which the application is presently executing. */
+/** HostName indicates the possible hosts for your application. */
 export enum HostName {
   /**
    * Office.com and Office Windows App
@@ -67,16 +67,19 @@ export enum HostName {
  * and can use the information provided by the context to adapt the app to the user's needs.
  * 
  * @example 
- * If the app is running in the settings context, the developer may want to display options for the 
- * user to configure their preferences. If the app is running in the content context, the developer 
- * may want to display information relevant to the content the user is currently viewing. 
+ * If your app is running in the "settings" context, you should be displaying your apps configuration page. 
+ * If the app is running in the content context, the developer may want to display information relevant to 
+ * the content the user is currently viewing. 
  */
 export enum FrameContexts {
-  /** App's frame context from where settings page can be accessed. */
+  /**
+   * App's frame context from where settings page can be accessed.
+   * See [how to create a configuration page.]( https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/create-tab-pages/configuration-page?tabs=teamsjs-v2)
+   */
   settings = 'settings',
   /** The default context for the app where all the content of the app is displayed. */
   content = 'content',
-  /** Sets app's frame context to authentication flow for the app. */
+  /** Frame context used when app is running in the authentication window launched by calling {@link authentication.authenticate} */
   authentication = 'authentication',
   /** The page shown when the user uninstalls the app. */
   remove = 'remove',
@@ -86,7 +89,7 @@ export enum FrameContexts {
   sidePanel = 'sidePanel',
   /** The stage is a large area that is displayed at the center of the host and can be used to display content or UI that requires a lot of space, such as a video player or a document editor. */
   stage = 'stage',
-  /** App's fram context from where meetingStage can be accessed in a meeting session, which is the primary area where video and presentation content is displayed during a meeting. */
+  /** App's frame context from where meetingStage can be accessed in a meeting session, which is the primary area where video and presentation content is displayed during a meeting. */
   meetingStage = 'meetingStage',
 }
 
@@ -143,7 +146,7 @@ export import TaskModuleDimension = DialogDimension;
  * The type of the channel with which the content is associated.
  */
 export enum ChannelType {
-  /** Default type of channel and is used for general collaboration and communication within a team. */
+  /** The default channel type. Type of channel is used for general collaboration and communication within a team. */
   Regular = 'Regular',
   /** Type of channel is used for sensitive or confidential communication within a team and is only accessible to members of the channel. */
   Private = 'Private',

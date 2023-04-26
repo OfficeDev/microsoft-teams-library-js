@@ -5,30 +5,35 @@ import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to interact with the meeting-specific part of the SDK.
+ * This namespace is used to handle meeting related functionality like 
+ * get meeting details, get/update state of mic, sharing app content and more.
+ */
 export namespace meeting {
   /** Error callback function type */
-  export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
+  type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
   /** Get live stream state callback function type */
-  export type getLiveStreamStateCallbackFunctionType = (
+  type getLiveStreamStateCallbackFunctionType = (
     error: SdkError | null,
     liveStreamState: LiveStreamState | null,
   ) => void;
   /** Live stream error callback function type */
-  export type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
+  type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
   /** Register live stream changed handler function type */
-  export type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
+  type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
   /** Get app content stage sharing capabilities callback function type */
-  export type getAppContentCallbackFunctionType = (
+  type getAppContentCallbackFunctionType = (
     error: SdkError | null,
     appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
   ) => void;
   /** Get app content stage sharing state callback function type */
-  export type getAppContentStageCallbackFunctionType = (
+  type getAppContentStageCallbackFunctionType = (
     error: SdkError | null,
     appContentStageSharingState: IAppContentStageSharingState | null,
   ) => void;
   /** Register speaking state change handler function type */
-  export type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
+  type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
   /**
    * @hidden
    * Data structure to represent meeting details

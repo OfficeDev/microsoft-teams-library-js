@@ -18,7 +18,7 @@ import { runtime } from './runtime';
  */
 export namespace tasks {
   /** Start task submit handler function type.  */
-  export type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
+  type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
 
   /**
    * @deprecated

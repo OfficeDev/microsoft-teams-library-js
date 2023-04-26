@@ -30,17 +30,21 @@ import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to interact with the media-specific part of the SDK.
+ * This namespace is used to capture image, select media, and view images.
+ */
 export namespace media {
   /** Capture image callback function type. */
-  export type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
+  type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
   /** Select media callback function type. */
-  export type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
+  type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
   /** Error callback function type. */
-  export type errorCallbackFunctionType = (error?: SdkError) => void;
+  type errorCallbackFunctionType = (error?: SdkError) => void;
   /** Scan BarCode callback function type. */
-  export type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
+  type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
   /** Get media callback function type. */
-  export type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
+  type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
 
   /**
    * Enum for file formats supported
@@ -169,7 +173,7 @@ export namespace media {
       }
     }
 
-    /** Function to retrieve media content, such as images or videos via callback. */
+    /** Function to retrieve media content, such as images or videos, via callback. */
     private getMediaViaCallback(callback: getMediaCallbackFunctionType): void {
       const helper: MediaHelper = {
         mediaMimeType: this.mimeType,
@@ -203,7 +207,7 @@ export namespace media {
       sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
     }
 
-    /** Function to retrieve media content, such as images or videos via handler. */
+    /** Function to retrieve media content, such as images or videos, via handler. */
     private getMediaViaHandler(callback: getMediaCallbackFunctionType): void {
       const actionName = generateGUID();
       const helper: MediaHelper = {
@@ -452,7 +456,7 @@ export namespace media {
    * Callback which will register your app to listen to lifecycle events during the video capture flow
    */
   export interface VideoControllerCallback {
-    /** The event is a type of callback that can be enlisted to handle various events linked to `onRecordingStarted` helps with playback of video content. */
+    /** The event is a type of callback that can be enlisted to handle various events linked to `onRecordingStarted`, which helps with playback of video content. */
     onRecordingStarted?(): void;
   }
 

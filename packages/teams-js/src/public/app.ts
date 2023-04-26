@@ -527,9 +527,9 @@ export namespace app {
   }
 
   /**
-   * Theme handler function type.
+   * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
    */
-  export type themeHandler = (theme: string) => void;
+  type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.

@@ -3,11 +3,15 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to interact with the mail-specific part of the SDK.
+ * This namespace is used to open mail item and compose mail.
+ */
 export namespace mail {
   /**
    * Opens a mail message in the host.
    *
-   * @param openMailItemParams - Object which specifies the ID of the mail message.
+   * @param openMailItemParams - Object that specifies the ID of the mail message.
    */
   export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -27,7 +31,7 @@ export namespace mail {
   /**
    * Compose a new email in the user's mailbox.
    *
-   * @param composeMailParams - Object which specifies the type of mail item to compose and the details of the mail item.
+   * @param composeMailParams - Object that specifies the type of mail item to compose and the details of the mail item.
    *
    */
   export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
@@ -74,7 +78,7 @@ export namespace mail {
    * Used for holding the type of mail item being composed
    *
    * @typeParam T - the identity type.
-   * @see {@link ComposeMailType}
+   * @see {@link mail.ComposeMailType}
    */
   interface ComposeMailBase<T extends ComposeMailType> {
     /** Type of the mail item being composed. */
