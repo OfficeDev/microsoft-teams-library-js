@@ -9,12 +9,12 @@ steps:
     path: iOSHost
     persistCredentials: true
 
-  - task: InstallSSHKey@0
-    displayName: 'Install an SSH key for OneDSTelemetry'
-    inputs:
-      knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
-      sshPublicKey: '$(OneDSTelemetryKey)'
-      sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
+  # - task: InstallSSHKey@0
+  #   displayName: 'Install an SSH key for OneDSTelemetry'
+  #   inputs:
+  #     knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
+  #     sshPublicKey: '$(OneDSTelemetryKey)'
+  #     sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
 
   - bash: |
       sudo gem install cocoapods
