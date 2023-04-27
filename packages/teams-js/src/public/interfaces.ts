@@ -246,8 +246,8 @@ export interface SecondaryId {
 }
 
 /**
- * These correspond with field names in the MSGraph
- *
+ * These correspond with field names in the MSGraph.
+ * See (commonly accessed resources)[https://learn.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources].
  * @beta
  */
 export enum SecondaryM365ContentIdName {
@@ -257,10 +257,7 @@ export enum SecondaryM365ContentIdName {
   GroupId = 'groupId',
   /** SharePoint ID */
   SiteId = 'siteId',
-  /**
-   * User's unique id should be used to make Graph REST calls.
-   * See (commonly accessed resources)[https://learn.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources].
-   */
+  /** User ID */
   UserId = 'userId',
 }
 
