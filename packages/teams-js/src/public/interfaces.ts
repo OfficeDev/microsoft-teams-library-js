@@ -257,7 +257,10 @@ export enum SecondaryM365ContentIdName {
   GroupId = 'groupId',
   /** SharePoint ID */
   SiteId = 'siteId',
-  /** A guid string defining user ID */
+  /**
+   * User's unique id should be used to make Graph REST calls.
+   * See (commonly accessed resources)[https://learn.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources].
+   */
   UserId = 'userId',
 }
 
