@@ -15,7 +15,10 @@ export namespace sharing {
 
   /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
-    /** Share web content message */
+    /**
+     * Share web content message.
+     * @internal
+     */
     shareWebContent: 'sharing.shareWebContent',
   };
 
