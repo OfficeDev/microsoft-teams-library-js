@@ -1,11 +1,12 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["./src/index.ts"],
+  "exclude": ["**/node_modules/**", "./src/private/**"],
   "out": "docs",
   "treatWarningsAsErrors": true,
   "validation": {
     "notExported": true,
     "invalidLink": true,
-    "notDocumented": false
+    "notDocumented": true
   }
 }

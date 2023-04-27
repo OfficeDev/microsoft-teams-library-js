@@ -8,6 +8,8 @@ import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace people {
+  /** Select people callback function type */
+  export type selectPeopleCallbackFunctionType = (error: SdkError, people: PeoplePickerResult[]) => void;
   /**
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
@@ -28,7 +30,7 @@ export namespace people {
    * @param peoplePickerInputs - Input parameters to launch customized people picker
    */
   export function selectPeople(
-    callback: (error: SdkError, people: PeoplePickerResult[]) => void,
+    callback: selectPeopleCallbackFunctionType,
     peoplePickerInputs?: PeoplePickerInputs,
   ): void;
   /**
@@ -41,13 +43,13 @@ export namespace people {
    * @returns Promise of Array of PeoplePickerResult objects.
    */
   export function selectPeople(
-    param1: PeoplePickerInputs | ((error: SdkError, people: PeoplePickerResult[]) => void) | undefined,
+    param1: PeoplePickerInputs | selectPeopleCallbackFunctionType | undefined,
     param2?: PeoplePickerInputs,
   ): Promise<PeoplePickerResult[]> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let callback: (error: SdkError, people: PeoplePickerResult[]) => void;
+    let callback: selectPeopleCallbackFunctionType;
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let peoplePickerInputs: PeoplePickerInputs;
 
