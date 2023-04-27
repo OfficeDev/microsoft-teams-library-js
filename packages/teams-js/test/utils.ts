@@ -163,7 +163,16 @@ export class Utils {
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
     }
-
+    else if (this.processMessage === undefined) {
+      const domEvent = {
+        data: {
+          id: message.id,
+          args: args,
+        } as MessageResponse,
+      } as DOMMessageEvent;
+      (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
+    }
+    else {
     this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
@@ -172,6 +181,7 @@ export class Utils {
         args: args,
       } as MessageResponse,
     } as MessageEvent);
+  }
   };
 
   public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
