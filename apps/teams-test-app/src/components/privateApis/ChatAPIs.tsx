@@ -89,7 +89,7 @@ const OpenGroupChat = (): React.ReactElement =>
 const DeprecatedOpenConversation = (): React.ReactElement =>
   ApiWithTextInput<OpenConversationRequest>({
     name: 'openConversation2',
-    title: 'Open Conversation',
+    title: '[Deprecated] Open Conversation',
     onClick: {
       validateInput: (input) => {
         if (!input.entityId || !input.title || !input.subEntityId) {

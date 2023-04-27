@@ -74,7 +74,8 @@ importers:
       ts-jest: ^29.0.5
       ts-loader: ^9.2.5
       ts-node: ^10.2.1
-      typedoc: ^0.23.24
+      typedoc: ^0.24.0
+      typedoc-plugin-missing-exports: ^2.0.0
       typescript: ^4.6.4
       uuid: ^9.0.0
       webpack: ^5.10.0
@@ -86,6 +87,7 @@ importers:
       webpack-subresource-integrity: ^5.1.0
       yargs: ^8.0.1
     dependencies:
+      typedoc-plugin-missing-exports: 2.0.0_typedoc@0.24.4
       uuid: 9.0.0
     devDependencies:
       '@babel/core': 7.21.0
@@ -147,7 +149,7 @@ importers:
       ts-jest: 29.0.5_kv2fdk7yz6jlbcjfldgcwh5vp4
       ts-loader: 9.4.2_hhrrucqyg4eysmfpujvov2ym5u
       ts-node: 10.9.1_zlol4fzmmjgb3bdeviopae4asm
-      typedoc: 0.23.26_typescript@4.9.5
+      typedoc: 0.24.4_typescript@4.9.5
       typescript: 4.9.5
       webpack: 5.75.0_webpack-cli@5.0.1
       webpack-assets-manifest: 5.1.0_webpack@5.75.0
@@ -4799,8 +4801,7 @@ packages:
     dev: true
 
   /ansi-sequence-parser/1.1.0:
-    resolution: {integrity: sha1-TXkPMSNqwgNmsjs5FreJ4b3jmu0=}
-    dev: true
+    resolution: {integrity: sha512-lEm8mt52to2fT8GhciPCGeCXACSz2UwIN4X2e2LJSnZ5uAbn2/dsYdOmUXq0AtWS5cpAupysIneExOgH0Vd2TQ==}
 
   /ansi-styles/3.2.1:
     resolution: {integrity: sha1-QfuyAkPlCxK+DwS43tvwdSDOhB0=}
@@ -5193,7 +5194,6 @@ packages:
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
-    dev: true
 
   /base64-js/1.5.1:
     resolution: {integrity: sha1-GxtEAWClv3rUC2UPCVljSBkDkwo=}
@@ -5315,7 +5315,6 @@ packages:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
     dependencies:
       balanced-match: 1.0.2
-    dev: true
 
   /braces/3.0.2:
     resolution: {integrity: sha1-NFThpGLujVmeI23zNs2epPiv4Qc=}
@@ -9038,8 +9037,7 @@ packages:
     dev: true
 
   /jsonc-parser/3.2.0:
-    resolution: {integrity: sha1-Mf8/TCuXk/icZyEmJ8UcY5T4jnY=}
-    dev: true
+    resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
 
   /jsonfile/6.1.0:
     resolution: {integrity: sha1-vFWyY0eTxnnsZAMJTrE2mKbsCq4=}
@@ -9452,8 +9450,7 @@ packages:
     dev: true
 
   /lunr/2.3.9:
-    resolution: {integrity: sha1-GLEjFCgyM33W6WTfGlp3B7JdNeE=}
-    dev: true
+    resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
   /make-dir/2.1.0:
     resolution: {integrity: sha1-XwMQ4YuL6JjMBwCSlaMK5B6R5vU=}
@@ -9515,11 +9512,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /marked/4.2.12:
-    resolution: {integrity: sha1-1ppk4h1xsGJQ2pldzQZcEQg767U=}
+  /marked/4.3.0:
+    resolution: {integrity: sha512-PRsaiG84bK+AMvxziE/lCFss8juXjNaWzVbN5tXAm4XjeaS9NAHhop+PjQxz2A9h8Q4M/xGmzP8vqNwy6JeK0A==}
     engines: {node: '>= 12'}
     hasBin: true
-    dev: true
 
   /md5.js/1.3.5:
     resolution: {integrity: sha1-tdB7jjIW4+J81yjXL3DR5qNCAF8=}
@@ -9658,12 +9654,11 @@ packages:
       brace-expansion: 2.0.1
     dev: true
 
-  /minimatch/7.4.2:
-    resolution: {integrity: sha1-FX6EfXnKZxBUJTuEBlZyDLcz8Q8=}
-    engines: {node: '>=10'}
+  /minimatch/9.0.0:
+    resolution: {integrity: sha512-0jJj8AvgKqWN05mrwuqi8QYKx1WmYSUoKSxu5Qhs9prezTz10sxAHGNZe9J9cqIJzta8DWsleh2KaVaLl6Ru2w==}
+    engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       brace-expansion: 2.0.1
-    dev: true
 
   /minimist-options/4.1.0:
     resolution: {integrity: sha1-wGVXE8U6ii69d/+iR9NCxA8BBhk=}
@@ -11640,13 +11635,12 @@ packages:
     dev: true
 
   /shiki/0.14.1:
-    resolution: {integrity: sha1-n74ILQqKoq1j30+/LuEeySSqfuE=}
+    resolution: {integrity: sha512-+Jz4nBkCBe0mEDqo1eKRcCdjRtrCjozmcbTUjbPTX7OOJfEbTZzlUWlZtGe3Gb5oV1/jnojhG//YZc3rs9zSEw==}
     dependencies:
       ansi-sequence-parser: 1.1.0
       jsonc-parser: 3.2.0
       vscode-oniguruma: 1.7.0
       vscode-textmate: 8.0.0
-    dev: true
 
   /shx/0.3.4:
     resolution: {integrity: sha1-dCiSMLS2Y5eRZ/lOGTWQFAbkDwI=}
@@ -12476,25 +12470,31 @@ packages:
     resolution: {integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=}
     dev: true
 
-  /typedoc/0.23.26_typescript@4.9.5:
-    resolution: {integrity: sha1-rggmg2mLrWh1fY/mGSQqVta1vzY=}
+  /typedoc-plugin-missing-exports/2.0.0_typedoc@0.24.4:
+    resolution: {integrity: sha512-t0QlKCm27/8DaheJkLo/gInSNjzBXgSciGhoLpL6sLyXZibm7SuwJtHvg4qXI2IjJfFBgW9mJvvszpoxMyB0TA==}
+    peerDependencies:
+      typedoc: 0.24.x
+    dependencies:
+      typedoc: 0.24.4_typescript@4.9.5
+    dev: false
+
+  /typedoc/0.24.4_typescript@4.9.5:
+    resolution: {integrity: sha512-vQuliyGhJEGeKzzCFHbkS3m0gHoIL6cfr0fHf6eX658iGELtq2J9mWe0b+X5McEYgFoMuHFt5Py3Zug6Sxjn/Q==}
     engines: {node: '>= 14.14'}
     hasBin: true
     peerDependencies:
-      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x
+      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x
     dependencies:
       lunr: 2.3.9
-      marked: 4.2.12
-      minimatch: 7.4.2
+      marked: 4.3.0
+      minimatch: 9.0.0
       shiki: 0.14.1
       typescript: 4.9.5
-    dev: true
 
   /typescript/4.9.5:
     resolution: {integrity: sha1-CVl5+bzA0J2jJNWNA86Pg3TL5lo=}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: true
 
   /uglify-js/3.17.4:
     resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
@@ -12710,12 +12710,10 @@ packages:
     dev: true
 
   /vscode-oniguruma/1.7.0:
-    resolution: {integrity: sha1-Q5v62P5xq9d5gzjRzT3FOovuqUs=}
-    dev: true
+    resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
 
   /vscode-textmate/8.0.0:
-    resolution: {integrity: sha1-LHo7EWPvBEEJfgtdY4nNVQS1nl0=}
-    dev: true
+    resolution: {integrity: sha512-AFbieoL7a5LMqcnOF04ji+rpXadgOXnZsxQr//r83kLPr7biP7am3g9zbaZIaBGwBRWeSvoMD4mgPdX3e4NWBg==}
 
   /w3c-xmlserializer/4.0.0:
     resolution: {integrity: sha1-rr3ISSDYBiIpNuPNzkCOMkiKMHM=}

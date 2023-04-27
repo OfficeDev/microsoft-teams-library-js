@@ -7,6 +7,7 @@ import { FrameContexts } from './constants';
  * Represents information about tabs for an app
  */
 export interface TabInformation {
+  /** Represents the tabs associated with a Microsoft Teams app */
   teamTabs: TabInstance[];
 }
 
@@ -153,11 +154,32 @@ export interface TeamInformation {
  * Represents OS locale info used for formatting date and time data
  */
 export interface LocaleInfo {
-  platform: 'windows' | 'macos';
+  /** Represents the user's platform on which the app is running. */
+  platform: HostClientType.android | HostClientType.ios | 'macos' | 'windows';
+  /** 
+   * Represents the regional format used by the user's locale. 
+   * @example `en-us`.
+   */
   regionalFormat: string;
+  /** 
+   * Displays date values, as specified by the short date format MM/DD/YYYY in user's regional settings.
+   * @example 4/21/2023 or 4-21-2023 
+   */
   shortDate: string;
+  /** 
+   * Displays only date values, as specified by the Long Date format in user's regional settings.
+   * @example Friday, April 21, 2023 
+   */
   longDate: string;
+  /**
+   * A string representing the short time format used by the user's locale. 
+   * @example 10:10
+   */
   shortTime: string;
+  /** 
+   * A string representing the long time format used by the user's locale. 
+   * @example 10:10:42 AM
+   */
   longTime: string;
 }
 
@@ -165,8 +187,11 @@ export interface LocaleInfo {
  * Allowed user file open preferences
  */
 export enum FileOpenPreference {
+  /** Indicates that the user should be prompted to open the file in inline. */
   Inline = 'inline',
+  /** Indicates that the user should be prompted to open the file in the native desktop application associated with the file type. */
   Desktop = 'desktop',
+  /** Indicates that the user should be prompted to open the file in a web browser. */
   Web = 'web',
 }
 
@@ -176,6 +201,7 @@ export enum FileOpenPreference {
  * @beta
  */
 export enum ActionObjectType {
+  /** Represents content within a Microsoft 365 application. */
   M365Content = 'm365content',
 }
 
@@ -187,6 +213,7 @@ export enum ActionObjectType {
  * @beta
  */
 export interface BaseActionObject<T extends ActionObjectType> {
+  /** Represents action type. */
   type: T;
 }
 
@@ -202,6 +229,7 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
    * to query the Microsoft graph for more details.
    */
   itemId: string;
+  /** Represents an optional secondary identifier for an action in a Microsoft 365 content item. */
   secondaryId?: SecondaryId;
 }
 
@@ -211,19 +239,25 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
  * @beta
  */
 export interface SecondaryId {
+  /** Name of the secondary id that should be used. */
   name: SecondaryM365ContentIdName;
+  /** The secondary id value that can be used to retrieve M365 content. */
   value: string;
 }
 
 /**
- * These correspond with field names in the MSGraph
- *
+ * These correspond with field names in the MSGraph.
+ * See (commonly accessed resources)[https://learn.microsoft.com/en-us/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources].
  * @beta
  */
 export enum SecondaryM365ContentIdName {
+  /** OneDrive ID */
   DriveId = 'driveId',
+  /** Teams Group ID */
   GroupId = 'groupId',
+  /** SharePoint ID */
   SiteId = 'siteId',
+  /** User ID */
   UserId = 'userId',
 }
 
@@ -707,6 +741,7 @@ export interface Context {
   mySitePath?: string;
 }
 
+/** Represents the parameters used to share a deep link. */
 export interface ShareDeepLinkParameters {
   /**
    * The developer-defined unique ID for the sub-page to which this deep link points in the current page.
@@ -754,7 +789,7 @@ export interface DeepLinkParameters {
  * Shared Dialog Properties
  */
 export interface BaseDialogInfo {
-  /*
+  /**
    * The requested size of the dialog
    */
   size: DialogSize;
@@ -885,10 +920,6 @@ export interface DialogInfo {
  */
 export type TaskInfo = DialogInfo;
 
-export interface DialogSize {
-  height: DialogDimension | number;
-  width: DialogDimension | number;
-}
 /**
  * @beta
  * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
@@ -905,6 +936,7 @@ export interface LoadContext {
   contentUrl: string;
 }
 
+/** Represents information about a frame within a tab or dialog module. */
 export interface FrameInfo {
   /**
    * The current URL that needs to be used in the iframe if the tab is reloaded
@@ -923,6 +955,7 @@ export interface FrameInfo {
  */
 export type FrameContext = FrameInfo;
 
+/** Represents an error that occurs during the execution of an app or integration. */
 export interface SdkError {
   /**
   error code
@@ -936,6 +969,7 @@ export interface SdkError {
   message?: string;
 }
 
+/** Error codes used to identify different types of errors that can occur while developing apps. */
 export enum ErrorCode {
   /**
    * API not supported in the current platform.
@@ -1014,6 +1048,8 @@ export interface HostVersionsInfo {
  * Represents the major and minor versions of the Adaptive Card schema in the current host
  */
 export interface AdaptiveCardVersion {
+  /** Represents the major version number. */
   majorVersion: number;
+  /** Represents the minor version number. */
   minorVersion: number;
 }

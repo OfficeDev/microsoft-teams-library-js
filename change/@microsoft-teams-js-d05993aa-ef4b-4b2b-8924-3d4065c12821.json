@@ -1,6 +1,6 @@
 {
-  "type": "none",
-  "comment": "Migrated from `yarn` to `pnpm` for repository package management",
+  "type": "patch",
+  "comment": "Added comments on all exported types and functions and made comments required for all future changes.",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
   "dependentChangeType": "none"
