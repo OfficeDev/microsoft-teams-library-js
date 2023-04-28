@@ -3,6 +3,14 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+import {
+  AllowSharedBufferSource,
+  PlaneLayout,
+  VideoFrameBufferInit,
+  VideoFrameCopyToOptions,
+  VideoFrameInit,
+  VideoPixelFormat,
+} from './VideoFrameTypes';
 
 /**
  * Namespace to video extensibility of the SDK
@@ -13,11 +21,62 @@ export namespace video {
   type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
   type notifyErrorFunctionType = (errorMessage: string) => void;
+
+  /**
+   * @beta
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  export interface VideoFrame {
+    readonly codedHeight: number;
+    readonly codedRect: DOMRectReadOnly | null;
+    readonly codedWidth: number;
+    readonly colorSpace: VideoColorSpace;
+    readonly displayHeight: number;
+    readonly displayWidth: number;
+    readonly duration: number | null;
+    readonly format: VideoPixelFormat | null;
+    readonly timestamp: number | null;
+    readonly visibleRect: DOMRectReadOnly | null;
+    allocationSize(options?: VideoFrameCopyToOptions): number;
+    clone(): VideoFrame;
+    close(): void;
+    copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
+  }
+
+  /**
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   */
+  // eslint-disable-next-line strict-null-checks/all
+  declare const VideoFrame: {
+    prototype: VideoFrame;
+    new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
+    new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
+  };
+
+  /**
+   * @beta
+   * Video frame data extracted from the media stream. More properties may be added in the future.
+   */
+  export type MediaStreamFrameData = {
+    /**
+     * The video frame from the media stream.
+     */
+    videoFrame: VideoFrame;
+  };
+
+  /**
+   * @beta
+   * Video effect change call back function definition.
+   * The video app should resolve the promise to notify a successfully processed video frame.
+   * The video app should reject the promise to notify a failure.
+   */
+  export type MediaStreamCallback = (receivedVideoFrame: MediaStreamFrameData) => Promise<VideoFrame>;
+
   /**
    * Represents a video frame
    * @beta
    */
-  export interface VideoFrame {
+  export interface VideoFrameData {
     /**
      * Video frame width
      */
@@ -29,7 +88,7 @@ export namespace video {
     /**
      * Video frame buffer
      */
-    data: Uint8ClampedArray;
+    videoFrameBuffer: Uint8ClampedArray;
     /**
      * NV12 luma stride, valid only when video frame format is NV12
      */
@@ -87,11 +146,17 @@ export namespace video {
    * Video frame call back function definition
    * @beta
    */
-  export type VideoFrameCallback = (
-    frame: VideoFrame,
+  export type SharedFrameCallback = (
+    frame: VideoFrameData,
     notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
     notifyError: notifyErrorFunctionType,
   ) => void;
+
+  export type VideoFrameCallbackOptions = {
+    mediaStreamCallback: MediaStreamCallback;
+    sharedFrameCallback: SharedFrameCallback;
+    config: VideoFrameConfig;
+  };
 
   /**
    * Predefined failure reasons for preparing the selected video effect
@@ -117,12 +182,47 @@ export namespace video {
   export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
 
   /**
+   * TODO: update doc later
    * Register to read the video frames in Permissions section
    * @beta
-   * @param frameCallback - The callback to invoke when registerForVideoFrame has completed
+   * @param videoBufferCallback - The callback to invoke when registerForVideoFrame has completed
    * @param config - VideoFrameConfig to customize generated video frame parameters
    */
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+  export function registerForVideoFrame(option: VideoFrameCallbackOptions): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (doesSupportMediaStream()) {
+      registerForMediaStream(option.mediaStreamCallback);
+    } else if (doesSupportSharedFrame()) {
+      registerForSharedFrame(option.sharedFrameCallback, option.config);
+    } else {
+      // should not happen if isSupported() is true
+      throw errorNotSupportedOnPlatform;
+    }
+  }
+
+  function doesSupportMediaStream(): boolean {
+    return (
+      ensureInitialized(runtime, FrameContexts.sidePanel) &&
+      isTextureStreamAvailable() &&
+      !!runtime.supports.video?.mediaStream
+    );
+  }
+
+  function isTextureStreamAvailable(): boolean {
+    return (
+      !inServerSideRenderingEnvironment() &&
+      !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
+    );
+  }
+
+  function doesSupportSharedFrame(): boolean {
+    return ensureInitialized(runtime, FrameContexts.sidePanel) && !!runtime.supports.video?.sharedFrame;
+  }
+
+  function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -130,10 +230,10 @@ export namespace video {
 
     registerHandler(
       'video.newVideoFrame',
-      (videoFrame: VideoFrame) => {
+      (videoFrame: VideoFrameData) => {
         if (videoFrame) {
           const timestamp = videoFrame.timestamp;
-          frameCallback(
+          videoBufferCallback(
             videoFrame,
             () => {
               notifyVideoFrameProcessed(timestamp);
@@ -211,7 +311,7 @@ export namespace video {
   }
 
   /**
-   * Checks if video capability is supported by the host
+   * Checks if video capability is supported by the host.
    * @beta
    * @returns boolean to represent whether the video capability is supported
    *
@@ -222,6 +322,7 @@ export namespace video {
     return (
       ensureInitialized(runtime) &&
       !!runtime.supports.video &&
+      /** A host should support either mediaStream or sharedFrame subcapability to support the video capability */
       (!!runtime.supports.video.mediaStream || !!runtime.supports.video.sharedFrame)
     );
   }
