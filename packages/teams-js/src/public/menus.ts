@@ -146,6 +146,13 @@ export namespace menus {
   let actionMenuItemPressHandler: ((id: string) => boolean) | undefined;
   let viewConfigItemPressHandler: ((id: string) => boolean) | undefined;
 
+  /**
+   * @hidden
+   * Register navBarMenuItemPress, actionMenuItemPress, setModuleView handlers.
+   *
+   * @internal
+   * Limited to Microsoft-internal use.
+   */
   export function initialize(): void {
     registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
     registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
@@ -199,6 +206,7 @@ export namespace menus {
     }
   }
 
+  /** Parameters used to create an action menu within an app */
   export interface ActionMenuParameters {
     /**
      * @hidden

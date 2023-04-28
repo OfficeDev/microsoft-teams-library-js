@@ -9,6 +9,10 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
+  /** Notify video frame processed function type */
+  type notifyVideoFrameProcessedFunctionType = () => void;
+  /** Notify error function type */
+  type notifyErrorFunctionType = (errorMessage: string) => void;
   /**
    * Represents a video frame
    * @beta
@@ -49,6 +53,7 @@ export namespace video {
    * @beta
    */
   export enum VideoFrameFormat {
+    /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
     NV12,
   }
 
@@ -84,8 +89,8 @@ export namespace video {
    */
   export type VideoFrameCallback = (
     frame: VideoFrame,
-    notifyVideoFrameProcessed: () => void,
-    notifyError: (errorMessage: string) => void,
+    notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
+    notifyError: notifyErrorFunctionType,
   ) => void;
 
   /**

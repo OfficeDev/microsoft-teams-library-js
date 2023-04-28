@@ -12,6 +12,11 @@ import { runtime } from './runtime';
  * Namespace to interact with the location module-specific part of the SDK.
  */
 export namespace location {
+  /** Get location callback function type */
+  type getLocationCallbackFunctionType = (error: SdkError, location: Location) => void;
+  /** Show location callback function type */
+  type showLocationCallbackFunctionType = (error: SdkError, status: boolean) => void;
+
   /**
    * @deprecated
    * Data Structure to set the location properties in getLocation call.
@@ -65,7 +70,7 @@ export namespace location {
    * @param props {@link LocationProps} - Specifying how the location request is handled
    * @param callback - Callback to invoke when current user location is fetched
    */
-  export function getLocation(props: LocationProps, callback: (error: SdkError, location: Location) => void): void {
+  export function getLocation(props: LocationProps, callback: getLocationCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[location.getLocation] Callback cannot be null');
     }
@@ -93,7 +98,7 @@ export namespace location {
    * @param location - Location to be shown on the map
    * @param callback - Callback to invoke when the location is opened on map
    */
-  export function showLocation(location: Location, callback: (error: SdkError, status: boolean) => void): void {
+  export function showLocation(location: Location, callback: showLocationCallbackFunctionType): void {
     if (!callback) {
       throw new Error('[location.showLocation] Callback cannot be null');
     }
