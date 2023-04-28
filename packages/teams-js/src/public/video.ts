@@ -1,17 +1,16 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { runtime } from './runtime';
+import { processMediaStream } from '../internal/mediaStreamUtils';
 import {
   AllowSharedBufferSource,
   PlaneLayout,
-  VideoFrameBufferInit,
   VideoFrameCopyToOptions,
-  VideoFrameInit,
   VideoPixelFormat,
-} from './VideoFrameTypes';
+} from '../internal/VideoFrameTypes';
+import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { runtime } from './runtime';
 
 /**
  * Namespace to video extensibility of the SDK
@@ -43,16 +42,6 @@ export namespace video {
     close(): void;
     copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
   }
-
-  /**
-   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
-   */
-  // eslint-disable-next-line strict-null-checks/all
-  declare const VideoFrame: {
-    prototype: VideoFrame;
-    new (source: CanvasImageSource, init?: VideoFrameInit): VideoFrame;
-    new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): VideoFrame;
-  };
 
   /**
    * @beta
@@ -182,6 +171,10 @@ export namespace video {
    */
   export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
 
+  type MediaStreamInfo = {
+    streamId: string;
+  };
+
   /**
    * TODO: update doc later
    * Register to read the video frames in Permissions section
@@ -221,6 +214,27 @@ export namespace video {
 
   function doesSupportSharedFrame(): boolean {
     return ensureInitialized(runtime, FrameContexts.sidePanel) && !!runtime.supports.video?.sharedFrame;
+  }
+
+  function registerForMediaStream(mediaStreamCallback: MediaStreamCallback): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler('video.startVideoExtensibilityVideoStream', async (mediaStreamInfo: MediaStreamInfo) => {
+      // when a new streamId is ready:
+      const { streamId } = mediaStreamInfo;
+      const generator = await processMediaStream(streamId, mediaStreamCallback, notifyError);
+      // register the video track with processed frames back to the stream:
+      !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+    });
+
+    sendMessageToParent('video.mediaStream.registerForVideoFrame', [
+      {
+        format: VideoFrameFormat.NV12,
+      },
+    ]);
   }
 
   function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
