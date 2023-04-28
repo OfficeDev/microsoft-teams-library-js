@@ -103,7 +103,7 @@ export namespace video {
    */
   export enum VideoFrameFormat {
     /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
-    NV12,
+    NV12 = 'NV12',
   }
 
   /**
@@ -125,11 +125,11 @@ export namespace video {
     /**
      * Current video effect changed
      */
-    EffectChanged,
+    EffectChanged = 'EffectChanged',
     /**
      * Disable the video effect
      */
-    EffectDisabled,
+    EffectDisabled = 'EffectDisabled',
   }
 
   /**
