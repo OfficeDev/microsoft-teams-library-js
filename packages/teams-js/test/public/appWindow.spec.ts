@@ -12,6 +12,7 @@ import { Utils } from '../utils';
 describe('appWindow', () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const emptyCallback = (): void => {};
+  const testMessage = 'exampleMessage';
   describe('Child app window', () => {
     const childAppWindow = new ChildAppWindow();
     it('childAppWindow.postMessage should not allow calls before initialization', () => {
@@ -42,10 +43,10 @@ describe('appWindow', () => {
           it(`should initiate the post message to child: ${frameContext}`, async () => {
             await utils.initializeWithContext(frameContext);
             expect(GlobalVars.isFramelessWindow).toBeTruthy();
-            childAppWindow.postMessage('exampleMessage');
+            childAppWindow.postMessage(testMessage);
             const message = utils.findMessageByFunc('messageForChild');
             expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual(['exampleMessage']);
+            expect(message.args).toStrictEqual([testMessage]);
           });
         });
       });
@@ -77,10 +78,10 @@ describe('appWindow', () => {
           it(`should initiate the post message to child: ${frameContext}`, async () => {
             await utils.initializeWithContext(frameContext);
             expect(GlobalVars.isFramelessWindow).toBeFalsy();
-            childAppWindow.postMessage('exampleMessage');
+            childAppWindow.postMessage(testMessage);
             const message = utils.findMessageByFunc('messageForChild');
             expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual(['exampleMessage']);
+            expect(message.args).toStrictEqual([testMessage]);
           });
         });
       });
@@ -131,10 +132,10 @@ describe('appWindow', () => {
             it(`should initiate the post message to parent: ${frameContext}`, async () => {
               await utils.initializeWithContext(frameContext);
               expect(GlobalVars.isFramelessWindow).toBeTruthy();
-              parentAppWindow.postMessage('exampleMessage');
+              parentAppWindow.postMessage(testMessage);
               const message = utils.findMessageByFunc('messageForParent');
               expect(message).not.toBeUndefined();
-              expect(message.args).toStrictEqual(['exampleMessage']);
+              expect(message.args).toStrictEqual([testMessage]);
             });
           } else {
             it(`should to not allow to initialize FramContext with context: ${frameContext}.`, async () => {
@@ -190,10 +191,10 @@ describe('appWindow', () => {
             it(`should initiate the post message to parent: ${frameContext}`, async () => {
               await utils.initializeWithContext(frameContext);
               expect(GlobalVars.isFramelessWindow).toBeFalsy();
-              parentAppWindow.postMessage('exampleMessage');
+              parentAppWindow.postMessage(testMessage);
               const message = utils.findMessageByFunc('messageForParent');
               expect(message).not.toBeUndefined();
-              expect(message.args).toStrictEqual(['exampleMessage']);
+              expect(message.args).toStrictEqual([testMessage]);
             });
           } else {
             it(`should to not allow to initialize FramContext with context: ${frameContext}.`, async () => {
