@@ -219,6 +219,10 @@ export namespace video {
    *
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.video ? true : false;
+    return (
+      ensureInitialized(runtime) &&
+      !!runtime.supports.video &&
+      (!!runtime.supports.video.mediaStream || !!runtime.supports.video.sharedFrame)
+    );
   }
 } //end of video namespace
