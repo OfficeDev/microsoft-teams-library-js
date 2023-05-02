@@ -5,8 +5,7 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
-import { _minRuntimeConfigToUninitialize, v1HostClientTypes } from '../../src/public/runtime';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { v1HostClientTypes } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
