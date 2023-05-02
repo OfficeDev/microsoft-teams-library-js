@@ -156,6 +156,9 @@ describe('people', () => {
   });
 
   describe('Testing people.isSupported function', () => {
+    afterEach(() => {
+      app._uninitialize();
+    });
     it('people.isSupported should return false if the runtime says people is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -167,7 +170,6 @@ describe('people', () => {
       utils.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
       expect(people.isSupported()).toBeTruthy();
     });
-
     it('people.isSupported should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
       expect(() => people.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
@@ -177,13 +179,6 @@ describe('people', () => {
   /* eslint-disable @typescript-eslint/no-empty-function */
   /* eslint-disable @typescript-eslint/no-unused-vars */
   describe('peoplePicker_V1', () => {
-    /**
-     * People Picker tests
-     */
-    it('should not allow selectPeople calls before initialization', () => {
-      expect(() => people.selectPeople(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
-    });
-
     let utils: Utils = new Utils();
     beforeEach(() => {
       utils = new Utils();
@@ -195,6 +190,14 @@ describe('people', () => {
       app._uninitialize();
       GlobalVars.isFramelessWindow = false;
     });
+
+    /**
+     * People Picker tests
+     */
+    it('should not allow selectPeople calls before initialization', () => {
+      expect(() => people.selectPeople(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         Object.values(v1HostClientTypes).forEach((hostClientType) => {
