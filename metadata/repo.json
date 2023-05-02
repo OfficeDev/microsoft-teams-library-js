@@ -1,0 +1,10 @@
+{
+  "contacts": ["msftteamslibrary@microsoft.com"],
+  "description": "Repository for microsoft-teams-library-js",
+  "deployedToProduction": true,
+  "complianceTypes": [],
+  "inventoryId": ["6eff390d-80c0-4456-81b6-6abafa71e768"],
+  "schema": {
+    "office": "1.0.0"
+  }
+}
