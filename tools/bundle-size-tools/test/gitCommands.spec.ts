@@ -1,5 +1,11 @@
 import { getBaselineCommit } from '../src/utilities/gitCommands';
 
+jest.mock('child_process', () => {
+  return {
+    execFileSync: (command, args) => command + ' ' + [...args].join(' '),
+  };
+});
+
 describe('gitCommands', () => {
   describe('getBaselineCommit', () => {
     it('test1', () => {

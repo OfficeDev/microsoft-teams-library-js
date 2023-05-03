@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="1" failures="1" errors="0" time="4.341">
+  <testsuite name="gitCommands" errors="0" failures="1" skipped="0" timestamp="2023-05-03T21:00:43" time="3.136" tests="1">
+    <testcase classname="test\gitCommands.spec.ts" name="gitCommands getBaselineCommit test1" time="0.005">
+      <failure>Error: expect(received).toEqual(expected) // deep equality
+
+Expected: &quot;git merge-base origin/test HEAD&quot;
+Received: &quot;git merge-base origin/test HEAD; git merge-base origin/FOO HEAD&quot;
+    at Object.&lt;anonymous&gt; (C:\Repos\GitHub\teamsjsfork\tools\bundle-size-tools\test\gitCommands.spec.ts:12:73)
+    at Promise.then.completed (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\utils.js:293:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\utils.js:226:10)
+    at _callCircusTest (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:248:40)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at _runTest (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:184:3)
+    at _runTestsForDescribeBlock (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:86:9)
+    at _runTestsForDescribeBlock (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:81:9)
+    at _runTestsForDescribeBlock (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:81:9)
+    at run (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\run.js:26:3)
+    at runAndTransformResultsToJestFormat (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:120:21)
+    at jestAdapter (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-circus@29.4.3\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-runner@29.4.3\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (C:\Repos\GitHub\teamsjsfork\node_modules\.pnpm\jest-runner@29.4.3\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

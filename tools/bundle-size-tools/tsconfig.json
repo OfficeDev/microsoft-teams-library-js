@@ -5,7 +5,7 @@
     "rootDir": "./src/",
     "module": "commonjs",
     "noImplicitAny": false,
-    "types": ["webpack", "node"],
+    "types": ["webpack", "node", "jest"],
     "esModuleInterop": true,
     "typeRoots": ["types", "node_modules/@types", "../../node_modules/@types"]
   },
