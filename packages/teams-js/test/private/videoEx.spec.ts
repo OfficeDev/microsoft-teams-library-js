@@ -1,5 +1,5 @@
 import { GlobalVars } from '../../src/internal/globalVars';
-import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
 import { videoEx } from '../../src/private/videoEx';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -69,9 +69,8 @@ describe('videoEx', () => {
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
-        const message = utils.findMessageByFunc('video.registerForVideoFrame');
+        const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
-        console.log(message.args);
         expect(message.args[0]).toHaveProperty('audioInferenceModel');
         expect(message.args[0].format).toBe(video.VideoFrameFormat.NV12);
         expect(message.args[0].requireCameraStream).toBe(false);
