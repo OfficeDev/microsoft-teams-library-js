@@ -1,17 +1,20 @@
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export type VideoPixelFormat = 'BGRA' | 'BGRX' | 'I420' | 'I420A' | 'I422' | 'I444' | 'NV12' | 'RGBA' | 'RGBX';
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 
@@ -19,6 +22,7 @@ export type AlphaOption = 'discard' | 'keep';
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export interface PlaneLayout {
@@ -28,6 +32,7 @@ export interface PlaneLayout {
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export interface VideoFrameCopyToOptions {
@@ -37,6 +42,7 @@ export interface VideoFrameCopyToOptions {
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export interface VideoFrameInit {
@@ -50,6 +56,7 @@ export interface VideoFrameInit {
 
 /**
  * @beta
+ * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
 export interface VideoFrameBufferInit {
