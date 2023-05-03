@@ -330,11 +330,17 @@ export namespace video {
 
     registerHandler(
       'video.newVideoFrame',
-      (videoFrame: VideoFrameData) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (videoFrame: any) => {
         if (videoFrame) {
-          const timestamp = videoFrame.timestamp;
+          // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
+          const videoFrameData = {
+            ...videoFrame,
+            videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
+          } as VideoFrameData;
+          const timestamp = videoFrameData.timestamp;
           videoBufferCallback(
-            videoFrame,
+            videoFrameData,
             () => {
               notifyVideoFrameProcessed(timestamp);
             },
