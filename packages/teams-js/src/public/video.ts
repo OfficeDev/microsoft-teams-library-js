@@ -27,19 +27,61 @@ export namespace video {
    * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
    */
   export interface VideoFrame {
+    /**
+     * Returns the height of the VideoFrame in pixels, potentially including non-visible padding, and prior to considering potential ratio adjustments.
+     */
     readonly codedHeight: number;
+    /**
+     * Returns a DOMRectReadOnly with the width and height matching codedWidth and codedHeight.
+     */
     readonly codedRect: DOMRectReadOnly | null;
+    /**
+     * Returns the width of the VideoFrame in pixels, potentially including non-visible padding, and prior to considering potential ratio adjustments.
+     */
     readonly codedWidth: number;
+    /**
+     * Returns a VideoColorSpace object.
+     */
     readonly colorSpace: VideoColorSpace;
+    /**
+     * Returns the height of the VideoFrame when displayed after applying aspect ratio adjustments.
+     */
     readonly displayHeight: number;
+    /**
+     * Returns the width of the VideoFrame when displayed after applying aspect ratio adjustments.
+     */
     readonly displayWidth: number;
+    /**
+     * Returns an integer indicating the duration of the video in microseconds.
+     */
     readonly duration: number | null;
+    /**
+     * Returns the pixel format of the VideoFrame.
+     */
     readonly format: VideoPixelFormat | null;
+    /**
+     * Returns an integer indicating the timestamp of the video in microseconds.
+     */
     readonly timestamp: number | null;
+    /**
+     * Returns a DOMRectReadOnly describing the visible rectangle of pixels for this VideoFrame.
+     */
     readonly visibleRect: DOMRectReadOnly | null;
+    /**
+     * Returns the number of bytes required to hold the VideoFrame as filtered by options passed into the method.
+     */
     allocationSize(options?: VideoFrameCopyToOptions): number;
+    /**
+     * Creates a new VideoFrame object with reference to the same media resource as the original.
+     */
     clone(): VideoFrame;
+    /**
+     * Clears all states and releases the reference to the media resource.
+     */
     close(): void;
+    /**
+     * Copies the contents of the VideoFrame to an ArrayBuffer.
+     */
     copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
   }
 
@@ -142,9 +184,22 @@ export namespace video {
     notifyError: notifyErrorFunctionType,
   ) => void;
 
+  /**
+   * @beta
+   * Callbacks and configuration supplied to the host to process the video frames.
+   */
   export type VideoFrameCallbackOptions = {
+    /**
+     * Callback function to process the video frames extracted from a media stream.
+     */
     mediaStreamCallback: MediaStreamCallback;
+    /**
+     * Callback function to process the video frames shared by the host.
+     */
     sharedFrameCallback: SharedFrameCallback;
+    /**
+     * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
+     */
     config: VideoFrameConfig;
   };
 
@@ -176,11 +231,41 @@ export namespace video {
   };
 
   /**
-   * TODO: update doc later
    * Register to read the video frames in Permissions section
    * @beta
-   * @param videoBufferCallback - The callback to invoke when registerForVideoFrame has completed
-   * @param config - VideoFrameConfig to customize generated video frame parameters
+   * @param option - Callbacks and configuration to process the video frames. A host may support either {@link MediaStreamCallback} or {@link SharedFrameCallback}, but not both.
+   * To ensure the video effect works on all supported hosts, the video app should provide both {@link MediaStreamCallback} and {@link SharedFrameCallback}.
+   * The host will choose the appropriate callback based on the host's capability.
+   *
+   * @example
+   * ```typescript
+   * video.registerForVideoFrame({
+   *   mediaStreamCallback: async (receivedVideoFrame) => {
+   *     const originalFrame = receivedVideoFrame.videoFrame;
+   *     try {
+   *       const processedFrame = await processFrame(originalFrame);
+   *       return processedFrame;
+   *     } catch (e) {
+   *       throw e;
+   *     }
+   *   },
+   *   sharedFrameCallback: (
+   *     frame: VideoFrameData,
+   *     notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
+   *     notifyError: notifyErrorFunctionType
+   *     ) => {
+   *       try {
+   *         processFrameInplace(frame);
+   *         notifyVideoFrameProcessed();
+   *       } catch (e) {
+   *         notifyError(e);
+   *       }
+   *     },
+   *   config: {
+   *     format: video.VideoPixelFormat.NV12,
+   *   }
+   * });
+   * ```
    */
   export function registerForVideoFrame(option: VideoFrameCallbackOptions): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
