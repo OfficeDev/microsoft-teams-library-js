@@ -19,6 +19,17 @@ import { runtime } from './runtime';
  * Navigation-specific part of the SDK.
  */
 export namespace pages {
+  /** Callback function */
+  type handlerFunctionType = () => void;
+  /** Full screen function */
+  type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
+  /** Back button handler function */
+  type backButtonHandlerFunctionType = () => boolean;
+  /** Save event function */
+  type saveEventType = (evt: pages.config.SaveEvent) => void;
+  /** Remove event function */
+  type removeEventType = (evt: pages.config.RemoveEvent) => void;
+
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
@@ -79,7 +90,7 @@ export namespace pages {
    */
   export function initializeWithFrameContext(
     frameInfo: FrameInfo,
-    callback?: () => void,
+    callback?: handlerFunctionType,
     validMessageOrigins?: string[],
   ): void {
     app.initialize(validMessageOrigins).then(() => callback && callback());
@@ -219,7 +230,7 @@ export namespace pages {
    * with this function will never be called.
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
-  export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
+  export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
     registerHandlerHelper('fullScreenChange', handler, [], () => {
       if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -392,7 +403,7 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when the user selects the Save button.
      */
-    export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
+    export function registerOnSaveHandler(handler: saveEventType): void {
       registerOnSaveHandlerHelper(handler, () => {
         if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -430,7 +441,7 @@ export namespace pages {
      * Only one handler may be registered at a time. Subsequent registrations will override the first.
      * @param handler - The handler to invoke when the user selects the Remove button.
      */
-    export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
+    export function registerOnRemoveHandler(handler: removeEventType): void {
       registerOnRemoveHandlerHelper(handler, () => {
         if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -462,14 +473,14 @@ export namespace pages {
     }
 
     function handleSave(result?: SaveParameters): void {
-      const saveEvent = new SaveEventImpl(result);
+      const saveEventType = new SaveEventImpl(result);
       if (saveHandler) {
-        saveHandler(saveEvent);
+        saveHandler(saveEventType);
       } else if (Communication.childWindow) {
         sendMessageEventToChild('settings.save', [result]);
       } else {
         // If no handler is registered, we assume success.
-        saveEvent.notifySuccess();
+        saveEventType.notifySuccess();
       }
     }
 
@@ -477,7 +488,7 @@ export namespace pages {
      * Registers a handler for when the tab configuration is changed by the user
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
-    export function registerChangeConfigHandler(handler: () => void): void {
+    export function registerChangeConfigHandler(handler: handlerFunctionType): void {
       registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -559,14 +570,14 @@ export namespace pages {
     }
 
     function handleRemove(): void {
-      const removeEvent = new RemoveEventImpl();
+      const removeEventType = new RemoveEventImpl();
       if (removeHandler) {
-        removeHandler(removeEvent);
+        removeHandler(removeEventType);
       } else if (Communication.childWindow) {
         sendMessageEventToChild('settings.remove', []);
       } else {
         // If no handler is registered, we assume success.
-        removeEvent.notifySuccess();
+        removeEventType.notifySuccess();
       }
     }
 
@@ -591,7 +602,7 @@ export namespace pages {
 
       private ensureNotNotified(): void {
         if (this.notified) {
-          throw new Error('The removeEvent may only notify success or failure once.');
+          throw new Error('The removeEventType may only notify success or failure once.');
         }
       }
     }
@@ -617,6 +628,13 @@ export namespace pages {
   export namespace backStack {
     let backButtonPressHandler: (() => boolean) | undefined;
 
+    /**
+     * @hidden
+     * Register backButtonPress handler.
+     *
+     * @internal
+     * Limited to Microsoft-internal use.
+     */
     export function _initialize(): void {
       registerHandler('backButtonPress', handleBackButtonPress, false);
     }
@@ -643,7 +661,7 @@ export namespace pages {
      * method to ask the host client to handle it instead.
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
-    export function registerBackButtonHandler(handler: () => boolean): void {
+    export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
       registerBackButtonHandlerHelper(handler, () => {
         if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -757,7 +775,7 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
-    export function onClick(handler: () => void): void {
+    export function onClick(handler: handlerFunctionType): void {
       registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -770,7 +788,7 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
-    export function onHoverEnter(handler: () => void): void {
+    export function onHoverEnter(handler: handlerFunctionType): void {
       registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -783,7 +801,7 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
-    export function onHoverLeave(handler: () => void): void {
+    export function onHoverLeave(handler: handlerFunctionType): void {
       registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;

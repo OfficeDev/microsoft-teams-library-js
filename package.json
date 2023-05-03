@@ -91,7 +91,7 @@
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.2.1",
-    "typedoc": "^0.23.24",
+    "typedoc": "^0.24.0",
     "typescript": "^4.6.4",
     "webpack": "^5.10.0",
     "webpack-assets-manifest": "^5.0.6",
@@ -114,6 +114,7 @@
     "y18n": "^4.0.1"
   },
   "dependencies": {
+    "typedoc-plugin-missing-exports": "^2.0.0",
     "uuid": "^9.0.0"
   }
 }

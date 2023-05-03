@@ -10,25 +10,42 @@ import { runtime } from './runtime';
  * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
  */
 export namespace sharing {
+  /** shareWebContent callback function type */
+  type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
+
+  /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
+    /**
+     * Share web content message.
+     * @internal
+     */
     shareWebContent: 'sharing.shareWebContent',
   };
 
   // More types can be added as we expand share capability
   type ContentType = 'URL';
 
+  /** Represents parameters for base shared content. */
   interface IBaseSharedContent {
+    /** Shared content type  */
     type: ContentType;
   }
 
   // More types can be added as we expand share capability
+  /** IShareRequestContentType defines share request type. */
   export type IShareRequestContentType = IURLContent;
 
+  /** Represents IShareRequest parameters interface.
+   * @typeparam T - The identity type
+   */
   export interface IShareRequest<T> {
+    /** Content of the share request. */
     content: T[];
   }
 
+  /** Represents IURLContent parameters. */
   export interface IURLContent extends IBaseSharedContent {
+    /** Type */
     type: 'URL';
 
     /**
@@ -67,11 +84,11 @@ export namespace sharing {
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback: (err?: SdkError) => void,
+    callback: shareWebContentCallbackFunctionType,
   ): void;
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
+    callback?: shareWebContentCallbackFunctionType,
   ): Promise<void> {
     // validate the given input (synchronous check)
     try {

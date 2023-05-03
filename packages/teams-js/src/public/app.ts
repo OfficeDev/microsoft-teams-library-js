@@ -35,10 +35,15 @@ export namespace app {
 
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
+  /** App Initialization Messages */
   export const Messages = {
+    /** App loaded. */
     AppLoaded: 'appInitialization.appLoaded',
+    /** App initialized successfully. */
     Success: 'appInitialization.success',
+    /** App initialization failed. */
     Failure: 'appInitialization.failure',
+    /** App initialization expected failure. */
     ExpectedFailure: 'appInitialization.expectedFailure',
   };
 
@@ -429,6 +434,7 @@ export namespace app {
     teamsSku?: string;
   }
 
+  /** Represents information about a SharePoint site */
   export interface SharePointSiteInfo {
     /**
      * The root SharePoint site associated with the team.
@@ -519,6 +525,11 @@ export namespace app {
      */
     team?: TeamInfo;
   }
+
+  /**
+   * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
+   */
+  type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.
@@ -768,7 +779,7 @@ export namespace app {
    *
    * @param handler - The handler to invoke when the user changes their theme.
    */
-  export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
+  export function registerOnThemeChangeHandler(handler: themeHandler): void {
     // allow for registration cleanup even when not called initialize
     handler && ensureInitializeCalled();
     Handlers.registerOnThemeChangeHandler(handler);

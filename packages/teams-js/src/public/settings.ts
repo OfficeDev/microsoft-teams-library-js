@@ -12,6 +12,15 @@ import { runtime } from './runtime';
  * This object is usable only on the settings frame.
  */
 export namespace settings {
+  /** Register on remove handler function type */
+  type registerOnRemoveHandlerFunctionType = (evt: RemoveEvent) => void;
+  /** Register on save handler function type */
+  type registerOnSaveHandlerFunctionType = (evt: SaveEvent) => void;
+  /** Set settings on complete function type */
+  type setSettingsOnCompleteFunctionType = (status: boolean, reason?: string) => void;
+  /** Get settings callback function type */
+  type getSettingsCallbackFunctionType = (instanceSettings: Settings) => void;
+
   /**
    * @deprecated
    * As of 2.0.0, please use {@link pages.config.Config} instead.
@@ -66,7 +75,7 @@ export namespace settings {
    *
    * @param callback - The callback to invoke when the {@link Settings} object is retrieved.
    */
-  export function getSettings(callback: (instanceSettings: Settings) => void): void {
+  export function getSettings(callback: getSettingsCallbackFunctionType): void {
     ensureInitialized(
       runtime,
       FrameContexts.content,
@@ -88,10 +97,7 @@ export namespace settings {
    *
    * @param - Set the desired settings for this instance.
    */
-  export function setSettings(
-    instanceSettings: Settings,
-    onComplete?: (status: boolean, reason?: string) => void,
-  ): void {
+  export function setSettings(instanceSettings: Settings, onComplete?: setSettingsOnCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
     onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
     pages.config
@@ -106,7 +112,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: (evt: SaveEvent) => void): void} instead.
+   * As of 2.0.0, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void} instead.
    *
    * Registers a handler for when the user attempts to save the settings. This handler should be used
    * to create or update the underlying resource powering the content.
@@ -115,13 +121,13 @@ export namespace settings {
    *
    * @param handler - The handler to invoke when the user selects the save button.
    */
-  export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
+  export function registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void {
     pages.config.registerOnSaveHandlerHelper(handler);
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void} instead.
+   * As of 2.0.0, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void} instead.
    *
    * Registers a handler for user attempts to remove content. This handler should be used
    * to remove the underlying resource powering the content.
@@ -130,7 +136,7 @@ export namespace settings {
    *
    * @param handler - The handler to invoke when the user selects the remove button.
    */
-  export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
+  export function registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void {
     pages.config.registerOnRemoveHandlerHelper(handler);
   }
 }
