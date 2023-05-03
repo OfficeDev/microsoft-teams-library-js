@@ -1,11 +1,11 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { people } from '../../src/public/people';
-import { _minRuntimeConfigToUninitialize, v1HostClientTypes } from '../../src/public/runtime';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { v1HostClientTypes } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -16,25 +16,9 @@ import { Utils } from '../utils';
  * Test cases for selectPeople API
  */
 describe('people', () => {
-  const framelessPlatformMock = new FramelessPostMocks();
-  const framedMock = new Utils();
+  const utils = new Utils();
   const minVersionForSelectPeople = '2.0.0';
   const originalDefaultPlatformVersion = '1.6.0';
-
-  beforeEach(() => {
-    framelessPlatformMock.messages = [];
-
-    // Set a mock window for testing
-    app._initialize(framelessPlatformMock.mockWindow);
-  });
-
-  afterEach(() => {
-    // Reset the object since it's a singleton
-    if (app._uninitialize) {
-      framedMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-      app._uninitialize();
-    }
-  });
   const allowedContexts = [FrameContexts.content, FrameContexts.task, FrameContexts.settings];
   const result = [
     {
@@ -47,6 +31,7 @@ describe('people', () => {
     title: 'Title',
     openOrgWideSearchInChatOrChannel: true,
   };
+
   describe('peoplePicker', () => {
     /**
      * People Picker tests
@@ -55,121 +40,137 @@ describe('people', () => {
       expect(() => people.selectPeople()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach((context) => {
-      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        Object.values(v1HostClientTypes).forEach((hostClientType) => {
-          it(`should throw error when people is not supported in runtime config. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-            expect(people.selectPeople()).rejects.toEqual(errorNotSupportedOnPlatform);
+    describe('frameless', () => {
+      let utils: Utils = new Utils();
+      beforeEach(() => {
+        utils = new Utils();
+        utils.mockWindow.parent = undefined;
+        utils.messages = [];
+        GlobalVars.isFramelessWindow = false;
+      });
+      afterEach(() => {
+        app._uninitialize();
+        GlobalVars.isFramelessWindow = false;
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          Object.values(v1HostClientTypes).forEach((hostClientType) => {
+            it(`should throw error when people is not supported in runtime config. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect(people.selectPeople()).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it(`should allow selectPeople calls with null peoplePickerInputs. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
+              people.selectPeople(null);
+              const selectPeopleMessage = utils.findMessageByFunc('people.selectPeople');
+              expect(selectPeopleMessage).not.toBeNull();
+              expect(selectPeopleMessage.args[0]).toEqual(null);
+            });
+
+            it(`should allow selectPeople calls with no peoplePickerInputs. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
+              people.selectPeople();
+              const selectPeopleMessage = utils.findMessageByFunc('people.selectPeople');
+              expect(selectPeopleMessage).not.toBeNull();
+              expect(selectPeopleMessage.args[0]).toEqual(null);
+            });
+
+            it(`should allow selectPeople calls with undefined peoplePickerInputs. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
+              people.selectPeople(undefined);
+              const selectPeopleMessage = utils.findMessageByFunc('people.selectPeople');
+              expect(selectPeopleMessage).not.toBeNull();
+              expect(selectPeopleMessage.args[0]).toEqual(null);
+            });
+
+            it(`selectPeople call in default version of platform support fails. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+              await expect(people.selectPeople()).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
+            });
+
+            it(`selectPeople calls with peoplePickerInput. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
+              const promise = people.selectPeople(input);
+
+              const message = utils.findMessageByFunc('people.selectPeople');
+
+              const callbackId = message.id;
+              utils.respondToFramelessMessage({
+                data: {
+                  id: callbackId,
+                  args: [undefined, result],
+                },
+              } as DOMMessageEvent);
+
+              await expect(promise).resolves.toBe(result);
+            });
+
+            it(`selectPeople calls with error. context: ${context}`, async () => {
+              await utils.initializeWithContext(context, hostClientType);
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
+              const peoplePickerInput: people.PeoplePickerInputs = {
+                title: 'Hello World',
+                setSelected: null,
+                openOrgWideSearchInChatOrChannel: true,
+                singleSelect: true,
+              };
+              const promise = people.selectPeople(peoplePickerInput);
+
+              const message = utils.findMessageByFunc('people.selectPeople');
+              expect(message).not.toBeNull();
+              expect(message.args.length).toBe(1);
+
+              const callbackId = message.id;
+              utils.respondToFramelessMessage({
+                data: {
+                  id: callbackId,
+                  args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
+                },
+              } as DOMMessageEvent);
+
+              expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+            });
           });
+        } else {
+          it(`should not allow selectPeople calls from the wrong context. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
 
-          it(`should allow selectPeople calls with null peoplePickerInputs. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-            people.selectPeople(null);
-            const selectPeopleMessage = framelessPlatformMock.findMessageByFunc('people.selectPeople');
-            expect(selectPeopleMessage).not.toBeNull();
-            expect(selectPeopleMessage.args[0]).toEqual(null);
+            expect(() => people.selectPeople()).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
           });
-
-          it(`should allow selectPeople calls with no peoplePickerInputs. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-            people.selectPeople();
-            const selectPeopleMessage = framelessPlatformMock.findMessageByFunc('people.selectPeople');
-            expect(selectPeopleMessage).not.toBeNull();
-            expect(selectPeopleMessage.args[0]).toEqual(null);
-          });
-
-          it(`should allow selectPeople calls with undefined peoplePickerInputs. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-            people.selectPeople(undefined);
-            const selectPeopleMessage = framelessPlatformMock.findMessageByFunc('people.selectPeople');
-            expect(selectPeopleMessage).not.toBeNull();
-            expect(selectPeopleMessage.args[0]).toEqual(null);
-          });
-
-          it(`selectPeople call in default version of platform support fails. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
-            await expect(people.selectPeople()).rejects.toEqual({ errorCode: ErrorCode.OLD_PLATFORM });
-          });
-
-          it(`selectPeople calls with peoplePickerInput. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-            const promise = people.selectPeople(input);
-
-            const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
-
-            const callbackId = message.id;
-            framelessPlatformMock.respondToMessage({
-              data: {
-                id: callbackId,
-                args: [undefined, result],
-              },
-            } as DOMMessageEvent);
-
-            await expect(promise).resolves.toBe(result);
-          });
-
-          it(`selectPeople calls with error. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
-            const peoplePickerInput: people.PeoplePickerInputs = {
-              title: 'Hello World',
-              setSelected: null,
-              openOrgWideSearchInChatOrChannel: true,
-              singleSelect: true,
-            };
-            const promise = people.selectPeople(peoplePickerInput);
-
-            const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-
-            const callbackId = message.id;
-            framelessPlatformMock.respondToMessage({
-              data: {
-                id: callbackId,
-                args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
-              },
-            } as DOMMessageEvent);
-
-            expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-          });
-        });
-      } else {
-        it(`should not allow selectPeople calls from the wrong context. context: ${context}`, async () => {
-          await framelessPlatformMock.initializeWithContext(context);
-
-          expect(() => people.selectPeople()).toThrowError(
-            `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContexts,
-            )}. Current context: "${context}".`,
-          );
-        });
-      }
+        }
+      });
     });
   });
 
   describe('Testing people.isSupported function', () => {
+    afterEach(() => {
+      app._uninitialize();
+    });
     it('people.isSupported should return false if the runtime says people is not supported', async () => {
-      await framedMock.initializeWithContext(FrameContexts.content);
-      framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(people.isSupported()).not.toBeTruthy();
     });
 
     it('people.isSupported should return true if the runtime says people is supported', async () => {
-      await framedMock.initializeWithContext(FrameContexts.content);
-      framedMock.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { people: {} } });
       expect(people.isSupported()).toBeTruthy();
     });
-
     it('people.isSupported should throw if called before initialization', () => {
-      framedMock.uninitializeRuntimeConfig();
+      utils.uninitializeRuntimeConfig();
       expect(() => people.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
@@ -177,6 +178,18 @@ describe('people', () => {
   /* eslint-disable @typescript-eslint/no-empty-function */
   /* eslint-disable @typescript-eslint/no-unused-vars */
   describe('peoplePicker_V1', () => {
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
+    });
+
     /**
      * People Picker tests
      */
@@ -188,44 +201,44 @@ describe('people', () => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         Object.values(v1HostClientTypes).forEach((hostClientType) => {
           it(`should throw error when people is not supported in runtime config. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+            await utils.initializeWithContext(context, hostClientType);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
             expect(people.selectPeople(() => {})).rejects.toEqual(errorNotSupportedOnPlatform);
           });
 
           it(`should allow selectPeople calls with null peoplePickerInputs context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
+            await utils.initializeWithContext(context, hostClientType);
+            utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
             people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {}, null);
-            const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
+            const message = utils.findMessageByFunc('people.selectPeople');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toEqual(null);
           });
 
           it(`should allow selectPeople calls with no peoplePickerInputs. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
+            await utils.initializeWithContext(context, hostClientType);
+            utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
             people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {});
-            const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
+            const message = utils.findMessageByFunc('people.selectPeople');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toEqual(null);
           });
 
           it(`should allow selectPeople calls with undefined peoplePickerInputs. context: ${context}`, async () => {
-            await framelessPlatformMock.initializeWithContext(context, hostClientType);
-            framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
+            await utils.initializeWithContext(context, hostClientType);
+            utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
             people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {}, undefined);
-            const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
+            const message = utils.findMessageByFunc('people.selectPeople');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toEqual(null);
           });
 
           it(`selectPeople call in default version of platform support fails. context: ${context}`, (done) => {
-            framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
-              framelessPlatformMock.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+            utils.initializeWithContext(context, hostClientType).then(() => {
+              utils.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
               people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {
                 expect(error).not.toBeNull();
                 expect(error.errorCode).toBe(ErrorCode.OLD_PLATFORM);
@@ -235,8 +248,8 @@ describe('people', () => {
           });
 
           it(`selectPeople calls with valid peoplePickerInput. context: ${context}`, (done) => {
-            framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
-              framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
+            utils.initializeWithContext(context, hostClientType).then(() => {
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
 
               people.selectPeople((e: SdkError, m: people.PeoplePickerResult[]) => {
                 expect(e).toBeFalsy();
@@ -244,10 +257,10 @@ describe('people', () => {
                 done();
               }, input);
 
-              const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
+              const message = utils.findMessageByFunc('people.selectPeople');
 
               const callbackId = message.id;
-              framelessPlatformMock.respondToMessage({
+              utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [undefined, result],
@@ -257,8 +270,8 @@ describe('people', () => {
           });
 
           it(`selectPeople calls with error. context: ${context}`, (done) => {
-            framelessPlatformMock.initializeWithContext(context, hostClientType).then(() => {
-              framelessPlatformMock.setClientSupportedSDKVersion(minVersionForSelectPeople);
+            utils.initializeWithContext(context, hostClientType).then(() => {
+              utils.setClientSupportedSDKVersion(minVersionForSelectPeople);
 
               const peoplePickerInput: people.PeoplePickerInputs = {
                 title: 'Hello World',
@@ -272,10 +285,10 @@ describe('people', () => {
                 done();
               }, peoplePickerInput);
 
-              const message = framelessPlatformMock.findMessageByFunc('people.selectPeople');
+              const message = utils.findMessageByFunc('people.selectPeople');
 
               const callbackId = message.id;
-              framelessPlatformMock.respondToMessage({
+              utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -286,7 +299,7 @@ describe('people', () => {
         });
       } else {
         it(`should not allow selectPeople calls from the wrong context. context: ${context}`, async () => {
-          await framelessPlatformMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           expect(() =>
             people.selectPeople((error: SdkError, people: people.PeoplePickerResult[]) => {}, null),
