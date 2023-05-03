@@ -7,7 +7,7 @@ import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/
 export interface MessageRequest {
   id: number;
   func: string;
-  args?: unknown[];
+  args?: any[];
   timestamp?: number;
   isPartialResponse?: boolean;
 }
