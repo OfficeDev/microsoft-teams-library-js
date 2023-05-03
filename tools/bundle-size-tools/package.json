@@ -9,7 +9,8 @@
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm tsc",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "lint": "pnpm eslint --max-warnings 0 --fix --ext .tsx"
+    "lint": "pnpm eslint --max-warnings 0 --fix --ext .tsx",
+    "test": "jest"
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.2",
