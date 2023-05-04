@@ -60,7 +60,7 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
             setResult('video frame received');
             return frame.videoFrame;
           },
-          sharedFrameCallback: (buffer) => {},
+          sharedFrameCallback: (buffer) => buffer,
           config: {
             format: video.VideoFrameFormat.NV12,
           },
@@ -82,7 +82,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
           mediaStreamCallback: async (frame) => {
             return frame.videoFrame;
           },
-          sharedFrameCallback: (buffer) => {
+          sharedFrameCallback: () => {
             setResult('video frame received');
           },
           config: {
