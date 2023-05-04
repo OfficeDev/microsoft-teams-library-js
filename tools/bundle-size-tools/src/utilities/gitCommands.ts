@@ -9,12 +9,19 @@ import { execFileSync, execSync } from 'child_process';
  * Gets the commit in main that the current branch is based on.
  */
 export function getBaselineCommit(baseBranch: string): string {
-  // return execSync(`git merge-base origin/${baseBranch} HEAD`).toString().trim();
+  if (!baseBranch || !baseBranch.trim()) {
+    throw new Error(`Invalid input passed to getBaselineCommit: "${baseBranch}"`);
+  }
   return execFileSync('git', ['merge-base', `origin/${baseBranch}`, 'HEAD'])
     .toString()
     .trim();
 }
 
 export function getPriorCommit(baseCommit: string): string {
-  return execSync(`git log --pretty=format:"%H" -1 ${baseCommit}~1`).toString().trim();
+  if (!baseCommit || !baseCommit.trim()) {
+    throw new Error(`Invalid input passed to getPriorCommit: "${baseCommit}"`);
+  }
+  return execFileSync('git', ['log', '--pretty=format:"%H"', '-1', `${baseCommit}~1`])
+    .toString()
+    .trim();
 }
