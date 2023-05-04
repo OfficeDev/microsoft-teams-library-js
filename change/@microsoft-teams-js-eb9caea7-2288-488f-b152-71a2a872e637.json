@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Updated video.registerForVideoFrame to support both media stream and shared frame",
+  "comment": "Updated `video.registerForVideoFrame` to support both media stream and shared frame",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"
