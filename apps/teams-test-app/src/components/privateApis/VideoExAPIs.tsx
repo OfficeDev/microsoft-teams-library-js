@@ -81,7 +81,7 @@ const CheckIsSupported = (): React.ReactElement =>
 
 const RegisterForVideoFrame = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'videoExFrameRegisterForVideoFrame',
+    name: 'videoExSharedFrameRegisterForVideoFrame',
     title: 'registerForVideoFrame',
     onClick: async (setResult) => {
       const onFrameCallback: videoEx.VideoFrameCallback = async () => {
