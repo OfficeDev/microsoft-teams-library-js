@@ -1,8 +1,20 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 06 Apr 2023 23:07:12 GMT and should not be manually modified.
+This log was last generated on Wed, 03 May 2023 18:17:38 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.11.0
+
+Wed, 03 May 2023 18:17:38 GMT
+
+### Minor changes
+
+- Added `getClientInfo` to LiveShareHost
+
+### Patches
+
+- Added comments on all exported types and functions and made comments required for all future changes.
 
 ## 2.10.1
 
