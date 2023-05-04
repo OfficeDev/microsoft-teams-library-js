@@ -34,7 +34,7 @@ export interface IAppWindow {
 }
 
 /**
- * An object that application can utilize to establish communication 
+ * An object that application can utilize to establish communication
  * with the child window it opened, which contains the corresponding task.
  */
 export class ChildAppWindow implements IAppWindow {
@@ -62,9 +62,9 @@ export class ChildAppWindow implements IAppWindow {
   }
 }
 
-/** 
- * An object that is utilized to facilitate communication with a parent window 
- * that initiated the opening of current window. For instance, a dialog or task 
+/**
+ * An object that is utilized to facilitate communication with a parent window
+ * that initiated the opening of current window. For instance, a dialog or task
  * module would utilize it to transmit messages to the application that launched it.
  */
 export class ParentAppWindow implements IAppWindow {
@@ -78,7 +78,7 @@ export class ParentAppWindow implements IAppWindow {
 
   /**
    * Send a message to the ParentAppWindow.
-   * 
+   *
    * @param message - The message to send
    * @param onComplete - The callback to know if the postMessage has been success/failed.
    */
