@@ -3,9 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { video } from '../../src/public/video';
-import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
 /* eslint-disable */
