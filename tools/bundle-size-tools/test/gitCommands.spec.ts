@@ -21,6 +21,7 @@ describe('gitCommands', () => {
     });
     it('the command passed to execFileSync should be only "git"', () => {
       getBaselineCommit('test');
+      // eslint-disable-next-line strict-null-checks/all
       expect(latestCommand).toEqual('git');
     });
     it('will throw if undefined baseBranch is passed in', () => {
@@ -45,6 +46,7 @@ describe('gitCommands', () => {
     });
     it('the command passed to execFileSync should be only "git"', () => {
       getPriorCommit('test');
+      // eslint-disable-next-line strict-null-checks/all
       expect(latestCommand).toEqual('git');
     });
     it('will throw if undefined baseCommit is passed in', () => {

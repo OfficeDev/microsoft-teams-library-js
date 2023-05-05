@@ -3,8 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { execFileSync, execSync } from 'child_process';
-
+import { execFileSync } from 'child_process';
 /**
  * Gets the commit in main that the current branch is based on.
  */

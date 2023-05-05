@@ -9,7 +9,7 @@
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm tsc",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "lint": "pnpm eslint --max-warnings 0 --fix --ext .tsx",
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "test": "jest"
   },
   "dependencies": {
