@@ -16,7 +16,7 @@ import { BundleFileData, getBundleFilePathsFromFolder } from './getBundleFilePat
  */
 export function getBundlePathsFromZipObject(jsZip: JSZip): BundleFileData[] {
   const relativePaths: string[] = [];
-  jsZip.forEach(path => {
+  jsZip.forEach((path) => {
     relativePaths.push(path);
   });
 
