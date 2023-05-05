@@ -5,19 +5,9 @@
     "rootDir": "./src/",
     "module": "commonjs",
     "noImplicitAny": false,
-    "types": [
-      "webpack",
-      "node"
-    ],
+    "types": ["webpack", "node", "jest"],
     "esModuleInterop": true,
-    "typeRoots": [
-      "types",
-      "node_modules/@types",
-      "../../node_modules/@types"
-    ]
+    "typeRoots": ["types", "node_modules/@types", "../../node_modules/@types"]
   },
-  "include": [
-    "src/**/*.ts",
-    "../../node_modules/@types/webpack/index.d.ts"
-  ]
+  "include": ["src/**/*.ts", "../../node_modules/@types/webpack/index.d.ts"]
 }
