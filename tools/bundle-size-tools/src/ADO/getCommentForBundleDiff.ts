@@ -15,7 +15,7 @@ const bundleDetailsTableHeader =
  * @param bundleDiff
  * @param baselineCommit Commit hash for the baseline
  */
-export function getCommentForBundleDiff(bundleComparison: BundleComparison[], baselineCommit: string) {
+export function getCommentForBundleDiff(bundleComparison: BundleComparison[], baselineCommit: string): string {
   const diffDetails = bundleComparison.map(getBundleDetails).reduce((prev, current) => {
     return prev + current;
   });
@@ -31,7 +31,7 @@ export function getCommentForBundleDiff(bundleComparison: BundleComparison[], ba
  * @param message the string to type as a message
  * @param baselineCommit Commit hash for the baseline
  */
-export function getSimpleComment(message: string, baselineCommit: string) {
+export function getSimpleComment(message: string, baselineCommit: string): string {
   const baselineFooter = getCommentFooter(baselineCommit);
 
   return `<p>${message}</p>` + baselineFooter;
@@ -42,7 +42,7 @@ export function getSimpleComment(message: string, baselineCommit: string) {
  *
  * @param baselineCommit
  */
-function getCommentFooter(baselineCommit: string) {
+function getCommentFooter(baselineCommit: string): string {
   return `<hr><p>Baseline commit: ${baselineCommit}</p>`;
 }
 
@@ -51,7 +51,7 @@ function getCommentFooter(baselineCommit: string) {
  *
  * @param bundleDiff
  */
-function getBundleDetails(bundleDiff: BundleComparison) {
+function getBundleDetails(bundleDiff: BundleComparison): string {
   const { bundleName, commonBundleMetrics } = bundleDiff;
 
   const metrics = Object.entries(commonBundleMetrics)
@@ -81,7 +81,7 @@ function getBundleDetails(bundleDiff: BundleComparison) {
  *
  * @param bundleDiff
  */
-function getMetricRow(metricName: string, baselineMetric: BundleMetric, compareMetric: BundleMetric) {
+function getMetricRow(metricName: string, baselineMetric: BundleMetric, compareMetric: BundleMetric): string {
   const parsedSizeDiff = compareMetric.parsedSize - baselineMetric.parsedSize;
   const glyph = getColorGlyph(parsedSizeDiff);
 
@@ -95,7 +95,7 @@ function getMetricRow(metricName: string, baselineMetric: BundleMetric, compareM
  *
  * @param bytes positive or negative number of bytes
  */
-export function formatBytes(bytes: number) {
+export function formatBytes(bytes: number): string {
   const base = 1024;
   const decimals = 2;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -108,7 +108,7 @@ export function formatBytes(bytes: number) {
 /**
  * Returns the number of bytes in a human readable format
  */
-function formatDiff(bytes: number) {
+function formatDiff(bytes: number): string {
   if (bytes === 0) {
     return 'No change';
   }
@@ -123,7 +123,7 @@ function formatDiff(bytes: number) {
  *
  * @param bytesDiff diff of bytes
  */
-function getColorGlyph(bytesDiff: number) {
+function getColorGlyph(bytesDiff: number): string {
   if (bytesDiff === 0) {
     return '<span style="color: green">■</span>';
   }
