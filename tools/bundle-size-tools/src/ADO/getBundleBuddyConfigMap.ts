@@ -18,10 +18,10 @@ export async function getBundleBuddyConfigMap(
   const result = new Map<string, BundleBuddyConfig>();
 
   const asyncWork: Promise<void>[] = [];
-  args.bundleFileData.forEach(bundle => {
+  args.bundleFileData.forEach((bundle) => {
     if (bundle.relativePathToConfigFile) {
       asyncWork.push(
-        args.getBundleBuddyConfig(bundle.relativePathToConfigFile).then(configFile => {
+        args.getBundleBuddyConfig(bundle.relativePathToConfigFile).then((configFile) => {
           result.set(bundle.bundleName, configFile);
         }),
       );
