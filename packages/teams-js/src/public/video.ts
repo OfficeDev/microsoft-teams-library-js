@@ -2,12 +2,6 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { processMediaStream } from '../internal/mediaStreamUtils';
-import {
-  AllowSharedBufferSource,
-  PlaneLayout,
-  VideoFrameCopyToOptions,
-  VideoPixelFormat,
-} from '../internal/VideoFrameTypes';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -24,66 +18,12 @@ export namespace video {
 
   /**
    * @beta
-   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/#videoframe-interface.
+   * The current version of typescript doesn't have the definition of VideoFrame so we have to define it here.
+   * On runtime it can be casted to VideoFrame directly: `(videoFrame as VideoFrame)`.
    */
-  export interface VideoFrame {
-    /**
-     * Returns the height of the VideoFrame in pixels, potentially including non-visible padding, and prior to considering potential ratio adjustments.
-     */
-    readonly codedHeight: number;
-    /**
-     * Returns a DOMRectReadOnly with the width and height matching codedWidth and codedHeight.
-     */
-    readonly codedRect: DOMRectReadOnly | null;
-    /**
-     * Returns the width of the VideoFrame in pixels, potentially including non-visible padding, and prior to considering potential ratio adjustments.
-     */
-    readonly codedWidth: number;
-    /**
-     * Returns a VideoColorSpace object.
-     */
-    readonly colorSpace: VideoColorSpace;
-    /**
-     * Returns the height of the VideoFrame when displayed after applying aspect ratio adjustments.
-     */
-    readonly displayHeight: number;
-    /**
-     * Returns the width of the VideoFrame when displayed after applying aspect ratio adjustments.
-     */
-    readonly displayWidth: number;
-    /**
-     * Returns an integer indicating the duration of the video in microseconds.
-     */
-    readonly duration: number | null;
-    /**
-     * Returns the pixel format of the VideoFrame.
-     */
-    readonly format: VideoPixelFormat | null;
-    /**
-     * Returns an integer indicating the timestamp of the video in microseconds.
-     */
-    readonly timestamp: number | null;
-    /**
-     * Returns a DOMRectReadOnly describing the visible rectangle of pixels for this VideoFrame.
-     */
-    readonly visibleRect: DOMRectReadOnly | null;
-    /**
-     * Returns the number of bytes required to hold the VideoFrame as filtered by options passed into the method.
-     */
-    allocationSize(options?: VideoFrameCopyToOptions): number;
-    /**
-     * Creates a new VideoFrame object with reference to the same media resource as the original.
-     */
-    clone(): VideoFrame;
-    /**
-     * Clears all states and releases the reference to the media resource.
-     */
-    close(): void;
-    /**
-     * Copies the contents of the VideoFrame to an ArrayBuffer.
-     */
-    copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface VideoFrame {}
 
   /**
    * @beta

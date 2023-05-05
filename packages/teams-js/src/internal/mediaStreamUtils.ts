@@ -3,8 +3,12 @@ import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { AllowSharedBufferSource, VideoFrameBufferInit, VideoFrameInit } from './VideoFrameTypes';
 
+interface VideoFrame {
+  close(): void;
+}
+
 /**
- * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/
+ * @hidden
  */
 // eslint-disable-next-line strict-null-checks/all
 declare const VideoFrame: {
@@ -85,7 +89,7 @@ function createProcessedStreamGenerator(
               });
               controller.enqueue(processedFrame);
               originalFrame.close();
-              frameProcessedByApp.close();
+              (frameProcessedByApp as VideoFrame).close();
             } catch (error) {
               originalFrame.close();
               notifyError(error);
