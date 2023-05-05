@@ -23,7 +23,7 @@ export function getBundleBuddyConfigProcessor(options: BundleBuddyConfigProcesso
 
     const result = new Map<string, BundleMetric>();
 
-    bundleBuddyConfig.chunksToAnalyze.forEach(chunk => {
+    bundleBuddyConfig.chunksToAnalyze.forEach((chunk) => {
       const chunkAnalysis = getChunkAndDependencySizes(stats, chunk.name);
 
       // Right now we log the size of the chunk plus all it's dependencies. We could support logging just the chunk via a configuration
