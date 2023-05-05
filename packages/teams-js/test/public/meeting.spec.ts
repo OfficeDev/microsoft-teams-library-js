@@ -5,7 +5,6 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
-import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -94,8 +93,7 @@ describe('meeting', () => {
           it(`should successfully send the toggleIncomingClientAudio message. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             meeting.toggleIncomingClientAudio(emptyCallBack);
-            const toggleIncomingClientAudioMessage =
-              utils.findMessageByFunc('toggleIncomingClientAudio');
+            const toggleIncomingClientAudioMessage = utils.findMessageByFunc('toggleIncomingClientAudio');
             expect(toggleIncomingClientAudioMessage).not.toBeNull();
             expect(toggleIncomingClientAudioMessage.args.length).toEqual(0);
           });
@@ -112,8 +110,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const toggleIncomingClientAudioMessage =
-              utils.findMessageByFunc('toggleIncomingClientAudio');
+            const toggleIncomingClientAudioMessage = utils.findMessageByFunc('toggleIncomingClientAudio');
             expect(toggleIncomingClientAudioMessage).not.toBeNull();
             const callbackId = toggleIncomingClientAudioMessage.id;
             utils.respondToFramelessMessage({
@@ -139,8 +136,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const toggleIncomingClientAudioMessage =
-              utils.findMessageByFunc('toggleIncomingClientAudio');
+            const toggleIncomingClientAudioMessage = utils.findMessageByFunc('toggleIncomingClientAudio');
             expect(toggleIncomingClientAudioMessage).not.toBeNull();
             const callbackId = toggleIncomingClientAudioMessage.id;
             utils.respondToFramelessMessage({
@@ -196,8 +192,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const getIncomingClientAudioMessage =
-              utils.findMessageByFunc('getIncomingClientAudioState');
+            const getIncomingClientAudioMessage = utils.findMessageByFunc('getIncomingClientAudioState');
             expect(getIncomingClientAudioMessage).not.toBeNull();
             const callbackId = getIncomingClientAudioMessage.id;
             utils.respondToFramelessMessage({
@@ -223,8 +218,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const getIncomingClientAudioMessage =
-              utils.findMessageByFunc('getIncomingClientAudioState');
+            const getIncomingClientAudioMessage = utils.findMessageByFunc('getIncomingClientAudioState');
             expect(getIncomingClientAudioMessage).not.toBeNull();
             const callbackId = getIncomingClientAudioMessage.id;
             utils.respondToFramelessMessage({
@@ -556,9 +550,7 @@ describe('meeting', () => {
               'streamkey',
             );
 
-            const requestStartLiveStreamMessage = utils.findMessageByFunc(
-              'meeting.requestStartLiveStreaming',
-            );
+            const requestStartLiveStreamMessage = utils.findMessageByFunc('meeting.requestStartLiveStreaming');
             expect(requestStartLiveStreamMessage).not.toBeNull();
 
             const callbackId = requestStartLiveStreamMessage.id;
@@ -588,9 +580,7 @@ describe('meeting', () => {
               'streamkey',
             );
 
-            const requestStartLiveStreamMessage = utils.findMessageByFunc(
-              'meeting.requestStartLiveStreaming',
-            );
+            const requestStartLiveStreamMessage = utils.findMessageByFunc('meeting.requestStartLiveStreaming');
             expect(requestStartLiveStreamMessage).not.toBeNull();
 
             const callbackId = requestStartLiveStreamMessage.id;
@@ -646,9 +636,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const requestStopLiveStreamingMessage = utils.findMessageByFunc(
-              'meeting.requestStopLiveStreaming',
-            );
+            const requestStopLiveStreamingMessage = utils.findMessageByFunc('meeting.requestStopLiveStreaming');
             expect(requestStopLiveStreamingMessage).not.toBeNull();
 
             const callbackId = requestStopLiveStreamingMessage.id;
@@ -674,9 +662,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const requestStopLiveStreamingMessage = utils.findMessageByFunc(
-              'meeting.requestStopLiveStreaming',
-            );
+            const requestStopLiveStreamingMessage = utils.findMessageByFunc('meeting.requestStopLiveStreaming');
             expect(requestStopLiveStreamingMessage).not.toBeNull();
 
             const callbackId = requestStopLiveStreamingMessage.id;
@@ -740,9 +726,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             }, requestUrl);
 
-            const shareAppContentToStageMessage = utils.findMessageByFunc(
-              'meeting.shareAppContentToStage',
-            );
+            const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
             expect(shareAppContentToStageMessage).not.toBeNull();
             const callbackId = shareAppContentToStageMessage.id;
             utils.respondToFramelessMessage({
@@ -770,9 +754,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             }, requestUrl);
 
-            const shareAppContentToStageMessage = utils.findMessageByFunc(
-              'meeting.shareAppContentToStage',
-            );
+            const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
             expect(shareAppContentToStageMessage).not.toBeNull();
             const callbackId = shareAppContentToStageMessage.id;
             utils.respondToFramelessMessage({
@@ -920,9 +902,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const stopSharingAppContentToStageMessage = utils.findMessageByFunc(
-              'meeting.stopSharingAppContentToStage',
-            );
+            const stopSharingAppContentToStageMessage = utils.findMessageByFunc('meeting.stopSharingAppContentToStage');
             expect(stopSharingAppContentToStageMessage).not.toBeNull();
             const callbackId = stopSharingAppContentToStageMessage.id;
             utils.respondToFramelessMessage({
@@ -948,9 +928,7 @@ describe('meeting', () => {
               returnedSdkError = error;
             });
 
-            const stopSharingAppContentToStageMessage = utils.findMessageByFunc(
-              'meeting.stopSharingAppContentToStage',
-            );
+            const stopSharingAppContentToStageMessage = utils.findMessageByFunc('meeting.stopSharingAppContentToStage');
             expect(stopSharingAppContentToStageMessage).not.toBeNull();
             const callbackId = stopSharingAppContentToStageMessage.id;
             utils.respondToFramelessMessage({
@@ -1314,9 +1292,7 @@ describe('meeting', () => {
           it(`should successfully set shareInformation. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             meeting.appShareButton.setOptions(shareInformation);
-            const toggleAppShareButtonMessage = utils.findMessageByFunc(
-              'meeting.appShareButton.setOptions',
-            );
+            const toggleAppShareButtonMessage = utils.findMessageByFunc('meeting.appShareButton.setOptions');
             expect(toggleAppShareButtonMessage).not.toBeNull();
             expect(toggleAppShareButtonMessage.args.length).toBe(1);
             expect(toggleAppShareButtonMessage.args[0]).toStrictEqual(shareInformation);
@@ -1406,9 +1382,7 @@ describe('meeting', () => {
               },
             );
 
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1438,9 +1412,7 @@ describe('meeting', () => {
               },
             );
 
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1471,9 +1443,7 @@ describe('meeting', () => {
               { isAppHandlingAudio: requestIsHostAudioless, micMuteStateChangedCallback: testMicStateCallback },
               (_result: boolean) => {},
             );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1517,9 +1487,7 @@ describe('meeting', () => {
               },
               (_result: boolean) => {},
             );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1563,9 +1531,7 @@ describe('meeting', () => {
               },
               (_result: boolean) => {},
             );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1610,9 +1576,7 @@ describe('meeting', () => {
               },
               (_result: boolean) => {},
             );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc(
-              'meeting.requestAppAudioHandling',
-            );
+            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
@@ -1690,3 +1654,4 @@ describe('meeting', () => {
     });
   });
 });
+
