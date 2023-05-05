@@ -40,7 +40,7 @@ export function getChunkAndDependencySizes(stats: WebpackStatsJson, chunkName: s
   }
 
   // Find a chunk that has the desired name
-  const rootChunk = stats.chunks.find(c => c.names.length > 0 && c.names.find(name => name === chunkName));
+  const rootChunk = stats.chunks.find((c) => c.names.length > 0 && c.names.find((name) => name === chunkName));
 
   if (rootChunk === undefined) {
     throw new Error(`Could not find chunk with name: ${chunkName} in the stats file`);
@@ -55,6 +55,7 @@ export function getChunkAndDependencySizes(stats: WebpackStatsJson, chunkName: s
   const dependenciesToProcess = [...rootChunk.parents, ...rootChunk.siblings];
 
   while (dependenciesToProcess.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const chunkToProcess = dependenciesToProcess.pop()!;
 
     if (!processedDependencies.has(chunkToProcess)) {
