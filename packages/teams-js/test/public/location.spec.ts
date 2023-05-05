@@ -4,6 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
+import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -24,20 +25,6 @@ describe('location', () => {
   };
   const utils: Utils = new Utils();
 
-  describe('isSupported API', () => {
-    it('location.isSupported should return false if the runtime says location is not supported', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(location.isSupported()).not.toBeTruthy();
-    });
-
-    it('location.isSupported should return true if the runtime says location is supported', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
-      expect(location.isSupported()).toBeTruthy();
-    });
-  });
-
   describe('frameless', () => {
     let utils: Utils = new Utils();
     beforeEach(() => {
@@ -49,6 +36,25 @@ describe('location', () => {
     afterEach(() => {
       app._uninitialize();
       GlobalVars.isFramelessWindow = false;
+    });
+
+    describe('isSupported API', () => {
+      it('location.isSupported should return false if the runtime says location is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+        expect(location.isSupported()).not.toBeTruthy();
+      });
+
+      it('location.isSupported should return true if the runtime says location is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
+        expect(location.isSupported()).toBeTruthy();
+      });
+
+      it('should not be supported before initialization', () => {
+        setUnitializedRuntime();
+        expect(() => location.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
     });
 
     describe('getLocation API', () => {
