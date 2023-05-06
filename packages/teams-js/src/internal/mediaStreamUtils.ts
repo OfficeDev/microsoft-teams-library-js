@@ -52,7 +52,7 @@ async function getInputVideoTrack(streamId: string, notifyError: (string) => voi
   } catch (error) {
     const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
     notifyError(errorMsg);
-    throw new Error(errorMsg);
+    throw new Error(`Internal error: can't get video track from stream ${streamId}`);
   }
 }
 
@@ -67,10 +67,13 @@ function createProcessedStreamGenerator(
   mediaStreamCallback: video.MediaStreamCallback,
   notifyError: (string) => void,
 ): MediaStreamTrack {
-  const MediaStreamTrackProcessor = !inServerSideRenderingEnvironment() && window['MediaStreamTrackProcessor'];
+  if (inServerSideRenderingEnvironment()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
   const processor = new MediaStreamTrackProcessor({ track: videoTrack });
   const source = processor.readable;
-  const MediaStreamTrackGenerator = !inServerSideRenderingEnvironment() && window['MediaStreamTrackGenerator'];
+  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
   const generator = new MediaStreamTrackGenerator({ kind: 'video' });
   const sink = generator.writable;
 
