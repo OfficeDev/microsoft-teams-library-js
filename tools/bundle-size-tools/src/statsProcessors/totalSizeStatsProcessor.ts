@@ -14,7 +14,7 @@ export interface TotalSizeStatsProcessorOptions {
  * A simple stats processor that simply returns the size information for the entry chunk
  */
 export function getTotalSizeStatsProcessor(options: TotalSizeStatsProcessorOptions): WebpackStatsProcessor {
-  return stats => {
+  return (stats) => {
     const result = new Map<string, BundleMetric>();
 
     if (!stats.assets) {

@@ -34,7 +34,7 @@ export class ADOSizeComparator {
    */
   private static readonly defaultBuildsToSearch = 40;
 
-  constructor(
+  public constructor(
     /**
      * ADO constants identifying where to fetch baseline bundle info
      */
@@ -92,7 +92,9 @@ export class ADOSizeComparator {
 
     // Some circumstances may want us to try a fallback, such as when a commit does
     // not trigger any CI loops.  If a fallback generator is provided, use that.
+    // eslint-disable-next-line strict-null-checks/all
     let baselineZip;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const fallbackGen = this.getFallbackCommit?.(baselineCommit!);
     const recentBuilds = await getBuilds(this.adoConnection, {
       project: this.adoConstants.projectName,
@@ -100,9 +102,10 @@ export class ADOSizeComparator {
       maxBuildsPerDefinition: this.adoConstants.buildsToSearch ?? ADOSizeComparator.defaultBuildsToSearch,
     });
     while (baselineCommit !== undefined) {
-      const baselineBuild = recentBuilds.find(build => build.sourceVersion === baselineCommit);
+      const baselineBuild = recentBuilds.find((build) => build.sourceVersion === baselineCommit);
 
       if (baselineBuild === undefined) {
+        // eslint-disable-next-line strict-null-checks/all
         baselineCommit = fallbackGen?.next().value;
         console.log(`Trying backup baseline commit ${baselineCommit}`);
         continue;
@@ -151,6 +154,7 @@ export class ADOSizeComparator {
 
       // Successful baseline build does not have the needed build artifacts
       if (baselineZip === undefined) {
+        // eslint-disable-next-line strict-null-checks/all
         baselineCommit = this.getFallbackCommit?.(baselineCommit).next().value;
         console.log(`Trying backup baseline commit ${baselineCommit}`);
         continue;
@@ -198,21 +202,21 @@ export class ADOSizeComparator {
 
     const configFileMap = await getBundleBuddyConfigMap({
       bundleFileData: prBundleFileSystemPaths,
-      getBundleBuddyConfig: relativePath =>
+      getBundleBuddyConfig: (relativePath) =>
         getBundleBuddyConfigFromFileSystem(join(this.localReportPath, relativePath)),
     });
 
     const baselineSummaries = await getBundleSummaries({
       bundlePaths: baselineZipBundlePaths,
-      getStatsFile: relativePath => getStatsFileFromZip(baselineZip, relativePath),
-      getBundleBuddyConfigFile: bundleName => configFileMap.get(bundleName),
+      getStatsFile: (relativePath) => getStatsFileFromZip(baselineZip, relativePath),
+      getBundleBuddyConfigFile: (bundleName) => configFileMap.get(bundleName),
       statsProcessors: DefaultStatsProcessors,
     });
 
     const prSummaries = await getBundleSummaries({
       bundlePaths: prBundleFileSystemPaths,
-      getStatsFile: relativePath => getStatsFileFromFileSystem(join(this.localReportPath, relativePath)),
-      getBundleBuddyConfigFile: bundleName => configFileMap.get(bundleName),
+      getStatsFile: (relativePath) => getStatsFileFromFileSystem(join(this.localReportPath, relativePath)),
+      getBundleBuddyConfigFile: (bundleName) => configFileMap.get(bundleName),
       statsProcessors: DefaultStatsProcessors,
     });
 
