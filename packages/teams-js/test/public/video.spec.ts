@@ -62,13 +62,13 @@ describe('video', () => {
   ])('registerForVideoFrame', ({ init, setRuntimeConfig, postMessage, findMessageByFunc }) => {
     it('should not allow registerForVideoFrame calls from the wrong context', async () => {
       await init(FrameContexts.content);
-      expect(() => video.registerForVideoFrame({} as video.VideoFrameCallbackOptions)).toThrowError();
+      expect(() => video.registerForVideoFrame({} as video.RegisterForVideoFrameParameters)).toThrowError();
     });
 
     it('should throw error when video is not supported in runtime config', async () => {
       await init(FrameContexts.sidePanel);
       setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(() => video.registerForVideoFrame({} as video.VideoFrameCallbackOptions)).toThrowError();
+      expect(() => video.registerForVideoFrame({} as video.RegisterForVideoFrameParameters)).toThrowError();
     });
 
     describe('when sharedFrame is supported', () => {
