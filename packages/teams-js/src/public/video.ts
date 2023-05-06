@@ -169,7 +169,7 @@ export namespace video {
    * @beta
    * Callbacks and configuration supplied to the host to process the video frames.
    */
-  export type VideoFrameCallbackOptions = {
+  export type RegisterForVideoFrameParameters = {
     /**
      * Callback function to process the video frames extracted from a media stream.
      */
@@ -214,7 +214,7 @@ export namespace video {
   /**
    * Register callbacks to process the video frames if the host supports it.
    * @beta
-   * @param option - Callbacks and configuration to process the video frames. A host may support either {@link MediaStreamCallback} or {@link SharedFrameCallback}, but not both.
+   * @param parameters - Callbacks and configuration to process the video frames. A host may support either {@link MediaStreamCallback} or {@link SharedFrameCallback}, but not both.
    * To ensure the video effect works on all supported hosts, the video app must provide both {@link MediaStreamCallback} and {@link SharedFrameCallback}.
    * The host will choose the appropriate callback based on the host's capability.
    *
@@ -248,15 +248,18 @@ export namespace video {
    * });
    * ```
    */
-  export function registerForVideoFrame(option: VideoFrameCallbackOptions): void {
+  export function registerForVideoFrame(parameters: RegisterForVideoFrameParameters): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+    if (!parameters.mediaStreamCallback || !parameters.sharedFrameCallback) {
+      throw new Error('Both mediaStreamCallback and sharedFrameCallback must be provided');
+    }
     if (doesSupportMediaStream()) {
-      registerForMediaStream(option.mediaStreamCallback);
+      registerForMediaStream(parameters.mediaStreamCallback);
     } else if (doesSupportSharedFrame()) {
-      registerForSharedFrame(option.sharedFrameCallback, option.config);
+      registerForSharedFrame(parameters.sharedFrameCallback, parameters.config);
     } else {
       // should not happen if isSupported() is true
       throw errorNotSupportedOnPlatform;
