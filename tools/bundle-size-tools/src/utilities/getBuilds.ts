@@ -22,7 +22,10 @@ export interface GetBuildOptions {
 /**
  * A wrapper around the terrible API signature for ADO getBuilds
  */
-export async function getBuilds(adoConnection: WebApi, options: GetBuildOptions) {
+// The type that getBuilds returns doesn't seem to be exported from the library we're using, so using
+// any and disabling warning for now
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getBuilds(adoConnection: WebApi, options: GetBuildOptions): Promise<any> {
   const buildApi = await adoConnection.getBuildApi();
 
   return buildApi.getBuilds(
