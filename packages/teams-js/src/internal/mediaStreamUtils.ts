@@ -36,7 +36,7 @@ export async function processMediaStream(
 /**
  * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
  */
-async function getInputVideoTrack(streamId: string, notifyError: (string) => void): Promise<unknown> {
+async function getInputVideoTrack(streamId: string, notifyError: (string) => void): Promise<MediaStreamTrack> {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
