@@ -38,9 +38,11 @@ export namespace video {
 
   /**
    * @beta
-   * Video effect change call back function definition.
+   * Video frame call back function definition.
+   * The callback will be called on every frame when runing on the supported host.
+   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
    * The video app should resolve the promise to notify a successfully processed video frame.
-   * The video app should reject the promise to notify a failure.
+   * The video app should reject the promise to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
    */
   export type MediaStreamCallback = (receivedVideoFrame: MediaStreamFrameData) => Promise<VideoFrame>;
 
@@ -61,6 +63,41 @@ export namespace video {
      * Video frame buffer
      */
     videoFrameBuffer: Uint8ClampedArray;
+    /**
+     * NV12 luma stride, valid only when video frame format is NV12
+     */
+    lumaStride?: number;
+    /**
+     * NV12 chroma stride, valid only when video frame format is NV12
+     */
+    chromaStride?: number;
+    /**
+     * RGB stride, valid only when video frame format is RGB
+     */
+    stride?: number;
+    /**
+     * The time stamp of the current video frame
+     */
+    timestamp?: number;
+  }
+
+  /**
+   * Old video frame data structure, almost identical to the {@link VideoFrameData} except `videoFrameBuffer` is named as `data`.
+   * Old host like the old Teams passes this data to the SDK. It will be deprecated in the future.
+   */
+  interface OldVideoFrame {
+    /**
+     * Video frame width
+     */
+    width: number;
+    /**
+     * Video frame height
+     */
+    height: number;
+    /**
+     * Video frame buffer
+     */
+    data: Uint8ClampedArray;
     /**
      * NV12 luma stride, valid only when video frame format is NV12
      */
@@ -115,8 +152,12 @@ export namespace video {
   }
 
   /**
-   * Video frame call back function definition
    * @beta
+   * Video frame call back function definition
+   * The callback will be called on every frame when runing on the supported host.
+   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
+   * The video app should call `notifyVideoFrameProcessed` to notify a successfully processed video frame.
+   * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
    */
   export type SharedFrameCallback = (
     frame: VideoFrameData,
@@ -171,17 +212,17 @@ export namespace video {
   };
 
   /**
-   * Register to read the video frames in Permissions section
+   * Register callbacks to process the video frames if the host supports it.
    * @beta
    * @param option - Callbacks and configuration to process the video frames. A host may support either {@link MediaStreamCallback} or {@link SharedFrameCallback}, but not both.
-   * To ensure the video effect works on all supported hosts, the video app should provide both {@link MediaStreamCallback} and {@link SharedFrameCallback}.
+   * To ensure the video effect works on all supported hosts, the video app must provide both {@link MediaStreamCallback} and {@link SharedFrameCallback}.
    * The host will choose the appropriate callback based on the host's capability.
    *
    * @example
    * ```typescript
    * video.registerForVideoFrame({
    *   mediaStreamCallback: async (receivedVideoFrame) => {
-   *     const originalFrame = receivedVideoFrame.videoFrame;
+   *     const originalFrame = receivedVideoFrame.videoFrame as VideoFrame;
    *     try {
    *       const processedFrame = await processFrame(originalFrame);
    *       return processedFrame;
@@ -243,7 +284,7 @@ export namespace video {
 
   function registerForMediaStream(mediaStreamCallback: MediaStreamCallback): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!isSupported()) {
+    if (!isSupported() || !doesSupportMediaStream()) {
       throw errorNotSupportedOnPlatform;
     }
 
@@ -264,14 +305,14 @@ export namespace video {
 
   function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!isSupported()) {
+    if (!isSupported() || !doesSupportSharedFrame()) {
       throw errorNotSupportedOnPlatform;
     }
 
     registerHandler(
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (videoFrame: any) => {
+      (videoFrame: VideoFrameData & OldVideoFrame) => {
         if (videoFrame) {
           // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
           const videoFrameData = {
