@@ -84,7 +84,7 @@ const RegisterForVideoFrame = (): React.ReactElement =>
     name: 'videoExSharedFrameRegisterForVideoFrame',
     title: 'registerForVideoFrame',
     onClick: async (setResult) => {
-      const onFrameCallback: videoEx.VideoFrameCallback = async () => {
+      const onFrameCallback: videoEx.SharedFrameCallback = async () => {
         setResult('video frame received');
       };
       try {
@@ -93,10 +93,13 @@ const RegisterForVideoFrame = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame(onFrameCallback, {
-          format: video.VideoFrameFormat.NV12,
-          requireCameraStream: false,
-          audioInferenceModel,
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: onFrameCallback,
+          config: {
+            format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
+          },
         });
       } catch (error) {
         return `Faild to register for video frame: ${JSON.stringify(error)}`;

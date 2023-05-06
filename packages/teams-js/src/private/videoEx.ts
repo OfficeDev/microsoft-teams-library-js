@@ -84,11 +84,29 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameCallback = (
+  export type SharedFrameCallback = (
     frame: VideoFrame,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
   ) => void;
+
+  /**
+   * @hidden
+   * @beta
+   * Callbacks and configuration supplied to the host to process the video frames.
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type RegisterForVideoFrameParameters = {
+    /**
+     * Callback function to process the video frames shared by the host.
+     */
+    sharedFrameCallback: SharedFrameCallback;
+    /**
+     * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
+     */
+    config: VideoFrameConfig;
+  };
 
   /**
    * @hidden
@@ -101,18 +119,20 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+  export function registerForVideoFrame(parameters: RegisterForVideoFrameParameters): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
+    if (!parameters.sharedFrameCallback) {
+      throw new Error('parameters.sharedFrameCallback must be provided');
+    }
     registerHandler(
       'video.newVideoFrame',
       (videoFrame: VideoFrame) => {
         if (videoFrame) {
           const timestamp = videoFrame.timestamp;
-          frameCallback(
+          parameters.sharedFrameCallback(
             videoFrame,
             () => {
               notifyVideoFrameProcessed(timestamp);
@@ -124,7 +144,7 @@ export namespace videoEx {
       false,
     );
 
-    sendMessageToParent('video.registerForVideoFrame', [config]);
+    sendMessageToParent('video.registerForVideoFrame', [parameters.config]);
   }
 
   /**
