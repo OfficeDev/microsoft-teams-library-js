@@ -1,11 +1,11 @@
 // import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts, HostClientType } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
-import { FramelessPostMocks } from '../framelessPostMocks';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -13,9 +13,6 @@ import { Utils } from '../utils';
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Testing authentication capability', () => {
-  const framelessPostMock = new FramelessPostMocks();
-  const utils = new Utils();
-
   const errorMessage = 'mockError';
   const mockResult = 'someResult';
   const mockResource = 'https://someresource/';
@@ -61,22 +58,15 @@ describe('Testing authentication capability', () => {
     HostClientType.teamsRoomsWindows,
   ];
   describe('FRAMED - authentication tests', () => {
+    let utils: Utils = new Utils();
     beforeEach(() => {
-      // Use to send a mock message from the app.
-      utils.processMessage = null;
+      utils = new Utils();
       utils.messages = [];
-      utils.childMessages = [];
-      utils.childWindow.closed = false;
-
       // Set a mock window for testing
       app._initialize(utils.mockWindow);
     });
-
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        app._uninitialize();
-      }
+      app._uninitialize();
     });
 
     describe('Testing authentication.initialize function', () => {
@@ -936,25 +926,22 @@ describe('Testing authentication capability', () => {
   });
 
   describe('FRAMELESS - authentication tests', () => {
+    let utils: Utils = new Utils();
     beforeEach(() => {
-      // Use to send a mock message from the app.
-      framelessPostMock.messages = [];
-      // Set a mock window for testing
-      app._initialize(framelessPostMock.mockWindow);
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
     });
-
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        app._uninitialize();
-      }
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
     });
 
     describe('Testing authentication.authenticate function', () => {
       Object.values(FrameContexts).forEach((context) => {
         if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context);
+            await utils.initializeWithContext(context);
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
               url: 'https://someurl/',
               width: 100,
@@ -970,7 +957,7 @@ describe('Testing authentication capability', () => {
         } else {
           allowedHostClientType.forEach((hostClientType) => {
             it(`authentication.authenticate should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await framelessPostMock.initializeWithContext(context, hostClientType);
+              await utils.initializeWithContext(context, hostClientType);
               const authenticationParams: authentication.AuthenticatePopUpParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -979,7 +966,7 @@ describe('Testing authentication capability', () => {
               };
               const promise = authentication.authenticate(authenticationParams);
 
-              const message = framelessPostMock.findMessageByFunc('authentication.authenticate');
+              const message = utils.findMessageByFunc('authentication.authenticate');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(4);
               expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
@@ -987,7 +974,7 @@ describe('Testing authentication capability', () => {
               expect(message.args[2]).toBe(authenticationParams.height);
               expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              framelessPostMock.respondToMessage({
+              utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [true, mockResult],
@@ -997,7 +984,7 @@ describe('Testing authentication capability', () => {
             });
 
             it(`authentication.authenticate should handle auth failure with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await framelessPostMock.initializeWithContext(context, hostClientType);
+              await utils.initializeWithContext(context, hostClientType);
               const authenticationParams: authentication.AuthenticatePopUpParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1006,8 +993,8 @@ describe('Testing authentication capability', () => {
               };
               const promise = authentication.authenticate(authenticationParams);
 
-              const message = framelessPostMock.findMessageByFunc('authentication.authenticate');
-              framelessPostMock.respondToMessage({
+              const message = utils.findMessageByFunc('authentication.authenticate');
+              utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   func: 'authentication.authenticate.failure',
@@ -1026,7 +1013,7 @@ describe('Testing authentication capability', () => {
       allowedContexts.forEach((context) => {
         allowedHostClientType.forEach((hostClientType) => {
           it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            framelessPostMock.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(() => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1043,7 +1030,7 @@ describe('Testing authentication capability', () => {
               authentication.registerAuthenticationHandlers(authenticationParams);
               authentication.authenticate();
 
-              const message = framelessPostMock.findMessageByFunc('authentication.authenticate');
+              const message = utils.findMessageByFunc('authentication.authenticate');
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(4);
               expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
@@ -1051,7 +1038,7 @@ describe('Testing authentication capability', () => {
               expect(message.args[2]).toBe(authenticationParams.height);
               expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              framelessPostMock.respondToMessage({
+              utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [true, mockResult],
@@ -1061,7 +1048,7 @@ describe('Testing authentication capability', () => {
           });
 
           it(`authentication.registerAuthenticationHandlers should handle auth failure with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            framelessPostMock.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(() => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1078,8 +1065,8 @@ describe('Testing authentication capability', () => {
               authentication.registerAuthenticationHandlers(authenticationParams);
               authentication.authenticate();
 
-              const message = framelessPostMock.findMessageByFunc('authentication.authenticate');
-              framelessPostMock.respondToMessage({
+              const message = utils.findMessageByFunc('authentication.authenticate');
+              utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [errorMessage],
@@ -1104,7 +1091,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
-          framelessPostMock.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(() => {
             const authTokenRequest = {
               resources: [mockResource],
               claims: [mockClaim],
@@ -1120,14 +1107,14 @@ describe('Testing authentication capability', () => {
 
             authentication.getAuthToken(authTokenRequest);
 
-            const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+            const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(3);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
 
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, 'token'],
@@ -1137,7 +1124,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should throw error in case of failure in legacy flow from ${context} context`, (done) => {
-          framelessPostMock.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(() => {
             const authTokenRequest = {
               resources: [mockResource],
               failureCallback: (error) => {
@@ -1151,13 +1138,13 @@ describe('Testing authentication capability', () => {
 
             authentication.getAuthToken(authTokenRequest);
 
-            const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+            const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(3);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toBeNull();
             expect(message.args[2]).toBeNull();
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [false, errorMessage],
@@ -1167,7 +1154,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should successfully return token in case of success from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const authTokenRequest = {
             resources: [mockResource],
@@ -1177,13 +1164,13 @@ describe('Testing authentication capability', () => {
 
           const promise = authentication.getAuthToken(authTokenRequest);
 
-          const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(3);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1193,18 +1180,18 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should successfully return token in case of success when using no authTokenRequest from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const promise = authentication.getAuthToken();
 
-          const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(3);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1214,7 +1201,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should throw error in case of failure from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const authTokenRequest: authentication.AuthTokenRequestParameters = {
             resources: [mockResource],
@@ -1222,13 +1209,13 @@ describe('Testing authentication capability', () => {
 
           const promise = authentication.getAuthToken(authTokenRequest);
 
-          const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(3);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1238,18 +1225,18 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should throw error in case of failure when using no authTokenRequest from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const promise = authentication.getAuthToken();
 
-          const message = framelessPostMock.findMessageByFunc('authentication.getAuthToken');
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(3);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1267,7 +1254,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
-          framelessPostMock.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(() => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
               done();
@@ -1280,11 +1267,11 @@ describe('Testing authentication capability', () => {
               failureCallback: failureCallback,
             };
             authentication.getUser(userRequest);
-            const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+            const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, mockResult],
@@ -1294,7 +1281,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
-          framelessPostMock.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(() => {
             const successCallback = (): void => {
               done();
             };
@@ -1307,11 +1294,11 @@ describe('Testing authentication capability', () => {
               failureCallback: failureCallback,
             };
             authentication.getUser(userRequest);
-            const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+            const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [false, mockResult],
@@ -1321,14 +1308,14 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile with ${context} context`, async () => {
-          expect.assertions(7);
-          await framelessPostMock.initializeWithContext(context);
+          expect.assertions(4);
+          await utils.initializeWithContext(context);
           const promise = authentication.getUser();
-          const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+          const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, mockResult],
@@ -1338,14 +1325,14 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
-          expect.assertions(7);
-          await framelessPostMock.initializeWithContext(context);
+          expect.assertions(4);
+          await utils.initializeWithContext(context);
           const promise = authentication.getUser();
-          const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+          const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUser],
@@ -1355,14 +1342,14 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should successfully get user profile including data residency info with ${context} context if data residency is provided by hosts`, async () => {
-          expect.assertions(7);
-          await framelessPostMock.initializeWithContext(context);
+          expect.assertions(4);
+          await utils.initializeWithContext(context);
           const promise = authentication.getUser();
-          const message = framelessPostMock.findMessageByFunc('authentication.getUser');
+          const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUserWithDataResidency],
@@ -1383,7 +1370,7 @@ describe('Testing authentication capability', () => {
       Object.values(FrameContexts).forEach((context) => {
         if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`authentication.notifySuccess should not allow calls from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context);
+            await utils.initializeWithContext(context);
             expect(() => authentication.notifySuccess()).toThrow(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
@@ -1392,10 +1379,10 @@ describe('Testing authentication capability', () => {
           });
         } else {
           it(`authentication.notifySuccess should successfully notify auth success from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context, HostClientType.android);
+            await utils.initializeWithContext(context, HostClientType.android);
 
             authentication.notifySuccess(mockResult);
-            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.success');
+            const message = utils.findMessageByFunc('authentication.authenticate.success');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe(mockResult);
@@ -1413,7 +1400,7 @@ describe('Testing authentication capability', () => {
       Object.values(FrameContexts).forEach((context) => {
         if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context);
+            await utils.initializeWithContext(context);
             expect(() => authentication.notifyFailure()).toThrow(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
@@ -1422,10 +1409,10 @@ describe('Testing authentication capability', () => {
           });
         } else {
           it(`authentication.notifyFailure should successfully notify auth failure from ${context} context`, async () => {
-            await framelessPostMock.initializeWithContext(context, HostClientType.android);
+            await utils.initializeWithContext(context, HostClientType.android);
 
             authentication.notifyFailure(mockResult);
-            const message = framelessPostMock.findMessageByFunc('authentication.authenticate.failure');
+            const message = utils.findMessageByFunc('authentication.authenticate.failure');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe(mockResult);
