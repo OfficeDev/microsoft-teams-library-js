@@ -16,8 +16,10 @@ export namespace secondaryBrowser {
    * Open a URL in the secondary browser aka in-app browser
    *
    * @param url Url to open in the browser
-   * @returns Promise that resolve to true if the URL successfully opens in the secondaryBrowser or throws an error {@link SdkError} incase of failure
+   * @returns Promise that resolve to true if the URL successfully opens in the secondaryBrowser
+   * or throws an error {@link SdkError} incase of failure before starting navigation
    *
+   * Pls note that any error that happens after starting navigation is delegated on external browsers to handle in their generic way
    * @beta
    */
   export function open(url: URL): Promise<boolean> {
