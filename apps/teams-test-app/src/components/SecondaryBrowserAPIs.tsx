@@ -13,8 +13,8 @@ const CheckSecondaryBrowserCapability = (): React.ReactElement =>
 
 const Open = (): React.ReactElement =>
   ApiWithTextInput<string>({
-    name: 'open',
-    title: 'Open',
+    name: 'secondaryBrowser_open',
+    title: 'Open URL',
     onClick: {
       validateInput: (input) => {
         if (typeof input !== 'string') {
