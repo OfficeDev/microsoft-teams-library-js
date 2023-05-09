@@ -46,7 +46,12 @@ describe('videoEx', () => {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() => videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            expect(() =>
+              videoEx.registerForVideoFrame({
+                sharedFrameCallback: emptyVideoFrameCallback,
+                config: videoFrameConfig,
+              }),
+            ).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -60,7 +65,10 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+          videoEx.registerForVideoFrame({
+            sharedFrameCallback: emptyVideoFrameCallback,
+            config: videoFrameConfig,
+          });
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -68,7 +76,10 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
         expect(message.args[0]).toHaveProperty('audioInferenceModel');
@@ -78,7 +89,10 @@ describe('videoEx', () => {
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
@@ -96,7 +110,10 @@ describe('videoEx', () => {
           handlerInvoked = true;
           returnedVideoFrame = _frame;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -122,7 +139,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -150,7 +170,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -181,7 +204,10 @@ describe('videoEx', () => {
           _notifyError(errorMessage);
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -211,7 +237,10 @@ describe('videoEx', () => {
         ): void => {
           handlerInvoked = true;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
@@ -416,7 +445,12 @@ describe('videoEx', () => {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() => videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            expect(() =>
+              videoEx.registerForVideoFrame({
+                sharedFrameCallback: emptyVideoFrameCallback,
+                config: videoFrameConfig,
+              }),
+            ).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -430,7 +464,10 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+          videoEx.registerForVideoFrame({
+            sharedFrameCallback: emptyVideoFrameCallback,
+            config: videoFrameConfig,
+          });
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -438,7 +475,10 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const message = utils.findMessageByFunc('video.registerForVideoFrame');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
@@ -447,7 +487,10 @@ describe('videoEx', () => {
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
@@ -466,7 +509,10 @@ describe('videoEx', () => {
           returnedVideoFrame = _frame;
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -487,7 +533,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -511,7 +560,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -537,7 +589,10 @@ describe('videoEx', () => {
           _notifyError(errorMessage);
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -562,7 +617,10 @@ describe('videoEx', () => {
         ): void => {
           handlerInvoked = true;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          sharedFrameCallback: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         utils.sendMessage('video.newVideoFrame', undefined);
         expect(handlerInvoked).toBe(false);
       });
