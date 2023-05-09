@@ -257,7 +257,7 @@ export namespace video {
       throw new Error('Both mediaStreamCallback and sharedFrameCallback must be provided');
     }
     if (doesSupportMediaStream()) {
-      registerForMediaStream(parameters.mediaStreamCallback);
+      registerForMediaStream(parameters.mediaStreamCallback, parameters.config);
     } else if (doesSupportSharedFrame()) {
       registerForSharedFrame(parameters.sharedFrameCallback, parameters.config);
     } else {
@@ -285,7 +285,7 @@ export namespace video {
     return ensureInitialized(runtime, FrameContexts.sidePanel) && !!runtime.supports.video?.sharedFrame;
   }
 
-  function registerForMediaStream(mediaStreamCallback: MediaStreamCallback): void {
+  function registerForMediaStream(mediaStreamCallback: MediaStreamCallback, config: VideoFrameConfig): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported() || !doesSupportMediaStream()) {
       throw errorNotSupportedOnPlatform;
@@ -299,11 +299,7 @@ export namespace video {
       !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
     });
 
-    sendMessageToParent('video.mediaStream.registerForVideoFrame', [
-      {
-        format: VideoFrameFormat.NV12,
-      },
-    ]);
+    sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
   }
 
   function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
