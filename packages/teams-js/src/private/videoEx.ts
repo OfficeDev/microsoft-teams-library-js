@@ -1,6 +1,10 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import {
+  createEffectParameterChangeCallback,
+  VideoEffectCallBack as DefaultVideoEffectCallBack,
+} from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { video } from '../public/video';
@@ -180,7 +184,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => void;
+  export type VideoEffectCallBack = DefaultVideoEffectCallBack;
 
   /**
    * @hidden
@@ -196,7 +200,8 @@ export namespace videoEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('video.effectParameterChange', callback, false);
+
+    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
     sendMessageToParent('video.registerForVideoEffect');
   }
 

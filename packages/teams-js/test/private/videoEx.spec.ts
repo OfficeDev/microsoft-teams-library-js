@@ -300,7 +300,7 @@ describe('videoEx', () => {
             await utils.initializeWithContext(context);
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            expect(() => videoEx.registerForVideoEffect(() => {})).toThrowError(
+            expect(() => videoEx.registerForVideoEffect(() => Promise.resolve())).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -315,7 +315,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoEffect(() => {});
+          videoEx.registerForVideoEffect(() => Promise.resolve());
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -325,7 +325,7 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        videoEx.registerForVideoEffect(() => {});
+        videoEx.registerForVideoEffect(() => Promise.resolve());
 
         expect(utils.findMessageByFunc('registerHandler')).toBeNull();
         const messageForRegister = utils.findMessageByFunc('video.registerForVideoEffect');
@@ -336,9 +336,10 @@ describe('videoEx', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string): void => {
+        const videoEffectCallBack = (effectId: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
@@ -674,7 +675,7 @@ describe('videoEx', () => {
             await utils.initializeWithContext(context);
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            expect(() => videoEx.registerForVideoEffect(() => {})).toThrowError(
+            expect(() => videoEx.registerForVideoEffect(() => Promise.resolve())).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -688,7 +689,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoEffect(() => {});
+          videoEx.registerForVideoEffect(() => Promise.resolve());
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -698,7 +699,7 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        videoEx.registerForVideoEffect(() => {});
+        videoEx.registerForVideoEffect(() => Promise.resolve());
 
         expect(utils.findMessageByFunc('registerHandler')).toBeNull();
         const messageForRegister = utils.findMessageByFunc('video.registerForVideoEffect');
@@ -709,9 +710,10 @@ describe('videoEx', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string): void => {
+        const videoEffectCallBack = (effectId: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);

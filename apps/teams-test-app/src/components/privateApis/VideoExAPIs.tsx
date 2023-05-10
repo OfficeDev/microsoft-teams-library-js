@@ -45,8 +45,9 @@ const RegisterForVideoEffect = (): React.ReactElement =>
     name: 'videoExRegisterForVideoEffect',
     title: 'videoEx - registerForVideoEffect',
     onClick: async (setResult) => {
-      const onVideoEffectChanged = (effectId: string | undefined, effectParam?: string): void => {
+      const onVideoEffectChanged = (effectId: string | undefined, effectParam?: string): Promise<void> => {
         setResult(`video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`);
+        return Promise.resolve();
       };
       videoEx.registerForVideoEffect(onVideoEffectChanged);
       return generateRegistrationMsg('it is invoked on video effect changed');

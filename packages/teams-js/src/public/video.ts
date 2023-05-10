@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { processMediaStream } from '../internal/mediaStreamUtils';
+import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -363,18 +363,7 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    const effectParameterChangeHandler = (effectId: string | undefined): void => {
-      callback(effectId)
-        .then(() => {
-          sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
-        })
-        .catch((reason) => {
-          const validReason = reason in EffectFailureReason ? reason : EffectFailureReason.InitializationFailure;
-          sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason]);
-        });
-    };
-
-    registerHandler('video.effectParameterChange', effectParameterChangeHandler, false);
+    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
     sendMessageToParent('video.registerForVideoEffect');
   }
 

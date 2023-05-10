@@ -1,6 +1,7 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
+import { sendMessageToParent } from './communication';
 import { AllowSharedBufferSource, VideoFrameBufferInit, VideoFrameInit } from './VideoFrameTypes';
 
 interface VideoFrame {
@@ -105,4 +106,26 @@ function createProcessedStreamGenerator(
     )
     .pipeTo(sink);
   return generator;
+}
+
+/**
+ * @hidden
+ */
+export type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => Promise<void>;
+
+/**
+ * @hidden
+ */
+export function createEffectParameterChangeCallback(callback: VideoEffectCallBack) {
+  return (effectId: string | undefined, effectParam?: string): void => {
+    callback(effectId, effectParam)
+      .then(() => {
+        sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
+      })
+      .catch((reason) => {
+        const validReason =
+          reason in video.EffectFailureReason ? reason : video.EffectFailureReason.InitializationFailure;
+        sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason]);
+      });
+  };
 }
