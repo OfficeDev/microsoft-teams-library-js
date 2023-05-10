@@ -1,12 +1,25 @@
 # How to Contribute
 
-One of the best ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
+One of the best ways to contribute is to participate in discussions and discuss issues. Currently submitting pull requests is diabled for users that do not have write access.
 
 ## API Design Guidelines
 
 Please review the [architectural guidelines](https://github.com/OfficeDev/microsoft-teams-library-js/wiki/Library-Architecture) when adding/changing functionality in the teams-js library.
 
 ## General Contribution Guide
+
+1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
+2. If the issue is trivial please refer to the [Legacy Contribution Guide](#legacy-contribution-guide)
+
+## Contribution Guide for Users with Write Access
+
+1. Clone this GitHub repository.
+2. Create a branch off the `main` branch in your cloned repository. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
+3. Commit your changes.
+4. Run `pnpm changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Change Log section.
+5. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
+
+## Legacy Contribution Guide
 
 1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
 2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
