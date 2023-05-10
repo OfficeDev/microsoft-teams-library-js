@@ -1053,3 +1053,48 @@ export interface AdaptiveCardVersion {
   /** Represents the minor version number. */
   minorVersion: number;
 }
+
+/**
+ * the product items in cart
+ */
+
+export interface CartItem {
+  /**
+   * the id of the cart item
+   */
+  id: string;
+  /**
+   * the quantity of the cart item
+   */
+  quantity: number;
+  /**
+   * the thumbnail imageURL of the cart item
+   */
+  imageURL?: string;
+  /**
+   * the price of one cart item
+   */
+  price?: number;
+  /**
+   * the display name of cart item
+   */
+  name?: string;
+}
+
+/**
+ * the cart object for app checkout flow
+ */
+export interface Cart {
+  /**
+   * the display id of cart
+   */
+  readonly id: string;
+  /**
+   * the version of cart model
+   */
+  readonly version: number;
+  /**
+   * the product items in cart
+   */
+  cartItems?: CartItem[];
+}

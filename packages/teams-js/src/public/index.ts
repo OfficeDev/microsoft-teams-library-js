@@ -67,6 +67,7 @@ export { version } from './version';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
+export { marketplace } from './marketplace';
 export {
   enablePrintCapability,
   executeDeepLink,
