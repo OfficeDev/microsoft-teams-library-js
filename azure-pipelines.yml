@@ -1,6 +1,7 @@
 variables:
   - group: InfoSec-SecurityResults
-  - products: 6eff390d-80c0-4456-81b6-6abafa71e768
+  - name: products
+    value: 6eff390d-80c0-4456-81b6-6abafa71e768
 
 trigger:
   branches:
