@@ -1,6 +1,6 @@
 # How to Contribute
 
-One of the best ways to contribute is to participate in discussions and discuss issues. Currently submitting pull requests is diabled for users that do not have write access.
+One of the best ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
 
 ## API Design Guidelines
 
