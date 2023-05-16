@@ -82,6 +82,7 @@ Each PR will not be able to have more than one change file. (e.g. A bug fix and 
 You can manually edit the change file- it's actually just a JSON file. Locate your change file under the [change](./change) directory. If you're having trouble finding your change file, try searching the directory in your IDE for your change description or going through your branch's commit history for the change file you had committed.
 
 ## Contribution Guide for Users without Write Access
+
 If you would like to share code changes with members of the team that have write access please do the following:
 
 1. Either add a code snippet to the issue that was created in the first step of the [General Contribution Guide](#general-contribution-guide) or fork the repository and make the necessary changes on your forked repository. If you go with the latter option please refer to the following steps:
@@ -90,17 +91,7 @@ If you would like to share code changes with members of the team that have write
 4. Commit your changes. [Commits](#commits)
 5. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
 6. Add a comment to the issue with a link to this pull request and an explanation of why this change is being made.
-7. Upon review, a member of our team with write access will open a new PR containing these changes that will run checks against it. 
+7. Upon review, a member of our team with write access will open a new PR containing these changes that will run checks against it.
 8. Once these checks have successfully completed we will merge the code into the `main` branch and update the issue.
-
-## Legacy Contribution Guide
-1. Unless it is a trivial change, make sure that there is a corresponding issue for your change first. If there is none, create one.
-2. Create a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks) in GitHub.
-3. Create a branch off the `main` branch in your fork. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
-4. Commit your changes.
-5. Run `pnpm changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Change Log section.
-6. Create a [pull request against the upstream's `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
-7. A user with write access to the upstream repo will need to trigger the checks that run on pull requests in the repo.
-8. Once your pull request is approved, a user with write access will need to merge your pull request into the upstream repo. You can then delete your branch and/or fork.
 
 Before submitting a feature or substantial code contribution please discuss it with the team and ensure it follows the product roadmap. You might also read these two blogs posts on contributing code: [Open Source Contribution Etiquette](http://tirania.org/blog/archive/2010/Dec-31.html) by Miguel de Icaza and [Don't "Push" Your Pull Requests](http://www.igvita.com/2011/12/19/dont-push-your-pull-requests/) by Ilya Grigorik.
