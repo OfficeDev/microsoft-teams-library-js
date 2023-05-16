@@ -234,9 +234,9 @@ importers:
 
   apps/teams-types-tester:
     specifiers:
-      '@microsoft/teams-js': 2.10.0
+      '@microsoft/teams-js': workspace:*
     devDependencies:
-      '@microsoft/teams-js': 2.10.0
+      '@microsoft/teams-js': link:../../packages/teams-js
 
   packages/teams-js:
     specifiers:
@@ -3126,15 +3126,6 @@ packages:
     resolution: {integrity: sha1-EUNtEG20PQlzeD2djgmepYma7ng=}
     dev: true
 
-  /@microsoft/teams-js/2.10.0:
-    resolution: {integrity: sha512-vy4flhocAlwbo0bN9jPHT16Cnh0l49FD0miLOfPEkB95OdP/jtqXZ+PLdBAwGA64kuZkoqnPWgZSyUJWiKHFgQ==}
-    dependencies:
-      '@types/dom-webcodecs': 0.1.3
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /@mixer/webpack-bundle-compare/0.1.1:
     resolution: {integrity: sha1-p1Tz64IqIqhjTAm5LFNNv21CC44=}
     dependencies:
@@ -3892,10 +3883,6 @@ packages:
 
   /@types/detect-indent/0.1.30:
     resolution: {integrity: sha1-3GgrtBK05lugmOcO2tc7SDP7kQ0=}
-    dev: true
-
-  /@types/dom-webcodecs/0.1.3:
-    resolution: {integrity: sha512-MEUfHAnXifFqUbY51WK1f9y3NyupMqBhcRwCpl+UtHcl40Au3ijhahI37bblMoNmAOlU/33KMCkN4usdE1kJjg==}
     dev: true
 
   /@types/eslint-scope/3.7.4:
