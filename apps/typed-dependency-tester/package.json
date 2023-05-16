@@ -1,5 +1,5 @@
 {
-  "name": "teams-type-tester",
+  "name": "typed-dependency-tester",
   "private": true,
   "author": "Microsoft Teams",
   "description": "A tester to check if types in the dependency array will cause errors",
