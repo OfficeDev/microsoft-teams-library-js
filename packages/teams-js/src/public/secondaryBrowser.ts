@@ -7,7 +7,7 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to power up the in-app browser experiences in the Host App.
- * For eg. opening a URL in the Host App inside a browser
+ * For e.g., opening a URL in the Host App inside a browser
  *
  * @beta
  */
@@ -16,10 +16,10 @@ export namespace secondaryBrowser {
    * Open a URL in the secondary browser aka in-app browser
    *
    * @param url Url to open in the browser
-   * @returns Promise that resolve to true if the URL successfully opens in the secondaryBrowser
+   * @returns Promise that resolves to true if the URL successfully opens in the secondaryBrowser
    * or throws an error {@link SdkError} incase of failure before starting navigation
    *
-   * Pls note that any error that happens after starting navigation is delegated on external browsers to handle in their generic way
+   * @remarks Any error that happens after navigation begins is handled by the platform browser component and not returned from this function.
    * @beta
    */
   export function open(url: URL): Promise<boolean> {
@@ -31,9 +31,7 @@ export namespace secondaryBrowser {
     if (!url || !isValidHttpsURL(url)) {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
-    return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleError('secondaryBrowser.open', url.toString()));
-    });
+    return sendAndHandleError('secondaryBrowser.open', url.toString());
   }
 
   /**
