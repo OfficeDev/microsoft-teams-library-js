@@ -22,9 +22,9 @@ export namespace secondaryBrowser {
    * @remarks Any error that happens after navigation begins is handled by the platform browser component and not returned from this function.
    * @beta
    */
-  export function open(url: URL): Promise<boolean> {
+  export function open(url: URL): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
-    if (!isSupported() || !isHostClientMobile()) {
+    if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 

@@ -68,16 +68,6 @@ describe('secondaryBrowser', () => {
             }
           });
 
-          it('should throw error when secondaryBrowser is called on clientType other than Mobile', async () => {
-            expect.assertions(1);
-            await utils.initializeWithContext(context, HostClientType.desktop);
-            try {
-              secondaryBrowser.open(validDialogUrl);
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
           it(`should not allow secondaryBrowser calls with undefined URL. context: ${context}`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context, HostClientType.android);
@@ -135,7 +125,7 @@ describe('secondaryBrowser', () => {
             }
 
             message && utils.respondToMessage(message, undefined as unknown, true);
-            await expect(promise).resolves.toEqual(true);
+            await expect(promise).resolves.toBeTruthy();
           });
 
           it(`secondaryBrowser calls with error context: ${context}`, async () => {
