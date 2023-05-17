@@ -50,6 +50,7 @@ export { pages } from './pages';
 export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { menus } from './menus';
 export { media } from './media';
+export { secondaryBrowser } from './secondaryBrowser';
 export { location } from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
