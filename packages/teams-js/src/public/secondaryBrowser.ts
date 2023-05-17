@@ -1,5 +1,5 @@
 import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
-import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { isValidHttpsURL } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
@@ -16,7 +16,7 @@ export namespace secondaryBrowser {
    * Open a URL in the secondary browser aka in-app browser
    *
    * @param url Url to open in the browser
-   * @returns Promise that resolves to true if the URL successfully opens in the secondaryBrowser
+   * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser
    * or throws an error {@link SdkError} incase of failure before starting navigation
    *
    * @remarks Any error that happens after navigation begins is handled by the platform browser component and not returned from this function.
