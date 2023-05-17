@@ -20,7 +20,7 @@ export namespace video {
    * @beta
    * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/#videoframe-interface.
    * The current version of typescript doesn't have the definition of VideoFrame so we have to define it here.
-   * On runtime it can be casted to VideoFrame directly: `(videoFrame as VideoFrame)`.
+   * At runtime it can be cast to VideoFrame directly: `(videoFrame as VideoFrame)`.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface VideoFrame {}

@@ -17,7 +17,6 @@ export type AllowSharedBufferSource = ArrayBuffer | ArrayBufferView;
  * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
  */
-
 export type AlphaOption = 'discard' | 'keep';
 
 /**
