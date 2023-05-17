@@ -31,6 +31,7 @@ export namespace secondaryBrowser {
     if (!url || !isValidHttpsURL(url)) {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
+
     return sendAndHandleError('secondaryBrowser.open', url.toString());
   }
 
