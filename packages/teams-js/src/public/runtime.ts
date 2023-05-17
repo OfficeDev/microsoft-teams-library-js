@@ -103,6 +103,7 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly map?: {};
     };
     readonly interactive?: {};
+    readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};

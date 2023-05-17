@@ -41,6 +41,7 @@ import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import ProfileAPIs from './components/ProfileAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SearchAPIs from './components/SearchAPIs';
+import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
@@ -151,6 +152,7 @@ const App = (): ReactElement => {
         <ProfileAPIs />
         <RemoteCameraAPIs />
         <SearchAPIs />
+        <SecondaryBrowserAPIs />
         <SharingAPIs />
         <WebStorageAPIs />
         <StageViewAPIs />
