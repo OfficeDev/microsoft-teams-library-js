@@ -68,7 +68,11 @@ describe('video', () => {
     it('should throw error when video is not supported in runtime config', async () => {
       await init(FrameContexts.sidePanel);
       setRuntimeConfig({ apiVersion: 1, supports: {} });
-      expect(() => video.registerForVideoFrame({} as video.RegisterForVideoFrameParameters)).toThrowError();
+      try {
+        video.registerForVideoFrame({} as video.RegisterForVideoFrameParameters);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
 
     describe('when sharedFrame is supported', () => {
