@@ -24,7 +24,7 @@ declare const VideoFrame: {
  */
 export async function processMediaStream(
   streamId: string,
-  mediaStreamCallback: video.MediaStreamCallback,
+  mediaStreamCallback: video.VideoFrameHandler,
   notifyError: (string) => void,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
@@ -65,7 +65,7 @@ async function getInputVideoTrack(streamId: string, notifyError: (string) => voi
  */
 function createProcessedStreamGenerator(
   videoTrack: unknown,
-  mediaStreamCallback: video.MediaStreamCallback,
+  mediaStreamCallback: video.VideoFrameHandler,
   notifyError: (string) => void,
 ): MediaStreamTrack {
   if (inServerSideRenderingEnvironment()) {

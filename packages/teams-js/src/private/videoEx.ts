@@ -68,7 +68,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoFrame extends video.VideoFrameData {
+  export interface VideoFrame extends video.VideoBufferData {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}

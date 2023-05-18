@@ -56,8 +56,8 @@ describe('video', () => {
 
     describe('registerForVideoFrame', () => {
       const registerForVideoFrameParameters: video.RegisterForVideoFrameParameters = {
-        sharedFrameCallback: (_frame, _onSuccess, _onError) => {},
-        mediaStreamCallback: (data) => Promise.resolve(data.videoFrame),
+        videoBufferHandler: (_bufferData, _onSuccess, _onError) => {},
+        videoFrameHandler: (data) => Promise.resolve(data.videoFrame),
         config: { format: video.VideoFrameFormat.NV12 },
       };
 
@@ -112,22 +112,22 @@ describe('video', () => {
         it.each([
           { isLegacy: true, frameData: { width: 30, height: 40, data: 101 } },
           { isLegacy: false, frameData: { width: 30, height: 40, videoFrameBuffer: 101 } },
-        ])('should successfully invoke sharedFrameHandler (legacy: $isLegacy)', async ({ frameData }) => {
+        ])('should successfully invoke videoBufferHandler (legacy: $isLegacy)', async ({ frameData }) => {
           expect.assertions(2);
 
           // Arrange
-          const sharedFrameCallback = jest.fn();
+          const videoBufferHandler = jest.fn();
 
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
-            sharedFrameCallback,
+            videoBufferHandler,
           });
           sendMessage('video.newVideoFrame', frameData);
 
           // Assert
-          expect(sharedFrameCallback).toHaveBeenCalledTimes(1);
-          expect(sharedFrameCallback.mock.lastCall[0]).toEqual({
+          expect(videoBufferHandler).toHaveBeenCalledTimes(1);
+          expect(videoBufferHandler.mock.lastCall[0]).toEqual({
             width: 30,
             height: 40,
             videoFrameBuffer: 101,
@@ -138,10 +138,10 @@ describe('video', () => {
           expect.assertions(3);
 
           // Arrange
-          const sharedFrameCallback: video.SharedFrameCallback = (_frame, onSuccess) => onSuccess();
+          const videoBufferHandler: video.VideoBufferHandler = (_frame, onSuccess) => onSuccess();
 
           // Act
-          video.registerForVideoFrame({ ...registerForVideoFrameParameters, sharedFrameCallback });
+          video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
           const videoFrameMock = { width: 30, height: 40, data: 101, timestamp: 200 };
           sendMessage('video.newVideoFrame', videoFrameMock);
 
@@ -157,12 +157,12 @@ describe('video', () => {
 
           // Arrange
           const errorMessage = 'Error occurs when processing the video frame';
-          const sharedFrameCallback: video.SharedFrameCallback = (_frame, _onSuccess, onError) => onError(errorMessage);
+          const videoBufferHandler: video.VideoBufferHandler = (_frame, _onSuccess, onError) => onError(errorMessage);
 
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
-            sharedFrameCallback,
+            videoBufferHandler,
           });
           const videoFrameMock = { width: 30, height: 40, data: 101 };
           sendMessage('video.newVideoFrame', videoFrameMock);
@@ -178,14 +178,14 @@ describe('video', () => {
           expect.assertions(1);
 
           // Arrange
-          const sharedFrameCallback = jest.fn();
+          const videoBufferHandler = jest.fn();
 
           // Act
-          video.registerForVideoFrame({ ...registerForVideoFrameParameters, sharedFrameCallback });
+          video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
           sendMessage('video.newVideoFrame', undefined);
 
           // Assert
-          expect(sharedFrameCallback).not.toHaveBeenCalled();
+          expect(videoBufferHandler).not.toHaveBeenCalled();
         });
       });
 
@@ -195,29 +195,29 @@ describe('video', () => {
           utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
         });
 
-        it('should successfully invoke mediaStreamHandler', async () => {
+        it('should successfully invoke videoFrameHandler', async () => {
           expect.assertions(1);
 
           // Arrange
-          const mediaStreamCallback = jest.fn();
+          const videoFrameHandler = jest.fn();
 
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
-            mediaStreamCallback,
+            videoFrameHandler,
           });
           sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
-          expect(mediaStreamCallback).toHaveBeenCalledTimes(1);
+          expect(videoFrameHandler).toHaveBeenCalledTimes(1);
         });
 
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
           expect.assertions(4);
 
           // Arrange
-          const mediaStreamCallback = jest.fn();
+          const videoFrameHandler = jest.fn();
           const webview = window['chrome']['webview'] as unknown as {
             getTextureStream: jest.Mock;
             registerTextureStream: jest.Mock;
@@ -226,7 +226,7 @@ describe('video', () => {
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
-            mediaStreamCallback,
+            videoFrameHandler,
           });
           sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
@@ -243,12 +243,12 @@ describe('video', () => {
 
           // Arrange
           const errorMessage = 'error message';
-          const mediaStreamCallback = jest.fn().mockRejectedValue(errorMessage);
+          const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
 
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
-            mediaStreamCallback,
+            videoFrameHandler,
           });
           sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
@@ -369,8 +369,8 @@ describe('video', () => {
         apiName: 'registerForVideoFrame',
         callApi: () =>
           video.registerForVideoFrame({
-            sharedFrameCallback: jest.fn(),
-            mediaStreamCallback: jest.fn(),
+            videoBufferHandler: jest.fn(),
+            videoFrameHandler: jest.fn(),
             config: { format: video.VideoFrameFormat.NV12 },
           }),
       },
