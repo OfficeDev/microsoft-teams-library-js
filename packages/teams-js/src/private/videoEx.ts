@@ -88,7 +88,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type SharedFrameCallback = (
+  export type videoBufferHandler = (
     frame: VideoFrame,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
@@ -105,7 +105,7 @@ export namespace videoEx {
     /**
      * Callback function to process the video frames shared by the host.
      */
-    sharedFrameCallback: SharedFrameCallback;
+    videoBufferHandler: videoBufferHandler;
     /**
      * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
      */
@@ -128,15 +128,15 @@ export namespace videoEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (!parameters.sharedFrameCallback) {
-      throw new Error('parameters.sharedFrameCallback must be provided');
+    if (!parameters.videoBufferHandler) {
+      throw new Error('parameters.videoBufferHandler must be provided');
     }
     registerHandler(
       'video.newVideoFrame',
       (videoFrame: VideoFrame) => {
         if (videoFrame) {
           const timestamp = videoFrame.timestamp;
-          parameters.sharedFrameCallback(
+          parameters.videoBufferHandler(
             videoFrame,
             () => {
               notifyVideoFrameProcessed(timestamp);

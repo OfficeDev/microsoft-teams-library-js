@@ -48,7 +48,7 @@ describe('videoEx', () => {
 
             expect(() =>
               videoEx.registerForVideoFrame({
-                sharedFrameCallback: emptyVideoFrameCallback,
+                videoBufferHandler: emptyVideoFrameCallback,
                 config: videoFrameConfig,
               }),
             ).toThrowError(
@@ -66,7 +66,7 @@ describe('videoEx', () => {
         expect.assertions(1);
         try {
           videoEx.registerForVideoFrame({
-            sharedFrameCallback: emptyVideoFrameCallback,
+            videoBufferHandler: emptyVideoFrameCallback,
             config: videoFrameConfig,
           });
         } catch (e) {
@@ -77,7 +77,7 @@ describe('videoEx', () => {
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: emptyVideoFrameCallback,
+          videoBufferHandler: emptyVideoFrameCallback,
           config: videoFrameConfig,
         });
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
@@ -90,7 +90,7 @@ describe('videoEx', () => {
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: emptyVideoFrameCallback,
+          videoBufferHandler: emptyVideoFrameCallback,
           config: videoFrameConfig,
         });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
@@ -111,7 +111,7 @@ describe('videoEx', () => {
           returnedVideoFrame = _frame;
         };
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -140,7 +140,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -171,7 +171,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -205,7 +205,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -238,7 +238,7 @@ describe('videoEx', () => {
           handlerInvoked = true;
         };
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         utils.respondToFramelessMessage({
@@ -448,7 +448,7 @@ describe('videoEx', () => {
 
             expect(() =>
               videoEx.registerForVideoFrame({
-                sharedFrameCallback: emptyVideoFrameCallback,
+                videoBufferHandler: emptyVideoFrameCallback,
                 config: videoFrameConfig,
               }),
             ).toThrowError(
@@ -466,7 +466,7 @@ describe('videoEx', () => {
         expect.assertions(1);
         try {
           videoEx.registerForVideoFrame({
-            sharedFrameCallback: emptyVideoFrameCallback,
+            videoBufferHandler: emptyVideoFrameCallback,
             config: videoFrameConfig,
           });
         } catch (e) {
@@ -477,7 +477,7 @@ describe('videoEx', () => {
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: emptyVideoFrameCallback,
+          videoBufferHandler: emptyVideoFrameCallback,
           config: videoFrameConfig,
         });
         const message = utils.findMessageByFunc('video.registerForVideoFrame');
@@ -489,7 +489,7 @@ describe('videoEx', () => {
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: emptyVideoFrameCallback,
+          videoBufferHandler: emptyVideoFrameCallback,
           config: videoFrameConfig,
         });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
@@ -511,7 +511,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -535,7 +535,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -562,7 +562,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -591,7 +591,7 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         const videoFrameMock = {
@@ -619,7 +619,7 @@ describe('videoEx', () => {
           handlerInvoked = true;
         };
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: videoFrameCallback,
+          videoBufferHandler: videoFrameCallback,
           config: videoFrameConfig,
         });
         utils.sendMessage('video.newVideoFrame', undefined);

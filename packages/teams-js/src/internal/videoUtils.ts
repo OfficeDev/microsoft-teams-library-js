@@ -20,16 +20,16 @@ declare const VideoFrame: {
 
 /**
  * @hidden
- * Create a MediaStreamTrack from the media stream with the given streamId and processed by mediaStreamCallback.
+ * Create a MediaStreamTrack from the media stream with the given streamId and processed by videoFrameHandler.
  */
 export async function processMediaStream(
   streamId: string,
-  mediaStreamCallback: video.VideoFrameHandler,
+  videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
     await getInputVideoTrack(streamId, notifyError),
-    mediaStreamCallback,
+    videoFrameHandler,
     notifyError,
   );
 }
@@ -65,7 +65,7 @@ async function getInputVideoTrack(streamId: string, notifyError: (string) => voi
  */
 function createProcessedStreamGenerator(
   videoTrack: unknown,
-  mediaStreamCallback: video.VideoFrameHandler,
+  videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
 ): MediaStreamTrack {
   if (inServerSideRenderingEnvironment()) {
@@ -85,7 +85,7 @@ function createProcessedStreamGenerator(
           const timestamp = originalFrame.timestamp;
           if (timestamp !== null) {
             try {
-              const frameProcessedByApp = await mediaStreamCallback({ videoFrame: originalFrame });
+              const frameProcessedByApp = await videoFrameHandler({ videoFrame: originalFrame });
               // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
               const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
                 // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.

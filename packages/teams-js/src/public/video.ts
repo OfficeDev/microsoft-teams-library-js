@@ -215,7 +215,7 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
-      throw new Error('Both mediaStreamCallback and sharedFrameCallback must be provided');
+      throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
     if (doesSupportMediaStream()) {
       registerForMediaStream(parameters.videoFrameHandler, parameters.config);

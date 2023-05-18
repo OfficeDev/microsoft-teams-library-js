@@ -85,7 +85,7 @@ const RegisterForVideoFrame = (): React.ReactElement =>
     name: 'videoExSharedFrameRegisterForVideoFrame',
     title: 'registerForVideoFrame',
     onClick: async (setResult) => {
-      const onFrameCallback: videoEx.SharedFrameCallback = async () => {
+      const onFrameCallback: videoEx.videoBufferHandler = async () => {
         setResult('video frame received');
       };
       try {
@@ -95,7 +95,7 @@ const RegisterForVideoFrame = (): React.ReactElement =>
           view[i] = i;
         }
         videoEx.registerForVideoFrame({
-          sharedFrameCallback: onFrameCallback,
+          videoBufferHandler: onFrameCallback,
           config: {
             format: video.VideoFrameFormat.NV12,
             requireCameraStream: false,
