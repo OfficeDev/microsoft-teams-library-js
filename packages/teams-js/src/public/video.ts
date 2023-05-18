@@ -17,36 +17,6 @@ export namespace video {
   type notifyErrorFunctionType = (errorMessage: string) => void;
 
   /**
-   * @beta
-   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/#videoframe-interface.
-   * The current version of typescript doesn't have the definition of VideoFrame so we have to define it here.
-   * At runtime it can be cast to VideoFrame directly: `(videoFrame as VideoFrame)`.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface VideoFrame {}
-
-  /**
-   * @beta
-   * Video frame data extracted from the media stream. More properties may be added in the future.
-   */
-  export type MediaStreamFrameData = {
-    /**
-     * The video frame from the media stream.
-     */
-    videoFrame: VideoFrame;
-  };
-
-  /**
-   * @beta
-   * Video frame call back function definition.
-   * The callback will be called on every frame when runing on the supported host.
-   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
-   * The video app should resolve the promise to notify a successfully processed video frame.
-   * The video app should reject the promise to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
-   */
-  export type MediaStreamCallback = (receivedVideoFrame: MediaStreamFrameData) => Promise<VideoFrame>;
-
-  /**
    * Represents a video frame
    * @beta
    */
@@ -63,41 +33,6 @@ export namespace video {
      * Video frame buffer
      */
     videoFrameBuffer: Uint8ClampedArray;
-    /**
-     * NV12 luma stride, valid only when video frame format is NV12
-     */
-    lumaStride?: number;
-    /**
-     * NV12 chroma stride, valid only when video frame format is NV12
-     */
-    chromaStride?: number;
-    /**
-     * RGB stride, valid only when video frame format is RGB
-     */
-    stride?: number;
-    /**
-     * The time stamp of the current video frame
-     */
-    timestamp?: number;
-  }
-
-  /**
-   * Old video frame data structure, almost identical to the {@link VideoFrameData} except `videoFrameBuffer` is named as `data`.
-   * Old host like the old Teams passes this data to the SDK. It will be deprecated in the future.
-   */
-  interface OldVideoFrame {
-    /**
-     * Video frame width
-     */
-    width: number;
-    /**
-     * Video frame height
-     */
-    height: number;
-    /**
-     * Video frame buffer
-     */
-    data: Uint8ClampedArray;
     /**
      * NV12 luma stride, valid only when video frame format is NV12
      */
@@ -152,39 +87,6 @@ export namespace video {
   }
 
   /**
-   * @beta
-   * Video frame call back function definition
-   * The callback will be called on every frame when runing on the supported host.
-   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
-   * The video app should call `notifyVideoFrameProcessed` to notify a successfully processed video frame.
-   * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
-   */
-  export type SharedFrameCallback = (
-    frame: VideoFrameData,
-    notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
-    notifyError: notifyErrorFunctionType,
-  ) => void;
-
-  /**
-   * @beta
-   * Callbacks and configuration supplied to the host to process the video frames.
-   */
-  export type RegisterForVideoFrameParameters = {
-    /**
-     * Callback function to process the video frames extracted from a media stream.
-     */
-    mediaStreamCallback: MediaStreamCallback;
-    /**
-     * Callback function to process the video frames shared by the host.
-     */
-    sharedFrameCallback: SharedFrameCallback;
-    /**
-     * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
-     */
-    config: VideoFrameConfig;
-  };
-
-  /**
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
@@ -207,8 +109,67 @@ export namespace video {
    */
   export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
 
-  type MediaStreamInfo = {
-    streamId: string;
+  /**
+   * @beta
+   * Video frame call back function definition
+   * The callback will be called on every frame when runing on the supported host.
+   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
+   * The video app should call `notifyVideoFrameProcessed` to notify a successfully processed video frame.
+   * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
+   */
+  export type SharedFrameCallback = (
+    frame: VideoFrameData,
+    notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
+    notifyError: notifyErrorFunctionType,
+  ) => void;
+
+  /**
+   * @beta
+   * VideoFrame definition, align with the W3C spec: https://www.w3.org/TR/webcodecs/#videoframe-interface.
+   * The current version of typescript doesn't have the definition of VideoFrame so we have to define it here.
+   * At runtime it can be cast to VideoFrame directly: `(videoFrame as VideoFrame)`.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface VideoFrame {}
+
+  /**
+   * @beta
+   * Video frame data extracted from the media stream. More properties may be added in the future.
+   */
+  export type MediaStreamFrameData = {
+    /**
+     * The video frame from the media stream.
+     */
+    videoFrame: VideoFrame;
+  };
+
+  /**
+   * @beta
+   * Video frame call back function definition.
+   * The callback will be called on every frame when runing on the supported host.
+   * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
+   * The video app should resolve the promise to notify a successfully processed video frame.
+   * The video app should reject the promise to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
+   */
+  export type MediaStreamCallback = (receivedVideoFrame: MediaStreamFrameData) => Promise<VideoFrame>;
+
+  /**
+   * @beta
+   * Callbacks and configuration supplied to the host to process the video frames.
+   */
+  export type RegisterForVideoFrameParameters = {
+    /**
+     * Callback function to process the video frames extracted from a media stream.
+     */
+    mediaStreamCallback: MediaStreamCallback;
+    /**
+     * Callback function to process the video frames shared by the host.
+     */
+    sharedFrameCallback: SharedFrameCallback;
+    /**
+     * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
+     */
+    config: VideoFrameConfig;
   };
 
   /**
@@ -264,75 +225,6 @@ export namespace video {
       // should not happen if isSupported() is true
       throw errorNotSupportedOnPlatform;
     }
-  }
-
-  function doesSupportMediaStream(): boolean {
-    return (
-      ensureInitialized(runtime, FrameContexts.sidePanel) &&
-      isTextureStreamAvailable() &&
-      !!runtime.supports.video?.mediaStream
-    );
-  }
-
-  function isTextureStreamAvailable(): boolean {
-    return (
-      !inServerSideRenderingEnvironment() &&
-      !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
-    );
-  }
-
-  function doesSupportSharedFrame(): boolean {
-    return ensureInitialized(runtime, FrameContexts.sidePanel) && !!runtime.supports.video?.sharedFrame;
-  }
-
-  function registerForMediaStream(mediaStreamCallback: MediaStreamCallback, config: VideoFrameConfig): void {
-    ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!isSupported() || !doesSupportMediaStream()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    registerHandler(
-      'video.startVideoExtensibilityVideoStream',
-      async (mediaStreamInfo: MediaStreamInfo) => {
-        // when a new streamId is ready:
-        const { streamId } = mediaStreamInfo;
-        const generator = await processMediaStream(streamId, mediaStreamCallback, notifyError);
-        // register the video track with processed frames back to the stream:
-        !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
-      },
-      false,
-    );
-
-    sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
-  }
-
-  function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
-    ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!isSupported() || !doesSupportSharedFrame()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    registerHandler(
-      'video.newVideoFrame',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (videoFrame: VideoFrameData & OldVideoFrame) => {
-        if (videoFrame) {
-          const { data, ...videoFrameData } = videoFrame;
-          // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
-          videoFrameData.videoFrameBuffer = videoFrameData.videoFrameBuffer || data;
-          const timestamp = videoFrameData.timestamp;
-          videoBufferCallback(
-            videoFrameData,
-            () => {
-              notifyVideoFrameProcessed(timestamp);
-            },
-            notifyError,
-          );
-        }
-      },
-      false,
-    );
-    sendMessageToParent('video.registerForVideoFrame', [config]);
   }
 
   /**
@@ -402,5 +294,95 @@ export namespace video {
       /** A host should support either mediaStream or sharedFrame subcapability to support the video capability */
       (!!runtime.supports.video.mediaStream || !!runtime.supports.video.sharedFrame)
     );
+  }
+
+  function registerForMediaStream(mediaStreamCallback: MediaStreamCallback, config: VideoFrameConfig): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    if (!isSupported() || !doesSupportMediaStream()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler(
+      'video.startVideoExtensibilityVideoStream',
+      async (mediaStreamInfo: { streamId: string }) => {
+        // when a new streamId is ready:
+        const { streamId } = mediaStreamInfo;
+        const generator = await processMediaStream(streamId, mediaStreamCallback, notifyError);
+        // register the video track with processed frames back to the stream:
+        !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+      },
+      false,
+    );
+
+    sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
+  }
+
+  /**
+   * Old video frame data structure, almost identical to the {@link VideoFrameData} except `videoFrameBuffer` is named as `data`.
+   * Old host like the old Teams passes this data to the SDK. It will be deprecated in the future.
+   */
+  type LegacyVideoFrameData = Omit<VideoFrameData, 'videoFrameBuffer'> & {
+    /**
+     * Video frame buffer
+     */
+    data: Uint8ClampedArray;
+  };
+
+  function registerForSharedFrame(videoBufferCallback: SharedFrameCallback, config: VideoFrameConfig): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    if (!isSupported() || !doesSupportSharedFrame()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    registerHandler(
+      'video.newVideoFrame',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (videoFrame: VideoFrameData | LegacyVideoFrameData) => {
+        if (videoFrame) {
+          const timestamp = videoFrame.timestamp;
+          videoBufferCallback(
+            normalizeVideoFrameData(videoFrame),
+            () => {
+              notifyVideoFrameProcessed(timestamp);
+            },
+            notifyError,
+          );
+        }
+      },
+      false,
+    );
+    sendMessageToParent('video.registerForVideoFrame', [config]);
+  }
+
+  function normalizeVideoFrameData(videoFrameData: VideoFrameData | LegacyVideoFrameData): VideoFrameData {
+    if ('videoFrameBuffer' in videoFrameData) {
+      return videoFrameData;
+    } else {
+      // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
+      const { data, ...newVideoFrameData } = videoFrameData;
+      return {
+        ...newVideoFrameData,
+        videoFrameBuffer: data,
+      };
+    }
+  }
+
+  function doesSupportMediaStream(): boolean {
+    return (
+      ensureInitialized(runtime, FrameContexts.sidePanel) &&
+      isTextureStreamAvailable() &&
+      !!runtime.supports.video?.mediaStream
+    );
+  }
+
+  function isTextureStreamAvailable(): boolean {
+    return (
+      !inServerSideRenderingEnvironment() &&
+      !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
+    );
+  }
+
+  function doesSupportSharedFrame(): boolean {
+    return ensureInitialized(runtime, FrameContexts.sidePanel) && !!runtime.supports.video?.sharedFrame;
   }
 } //end of video namespace
