@@ -85,7 +85,7 @@ const RegisterForVideoFrame = (): React.ReactElement =>
     name: 'videoExSharedFrameRegisterForVideoFrame',
     title: 'registerForVideoFrame',
     onClick: async (setResult) => {
-      const onFrameCallback: videoEx.videoBufferHandler = async () => {
+      const onFrameCallback: videoEx.VideoBufferHandler = async () => {
         setResult('video frame received');
       };
       try {

@@ -68,7 +68,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoFrame extends video.VideoBufferData {
+  export interface VideoBufferData extends video.VideoBufferData {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -88,8 +88,8 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type videoBufferHandler = (
-    frame: VideoFrame,
+  export type VideoBufferHandler = (
+    videoBufferData: VideoBufferData,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
   ) => void;
@@ -105,7 +105,7 @@ export namespace videoEx {
     /**
      * Callback function to process the video frames shared by the host.
      */
-    videoBufferHandler: videoBufferHandler;
+    videoBufferHandler: VideoBufferHandler;
     /**
      * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
      */
@@ -133,11 +133,11 @@ export namespace videoEx {
     }
     registerHandler(
       'video.newVideoFrame',
-      (videoFrame: VideoFrame) => {
-        if (videoFrame) {
-          const timestamp = videoFrame.timestamp;
+      (videoBufferData: VideoBufferData) => {
+        if (videoBufferData) {
+          const timestamp = videoBufferData.timestamp;
           parameters.videoBufferHandler(
-            videoFrame,
+            videoBufferData,
             () => {
               notifyVideoFrameProcessed(timestamp);
             },

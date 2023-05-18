@@ -118,7 +118,7 @@ export namespace video {
    * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
    */
   export type VideoBufferHandler = (
-    frame: VideoBufferData,
+    videoBufferData: VideoBufferData,
     notifyVideoFrameProcessed: notifyVideoFrameProcessedFunctionType,
     notifyError: notifyErrorFunctionType,
   ) => void;
@@ -337,11 +337,11 @@ export namespace video {
     registerHandler(
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (videoFrame: VideoBufferData | LegacyVideoBufferData) => {
-        if (videoFrame) {
-          const timestamp = videoFrame.timestamp;
+      (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
+        if (videoBufferData) {
+          const timestamp = videoBufferData.timestamp;
           videoBufferHandler(
-            normalizeVideoBufferData(videoFrame),
+            normalizeVideoBufferData(videoBufferData),
             () => {
               notifyVideoFrameProcessed(timestamp);
             },
