@@ -65,3 +65,15 @@ Object.defineProperty(window, 'TransformStream', {
   value: jest.fn().mockImplementation((transformer) => (transform = transformer.transform)),
   writable: true,
 });
+
+window['chrome'] = {
+  webview: {
+    getTextureStream: () => {
+      const videoTrack = new MediaStreamTrack();
+      const videoStream = new MediaStream([videoTrack]);
+      return Promise.resolve(videoStream);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    registerTextureStream: () => {},
+  },
+};

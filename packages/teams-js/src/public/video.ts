@@ -291,13 +291,17 @@ export namespace video {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler('video.startVideoExtensibilityVideoStream', async (mediaStreamInfo: MediaStreamInfo) => {
-      // when a new streamId is ready:
-      const { streamId } = mediaStreamInfo;
-      const generator = await processMediaStream(streamId, mediaStreamCallback, notifyError);
-      // register the video track with processed frames back to the stream:
-      !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
-    });
+    registerHandler(
+      'video.startVideoExtensibilityVideoStream',
+      async (mediaStreamInfo: MediaStreamInfo) => {
+        // when a new streamId is ready:
+        const { streamId } = mediaStreamInfo;
+        const generator = await processMediaStream(streamId, mediaStreamCallback, notifyError);
+        // register the video track with processed frames back to the stream:
+        !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+      },
+      false,
+    );
 
     sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
   }
@@ -313,11 +317,9 @@ export namespace video {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (videoFrame: VideoFrameData & OldVideoFrame) => {
         if (videoFrame) {
+          const { data, ...videoFrameData } = videoFrame;
           // The host may pass the VideoFrame with the old definition which has `data` instead of `videoFrameBuffer`
-          const videoFrameData = {
-            ...videoFrame,
-            videoFrameBuffer: videoFrame.videoFrameBuffer || videoFrame.data,
-          } as VideoFrameData;
+          videoFrameData.videoFrameBuffer = videoFrameData.videoFrameBuffer || data;
           const timestamp = videoFrameData.timestamp;
           videoBufferCallback(
             videoFrameData,
