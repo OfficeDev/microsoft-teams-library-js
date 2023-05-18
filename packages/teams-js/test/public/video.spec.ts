@@ -1,5 +1,3 @@
-import './mediaStreamApiMock';
-
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
@@ -12,8 +10,10 @@ import { Utils } from '../utils';
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
+mockMediaStreamAPI();
+
 /**
- * Test cases for selectPeople API
+ * Test cases for video API
  */
 describe('video', () => {
   let utils: Utils;
@@ -222,8 +222,6 @@ describe('video', () => {
             getTextureStream: jest.Mock;
             registerTextureStream: jest.Mock;
           };
-          const getTextureStreamSpy = jest.spyOn(webview, 'getTextureStream');
-          const registerTextureStreamSpy = jest.spyOn(webview, 'registerTextureStream');
 
           // Act
           video.registerForVideoFrame({
@@ -238,10 +236,6 @@ describe('video', () => {
           expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
           expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
           expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
-
-          // cleanup
-          getTextureStreamSpy.mockRestore();
-          registerTextureStreamSpy.mockRestore();
         });
 
         it('should notify error when callback rejects', async () => {
@@ -422,3 +416,87 @@ describe('video', () => {
     });
   });
 });
+
+function mockMediaStreamAPI() {
+  // Jest doesn't support MediaStream API yet, so we need to mock it.
+  // Reference:
+  //   https://stackoverflow.com/questions/57424190/referenceerror-mediastream-is-not-defined-in-unittest-with-jest
+  //   https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+
+  // eslint-disable-next-line strict-null-checks/all
+  let transform;
+
+  Object.defineProperty(window, 'MediaStream', {
+    value: jest.fn().mockImplementation((tracks: MediaStreamTrack[]) => ({
+      getVideoTracks: () => tracks,
+    })),
+
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrack', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'ReadableStream', {
+    value: jest.fn().mockImplementation(() => ({
+      pipeThrough: () => ({
+        pipeTo: () =>
+          transform &&
+          transform(
+            /* mock VideoFrame */
+            {
+              timestamp: 0,
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              close: () => {},
+            },
+            /* mock TransformStreamDefaultController */
+            {
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              enqueue: () => {},
+            },
+          ),
+      }),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'WritableStream', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrackProcessor', {
+    value: jest.fn().mockImplementation(() => ({
+      readable: new ReadableStream(),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrackGenerator', {
+    value: jest.fn().mockImplementation(() => ({
+      writable: new WritableStream(),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'TransformStream', {
+    value: jest.fn().mockImplementation((transformer) => (transform = transformer.transform)),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'chrome', {
+    value: {
+      webview: {
+        getTextureStream: jest.fn(() => {
+          const videoTrack = new MediaStreamTrack();
+          const videoStream = new MediaStream([videoTrack]);
+          return Promise.resolve(videoStream);
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        registerTextureStream: jest.fn(),
+      },
+    },
+  });
+}
