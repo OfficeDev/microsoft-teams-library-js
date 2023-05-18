@@ -46,7 +46,7 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     const result = handler.apply(this, args);
     return [true, result];
   } else if (Communication.childWindow) {
-    sendMessageEventToChild(name, [args]);
+    sendMessageEventToChild(name, args);
     return [false, undefined];
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
