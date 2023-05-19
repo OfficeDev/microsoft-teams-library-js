@@ -30,7 +30,7 @@ describe('videoEx', () => {
 
     describe('registerForVideoFrame', () => {
       const emptyVideoFrameCallback = (
-        _frame: videoEx.VideoFrame,
+        _frame: videoEx.VideoBufferData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {};
@@ -46,7 +46,12 @@ describe('videoEx', () => {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() => videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            expect(() =>
+              videoEx.registerForVideoFrame({
+                videoBufferHandler: emptyVideoFrameCallback,
+                config: videoFrameConfig,
+              }),
+            ).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -60,7 +65,10 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+          videoEx.registerForVideoFrame({
+            videoBufferHandler: emptyVideoFrameCallback,
+            config: videoFrameConfig,
+          });
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -68,35 +76,44 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
-        expect(message.args[0]).toHaveProperty('audioInferenceModel');
-        expect(message.args[0].format).toBe(video.VideoFrameFormat.NV12);
-        expect(message.args[0].requireCameraStream).toBe(false);
+        expect(message?.args?.[0]).toHaveProperty('audioInferenceModel');
+        expect(message?.args?.[0].format).toBe(video.VideoFrameFormat.NV12);
+        expect(message?.args?.[0].requireCameraStream).toBe(false);
       });
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
 
       it('should successfully invoke video frame event handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        let returnedVideoFrame: videoEx.VideoFrame;
+        let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
         //callback
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           handlerInvoked = true;
-          returnedVideoFrame = _frame;
+          returnedVideoFrame = _videoBufferData;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -109,20 +126,23 @@ describe('videoEx', () => {
           },
         } as DOMMessageEvent);
         expect(handlerInvoked).toBeTruthy();
-        expect(returnedVideoFrame).toEqual(videoFrameMock);
+        expect(returnedVideoFrame!).toEqual(videoFrameMock);
       });
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           _notifyVideoFrameProcessed();
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -137,7 +157,7 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
+        expect(message?.args?.length).toBe(1);
       });
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
@@ -150,7 +170,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -166,22 +189,25 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBe(200);
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toBe(200);
       });
 
       it('should invoke video frame event handler and successfully send notifyError', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const errorMessage = 'Error occurs when processing the video frame';
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           _notifyError(errorMessage);
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -196,22 +222,25 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.notifyError');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(2);
-        expect(message.args[0]).toEqual(errorMessage);
-        expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
+        expect(message?.args?.length).toBe(2);
+        expect(message?.args?.[0]).toEqual(errorMessage);
+        expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
       });
 
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let handlerInvoked = false;
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           handlerInvoked = true;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
@@ -258,8 +287,8 @@ describe('videoEx', () => {
         videoEx.notifySelectedVideoEffectChanged(effectChangeType, effectId);
         const message = utils.findMessageByFunc('video.videoEffectChanged');
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
-        expect(message.args).toStrictEqual([effectChangeType, effectId, null]);
+        expect(message?.args?.length).toBe(3);
+        expect(message?.args).toStrictEqual([effectChangeType, effectId, null]);
       });
     });
 
@@ -271,7 +300,7 @@ describe('videoEx', () => {
             await utils.initializeWithContext(context);
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            expect(() => videoEx.registerForVideoEffect(() => {})).toThrowError(
+            expect(() => videoEx.registerForVideoEffect(() => Promise.resolve())).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -286,7 +315,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoEffect(() => {});
+          videoEx.registerForVideoEffect(() => Promise.resolve());
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -296,20 +325,21 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        videoEx.registerForVideoEffect(() => {});
+        videoEx.registerForVideoEffect(() => Promise.resolve());
 
         expect(utils.findMessageByFunc('registerHandler')).toBeNull();
         const messageForRegister = utils.findMessageByFunc('video.registerForVideoEffect');
-        expect(messageForRegister.args.length).toBe(0);
+        expect(messageForRegister?.args?.length).toBe(0);
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        let returnedEffectId: string;
+        let returnedEffectId: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string): void => {
+        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
@@ -358,8 +388,8 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
         videoEx.updatePersonalizedEffects(personalizedEffects);
         const message = utils.findMessageByFunc('video.personalizedEffectsChanged');
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toEqual(personalizedEffects);
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toEqual(personalizedEffects);
       });
     });
 
@@ -381,9 +411,9 @@ describe('videoEx', () => {
         const fakeErrorMsg = 'fake error';
         videoEx.notifyFatalError(fakeErrorMsg);
         const message = utils.findMessageByFunc('video.notifyError');
-        expect(message.args.length).toBe(2);
-        expect(message.args[0]).toEqual(fakeErrorMsg);
-        expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
+        expect(message?.args?.length).toBe(2);
+        expect(message?.args?.[0]).toEqual(fakeErrorMsg);
+        expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Fatal);
       });
     });
   });
@@ -400,7 +430,7 @@ describe('videoEx', () => {
 
     describe('registerForVideoFrame', () => {
       const emptyVideoFrameCallback = (
-        _frame: videoEx.VideoFrame,
+        _videoBufferData: videoEx.VideoBufferData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
       ): void => {};
@@ -416,7 +446,12 @@ describe('videoEx', () => {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() => videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig)).toThrowError(
+            expect(() =>
+              videoEx.registerForVideoFrame({
+                videoBufferHandler: emptyVideoFrameCallback,
+                config: videoFrameConfig,
+              }),
+            ).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -430,7 +465,10 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+          videoEx.registerForVideoFrame({
+            videoBufferHandler: emptyVideoFrameCallback,
+            config: videoFrameConfig,
+          });
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -438,56 +476,68 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const message = utils.findMessageByFunc('video.registerForVideoFrame');
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toEqual(videoFrameConfig);
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toEqual(videoFrameConfig);
       });
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame(emptyVideoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: emptyVideoFrameCallback,
+          config: videoFrameConfig,
+        });
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
 
       it('should successfully invoke video frame event handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        let returnedVideoFrame: videoEx.VideoFrame;
+        let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
 
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           handlerInvoked = true;
-          returnedVideoFrame = _frame;
+          returnedVideoFrame = _videoBufferData;
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
           data: 101,
         };
         utils.sendMessage('video.newVideoFrame', videoFrameMock);
-        expect(returnedVideoFrame).toEqual(videoFrameMock);
+        expect(returnedVideoFrame!).toEqual(videoFrameMock);
         expect(handlerInvoked).toBeTruthy();
       });
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           _notifyVideoFrameProcessed();
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -497,8 +547,8 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBeUndefined();
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toBeUndefined();
       });
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
@@ -511,7 +561,10 @@ describe('videoEx', () => {
           _notifyVideoFrameProcessed();
         };
 
-        video.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -522,22 +575,25 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toBe(200);
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toBe(200);
       });
 
       it('should invoke video frame event handler and successfully send notifyError', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const errorMessage = 'Error occurs when processing the video frame';
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           _notifyError(errorMessage);
         };
 
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         const videoFrameMock = {
           width: 30,
           height: 40,
@@ -547,22 +603,25 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.notifyError');
 
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(2);
-        expect(message.args[0]).toEqual(errorMessage);
-        expect(message.args[1]).toEqual(videoEx.ErrorLevel.Warn);
+        expect(message?.args?.length).toBe(2);
+        expect(message?.args?.[0]).toEqual(errorMessage);
+        expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
       });
 
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let handlerInvoked = false;
         const videoFrameCallback = (
-          _frame: videoEx.VideoFrame,
+          _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
           handlerInvoked = true;
         };
-        videoEx.registerForVideoFrame(videoFrameCallback, videoFrameConfig);
+        videoEx.registerForVideoFrame({
+          videoBufferHandler: videoFrameCallback,
+          config: videoFrameConfig,
+        });
         utils.sendMessage('video.newVideoFrame', undefined);
         expect(handlerInvoked).toBe(false);
       });
@@ -603,8 +662,8 @@ describe('videoEx', () => {
         videoEx.notifySelectedVideoEffectChanged(effectChangeType, effectId);
         const message = utils.findMessageByFunc('video.videoEffectChanged');
         expect(message).not.toBeNull();
-        expect(message.args.length).toBe(3);
-        expect(message.args).toStrictEqual([effectChangeType, effectId, undefined]);
+        expect(message?.args?.length).toBe(3);
+        expect(message?.args).toStrictEqual([effectChangeType, effectId, undefined]);
       });
     });
 
@@ -616,7 +675,7 @@ describe('videoEx', () => {
             await utils.initializeWithContext(context);
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            expect(() => videoEx.registerForVideoEffect(() => {})).toThrowError(
+            expect(() => videoEx.registerForVideoEffect(() => Promise.resolve())).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -630,7 +689,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoEffect(() => {});
+          videoEx.registerForVideoEffect(() => Promise.resolve());
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -640,20 +699,21 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        videoEx.registerForVideoEffect(() => {});
+        videoEx.registerForVideoEffect(() => Promise.resolve());
 
         expect(utils.findMessageByFunc('registerHandler')).toBeNull();
         const messageForRegister = utils.findMessageByFunc('video.registerForVideoEffect');
-        expect(messageForRegister.args.length).toBe(0);
+        expect(messageForRegister?.args?.length).toBe(0);
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        let returnedEffectId: string;
+        let returnedEffectId: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string): void => {
+        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
@@ -697,8 +757,8 @@ describe('videoEx', () => {
         await utils.initializeWithContext('sidePanel');
         videoEx.updatePersonalizedEffects(personalizedEffects);
         const message = utils.findMessageByFunc('video.personalizedEffectsChanged');
-        expect(message.args.length).toBe(1);
-        expect(message.args[0]).toEqual(personalizedEffects);
+        expect(message?.args?.length).toBe(1);
+        expect(message?.args?.[0]).toEqual(personalizedEffects);
       });
     });
     describe('notifyFatalError', () => {
@@ -712,9 +772,9 @@ describe('videoEx', () => {
         const fakeErrorMsg = 'fake error';
         videoEx.notifyFatalError(fakeErrorMsg);
         const message = utils.findMessageByFunc('video.notifyError');
-        expect(message.args.length).toBe(2);
-        expect(message.args[0]).toEqual(fakeErrorMsg);
-        expect(message.args[1]).toEqual(videoEx.ErrorLevel.Fatal);
+        expect(message?.args?.length).toBe(2);
+        expect(message?.args?.[0]).toEqual(fakeErrorMsg);
+        expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Fatal);
       });
     });
   });

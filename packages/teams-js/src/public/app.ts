@@ -16,6 +16,7 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
+import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { logs } from '../private/logs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
@@ -908,8 +909,4 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
   };
 
   return context;
-}
-
-function inServerSideRenderingEnvironment(): boolean {
-  return typeof window === 'undefined';
 }
