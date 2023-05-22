@@ -79,6 +79,12 @@ steps:
   #     comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
   #   displayName: 'Post bundle analysis result as PR comment on GitHub'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: './common/temp/bundleAnalysis'
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - task: PublishBuildArtifacts@1
     condition: and(
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
@@ -112,8 +118,7 @@ steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'Manifest Generation Task'
     inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-      BuildComponentPath: $(Build.SourcesDirectory)
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\'
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
@@ -151,7 +156,6 @@ steps:
     displayName: 'Manifest Generation Task'
     inputs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
-      BuildComponentPath: $(Build.SourcesDirectory)
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
@@ -164,7 +168,6 @@ steps:
     displayName: 'Manifest Generation Task'
     inputs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-      BuildComponentPath: $(Build.SourcesDirectory)
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
