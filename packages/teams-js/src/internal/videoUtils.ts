@@ -1,4 +1,5 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
@@ -28,6 +29,22 @@ export async function processMediaStream(
   notifyError: (string) => void,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
+    await getInputVideoTrack(streamId, notifyError),
+    videoFrameHandler,
+    notifyError,
+  );
+}
+
+/**
+ * @hidden
+ * Create a MediaStreamTrack from the media stream with the given streamId and processed by videoFrameHandler.
+ */
+export async function processMediaStreamWithMetadata(
+  streamId: string,
+  videoFrameHandler: videoEx.VideoFrameHandler,
+  notifyError: (string) => void,
+): Promise<MediaStreamTrack> {
+  return createProcessedStreamGeneratorWithMetadata(
     await getInputVideoTrack(streamId, notifyError),
     videoFrameHandler,
     notifyError,
@@ -106,6 +123,78 @@ function createProcessedStreamGenerator(
     )
     .pipeTo(sink);
   return generator;
+}
+
+/**
+ * The function to create a processed video track from the original video track.
+ * It reads frames from the video track and pipes them to the video frame callback to process the frames.
+ * The processed frames are then enqueued to the generator.
+ * The generator can be registered back to the media stream so that the host can get the processed frames.
+ */
+function createProcessedStreamGeneratorWithMetadata(
+  videoTrack: unknown,
+  videoFrameHandler: videoEx.VideoFrameHandler,
+  notifyError: (string) => void,
+): MediaStreamTrack {
+  if (inServerSideRenderingEnvironment()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
+  const processor = new MediaStreamTrackProcessor({ track: videoTrack });
+  const source = processor.readable;
+  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+  const generator = new MediaStreamTrackGenerator({ kind: 'video' });
+  const sink = generator.writable;
+
+  source
+    .pipeThrough(
+      new TransformStream({
+        async transform(originalFrame, controller) {
+          const timestamp = originalFrame.timestamp;
+          if (timestamp !== null) {
+            try {
+              const { videoFrame, metadata: { audioInferenceResult } = {} } = extractVideoFrameAndMetadata(
+                originalFrame,
+                notifyError,
+              );
+              const frameProcessedByApp = await videoFrameHandler({ videoFrame, audioInferenceResult });
+              // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
+              const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
+                // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
+                timestamp: timestamp,
+              });
+              controller.enqueue(processedFrame);
+              originalFrame.close();
+              (frameProcessedByApp as VideoFrame).close();
+            } catch (error) {
+              originalFrame.close();
+              notifyError(error);
+            }
+          } else {
+            notifyError('timestamp of the original video frame is null');
+          }
+        },
+      }),
+    )
+    .pipeTo(sink);
+  return generator;
+}
+
+/**
+ * @hidden
+ * Extract video frame and metadata from the given texture.
+ */
+function extractVideoFrameAndMetadata(
+  texture: VideoFrame,
+  notifyError: (string) => void,
+): { videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } } {
+  if (inServerSideRenderingEnvironment()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  if (texture === null) {
+    notifyError('timestamp of the original video frame is null');
+  }
+  return { videoFrame: texture, metadata: {} };
 }
 
 /**
