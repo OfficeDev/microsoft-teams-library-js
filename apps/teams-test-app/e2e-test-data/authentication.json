@@ -1,0 +1,22 @@
+{
+  "name": "Authentication",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "getUser API Call - Success",
+      "version": "1.x || >2.0.0-beta.2",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "expectedTestAppValue": "{\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    },
+    {
+      "title": "getUser API Call - Success",
+      "version": "2.0.0-beta.2",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "expectedTestAppValue": "Success: {\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    }
+  ]
+}

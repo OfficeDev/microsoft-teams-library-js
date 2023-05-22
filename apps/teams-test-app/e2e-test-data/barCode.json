@@ -1,0 +1,54 @@
+{
+  "name": "BarCode",
+  "platforms": "Web",
+  "version": ">=2.1.0",
+  "checkIsSupported": {
+    "domElementName": "checkBarCodeCapability",
+    "expectedOutput": "BarCode is not supported"
+  },
+  "testCases": [
+    {
+      "title": "requestBarCodePermission API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestBarCodePermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": false },
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "repeated requestBarCodePermission API Call with no dialog- Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestBarCodePermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": true },
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "hasBarCodePermission API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_hasBarCodePermission",
+      "expectedTestAppValue": "false"
+    },
+    {
+      "title": "scanBarCode API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_scanBarCode",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestBarCodePermission",
+        "consentPermission": true
+      },
+      "inputValue": {},
+      "expectedTestAppValue": "\"scannedCode\"",
+      "expectedAlertValue": ["scanBarCode called with {}"]
+    },
+    {
+      "title": "scanBarCode API Call - Failure",
+      "type": "callResponse",
+      "boxSelector": "#box_scanBarCode",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestBarCodePermission",
+        "consentPermission": "false"
+      },
+      "inputValue": {},
+      "expectedTestAppValue": "Error: [object Object]"
+    }
+  ]
+}

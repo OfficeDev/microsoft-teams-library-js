@@ -1,0 +1,63 @@
+{
+  "name": "MeetingRoom",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.0",
+  "checkIsSupported": {
+    "expectedOutput": "MeetingRoom is not supported"
+  },
+  "testCases": [
+    {
+      "title": "getPairedMeetingRoomInfo API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getPairedMeetingRoomInfo",
+      "expectedAlertValue": "getPairedMeetingRoomInfo is called",
+      "expectedTestAppValue": "{\"endpointId\":\"someEndpointId\",\"deviceName\":\"someDeviceName\",\"clientType\":\"clientType\",\"clientVersion\":\"clientVersion\"}"
+    },
+    {
+      "title": "sendCommandToPairedMeetingRoom API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_sendCommandToPairedMeetingRoom",
+      "inputValue": {
+        "commandName": "someCommandName"
+      },
+      "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "sendCommandToPairedMeetingRoom API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_sendCommandToPairedMeetingRoom",
+      "inputValue": {
+        "commandName": "someCommandName"
+      },
+      "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with \"{\\\"commandName\\\":\\\"someCommandName\\\"}\""
+    },
+    {
+      "title": "registerMeetingRoomCapabilitiesUpdateHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerMeetingRoomCapabilitiesUpdateHandler",
+      "eventName": "meetingRoomCapabilitiesUpdate",
+      "eventData": {
+        "mediaControls": ["toggleMute", "toggleMute"],
+        "stageLayoutControls": ["showContent", "showVideoGalleryAndContent"],
+        "meetingControls": ["leaveMeeting"]
+      },
+      "expectedTestAppValue": "Capabilities of meeting room update ##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "registerMeetingRoomStatesUpdateHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerMeetingRoomStatesUpdateHandler",
+      "eventName": "meetingRoomStatesUpdate",
+      "eventData": {
+        "toggleMute": true,
+        "toggleCamera": true,
+        "toggleCaptions": true,
+        "stageLayout": ["Gallery"],
+        "leaveMeeting": true
+      },
+      "expectedTestAppValue": "States of meeting room update ##JSON_EVENT_DATA##"
+    }
+  ]
+}

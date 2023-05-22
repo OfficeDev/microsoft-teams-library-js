@@ -1,0 +1,23 @@
+{
+  "name": "Teams",
+  "platforms": "Web",
+  "version": "1.x || >2.0.0-beta.2",
+  "testCases": [
+    {
+      "title": "getTeamChannels API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getTeamChannels2",
+      "inputValue": "groupId",
+      "expectedAlertValue": "getTeamChannels called",
+      "expectedTestAppValue": "[{\"siteUrl\":\"siteURL\",\"objectId\":\"objectId\",\"folderRelativeUrl\":\"folderRelativeUrl\",\"displayName\":\"displayname\",\"channelType\":\"Regular\"}]"
+    },
+    {
+      "title": "refreshSiteUrl API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_refreshSiteUrl2",
+      "inputValue": "threadId",
+      "expectedAlertValue": "refreshSiteUrl called",
+      "expectedTestAppValue": "Success"
+    }
+  ]
+}
