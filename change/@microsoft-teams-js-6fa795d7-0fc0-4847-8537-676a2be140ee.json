@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Replaced `export VideoFrameCallback` in `videoUtils.ts` with `export VideoFrameCallback as DefaultVideoFrameCallback` and removed `export type VideoFrameCallback = DefaultVideoFrameCallback` in `videoEx.ts`",
+  "comment": "Fixed exports in `video` capability",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "patch"
