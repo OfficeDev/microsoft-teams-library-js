@@ -1,6 +1,10 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import {
+  createEffectParameterChangeCallback,
+  VideoEffectCallBack as DefaultVideoEffectCallBack,
+} from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { video } from '../public/video';
@@ -64,7 +68,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoFrame extends video.VideoFrame {
+  export interface VideoBufferData extends video.VideoBufferData {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -84,11 +88,29 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameCallback = (
-    frame: VideoFrame,
+  export type VideoBufferHandler = (
+    videoBufferData: VideoBufferData,
     notifyVideoFrameProcessed: () => void,
     notifyError: (errorMessage: string) => void,
   ) => void;
+
+  /**
+   * @hidden
+   * @beta
+   * Callbacks and configuration supplied to the host to process the video frames.
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type RegisterForVideoFrameParameters = {
+    /**
+     * Callback function to process the video frames shared by the host.
+     */
+    videoBufferHandler: VideoBufferHandler;
+    /**
+     * Video frame configuration supplied to the host to customize the generated video frame parameters, like format
+     */
+    config: VideoFrameConfig;
+  };
 
   /**
    * @hidden
@@ -101,19 +123,21 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function registerForVideoFrame(frameCallback: VideoFrameCallback, config: VideoFrameConfig): void {
+  export function registerForVideoFrame(parameters: RegisterForVideoFrameParameters): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
+    if (!parameters.videoBufferHandler) {
+      throw new Error('parameters.videoBufferHandler must be provided');
+    }
     registerHandler(
       'video.newVideoFrame',
-      (videoFrame: VideoFrame) => {
-        if (videoFrame) {
-          const timestamp = videoFrame.timestamp;
-          frameCallback(
-            videoFrame,
+      (videoBufferData: VideoBufferData) => {
+        if (videoBufferData) {
+          const timestamp = videoBufferData.timestamp;
+          parameters.videoBufferHandler(
+            videoBufferData,
             () => {
               notifyVideoFrameProcessed(timestamp);
             },
@@ -124,7 +148,7 @@ export namespace videoEx {
       false,
     );
 
-    sendMessageToParent('video.registerForVideoFrame', [config]);
+    sendMessageToParent('video.registerForVideoFrame', [parameters.config]);
   }
 
   /**
@@ -160,7 +184,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => void;
+  export type VideoEffectCallBack = DefaultVideoEffectCallBack;
 
   /**
    * @hidden
@@ -176,7 +200,8 @@ export namespace videoEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('video.effectParameterChange', callback, false);
+
+    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
     sendMessageToParent('video.registerForVideoEffect');
   }
 
