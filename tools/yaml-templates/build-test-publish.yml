@@ -42,6 +42,13 @@ steps:
       pnpm test
     displayName: 'pnpm test'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - task: PublishTestResults@2
     inputs:
       searchFolder: '$(System.DefaultWorkingDirectory)\packages'
@@ -65,13 +72,6 @@ steps:
       eq(variables['System.PullRequest.TargetBranch'], 'main'))
     name: bundleAnalysisTask
     displayName: 'Analyze bundles against main and output result'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
-      BuildComponentPath: $(Build.SourcesDirectory)
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   # Temporarily disabled due to failures when posting comments to Github
   # - task: GitHubComment@0
