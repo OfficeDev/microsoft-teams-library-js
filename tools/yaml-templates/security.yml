@@ -71,3 +71,10 @@ steps:
       or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')),
       ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Component Governance (main, release)'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
