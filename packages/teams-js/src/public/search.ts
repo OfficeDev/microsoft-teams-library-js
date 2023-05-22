@@ -3,6 +3,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+import { version } from './version';
 
 /**
  * Allows your application to interact with the host M365 application's search box.
@@ -126,5 +127,10 @@ export namespace search {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.search ? true : false;
+  }
+
+  export function closeSearch(): void {
+    ensureInitialized(runtime); 
+    sendMessageToParent('search.closeSearch', [version]); //Ask Trevor Harris if version is important and which changes to check in first
   }
 }
