@@ -110,8 +110,13 @@ function createProcessedStreamGenerator(
 
 /**
  * @hidden
+ * Video effect change call back function definition
+ * @beta
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
-export type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => Promise<void>;
+type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) => Promise<void>;
 
 /**
  * @hidden
@@ -129,3 +134,5 @@ export function createEffectParameterChangeCallback(callback: VideoEffectCallBac
       });
   };
 }
+
+export { VideoEffectCallBack as DefaultVideoEffectCallBack };
