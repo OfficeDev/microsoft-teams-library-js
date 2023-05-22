@@ -6,9 +6,9 @@ The Typed Depndency Tester is a tool used to detect if types in `MicrosoftTeams.
 
 ### Running the Dependency Tester
 
-If you would like to use this tester locally, simply type `pnpm build` in your terminal. The tester will then proceed to install the workspace version of the TeamsJS.
+If you would like to use this tester locally, simply type `pnpm build` in your terminal. The tester will then proceed to install the workspace version of the TeamsJS library.
 
-If you would like to test against a specific version of Teams JS you will need to edit the `@microsoft/teams-js` version in the `package.json` file.
+If you would like to test against a specific version of TeamsJS you will need to edit the `@microsoft/teams-js` version in the `package.json` file.
 
 If a `TS2304` type error occurs during the build, then the tester has successfully detected a build failure in the `MicrosoftTeams.d.ts` file. Please investigate the generated typed file using the outputted build failure information.
 
