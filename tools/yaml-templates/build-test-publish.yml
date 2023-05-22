@@ -42,13 +42,6 @@ steps:
       pnpm test
     displayName: 'pnpm test'
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
-      BuildComponentPath: $(Build.SourcesDirectory)
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
   - task: PublishTestResults@2
     inputs:
       searchFolder: '$(System.DefaultWorkingDirectory)\packages'
@@ -116,6 +109,13 @@ steps:
       replaceExistingArchive: true
     displayName: 'Zip Test app artifacts'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
@@ -147,11 +147,25 @@ steps:
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
       ArtifactName: 'CDNFeed'
     displayName: 'Publish CDN feed to build Artifacts'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
     inputs:
@@ -166,6 +180,13 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
     displayName: 'Copy Power Shell scripts to scripts'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\scripts'
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
     inputs:
