@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add default value for Adaptive Card version info to back support in Teams V1",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
