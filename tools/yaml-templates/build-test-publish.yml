@@ -66,6 +66,13 @@ steps:
     name: bundleAnalysisTask
     displayName: 'Analyze bundles against main and output result'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   # Temporarily disabled due to failures when posting comments to Github
   # - task: GitHubComment@0
   #   condition: and(
