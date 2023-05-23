@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "azure-devops-node-api": "^10.2.2",
-    "jszip": "^3.2.2",
+    "jszip": "^3.10.1",
     "msgpack-lite": "^0.1.26",
     "pako": "^2.0.2"
   }
