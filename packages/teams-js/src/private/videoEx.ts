@@ -3,7 +3,7 @@ import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   createEffectParameterChangeCallback,
-  VideoEffectCallBack as DefaultVideoEffectCallBack,
+  DefaultVideoEffectCallBack as VideoEffectCallBack,
 } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -175,16 +175,6 @@ export namespace videoEx {
     }
     sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId, effectParam]);
   }
-
-  /**
-   * @hidden
-   * Video effect change call back function definition
-   * @beta
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type VideoEffectCallBack = DefaultVideoEffectCallBack;
 
   /**
    * @hidden
