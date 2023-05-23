@@ -130,7 +130,7 @@ export namespace search {
   }
 
   export function closeSearch(): void {
-    ensureInitialized(runtime); 
+    ensureInitialized(runtime);
     sendMessageToParent('search.closeSearch', [version]); //Ask Trevor Harris if version is important and which changes to check in first
   }
 }
