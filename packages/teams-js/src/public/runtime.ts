@@ -4,7 +4,7 @@ import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../interna
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
-import { HostClientType, minAdaptiveCardVersion } from './constants';
+import { HostClientType, teamsMinAdaptiveCardVersion } from './constants';
 import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
@@ -177,7 +177,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 2,
-  hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+  hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
     appInstallDialog: {},
@@ -290,7 +290,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
     upgradeToNextVersion: (previousVersionRuntime: IRuntimeV1): IRuntimeV2 => {
       return {
         apiVersion: 2,
-        hostVersionsInfo: previousVersionRuntime.hostVersionsInfo,
+        hostVersionsInfo: undefined,
         isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: {
           ...previousVersionRuntime.supports,
@@ -387,7 +387,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
   const backCompatRuntimeConfig: Runtime = {
     apiVersion: 2,
-    hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
+    hostVersionsInfo: teamsMinAdaptiveCardVersion,
     isLegacyTeams: true,
     supports: newSupports,
   };
