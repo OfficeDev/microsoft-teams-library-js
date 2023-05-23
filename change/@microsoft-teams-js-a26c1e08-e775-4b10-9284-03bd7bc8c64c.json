@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Deleted unnecessary 'export' from helper functions in `dialog` and `tasks` capability. Deleted unnecessary and unused functions from `dialog` capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
