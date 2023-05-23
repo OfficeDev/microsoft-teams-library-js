@@ -130,10 +130,9 @@ export namespace search {
   }
 
   /**
-   * Used by launch page hubs to tell the host to clear the search box in case the want to exit an internal search in the app
-   * @returns void, it is a fire and forget method
+   * Clear the host M365 application's search box
    *
-   * @throws N/A
+   * @beta
    */
   export function closeSearch(): void {
     ensureInitialized(runtime);
