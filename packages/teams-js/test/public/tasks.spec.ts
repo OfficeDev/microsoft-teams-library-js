@@ -148,9 +148,7 @@ describe('tasks', () => {
           tasks.startTask(taskInfo, () => {
             return;
           });
-          const taskInfoWithSize = taskInfo;
-          taskInfoWithSize.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
-          taskInfoWithSize.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
 
           expect(startTaskMessage).not.toBeNull();
@@ -237,13 +235,10 @@ describe('tasks', () => {
           context,
         )}`, async () => {
           await utils.initializeWithContext(context);
-          const taskInfo: TaskInfo = { width: 10 };
+          const taskInfo = { width: 10 };
 
           tasks.updateTask(taskInfo);
-          const taskInfoWithSize = taskInfo;
-          taskInfoWithSize.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
-          taskInfoWithSize.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
-
+          const taskInfoWithSize = tasks.getDefaultSizeIfNotProvided(taskInfo);
           const updateTaskMessage = utils.findMessageByFunc('tasks.updateTask');
           expect(updateTaskMessage).not.toBeNull();
           expect(updateTaskMessage.args).toEqual([taskInfo]);

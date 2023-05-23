@@ -126,18 +126,12 @@ export namespace tasks {
   }
 
   /**
-   * @hidden
-   * Hide from docs
-   * --------
-   *
    * Sets the height and width of the {@link TaskInfo} object to the original height and width, if initially specified,
    * otherwise uses the height and width values corresponding to {@link DialogDimension | TaskModuleDimension.Small}
    * @param taskInfo TaskInfo object from which to extract size info, if specified
    * @returns TaskInfo with height and width specified
-   *
-   * @internal
    */
-  function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
+  export function getDefaultSizeIfNotProvided(taskInfo: TaskInfo): TaskInfo {
     taskInfo.height = taskInfo.height ? taskInfo.height : TaskModuleDimension.Small;
     taskInfo.width = taskInfo.width ? taskInfo.width : TaskModuleDimension.Small;
     return taskInfo;
