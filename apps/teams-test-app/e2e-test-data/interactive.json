@@ -1,6 +1,5 @@
 {
   "name": "Interactive",
-  "platforms": "Web",
   "version": "experimental/interactive",
   "testUrlParams": [["frameContext", "sidePanel"]],
   "testCases": [
@@ -12,7 +11,7 @@
         "origin": "https://localhost:4000"
       },
       "expectedAlertValue": "getFluidTenantInfo called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "{\"tenantId\":\"mockTenantId\",\"ordererEndpoint\":\"mockOrdererEndpoint\",\"storageEndpoint\":\"mockStorageEndpoint\",\"serviceEndpoint\":\"mockServiceEndpoint\"}"
+      "expectedTestAppValue": "{\"tenantId\":\"mockTenantId\",\"serviceEndpoint\":\"mockServiceEndpoint\"}"
     },
     {
       "title": "getFluidToken API Call - Success",
