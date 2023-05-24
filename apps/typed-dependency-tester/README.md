@@ -14,4 +14,4 @@ If a `TS2304` type error occurs during the build, then the tester has successful
 
 ## Troubleshooting
 
-- If you see an error that is unrelated to types during the `pnpm build` check to make sure you have installed and built the `teams-js` package by running `pnpm i` and `pnpm build` from the root repository
+- If you see an error that is unrelated to types during the `pnpm build` check to make sure you have installed and built the `teams-js` package by running `pnpm i` and `pnpm build` from the repository root.
