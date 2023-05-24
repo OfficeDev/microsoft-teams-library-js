@@ -1,6 +1,6 @@
 # Typed Dependency Tester
 
-The Typed Depndency Tester is a tool used to detect if types in `MicrosoftTeams.d.ts` are importing types from other modules and giving them an implicit `any` resolution
+The Typed Dependency Tester is a tool used to detect if types in `MicrosoftTeams.d.ts` are importing types from other modules and giving them an implicit `any` resolution
 
 ## Getting Started
 
