@@ -28,7 +28,6 @@ importers:
       '@types/fs-extra': ^9.0.11
       '@types/jest': ^27.0.1
       '@types/jscodeshift': ^0.11.0
-      '@types/jszip': ^3.4.1
       '@types/msgpack-lite': ^0.1.7
       '@types/node': ^16.8.31
       '@types/pako': ^1.0.1
@@ -103,7 +102,6 @@ importers:
       '@types/fs-extra': 9.0.13
       '@types/jest': 27.5.2
       '@types/jscodeshift': 0.11.6
-      '@types/jszip': 3.4.1
       '@types/msgpack-lite': 0.1.8
       '@types/node': 16.18.31
       '@types/pako': 1.0.4
@@ -250,7 +248,7 @@ importers:
   tools/bundle-size-tools:
     specifiers:
       azure-devops-node-api: ^10.2.2
-      jszip: ^3.2.2
+      jszip: ^3.10.1
       msgpack-lite: ^0.1.26
       pako: ^2.0.2
     dependencies:
@@ -4143,12 +4141,6 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha1-1CG2xSejA398hEM/0sQingFoY9M=}
-    dev: true
-
-  /@types/jszip/3.4.1:
-    resolution: {integrity: sha1-56QFlIbklMlJ73UJM9AJaEInhG8=}
-    dependencies:
-      jszip: 3.10.1
     dev: true
 
   /@types/mime/3.0.1:
@@ -8201,7 +8193,8 @@ packages:
     dev: true
 
   /immediate/3.0.6:
-    resolution: {integrity: sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=}
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+    dev: false
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -9373,12 +9366,13 @@ packages:
     dev: true
 
   /jszip/3.10.1:
-    resolution: {integrity: sha1-NK7nDrGOofrsL1iSCKFX0f6wkcI=}
+    resolution: {integrity: sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==}
     dependencies:
       lie: 3.3.0
       pako: 1.0.11
       readable-stream: 2.3.8
       setimmediate: 1.0.5
+    dev: false
 
   /just-diff-apply/5.5.0:
     resolution: {integrity: sha512-OYTthRfSh55WOItVqwpefPtNt2VdKsq5AnAK6apdtR6yCH8pr0CmSr710J0Mf+WdQy7K/OzMy7K2MgAfdQURDw==}
@@ -9572,9 +9566,10 @@ packages:
     dev: true
 
   /lie/3.3.0:
-    resolution: {integrity: sha1-3Pgt7lRfRgdNryAMfBxaCOD0D2o=}
+    resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
     dependencies:
       immediate: 3.0.6
+    dev: false
 
   /lines-and-columns/1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
@@ -10948,7 +10943,8 @@ packages:
     dev: true
 
   /pako/1.0.11:
-    resolution: {integrity: sha1-bJWZ00DVTf05RjgCUqNXBaa5kr8=}
+    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
+    dev: false
 
   /pako/2.1.0:
     resolution: {integrity: sha1-JmzDf5jH2INUXREzXAD71AYsmoY=}
@@ -12065,7 +12061,8 @@ packages:
     dev: true
 
   /setimmediate/1.0.5:
-    resolution: {integrity: sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=}
+    resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
+    dev: false
 
   /setprototypeof/1.1.0:
     resolution: {integrity: sha1-0L2FU2iHtv58DYGMuWLZ2RxU5lY=}
