@@ -11,7 +11,7 @@ trigger:
       - 'main'
       - 'release/*'
 
-jobs:
+steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'Manifest Generation Task'
     inputs:
@@ -19,6 +19,7 @@ jobs:
       BuildComponentPath: $(Build.SourcesDirectory)
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
+jobs:
   - job: Security
     displayName: 'Security Tasks'
     pool:
