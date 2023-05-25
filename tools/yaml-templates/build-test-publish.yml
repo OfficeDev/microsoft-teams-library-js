@@ -177,4 +177,4 @@ steps:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\_manifest'
       ArtifactName: 'SBOM'
-    displayName: 'Publish Powershell Scripts to Build Artifacts'
+    displayName: 'Publish SBOM to Build Artifacts'
