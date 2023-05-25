@@ -10,7 +10,7 @@ steps:
   - script: |
       npm install -g pnpm@7.30.1
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-    displayName: 'Setup pnpm'
+    displayName: 'Setup pnpm
 
   - script: |
       pnpm install
@@ -160,15 +160,21 @@ steps:
       flattenFolders: true
     displayName: 'Copy Power Shell scripts to scripts'
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\scripts'
-      BuildComponentPath: $(Build.SourcesDirectory)
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
       ArtifactName: 'scripts'
+    displayName: 'Publish Powershell Scripts to Build Artifacts'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\_manifest'
+      ArtifactName: 'SBOM'
     displayName: 'Publish Powershell Scripts to Build Artifacts'
