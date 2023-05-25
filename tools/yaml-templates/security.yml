@@ -2,6 +2,13 @@
 # Should be used in any other new pipelines we have that are linked to this repo.
 
 steps:
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - task: ESLint@1
     displayName: 'Run ESLint'
     inputs:
