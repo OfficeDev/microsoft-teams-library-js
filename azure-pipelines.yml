@@ -11,6 +11,16 @@ trigger:
       - 'main'
       - 'release/*'
 jobs:
+  - job: SBOM
+    displayName: 'Generate SBOM'
+    steps:
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 'Manifest Generation Task'
+        inputs:
+          BuildDropPath: $(Build.ArtifactStagingDirectory)
+          BuildComponentPath: $(Build.SourcesDirectory)
+          AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
   - job: Security
     displayName: 'Security Tasks'
     pool:
