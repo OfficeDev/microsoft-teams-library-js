@@ -79,12 +79,6 @@ steps:
   #     comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
   #   displayName: 'Post bundle analysis result as PR comment on GitHub'
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: './common/temp/bundleAnalysis'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
   - task: PublishBuildArtifacts@1
     condition: and(
       in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
@@ -114,12 +108,6 @@ steps:
       archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
       replaceExistingArchive: true
     displayName: 'Zip Test app artifacts'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
     inputs:
@@ -152,23 +140,11 @@ steps:
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
       ArtifactName: 'CDNFeed'
     displayName: 'Publish CDN feed to build Artifacts'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
   - task: PublishBuildArtifacts@1
     inputs:
