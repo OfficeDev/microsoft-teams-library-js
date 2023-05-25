@@ -10,7 +10,7 @@ steps:
   - script: |
       npm install -g pnpm@7.30.1
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-    displayName: 'Setup pnpm
+    displayName: 'Setup pnpm'
 
   - script: |
       pnpm install
@@ -172,7 +172,7 @@ steps:
       BuildDropPath: $(Build.ArtifactStagingDirectory)
       BuildComponentPath: $(Build.SourcesDirectory)
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-  
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\_manifest'
