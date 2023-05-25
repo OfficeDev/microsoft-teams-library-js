@@ -165,3 +165,16 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
       ArtifactName: 'scripts'
     displayName: 'Publish Powershell Scripts to Build Artifacts'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Manifest Generation Task'
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+      BuildComponentPath: $(Build.SourcesDirectory)
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\_manifest'
+      ArtifactName: 'SBOM'
+    displayName: 'Publish SBOM to Build Artifacts'
