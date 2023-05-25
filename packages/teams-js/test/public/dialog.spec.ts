@@ -10,7 +10,7 @@ import {
   minAdaptiveCardVersion,
 } from '../../src/public/constants';
 import { dialog } from '../../src/public/dialog';
-import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogSize } from '../../src/public/interfaces';
+import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
@@ -736,9 +736,15 @@ describe('Dialog', () => {
               });
               const openMessage = utils.findMessageByFunc('tasks.startTask');
               expect(openMessage).not.toBeNull();
-              expect(openMessage.args).toEqual([
-                dialog.adaptiveCard.getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo),
-              ]);
+
+              const getDialogInfoFromAdaptiveCardDialogInfo: DialogInfo = {
+                card: adaptiveCardDialogInfo.card,
+                height: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.height : DialogDimension.Small,
+                width: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.width : DialogDimension.Small,
+                title: adaptiveCardDialogInfo.title,
+              };
+
+              expect(openMessage.args).toEqual([getDialogInfoFromAdaptiveCardDialogInfo]);
             });
 
             it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
@@ -902,9 +908,15 @@ describe('Dialog', () => {
               });
               const openMessage = utils.findMessageByFunc('tasks.startTask');
               expect(openMessage).not.toBeNull();
-              expect(openMessage.args).toEqual([
-                dialog.adaptiveCard.getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo),
-              ]);
+              const getDialogInfoFromBotAdaptiveCardDialogInfo: DialogInfo = {
+                card: botAdaptiveCardDialogInfo.card,
+                height: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.height : DialogDimension.Small,
+                width: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.width : DialogDimension.Small,
+                title: botAdaptiveCardDialogInfo.title,
+                completionBotId: botAdaptiveCardDialogInfo.completionBotId,
+              };
+
+              expect(openMessage.args).toEqual([getDialogInfoFromBotAdaptiveCardDialogInfo]);
             });
 
             it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
@@ -1616,10 +1628,14 @@ describe('Dialog', () => {
                 return;
               });
               const openMessage = utils.findMessageByFunc('tasks.startTask');
+              const getDialogInfoFromAdaptiveCardDialogInfo: DialogInfo = {
+                card: adaptiveCardDialogInfo.card,
+                height: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.height : DialogDimension.Small,
+                width: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.width : DialogDimension.Small,
+                title: adaptiveCardDialogInfo.title,
+              };
               expect(openMessage).not.toBeNull();
-              expect(openMessage.args).toEqual([
-                dialog.adaptiveCard.getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo),
-              ]);
+              expect(openMessage.args).toEqual([getDialogInfoFromAdaptiveCardDialogInfo]);
             });
 
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
@@ -1739,10 +1755,16 @@ describe('Dialog', () => {
                 return;
               });
               const openMessage = utils.findMessageByFunc('tasks.startTask');
+              const getDialogInfoFromBotAdaptiveCardDialogInfo: DialogInfo = {
+                card: botAdaptiveCardDialogInfo.card,
+                height: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.height : DialogDimension.Small,
+                width: botAdaptiveCardDialogInfo.size ? botAdaptiveCardDialogInfo.size.width : DialogDimension.Small,
+                title: botAdaptiveCardDialogInfo.title,
+                completionBotId: botAdaptiveCardDialogInfo.completionBotId,
+              };
+
               expect(openMessage).not.toBeNull();
-              expect(openMessage.args).toEqual([
-                dialog.adaptiveCard.getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo),
-              ]);
+              expect(openMessage.args).toEqual([getDialogInfoFromBotAdaptiveCardDialogInfo]);
             });
 
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
