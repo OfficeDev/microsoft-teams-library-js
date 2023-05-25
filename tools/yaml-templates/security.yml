@@ -25,7 +25,7 @@ steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'Manifest Generation Task'
     inputs:
-      BuildDropPath: $(Build.ArtifactStagingDirectory)\packages
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
       BuildComponentPath: $(Build.SourcesDirectory)
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
 
