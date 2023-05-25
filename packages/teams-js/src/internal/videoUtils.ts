@@ -3,10 +3,22 @@ import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
-import { AllowSharedBufferSource, VideoFrameBufferInit, VideoFrameInit } from './VideoFrameTypes';
+import {
+  AllowSharedBufferSource,
+  PlaneLayout,
+  VideoFrameBufferInit,
+  VideoFrameCopyToOptions,
+  VideoFrameInit,
+  VideoPixelFormat,
+} from './VideoFrameTypes';
 
 interface VideoFrame {
+  readonly codedWidth: number;
+  readonly codedHeight: number;
+  readonly format: VideoPixelFormat | null;
+  readonly timestamp: number;
   close(): void;
+  copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
 }
 
 /**
@@ -153,7 +165,7 @@ function createProcessedStreamGeneratorWithMetadata(
           const timestamp = originalFrame.timestamp;
           if (timestamp !== null) {
             try {
-              const { videoFrame, metadata: { audioInferenceResult } = {} } = extractVideoFrameAndMetadata(
+              const { videoFrame, metadata: { audioInferenceResult } = {} } = await extractVideoFrameAndMetadata(
                 originalFrame,
                 notifyError,
               );
@@ -184,17 +196,85 @@ function createProcessedStreamGeneratorWithMetadata(
  * @hidden
  * Extract video frame and metadata from the given texture.
  */
-function extractVideoFrameAndMetadata(
+async function extractVideoFrameAndMetadata(
   texture: VideoFrame,
   notifyError: (string) => void,
-): { videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } } {
+): Promise<{ videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } }> {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (texture === null) {
-    notifyError('timestamp of the original video frame is null');
+
+  if (texture.format !== 'NV12') {
+    notifyError('Unsupported video frame format');
+    throw new Error('Unsupported video frame format');
   }
-  return { videoFrame: texture, metadata: {} };
+
+  const awesomeDebuggingEnabled = localStorage.getItem('awesomeDebuggingEnabled');
+
+  // The rectangle of pixels to copy from the texture
+  const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
+  const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
+  await texture.copyTo(headerBuffer, { rect: headerRect });
+  const headerDataView = new Uint32Array(headerBuffer);
+  // const [ version, frameRowOffset, frameFormat, frameWidth, frameHeight, frameLumaStride, frameChromaStride, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
+  if (awesomeDebuggingEnabled) {
+    console.log(
+      'version:',
+      headerDataView[0],
+      'frameRowOffset:',
+      headerDataView[1],
+      'frameFormat:',
+      headerDataView[2],
+      'frameWidth:',
+      headerDataView[3],
+      'frameHeight:',
+      headerDataView[4],
+      'frameLumaStride:',
+      headerDataView[5],
+      'frameChromaStride:',
+      headerDataView[6],
+      'multiStreamHeaderRowOffset:',
+      headerDataView[7],
+      'multiStreamCount:',
+      headerDataView[8],
+    );
+  }
+
+  const metadataRect = {
+    x: 0,
+    y: headerDataView[7],
+    width: texture.codedWidth,
+    height: texture.codedHeight - headerDataView[7],
+  };
+  const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
+  await texture.copyTo(metadataBuffer, { rect: metadataRect });
+  const metadata = new Uint32Array(metadataBuffer);
+  for (let i = 0, index = 0; i < headerDataView[8]; i++) {
+    const streamId = metadata[index++];
+    const streamDataOffset = metadata[index++];
+    const streamDataSize = metadata[index++];
+    const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
+    if (awesomeDebuggingEnabled) {
+      console.log(
+        'streamId:',
+        streamId,
+        'streamDataOffset:',
+        streamDataOffset,
+        'streamDataSize:',
+        streamDataSize,
+        'streamData:',
+        streamData,
+      );
+    }
+  }
+
+  return {
+    videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
+      timestamp: texture.timestamp,
+      visibleRect: { x: 0, y: headerDataView[1], width: headerDataView[3], height: headerDataView[4] },
+    }) as VideoFrame,
+    metadata: {},
+  };
 }
 
 /**

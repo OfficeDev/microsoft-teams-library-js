@@ -80,26 +80,44 @@ const CheckIsSupported = (): React.ReactElement =>
     },
   });
 
-const RegisterForVideoFrame = (): React.ReactElement =>
+const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'videoExSharedFrameRegisterForVideoFrame',
-    title: 'registerForVideoFrame',
+    name: 'videoExMediaStreamRegisterForVideoFrame',
+    title: 'medisStream - registerForVideoFrame',
     onClick: async (setResult) => {
-      const onFrameCallback: videoEx.VideoBufferHandler = async () => {
-        setResult('video frame received');
-      };
       try {
-        const audioInferenceModel = new ArrayBuffer(8);
-        const view = new Uint8Array(audioInferenceModel);
-        for (let i = 0; i < view.length; i++) {
-          view[i] = i;
-        }
         videoEx.registerForVideoFrame({
-          videoBufferHandler: onFrameCallback,
+          videoFrameHandler: async (frame) => {
+            setResult('video frame received');
+            return frame.videoFrame;
+          },
+          videoBufferHandler: (buffer) => buffer,
           config: {
             format: video.VideoFrameFormat.NV12,
-            requireCameraStream: false,
-            audioInferenceModel,
+          },
+        });
+      } catch (error) {
+        return `Faild to register for video frame: ${JSON.stringify(error)}`;
+      }
+      return generateRegistrationMsg('it is invoked on video frame received');
+    },
+  });
+
+const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'videoExSharedFrameRegisterForVideoFrame',
+    title: 'sharedFrame - registerForVideoFrame',
+    onClick: async (setResult) => {
+      try {
+        videoEx.registerForVideoFrame({
+          videoFrameHandler: async (frame) => {
+            return frame.videoFrame;
+          },
+          videoBufferHandler: () => {
+            setResult('video frame received');
+          },
+          config: {
+            format: video.VideoFrameFormat.NV12,
           },
         });
       } catch (error) {
@@ -114,7 +132,8 @@ const VideoExAPIs = (): React.ReactElement => (
     <UpdatePersonalizedEffects />
     <NotifySelectedVideoEffectChanged />
     <RegisterForVideoEffect />
-    <RegisterForVideoFrame />
+    <MediaStreamRegisterForVideoFrame />
+    <SharedFrameRegisterForVideoFrame />
     <NotifyFatalError />
     <CheckIsSupported />
   </ModuleWrapper>
