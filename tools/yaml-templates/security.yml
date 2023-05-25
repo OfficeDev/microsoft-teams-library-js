@@ -22,13 +22,6 @@ steps:
       debugMode: false
       suppressionsFile: '.sdl\CredScanSuppressions.json'
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: $(Build.ArtifactStagingDirectory)
-      BuildComponentPath: $(Build.SourcesDirectory)
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
   - task: PublishSecurityAnalysisLogs@3
     inputs:
       ArtifactName: 'CodeAnalysisLogs'
