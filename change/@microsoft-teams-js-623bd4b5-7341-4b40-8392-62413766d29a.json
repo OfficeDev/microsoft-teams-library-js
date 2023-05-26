@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `secondaryBrowser` capability and its open API to enable browsing experience for Apps",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
