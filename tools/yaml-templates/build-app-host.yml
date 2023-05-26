@@ -5,6 +5,8 @@ parameters:
     default: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     type: string
 
+variables:
+  - tester: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
 steps:
   - checkout: self
   - checkout: ${{variables.tester}}
