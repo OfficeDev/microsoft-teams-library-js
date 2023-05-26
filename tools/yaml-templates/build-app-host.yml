@@ -5,11 +5,12 @@ parameters:
   - name: 'appHostGitPath'
     default: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     type: string
-repositories:
-  - repository: AppHostingRepo
-    type: git
-    name: $(AppHostingSdkGitPath)
-    ref: $(AppHostingSdkGitRef)
+resources:
+  repositories:
+    - repository: AppHostingRepo
+      type: git
+      name: $(AppHostingSdkGitPath)
+      ref: $(AppHostingSdkGitRef)
 
 steps:
   - checkout: self
