@@ -1,3 +1,10 @@
+resources:
+  repositories:
+    - repository: AppHostingRepo
+      type: git
+      name: $(AppHostingSdkGitPath)
+      ref: $(AppHostingSdkGitRef)
+
 variables:
   - group: InfoSec-SecurityResults
   - name: products
