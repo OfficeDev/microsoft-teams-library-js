@@ -5,10 +5,15 @@ parameters:
   - name: 'appHostGitPath'
     default: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     type: string
+repositories:
+  - repository: AppHostingRepo
+    type: git
+    name: $(AppHostingSdkGitPath)
+    ref: $(AppHostingSdkGitRef)
 
 steps:
   - checkout: self
-  - checkout: git://${{parameters.appHostGitPath}}
+  - checkout: AppHostingRepo
     persistCredentials: true
 
   - task: NodeTool@0
