@@ -1,6 +1,4 @@
 variables:
-  - name: tester
-    value: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
   - group: InfoSec-SecurityResults
   - name: products
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
@@ -48,6 +46,8 @@ jobs:
         condition: succeededOrFailed()
 
   - job: E2ETest2
+    variables:
+      tester: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     displayName: 'E2E Test - Default'
     pool:
       vmImage: 'ubuntu-20.04'
@@ -75,6 +75,8 @@ jobs:
 
   - job: E2ETest3
     displayName: 'E2E Test - Local Tag'
+    variables:
+      tester: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     pool:
       vmImage: 'ubuntu-latest'
     steps:
