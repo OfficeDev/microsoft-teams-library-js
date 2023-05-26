@@ -73,6 +73,14 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Q & A
 
+### Q. I'm a Microsoft Employee, How Do I Gain Write Access?
+
+1. Use or create a corporate-linked github account (if you already have a github account associated with Microsoft, you can skip this step)
+
+2. With your github account ready, visit https://repos.opensource.microsoft.com/ and follow the instructions to link it to Microsoft and join the Microsoft organization.
+
+3. Join the OfficeDev organization: https://repos.opensource.microsoft.com/orgs/OfficeDev/join
+
 ### Q. Can I have more than one change file in one PR?
 
 Each PR will not be able to have more than one change file. (e.g. A bug fix and a minor change should go through separate PRs.)
