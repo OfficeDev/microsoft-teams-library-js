@@ -8,7 +8,7 @@ parameters:
 
 steps:
   - checkout: self
-  - checkout: git://${{variables.AppHostingSdkGitPath}}@$(AppHostingSdkGitRef)
+  - checkout: git://${{variables.AppHostingSdkGitPath}}@${{variables.AppHostingSdkGitRef}}
     persistCredentials: true
 
   - task: NodeTool@0
