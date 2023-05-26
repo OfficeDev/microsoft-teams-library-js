@@ -32,8 +32,6 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
       - template: tools/yaml-templates/build-app-host.yml
-        parameters:
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
@@ -53,8 +51,6 @@ jobs:
       vmImage: 'ubuntu-20.04'
     steps:
       - template: tools/yaml-templates/build-app-host.yml
-        parameters:
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
