@@ -13,8 +13,10 @@ import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
 import DialogCardAPIs from './components/DialogCardAPIs';
+import DialogCardBotAPIs from './components/DialogCardBotAPIs';
 import DialogUpdateAPIs from './components/DialogUpdateAPIs';
 import DialogUrlAPIs from './components/DialogUrlAPIs';
+import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -128,8 +130,10 @@ const App = (): ReactElement => {
         <ChatAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
+        <DialogCardBotAPIs />
         <DialogUpdateAPIs />
         <DialogUrlAPIs />
+        <DialogUrlBotAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />
