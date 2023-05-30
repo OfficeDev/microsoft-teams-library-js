@@ -38,7 +38,7 @@ const CloseSearch = (): React.ReactElement =>
     title: 'Close Search',
     onClick: {
       withPromise: async () => {
-        search.closeSearch();
+        await search.closeSearch();
         return 'called';
       },
       withCallback: (setResult) => {

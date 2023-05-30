@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Communication, sendMessageToParent, uninitializeCommunication } from '../internal/communication';
+import {
+  Communication,
+  sendAndHandleStatusAndReason as sendAndHandleError,
+  sendMessageToParent,
+  uninitializeCommunication,
+} from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -146,9 +151,15 @@ export namespace search {
    *
    * @beta
    */
-  export function closeSearch(): void {
-    ensureInitialized(runtime);
-    sendMessageToParent('search.closeSearch', [version]);
+  export function closeSearch(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error('Not supported');
+      }
+
+      resolve(sendAndHandleError('search.closeSearch', version));
+    });
   }
 
   /**
