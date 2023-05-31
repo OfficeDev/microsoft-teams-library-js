@@ -1,19 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import {
-  Communication,
-  sendAndHandleStatusAndReason as sendAndHandleError,
-  sendMessageToParent,
-  uninitializeCommunication,
-} from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { logs } from '../private/logs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { pages } from './pages';
 import { runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
 /**
@@ -28,12 +17,6 @@ export namespace search {
   const onChangeHandlerName = 'search.queryChange';
   const onClosedHandlerName = 'search.queryClose';
   const onExecutedHandlerName = 'search.queryExecute';
-
-  /** Search Function Messages */
-  export const Messages = {
-    /** Close search is called. */
-    CloseSearch: 'search.closeSearch',
-  };
 
   /**
    * This interface contains information pertaining to the contents of the host M365 application's search box
@@ -158,61 +141,7 @@ export namespace search {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleError('search.closeSearch', version));
+      resolve(sendAndHandleStatusAndReason('search.closeSearch'));
     });
-  }
-
-  /**
-   * @hidden
-   * Undocumented function used to set a mock window for unit tests
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function _initialize(hostWindow: any): void {
-    Communication.currentWindow = hostWindow;
-  }
-
-  /**
-   * @hidden
-   * Undocumented function used to clear state between unit tests
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function _uninitialize(): void {
-    if (!GlobalVars.initializeCalled) {
-      return;
-    }
-
-    if (GlobalVars.frameContext) {
-      /* eslint-disable strict-null-checks/all */
-      pages.backStack.registerBackButtonHandler(null);
-      pages.registerFullScreenHandler(null);
-      teamsCore.registerBeforeUnloadHandler(null);
-      teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
-      /* eslint-enable strict-null-checks/all */
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.settings) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnSaveHandler(null);
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.remove) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnRemoveHandler(null);
-    }
-
-    GlobalVars.initializeCalled = false;
-    GlobalVars.initializeCompleted = false;
-    GlobalVars.initializePromise = null;
-    GlobalVars.additionalValidOrigins = [];
-    GlobalVars.frameContext = null;
-    GlobalVars.hostClientType = null;
-    GlobalVars.isFramelessWindow = false;
-
-    uninitializeCommunication();
   }
 }

@@ -1,10 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { app } from '../../src/public/app';
 import { FrameContexts } from '../../src/public/constants';
 import { M365ContentAction } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { search } from '../../src/public/search';
-import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -32,17 +32,17 @@ describe('Testing search capability', () => {
       utils.messages = [];
       utils.childMessages = [];
       utils.childWindow.closed = false;
-      utils.mockWindow.parent = utils.parentWindow;
+      GlobalVars.frameContext = undefined;
 
       // Set a mock window for testing
-      search._initialize(utils.mockWindow);
+      app._initialize(utils.mockWindow);
     });
 
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (search._uninitialize) {
+       // Reset the object since it's a singleton
+      if (app._uninitialize) {
         utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-        search._uninitialize();
+        app._uninitialize();
       }
     });
 
@@ -122,8 +122,8 @@ describe('Testing search capability', () => {
         await promise;
   
         expect(closeSearchMessage).not.toBeNull();
-        expect(closeSearchMessage.args.length).toEqual(1);
-        expect(closeSearchMessage.args[0]).toEqual(version);
+        expect(closeSearchMessage.args.length).toEqual(0);
+        expect(closeSearchMessage.args[0]).toEqual(undefined);
       });
   
       it('should resolve promise after successfully sending the closeSearch message', async () => {
@@ -147,15 +147,21 @@ describe('Testing search capability', () => {
   describe('Frameless - Testing app capbility', () => {
     let utils: Utils = new Utils();
     beforeEach(() => {
-      utils = new Utils();
-      utils.mockWindow.parent = undefined;
+      utils.processMessage = null;
       utils.messages = [];
-      search._initialize(utils.mockWindow);
-      GlobalVars.isFramelessWindow = false;
+      utils.childMessages = [];
+      utils.childWindow.closed = false;
+      GlobalVars.frameContext = undefined;
+
+      // Set a mock window for testing
+      app._initialize(utils.mockWindow);
     });
     afterEach(() => {
-      search._uninitialize();
-      GlobalVars.isFramelessWindow = false;
+       // Reset the object since it's a singleton
+      if (app._uninitialize) {
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        app._uninitialize();
+      }
     });
 
     describe('Testing search.closeSearch function', () => {
@@ -234,8 +240,8 @@ describe('Testing search capability', () => {
         await promise;
   
         expect(closeSearchMessage).not.toBeNull();
-        expect(closeSearchMessage.args.length).toEqual(1);
-        expect(closeSearchMessage.args[0]).toEqual(version);
+        expect(closeSearchMessage.args.length).toEqual(0);
+        expect(closeSearchMessage.args[0]).toEqual(undefined);
       });
   
       it('should resolve promise after successfully sending the closeSearch message', async () => {
