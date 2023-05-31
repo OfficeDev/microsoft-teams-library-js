@@ -141,6 +141,7 @@ import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;
+import { HostVersionsInfo } from './interfaces';
 
 /**
  * The type of the channel with which the content is associated.
@@ -165,3 +166,12 @@ export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_
  * Minimum Adaptive Card version supported by the host.
  */
 export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };
+
+/**
+ * @hidden
+ *
+ * Adaptive Card version supported by the Teams v1 client.
+ */
+export const teamsMinAdaptiveCardVersion: HostVersionsInfo = {
+  adaptiveCardSchemaVersion: { majorVersion: 1, minorVersion: 5 },
+};
