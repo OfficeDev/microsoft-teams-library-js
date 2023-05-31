@@ -3,7 +3,6 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
-import { version } from './version';
 
 /**
  * Allows your application to interact with the host M365 application's search box.
