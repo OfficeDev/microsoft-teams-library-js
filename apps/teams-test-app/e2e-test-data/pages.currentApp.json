@@ -17,7 +17,7 @@
         "pageId": "tasklist123",
         "subPageId": "task456"
       },
-      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.metaostestapp.test\",\"pageId\":\"tasklist123\",\"subPageId\":\"task456\"}",
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.msfttestapp.test\",\"pageId\":\"tasklist123\",\"subPageId\":\"task456\"}",
       "expectedTestAppValue": "Completed"
     },
     {
@@ -28,7 +28,7 @@
       "inputValue": {
         "pageId": "tasklist123"
       },
-      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.metaostestapp.test\",\"pageId\":\"tasklist123\"}",
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.msfttestapp.test\",\"pageId\":\"tasklist123\"}",
       "expectedTestAppValue": "Completed"
     },
     {
@@ -44,7 +44,7 @@
       "type": "callResponse",
       "version": ">2.3.0",
       "boxSelector": "#box_navigateToDefaultPage",
-      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.metaostestapp.test\",\"pageId\":\"serverUrl\"}",
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.msfttestapp.test\",\"pageId\":\"serverUrl\"}",
       "expectedTestAppValue": "Completed"
     }
   ]
