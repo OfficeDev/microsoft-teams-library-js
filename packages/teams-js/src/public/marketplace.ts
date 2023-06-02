@@ -1,13 +1,14 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform } from './constants';
-import { Cart } from './interfaces';
+import { Cart, CartItem, UpdateCartStatusParams } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace marketplace {
   /**
    * get cart object for app.
    *
+   * @beta
    */
   export function getCart(): Promise<Cart> {
     return new Promise<Cart>((resolve) => {
@@ -18,18 +19,50 @@ export namespace marketplace {
     });
   }
   /**
-   * update cart object in the host for app
+   * add or update cart items in the cart in host.
    *
-   * @param cart - An object containing all product items and cart info.
+   * @param cartItems - a list of cart item, if item id is existing, update the quantity, otherwise add new item to cart.
    *
-   * @returns boolean to represent whether the set operation is success or not
+   * @beta
    */
-  export function setCart(cart: Cart): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
+  export function addOrUpdateCartItems(cartItems: CartItem[]): Promise<void> {
+    return new Promise<void>((resolve) => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('marketplace.setCart', cart));
+      resolve(sendAndHandleSdkError('marketplace.addOrUpdateCartItems', cartItems));
+    });
+  }
+  /**
+   * remove cart items in the cart in host.
+   *
+   * @param cartItemIds - a list of cart id, delete the cart item accordingly.
+   *
+   * @beta
+   */
+  export function removeCartItems(cartItemIds: string[]): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      resolve(sendAndHandleSdkError('marketplace.removeCartItems', cartItemIds));
+    });
+  }
+  /**
+   * update cart status.
+   *
+   * @param cartStatus - cart status.
+   *
+   * @param message - extra info to the status.
+   *
+   * @beta
+   */
+  export function updateCartStatus(updateCartStatusParams: UpdateCartStatusParams): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      resolve(sendAndHandleSdkError('marketplace.updateCartStatus', updateCartStatusParams));
     });
   }
   /**
