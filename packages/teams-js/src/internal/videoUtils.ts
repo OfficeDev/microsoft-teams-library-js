@@ -216,40 +216,40 @@ async function extractVideoFrameAndMetadata(
   const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
   await texture.copyTo(headerBuffer, { rect: headerRect });
   const headerDataView = new Uint32Array(headerBuffer);
-  // const [ version, frameRowOffset, frameFormat, frameWidth, frameHeight, frameLumaStride, frameChromaStride, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
+  // const [ oneTextureId, version, frameRowOffset, frameFormat, frameWidth, frameHeight, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
   if (awesomeDebuggingEnabled) {
     console.log(
-      'version:',
+      'OneTextureId:',
       headerDataView[0],
-      'frameRowOffset:',
+      'Version:',
       headerDataView[1],
-      'frameFormat:',
+      'FrameRowOffset:',
       headerDataView[2],
-      'frameWidth:',
+      'FrameFormat:',
       headerDataView[3],
-      'frameHeight:',
+      'FrameWidth:',
       headerDataView[4],
-      'frameLumaStride:',
+      'FrameHeight:',
       headerDataView[5],
-      'frameChromaStride:',
+      'MultiStreamHeaderRowOffset:',
       headerDataView[6],
-      'multiStreamHeaderRowOffset:',
+      'MultiStreamCount:',
       headerDataView[7],
-      'multiStreamCount:',
-      headerDataView[8],
+      // 'Timestamp:',
+      // headerDataView[8],
     );
   }
 
   const metadataRect = {
     x: 0,
-    y: headerDataView[7],
+    y: headerDataView[6],
     width: texture.codedWidth,
-    height: texture.codedHeight - headerDataView[7],
+    height: texture.codedHeight - headerDataView[6],
   };
   const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
   await texture.copyTo(metadataBuffer, { rect: metadataRect });
   const metadata = new Uint32Array(metadataBuffer);
-  for (let i = 0, index = 0; i < headerDataView[8]; i++) {
+  for (let i = 0, index = 0; i < headerDataView[7]; i++) {
     const streamId = metadata[index++];
     const streamDataOffset = metadata[index++];
     const streamDataSize = metadata[index++];
@@ -271,7 +271,7 @@ async function extractVideoFrameAndMetadata(
   return {
     videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
       timestamp: texture.timestamp,
-      visibleRect: { x: 0, y: headerDataView[1], width: headerDataView[3], height: headerDataView[4] },
+      visibleRect: { x: 0, y: headerDataView[2], width: headerDataView[4], height: headerDataView[5] },
     }) as VideoFrame,
     metadata: {},
   };
