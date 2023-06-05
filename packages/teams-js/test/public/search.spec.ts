@@ -92,7 +92,6 @@ describe('Search', () => {
 
           expect(closeSearchMessage).not.toBeNull();
           expect(closeSearchMessage.args.length).toEqual(0);
-          expect(closeSearchMessage.args[0]).toEqual(undefined);
         }
       });
 
@@ -209,7 +208,6 @@ describe('Search', () => {
 
           expect(closeSearchMessage).not.toBeNull();
           expect(closeSearchMessage.args.length).toEqual(0);
-          expect(closeSearchMessage.args[0]).toEqual(undefined);
         }
       });
 
