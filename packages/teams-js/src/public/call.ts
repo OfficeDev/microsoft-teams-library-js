@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { sendAndHandleStatusAndReasonWithDefaultError } from '../internal/communication';
+import { sendAndUnwrap } from '../internal/communication';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -57,12 +57,14 @@ export namespace call {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        sendAndHandleStatusAndReasonWithDefaultError(
-          'executeDeepLink',
-          createTeamsDeepLinkForCall(
-            startCallParams.targets,
-            startCallParams.requestedModalities?.includes(CallModalities.Video),
-            startCallParams.source,
+        resolve(
+          sendAndUnwrap(
+            'executeDeepLink',
+            createTeamsDeepLinkForCall(
+              startCallParams.targets,
+              startCallParams.requestedModalities?.includes(CallModalities.Video),
+              startCallParams.source,
+            ),
           ),
         );
       } else {

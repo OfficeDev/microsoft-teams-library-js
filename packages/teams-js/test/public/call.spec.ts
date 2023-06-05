@@ -88,7 +88,7 @@ describe('call', () => {
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 
-    utils.respondToMessage(executeDeepLinkMsg, false, true);
+    utils.respondToMessage(executeDeepLinkMsg, true);
     await expect(promise).resolves.toBe(true);
   });
 });
