@@ -15,7 +15,7 @@
       "inputValue": {
         "contentUrl": "https://www.bing.com",
         "entityId": "1",
-        "suggestedDisplayName": "MsftApp"
+        "suggestedDisplayName": "M365TestApp"
       },
       "expectedAlertValue": "setConfig called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "Completed"

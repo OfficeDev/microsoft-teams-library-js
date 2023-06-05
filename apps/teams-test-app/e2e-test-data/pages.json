@@ -7,7 +7,7 @@
       "type": "callResponse",
       "boxSelector": "#box_config_getConfig",
       "expectedAlertValue": "getConfig called",
-      "expectedTestAppValue": "{\"contentUrl\":\"https://www.bing.com\",\"entityId\":\"1\",\"suggestedDisplayName\":\"MsftTestApp\"}"
+      "expectedTestAppValue": "{\"contentUrl\":\"https://www.bing.com\",\"entityId\":\"1\",\"suggestedDisplayName\":\"M365TestApp\"}"
     },
     {
       "title": "getConfig API Call - Default Response",
