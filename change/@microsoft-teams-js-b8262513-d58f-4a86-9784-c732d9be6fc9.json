@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Changing sendAndHandleSdkError to sendAndHandleStatusAndReasonWithDefaultError in call.ts",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
