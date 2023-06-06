@@ -120,7 +120,6 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
-        <MarketplaceAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />

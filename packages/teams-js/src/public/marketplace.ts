@@ -22,7 +22,7 @@ export namespace marketplace {
   /**
    * add or update cart items in the cart in host.
    *
-   * @param cartItems - a list of cart item, if item id is existing, update the quantity, otherwise add new item to cart.
+   * @param cartItems - a list of cart item, if item id is existing, overwrite the item, otherwise add new item to cart.
    *
    * @beta
    */
