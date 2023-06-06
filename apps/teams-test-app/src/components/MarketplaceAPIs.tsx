@@ -26,7 +26,7 @@ const AddOrUpdateCartItems = (): ReactElement =>
       },
       submit: async (cartItems, setResult) => {
         await marketplace.addOrUpdateCartItems(cartItems);
-        const msg = 'Teams client update cart items succeeded';
+        const msg = 'update cart items succeeded';
         setResult(msg);
         return msg;
       },
@@ -45,7 +45,7 @@ const RemoveCartItems = (): ReactElement =>
       },
       submit: async (cartItemIds, setResult) => {
         await marketplace.removeCartItems(cartItemIds);
-        const msg = 'Teams client remove cart items succeeded';
+        const msg = 'remove cart items succeeded';
         setResult(msg);
         return msg;
       },
@@ -64,7 +64,7 @@ const UpdateCartStatus = (): ReactElement =>
       },
       submit: async (updateCartStatusParams, setResult) => {
         await marketplace.updateCartStatus(updateCartStatusParams);
-        const msg = 'Teams client remove cart items succeeded';
+        const msg = 'update cart status succeeded';
         setResult(msg);
         return msg;
       },
