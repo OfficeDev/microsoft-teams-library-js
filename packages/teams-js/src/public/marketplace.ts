@@ -1,6 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { Cart, CartItem, UpdateCartStatusParams } from './interfaces';
 import { runtime } from './runtime';
 
@@ -12,6 +12,7 @@ export namespace marketplace {
    */
   export function getCart(): Promise<Cart> {
     return new Promise<Cart>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -27,6 +28,7 @@ export namespace marketplace {
    */
   export function addOrUpdateCartItems(cartItems: CartItem[]): Promise<void> {
     return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -42,6 +44,7 @@ export namespace marketplace {
    */
   export function removeCartItems(cartItemIds: string[]): Promise<void> {
     return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -51,14 +54,17 @@ export namespace marketplace {
   /**
    * update cart status.
    *
-   * @param cartStatus - cart status.
+   * @param updateCartStatusParams
    *
-   * @param message - extra info to the status.
+   * updateCartStatusParams.cartStatus - cart status;
+   *
+   * updateCartStatusParams. message - extra info to the status.
    *
    * @beta
    */
   export function updateCartStatus(updateCartStatusParams: UpdateCartStatusParams): Promise<void> {
     return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
