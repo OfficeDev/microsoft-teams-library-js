@@ -32,10 +32,27 @@ const RegisterHandlers = (): React.ReactElement =>
     },
   });
 
+const CloseSearch = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'search_closeSearch',
+    title: 'Close Search',
+    onClick: {
+      withPromise: async () => {
+        await search.closeSearch();
+        return 'called';
+      },
+      withCallback: (setResult) => {
+        search.closeSearch();
+        setResult('called');
+      },
+    },
+  });
+
 const SearchAPIs = (): ReactElement => (
   <>
     <ModuleWrapper title="Search">
       <RegisterHandlers />
+      <CloseSearch />
     </ModuleWrapper>
   </>
 );
