@@ -1,5 +1,5 @@
-import { sendMessageToParent } from '../internal/communication';
-import { sendAndUnwrap } from '../internal/communication';
+import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
+import { errorCallNotStarted } from '../internal/constants';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -65,7 +65,12 @@ export namespace call {
               startCallParams.requestedModalities?.includes(CallModalities.Video),
               startCallParams.source,
             ),
-          ),
+          ).then((result: boolean) => {
+            if (!result) {
+              throw new Error(errorCallNotStarted);
+            }
+            return result;
+          }),
         );
       } else {
         return sendMessageToParent('call.startCall', [startCallParams], resolve);
