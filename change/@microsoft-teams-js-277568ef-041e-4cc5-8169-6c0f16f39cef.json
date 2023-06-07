@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Embedded apps no longer incorrectly get their parameters wrapped in an array",
-  "packageName": "@microsoft/teams-js",
-  "email": "sigulati@microsoft.com",
-  "dependentChangeType": "minor"
-}
