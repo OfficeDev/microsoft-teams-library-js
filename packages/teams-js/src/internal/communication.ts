@@ -133,8 +133,8 @@ export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T>
 }
 
 export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
-    if (!status) {
+  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
+    if (!wasSuccessful) {
       throw new Error(reason);
     }
   });
@@ -149,8 +149,8 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
   defaultError: string,
   ...args: any[]
 ): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([status, reason]: [boolean, string]) => {
-    if (!status) {
+  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
+    if (!wasSuccessful) {
       throw new Error(reason ? reason : defaultError);
     }
   });
