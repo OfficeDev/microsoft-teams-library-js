@@ -16,8 +16,8 @@ const GetCart = (): ReactElement =>
 
 const AddOrUpdateCartItems = (): ReactElement =>
   ApiWithTextInput<CartItem[]>({
-    name: 'AddOrUpdateCartItems',
-    title: 'AddOrUpdateCartItems',
+    name: 'addOrUpdateCartItems',
+    title: 'Add Or Update CartItems',
     onClick: {
       validateInput: (input) => {
         if (!input) {
@@ -35,8 +35,8 @@ const AddOrUpdateCartItems = (): ReactElement =>
 
 const RemoveCartItems = (): ReactElement =>
   ApiWithTextInput<string[]>({
-    name: 'RemoveCartItems',
-    title: 'RemoveCartItems',
+    name: 'removeCartItems',
+    title: 'Remove Cart Items',
     onClick: {
       validateInput: (input) => {
         if (!input) {
@@ -54,8 +54,8 @@ const RemoveCartItems = (): ReactElement =>
 
 const UpdateCartStatus = (): ReactElement =>
   ApiWithTextInput<UpdateCartStatusParams>({
-    name: 'UpdateCartStatus',
-    title: 'UpdateCartStatus',
+    name: 'updateCartStatus',
+    title: 'Update Cart Status',
     onClick: {
       validateInput: (input) => {
         if (!input) {
@@ -73,13 +73,13 @@ const UpdateCartStatus = (): ReactElement =>
 
 const CheckMarketplaceCapability = (): ReactElement =>
   ApiWithoutInput({
-    name: 'checkCapabilityMarketplace',
-    title: 'Check Capability Marketplace',
+    name: 'checkMarketplaceCapability',
+    title: 'Check Marketplace Capability ',
     onClick: async () => {
       if (marketplace.isSupported()) {
-        return 'Marketplace capability is supported';
+        return 'marketplace module is supported';
       } else {
-        return 'Marketplace capability is not supported';
+        return 'marketplace module is not supported';
       }
     },
   });
