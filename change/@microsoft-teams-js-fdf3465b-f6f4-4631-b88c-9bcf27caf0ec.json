@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `closeSearch` to `search` capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "kennethba@microsoft.com",
-  "dependentChangeType": "patch"
-}
