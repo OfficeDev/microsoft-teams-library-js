@@ -1,8 +1,58 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 03 Mar 2023 19:57:31 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Jun 2023 19:21:01 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.12.0
+
+Wed, 07 Jun 2023 19:21:01 GMT
+
+### Minor changes
+
+- Embedded apps no longer incorrectly get their parameters wrapped in an array
+- Added `secondaryBrowser` capability and its open API to enable browsing experience for Apps
+- Deleted unnecessary 'export' from helper functions and deleted unused and unnecessary functions in `dialog` capability.
+- Updated `video.registerForVideoFrame` to support both media stream and shared frame
+- Added `closeSearch` to `search` capability
+
+### Patches
+
+- Added default value for Adaptive Card version to support adaptive card dialogs in Teams V1
+- Fixed exports in `video` capability
+
+## 2.11.0
+
+Wed, 03 May 2023 18:17:38 GMT
+
+### Minor changes
+
+- Added `getClientInfo` to LiveShareHost
+
+### Patches
+
+- Added comments on all exported types and functions and made comments required for all future changes.
+
+## 2.10.1
+
+Thu, 06 Apr 2023 23:07:12 GMT
+
+### Minor changes
+
+- Fixed errors in `video` capability
+- Removed some valid origins
+
+### Patches
+
+- Fixed broken documentation link and invalid markdown.
+- Added `ipados` host client type check for auth flow
+- Removed legacy endpoints from `IFluidTenantInfo` interface
+- Added documentation to interfaces in `mail` capability
+- Removed unnecessary (and outdated) docs on various `enum` properties
+- `meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs
+- Added documentation for "Anonymous" as possible value for `UserInfo.licenseType`
+- `sharing.isSupported` now returns the correct value on mobile platforms
+- Clarified documentation on proper use of various user identity properties
 
 ## 2.9.1
 

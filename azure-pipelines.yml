@@ -1,5 +1,9 @@
 variables:
   - group: InfoSec-SecurityResults
+  - name: products
+    value: 6eff390d-80c0-4456-81b6-6abafa71e768
+  - name: tags
+    value: production
 
 trigger:
   branches:
@@ -151,7 +155,7 @@ jobs:
   - job: E2ETestIOS
     displayName: 'E2E Test - IOS'
     pool:
-      vmImage: 'internal-macos-11'
+      vmImage: 'internal-macos12'
     steps:
       - template: tools/yaml-templates/ios-test.yml
         parameters:

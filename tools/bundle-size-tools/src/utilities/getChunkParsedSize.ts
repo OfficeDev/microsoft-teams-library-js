@@ -13,7 +13,7 @@ export function getChunkParsedSize(stats: WebpackStatsJson, chunkId: string | nu
     throw new Error("No assets property in the stats file, can't compute parsed sizes of chunks");
   }
 
-  const matchingAsset = stats.assets.find(asset => {
+  const matchingAsset = stats.assets.find((asset) => {
     // Make sure to only look at js files and not source maps (assumes source maps don't end in .js)
     if (asset.name.endsWith('.js')) {
       // Assumes only a single chunk per asset, this may not hold for all apps.

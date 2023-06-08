@@ -3,7 +3,15 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * Used to interact with mail capability, including opening and composing mail.
+ */
 export namespace mail {
+  /**
+   * Opens a mail message in the host.
+   *
+   * @param openMailItemParams - Object that specifies the ID of the mail message.
+   */
   export function openMailItem(openMailItemParams: OpenMailItemParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
@@ -19,6 +27,12 @@ export namespace mail {
     });
   }
 
+  /**
+   * Compose a new email in the user's mailbox.
+   *
+   * @param composeMailParams - Object that specifies the type of mail item to compose and the details of the mail item.
+   *
+   */
   export function composeMail(composeMailParams: ComposeMailParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
@@ -40,14 +54,21 @@ export namespace mail {
     return ensureInitialized(runtime) && runtime.supports.mail ? true : false;
   }
 
+  /** Defines the parameters used to open a mail item in the user's mailbox */
   export interface OpenMailItemParams {
+    /** An unique base64-encoded string id that represents the itemId or messageId. */
     itemId: string;
   }
 
+  /** Defines compose mail types. */
   export enum ComposeMailType {
+    /** Compose a new mail message. */
     New = 'new',
+    /** Compose a reply to the sender of an existing mail message. */
     Reply = 'reply',
+    /** Compose a reply to all recipients of an existing mail message. */
     ReplyAll = 'replyAll',
+    /** Compose a new mail message with the content of an existing mail message forwarded to a new recipient. */
     Forward = 'forward',
   }
 
@@ -55,9 +76,11 @@ export namespace mail {
    * Foundational interface for all other mail compose interfaces
    * Used for holding the type of mail item being composed
    *
-   * @see {@link ComposeMailType}
+   * @typeParam T - the identity type.
+   * @see {@link mail.ComposeMailType}
    */
   interface ComposeMailBase<T extends ComposeMailType> {
+    /** Type of the mail item being composed. */
     type: T;
   }
 
@@ -97,6 +120,7 @@ export namespace mail {
    * @see {@link ComposeMailType}
    */
   export interface ComposeReplyOrForwardParams<T extends ComposeMailType> extends ComposeMailBase<T> {
+    /** An unique base64-encoded string id that represents the mail message. */
     itemid: string;
   }
 

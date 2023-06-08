@@ -1,8 +1,8 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import { app, FrameContexts, menus } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
-import { _minRuntimeConfigToUninitialize, setUnitializedRuntime } from '../../src/public/runtime';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -11,21 +11,13 @@ import { Utils } from '../utils';
 
 describe('Testing menus capability', () => {
   describe('FRAMED - Testing menus capability', () => {
-    const framedMock = new Utils();
-
+    let utils: Utils = new Utils();
     beforeEach(() => {
-      framedMock.processMessage = null;
-      framedMock.messages = [];
-      framedMock.childMessages = [];
-      framedMock.childWindow.closed = false;
+      utils = new Utils();
+      utils.messages = [];
     });
-
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        framedMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-        app._uninitialize();
-      }
+      app._uninitialize();
     });
 
     describe('Testing menus.isSupported', () => {
@@ -49,8 +41,8 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setUpViews should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framedMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(1);
           try {
             menus.setUpViews([viewConfiguration], () => true);
@@ -60,9 +52,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.setUpViews should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framedMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.setUpViews([viewConfiguration], () => true);
-          const message = framedMock.findMessageByFunc('setUpViews');
+          const message = utils.findMessageByFunc('setUpViews');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual([viewConfiguration]);
         });
@@ -78,8 +70,8 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setNavBarMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framedMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(1);
           try {
             menus.setNavBarMenu([menuItem], () => true);
@@ -89,9 +81,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.setNavBarMenu should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framedMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.setNavBarMenu([menuItem], () => true);
-          const message = framedMock.findMessageByFunc('setNavBarMenu');
+          const message = utils.findMessageByFunc('setNavBarMenu');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual([menuItem]);
         });
@@ -112,8 +104,8 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.showActionMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framedMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
           expect.assertions(1);
           try {
             menus.showActionMenu(actionMenuParams, () => true);
@@ -123,9 +115,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.showActionMenu should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framedMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.showActionMenu(actionMenuParams, () => true);
-          const message = framedMock.findMessageByFunc('showActionMenu');
+          const message = utils.findMessageByFunc('showActionMenu');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual(actionMenuParams);
         });
@@ -134,25 +126,17 @@ describe('Testing menus capability', () => {
   });
 
   describe('FRAMELESS - Testing menus capability', () => {
-    const framedMock = new Utils();
-    const framelessMock = new FramelessPostMocks();
-
+    let utils: Utils = new Utils();
     beforeEach(() => {
-      framedMock.processMessage = null;
-      framedMock.messages = [];
-      framelessMock.messages = [];
-      framedMock.childMessages = [];
-      framedMock.childWindow.closed = false;
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      GlobalVars.isFramelessWindow = false;
     });
-
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        framedMock.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-        app._uninitialize();
-      }
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
     });
-
     describe('Testing menus.setUpViews function', () => {
       const viewConfiguration: menus.ViewConfiguration = {
         id: 'some ID',
@@ -167,9 +151,9 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setUpViews should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framelessMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect.assertions(4);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
           try {
             menus.setUpViews([viewConfiguration], () => true);
           } catch (e) {
@@ -178,9 +162,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.setUpViews should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framelessMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.setUpViews([viewConfiguration], () => true);
-          const message = framelessMock.findMessageByFunc('setUpViews');
+          const message = utils.findMessageByFunc('setUpViews');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual([viewConfiguration]);
         });
@@ -200,9 +184,9 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.setNavBarMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framelessMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect.assertions(4);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
           try {
             menus.setNavBarMenu([menuItem], () => true);
           } catch (e) {
@@ -211,9 +195,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.setNavBarMenu should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framelessMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.setNavBarMenu([menuItem], () => false);
-          const message = framelessMock.findMessageByFunc('setNavBarMenu');
+          const message = utils.findMessageByFunc('setNavBarMenu');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual([expectedOutput]);
         });
@@ -245,9 +229,9 @@ describe('Testing menus capability', () => {
 
       Object.values(FrameContexts).forEach((frameContext) => {
         it(`menus.showActionMenu should throw error when menus is not supported  when set to true in ${frameContext} context`, async () => {
-          await framelessMock.initializeWithContext(frameContext);
-          framedMock.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect.assertions(4);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect.assertions(1);
           try {
             menus.showActionMenu(actionMenuParams, () => true);
           } catch (e) {
@@ -256,9 +240,9 @@ describe('Testing menus capability', () => {
         });
 
         it(`menus.showActionMenu should initiate the post message to Parent when set to true in ${frameContext} context `, async () => {
-          await framelessMock.initializeWithContext(frameContext);
+          await utils.initializeWithContext(frameContext);
           menus.showActionMenu(actionMenuParams, () => true);
-          const message = framelessMock.findMessageByFunc('showActionMenu');
+          const message = utils.findMessageByFunc('showActionMenu');
           expect(message).not.toBeUndefined();
           expect(message.args[0]).toStrictEqual(expectedOutput);
         });

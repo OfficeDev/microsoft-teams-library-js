@@ -162,16 +162,24 @@ export class Utils {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
+    } else if (this.processMessage === undefined) {
+      const domEvent = {
+        data: {
+          id: message.id,
+          args: args,
+        } as MessageResponse,
+      } as DOMMessageEvent;
+      (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
+    } else {
+      this.processMessage({
+        origin: this.validOrigin,
+        source: this.mockWindow.parent,
+        data: {
+          id: message.id,
+          args: args,
+        } as MessageResponse,
+      } as MessageEvent);
     }
-
-    this.processMessage({
-      origin: this.validOrigin,
-      source: this.mockWindow.parent,
-      data: {
-        id: message.id,
-        args: args,
-      } as MessageResponse,
-    } as MessageEvent);
   };
 
   public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
@@ -216,6 +224,10 @@ export class Utils {
         args: args,
       },
     } as MessageEvent);
+  };
+
+  public respondToFramelessMessage = (event: DOMMessageEvent): void => {
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(event);
   };
 
   /**

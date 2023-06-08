@@ -26,8 +26,8 @@ const buildAndGetIntegrityHash = async () => {
   const absolutePathToManifestJson = path.resolve(__dirname, relativePathToManifestJson);
 
   console.log('Building @microsoft/teams-js');
-  await execShellCommand('pnpm workspace @microsoft/teams-js install');
-  await execShellCommand('pnpm workspace @microsoft/teams-js build');
+  await execShellCommand('pnpm install');
+  await execShellCommand('pnpm build');
 
   if (!fs.existsSync(absolutePathToManifestJson)) {
     throw `ERROR: MicrosoftTeams-manifest.json at ${absolutePathToManifestJson} was not found.`;
@@ -60,11 +60,11 @@ const updateVersionAndIntegrity = async (absolutePath, version, integrityHash) =
   const result = readme
     .replace(/integrity=\".*?\"/, `integrity="${integrityHash}"`)
     .replace(
-      /res.cdn.office.net\/teams-js\/.*\/js\/MicrosoftTeams.min.js/g,
+      /res\.cdn\.office.net\/teams-js\/.*\/js\/MicrosoftTeams\.min\.js/g,
       `res.cdn.office.net/teams-js/${version}/js/MicrosoftTeams.min.js`,
     )
     .replace(
-      /node_modules\/@microsoft\/teams-js@.*\/dist\/MicrosoftTeams.min.js/g,
+      /node_modules\/@microsoft\/teams-js@.*\/dist\/MicrosoftTeams\.min\.js/g,
       `node_modules/@microsoft/teams-js@${version}/dist/MicrosoftTeams.min.js`,
     );
   fs.writeFileSync(absolutePath, result);
