@@ -1,4 +1,4 @@
-import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { errorCallNotStarted, errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, call, FrameContexts } from '../../src/public';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
@@ -88,7 +88,29 @@ describe('call', () => {
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 
-    utils.respondToMessage(executeDeepLinkMsg, false, true);
+    utils.respondToMessage(executeDeepLinkMsg, true);
     await expect(promise).resolves.toBe(true);
+  });
+
+  it('startCall should correctly throw error if called with {error, result} format: Legacy host', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({
+      apiVersion: 1,
+      isLegacyTeams: true,
+      supports: {
+        call: {},
+      },
+    });
+    const promise = call.startCall(mockStartCallParams);
+    const executeDeepLinkMsg = utils.findMessageByFunc('executeDeepLink');
+    expect(executeDeepLinkMsg).toBeTruthy();
+    expect(executeDeepLinkMsg.args).toHaveLength(1);
+
+    const callDeepLink: URL = new URL(executeDeepLinkMsg.args[0] as string);
+    validateCallDeepLinkPrefix(callDeepLink);
+    validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
+
+    utils.respondToMessage(executeDeepLinkMsg, false, errorCallNotStarted);
+    await expect(promise).rejects.toThrowError(errorCallNotStarted);
   });
 });
