@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -24,7 +24,7 @@ export namespace calendar {
         throw new Error('Must supply an itemId to openCalendarItem');
       }
 
-      resolve(sendAndHandleError('calendar.openCalendarItem', openCalendarItemParams));
+      resolve(sendAndHandleStatusAndReason('calendar.openCalendarItem', openCalendarItemParams));
     });
   }
 
@@ -41,7 +41,7 @@ export namespace calendar {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleError(
+          sendAndHandleStatusAndReason(
             'executeDeepLink',
             createTeamsDeepLinkForCalendar(
               composeMeetingParams.attendees,
@@ -53,7 +53,7 @@ export namespace calendar {
           ),
         );
       } else {
-        resolve(sendAndHandleError('calendar.composeMeeting', composeMeetingParams));
+        resolve(sendAndHandleStatusAndReason('calendar.composeMeeting', composeMeetingParams));
       }
     });
   }

@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -23,7 +23,7 @@ export namespace mail {
         throw new Error('Must supply an itemId to openMailItem');
       }
 
-      resolve(sendAndHandleError('mail.openMailItem', openMailItemParams));
+      resolve(sendAndHandleStatusAndReason('mail.openMailItem', openMailItemParams));
     });
   }
 
@@ -40,7 +40,7 @@ export namespace mail {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleError('mail.composeMail', composeMailParams));
+      resolve(sendAndHandleStatusAndReason('mail.composeMail', composeMailParams));
     });
   }
 
