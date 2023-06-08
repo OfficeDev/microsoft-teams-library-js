@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed exports in `video` capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
