@@ -1,8 +1,8 @@
 import {
   Communication,
   sendAndHandleSdkError,
-  sendAndHandleStatusAndReason as send,
-  sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
+  sendAndHandleStatusAndReason,
+  sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
   sendMessageEventToChild,
   sendMessageToParent,
@@ -170,7 +170,7 @@ export namespace pages {
       }
       const errorMessage =
         'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-      resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
+      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', errorMessage, url));
     });
   }
 
@@ -198,9 +198,9 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(send('executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReason('executeDeepLink', createTeamsAppLink(params)));
       } else {
-        resolve(send('pages.navigateToApp', params));
+        resolve(sendAndHandleStatusAndReason('pages.navigateToApp', params));
       }
     });
   }
@@ -296,7 +296,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-        resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', errorMessage, tabInstance));
       });
     }
     /**
@@ -392,7 +392,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('settings.setSettings', instanceConfig));
+        resolve(sendAndHandleStatusAndReason('settings.setSettings', instanceConfig));
       });
     }
 
@@ -650,7 +650,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Back navigation is not supported in the current client or context.';
-        resolve(sendAndDefaultError('navigateBack', errorMessage));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', errorMessage));
       });
     }
 

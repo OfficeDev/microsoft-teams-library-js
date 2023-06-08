@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { isValidHttpsURL } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -32,7 +32,7 @@ export namespace secondaryBrowser {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
 
-    return sendAndHandleError('secondaryBrowser.open', url.toString());
+    return sendAndHandleSdkError('secondaryBrowser.open', url.toString());
   }
 
   /**
