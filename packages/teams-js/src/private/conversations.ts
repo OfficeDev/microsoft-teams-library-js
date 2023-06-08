@@ -1,8 +1,4 @@
-import {
-  sendAndHandleStatusAndReason as sendAndHandleError,
-  sendAndUnwrap,
-  sendMessageToParent,
-} from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -148,7 +144,7 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const sendPromise = sendAndHandleError('conversations.openConversation', {
+      const sendPromise = sendAndHandleStatusAndReason('conversations.openConversation', {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
         conversationId: openConversationRequest.conversationId,

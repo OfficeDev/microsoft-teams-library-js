@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -33,7 +33,7 @@ export namespace appInstallDialog {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleError(
+          sendAndHandleStatusAndReason(
             'executeDeepLink',
             createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
           ),
