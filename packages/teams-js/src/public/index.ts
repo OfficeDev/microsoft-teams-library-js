@@ -67,7 +67,6 @@ export { version } from './version';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
-export { marketplace } from './marketplace';
 export {
   enablePrintCapability,
   executeDeepLink,
@@ -94,3 +93,7 @@ export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from '.
 export { settings } from './settings';
 export { tasks } from './tasks';
 export * from './liveShareHost';
+export { Country as Market } from './countryCode';
+export { Locale } from './locale';
+export { Currency } from './currencyCode';
+export * from './marketplace';

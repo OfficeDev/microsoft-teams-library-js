@@ -2,9 +2,6 @@
 
 import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { FrameContexts } from './constants';
-import { Country } from './countryCode';
-import { Currency } from './currencyCode';
-import { Locale } from './locale';
 
 /**
  * Represents information about tabs for an app
@@ -1055,96 +1052,4 @@ export interface AdaptiveCardVersion {
   majorVersion: number;
   /** Represents the minor version number. */
   minorVersion: number;
-}
-
-/**
- * the cart object for app checkout flow
- */
-export interface Cart {
-  /** version of the cart. */
-  readonly version: CartVersion;
-  /** the id of the cart. */
-  readonly id: string;
-  /** the cart info. */
-  cartInfo: CartInfo;
-  /** the cart items. */
-  cartItems: CartItem[];
-}
-
-/**
- * version of the cart.
- */
-interface CartVersion {
-  /** Represents the major version number. */
-  majorVersion: number;
-  /** Represents the minor version number. */
-  minorVersion: number;
-}
-
-/** the cart info. */
-interface CartInfo {
-  /** the country market that where the products are . */
-  readonly market: Country;
-  /** the identifier to tell the cart is checked out by admin or information worker */
-  readonly intent: Intent;
-  /** locale for the user */
-  readonly locale: Locale;
-  /** the status of the cart. */
-  status: CartStatus;
-  /** currency code for the cart item price. */
-  readonly currency: Currency;
-}
-
-/** the cart items. */
-interface Item {
-  /** the id of the cart item. */
-  readonly id: string;
-  /** the display name of the cart item. */
-  name: string;
-  /** the quantity of the cart item. */
-  quantity: number;
-  /** the price of the single cart item. */
-  price: number;
-  /** the thumbnail imageURL of the cart item. */
-  readonly imageURL?: string;
-}
-
-/** the cart items. */
-export interface CartItem extends Item {
-  /** accessories to the item if exist. */
-  readonly accessories?: Item[];
-}
-
-/** the identifier to tell the cart is checked out by admin or information worker */
-export enum Intent {
-  /** the cart is created by admin of an organization. */
-  Admin = 'Admin',
-  /** the cart is created by end user of an organization. */
-  IW = 'IW',
-}
-
-/** the status of the cart. */
-export enum CartStatus {
-  /** cart is created but not checked out yet.*/
-  Opened = 'Opened',
-  /** cart is checked out but not completed yet.*/
-  Processing = 'Processing',
-  /**
-   * indicate checking out is completed and
-   * response a new cart in the next getCart call
-   */
-  Processed = 'Processed',
-  /**
-   * indicate checking out if fail and
-   * response a new cart in the next getCart call
-   */
-  Error = 'Processed',
-}
-
-/** the parameters to update cart status. */
-export interface UpdateCartStatusParams {
-  /** cart is created but not checked out yet.*/
-  cartStatus: CartStatus;
-  /** extra info to the status. */
-  message?: string;
 }
