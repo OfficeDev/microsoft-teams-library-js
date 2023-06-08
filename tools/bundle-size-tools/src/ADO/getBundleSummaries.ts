@@ -22,7 +22,7 @@ export interface GetBundleSummariesArgs {
 export async function getBundleSummaries(args: GetBundleSummariesArgs): Promise<BundleSummaries> {
   const result: BundleSummaries = new Map();
 
-  const pendingAsyncWork = args.bundlePaths.map(async bundle => {
+  const pendingAsyncWork = args.bundlePaths.map(async (bundle) => {
     const [statsFile, bundleBuddyConfig] = await Promise.all([
       args.getStatsFile(bundle.relativePathToStatsFile),
       args.getBundleBuddyConfigFile(bundle.bundleName),
@@ -30,6 +30,7 @@ export async function getBundleSummaries(args: GetBundleSummariesArgs): Promise<
 
     const bundleSummary = runProcessorsOnStatsFile(
       bundle.bundleName,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       statsFile!, // non-null assertion here needed to due TS bug. Stats file is never undefined here
       bundleBuddyConfig,
       args.statsProcessors,

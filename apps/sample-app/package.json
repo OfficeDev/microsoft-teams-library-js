@@ -11,9 +11,9 @@
     "start": "webpack serve"
   },
   "dependencies": {
-    "@azure/msal-browser": "^2.26.0",
-    "@azure/msal-react": "^1.4.2",
-    "@microsoft/microsoft-graph-client": "^3.0.2",
+    "@azure/msal-browser": "^2.37.0",
+    "@azure/msal-react": "^1.5.7",
+    "@microsoft/microsoft-graph-client": "^3.0.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "@fluentui/react": "^8.75.1",

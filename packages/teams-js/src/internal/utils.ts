@@ -42,7 +42,7 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  */
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
-  if (messageOrigin.protocol !== 'https:') {
+  if (!isValidHttpsURL(messageOrigin)) {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
@@ -359,4 +359,15 @@ export function isHostAdaptiveCardSchemaVersionUnsupported(
   } else {
     return true;
   }
+}
+
+/**
+ * @hidden
+ * Checks if a URL is a HTTPS protocol based URL.
+ * @param url URL to be validated.
+ *
+ * @returns true if the URL is an https URL.
+ */
+export function isValidHttpsURL(url: URL): boolean {
+  return url.protocol === 'https:';
 }

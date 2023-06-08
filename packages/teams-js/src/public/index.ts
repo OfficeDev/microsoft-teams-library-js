@@ -47,13 +47,10 @@ export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
-export {
-  ChildAppWindow,
-  IAppWindow,
-  ParentAppWindow
-} from './appWindow';
+export { ChildAppWindow, IAppWindow, ParentAppWindow } from './appWindow';
 export { menus } from './menus';
 export { media } from './media';
+export { secondaryBrowser } from './secondaryBrowser';
 export { location } from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
@@ -92,12 +89,7 @@ export {
   setFrameContext,
   shareDeepLink,
 } from './publicAPIs';
-export {
-  returnFocus,
-  navigateBack,
-  navigateCrossDomain,
-  navigateToTab,
-} from './navigation';
+export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from './navigation';
 export { settings } from './settings';
 export { tasks } from './tasks';
 export * from './liveShareHost';
