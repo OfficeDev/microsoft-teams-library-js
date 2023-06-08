@@ -48,7 +48,10 @@ export namespace call {
    * Starts a call with other users
    *
    * @param startCallParams - Parameters for the call
-   * @returns If the call is accepted
+   *
+   * @throws Error if call capability is not supported
+   * @throws Error if host notifies of a failed start call attempt in a legacy teams environment
+   * @returns always true if the host notifies of a successful call inititation
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
     return new Promise((resolve) => {
