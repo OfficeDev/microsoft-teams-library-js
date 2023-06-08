@@ -20,7 +20,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            let fs = require('fs');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
