@@ -82,15 +82,27 @@ const WebAPIGetCurrentPosition = (): React.ReactElement =>
     onClick: async (setResult) => {
       let result;
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          result = 'Latitude: ' + position.coords.latitude + ' Longitude: ' + position.coords.longitude;
-          setResult(result);
-        });
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            result = 'Latitude: ' + position.coords.latitude + ' Longitude: ' + position.coords.longitude;
+            setResult(result);
+          },
+          (error) => {
+            result = 'Error occurred. Error code: ' + JSON.stringify(error);
+            setResult(result);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          },
+        );
+        return JSON.stringify('Requesting location');
       } else {
         result = 'navigator.geolocation is not accessible';
         setResult(result);
+        return JSON.stringify(result);
       }
-      return JSON.stringify('Do not have required permissions to access location');
     },
   });
 
