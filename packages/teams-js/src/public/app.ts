@@ -5,7 +5,7 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReason as send,
+  sendAndHandleStatusAndReason,
   sendAndUnwrap,
   sendMessageToParent,
   uninitializeCommunication,
@@ -803,7 +803,7 @@ export namespace app {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-      resolve(send('executeDeepLink', deepLink));
+      resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
     });
   }
 }
