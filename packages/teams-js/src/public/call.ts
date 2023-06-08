@@ -50,7 +50,7 @@ export namespace call {
    * @param startCallParams - Parameters for the call
    *
    * @throws Error if call capability is not supported
-   * @throws Error if host notifies of a failed start call attempt in a legacy teams environment
+   * @throws Error if host notifies of a failed start call attempt in a legacy Teams environment
    * @returns always true if the host notifies of a successful call inititation
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
