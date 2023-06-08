@@ -1,15 +1,14 @@
 module.exports = {
-  extends: '../../.eslintrc.js',
-  root: true,
+  ignorePatterns: ['.eslintrc.js'],
+  parserOptions: {
+    project: './tsconfig.strictNullChecks.json',
+  },
+  plugins: ['strict-null-checks'],
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
-    'curly': 'off',
-    'react-hooks/exhaustive-deps': 'off',
-    'react-hooks/rules-of-hooks': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-member-accessibility': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',  
+    '@typescript-eslint/no-namespace': 'off',
+    '@typescript-eslint/interface-name-prefix': 'off',
+    'no-inner-declarations': 'off',
+    'strict-null-checks/all': 'warn',
   },
 };

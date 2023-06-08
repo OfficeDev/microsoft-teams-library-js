@@ -9,11 +9,12 @@
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm tsc",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "lint": "pnpm eslint --max-warnings 0 --fix --ext .tsx"
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
+    "test": "jest"
   },
   "dependencies": {
-    "azure-devops-node-api": "^10.2.2",
-    "jszip": "^3.2.2",
+    "azure-devops-node-api": "^12.0.0",
+    "jszip": "^3.10.1",
     "msgpack-lite": "^0.1.26",
     "pako": "^2.0.2"
   }

@@ -20,7 +20,7 @@ export function runProcessorsOnStatsFile(
 ): BundleMetricSet {
   const result: BundleMetricSet = new Map();
 
-  statsProcessors.forEach(processor => {
+  statsProcessors.forEach((processor) => {
     const localMetrics = processor(stats, config);
 
     if (localMetrics) {

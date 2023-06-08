@@ -4,7 +4,7 @@ import { errorRuntimeNotInitialized, errorRuntimeNotSupported } from '../interna
 import { GlobalVars } from '../internal/globalVars';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, deepFreeze } from '../internal/utils';
-import { HostClientType } from './constants';
+import { HostClientType, teamsMinAdaptiveCardVersion } from './constants';
 import { HostVersionsInfo } from './interfaces';
 
 const runtimeLogger = getLogger('runtime');
@@ -73,7 +73,10 @@ interface IRuntimeV1 extends IBaseRuntime {
       };
     };
     readonly teamsCore?: {};
-    readonly video?: {};
+    readonly video?: {
+      readonly mediaStream?: {};
+      readonly sharedFrame?: {};
+    };
     readonly webStorage?: {};
   };
 }
@@ -103,6 +106,7 @@ interface IRuntimeV2 extends IBaseRuntime {
       readonly map?: {};
     };
     readonly interactive?: {};
+    readonly secondaryBrowser?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -131,7 +135,10 @@ interface IRuntimeV2 extends IBaseRuntime {
       };
     };
     readonly teamsCore?: {};
-    readonly video?: {};
+    readonly video?: {
+      readonly mediaStream?: {};
+      readonly sharedFrame?: {};
+    };
     readonly webStorage?: {};
   };
 }
@@ -170,7 +177,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
   apiVersion: 2,
-  hostVersionsInfo: undefined,
+  hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
     appInstallDialog: {},
@@ -179,6 +186,9 @@ export const teamsRuntimeConfig: Runtime = {
     chat: {},
     conversations: {},
     dialog: {
+      card: {
+        bot: {},
+      },
       url: {
         bot: {},
       },
@@ -203,7 +213,9 @@ export const teamsRuntimeConfig: Runtime = {
       fullTrust: {},
     },
     teamsCore: {},
-    video: {},
+    video: {
+      sharedFrame: {},
+    },
   },
 };
 
@@ -375,6 +387,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
   const backCompatRuntimeConfig: Runtime = {
     apiVersion: 2,
+    hostVersionsInfo: teamsMinAdaptiveCardVersion,
     isLegacyTeams: true,
     supports: newSupports,
   };
