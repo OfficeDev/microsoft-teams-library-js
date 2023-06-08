@@ -65,11 +65,11 @@ export enum HostName {
  * FrameContexts provides information about the context in which the app is running within the host.
  * Developers can use FrameContexts to determine how their app should behave in different contexts,
  * and can use the information provided by the context to adapt the app to the user's needs.
- * 
- * @example 
- * If your app is running in the "settings" context, you should be displaying your apps configuration page. 
- * If the app is running in the content context, the developer may want to display information relevant to 
- * the content the user is currently viewing. 
+ *
+ * @example
+ * If your app is running in the "settings" context, you should be displaying your apps configuration page.
+ * If the app is running in the content context, the developer may want to display information relevant to
+ * the content the user is currently viewing.
  */
 export enum FrameContexts {
   /**
@@ -141,6 +141,7 @@ import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;
+import { HostVersionsInfo } from './interfaces';
 
 /**
  * The type of the channel with which the content is associated.
@@ -165,3 +166,12 @@ export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_
  * Minimum Adaptive Card version supported by the host.
  */
 export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, minorVersion: 5 };
+
+/**
+ * @hidden
+ *
+ * Adaptive Card version supported by the Teams v1 client.
+ */
+export const teamsMinAdaptiveCardVersion: HostVersionsInfo = {
+  adaptiveCardSchemaVersion: { majorVersion: 1, minorVersion: 5 },
+};

@@ -15,7 +15,7 @@ export namespace appInstallDialog {
   /**
    * Displays a dialog box that allows users to install a specific app within the host environment.
    *
-   * @param openAPPInstallDialogParams - See {@link OpenAppInstallDialogParams | OpenAppInstallDialogParams} for more information. 
+   * @param openAPPInstallDialogParams - See {@link OpenAppInstallDialogParams | OpenAppInstallDialogParams} for more information.
    */
   export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
     return new Promise((resolve) => {

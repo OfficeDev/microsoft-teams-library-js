@@ -31,7 +31,7 @@ export function getBundleFilePathsFromFolder(relativePathsInFolder: string[]): B
   // A map from bundle name to a bundle buddy config
   const configFilePathMap = new Map<string, string>();
 
-  relativePathsInFolder.forEach(relativePath => {
+  relativePathsInFolder.forEach((relativePath) => {
     if (relativePath.endsWith('.msp.gz')) {
       statsFilePaths.push({
         bundleName: getBundleNameFromPath(relativePath),
