@@ -188,9 +188,11 @@ export namespace videoEx {
       if (runtime.supports.video?.mediaStream) {
         registerHandler(
           'video.startVideoExtensibilityVideoStream',
-          async (mediaStreamInfo: { streamId: string }) => {
-            // when a new streamId is ready:
-            const { streamId } = mediaStreamInfo;
+          async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
+            const { streamId /*, metadataInTexture */ } = mediaStreamInfo;
+            // const generator = metadataInTexture
+            //   ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
+            //   : processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
             const generator = await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError);
             // register the video track with processed frames back to the stream:
             !inServerSideRenderingEnvironment() &&

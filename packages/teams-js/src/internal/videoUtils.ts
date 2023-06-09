@@ -3,6 +3,7 @@ import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
+import { registerHandler } from './handlers';
 import {
   AllowSharedBufferSource,
   PlaneLayout,
@@ -158,6 +159,16 @@ function createProcessedStreamGeneratorWithMetadata(
   const generator = new MediaStreamTrackGenerator({ kind: 'video' });
   const sink = generator.writable;
 
+  let shouldDiscardAudioInferenceResult = false;
+
+  registerHandler(
+    'video.mediaStream.audioInferenceDiscardStatusChange',
+    ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
+      console.log('discardAudioInferenceResult', discardAudioInferenceResult);
+      shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
+    },
+  );
+
   source
     .pipeThrough(
       new TransformStream({
@@ -167,6 +178,7 @@ function createProcessedStreamGeneratorWithMetadata(
             try {
               const { videoFrame, metadata: { audioInferenceResult } = {} } = await extractVideoFrameAndMetadata(
                 originalFrame,
+                shouldDiscardAudioInferenceResult,
                 notifyError,
               );
               const frameProcessedByApp = await videoFrameHandler({ videoFrame, audioInferenceResult });
@@ -176,6 +188,7 @@ function createProcessedStreamGeneratorWithMetadata(
                 timestamp: timestamp,
               });
               controller.enqueue(processedFrame);
+              videoFrame.close();
               originalFrame.close();
               (frameProcessedByApp as VideoFrame).close();
             } catch (error) {
@@ -198,6 +211,7 @@ function createProcessedStreamGeneratorWithMetadata(
  */
 async function extractVideoFrameAndMetadata(
   texture: VideoFrame,
+  shouldDiscardAudioInferenceResult: boolean,
   notifyError: (string) => void,
 ): Promise<{ videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } }> {
   if (inServerSideRenderingEnvironment()) {
@@ -266,6 +280,10 @@ async function extractVideoFrameAndMetadata(
         streamData,
       );
     }
+  }
+
+  if (shouldDiscardAudioInferenceResult && awesomeDebuggingEnabled) {
+    console.log('audio inference dicarded');
   }
 
   return {
