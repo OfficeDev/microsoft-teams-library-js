@@ -224,6 +224,10 @@ async function extractVideoFrameAndMetadata(
   }
 
   const awesomeDebuggingEnabled = localStorage.getItem('awesomeDebuggingEnabled');
+  /**
+   * stream id for audio inference data
+   */
+  const AUDIO_INFERENCE_RESULT_STREAM_ID_V2 = 0x31646961;
 
   // The rectangle of pixels to copy from the texture
   const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
@@ -263,11 +267,15 @@ async function extractVideoFrameAndMetadata(
   const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
   await texture.copyTo(metadataBuffer, { rect: metadataRect });
   const metadata = new Uint32Array(metadataBuffer);
+  let audioInferenceResult: Uint8Array | undefined;
   for (let i = 0, index = 0; i < headerDataView[7]; i++) {
     const streamId = metadata[index++];
     const streamDataOffset = metadata[index++];
     const streamDataSize = metadata[index++];
     const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
+    if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID_V2) {
+      audioInferenceResult = streamData;
+    }
     if (awesomeDebuggingEnabled) {
       console.log(
         'streamId:',
@@ -291,7 +299,9 @@ async function extractVideoFrameAndMetadata(
       timestamp: texture.timestamp,
       visibleRect: { x: 0, y: headerDataView[2], width: headerDataView[4], height: headerDataView[5] },
     }) as VideoFrame,
-    metadata: {},
+    metadata: {
+      audioInferenceResult: shouldDiscardAudioInferenceResult ? undefined : audioInferenceResult,
+    },
   };
 }
 

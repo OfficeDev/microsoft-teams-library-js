@@ -4,6 +4,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
+  processMediaStream,
   processMediaStreamWithMetadata,
 } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -189,11 +190,12 @@ export namespace videoEx {
         registerHandler(
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
-            const { streamId /*, metadataInTexture */ } = mediaStreamInfo;
-            // const generator = metadataInTexture
-            //   ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
-            //   : processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
-            const generator = await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError);
+            const { streamId, metadataInTexture } = mediaStreamInfo;
+            console.log('video.startVideoExtensibilityVideoStream: ', streamId, metadataInTexture);
+            const generator = metadataInTexture
+              ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
+              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
+            // const generator = await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError);
             // register the video track with processed frames back to the stream:
             !inServerSideRenderingEnvironment() &&
               window['chrome']?.webview?.registerTextureStream(streamId, generator);
