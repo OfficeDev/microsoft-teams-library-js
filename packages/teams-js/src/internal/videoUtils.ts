@@ -322,12 +322,12 @@ export function createEffectParameterChangeCallback(callback: VideoEffectCallBac
   return (effectId: string | undefined, effectParam?: string): void => {
     callback(effectId, effectParam)
       .then(() => {
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId]);
+        sendMessageToParent('video.videoEffectReadiness', [true, effectId, effectParam, undefined]);
       })
       .catch((reason) => {
         const validReason =
           reason in video.EffectFailureReason ? reason : video.EffectFailureReason.InitializationFailure;
-        sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason]);
+        sendMessageToParent('video.videoEffectReadiness', [false, effectId, effectParam, validReason]);
       });
   };
 }
