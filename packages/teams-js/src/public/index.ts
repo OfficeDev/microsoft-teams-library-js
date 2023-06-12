@@ -93,7 +93,7 @@ export { returnFocus, navigateBack, navigateCrossDomain, navigateToTab } from '.
 export { settings } from './settings';
 export { tasks } from './tasks';
 export * from './liveShareHost';
-export { Country as Market } from './countryCode';
+export { Market } from './countryCode';
 export { Locale } from './locale';
 export { Currency } from './currencyCode';
 export * from './marketplace';
