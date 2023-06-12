@@ -1,5 +1,5 @@
 /** country code. */
-export enum Country {
+export enum Market {
   /** Afghanistan */
   AF = 'AF',
   /** AlandIslands */

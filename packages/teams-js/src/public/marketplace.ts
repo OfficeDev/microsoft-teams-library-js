@@ -5,18 +5,18 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * Represents the cart object for the app checkout flow
+ * Represents the cart object for the app checkout flow.
  *
  * @beta
  */
 export interface Cart {
-  /** version of the cart. */
+  /** Version of the cart. */
   readonly version: CartVersion;
-  /** the id of the cart. */
+  /** The id of the cart. */
   readonly id: string;
-  /** the cart info. */
+  /** The cart info. */
   cartInfo: CartInfo;
-  /** the cart items. */
+  /** The cart items. */
   cartItems: CartItem[];
 }
 
@@ -51,20 +51,20 @@ interface CartInfo {
 }
 
 /**
- * Represents the basic cart item information
+ * Represents the basic cart item information.
  *
  * @beta
  */
 interface Item {
-  /** the id of the cart item. */
+  /** The id of the cart item. */
   readonly id: string;
-  /** the display name of the cart item. */
+  /** The display name of the cart item. */
   name: string;
-  /** the quantity of the cart item. */
+  /** The quantity of the cart item. */
   quantity: number;
-  /** the price of the single cart item. */
+  /** The price of the single cart item. */
   price: number;
-  /** the thumbnail imageURL of the cart item. */
+  /** The thumbnail imageURL of the cart item. */
   readonly imageURL?: string;
 }
 
@@ -74,57 +74,57 @@ interface Item {
  * @beta
  */
 export interface CartItem extends Item {
-  /** accessories to the item if exist. */
+  /** Accessories to the item if existing. */
   readonly accessories?: Item[];
 }
 
 /**
- * Represents the persona creating the cart
+ * Represents the persona creating the cart.
  *
  * @beta
  */
 export enum Intent {
-  /** the cart is created by admin of an organization. */
+  /** The cart is created by admin of an organization. */
   AdminUser = 'AdminUser',
-  /** the cart is created by end user of an organization. */
+  /** The cart is created by end user of an organization. */
   EndUser = 'EndUser',
 }
 
 /**
- * Represents the status of the cart
+ * Represents the status of the cart.
  *
  * @beta
  */
 export enum CartStatus {
-  /** Cart is created but not checked out yet.*/
+  /** Cart is created but not checked out yet. */
   Open = 'Open',
-  /** Cart is checked out but not completed yet.*/
+  /** Cart is checked out but not completed yet. */
   Processing = 'Processing',
   /**
    * Indicate checking out is completed and the host should
-   * Response a new cart in the next getCart call
+   * Response a new cart in the next getCart call.
    */
   Processed = 'Processed',
   /**
    * Indicate checking out is failed and the host should
-   * Response a new cart in the next getCart call
+   * Response a new cart in the next getCart call.
    */
   Error = 'Error',
 }
 /**
- * Represents the parameters to update the cart status
+ * Represents the parameters to update the cart status.
  *
  * @beta
  */
 export interface UpdateCartStatusParams {
-  /** Cart is created but not checked out yet.*/
+  /** Status of the cart. */
   cartStatus: CartStatus;
   /** Extra info to the status. */
   message?: string;
 }
 
 /**
- * Namespace for a vendor app to support a checkout flow by interacting with the marketplace cart.
+ * Namespace for a vendor app to support a checkout flow by interacting with the marketplace cart in the host.
  */
 export namespace marketplace {
   /**
@@ -144,7 +144,7 @@ export namespace marketplace {
   /**
    * Add or update cart items in the cart owned by the host.
    *
-   * @param cartItems - A list of cart item, if item id is existing, overwrite the item, otherwise add new item to cart.
+   * @param cartItems - A list of cart items, if item id exists, overwrite the item, otherwise add new items to cart.
    *
    * @beta
    */
@@ -178,7 +178,7 @@ export namespace marketplace {
    *
    * @param updateCartStatusParams
    *
-   * updateCartStatusParams.cartStatus - cart status;
+   * updateCartStatusParams.cartStatus - cart status.
    *
    * updateCartStatusParams.message - extra info to the status.
    *
@@ -194,10 +194,10 @@ export namespace marketplace {
     });
   }
   /**
-   * Checks if the marketplace capability is supported by the host
-   * @returns Boolean to represent whether the marketplace capability is supported
+   * Checks if the marketplace capability is supported by the host.
+   * @returns Boolean to represent whether the marketplace capability is supported.
    *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @throws Error if {@linkcode app.initialize} has not successfully completed.
    *
    * @beta
    */
