@@ -18,19 +18,15 @@ module.exports = {
     MicrosoftTeams: './src/index.ts',
     'MicrosoftTeams.min': './src/index.ts',
   },
-  experiments: {
-    outputModule: true,
-  },
   output: {
     filename: '[name].js',
     // the following setting is required for SRI to work
     crossOriginLoading: 'anonymous',
     path: path.resolve(__dirname, 'dist'),
     library: {
-      // name: libraryName,
-      // type: 'umd',
-      // umdNamedDefine: true,
-      type: 'module',
+      name: libraryName,
+      type: 'umd',
+      umdNamedDefine: true,
     },
     //Typically resolves to 'self' unless running in a server side rendered environment
     globalObject: "typeof self !== 'undefined' ? self : this",
@@ -48,23 +44,23 @@ module.exports = {
       },
     ],
   },
-  // optimization: {
-  //   minimize: true,
-  //   minimizer: [
-  //     new TerserPlugin({
-  //       terserOptions: {
-  //         compress: {
-  //           reduce_funcs: false,
-  //           inline: false,
-  //         },
-  //       },
-  //       include: /\.min\.js$/,
-  //     }),
-  //   ],
-  //   nodeEnv: 'production',
-  // },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            reduce_funcs: false,
+            inline: false,
+          },
+        },
+        include: /\.min\.js$/,
+      }),
+    ],
+    nodeEnv: 'production',
+  },
   // webpack.production.config.js
-  mode: 'development',
+  mode: 'production',
   performance: {
     hints: false,
   },

@@ -51,6 +51,9 @@ export async function processMediaStream(
 /**
  * @hidden
  * Create a MediaStreamTrack from the media stream with the given streamId and processed by videoFrameHandler.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export async function processMediaStreamWithMetadata(
   streamId: string,
@@ -161,10 +164,10 @@ function createProcessedStreamGeneratorWithMetadata(
 
   let shouldDiscardAudioInferenceResult = false;
 
+  // internal event handler to receive discardAudioInferenceResult from host
   registerHandler(
     'video.mediaStream.audioInferenceDiscardStatusChange',
     ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
-      console.log('discardAudioInferenceResult', discardAudioInferenceResult);
       shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
     },
   );
@@ -208,6 +211,9 @@ function createProcessedStreamGeneratorWithMetadata(
 /**
  * @hidden
  * Extract video frame and metadata from the given texture.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 async function extractVideoFrameAndMetadata(
   texture: VideoFrame,
@@ -223,81 +229,47 @@ async function extractVideoFrameAndMetadata(
     throw new Error('Unsupported video frame format');
   }
 
-  const awesomeDebuggingEnabled = localStorage.getItem('awesomeDebuggingEnabled');
   /**
    * stream id for audio inference data
    */
-  const AUDIO_INFERENCE_RESULT_STREAM_ID_V2 = 0x31646961;
+  const AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
 
   // The rectangle of pixels to copy from the texture
   const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
+  // it's in NV12 format, but the real data is in the y plane only.
   const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
   await texture.copyTo(headerBuffer, { rect: headerRect });
   const headerDataView = new Uint32Array(headerBuffer);
   // const [ oneTextureId, version, frameRowOffset, frameFormat, frameWidth, frameHeight, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
-  if (awesomeDebuggingEnabled) {
-    console.log(
-      'OneTextureId:',
-      headerDataView[0],
-      'Version:',
-      headerDataView[1],
-      'FrameRowOffset:',
-      headerDataView[2],
-      'FrameFormat:',
-      headerDataView[3],
-      'FrameWidth:',
-      headerDataView[4],
-      'FrameHeight:',
-      headerDataView[5],
-      'MultiStreamHeaderRowOffset:',
-      headerDataView[6],
-      'MultiStreamCount:',
-      headerDataView[7],
-      // 'Timestamp:',
-      // headerDataView[8],
-    );
-  }
-
   const metadataRect = {
     x: 0,
-    y: headerDataView[6],
+    y: headerDataView[6], // multiStreamHeaderRowOffset
     width: texture.codedWidth,
-    height: texture.codedHeight - headerDataView[6],
+    height: texture.codedHeight - headerDataView[6], // multiStreamHeaderRowOffset
   };
   const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
   await texture.copyTo(metadataBuffer, { rect: metadataRect });
   const metadata = new Uint32Array(metadataBuffer);
   let audioInferenceResult: Uint8Array | undefined;
-  for (let i = 0, index = 0; i < headerDataView[7]; i++) {
+  for (let i = 0, index = 0; i < headerDataView[7] /* multiStreamCount */; i++) {
     const streamId = metadata[index++];
     const streamDataOffset = metadata[index++];
     const streamDataSize = metadata[index++];
     const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
-    if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID_V2) {
+    if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID) {
       audioInferenceResult = streamData;
     }
-    if (awesomeDebuggingEnabled) {
-      console.log(
-        'streamId:',
-        streamId,
-        'streamDataOffset:',
-        streamDataOffset,
-        'streamDataSize:',
-        streamDataSize,
-        'streamData:',
-        streamData,
-      );
-    }
-  }
-
-  if (shouldDiscardAudioInferenceResult && awesomeDebuggingEnabled) {
-    console.log('audio inference dicarded');
   }
 
   return {
     videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
       timestamp: texture.timestamp,
-      visibleRect: { x: 0, y: headerDataView[2], width: headerDataView[4], height: headerDataView[5] },
+      visibleRect: {
+        x: 0,
+        y: headerDataView[2], // frameRowOffset
+        width: headerDataView[4], // frameWidth
+        height: headerDataView[5], // frameHeight
+      },
     }) as VideoFrame,
     metadata: {
       audioInferenceResult: shouldDiscardAudioInferenceResult ? undefined : audioInferenceResult,

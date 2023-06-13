@@ -191,18 +191,15 @@ export namespace videoEx {
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
-            console.log('video.startVideoExtensibilityVideoStream: ', streamId, metadataInTexture);
             const generator = metadataInTexture
               ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
               : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
-            // const generator = await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError);
-            // register the video track with processed frames back to the stream:
+            // register the video track with processed frames back to the stream
             !inServerSideRenderingEnvironment() &&
               window['chrome']?.webview?.registerTextureStream(streamId, generator);
           },
           false,
         );
-
         sendMessageToParent('video.mediaStream.registerForVideoFrame', [parameters.config]);
       } else if (runtime.supports.video?.sharedFrame) {
         registerHandler(
