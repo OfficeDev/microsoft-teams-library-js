@@ -17,7 +17,8 @@ Please review the [architectural guidelines](https://github.com/OfficeDev/micros
 2. Create a branch off the `main` branch in your cloned repository. Name it something that that makes sense, such as `issue-123` or `githubhandle-issue`. This makes it easy for everyone to figure out what the branch is used for. It also makes it easier to isolate your change from incoming changes from the upstream repo.
 3. Commit your changes.
 4. Run `pnpm changefile`, answer the following prompts, and push your changes to GitHub. **Important! Our pipeline checks will fail if you skip this step.** More on this below in our Change Log section.
-5. Create a [pull request against the `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
+5. If you are an internal Microsoft employee, you must join these organizations in order to have your changes built and tested in the pipeline: [Microsoft](https://repos.opensource.microsoft.com/) / [OfficeDev](https://repos.opensource.microsoft.com/orgs/OfficeDev/join) / [Teams Client SDK Contributors](https://github.com/orgs/OfficeDev/teams/teams-client-sdk-contributors)
+6. Create a [pull request against the `main` branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests). If you don't know what a pull request is read [this article](https://help.github.com/articles/using-pull-requests).
 
 ### Commits
 
