@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "support mediaStream with metadata in videoEx module",
+  "packageName": "@microsoft/teams-js",
+  "email": "xuwu@microsoft.com",
+  "dependentChangeType": "patch"
+}
