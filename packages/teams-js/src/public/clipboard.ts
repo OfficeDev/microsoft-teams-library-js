@@ -1,8 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -12,81 +10,62 @@ import { runtime } from './runtime';
  */
 export namespace clipboard {
   /**
+   * Clipboard data formats.
+   */
+  export enum ClipboardDataFormat {
+    /** Clipboard data in text/html format. */
+    HTML = 'text/html',
+    /** Clipboard data in plain text format. */
+    Plain = 'text/plain',
+    /** Clipboard data in image PNG format. */
+    PNG = 'image/png',
+    /** Clipboard data in image JPEG format. */
+    JPG = 'image/jpeg',
+    /** Clipboard data in image SVG format. */
+    SVG = 'image/svg+xml',
+  }
+
+  /**
    * Clipboard config interface to interact with clipboard API.
    *
    * @beta
    */
-  export interface clipboardConfig {
-    /**
-     * Think it through. what kind of event, what other parameters? detail it.
-     * button, click event to tie it to app not to app developer calls.
-     */
-    clipboardConfig?: Event;
+  export interface ICopyToClipboard {
+    /** String value */
+    value?: string;
+    /** Data type to be copied */
+    dataType: ClipboardDataFormat;
   }
+
   /**
-   * write
+   * Function to copy text to clipboard.
+   * @param clipboardConfig: {@link ICopyToClipboard} - an object representing target element or value to be copied to clipboard.
    */
-  export function write(barCodeConfig: BarCodeConfig): Promise<string> {
-    return new Promise<string>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  export function write(clipboardConfig: ICopyToClipboard): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(
+        runtime,
+        FrameContexts.content,
+        FrameContexts.task,
+        FrameContexts.stage,
+        FrameContexts.sidePanel,
+      );
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      if (!validateScanBarCodeInput(barCodeConfig)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      }
-
-      resolve(sendAndHandleSdkError('media.scanBarCode', barCodeConfig));
+      resolve(sendAndHandleSdkError('clipboard.writeToClipboard', clipboardConfig));
     });
   }
 
   /**
-   * Checks whether or not media has user permission
-   *
-   * @returns true if the user has granted the app permission to media information, false otherwise
-   *
-   * @beta
-   */
-  export function hasPermission(): Promise<boolean> {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    const permissions: DevicePermission = DevicePermission.Media;
-
-    return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
-    });
-  }
-
-  /**
-   * Requests user permission for media
-   *
-   * @returns true if the user has granted the app permission to the media, false otherwise
-   *
-   * @beta
-   */
-  export function requestPermission(): Promise<boolean> {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    const permissions: DevicePermission = DevicePermission.Media;
-
-    return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
-    });
-  }
-
-  /**
-   * Checks if barCode capability is supported by the host
-   * @returns boolean to represent whether the barCode capability is supported
+   * Checks if clipboard capability is supported by the host
+   * @returns boolean to represent whether the clipboard capability is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.barCode && runtime.supports.permissions ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.clipboard ? true : false;
   }
 }

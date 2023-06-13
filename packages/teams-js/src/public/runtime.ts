@@ -92,6 +92,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly clipboard?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -185,6 +186,7 @@ export const teamsRuntimeConfig: Runtime = {
     call: {},
     chat: {},
     conversations: {},
+    clipboard: {},
     dialog: {
       card: {
         bot: {},
