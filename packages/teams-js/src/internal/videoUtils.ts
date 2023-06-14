@@ -294,12 +294,12 @@ export function createEffectParameterChangeCallback(callback: VideoEffectCallBac
   return (effectId: string | undefined, effectParam?: string): void => {
     callback(effectId, effectParam)
       .then(() => {
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId, effectParam, undefined]);
+        sendMessageToParent('video.videoEffectReadiness', [true, effectId, effectParam ?? null, null]);
       })
       .catch((reason) => {
         const validReason =
           reason in video.EffectFailureReason ? reason : video.EffectFailureReason.InitializationFailure;
-        sendMessageToParent('video.videoEffectReadiness', [false, effectId, effectParam, validReason]);
+        sendMessageToParent('video.videoEffectReadiness', [false, effectId, effectParam ?? null, validReason]);
       });
   };
 }
