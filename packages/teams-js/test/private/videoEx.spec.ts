@@ -6,6 +6,8 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { video } from '../../src/public/video';
 import { Utils } from '../utils';
 
+mockMediaStreamAPI();
+
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
@@ -241,6 +243,71 @@ describe('videoEx', () => {
         } as DOMMessageEvent);
         expect(handlerInvoked).toBe(false);
       });
+
+      describe('mediaStream', () => {
+        beforeEach(async () => {
+          await utils.initializeWithContext(FrameContexts.sidePanel);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+
+        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id' }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+        });
+
+        it('should notify error when callback rejects', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const errorMessage = 'error message';
+          const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id' }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          const message = utils.findMessageByFunc('video.notifyError');
+          expect(message).not.toBeNull();
+          expect(message?.args?.length).toBe(2);
+          expect(message?.args?.[0]).toEqual(errorMessage);
+          expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
+        });
+      });
     });
 
     describe('notifySelectedVideoEffectChanged', () => {
@@ -327,23 +394,81 @@ describe('videoEx', () => {
       it('should successfully invoke effectParameterChange handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string | undefined;
+        let returnedEffectParam: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
+        const videoEffectCallBack = (effectId: string | undefined, effectParam?: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          returnedEffectParam = effectParam;
           return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
         utils.respondToFramelessMessage({
           data: {
             func: 'video.effectParameterChange',
-            args: [effectId],
+            args: [effectId, effectParameter],
           },
         } as DOMMessageEvent);
         expect(returnedEffectId).toEqual(effectId);
+        expect(returnedEffectParam).toEqual(effectParameter);
         expect(handlerInvoked).toBeTruthy();
+      });
+
+      it('should invoke videoEffectReadiness handler on callback resolved', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
+
+        // Act
+        videoEx.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.effectParameterChange',
+            args: [effectId, effectParameter],
+          },
+        } as DOMMessageEvent);
+        await videoEffectCallBack.mock.results[0].value;
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([true, effectId, effectParameter, null]);
+      });
+
+      it('should invoke videoEffectReadiness handler on callback rejects', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest
+          .fn<Promise<void>, unknown[]>()
+          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+
+        // Act
+        video.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.effectParameterChange',
+            args: [effectId, effectParameter],
+          },
+        } as DOMMessageEvent);
+        await videoEffectCallBack.mock.results[0].value.catch(() => {});
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([false, effectId, effectParameter, 'InvalidEffectId']);
       });
     });
 
@@ -608,6 +733,61 @@ describe('videoEx', () => {
         utils.sendMessage('video.newVideoFrame', undefined);
         expect(handlerInvoked).toBe(false);
       });
+
+      describe('mediaStream', () => {
+        beforeEach(async () => {
+          await utils.initializeWithContext(FrameContexts.sidePanel);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+
+        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+        });
+
+        it('should notify error when callback rejects', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const errorMessage = 'error message';
+          const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.flushPromises();
+
+          // Assert
+          const message = utils.findMessageByFunc('video.notifyError');
+          expect(message).not.toBeNull();
+          expect(message?.args?.length).toBe(2);
+          expect(message?.args?.[0]).toEqual(errorMessage);
+          expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
+        });
+      });
     });
 
     describe('notifySelectedVideoEffectChanged', () => {
@@ -690,20 +870,69 @@ describe('videoEx', () => {
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
+        expect.assertions(3);
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string | undefined;
+        let returnedEffectParameter: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
+        const videoEffectCallBack = (effectId: string | undefined, effectParam?: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          returnedEffectParameter = effectParam;
           return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
-        utils.sendMessage('video.effectParameterChange', effectId);
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
         expect(returnedEffectId).toEqual(effectId);
+        expect(returnedEffectParameter).toEqual(effectParameter);
         expect(handlerInvoked).toBeTruthy();
+      });
+
+      it('should invoke videoEffectReadiness handler on callback resolved', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
+
+        // Act
+        videoEx.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await videoEffectCallBack.mock.results[0].value;
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([true, effectId, effectParameter, null]);
+      });
+
+      it('should invoke videoEffectReadiness handler on callback rejects', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest
+          .fn<Promise<void>, unknown[]>()
+          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+
+        // Act
+        video.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await videoEffectCallBack.mock.results[0].value.catch(() => {});
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([false, effectId, effectParameter, 'InvalidEffectId']);
       });
     });
 
@@ -762,3 +991,87 @@ describe('videoEx', () => {
     });
   });
 });
+
+function mockMediaStreamAPI() {
+  // Jest doesn't support MediaStream API yet, so we need to mock it.
+  // Reference:
+  //   https://stackoverflow.com/questions/57424190/referenceerror-mediastream-is-not-defined-in-unittest-with-jest
+  //   https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+
+  // eslint-disable-next-line strict-null-checks/all
+  let transform;
+
+  Object.defineProperty(window, 'MediaStream', {
+    value: jest.fn().mockImplementation((tracks: MediaStreamTrack[]) => ({
+      getVideoTracks: () => tracks,
+    })),
+
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrack', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'ReadableStream', {
+    value: jest.fn().mockImplementation(() => ({
+      pipeThrough: () => ({
+        pipeTo: () =>
+          transform &&
+          transform(
+            /* mock VideoFrame */
+            {
+              timestamp: 0,
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              close: () => {},
+            },
+            /* mock TransformStreamDefaultController */
+            {
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              enqueue: () => {},
+            },
+          ),
+      }),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'WritableStream', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrackProcessor', {
+    value: jest.fn().mockImplementation(() => ({
+      readable: new ReadableStream(),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'MediaStreamTrackGenerator', {
+    value: jest.fn().mockImplementation(() => ({
+      writable: new WritableStream(),
+    })),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'TransformStream', {
+    value: jest.fn().mockImplementation((transformer) => (transform = transformer.transform)),
+    writable: true,
+  });
+
+  Object.defineProperty(window, 'chrome', {
+    value: {
+      webview: {
+        getTextureStream: jest.fn(() => {
+          const videoTrack = new MediaStreamTrack();
+          const videoStream = new MediaStream([videoTrack]);
+          return Promise.resolve(videoStream);
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        registerTextureStream: jest.fn(),
+      },
+    },
+  });
+}
