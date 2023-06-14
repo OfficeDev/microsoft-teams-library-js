@@ -86,6 +86,11 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
     title: 'medisStream - registerForVideoFrame',
     onClick: async (setResult) => {
       try {
+        const audioInferenceModel = new ArrayBuffer(8);
+        const view = new Uint8Array(audioInferenceModel);
+        for (let i = 0; i < view.length; i++) {
+          view[i] = i;
+        }
         videoEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             setResult('video frame received');
@@ -94,6 +99,8 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
           videoBufferHandler: (buffer) => buffer,
           config: {
             format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
           },
         });
       } catch (error) {
@@ -109,6 +116,11 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
     title: 'sharedFrame - registerForVideoFrame',
     onClick: async (setResult) => {
       try {
+        const audioInferenceModel = new ArrayBuffer(8);
+        const view = new Uint8Array(audioInferenceModel);
+        for (let i = 0; i < view.length; i++) {
+          view[i] = i;
+        }
         videoEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
@@ -118,6 +130,8 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
           },
           config: {
             format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
           },
         });
       } catch (error) {
