@@ -147,131 +147,128 @@ export namespace liveShare {
       ? true
       : false;
   }
-
-  /**
-   * Live Share host implementation for O365 and Teams clients.
-   */
-  export class LiveShareHost {
-    /**
-     * Returns the Fluid Tenant connection info for user's current context.
-     */
-    public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
-      ensureSupported();
-      return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
-      });
-    }
-
-    /**
-     * Returns the fluid access token for mapped container Id.
-     *
-     * @param containerId Fluid's container Id for the request. Undefined for new containers.
-     * @returns token for connecting to Fluid's session.
-     */
-    public getFluidToken(containerId?: string): Promise<string> {
-      ensureSupported();
-      return new Promise<string>((resolve) => {
-        // eslint-disable-next-line strict-null-checks/all
-        resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
-      });
-    }
-
-    /**
-     * Returns the ID of the fluid container associated with the user's current context.
-     */
-    public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
-      ensureSupported();
-      return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
-      });
-    }
-
-    /**
-     * Sets the ID of the fluid container associated with the current context.
-     *
-     * @remarks
-     * If this returns false, the client should delete the container they created and then call
-     * `getFluidContainerId()` to get the ID of the container being used.
-     * @param containerId ID of the fluid container the client created.
-     * @returns A data structure with a `containerState` indicating the success or failure of the request.
-     */
-    public setFluidContainerId(containerId: string): Promise<liveShare.IFluidContainerInfo> {
-      ensureSupported();
-      return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
-      });
-    }
-
-    /**
-     * Returns the shared clock server's current time.
-     */
-    public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
-      ensureSupported();
-      return new Promise<liveShare.INtpTimeInfo>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.getNtpTime'));
-      });
-    }
-
-    /**
-     * Associates the fluid client ID with a set of user roles.
-     *
-     * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
-     * @returns The roles for the current user.
-     */
-    public registerClientId(clientId: string): Promise<liveShare.UserMeetingRole[]> {
-      ensureSupported();
-      return new Promise<liveShare.UserMeetingRole[]>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
-      });
-    }
-
-    /**
-     * Returns the roles associated with a client ID.
-     *
-     * @param clientId The Client ID the message was received from.
-     * @returns The roles for a given client. Returns `undefined` if the client ID hasn't been registered yet.
-     */
-    public getClientRoles(clientId: string): Promise<liveShare.UserMeetingRole[] | undefined> {
-      ensureSupported();
-      return new Promise<liveShare.UserMeetingRole[] | undefined>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
-      });
-    }
-
-    /**
-     * Returns the `IClientInfo` associated with a client ID.
-     *
-     * @param clientId The Client ID the message was received from.
-     * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
-     */
-    public getClientInfo(clientId: string): Promise<liveShare.IClientInfo | undefined> {
-      ensureSupported();
-      return new Promise<liveShare.IClientInfo | undefined>((resolve) => {
-        resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
-      });
-    }
-
-    /**
-     * Returns a host instance for the client that can be passed to the `LiveShareClient` class.
-     *
-     * @remarks
-     * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
-     */
-    public static create(): LiveShareHost {
-      ensureSupported();
-
-      return new LiveShareHost();
-    }
-  }
-
-  function ensureSupported(): void {
-    if (!liveShare.isSupported()) {
-      throw new Error('LiveShareHost Not supported');
-    }
-  }
 }
 
 /**
- * Live Share host implementation for O365 and Teams clients.
+ * Live Share host implementation for connecting to real-time collaborative sessions.
+ * Designed for use with the `LiveShareClient` class in the `@microsoft/live-share` package.
+ * Learn more at https://aka.ms/teamsliveshare
  */
-export const LiveShareHost = liveShare.LiveShareHost;
+export class LiveShareHost {
+  /**
+   * Returns the Fluid Tenant connection info for user's current context.
+   */
+  public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
+    ensureSupported();
+    return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
+    });
+  }
+
+  /**
+   * Returns the fluid access token for mapped container Id.
+   *
+   * @param containerId Fluid's container Id for the request. Undefined for new containers.
+   * @returns token for connecting to Fluid's session.
+   */
+  public getFluidToken(containerId?: string): Promise<string> {
+    ensureSupported();
+    return new Promise<string>((resolve) => {
+      // eslint-disable-next-line strict-null-checks/all
+      resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
+    });
+  }
+
+  /**
+   * Returns the ID of the fluid container associated with the user's current context.
+   */
+  public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
+    ensureSupported();
+    return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
+    });
+  }
+
+  /**
+   * Sets the ID of the fluid container associated with the current context.
+   *
+   * @remarks
+   * If this returns false, the client should delete the container they created and then call
+   * `getFluidContainerId()` to get the ID of the container being used.
+   * @param containerId ID of the fluid container the client created.
+   * @returns A data structure with a `containerState` indicating the success or failure of the request.
+   */
+  public setFluidContainerId(containerId: string): Promise<liveShare.IFluidContainerInfo> {
+    ensureSupported();
+    return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
+    });
+  }
+
+  /**
+   * Returns the shared clock server's current time.
+   */
+  public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
+    ensureSupported();
+    return new Promise<liveShare.INtpTimeInfo>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getNtpTime'));
+    });
+  }
+
+  /**
+   * Associates the fluid client ID with a set of user roles.
+   *
+   * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
+   * @returns The roles for the current user.
+   */
+  public registerClientId(clientId: string): Promise<liveShare.UserMeetingRole[]> {
+    ensureSupported();
+    return new Promise<liveShare.UserMeetingRole[]>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
+    });
+  }
+
+  /**
+   * Returns the roles associated with a client ID.
+   *
+   * @param clientId The Client ID the message was received from.
+   * @returns The roles for a given client. Returns `undefined` if the client ID hasn't been registered yet.
+   */
+  public getClientRoles(clientId: string): Promise<liveShare.UserMeetingRole[] | undefined> {
+    ensureSupported();
+    return new Promise<liveShare.UserMeetingRole[] | undefined>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
+    });
+  }
+
+  /**
+   * Returns the `IClientInfo` associated with a client ID.
+   *
+   * @param clientId The Client ID the message was received from.
+   * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
+   */
+  public getClientInfo(clientId: string): Promise<liveShare.IClientInfo | undefined> {
+    ensureSupported();
+    return new Promise<liveShare.IClientInfo | undefined>((resolve) => {
+      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
+    });
+  }
+
+  /**
+   * Returns a host instance for the client that can be passed to the `LiveShareClient` class.
+   *
+   * @remarks
+   * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
+   */
+  public static create(): LiveShareHost {
+    ensureSupported();
+
+    return new LiveShareHost();
+  }
+}
+
+function ensureSupported(): void {
+  if (!liveShare.isSupported()) {
+    throw new Error('LiveShareHost Not supported');
+  }
+}
