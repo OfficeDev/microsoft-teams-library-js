@@ -176,6 +176,7 @@ export namespace liveShare {
  */
 export class LiveShareHost {
   /**
+   * @hidden
    * Returns the Fluid Tenant connection info for user's current context.
    */
   public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
@@ -186,6 +187,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the fluid access token for mapped container Id.
    *
    * @param containerId Fluid's container Id for the request. Undefined for new containers.
@@ -200,6 +202,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the ID of the fluid container associated with the user's current context.
    */
   public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
@@ -210,6 +213,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Sets the ID of the fluid container associated with the current context.
    *
    * @remarks
@@ -226,6 +230,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the shared clock server's current time.
    */
   public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
@@ -236,6 +241,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Associates the fluid client ID with a set of user roles.
    *
    * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
@@ -249,6 +255,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the roles associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.
@@ -262,6 +269,7 @@ export class LiveShareHost {
   }
 
   /**
+   * @hidden
    * Returns the `IClientInfo` associated with a client ID.
    *
    * @param clientId The Client ID the message was received from.
@@ -275,10 +283,12 @@ export class LiveShareHost {
   }
 
   /**
-   * Returns a host instance for the client that can be passed to the `LiveShareClient` class.
+   * Factories a new `LiveShareHost` instance for use with the `LiveShareClient` class
+   * in the `@microsoft/live-share` package.
    *
    * @remarks
-   * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
+   * `app.initialize()` must first be called before using this API.
+   * This API can only be called from `meetingStage` or `sidePanel` contexts.
    */
   public static create(): LiveShareHost {
     ensureSupported();
