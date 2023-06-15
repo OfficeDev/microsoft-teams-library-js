@@ -48,6 +48,10 @@ interface CartInfo {
   status: CartStatus;
   /** Currency code for the cart item price. */
   readonly currency: Currency;
+  /** ISO 8601 timestamp string, indicates when the cart is created. */
+  readonly createdAt: string;
+  /** ISO 8601 timestamp string, indicates when the cart is updated. */
+  updatedAt: string;
 }
 
 /**
@@ -120,7 +124,7 @@ export interface UpdateCartStatusParams {
   /** Status of the cart. */
   cartStatus: CartStatus;
   /** Extra info to the status. */
-  message?: string;
+  statusInfo?: string;
 }
 
 /**
