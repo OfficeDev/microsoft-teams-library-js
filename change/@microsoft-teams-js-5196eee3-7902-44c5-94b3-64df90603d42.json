@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "wrapped live share code in liveShare namespace",
+  "packageName": "@microsoft/teams-js",
+  "email": "jameshunt@microsoft.com",
+  "dependentChangeType": "patch"
+}
