@@ -3,9 +3,16 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
+/**
+ * APIs involving Live Share, a framework for building real-time collaborative apps.
+ * For more information, visit https://aka.ms/teamsliveshare
+ *
+ * @see LiveShareHost
+ */
 export namespace liveShare {
   /**
-   * Meeting Roles.
+   * The meeting roles of a user.
+   * Used in Live Share for its role verification feature.
    */
   export enum UserMeetingRole {
     /**
@@ -27,7 +34,8 @@ export namespace liveShare {
   }
 
   /**
-   * State of the current Live Share sessions backing fluid container.
+   * State of the current Live Share session's Fluid container.
+   * This is used internally by the `LiveShareClient` when joining a Live Share session.
    */
   export enum ContainerState {
     /**
@@ -37,26 +45,27 @@ export namespace liveShare {
     added = 'Added',
 
     /**
-     * A container mapping for the current Live Share Session already exists and should be used
-     * when joining the sessions Fluid container.
+     * A container mapping for the current Live Share session already exists.
+     * This indicates to Live Share that a new container does not need be created.
      */
     alreadyExists = 'AlreadyExists',
 
     /**
-     * The call to `LiveShareHost.setContainerId()` failed to create the container mapping due to
-     * another client having already set the container ID for the current Live Share session.
+     * The call to `LiveShareHost.setContainerId()` failed to create the container mapping.
+     * This happens when another client has already set the container ID for the session.
      */
     conflict = 'Conflict',
 
     /**
-     * A container mapping for the current Live Share session doesn't exist yet.
+     * A container mapping for the current Live Share session does not yet exist.
+     * This indicates to Live Share that a new container should be created.
      */
     notFound = 'NotFound',
   }
 
   /**
-   * Returned from `LiveShareHost.get/setFluidContainerId()` to specify the container mapping for the
-   * current Live Share session.
+   * Returned from `LiveShareHost.getFluidContainerId()` and `LiveShareHost.setFluidContainerId`.
+   * This response specifies the container mapping information for the current Live Share session.
    */
   export interface IFluidContainerInfo {
     /**
@@ -77,9 +86,9 @@ export namespace liveShare {
     shouldCreate: boolean;
 
     /**
-     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but
-     * another client is creating it. The local client should wait the specified amount of time and
-     * then ask for the container info again.
+     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready
+     * but another client is creating it. In this case, the local client should wait the specified
+     * amount of time before calling `LiveShareHost.getFluidContainerId()` again.
      */
     retryAfter: number;
   }
@@ -122,15 +131,16 @@ export namespace liveShare {
    */
   export interface IClientInfo {
     /**
-     * Teams userId associated with clientId
+     * The host user's `userId` associated with a given `clientId`
      */
     userId: string;
     /**
-     * Meeting roles associated with clientId
+     * User's meeting roles associated with a given `clientId`
      */
     roles: UserMeetingRole[];
     /**
-     * DisplayName associated with clientId
+     * The user's display name associated with a given `clientId`.
+     * If this returns as `undefined`, the user may need to update their host client.
      */
     displayName?: string;
   }
