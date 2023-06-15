@@ -171,8 +171,8 @@ export namespace liveShare {
  * Learn more at https://aka.ms/teamsliveshare
  *
  * @remarks
- * The APIs in this class are not intended to be used directly by your app.
- * The `LiveShareClient` class from Live Share uses this to join/manage the session.
+ * The `LiveShareClient` class from Live Share uses the hidden API's to join/manage the session.
+ * To create a new `LiveShareHost` instance use the static `LiveShareHost.create()` function.
  */
 export class LiveShareHost {
   /**
