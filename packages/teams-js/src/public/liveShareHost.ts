@@ -11,6 +11,7 @@ import { runtime } from './runtime';
  */
 export namespace liveShare {
   /**
+   * @hidden
    * The meeting roles of a user.
    * Used in Live Share for its role verification feature.
    */
@@ -34,6 +35,7 @@ export namespace liveShare {
   }
 
   /**
+   * @hidden
    * State of the current Live Share session's Fluid container.
    * This is used internally by the `LiveShareClient` when joining a Live Share session.
    */
@@ -64,6 +66,7 @@ export namespace liveShare {
   }
 
   /**
+   * @hidden
    * Returned from `LiveShareHost.getFluidContainerId()` and `LiveShareHost.setFluidContainerId`.
    * This response specifies the container mapping information for the current Live Share session.
    */
@@ -94,6 +97,7 @@ export namespace liveShare {
   }
 
   /**
+   * @hidden
    * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
    * Live Share session.
    */
@@ -110,6 +114,7 @@ export namespace liveShare {
   }
 
   /**
+   * @hidden
    * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
    * current Live Share session.
    */
@@ -126,6 +131,7 @@ export namespace liveShare {
   }
 
   /**
+   * @hidden
    * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
    * particular client in a Live Share session.
    */
@@ -163,6 +169,10 @@ export namespace liveShare {
  * Live Share host implementation for connecting to real-time collaborative sessions.
  * Designed for use with the `LiveShareClient` class in the `@microsoft/live-share` package.
  * Learn more at https://aka.ms/teamsliveshare
+ *
+ * @remarks
+ * The APIs in this class are not intended to be used directly by your app.
+ * The `LiveShareClient` class from Live Share uses this to join/manage the session.
  */
 export class LiveShareHost {
   /**
