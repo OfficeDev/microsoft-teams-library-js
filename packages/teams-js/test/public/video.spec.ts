@@ -352,7 +352,7 @@ describe('video', () => {
         const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
         expect(messageForRegister).not.toBeNull();
         expect(messageForRegister?.args?.length).toBe(4);
-        expect(messageForRegister?.args).toEqual([false, effectId, null, 'InvalidEffectId']);
+        expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId', null]);
       });
     });
 

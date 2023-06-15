@@ -46,7 +46,14 @@ const RegisterForVideoEffect = (): React.ReactElement =>
     title: 'videoEx - registerForVideoEffect',
     onClick: async (setResult) => {
       const onVideoEffectChanged = (effectId: string | undefined, effectParam?: string): Promise<void> => {
-        setResult(`video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`);
+        if (effectId === 'anInvalidEffectId') {
+          setResult(`failed to change effect to ${JSON.stringify(effectId)}, param: ${JSON.stringify(effectParam)}`);
+          throw video.EffectFailureReason.InvalidEffectId;
+        } else {
+          setResult(
+            `video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`,
+          );
+        }
         return Promise.resolve();
       };
       videoEx.registerForVideoEffect(onVideoEffectChanged);
