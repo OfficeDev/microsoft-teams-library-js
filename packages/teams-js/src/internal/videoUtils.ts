@@ -43,8 +43,7 @@ export async function processMediaStream(
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
     await getInputVideoTrack(streamId, notifyError),
-    videoFrameHandler,
-    notifyError,
+    new DefaultTransformer(notifyError, videoFrameHandler),
   );
 }
 
@@ -60,10 +59,9 @@ export async function processMediaStreamWithMetadata(
   videoFrameHandler: videoEx.VideoFrameHandler,
   notifyError: (string) => void,
 ): Promise<MediaStreamTrack> {
-  return createProcessedStreamGeneratorWithMetadata(
+  return createProcessedStreamGenerator(
     await getInputVideoTrack(streamId, notifyError),
-    videoFrameHandler,
-    notifyError,
+    new TransformerWithMetadata(notifyError, videoFrameHandler),
   );
 }
 
@@ -98,8 +96,7 @@ async function getInputVideoTrack(streamId: string, notifyError: (string) => voi
  */
 function createProcessedStreamGenerator(
   videoTrack: unknown,
-  videoFrameHandler: video.VideoFrameHandler,
-  notifyError: (string) => void,
+  transformer: TransformerWithMetadata | DefaultTransformer,
 ): MediaStreamTrack {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
@@ -111,169 +108,139 @@ function createProcessedStreamGenerator(
   const generator = new MediaStreamTrackGenerator({ kind: 'video' });
   const sink = generator.writable;
 
-  source
-    .pipeThrough(
-      new TransformStream({
-        async transform(originalFrame, controller) {
-          const timestamp = originalFrame.timestamp;
-          if (timestamp !== null) {
-            try {
-              const frameProcessedByApp = await videoFrameHandler({ videoFrame: originalFrame });
-              // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
-              const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
-                // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
-                timestamp: timestamp,
-              });
-              controller.enqueue(processedFrame);
-              originalFrame.close();
-              (frameProcessedByApp as VideoFrame).close();
-            } catch (error) {
-              originalFrame.close();
-              notifyError(error);
-            }
-          } else {
-            notifyError('timestamp of the original video frame is null');
-          }
-        },
-      }),
-    )
-    .pipeTo(sink);
+  source.pipeThrough(new TransformStream(transformer)).pipeTo(sink);
   return generator;
 }
 
-/**
- * The function to create a processed video track from the original video track.
- * It reads frames from the video track and pipes them to the video frame callback to process the frames.
- * The processed frames are then enqueued to the generator.
- * The generator can be registered back to the media stream so that the host can get the processed frames.
- */
-function createProcessedStreamGeneratorWithMetadata(
-  videoTrack: unknown,
-  videoFrameHandler: videoEx.VideoFrameHandler,
-  notifyError: (string) => void,
-): MediaStreamTrack {
-  if (inServerSideRenderingEnvironment()) {
-    throw errorNotSupportedOnPlatform;
-  }
-  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
-  const processor = new MediaStreamTrackProcessor({ track: videoTrack });
-  const source = processor.readable;
-  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
-  const generator = new MediaStreamTrackGenerator({ kind: 'video' });
-  const sink = generator.writable;
+class DefaultTransformer {
+  public constructor(private notifyError: (string) => void, private videoFrameHandler: video.VideoFrameHandler) {}
 
-  let shouldDiscardAudioInferenceResult = false;
-
-  // internal event handler to receive discardAudioInferenceResult from host
-  registerHandler(
-    'video.mediaStream.audioInferenceDiscardStatusChange',
-    ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
-      shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
-    },
-  );
-
-  source
-    .pipeThrough(
-      new TransformStream({
-        async transform(originalFrame, controller) {
-          const timestamp = originalFrame.timestamp;
-          if (timestamp !== null) {
-            try {
-              const { videoFrame, metadata: { audioInferenceResult } = {} } = await extractVideoFrameAndMetadata(
-                originalFrame,
-                shouldDiscardAudioInferenceResult,
-                notifyError,
-              );
-              const frameProcessedByApp = await videoFrameHandler({ videoFrame, audioInferenceResult });
-              // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
-              const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
-                // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
-                timestamp: timestamp,
-              });
-              controller.enqueue(processedFrame);
-              videoFrame.close();
-              originalFrame.close();
-              (frameProcessedByApp as VideoFrame).close();
-            } catch (error) {
-              originalFrame.close();
-              notifyError(error);
-            }
-          } else {
-            notifyError('timestamp of the original video frame is null');
-          }
-        },
-      }),
-    )
-    .pipeTo(sink);
-  return generator;
+  public transform = async (originalFrame, controller): Promise<void> => {
+    const timestamp = originalFrame.timestamp;
+    if (timestamp !== null) {
+      try {
+        const frameProcessedByApp = await this.videoFrameHandler({ videoFrame: originalFrame });
+        // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
+        const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
+          // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
+          timestamp: timestamp,
+        });
+        controller.enqueue(processedFrame);
+        originalFrame.close();
+        (frameProcessedByApp as VideoFrame).close();
+      } catch (error) {
+        originalFrame.close();
+        this.notifyError(error);
+      }
+    } else {
+      this.notifyError('timestamp of the original video frame is null');
+    }
+  };
 }
 
-/**
- * @hidden
- * Extract video frame and metadata from the given texture.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-async function extractVideoFrameAndMetadata(
-  texture: VideoFrame,
-  shouldDiscardAudioInferenceResult: boolean,
-  notifyError: (string) => void,
-): Promise<{ videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } }> {
-  if (inServerSideRenderingEnvironment()) {
-    throw errorNotSupportedOnPlatform;
+class TransformerWithMetadata {
+  private shouldDiscardAudioInferenceResult = false;
+
+  public constructor(private notifyError: (string) => void, private videoFrameHandler: videoEx.VideoFrameHandler) {
+    registerHandler(
+      'video.mediaStream.audioInferenceDiscardStatusChange',
+      ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
+        this.shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
+      },
+    );
   }
 
-  if (texture.format !== 'NV12') {
-    notifyError('Unsupported video frame format');
-    throw new Error('Unsupported video frame format');
-  }
+  public transform = async (originalFrame, controller): Promise<void> => {
+    const timestamp = originalFrame.timestamp;
+    if (timestamp !== null) {
+      try {
+        const { videoFrame, metadata: { audioInferenceResult } = {} } = await this.extractVideoFrameAndMetadata(
+          originalFrame,
+        );
+        const frameProcessedByApp = await this.videoFrameHandler({ videoFrame, audioInferenceResult });
+        // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
+        const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
+          // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
+          timestamp: timestamp,
+        });
+        controller.enqueue(processedFrame);
+        videoFrame.close();
+        originalFrame.close();
+        (frameProcessedByApp as VideoFrame).close();
+      } catch (error) {
+        originalFrame.close();
+        this.notifyError(error);
+      }
+    } else {
+      this.notifyError('timestamp of the original video frame is null');
+    }
+  };
 
   /**
-   * stream id for audio inference data
+   * @hidden
+   * Extract video frame and metadata from the given texture.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
-  const AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
-
-  // The rectangle of pixels to copy from the texture
-  const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
-  // it's in NV12 format, but the real data is in the y plane only.
-  const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
-  await texture.copyTo(headerBuffer, { rect: headerRect });
-  const headerDataView = new Uint32Array(headerBuffer);
-  // const [ oneTextureId, version, frameRowOffset, frameFormat, frameWidth, frameHeight, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
-  const metadataRect = {
-    x: 0,
-    y: headerDataView[6], // multiStreamHeaderRowOffset
-    width: texture.codedWidth,
-    height: texture.codedHeight - headerDataView[6], // multiStreamHeaderRowOffset
-  };
-  const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
-  await texture.copyTo(metadataBuffer, { rect: metadataRect });
-  const metadata = new Uint32Array(metadataBuffer);
-  let audioInferenceResult: Uint8Array | undefined;
-  for (let i = 0, index = 0; i < headerDataView[7] /* multiStreamCount */; i++) {
-    const streamId = metadata[index++];
-    const streamDataOffset = metadata[index++];
-    const streamDataSize = metadata[index++];
-    const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
-    if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID) {
-      audioInferenceResult = streamData;
+  private extractVideoFrameAndMetadata = async (
+    texture: VideoFrame,
+  ): Promise<{ videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } }> => {
+    if (inServerSideRenderingEnvironment()) {
+      throw errorNotSupportedOnPlatform;
     }
-  }
 
-  return {
-    videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
-      timestamp: texture.timestamp,
-      visibleRect: {
-        x: 0,
-        y: headerDataView[2], // frameRowOffset
-        width: headerDataView[4], // frameWidth
-        height: headerDataView[5], // frameHeight
+    if (texture.format !== 'NV12') {
+      this.notifyError('Unsupported video frame format');
+      throw new Error('Unsupported video frame format');
+    }
+
+    /**
+     * stream id for audio inference data
+     */
+    const AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
+
+    // The rectangle of pixels to copy from the texture
+    const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
+    // it's in NV12 format, but the real data is in the y plane only.
+    const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
+    await texture.copyTo(headerBuffer, { rect: headerRect });
+    const headerDataView = new Uint32Array(headerBuffer);
+    // const [ oneTextureId, version, frameRowOffset, frameFormat, frameWidth, frameHeight, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
+    const metadataRect = {
+      x: 0,
+      y: headerDataView[6], // multiStreamHeaderRowOffset
+      width: texture.codedWidth,
+      height: texture.codedHeight - headerDataView[6], // multiStreamHeaderRowOffset
+    };
+    const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
+    await texture.copyTo(metadataBuffer, { rect: metadataRect });
+    const metadata = new Uint32Array(metadataBuffer);
+    let audioInferenceResult: Uint8Array | undefined;
+    for (let i = 0, index = 0; i < headerDataView[7] /* multiStreamCount */; i++) {
+      const streamId = metadata[index++];
+      const streamDataOffset = metadata[index++];
+      const streamDataSize = metadata[index++];
+      const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
+      if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID) {
+        audioInferenceResult = streamData;
+      }
+    }
+
+    return {
+      videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
+        timestamp: texture.timestamp,
+        visibleRect: {
+          x: 0,
+          y: headerDataView[2], // frameRowOffset
+          width: headerDataView[4], // frameWidth
+          height: headerDataView[5], // frameHeight
+        },
+      }) as VideoFrame,
+      metadata: {
+        audioInferenceResult: this.shouldDiscardAudioInferenceResult ? undefined : audioInferenceResult,
       },
-    }) as VideoFrame,
-    metadata: {
-      audioInferenceResult: shouldDiscardAudioInferenceResult ? undefined : audioInferenceResult,
-    },
+    };
   };
 }
 
