@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateShowProfileRequest } from '../internal/profileUtil';
 import { FrameContexts } from './constants';
@@ -40,7 +40,7 @@ export namespace profile {
         },
       };
 
-      resolve(sendAndHandleError('profile.showProfile', requestInternal));
+      resolve(sendAndHandleSdkError('profile.showProfile', requestInternal));
     });
   }
 
