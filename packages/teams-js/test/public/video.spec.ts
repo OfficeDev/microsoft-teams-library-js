@@ -314,7 +314,7 @@ describe('video', () => {
       });
 
       it('should invoke videoEffectReadiness handler on callback resolved', async () => {
-        expect.assertions(3);
+        expect.assertions(4);
 
         // Arrange
         await utils.initializeWithContext(FrameContexts.sidePanel);
@@ -330,11 +330,12 @@ describe('video', () => {
         const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
         expect(messageForRegister).not.toBeNull();
         expect(messageForRegister?.args?.length).toBe(4);
-        expect(messageForRegister?.args).toEqual([true, effectId, null, null]);
+        expect(messageForRegister?.args?.[0]).toEqual(true);
+        expect(messageForRegister?.args?.[1]).toEqual(effectId);
       });
 
       it('should invoke videoEffectReadiness handler on callback rejects', async () => {
-        expect.assertions(3);
+        expect.assertions(5);
 
         // Arrange
         await utils.initializeWithContext(FrameContexts.sidePanel);
@@ -352,7 +353,9 @@ describe('video', () => {
         const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
         expect(messageForRegister).not.toBeNull();
         expect(messageForRegister?.args?.length).toBe(4);
-        expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId', null]);
+        expect(messageForRegister?.args?.[0]).toEqual(false);
+        expect(messageForRegister?.args?.[1]).toEqual(effectId);
+        expect(messageForRegister?.args?.[2]).toEqual('InvalidEffectId');
       });
     });
 

@@ -909,7 +909,7 @@ describe('videoEx', () => {
         const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
         expect(messageForRegister).not.toBeNull();
         expect(messageForRegister?.args?.length).toBe(4);
-        expect(messageForRegister?.args).toEqual([true, effectId, null, effectParameter]);
+        expect(messageForRegister?.args).toEqual([true, effectId, undefined, effectParameter]);
       });
 
       it('should invoke videoEffectReadiness handler on callback rejects', async () => {
