@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "wrapped live share code in liveShare namespace",
+  "comment": "Added `liveShare` capability, which helps with building real-time collaborative apps",
   "packageName": "@microsoft/teams-js",
   "email": "jameshunt@microsoft.com",
   "dependentChangeType": "patch"
