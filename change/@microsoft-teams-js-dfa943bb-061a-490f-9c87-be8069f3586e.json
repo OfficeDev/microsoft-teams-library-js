@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "add `marketplace` capability as well as 4 methods to interact with `cart`",
+  "comment": "Added `marketplace` capability that helps app developers interact with a checkout flow",
   "packageName": "@microsoft/teams-js",
   "email": "xiaojunwu@microsoft.com",
   "dependentChangeType": "patch"
