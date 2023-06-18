@@ -255,7 +255,7 @@ describe('videoEx', () => {
           restoreMediaStreamAPI();
         });
 
-        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+        it('should register for audioInferenceDiscardStatusChange and get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
           expect.assertions(6);
 
           // Arrange
@@ -288,6 +288,38 @@ describe('videoEx', () => {
           expect(msgRegisterAudioInferenceDiscardStatusChange?.args?.[0]).toBe(
             'video.mediaStream.audioInferenceDiscardStatusChange',
           );
+        });
+
+        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(5);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id' }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+          // no registerHandler message for audioInferenceDiscardStatusChange
+          expect(utils.findMessageByFunc('registerHandler')).toBeNull();
         });
 
         it('should notify error when callback rejects', async () => {
