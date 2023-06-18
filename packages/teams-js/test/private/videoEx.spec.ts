@@ -256,7 +256,7 @@ describe('videoEx', () => {
         });
 
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
-          expect.assertions(4);
+          expect.assertions(6);
 
           // Arrange
           const videoFrameHandler = jest.fn();
@@ -273,7 +273,7 @@ describe('videoEx', () => {
           utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
-              args: [{ streamId: 'stream id' }],
+              args: [{ streamId: 'stream id', metadataInTexture: true }],
             },
           } as DOMMessageEvent);
           await utils.flushPromises();
@@ -283,6 +283,11 @@ describe('videoEx', () => {
           expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
           expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
           expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+          const msgRegisterAudioInferenceDiscardStatusChange = utils.findMessageByFunc('registerHandler');
+          expect(msgRegisterAudioInferenceDiscardStatusChange).not.toBeNull();
+          expect(msgRegisterAudioInferenceDiscardStatusChange?.args?.[0]).toBe(
+            'video.mediaStream.audioInferenceDiscardStatusChange',
+          );
         });
 
         it('should notify error when callback rejects', async () => {
