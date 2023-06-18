@@ -6,8 +6,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { video } from '../../src/public/video';
 import { Utils } from '../utils';
 
-mockMediaStreamAPI();
-
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
@@ -245,9 +243,16 @@ describe('videoEx', () => {
       });
 
       describe('mediaStream', () => {
+        let restoreMediaStreamAPI: () => void;
         beforeEach(async () => {
           await utils.initializeWithContext(FrameContexts.sidePanel);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+        beforeAll(() => {
+          restoreMediaStreamAPI = mockMediaStreamAPI();
+        });
+        afterAll(() => {
+          restoreMediaStreamAPI();
         });
 
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
@@ -735,9 +740,16 @@ describe('videoEx', () => {
       });
 
       describe('mediaStream', () => {
+        let restoreMediaStreamAPI: () => void;
         beforeEach(async () => {
           await utils.initializeWithContext(FrameContexts.sidePanel);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+        beforeAll(() => {
+          restoreMediaStreamAPI = mockMediaStreamAPI();
+        });
+        afterAll(() => {
+          restoreMediaStreamAPI();
         });
 
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
@@ -1001,6 +1013,8 @@ function mockMediaStreamAPI() {
   // eslint-disable-next-line strict-null-checks/all
   let transform;
 
+  const originalMediaStream = window['MediaStream'];
+
   Object.defineProperty(window, 'MediaStream', {
     value: jest.fn().mockImplementation((tracks: MediaStreamTrack[]) => ({
       getVideoTracks: () => tracks,
@@ -1009,10 +1023,14 @@ function mockMediaStreamAPI() {
     writable: true,
   });
 
+  const originalMediaStreamTrack = window['MediaStreamTrack'];
+
   Object.defineProperty(window, 'MediaStreamTrack', {
     value: jest.fn().mockImplementation(() => ({})),
     writable: true,
   });
+
+  const originalReadableStream = window['ReadableStream'];
 
   Object.defineProperty(window, 'ReadableStream', {
     value: jest.fn().mockImplementation(() => ({
@@ -1037,10 +1055,14 @@ function mockMediaStreamAPI() {
     writable: true,
   });
 
+  const originalWritableStream = window['WritableStream'];
+
   Object.defineProperty(window, 'WritableStream', {
     value: jest.fn().mockImplementation(() => ({})),
     writable: true,
   });
+
+  const originalMediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
 
   Object.defineProperty(window, 'MediaStreamTrackProcessor', {
     value: jest.fn().mockImplementation(() => ({
@@ -1049,6 +1071,8 @@ function mockMediaStreamAPI() {
     writable: true,
   });
 
+  const originalMediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+
   Object.defineProperty(window, 'MediaStreamTrackGenerator', {
     value: jest.fn().mockImplementation(() => ({
       writable: new WritableStream(),
@@ -1056,10 +1080,14 @@ function mockMediaStreamAPI() {
     writable: true,
   });
 
+  const originalTransformStream = window['TransformStream'];
+
   Object.defineProperty(window, 'TransformStream', {
     value: jest.fn().mockImplementation((transformer) => (transform = transformer.transform)),
     writable: true,
   });
+
+  const originalChrome = window['chrome'];
 
   Object.defineProperty(window, 'chrome', {
     value: {
@@ -1073,5 +1101,44 @@ function mockMediaStreamAPI() {
         registerTextureStream: jest.fn(),
       },
     },
+    writable: true,
   });
+
+  // restore original APIs
+  return () => {
+    Object.defineProperties(window, {
+      MediaStream: {
+        value: originalMediaStream,
+        writable: true,
+      },
+      MediaStreamTrack: {
+        value: originalMediaStreamTrack,
+        writable: true,
+      },
+      ReadableStream: {
+        value: originalReadableStream,
+        writable: true,
+      },
+      WritableStream: {
+        value: originalWritableStream,
+        writable: true,
+      },
+      MediaStreamTrackProcessor: {
+        value: originalMediaStreamTrackProcessor,
+        writable: true,
+      },
+      MediaStreamTrackGenerator: {
+        value: originalMediaStreamTrackGenerator,
+        writable: true,
+      },
+      TransformStream: {
+        value: originalTransformStream,
+        writable: true,
+      },
+      chrome: {
+        value: originalChrome,
+        writable: true,
+      },
+    });
+  };
 }
