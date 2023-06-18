@@ -96,11 +96,10 @@ export namespace videoEx {
 
   /**
    * @hidden
-   * Video frame call back function definition
    * The callback will be called on every frame when running on the supported host.
    * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
    * The video app should call `notifyVideoFrameProcessed` to notify a successfully processed video frame.
-   * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
+   * The video app should call `notifyError` to notify a failure. When the failures accumulate to a certain number(determined by the host), the host will see the app is "frozen" and give the user the option to close the app.
    * @beta
    *
    * @internal
@@ -134,11 +133,10 @@ export namespace videoEx {
 
   /**
    * @hidden
-   * Video frame call back function definition.
    * The callback will be called on every frame when running on the supported host.
    * We require the frame rate of the video to be at least 22fps for 720p, thus the callback should process a frame timely.
    * The video app should resolve the promise to notify a successfully processed video frame.
-   * The video app should reject the promise to notify a failure. When the failures accumulate to a certain number, the host will see the app is "frozen" and ask the user to close it or not.
+   * The video app should reject the promise to notify a failure. When the failures accumulate to a certain number(determined by the host), the host will see the app is "frozen" and give the user the option to close the app.
    * @beta
    *
    * @internal
@@ -181,6 +179,9 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function registerForVideoFrame(parameters: RegisterForVideoFrameParameters): void {
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }

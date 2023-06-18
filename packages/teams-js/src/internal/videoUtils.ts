@@ -14,10 +14,27 @@ import {
 } from './VideoFrameTypes';
 
 interface VideoFrame {
+  /**
+   * The width of the VideoFrame in pixels, potentially including non-visible padding, and prior to
+   * considering potential ratio adjustments.
+   */
   readonly codedWidth: number;
+  /**
+   * The height of the VideoFrame in pixels, potentially including non-visible padding, and prior to
+   * considering potential ratio adjustments.
+   */
   readonly codedHeight: number;
+  /**
+   * The pixel format of the VideoFrame.
+   */
   readonly format: VideoPixelFormat | null;
+  /**
+   * An integer indicating the timestamp of the video in microseconds.
+   */
   readonly timestamp: number;
+  /**
+   * Clears all states and releases the reference to the media resource
+   */
   close(): void;
   copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
 }
@@ -50,6 +67,7 @@ export async function processMediaStream(
 /**
  * @hidden
  * Create a MediaStreamTrack from the media stream with the given streamId and processed by videoFrameHandler.
+ * The videoFrameHandler will receive metadata of the video frame.
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -179,6 +197,24 @@ class TransformerWithMetadata {
   /**
    * @hidden
    * Extract video frame and metadata from the given texture.
+   * The given texure should be in NV12 format and the layout of the texture should be:
+   * | Texture layout        |
+   * | :---                  |
+   * | Header                |
+   * | Real video frame data |
+   * | Metadata              |
+   *
+   * The header data is in the first two rows with the following format:
+   * | oneTextureLayoutId | version | frameRowOffset | frameFormat | frameWidth | frameHeight | multiStreamHeaderRowOffset | multiStreamCount | ...   |
+   * |    :---:           | :---:   | :---:          |  :---:      |  :---:     |  :---:      |  :---:                     |  :---:           | :---: |
+   * | 4 bytes            | 4 bytes | 4 bytes        | 4 bytes     | 4 bytes    | 4 bytes     | 4 bytes                    | 4 bytes          | ...   |
+   *
+   * After header, it comes with the real video frame data.
+   * At the end of the texture, it comes with the metadata. The metadata section can contain multiple types of metadata.
+   * Each type of metadata is called a stream. The section is in the following format:
+   * | stream1.id | stream1.dataOffset | stream1.dataSize | stream2.id | stream2.dataOffset | stream2.dataSize | ... | stream1.data | stream2.data | ... |
+   * | :---:      | :---:              | :---:            |  :---:     |  :---:             |  :---:           |:---:|  :---:       | :---:        |:---:|
+   * | 4 bytes    | 4 bytes            | 4 bytes          | 4 bytes    | 4 bytes            | 4 bytes          | ... | ...          | ...          | ... |
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -195,24 +231,50 @@ class TransformerWithMetadata {
       throw new Error('Unsupported video frame format');
     }
 
-    /**
-     * stream id for audio inference data
-     */
+    // Identifier for the texture layout, which is the 4-byte ASCII string "oti1" hardcoded by the host
+    // (oti1 stands for "one texture input version 1")
+    const ONE_TEXTURE_LAYOUT_ID = 0x6f746931;
+    // Stream id for audio inference metadata, which is the 4-byte ASCII string "1dia" hardcoded by the host
+    // (1dia stands for "audio inference data version 1")
     const AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
 
-    // The rectangle of pixels to copy from the texture
+    // The rectangle of pixels to copy from the texture. The first two rows are the header.
     const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
-    // it's in NV12 format, but the real data is in the y plane only.
+    // allocate buffer for the header
+    // it's in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12), so the
+    // number bytes of the header is (the size of the Y plane + the size of the UV plane)
+    // (headerRect.width * headerRect.height) + (headerRect.width * headerRect.height) / 2
     const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
     await texture.copyTo(headerBuffer, { rect: headerRect });
     const headerDataView = new Uint32Array(headerBuffer);
-    // const [ oneTextureId, version, frameRowOffset, frameFormat, frameWidth, frameHeight, multiStreamHeaderRowOffset, multiStreamCount ] = headerDataView;
+    // headerDataView contains the following data:
+    // 0: oneTextureLayoutId
+    // 1: version
+    // 2: frameRowOffset
+    // 3: frameFormat
+    // 4: frameWidth
+    // 5: frameHeight
+    // 6: multiStreamHeaderRowOffset
+    // 7: multiStreamCount
+    if (headerDataView.length < 8) {
+      this.notifyError('Invalid video frame header');
+      throw new Error('Invalid video frame header');
+    }
+    // ensure the texture layout is supported
+    if (headerDataView[0] !== ONE_TEXTURE_LAYOUT_ID) {
+      this.notifyError('Unsupported texture layout');
+      throw new Error('Unsupported texture layout');
+    }
+
+    // The rectangle of pixels to copy from the texture. Metadata are at the bottom.
     const metadataRect = {
       x: 0,
       y: headerDataView[6], // multiStreamHeaderRowOffset
       width: texture.codedWidth,
       height: texture.codedHeight - headerDataView[6], // multiStreamHeaderRowOffset
     };
+    // allocate buffer for the metadata, buffer size = (the size of the Y plane + the size of the UV plane)
+    // (metadataRect.width * metadataRect.height) + (metadataRect.width * metadataRect.height) / 2
     const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
     await texture.copyTo(metadataBuffer, { rect: metadataRect });
     const metadata = new Uint32Array(metadataBuffer);
