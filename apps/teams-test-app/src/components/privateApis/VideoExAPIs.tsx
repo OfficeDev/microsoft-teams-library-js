@@ -110,13 +110,14 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
           },
         });
       } catch (error) {
-        return `Faild to register for video frame: ${JSON.stringify(error)}`;
+        return `Failed to register for video frame: ${JSON.stringify(error)}`;
       }
       return generateRegistrationMsg('it is invoked on video frame received');
     },
   });
 
-const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
+// To be removed, use the one below with typo fix
+const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'videoExSharedFrameRegisterForVideoFrame',
     title: 'sharedFrame - registerForVideoFrame',
@@ -147,12 +148,44 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
     },
   });
 
+const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'videoExSharedFrameRegisterForVideoFrame-1',
+    title: 'sharedFrame - registerForVideoFrame',
+    onClick: async (setResult) => {
+      try {
+        const audioInferenceModel = new ArrayBuffer(8);
+        const view = new Uint8Array(audioInferenceModel);
+        for (let i = 0; i < view.length; i++) {
+          view[i] = i;
+        }
+        videoEx.registerForVideoFrame({
+          videoFrameHandler: async (frame) => {
+            return frame.videoFrame;
+          },
+          videoBufferHandler: () => {
+            setResult('video frame received');
+          },
+          config: {
+            format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
+          },
+        });
+      } catch (error) {
+        return `Failed to register for video frame: ${JSON.stringify(error)}`;
+      }
+      return generateRegistrationMsg('it is invoked on video frame received');
+    },
+  });
+
 const VideoExAPIs = (): React.ReactElement => (
   <ModuleWrapper title="VideoEx">
     <UpdatePersonalizedEffects />
     <NotifySelectedVideoEffectChanged />
     <RegisterForVideoEffect />
     <MediaStreamRegisterForVideoFrame />
+    <SharedFrameRegisterForVideoFrameToBeRemoved />
     <SharedFrameRegisterForVideoFrame />
     <NotifyFatalError />
     <CheckIsSupported />
