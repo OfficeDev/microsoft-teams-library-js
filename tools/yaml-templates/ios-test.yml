@@ -87,10 +87,10 @@ steps:
 
       if [[ $? == 0 ]];
       then
-      echo "E2E Test passes successfully"
+      echo "E2E Test passes successfully";
       exit 0;
       else
-      echo "E2E Test failed"
+      echo "E2E Test failed";
       exit 1;
       fi;
     displayName: 'iOS UI/E2E Tests'
