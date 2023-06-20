@@ -1,0 +1,48 @@
+{
+  "name": "GeoLocation Map",
+  "platforms": "Web",
+  "version": ">=2.1.0",
+  "checkIsSupported": {
+    "capabilityName": "LocationMap"
+  },
+  "testCases": [
+    {
+      "title": "chooseLocationOnMap API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_chooseLocationOnMap",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "expectedAlertValue": "location.map.chooseLocation is called.",
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
+      "title": "chooseLocationOnMap API Call - Failure",
+      "type": "callResponse",
+      "boxSelector": "#box_chooseLocationOnMap",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": "false"
+      },
+      "expectedTestAppValue": "Error: [object Object]"
+    },
+    {
+      "title": "showLocationOnMap API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_showLocationOnMap",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "inputValue": {
+        "latitude": 51.507351,
+        "longitude": -0.127758,
+        "accuracy": 2,
+        "timestamp": 200
+      },
+      "expectedAlertValue": "location.map.showLocation called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

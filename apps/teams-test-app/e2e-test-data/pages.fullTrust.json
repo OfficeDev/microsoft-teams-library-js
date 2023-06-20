@@ -1,0 +1,19 @@
+{
+  "name": "Pages FullTrust",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.0",
+  "testCases": [
+    {
+      "title": "enterFullscreen API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_enterFullscreen",
+      "expectedAlertValue": "enterFullscreen called"
+    },
+    {
+      "title": "exitFullscreen API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_exitFullscreen",
+      "expectedAlertValue": "exitFullscreen called"
+    }
+  ]
+}

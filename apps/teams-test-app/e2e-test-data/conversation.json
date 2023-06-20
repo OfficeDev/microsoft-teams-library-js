@@ -1,0 +1,124 @@
+{
+  "name": "Conversation",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "closeConversation API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.3",
+      "boxSelector": "#box_closeConversation",
+      "expectedAlertValue": "closeConversation called",
+      "expectedTestAppValue": "Conversation Closed!"
+    },
+    {
+      "title": "getChatMembers API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.3",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getChatMembers",
+      "expectedAlertValue": "getChatMembers called",
+      "expectedTestAppValue": "{\"members\":[{\"upn\":\"testUpn\"}]}"
+    },
+    {
+      "title": "getChatMembers API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.3",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_getChatMembers",
+      "expectedAlertValue": "getChatMembers called",
+      "expectedTestAppValue": "{\"members\":[{\"principalName\":\"TestUser\"}]}"
+    },
+    {
+      "title": "openConversation API Call - with startConversation",
+      "version": ">2.0.0-beta.2",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_openConversation2",
+      "type": "registerAndRaiseEvent",
+      "inputValue": {
+        "title": "testTitle",
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedAlertValueOnRegistration": "openConversation called with ##JSON_INPUT_VALUE##",
+      "eventName": "startConversation",
+      "eventData": {
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedTestAppValue": "Start Conversation Subentity Id testSubEntityId Conversation Id: testConversationId Entity Id: testEntityId Channel Id: testChannelId"
+    },
+    {
+      "title": "openConversation API Call - with startConversation",
+      "version": "2.0.0-beta.2",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_openConversation",
+      "type": "registerAndRaiseEvent",
+      "inputValue": {
+        "title": "testTitle",
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedAlertValueOnRegistration": "openConversation called with ##JSON_INPUT_VALUE##",
+      "eventName": "startConversation",
+      "eventData": {
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedTestAppValue": "Start Conversation Subentity Id testSubEntityId Conversation Id: testConversationId Entity Id: testEntityId Channel Id: testChannelId"
+    },
+    {
+      "title": "openConversation API Call - with closeConversation",
+      "version": ">2.0.0-beta.2",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_openConversation2",
+      "type": "registerAndRaiseEvent",
+      "inputValue": {
+        "title": "testTitle",
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedAlertValueOnRegistration": "openConversation called with ##JSON_INPUT_VALUE##",
+      "eventName": "closeConversation",
+      "eventData": {
+        "subEntityId": "closeConversationSubEntityId",
+        "conversationId": "closeConversationConversationId",
+        "channelId": "closeConversationChannelId",
+        "entityId": "closeConversationEntityId"
+      },
+      "expectedTestAppValue": "Close Conversation Subentity Id closeConversationSubEntityId Conversation Id: closeConversationConversationId Entity Id: closeConversationEntityId Channel Id: closeConversationChannelId"
+    },
+    {
+      "title": "openConversation API Call - with closeConversation",
+      "version": "2.0.0-beta.2",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_openConversation",
+      "type": "registerAndRaiseEvent",
+      "inputValue": {
+        "title": "testTitle",
+        "subEntityId": "testSubEntityId",
+        "conversationId": "testConversationId",
+        "channelId": "testChannelId",
+        "entityId": "testEntityId"
+      },
+      "expectedAlertValueOnRegistration": "openConversation called with ##JSON_INPUT_VALUE##",
+      "eventName": "closeConversation",
+      "eventData": {
+        "subEntityId": "closeConversationSubEntityId",
+        "conversationId": "closeConversationConversationId",
+        "channelId": "closeConversationChannelId",
+        "entityId": "closeConversationEntityId"
+      },
+      "expectedTestAppValue": "Start Conversation Subentity Id closeConversationSubEntityId Conversation Id: closeConversationConversationId Entity Id: closeConversationEntityId Channel Id: closeConversationChannelId"
+    }
+  ]
+}

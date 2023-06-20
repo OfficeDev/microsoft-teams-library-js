@@ -1,0 +1,73 @@
+{
+  "name": "Interactive",
+  "version": "experimental/interactive",
+  "testUrlParams": [["frameContext", "sidePanel"]],
+  "testCases": [
+    {
+      "title": "getFluidTenantInfo API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getFluidTenantInfo",
+      "inputValue": {
+        "origin": "https://localhost:4000"
+      },
+      "expectedAlertValue": "getFluidTenantInfo called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"tenantId\":\"mockTenantId\",\"serviceEndpoint\":\"mockServiceEndpoint\"}"
+    },
+    {
+      "title": "getFluidToken API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getFluidToken",
+      "inputValue": {
+        "containerId": "mockContainerId",
+        "origin": "https://localhost:4000"
+      },
+      "expectedAlertValue": "getFluidToken called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "getFluidContainerId API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getFluidContainerId",
+      "inputValue": {
+        "origin": "https://localhost:4000"
+      },
+      "expectedAlertValue": "getFluidContainerId called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"containerState\":\"Added\",\"containerId\":\"mockContainerId\",\"shouldCreate\":false,\"retryAfter\":0}"
+    },
+    {
+      "title": "setFluidContainerId API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_setFluidContainerId",
+      "inputValue": {
+        "containerId": "mockContainerId",
+        "origin": "https://localhost:4000"
+      },
+      "expectedAlertValue": "setFluidContainerId called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"containerState\":\"Added\",\"containerId\":\"mockContainerId\",\"shouldCreate\":false,\"retryAfter\":0}"
+    },
+    {
+      "title": "getNtpTime API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getNtpTime",
+      "expectedAlertValue": "getNtpTime called",
+      "expectedTestAppValue": "{\"ntpTime\":\"mockNtpTime\",\"ntpTimeInUTC\":0}"
+    },
+    {
+      "title": "registerClientId API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_registerClientId",
+      "expectedAlertValue": "registerClientId called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[\"Attendee\",\"Presenter\"]"
+    },
+    {
+      "title": "getClientRoles API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getClientRoles",
+      "inputValue": {
+        "clientId": "mockClientId",
+        "origin": "https://localhost:4000"
+      },
+      "expectedAlertValue": "getClientRoles called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[\"Attendee\",\"Presenter\"]"
+    }
+  ]
+}
