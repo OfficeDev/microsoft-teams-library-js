@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "add `marketplace` capability as well as 4 methods to interact with `cart`",
+  "packageName": "@microsoft/teams-js",
+  "email": "xiaojunwu@microsoft.com",
+  "dependentChangeType": "patch"
+}
