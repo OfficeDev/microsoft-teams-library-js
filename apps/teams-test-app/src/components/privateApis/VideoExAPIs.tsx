@@ -150,7 +150,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
 
 const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'videoExSharedFrameRegisterForVideoFrame-1',
+    name: 'videoExSharedFrameRegisterForVideoFrame1',
     title: 'sharedFrame - registerForVideoFrame',
     onClick: async (setResult) => {
       try {

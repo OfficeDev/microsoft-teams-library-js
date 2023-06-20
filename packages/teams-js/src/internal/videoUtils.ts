@@ -13,6 +13,10 @@ import {
   VideoPixelFormat,
 } from './VideoFrameTypes';
 
+/**
+ * @hidden
+ * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+ */
 interface VideoFrame {
   /**
    * The width of the VideoFrame in pixels, potentially including non-visible padding, and prior to
@@ -36,6 +40,11 @@ interface VideoFrame {
    * Clears all states and releases the reference to the media resource
    */
   close(): void;
+  /**
+   * Copies the contents of the VideoFrame to an ArrayBuffer
+   * @param destination An ArrayBuffer, a TypedArray, or a DataView to copy to.
+   * @param options An object containing rect - the rectangle of pixels to copy from the VideoFrame.
+   */
   copyTo(destination: AllowSharedBufferSource, options?: VideoFrameCopyToOptions): Promise<PlaneLayout[]>;
 }
 
