@@ -119,7 +119,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
-        <AppAPIs />
+        {/* <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
         <AuthenticationAPIs />
@@ -165,7 +165,7 @@ const App = (): ReactElement => {
         <TeamsCoreAPIs />
         <TeamsAPIs />
         <VideoAPIs />
-        <VideoExAPIs />
+        <VideoExAPIs /> */}
       </div>
       <Version />
     </div>
