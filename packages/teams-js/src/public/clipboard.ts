@@ -71,6 +71,8 @@ export namespace clipboard {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.clipboard ? true : false;
+    return ensureInitialized(runtime) && (!navigator || !navigator.clipboard) && runtime.supports.clipboard
+      ? true
+      : false;
   }
 }
