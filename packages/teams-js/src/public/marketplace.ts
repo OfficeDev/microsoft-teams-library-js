@@ -278,6 +278,9 @@ export namespace marketplace {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
+      if (!Array.isArray(cartItemIds) || cartItemIds.length === 0) {
+        throw new Error('cartItemIds must be a non-empty array');
+      }
       resolve(sendAndHandleSdkError('marketplace.removeCartItems', cartItemIds));
     });
   }
@@ -296,9 +299,6 @@ export namespace marketplace {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
-      }
-      if (!Array.isArray(updateCartStatusParams) || updateCartStatusParams.length === 0) {
-        throw new Error('updateCartStatusParams must be a non-empty array');
       }
       resolve(sendAndHandleSdkError('marketplace.updateCartStatus', updateCartStatusParams));
     });

@@ -32,7 +32,7 @@ export function validateCartItems(cartItems: marketplace.CartItem[]): [boolean, 
  * @internal
  * Limited to Microsoft-internal use
  */
-function validatePrice(price: number): [boolean, string | undefined] {
+export function validatePrice(price: number): [boolean, string | undefined] {
   if (typeof price !== 'number' || price < 0) {
     return [false, `price ${price} must be a number not less than 0`];
   }
@@ -44,19 +44,16 @@ function validatePrice(price: number): [boolean, string | undefined] {
 
 /**
  * @hidden
- * Validates quantity is valid
+ * Validates quantity
  * @param quantity The quantity to be validated
  * @returns [true, undefined] if quantity is valid, [false, error message] otherwise
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-function validateQuantity(quantity: number): [boolean, string | undefined] {
-  if (typeof quantity !== 'number' || quantity <= 0) {
-    return [false, `quantity ${quantity} must be a number greater than 0`];
-  }
-  if (parseInt(quantity.toString()) !== quantity) {
-    return [false, `quantity ${quantity} must be an integer`];
+export function validateQuantity(quantity: number): [boolean, string | undefined] {
+  if (typeof quantity !== 'number' || quantity <= 0 || parseInt(quantity.toString()) !== quantity) {
+    return [false, `quantity ${quantity} must be an integer greater than 0`];
   }
   return [true, undefined];
 }
