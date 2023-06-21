@@ -46,6 +46,7 @@ import RemoteCameraAPIs from './components/RemoteCameraAPIs';
 import SearchAPIs from './components/SearchAPIs';
 import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
+import SigsAPIs from './components/SigsAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
@@ -119,6 +120,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <SigsAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />

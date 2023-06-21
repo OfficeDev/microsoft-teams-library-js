@@ -62,6 +62,7 @@ export { profile } from './profile';
 export { video } from './video';
 export { search } from './search';
 export { sharing } from './sharing';
+export { sigs } from './sigs';
 export { stageView } from './stageView';
 export { version } from './version';
 export { webStorage } from './webStorage';
