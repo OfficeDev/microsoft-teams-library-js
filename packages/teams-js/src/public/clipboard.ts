@@ -31,8 +31,13 @@ export namespace clipboard {
    * @beta
    */
   export interface ICopyToClipboard {
-    /** String value */
-    value?: string;
+    /**
+     *  Value represent data to be copied to clipboard.
+     *  Note: For images the value must be in Base64 encoded string.
+     *  Format - data:image/(jpeg | png | svg+xml);base64,
+     *  @example data:image/svg+xml;base64,YOUR_IMAGE_STRING_ENCODED
+     */
+    value: string;
     /** Data type to be copied */
     dataType: ClipboardDataFormat;
   }
