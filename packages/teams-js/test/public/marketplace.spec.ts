@@ -23,6 +23,7 @@ describe('Testing marketplace capability', () => {
     });
     it('should validate price of cart items', () => {
       expect(validatePrice(12.34)).toEqual([true, undefined]);
+      expect(validatePrice(12.346)).toEqual([true, undefined]);
       expect(validatePrice(0)).toEqual([true, undefined]);
       expect(validatePrice(-12.34)).toEqual([false, 'price -12.34 must be a number not less than 0']);
       expect(validatePrice(12.3456)).toEqual([false, 'price 12.3456 must have at most 3 decimal places']);
@@ -166,7 +167,9 @@ describe('Testing marketplace capability', () => {
         it('marketplace.removeCartItems should throw error with empty array input', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-          expect(marketplace.removeCartItems(cartItemIds)).rejects.toEqual('cartItemIds must be a non-empty array');
+          expect(marketplace.removeCartItems([])).rejects.toThrowError(
+            new Error('cartItemIds must be a non-empty array'),
+          );
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -210,8 +213,8 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.updateCartStatus function', () => {
         const cartStatusParams = {
-          cartStatus: marketplace.CartStatus.Processed,
-          message: 'success message',
+          cartStatus: marketplace.CartStatus.Error,
+          statusInfo: 'error message',
         };
 
         it('marketplace.updateCartStatus should not allow calls before initialization', async () => {
@@ -374,7 +377,9 @@ describe('Testing marketplace capability', () => {
         it('marketplace.removeCartItems should throw error with empty array input', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-          expect(marketplace.removeCartItems(cartItemIds)).rejects.toEqual('cartItemIds must be a non-empty array');
+          expect(marketplace.removeCartItems([])).rejects.toThrowError(
+            new Error('cartItemIds must be a non-empty array'),
+          );
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -418,8 +423,8 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.updateCartStatus function', () => {
         const cartStatusParams = {
-          cartStatus: marketplace.CartStatus.Processed,
-          message: 'success message',
+          cartStatus: marketplace.CartStatus.Error,
+          statusInfo: 'error message',
         };
 
         it('marketplace.updateCartStatus should not allow calls before initialization', async () => {

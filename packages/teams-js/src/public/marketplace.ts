@@ -1,3 +1,5 @@
+import { UUID } from 'crypto';
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateCartItems } from '../internal/marketplaceUtils';
@@ -27,7 +29,7 @@ export namespace marketplace {
      * @hidden
      * The id of the cart.
      */
-    readonly id: string;
+    readonly id: UUID;
     /**
      * @hidden
      * The cart info.
@@ -75,7 +77,7 @@ export namespace marketplace {
     readonly market: string;
     /**
      * @hidden
-     * The identifier to tell the cart is checked out by admin or information worker
+     * The identifier to tell the cart is checked out by admin or end user.
      */
     readonly intent: Intent;
     /**
@@ -128,7 +130,7 @@ export namespace marketplace {
      * @hidden
      * The display name of the cart item.
      */
-    name: string;
+    readonly name: string;
     /**
      * @hidden
      * The quantity of the cart item.
@@ -247,7 +249,9 @@ export namespace marketplace {
    * @hidden
    * Add or update cart items in the cart owned by the host.
    *
-   * @param cartItems - A list of cart items, if item id exists, overwrite the item, otherwise add new items to cart.
+   * @param cartItems - A list of cart items object, for each item,
+   * if item id exists in the cart, overwrite the item price and quantity,
+   * otherwise add new items to cart.
    *
    * @beta
    */
@@ -290,7 +294,7 @@ export namespace marketplace {
    *
    * @param updateCartStatusParams
    * updateCartStatusParams.cartStatus - cart status.
-   * updateCartStatusParams.message - extra info to the status.
+   * updateCartStatusParams.statusInfo - extra info to the status.
    *
    * @beta
    */
