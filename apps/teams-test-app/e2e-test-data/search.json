@@ -47,6 +47,13 @@
         }
       ],
       "expectedTestAppValue": "Update your application to handle the search experience being closed. Last query: Hello, world"
+    },
+    {
+      "version": ">=2.12.0",
+      "title": "closeSearch API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_search_closeSearch",
+      "expectedAlertValue": "called"
     }
   ]
 }
