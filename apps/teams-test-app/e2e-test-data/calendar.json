@@ -1,0 +1,32 @@
+{
+  "name": "Calendar",
+  "version": ">=2.0.0",
+  "checkIsSupported": {},
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "openCalendarItem API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openCalendarItem",
+      "inputValue": {
+        "itemId": "123"
+      },
+      "expectedAlertValue": "openCalendarItem called with itemId: 123",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "composeMeeting API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_composeMeeting",
+      "inputValue": {
+        "attendees": ["attendees"],
+        "startTime": "startTime",
+        "endTime": "endTime",
+        "subject": "subject",
+        "content": "content"
+      },
+      "expectedAlertValue": "composeMeeting called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

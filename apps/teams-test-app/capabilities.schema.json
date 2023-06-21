@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "only": { "type": "boolean" },
+    "checkIsSupported": {
+      "type": "object",
+      "properties": {
+        "capabilityName": { "type": "string" },
+        "domElementName": { "type": "string" },
+        "expectedOutput": { "type": "string" },
+        "toggleId": { "type": "string" },
+        "version": { "type": "string" },
+        "testUrlParams": { "$ref": "#/$defs/testUrlParams" }
+      },
+      "additionalProperties": false
+    },
+    "platforms": {
+      "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+    },
+    "testUrlParams": { "$ref": "#/$defs/testUrlParams" },
+    "testCases": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "version": { "type": "string" },
+              "platformsExcluded": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "only": { "type": "boolean" },
+              "testUrlParams": { "$ref": "#/$defs/testUrlParams" },
+              "expectedAlertValue": {
+                "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+              },
+              "expectedWindowOpenTarget": { "type": "string" },
+              "expectedIFrameTarget": { "type": "string" },
+              "modulesToDisable": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "skipForCallbackBasedRuns": { "type": "boolean" }
+            },
+            "required": ["title"]
+          },
+          {
+            "type": "object",
+            "oneOf": [
+              {
+                "properties": {
+                  "type": { "const": "callResponse" },
+                  "boxSelector": { "type": "string" },
+                  "inputValue": {},
+                  "skipJsonStringifyOnInputValue": { "type": "boolean" },
+                  "checkboxState": { "type": "boolean" },
+                  "expectedTestAppValue": { "type": "string" },
+                  "requestPermissionBeforeThisCall": {
+                    "type": "object",
+                    "properties": {
+                      "boxSelector": { "type": "string" },
+                      "consentPermission": { "type": "boolean" }
+                    }
+                  }
+                },
+                "required": ["boxSelector"]
+              },
+              {
+                "properties": {
+                  "type": { "const": "raiseEvent" },
+                  "eventName": { "type": "string" },
+                  "eventData": {}
+                },
+                "required": ["eventName"]
+              },
+              {
+                "properties": {
+                  "type": { "const": "registerAndRaiseEvent" },
+                  "boxSelector": { "type": "string" },
+                  "inputValue": {},
+                  "eventName": { "type": "string" },
+                  "eventData": {},
+                  "expectedAlertValueOnRegistration": {
+                    "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+                  },
+                  "expectedTestAppValue": { "type": "string" }
+                },
+                "required": ["boxSelector", "eventName"]
+              }
+            ]
+          }
+        ],
+        "unevaluatedProperties": false,
+        "required": ["type"]
+      }
+    }
+  },
+  "required": ["name", "testCases"],
+  "additionalProperties": false,
+  "$defs": {
+    "testUrlParams": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          { "enum": ["env", "appDefOverrides", "sessionId", "frameContext", "hostClientType", "hostView"] },
+          { "type": "string" }
+        ]
+      }
+    },
+    "appInteractionValidationProperties": {
+      "type": "object",
+      "properties": {
+        "expectedAlertValue": {
+          "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }]
+        },
+        "expectedTestAppValue": { "type": "string" },
+        "expectedWindowOpenTarget": { "type": "string" },
+        "expectedIFrameTarget": { "type": "string" }
+      }
+    }
+  }
+}

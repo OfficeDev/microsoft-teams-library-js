@@ -1,0 +1,20 @@
+{
+  "name": "Notifications",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.0",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityNotifications"
+  },
+  "testCases": [
+    {
+      "title": "showNotification API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_showNotification",
+      "inputValue": {
+        "message": "testMessage",
+        "notificationType": "fileDownloadStart"
+      },
+      "expectedAlertValue": "showNotification called with ##JSON_INPUT_VALUE##"
+    }
+  ]
+}

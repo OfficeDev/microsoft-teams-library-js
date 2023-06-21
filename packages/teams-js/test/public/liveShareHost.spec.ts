@@ -1,15 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
-import {
-  ContainerState,
-  IClientInfo,
-  IFluidContainerInfo,
-  IFluidTenantInfo,
-  INtpTimeInfo,
-  isSupported,
-  LiveShareHost,
-  UserMeetingRole,
-} from '../../src/public/liveShareHost';
+import { liveShare, LiveShareHost } from '../../src/public/liveShareHost';
 import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -84,7 +75,7 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const mockTenantInfo: IFluidTenantInfo = {
+      const mockTenantInfo: liveShare.IFluidTenantInfo = {
         tenantId: 'test-tenant',
         serviceEndpoint: 'https://test.azure.com',
       };
@@ -157,8 +148,8 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const mockContainerInfo: IFluidContainerInfo = {
-        containerState: ContainerState.notFound,
+      const mockContainerInfo: liveShare.IFluidContainerInfo = {
+        containerState: liveShare.ContainerState.notFound,
         containerId: undefined,
         shouldCreate: false,
         retryAfter: 500,
@@ -197,8 +188,8 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const mockContainerInfo: IFluidContainerInfo = {
-        containerState: ContainerState.added,
+      const mockContainerInfo: liveShare.IFluidContainerInfo = {
+        containerState: liveShare.ContainerState.added,
         containerId: '1234',
         shouldCreate: false,
         retryAfter: 0,
@@ -238,7 +229,7 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const mockNtpTime: INtpTimeInfo = {
+      const mockNtpTime: liveShare.INtpTimeInfo = {
         ntpTime: 'some-time',
         ntpTimeInUTC: 12345,
       };
@@ -276,7 +267,7 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const userRoles = [UserMeetingRole.presenter];
+      const userRoles = [liveShare.UserMeetingRole.presenter];
       const promise = host.registerClientId('test-client');
 
       const registerClientIdMessage = utils.findMessageByFunc('interactive.registerClientId');
@@ -311,7 +302,7 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const userRoles = [UserMeetingRole.presenter];
+      const userRoles = [liveShare.UserMeetingRole.presenter];
       const promise = host.getClientRoles('test-client');
 
       const getClientRolesMessage = utils.findMessageByFunc('interactive.getClientRoles');
@@ -346,9 +337,9 @@ describe('LiveShareHost', () => {
 
     it('should resolve promise correctly', async () => {
       await utils.initializeWithContext('meetingStage');
-      const userInfo: IClientInfo = {
+      const userInfo: liveShare.IClientInfo = {
         userId: 'test userId',
-        roles: [UserMeetingRole.presenter],
+        roles: [liveShare.UserMeetingRole.presenter],
         displayName: 'test name',
       };
       const promise = host.getClientInfo('test-client');
@@ -364,7 +355,7 @@ describe('LiveShareHost', () => {
   describe('Testing isSupported', () => {
     it('should not be supported before initialization', () => {
       setUnitializedRuntime();
-      expect(() => isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => liveShare.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

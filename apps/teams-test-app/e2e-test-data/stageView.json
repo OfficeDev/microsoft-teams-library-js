@@ -1,0 +1,27 @@
+{
+  "name": "StageView",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.3",
+  "checkIsSupported": {
+    "expectedOutput": "StageView is not supported",
+    "version": ">2.0.0"
+  },
+  "testCases": [
+    {
+      "title": "openStageView API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_stageViewOpen",
+      "inputValue": {
+        "appId": "appId",
+        "contentUrl": "contentUrl",
+        "threadId": "threadId",
+        "title": "title",
+        "websiteUrl": "websiteUrl",
+        "entityId": "entityId"
+      },
+      "expectedAlertValue": "stageView.open called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "opened",
+      "skipForCallbackBasedRuns": true
+    }
+  ]
+}

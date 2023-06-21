@@ -1,0 +1,17 @@
+{
+  "name": "Teams FullTrust JoinedTeams",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.0",
+  "testCases": [
+    {
+      "title": "getUserJoinedTeams API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getUserJoinedTeams",
+      "inputValue": {
+        "favoriteTeamsOnly": true
+      },
+      "expectedAlertValue": "getUserJoinedTeams called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"userJoinedTeams\":[{\"teamId\":\"testTeamId\",\"teamName\":\"testTeamName\"}]}"
+    }
+  ]
+}

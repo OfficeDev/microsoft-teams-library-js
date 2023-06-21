@@ -1,0 +1,119 @@
+{
+  "name": "Pages",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "getConfig API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_config_getConfig",
+      "expectedAlertValue": "getConfig called",
+      "expectedTestAppValue": "{\"contentUrl\":\"https://www.bing.com\",\"entityId\":\"1\",\"suggestedDisplayName\":\"M365TestApp\"}"
+    },
+    {
+      "title": "getConfig API Call - Default Response",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_config_getConfig",
+      "modulesToDisable": ["pageConfigToggle"],
+      "expectedTestAppValue": "{\"contentUrl\":\"https://localhost:4000\",\"entityId\":\"serverUrl\",\"suggestedDisplayName\":\"Server Url\"}"
+    },
+    {
+      "title": "returnFocus API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_returnFocus",
+      "checkboxState": true,
+      "expectedAlertValue": "returnFocus called with true",
+      "expectedTestAppValue": "Current navigateForward state is true"
+    },
+    {
+      "title": "setCurrentFrame API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_setCurrentFrame",
+      "inputValue": {
+        "contentUrl": "https://localhost:4000/app",
+        "websiteUrl": "https://localhost:4000/website"
+      },
+      "expectedAlertValue": "setCurrentFrame called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "called"
+    },
+    {
+      "title": "navigateToApp API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_navigateToApp",
+      "inputValue": {
+        "appId": "fe4a8eba-2a31-4737-8e33-e5fae6fee194",
+        "pageId": "tasklist123",
+        "webUrl": "https://tasklist.example.com/123",
+        "subPageId": "task456",
+        "channelId": "19:cbe3683f25094106b826c9cada3afbe0@thread.skype"
+      },
+      "expectedAlertValue": "navigateToApp called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "navigateCrossDomain API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_navigateCrossDomain2",
+      "inputValue": "https://teams-test-tab.azurewebsites.net",
+      "expectedIFrameTarget": "https://teams-test-tab.azurewebsites.net"
+    },
+    {
+      "title": "navigateCrossDomain API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_navigateCrossDomain",
+      "inputValue": "https://teams-test-tab.azurewebsites.net",
+      "skipJsonStringifyOnInputValue": true,
+      "expectedIFrameTarget": "https://teams-test-tab.azurewebsites.net"
+    },
+    {
+      "title": "shareDeepLink API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "version": "<=2.1.0",
+      "boxSelector": "#box_core\\.shareDeepLink",
+      "inputValue": {
+        "subEntityId": "testId",
+        "subEntityLabel": "testLabel",
+        "subEntityWebUrl": "testUrl"
+      },
+      "expectedAlertValue": "shareDeepLink called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "called shareDeepLink"
+    },
+    {
+      "title": "shareDeepLink API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "version": ">2.1.0",
+      "boxSelector": "#box_pages\\.shareDeepLink",
+      "inputValue": {
+        "subEntityId": "testId",
+        "subEntityLabel": "testLabel",
+        "subEntityWebUrl": "testUrl"
+      },
+      "expectedAlertValue": "shareDeepLink called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "called shareDeepLink"
+    },
+    {
+      "title": "registerFullScreenChangeHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_registerFullScreenChangeHandler",
+      "eventName": "fullScreenChange",
+      "eventData": true,
+      "expectedTestAppValue": "successfully called with isFullScreen:true"
+    },
+    {
+      "title": "registerFocusEnterHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "platformsExcluded": ["iOS"],
+      "version": "1.x || >2.0.0-beta.2",
+      "boxSelector": "#box_registerFocusEnterHandler",
+      "eventName": "focusEnter",
+      "eventData": true,
+      "expectedTestAppValue": "successfully called with navigateForward:true"
+    }
+  ]
+}

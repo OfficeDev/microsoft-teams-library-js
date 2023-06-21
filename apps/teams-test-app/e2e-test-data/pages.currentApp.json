@@ -1,0 +1,51 @@
+{
+  "name": "Pages CurrentApp",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "capabilityName": "PageCurrentApp",
+    "expectedOutput": "Pages.currentApp module is supported",
+    "testUrlParams": [],
+    "version": ">2.3.0"
+  },
+  "testCases": [
+    {
+      "title": "navigateTo API Call - Success",
+      "type": "callResponse",
+      "version": ">2.3.0",
+      "boxSelector": "#box_navigateTo",
+      "inputValue": {
+        "pageId": "tasklist123",
+        "subPageId": "task456"
+      },
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.m365testapp.test\",\"pageId\":\"tasklist123\",\"subPageId\":\"task456\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "navigateTo API Call no subPageID- Success",
+      "type": "callResponse",
+      "version": ">2.3.0",
+      "boxSelector": "#box_navigateTo",
+      "inputValue": {
+        "pageId": "tasklist123"
+      },
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.m365testapp.test\",\"pageId\":\"tasklist123\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "navigateTo API Call - Failure",
+      "type": "callResponse",
+      "version": ">2.3.0",
+      "boxSelector": "#box_navigateTo",
+      "inputValue": {},
+      "expectedTestAppValue": "Error: PageID are required."
+    },
+    {
+      "title": "navigateToDefaultPage API Call - Success",
+      "type": "callResponse",
+      "version": ">2.3.0",
+      "boxSelector": "#box_navigateToDefaultPage",
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"com.example.m365testapp.test\",\"pageId\":\"serverUrl\"}",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

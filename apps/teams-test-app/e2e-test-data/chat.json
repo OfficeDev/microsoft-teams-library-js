@@ -1,0 +1,58 @@
+{
+  "name": "Chat",
+  "version": ">2.0.0-beta.0",
+  "platforms": "*",
+  "checkIsSupported": {
+    "version": ">2.0.0-beta.3"
+  },
+  "testCases": [
+    {
+      "title": "openChat API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.3",
+      "boxSelector": "#box_openChat",
+      "inputValue": {
+        "user": ["testUpn"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+    },
+    {
+      "title": "openGroupChat API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.3",
+      "boxSelector": "#box_openGroupChat",
+      "inputValue": {
+        "users": ["testUpn1", "testUpn2"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+    },
+    {
+      "title": "openChat2 API Call - Success",
+      "type": "callResponse",
+      "version": ">2.2.0",
+      "boxSelector": "#box_openChat2",
+      "inputValue": {
+        "user": ["testUpn"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openChat() was called"
+    },
+    {
+      "title": "openGroupChat2 API Call - Success",
+      "type": "callResponse",
+      "version": ">2.2.0",
+      "boxSelector": "#box_openGroupChat2",
+      "inputValue": {
+        "users": ["testUpn1", "testUpn2"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openGroupChat() was called"
+    }
+  ]
+}
