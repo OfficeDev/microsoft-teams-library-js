@@ -1,0 +1,59 @@
+{
+  "name": "Search",
+  "platforms": "Web",
+  "testCases": [
+    {
+      "version": ">2.4.0-beta.1",
+      "title": "registerHandlers - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_search_registerHandlers",
+      "expectedTestAppValue": "received"
+    },
+    {
+      "version": ">2.4.0-beta.1",
+      "title": "registerHandlers and call onChange event",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_search_registerHandlers",
+      "eventName": "queryChange",
+      "eventData": [
+        {
+          "searchTerm": "Hello, world"
+        }
+      ],
+      "expectedTestAppValue": "Update your application with the changed search query: Hello, world"
+    },
+    {
+      "version": ">2.4.0-beta.1",
+      "title": "registerHandlers and call onExecute event",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_search_registerHandlers",
+      "eventName": "queryExecute",
+      "eventData": [
+        {
+          "searchTerm": "Hello, world"
+        }
+      ],
+      "expectedTestAppValue": "Update your application to handle an executed search result: Hello, world"
+    },
+    {
+      "version": ">2.4.0-beta.1",
+      "title": "registerHandlers and call queryClose event",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_search_registerHandlers",
+      "eventName": "queryClose",
+      "eventData": [
+        {
+          "searchTerm": "Hello, world"
+        }
+      ],
+      "expectedTestAppValue": "Update your application to handle the search experience being closed. Last query: Hello, world"
+    },
+    {
+      "version": ">=2.12.0",
+      "title": "closeSearch API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_search_closeSearch",
+      "expectedAlertValue": "called"
+    }
+  ]
+}

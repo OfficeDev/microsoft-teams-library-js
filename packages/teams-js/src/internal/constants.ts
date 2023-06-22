@@ -180,3 +180,6 @@ export const errorRuntimeNotInitialized = 'The runtime has not yet been initiali
 
 /** @hidden */
 export const errorRuntimeNotSupported = 'The runtime version is not supported';
+
+/** @hidden */
+export const errorCallNotStarted = 'The call was not properly started';

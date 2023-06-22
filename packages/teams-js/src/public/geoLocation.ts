@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
@@ -46,7 +46,7 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleError('location.getLocation', { allowChooseLocation: false, showMap: false });
+    return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: false, showMap: false });
   }
 
   /**
@@ -65,7 +65,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleError('permissions.has', permissions));
+      resolve(sendAndHandleSdkError('permissions.has', permissions));
     });
   }
 
@@ -86,7 +86,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleError('permissions.request', permissions));
+      resolve(sendAndHandleSdkError('permissions.request', permissions));
     });
   }
 
@@ -120,7 +120,7 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleError('location.getLocation', { allowChooseLocation: true, showMap: true });
+      return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: true, showMap: true });
     }
 
     /**
@@ -139,7 +139,7 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleError('location.showLocation', location);
+      return sendAndHandleSdkError('location.showLocation', location);
     }
 
     /**

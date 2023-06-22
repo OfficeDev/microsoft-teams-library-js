@@ -1,0 +1,71 @@
+{
+  "name": "Media",
+  "platforms": "Web",
+  "testCases": [
+    {
+      "title": "selectMedia API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_selectMedia",
+      "inputValue": {
+        "mediaType": 1,
+        "maxMediaCount": 1,
+        "imageProps": {
+          "sources": [1, 2],
+          "startMode": 1,
+          "ink": true,
+          "cameraSwitcher": true,
+          "textSticker": true,
+          "enableFilter": false
+        }
+      },
+      "expectedAlertValue": "selectMedia called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[format: id, size: 2, mimeType: text/plain, content: ABCDEFGHIJKL, preview: ABC],[format: base64, size: 2, mimeType: .bin, content: ABCDEFGHIJKL2, preview: ABC],"
+    },
+    {
+      "title": "getMedia API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getMedia",
+      "inputValue": {},
+      "expectedAlertValue": ["selectMedia called with ##JSON_INPUT_VALUE##", "getMedia called with \"ABCDEFGHIJKL\""],
+      "expectedTestAppValue": "Received Blob (length: 74163)"
+    },
+    {
+      "title": "viewImagesWithIds API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_viewImagesWithId",
+      "inputValue": {
+        "mediaType": 1,
+        "maxMediaCount": 1,
+        "imageProps": {
+          "sources": [1, 2],
+          "startMode": 1,
+          "ink": true,
+          "cameraSwitcher": true,
+          "textSticker": true,
+          "enableFilter": false
+        }
+      },
+      "expectedAlertValue": [
+        "selectMedia called with ##JSON_INPUT_VALUE##",
+        "viewImages called with [{\"value\":\"ABCDEFGHIJKL\",\"type\":1},{\"value\":\"ABCDEFGHIJKL2\",\"type\":1}]"
+      ]
+    },
+    {
+      "title": "viewImagesWithUrls API Call - Success",
+      "type": "callResponse",
+      "version": "1.x || >2.0.0-beta.2",
+      "boxSelector": "#box_viewImagesWithUrls",
+      "inputValue": ["first", "second"],
+      "expectedAlertValue": "viewImages called with [{\"value\":\"first\",\"type\":2},{\"value\":\"second\",\"type\":2}]"
+    },
+    {
+      "title": "viewImagesWithUrls API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_viewImagesWithUrls",
+      "inputValue": "first, second",
+      "skipJsonStringifyOnInputValue": true,
+      "expectedAlertValue": "viewImages called with [{\"value\":\"first\",\"type\":2},{\"value\":\"second\",\"type\":2}]"
+    }
+  ]
+}
