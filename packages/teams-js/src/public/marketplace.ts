@@ -1,22 +1,18 @@
-import { UUID } from 'crypto';
-
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { validateCartItems } from '../internal/marketplaceUtils';
+import { validateCartItems, validateCartStatus, validateUuid } from '../internal/marketplaceUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
  * @hidden
  * Namespace for an app to support a checkout flow by interacting with the marketplace cart in the host.
- *
  * @beta
  */
 export namespace marketplace {
   /**
    * @hidden
    * Represents the cart object for the app checkout flow.
-   *
    * @beta
    */
   export interface Cart {
@@ -27,25 +23,24 @@ export namespace marketplace {
     readonly version: CartVersion;
     /**
      * @hidden
-     * The id of the cart.
+     * The uuid of the cart.
      */
-    readonly id: UUID;
+    readonly id: string;
     /**
      * @hidden
      * The cart info.
      */
-    cartInfo: CartInfo;
+    readonly cartInfo: CartInfo;
     /**
      * @hidden
      * The cart items.
      */
-    cartItems: CartItem[];
+    readonly cartItems: CartItem[];
   }
 
   /**
    * @hidden
    * Version of the cart.
-   *
    * @beta
    */
   interface CartVersion {
@@ -53,18 +48,17 @@ export namespace marketplace {
      * @hidden
      * Represents the major version number.
      */
-    majorVersion: number;
+    readonly majorVersion: number;
     /**
      * @hidden
      * Represents the minor version number.
      */
-    minorVersion: number;
+    readonly minorVersion: number;
   }
 
   /**
    * @hidden
    * Represents the cart information
-   *
    * @beta
    */
   interface CartInfo {
@@ -91,7 +85,7 @@ export namespace marketplace {
      * @hidden
      * The status of the cart.
      */
-    status: CartStatus;
+    readonly status: CartStatus;
     /**
      * @hidden
      * ISO 4217 currency code for the cart item price, e.g. USD for US Dollar.
@@ -117,10 +111,9 @@ export namespace marketplace {
   /**
    * @hidden
    * Represents the basic cart item information.
-   *
    * @beta
    */
-  interface Item {
+  export interface Item {
     /**
      * @hidden
      * The id of the cart item.
@@ -135,12 +128,12 @@ export namespace marketplace {
      * @hidden
      * The quantity of the cart item.
      */
-    quantity: number;
+    readonly quantity: number;
     /**
      * @hidden
      * The price of the single cart item.
      */
-    price: number;
+    readonly price: number;
     /**
      * @hidden
      * The thumbnail imageURL of the cart item.
@@ -151,7 +144,6 @@ export namespace marketplace {
   /**
    * @hidden
    * Represents the cart item that could have accessories
-   *
    * @beta
    */
   export interface CartItem extends Item {
@@ -165,7 +157,6 @@ export namespace marketplace {
   /**
    * @hidden
    * Represents the persona creating the cart.
-   *
    * @beta
    */
   export enum Intent {
@@ -184,7 +175,6 @@ export namespace marketplace {
   /**
    * @hidden
    * Represents the status of the cart.
-   *
    * @beta
    */
   export enum CartStatus {
@@ -201,23 +191,71 @@ export namespace marketplace {
     /**
      * @hidden
      * Indicate checking out is completed and the host should
-     * response a new cart in the next getCart call.
+     * return a new cart in the next getCart call.
      */
     Processed = 'Processed',
     /**
      * @hidden
+     * Indicate checking out process is manually cancelled by the user
+     */
+    Closed = 'Closed',
+    /**
+     * @hidden
      * Indicate checking out is failed and the host should
-     * response a new cart in the next getCart call.
+     * return a new cart in the next getCart call.
      */
     Error = 'Error',
   }
   /**
    * @hidden
+   * Represents the parameters to update the cart items.
+   * @beta
+   */
+  export interface AddOrUpdateCartItemsParams {
+    /**
+     * @hidden
+     * The uuid of the cart to be updated, target on the cart
+     * being checked out  if cartId is not provided.
+     */
+    cartId?: string;
+    /**
+     * @hidden
+     * A list of cart items object, for each item,
+     * if item id exists in the cart, overwrite the item price and quantity,
+     * otherwise add new items to cart.
+     */
+    cartItems: CartItem[];
+  }
+  /**
+   * @hidden
+   * Represents the parameters to remove the cart items.
+   * @beta
+   */
+  export interface RemoveCartItemsParams {
+    /**
+     * @hidden
+     * The uuid of the cart to be updated, target on the cart
+     * being checked out if cartId is not provided.
+     */
+    cartId?: string;
+    /**
+     * @hidden
+     * A list of cart id, delete the cart item accordingly.
+     */
+    cartItemIds: string[];
+  }
+  /**
+   * @hidden
    * Represents the parameters to update the cart status.
-   *
    * @beta
    */
   export interface UpdateCartStatusParams {
+    /**
+     * @hidden
+     * The uuid of the cart to be updated, target on the cart
+     * being checked out if cartId is not provided.
+     */
+    cartId?: string;
     /**
      * @hidden
      * Status of the cart.
@@ -233,7 +271,7 @@ export namespace marketplace {
   /**
    * @hidden
    * Get the cart object owned by the host to checkout.
-   *
+   * @returns A promise of the cart object.
    * @beta
    */
   export function getCart(): Promise<Cart> {
@@ -248,73 +286,73 @@ export namespace marketplace {
   /**
    * @hidden
    * Add or update cart items in the cart owned by the host.
-   *
-   * @param cartItems - A list of cart items object, for each item,
-   * if item id exists in the cart, overwrite the item price and quantity,
-   * otherwise add new items to cart.
-   *
+   * @param addOrUpdateCartItemsParams Represents the parameters to update the cart items.
+   * @returns A promise of the updated cart object.
    * @beta
    */
-  export function addOrUpdateCartItems(cartItems: CartItem[]): Promise<void> {
-    return new Promise<void>((resolve) => {
+  export function addOrUpdateCartItems(addOrUpdateCartItemsParams: AddOrUpdateCartItemsParams): Promise<Cart> {
+    return new Promise<Cart>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const [isValidItems, invalidItemsMessage] = validateCartItems(cartItems);
-      if (!isValidItems) {
-        throw new Error(invalidItemsMessage);
+      if (!addOrUpdateCartItemsParams) {
+        throw new Error('addOrUpdateCartItemsParams must be provided');
       }
-      resolve(sendAndHandleSdkError('marketplace.addOrUpdateCartItems', cartItems));
+      validateUuid(addOrUpdateCartItemsParams?.cartId);
+      validateCartItems(addOrUpdateCartItemsParams?.cartItems);
+      resolve(sendAndHandleSdkError('marketplace.addOrUpdateCartItems', addOrUpdateCartItemsParams));
     });
   }
   /**
    * @hidden
    * Remove cart items from the cart owned by the host.
-   *
-   * @param cartItemIds - A list of cart id, delete the cart item accordingly.
-   *
+   * @param removeCartItemsParams The parameters to remove the cart items.
+   * @returns A promise of the updated cart object.
    * @beta
    */
-  export function removeCartItems(cartItemIds: string[]): Promise<void> {
-    return new Promise<void>((resolve) => {
+  export function removeCartItems(removeCartItemsParams: RemoveCartItemsParams): Promise<Cart> {
+    return new Promise<Cart>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      if (!Array.isArray(cartItemIds) || cartItemIds.length === 0) {
+      if (!removeCartItemsParams) {
+        throw new Error('removeCartItemsParams must be provided');
+      }
+      validateUuid(removeCartItemsParams?.cartId);
+      if (!Array.isArray(removeCartItemsParams?.cartItemIds) || removeCartItemsParams?.cartItemIds.length === 0) {
         throw new Error('cartItemIds must be a non-empty array');
       }
-      resolve(sendAndHandleSdkError('marketplace.removeCartItems', cartItemIds));
+      resolve(sendAndHandleSdkError('marketplace.removeCartItems', removeCartItemsParams));
     });
   }
   /**
    * @hidden
    * Update cart status in the cart owned by the host.
-   *
-   * @param updateCartStatusParams
-   * updateCartStatusParams.cartStatus - cart status.
-   * updateCartStatusParams.statusInfo - extra info to the status.
-   *
+   * @param updateCartStatusParams The parameters to update the cart status.
+   * @returns A promise of the updated cart object.
    * @beta
    */
-  export function updateCartStatus(updateCartStatusParams: UpdateCartStatusParams): Promise<void> {
-    return new Promise<void>((resolve) => {
+  export function updateCartStatus(updateCartStatusParams: UpdateCartStatusParams): Promise<Cart> {
+    return new Promise<Cart>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
+      if (!updateCartStatusParams) {
+        throw new Error('updateCartStatusParams must be provided');
+      }
+      validateUuid(updateCartStatusParams?.cartId);
+      validateCartStatus(updateCartStatusParams?.cartStatus);
       resolve(sendAndHandleSdkError('marketplace.updateCartStatus', updateCartStatusParams));
     });
   }
   /**
    * @hidden
    * Checks if the marketplace capability is supported by the host.
-   *
    * @returns Boolean to represent whether the marketplace capability is supported.
-   *
    * @throws Error if {@linkcode app.initialize} has not successfully completed.
-   *
    * @beta
    */
   export function isSupported(): boolean {

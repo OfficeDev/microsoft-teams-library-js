@@ -15,7 +15,7 @@ const GetCart = (): ReactElement =>
   });
 
 const AddOrUpdateCartItems = (): ReactElement =>
-  ApiWithTextInput<marketplace.CartItem[]>({
+  ApiWithTextInput<marketplace.AddOrUpdateCartItemsParams>({
     name: 'addOrUpdateCartItems',
     title: 'Add Or Update CartItems',
     onClick: {
@@ -24,17 +24,15 @@ const AddOrUpdateCartItems = (): ReactElement =>
           throw new Error('input is undefined');
         }
       },
-      submit: async (cartItems, setResult) => {
-        await marketplace.addOrUpdateCartItems(cartItems);
-        const msg = 'update cart items succeeded';
-        setResult(msg);
-        return msg;
+      submit: async (addOrUpdateCartItemsParams) => {
+        const cart = await marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams);
+        return JSON.stringify(cart);
       },
     },
   });
 
 const RemoveCartItems = (): ReactElement =>
-  ApiWithTextInput<string[]>({
+  ApiWithTextInput<marketplace.RemoveCartItemsParams>({
     name: 'removeCartItems',
     title: 'Remove Cart Items',
     onClick: {
@@ -43,11 +41,9 @@ const RemoveCartItems = (): ReactElement =>
           throw new Error('input is undefined');
         }
       },
-      submit: async (cartItemIds, setResult) => {
-        await marketplace.removeCartItems(cartItemIds);
-        const msg = 'remove cart items succeeded';
-        setResult(msg);
-        return msg;
+      submit: async (removeCartItemsParams) => {
+        const cart = await marketplace.removeCartItems(removeCartItemsParams);
+        return JSON.stringify(cart);
       },
     },
   });
@@ -62,11 +58,9 @@ const UpdateCartStatus = (): ReactElement =>
           throw new Error('input is undefined');
         }
       },
-      submit: async (updateCartStatusParams, setResult) => {
-        await marketplace.updateCartStatus(updateCartStatusParams);
-        const msg = 'update cart status succeeded';
-        setResult(msg);
-        return msg;
+      submit: async (updateCartStatusParams) => {
+        const cart = await marketplace.updateCartStatus(updateCartStatusParams);
+        return JSON.stringify(cart);
       },
     },
   });
