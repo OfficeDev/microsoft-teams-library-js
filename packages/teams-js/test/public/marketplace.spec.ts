@@ -166,25 +166,25 @@ describe('Testing marketplace capability', () => {
           );
         });
 
-        it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
-          await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-          const emptyCartItemIds = { cartItemIds: [], cartId: uuid() };
-          expect(marketplace.removeCartItems(emptyCartItemIds)).rejects.toThrowError(
-            new Error('cartItemIds must be a non-empty array'),
-          );
-          const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
-          expect(
-            marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
-          ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
-        });
-
         Object.values(FrameContexts).forEach((context) => {
           if (context === FrameContexts.content || context === FrameContexts.task) {
             it(`marketplace.removeCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.removeCartItems should throw error with invalid cart item array input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              const emptyCartItemIds = { cartItemIds: [], cartId: uuid() };
+              expect(marketplace.removeCartItems(emptyCartItemIds)).rejects.toThrowError(
+                new Error('cartItemIds must be a non-empty array'),
+              );
+              const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+              expect(
+                marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
+              ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
             });
 
             it('marketplace.removeCartItems should successfully send the removeCartItems message', async () => {
@@ -452,25 +452,25 @@ describe('Testing marketplace capability', () => {
           );
         });
 
-        it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
-          await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-          const emptyRemoveCartItemIds = { cartItemIds: [], cartId: uuid() };
-          expect(marketplace.removeCartItems(emptyRemoveCartItemIds)).rejects.toThrowError(
-            new Error('cartItemIds must be a non-empty array'),
-          );
-          const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
-          expect(
-            marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
-          ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
-        });
-
         Object.values(FrameContexts).forEach((context) => {
           if (context === FrameContexts.content || context === FrameContexts.task) {
             it(`marketplace.removeCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              const emptyRemoveCartItemIds = { cartItemIds: [], cartId: uuid() };
+              expect(marketplace.removeCartItems(emptyRemoveCartItemIds)).rejects.toThrowError(
+                new Error('cartItemIds must be a non-empty array'),
+              );
+              const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+              expect(
+                marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
+              ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
             });
 
             it('marketplace.removeCartItems should successfully send the removeCartItems message', async () => {
