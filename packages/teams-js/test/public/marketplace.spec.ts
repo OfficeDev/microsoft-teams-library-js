@@ -74,6 +74,19 @@ describe('Testing marketplace capability', () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.getCart()).rejects.toEqual(errorNotSupportedOnPlatform);
             });
+
+            it('marketplace.getCart should successfully send the getCart message', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+
+              const promise = marketplace.getCart();
+
+              const getCartItemsMessage = utils.findMessageByFunc('marketplace.getCart');
+              validateExpectedArgumentsInRequest(getCartItemsMessage, 'marketplace.getCart', MatcherType.ToStrictEqual);
+
+              utils.respondToMessage(getCartItemsMessage!);
+              await promise;
+            });
           } else {
             it(`marketplace.getCart should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
@@ -160,6 +173,10 @@ describe('Testing marketplace capability', () => {
           expect(marketplace.removeCartItems(emptyCartItemIds)).rejects.toThrowError(
             new Error('cartItemIds must be a non-empty array'),
           );
+          const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+          expect(
+            marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
+          ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -304,6 +321,41 @@ describe('Testing marketplace capability', () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.getCart()).rejects.toEqual(errorNotSupportedOnPlatform);
             });
+
+            it('marketplace.getCart should successfully send the getCart message', async () => {
+              const cart: marketplace.Cart = {
+                id: uuid(),
+                version: {
+                  majorVersion: 1,
+                  minorVersion: 0,
+                },
+                cartInfo: {
+                  market: 'US',
+                  intent: marketplace.Intent.AdminUser,
+                  locale: 'en-US',
+                  status: marketplace.CartStatus.Open,
+                  currency: 'USD',
+                  createdAt: '2023-06-19T22:06:59Z',
+                  updatedAt: '2023-06-19T22:06:59Z',
+                },
+                cartItems: [],
+              };
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+
+              const promise = marketplace.getCart();
+
+              const getCartMessage = utils.findMessageByFunc('marketplace.getCart');
+              utils.respondToFramelessMessage({
+                data: {
+                  id: getCartMessage!.id,
+                  args: [undefined, cart],
+                },
+              } as DOMMessageEvent);
+
+              await promise;
+              await expect(promise).resolves.toBe(cart);
+            });
           } else {
             it(`marketplace.getCart should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
@@ -341,13 +393,38 @@ describe('Testing marketplace capability', () => {
             });
 
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
+              const cart: marketplace.Cart = {
+                id: uuid(),
+                version: {
+                  majorVersion: 1,
+                  minorVersion: 0,
+                },
+                cartInfo: {
+                  market: 'US',
+                  intent: marketplace.Intent.AdminUser,
+                  locale: 'en-US',
+                  status: marketplace.CartStatus.Open,
+                  currency: 'USD',
+                  createdAt: '2023-06-19T22:06:59Z',
+                  updatedAt: '2023-06-19T22:06:59Z',
+                },
+                cartItems: [],
+              };
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+
               const promise = marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams);
+
               const addOrUpdateCartItemsMessage = utils.findMessageByFunc('marketplace.addOrUpdateCartItems');
-              utils.respondToMessage(addOrUpdateCartItemsMessage!);
+              utils.respondToFramelessMessage({
+                data: {
+                  id: addOrUpdateCartItemsMessage!.id,
+                  args: [undefined, cart],
+                },
+              } as DOMMessageEvent);
+
               await promise;
-              await expect(promise).resolves.toBe(undefined);
+              await expect(promise).resolves.toBe(cart);
             });
           } else {
             it(`marketplace.addOrUpdateCartItems should not allow calls from ${context} context`, async () => {
@@ -382,6 +459,10 @@ describe('Testing marketplace capability', () => {
           expect(marketplace.removeCartItems(emptyRemoveCartItemIds)).rejects.toThrowError(
             new Error('cartItemIds must be a non-empty array'),
           );
+          const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+          expect(
+            marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
+          ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
         });
 
         Object.values(FrameContexts).forEach((context) => {
