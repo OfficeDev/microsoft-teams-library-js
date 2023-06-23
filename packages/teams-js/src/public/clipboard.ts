@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -10,11 +10,15 @@ import { runtime } from './runtime';
  */
 export namespace clipboard {
   /**
-   * Function to copy text to clipboard.
+   * Function to copy data to clipboard.
+   * @remarks
+   * Note: clipboard.write only supports Text, HTML, PNG, JPEG and SVG data format.
+   *       Also, JPEG and SVG will be converted to PNG image when copying to clipboard.
+   *
    * @param blob - A Blob object representing the data to be copied to clipboard.
    */
-  export function write(blob: Blob): Promise<void> {
-    return new Promise<void>((resolve) => {
+  export function write(blob: Blob): Promise<string> {
+    return new Promise((resolve) => {
       ensureInitialized(
         runtime,
         FrameContexts.content,
@@ -25,7 +29,15 @@ export namespace clipboard {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('clipboard.writeToClipboard', blob));
+      if (
+        blob.type.startsWith('image') &&
+        !blob.type.endsWith('png') &&
+        !blob.type.endsWith('jpeg') &&
+        !blob.type.endsWith('svg+xml')
+      ) {
+        throw `Blob type ${blob.type} is not supported.`;
+      }
+      sendMessageToParent('clipboard.writeToClipboard', [blob], resolve);
     });
   }
 
@@ -38,8 +50,6 @@ export namespace clipboard {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && (!navigator || !navigator.clipboard) && runtime.supports.clipboard
-      ? true
-      : false;
+    return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard ? true : false;
   }
 }
