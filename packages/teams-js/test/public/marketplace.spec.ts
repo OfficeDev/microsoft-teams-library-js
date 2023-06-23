@@ -123,6 +123,14 @@ describe('Testing marketplace capability', () => {
               );
             });
 
+            it('marketplace.addOrUpdateCartItems should throw error with invalid addOrUpdateCartItemsParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.addOrUpdateCartItems(null as unknown as marketplace.AddOrUpdateCartItemsParams),
+              ).rejects.toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
+            });
+
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
@@ -172,6 +180,14 @@ describe('Testing marketplace capability', () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.removeCartItems should throw error with invalid removeCartItemsParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.removeCartItems(null as unknown as marketplace.RemoveCartItemsParams),
+              ).rejects.toThrowError(new Error('removeCartItemsParams must be provided'));
             });
 
             it('marketplace.removeCartItems should throw error with invalid cart item array input', async () => {
@@ -237,6 +253,14 @@ describe('Testing marketplace capability', () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.updateCartStatus should throw error with invalid updateCartStatusParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.updateCartStatus(null as unknown as marketplace.UpdateCartStatusParams),
+              ).rejects.toThrowError(new Error('updateCartStatusParams must be provided'));
             });
 
             it('marketplace.updateCartStatus should successfully send the updateCartStatus message', async () => {
@@ -392,6 +416,14 @@ describe('Testing marketplace capability', () => {
               );
             });
 
+            it('marketplace.addOrUpdateCartItems should throw error with invalid addOrUpdateCartItemsParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.addOrUpdateCartItems(null as unknown as marketplace.AddOrUpdateCartItemsParams),
+              ).rejects.toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
+            });
+
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
               const cart: marketplace.Cart = {
                 id: uuid(),
@@ -458,6 +490,14 @@ describe('Testing marketplace capability', () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.removeCartItems should throw error with invalid removeCartItemsParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.removeCartItems(null as unknown as marketplace.RemoveCartItemsParams),
+              ).rejects.toThrowError(new Error('removeCartItemsParams must be provided'));
             });
 
             it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
@@ -540,6 +580,14 @@ describe('Testing marketplace capability', () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
               expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+            });
+
+            it('marketplace.updateCartStatus should throw error with invalid updateCartStatusParams input', async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
+              expect(
+                marketplace.updateCartStatus(null as unknown as marketplace.UpdateCartStatusParams),
+              ).rejects.toThrowError(new Error('updateCartStatusParams must be provided'));
             });
 
             it('marketplace.updateCartStatus should successfully send the updateCartStatus message', async () => {
