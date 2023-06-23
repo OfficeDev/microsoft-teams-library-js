@@ -1,0 +1,13 @@
+{
+  "name": "Pages BackStack",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "navigateBack API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_navigateBack",
+      "expectedAlertValue": "navigateBack called",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "People",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "selectPeople API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_selectPeople",
+      "inputValue": {
+        "title": "title",
+        "setSelected": ["setSelected"],
+        "openOrgWideSearchInChatOrChannel": true,
+        "singleSelect": true
+      },
+      "expectedAlertValue": "selectPeople called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[{\"objectId\":\"1\",\"displayName\":\"Name\",\"email\":\"test@microsoft.com\"}]"
+    }
+  ]
+}

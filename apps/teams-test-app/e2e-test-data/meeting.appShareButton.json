@@ -1,0 +1,18 @@
+{
+  "name": "Meeting",
+  "platforms": "Web",
+  "testUrlParams": [["sidePanel"]],
+  "testCases": [
+    {
+      "title": "setOptions API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_setOptions",
+      "inputValue": {
+        "contentUrl": "https://www.someUrl.com",
+        "isVisible": true
+      },
+      "expectedAlertValue": "setOptions called",
+      "expectedTestAppValue": "setOptions() succeeded"
+    }
+  ]
+}

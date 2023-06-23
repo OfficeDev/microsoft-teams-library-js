@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -72,13 +72,13 @@ export namespace chat {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleError(
+          sendAndHandleStatusAndReason(
             'executeDeepLink',
             createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
-        const sendPromise = sendAndHandleError('chat.openChat', {
+        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
           members: openChatRequest.user,
           message: openChatRequest.message,
         });
@@ -115,13 +115,13 @@ export namespace chat {
         }
         if (runtime.isLegacyTeams) {
           resolve(
-            sendAndHandleError(
+            sendAndHandleStatusAndReason(
               'executeDeepLink',
               createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
             ),
           );
         } else {
-          const sendPromise = sendAndHandleError('chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,

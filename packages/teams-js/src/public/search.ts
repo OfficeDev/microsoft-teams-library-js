@@ -1,4 +1,4 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -126,5 +126,21 @@ export namespace search {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.search ? true : false;
+  }
+
+  /**
+   * Clear the host M365 application's search box
+   *
+   * @beta
+   */
+  export function closeSearch(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error('Not supported');
+      }
+
+      resolve(sendAndHandleStatusAndReason('search.closeSearch'));
+    });
   }
 }

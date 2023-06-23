@@ -1,0 +1,24 @@
+{
+  "name": "Sharing",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "expectedOutput": "Sharing is not supported"
+  },
+  "testCases": [
+    {
+      "title": "shareWebContent API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_share_shareWebContent",
+      "inputValue": {
+        "content": [
+          {
+            "type": "URL",
+            "url": "https://bing.com",
+            "message": "def"
+          }
+        ]
+      },
+      "expectedAlertValue": "shareWebContent called with ##JSON_INPUT_VALUE##"
+    }
+  ]
+}

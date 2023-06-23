@@ -1,0 +1,30 @@
+{
+  "name": "Dialog",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityDialog"
+  },
+  "testCases": [
+    {
+      "title": "dialogResize API Call - Success",
+      "type": "callResponse",
+      "testUrlParams": [["frameContext", "task"]],
+      "boxSelector": "#box_dialogResize",
+      "inputValue": {
+        "height": "large",
+        "width": "large"
+      },
+      "expectedAlertValue": "dialog.resize() called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "dialogSubmit API Call - Success",
+      "type": "callResponse",
+      "testUrlParams": [["frameContext", "task"]],
+      "boxSelector": "#box_dialogSubmitWithInput",
+      "inputValue": {
+        "result": "testResult"
+      },
+      "expectedAlertValue": "dialog.submit() called with \"testResult\""
+    }
+  ]
+}

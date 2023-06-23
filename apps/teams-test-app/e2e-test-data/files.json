@@ -1,0 +1,198 @@
+{
+  "name": "Files",
+  "version": ">2.0.0-beta.0",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "openFilePreview API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_openFilePreview",
+      "inputValue": {
+        "entityId": "testEntityId",
+        "title": "testTitle",
+        "description": "testDescription",
+        "type": "testType",
+        "objectUrl": "testObjectUrl",
+        "downloadUrl": "testDownloadUrl",
+        "webPreviewUrl": "testWebPreviewUrl",
+        "baseUrl": "testBaseUrl",
+        "editFile": true,
+        "subEntityId": "testSubEntityId",
+        "viewerAction": "edit",
+        "fileOpenPreference": "web"
+      },
+      "expectedAlertValue": "openFilePreview called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Called"
+    },
+    {
+      "title": "openFilePreview API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_openFilePreview",
+      "inputValue": {
+        "entityId": "testEntityId",
+        "title": "testTitle",
+        "description": "testDescription",
+        "type": "testType",
+        "objectUrl": "testObjectUrl",
+        "downloadUrl": "testDownloadUrl",
+        "webPreviewUrl": "testWebPreviewUrl",
+        "baseUrl": "testBaseUrl",
+        "editFile": true,
+        "subEntityId": "testSubEntityId",
+        "viewerAction": "edit",
+        "fileOpenPreference": "web"
+      },
+      "expectedAlertValue": "openFilePreview called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "openFilePreview() was called, but there was no response from the Host SDK."
+    },
+    {
+      "title": "getCloudStorageFolders API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_getCloudStorageFolders2",
+      "inputValue": "testChannelId",
+      "expectedAlertValue": "getCloudStorageFolders called with channelId: testChannelId",
+      "expectedTestAppValue": "[{\"id\":\"testId\",\"title\":\"testTitle\",\"folderId\":\"testFolderId\",\"providerType\":2,\"providerCode\":\"GOOGLEDRIVE\",\"ownerDisplayName\":\"testOwnerDisplayName\"}]"
+    },
+    {
+      "title": "getCloudStorageFolders API Call - Failure (Not Full Trust)",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "version": ">2.0.0-beta.5",
+      "boxSelector": "#box_getCloudStorageFolders2",
+      "inputValue": "testChannelId",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
+      "expectedTestAppValue": "{\"errorCode\":500,\"message\":\"App does not have the required permissions for this operation\"}"
+    },
+    {
+      "title": "getCloudStorageFolders API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_getCloudStorageFolders",
+      "inputValue": "testChannelId",
+      "expectedAlertValue": "getCloudStorageFolders called with channelId: \"testChannelId\"",
+      "expectedTestAppValue": "[{\"id\":\"testId\",\"title\":\"testTitle\",\"folderId\":\"testFolderId\",\"providerType\":2,\"providerCode\":\"GOOGLEDRIVE\",\"ownerDisplayName\":\"testOwnerDisplayName\"}]"
+    },
+    {
+      "title": "addCloudStorageFolder API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_addCloudStorageFolder2",
+      "inputValue": "testChannelId",
+      "expectedAlertValue": "addCloudStorageFolder called with channelId: testChannelId",
+      "expectedTestAppValue": "{\"isFolderAdded\":true,\"folders\":[{\"id\":\"testId\",\"title\":\"testTitle\",\"folderId\":\"testFolderId\",\"providerType\":2,\"providerCode\":\"GOOGLEDRIVE\",\"ownerDisplayName\":\"testOwnerDisplayName\"}]}"
+    },
+    {
+      "title": "addCloudStorageFolder API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_addCloudStorageFolder",
+      "inputValue": "testChannelId",
+      "expectedAlertValue": "addCloudStorageFolder called with channelId: \"testChannelId\"",
+      "expectedTestAppValue": "{\"isFolderAdded\":true,\"folders\":[{\"id\":\"testId\",\"title\":\"testTitle\",\"folderId\":\"testFolderId\",\"providerType\":2,\"providerCode\":\"GOOGLEDRIVE\",\"ownerDisplayName\":\"testOwnerDisplayName\"}]}"
+    },
+    {
+      "title": "deleteCloudStorageFolder API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_deleteCloudStorageFolder",
+      "inputValue": {
+        "channelId": "testChannelId",
+        "folderToDelete": {
+          "id": "testId",
+          "title": "testTitle",
+          "folderId": "testFolderId",
+          "providerType": 2,
+          "providerCode": "GOOGLEDRIVE",
+          "ownerDisplayName": "testOwnerDisplayName"
+        }
+      },
+      "expectedAlertValue": "deleteCloudStorageFolder called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "copyMoveFiles API Call - Success",
+      "version": ">2.0.0-beta.2",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_copyMoveFiles",
+      "inputValue": {
+        "selectedFiles": [
+          {
+            "id": "123",
+            "lastModifiedTime": "2021-04-14T15:08:35Z",
+            "size": 32,
+            "objectUrl": "abc.com",
+            "title": "file",
+            "isSubdirectory": false,
+            "type": "type"
+          }
+        ],
+        "providerCode": "DROPBOX",
+        "destinationFolder": {
+          "id": "123",
+          "lastModifiedTime": "2021-04-14T15:08:35Z",
+          "size": 32,
+          "objectUrl": "abc.com",
+          "title": "file",
+          "isSubdirectory": false,
+          "type": "type"
+        },
+        "destinationProviderCode": "GOOGLEDRIVE",
+        "isMove": false
+      },
+      "expectedAlertValue": "copyMoveFiles called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "openCloudStorageFile API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_openCloudStorageFile",
+      "inputValue": {
+        "file": {
+          "id": "test1",
+          "title": "test.pptx",
+          "isSubdirectory": false,
+          "type": ".pptx",
+          "size": 100,
+          "objectUrl": "https://api.com/test.pptx",
+          "lastModifiedTime": "2021-04-14T15:08:35Z"
+        },
+        "providerCode": "BOX"
+      },
+      "expectedAlertValue": "openCloudStorageFile called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "getExternalProviders API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "version": ">2.0.0",
+      "boxSelector": "#box_getExternalProviders",
+      "checkboxState": true,
+      "expectedAlertValue": "getExternalProviders called",
+      "expectedTestAppValue": "[{\"name\":\"firstProvider\",\"description\":\"dDesc\",\"thumbnails\":[],\"providerCode\":\"GOOGLEDRIVE\",\"providerType\":2}]"
+    },
+    {
+      "title": "getCloudStorageFolderContents API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_getCloudStorageFolderContents",
+      "inputValue": {
+        "folder": {
+          "id": "test1",
+          "title": "test.pptx",
+          "isSubdirectory": true,
+          "type": ".pptx",
+          "size": 100,
+          "objectUrl": "https://api.com/test.pptx",
+          "lastModifiedTime": "2021-04-14T15:08:35Z"
+        },
+        "providerCode": "BOX"
+      },
+      "expectedAlertValue": "getCloudStorageFolderContents called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[{\"id\":\"test\",\"isSubdirectory\":false,\"lastModifiedTime\":\"23/06\",\"type\":\"ext\",\"size\":50,\"objectUrl\":\"object\",\"title\":\"testtitle\"}]"
+    }
+  ]
+}
