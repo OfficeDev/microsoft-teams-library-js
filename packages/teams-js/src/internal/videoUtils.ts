@@ -139,6 +139,15 @@ function createProcessedStreamGenerator(
   return generator;
 }
 
+/**
+ * @hidden
+ * Error messages during video frame transformation.
+ */
+enum VideoFrameTransformErrors {
+  TimestampIsNull = 'timestamp of the original video frame is null',
+  UnsupportedVideoFramePixelFormat = 'Unsupported video frame pixel format',
+}
+
 class DefaultTransformer {
   public constructor(private notifyError: (string) => void, private videoFrameHandler: video.VideoFrameHandler) {}
 
@@ -160,9 +169,100 @@ class DefaultTransformer {
         this.notifyError(error);
       }
     } else {
-      this.notifyError('timestamp of the original video frame is null');
+      this.notifyError(VideoFrameTransformErrors.TimestampIsNull);
     }
   };
+}
+
+/**
+ * @hidden
+ * Utility class to parse the header of a one-texture-input texture.
+ */
+class OneTextureHeader {
+  private readonly headerDataView: Uint32Array;
+  // Identifier for the texture layout, which is the 4-byte ASCII string "oti1" hardcoded by the host
+  // (oti1 stands for "one texture input version 1")
+  private readonly ONE_TEXTURE_INPUT_ID = 0x6f746931;
+  private readonly INVALID_HEADER_ERROR = 'Invalid video frame header';
+  private readonly UNSUPPORTED_LAYOUT_ERROR = 'Unsupported texture layout';
+  public constructor(private readonly headerBuffer: ArrayBuffer, private readonly notifyError: (string) => void) {
+    this.headerDataView = new Uint32Array(headerBuffer);
+    // headerDataView will contain the following data:
+    // 0: oneTextureLayoutId
+    // 1: version
+    // 2: frameRowOffset
+    // 3: frameFormat
+    // 4: frameWidth
+    // 5: frameHeight
+    // 6: multiStreamHeaderRowOffset
+    // 7: multiStreamCount
+    if (this.headerDataView.length < 8) {
+      this.notifyError(this.INVALID_HEADER_ERROR);
+      throw new Error(this.INVALID_HEADER_ERROR);
+    }
+    // ensure the texture layout is supported
+    if (this.headerDataView[0] !== this.ONE_TEXTURE_INPUT_ID) {
+      this.notifyError(this.UNSUPPORTED_LAYOUT_ERROR);
+      throw new Error(this.UNSUPPORTED_LAYOUT_ERROR);
+    }
+  }
+
+  public get oneTextureLayoutId(): number {
+    return this.headerDataView[0];
+  }
+
+  public get version(): number {
+    return this.headerDataView[1];
+  }
+
+  public get frameRowOffset(): number {
+    return this.headerDataView[2];
+  }
+
+  public get frameFormat(): number {
+    return this.headerDataView[3];
+  }
+
+  public get frameWidth(): number {
+    return this.headerDataView[4];
+  }
+
+  public get frameHeight(): number {
+    return this.headerDataView[5];
+  }
+
+  public get multiStreamHeaderRowOffset(): number {
+    return this.headerDataView[6];
+  }
+
+  public get multiStreamCount(): number {
+    return this.headerDataView[7];
+  }
+}
+
+/**
+ * @hidden
+ * Utility class to parse the metadata of a one-texture-input texture.
+ */
+class OneTextureMetadata {
+  private readonly metadataMap: Map<number, Uint8Array> = new Map();
+  // Stream id for audio inference metadata, which is the 4-byte ASCII string "1dia" hardcoded by the host
+  // (1dia stands for "audio inference data version 1")
+  private readonly AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
+  public constructor(metadataBuffer: ArrayBuffer, streamCount: number) {
+    const metadataDataView = new Uint32Array(metadataBuffer);
+    for (let i = 0, index = 0; i < streamCount; i++) {
+      const streamId = metadataDataView[index++];
+      const streamDataOffset = metadataDataView[index++];
+      const streamDataSize = metadataDataView[index++];
+      const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
+      this.metadataMap.set(streamId, streamData);
+    }
+  }
+
+  public get audioInferenceResult(): Uint8Array | undefined {
+    return this.metadataMap.get(this.AUDIO_INFERENCE_RESULT_STREAM_ID);
+  }
 }
 
 class TransformerWithMetadata {
@@ -199,7 +299,7 @@ class TransformerWithMetadata {
         this.notifyError(error);
       }
     } else {
-      this.notifyError('timestamp of the original video frame is null');
+      this.notifyError(VideoFrameTransformErrors.TimestampIsNull);
     }
   };
 
@@ -234,82 +334,45 @@ class TransformerWithMetadata {
     if (inServerSideRenderingEnvironment()) {
       throw errorNotSupportedOnPlatform;
     }
-
     if (texture.format !== 'NV12') {
-      this.notifyError('Unsupported video frame format');
-      throw new Error('Unsupported video frame format');
+      this.notifyError(VideoFrameTransformErrors.UnsupportedVideoFramePixelFormat);
+      throw new Error(VideoFrameTransformErrors.UnsupportedVideoFramePixelFormat);
     }
-
-    // Identifier for the texture layout, which is the 4-byte ASCII string "oti1" hardcoded by the host
-    // (oti1 stands for "one texture input version 1")
-    const ONE_TEXTURE_LAYOUT_ID = 0x6f746931;
-    // Stream id for audio inference metadata, which is the 4-byte ASCII string "1dia" hardcoded by the host
-    // (1dia stands for "audio inference data version 1")
-    const AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
 
     // The rectangle of pixels to copy from the texture. The first two rows are the header.
     const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
     // allocate buffer for the header
     // it's in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12), so the
     // number bytes of the header is (the size of the Y plane + the size of the UV plane)
-    // (headerRect.width * headerRect.height) + (headerRect.width * headerRect.height) / 2
+    // (headerRect.width * headerRect.height) + (headerRect.width * headerRect.height) / 2 = (headerRect.width * headerRect.height * 3) / 2
     const headerBuffer = new ArrayBuffer((headerRect.width * headerRect.height * 3) / 2);
     await texture.copyTo(headerBuffer, { rect: headerRect });
-    const headerDataView = new Uint32Array(headerBuffer);
-    // headerDataView contains the following data:
-    // 0: oneTextureLayoutId
-    // 1: version
-    // 2: frameRowOffset
-    // 3: frameFormat
-    // 4: frameWidth
-    // 5: frameHeight
-    // 6: multiStreamHeaderRowOffset
-    // 7: multiStreamCount
-    if (headerDataView.length < 8) {
-      this.notifyError('Invalid video frame header');
-      throw new Error('Invalid video frame header');
-    }
-    // ensure the texture layout is supported
-    if (headerDataView[0] !== ONE_TEXTURE_LAYOUT_ID) {
-      this.notifyError('Unsupported texture layout');
-      throw new Error('Unsupported texture layout');
-    }
+    const header = new OneTextureHeader(headerBuffer, this.notifyError);
 
     // The rectangle of pixels to copy from the texture. Metadata are at the bottom.
     const metadataRect = {
       x: 0,
-      y: headerDataView[6], // multiStreamHeaderRowOffset
+      y: header.multiStreamHeaderRowOffset,
       width: texture.codedWidth,
-      height: texture.codedHeight - headerDataView[6], // multiStreamHeaderRowOffset
+      height: texture.codedHeight - header.multiStreamHeaderRowOffset,
     };
     // allocate buffer for the metadata, buffer size = (the size of the Y plane + the size of the UV plane)
-    // (metadataRect.width * metadataRect.height) + (metadataRect.width * metadataRect.height) / 2
+    // (metadataRect.width * metadataRect.height) + (metadataRect.width * metadataRect.height) / 2 = (metadataRect.width * metadataRect.height * 3) / 2
     const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
     await texture.copyTo(metadataBuffer, { rect: metadataRect });
-    const metadata = new Uint32Array(metadataBuffer);
-    let audioInferenceResult: Uint8Array | undefined;
-    for (let i = 0, index = 0; i < headerDataView[7] /* multiStreamCount */; i++) {
-      const streamId = metadata[index++];
-      const streamDataOffset = metadata[index++];
-      const streamDataSize = metadata[index++];
-      const streamData = new Uint8Array(metadataBuffer, streamDataOffset, streamDataSize);
-      if (streamId === AUDIO_INFERENCE_RESULT_STREAM_ID) {
-        audioInferenceResult = streamData;
-      }
-    }
-
+    const metadata = new OneTextureMetadata(metadataBuffer, header.multiStreamCount);
     return {
       videoFrame: new VideoFrame(texture as unknown as CanvasImageSource, {
         timestamp: texture.timestamp,
         visibleRect: {
           x: 0,
-          y: headerDataView[2], // frameRowOffset
-          width: headerDataView[4], // frameWidth
-          height: headerDataView[5], // frameHeight
+          y: header.frameRowOffset,
+          width: header.frameWidth,
+          height: header.frameHeight,
         },
       }) as VideoFrame,
       metadata: {
-        audioInferenceResult: this.shouldDiscardAudioInferenceResult ? undefined : audioInferenceResult,
+        audioInferenceResult: this.shouldDiscardAudioInferenceResult ? undefined : metadata.audioInferenceResult,
       },
     };
   };
