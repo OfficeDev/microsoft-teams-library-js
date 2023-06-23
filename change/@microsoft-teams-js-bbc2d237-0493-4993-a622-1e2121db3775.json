@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added clipboard capability to TeamsJS library",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
