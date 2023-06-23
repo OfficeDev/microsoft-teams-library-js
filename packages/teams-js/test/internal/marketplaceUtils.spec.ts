@@ -55,8 +55,10 @@ describe.only('Testing marketplace utils', () => {
   it('should validate basic cart item', () => {
     const basicCartItem = { id: '1', name: 'Item 1', price: 10, quantity: 1 };
     const nestedAccessories = { id: '2', name: '', price: 10, quantity: 2, accessories: [] };
+    const emptyIdItem = { id: '', name: 'Item 1', price: 10, quantity: 1 };
     expect(() => validateBasicCartItem(basicCartItem)).not.toThrowError();
     expect(() => validateBasicCartItem(nestedAccessories)).toThrowError('cartItem.name must not be empty');
+    expect(() => validateBasicCartItem(emptyIdItem)).toThrowError('cartItem.id must not be empty');
   });
   it('should validate url', () => {
     expect(() => validateUrl(null)).not.toThrowError();

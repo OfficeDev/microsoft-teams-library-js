@@ -52,6 +52,9 @@ export function validateAccessoryItems(accessoryItems: marketplace.Item[] | unde
  * Limited to Microsoft-internal use
  */
 export function validateBasicCartItem(basicCartItem: marketplace.Item): void {
+  if (!basicCartItem.id) {
+    throw new Error('cartItem.id must not be empty');
+  }
   if (!basicCartItem.name) {
     throw new Error('cartItem.name must not be empty');
   }
