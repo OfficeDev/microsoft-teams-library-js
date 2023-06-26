@@ -48,10 +48,30 @@ const CopyImage = (): React.ReactElement =>
     },
   });
 
+const Paste = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'paste',
+    title: 'Paste',
+    onClick: async () => {
+      const result = await clipboard.read();
+      if (result.type.startsWith('text')) {
+        return JSON.stringify(await result.text());
+      } else if (result.type.startsWith('image')) {
+        const image = document.createElement('img');
+        image.setAttribute('id', 'clipboardImage');
+        image.src = URL.createObjectURL(result);
+        document.body.appendChild(image);
+        return JSON.stringify(image);
+      } else {
+        return JSON.stringify('No contents read from clipboard.');
+      }
+    },
+  });
 const ClipboardAPIs: React.FC = () => (
   <ModuleWrapper title="Clipboard">
     <CopyText />
     <CopyImage />
+    <Paste />
     <CheckCallCapability />
   </ModuleWrapper>
 );
