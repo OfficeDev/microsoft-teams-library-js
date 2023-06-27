@@ -17,6 +17,7 @@ dts/
 # Test App gitignore areas
 yarn-error.log
 *.log
+*.pem
 
 # bundle analysis folders
 /common/*

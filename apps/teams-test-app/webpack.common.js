@@ -1,6 +1,17 @@
 /* eslint @typescript-eslint/no-var-requires: off*/
 
 const path = require('path');
+const fs = require('fs');
+
+let useLocalCert = false;
+
+try {
+  fs.accessSync('localhost-key.pem', fs.constants.F_OK);
+  fs.accessSync('localhost.pem', fs.constants.F_OK);
+  useLocalCert = true;
+} catch (err) {
+  console.log('Certificates not found, using default https settings...');
+}
 
 module.exports = {
   mode: 'production',
@@ -39,7 +50,12 @@ module.exports = {
     },
     compress: true,
     port: 4000,
-    https: true,
+    https: useLocalCert
+      ? {
+          key: fs.readFileSync('localhost-key.pem'),
+          cert: fs.readFileSync('localhost.pem'),
+        }
+      : true,
     allowedHosts: 'all',
   },
   performance: { hints: false },
