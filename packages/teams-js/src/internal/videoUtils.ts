@@ -342,10 +342,10 @@ class TransformerWithMetadata {
     // The rectangle of pixels to copy from the texture. The first two rows are the header.
     const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
     // allocate buffer for the header
-    // it's in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12), so the
+    // The texture is in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12).
     // NV12 has one luma "luminance" plane Y and one UV plane with U and V values interleaved.
     // In NV12, chroma planes (blue and red) are subsampled in both the horizontal and vertical dimensions by a factor of 2.
-    // So for a 2×2 group of pixels, you have 4 Y samples and 1 U and 1 V sample;
+    // So for a 2×2 group of pixels, you have 4 Y samples and 1 U and 1 V sample, each sample being 1 byte.
     // for a 10×10 NV12 frame: there are 100 Y samples followed by 25 U and 25 V samples interleaved.
     // The graphical representation of the memory layout of a 2×2 NV12 frame is as follows:
     // | Y0 | Y1 | Y2 | Y3 | U0 | V0 |
@@ -364,7 +364,9 @@ class TransformerWithMetadata {
       width: texture.codedWidth,
       height: texture.codedHeight - header.multiStreamHeaderRowOffset,
     };
-    // allocate buffer for the metadata, buffer size = (the size of the Y plane + the size of the UV plane)
+    // Allocate buffer for the metadata. The number of pixels of the metadata section is
+    // (metadataRect.width * metadataRect.height), so the number of bytes of the metadata section is
+    // (the size of the Y plane + the size of the UV plane), which is
     // (metadataRect.width * metadataRect.height) + (metadataRect.width * metadataRect.height) / 2
     //   = (metadataRect.width * metadataRect.height * 3) / 2
     const metadataBuffer = new ArrayBuffer((metadataRect.width * metadataRect.height * 3) / 2);
