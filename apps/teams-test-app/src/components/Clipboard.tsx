@@ -4,6 +4,9 @@ import React from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
+const image = document.createElement('img');
+image.setAttribute('id', 'clipboardImage');
+
 const CheckCallCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkCapabilityClipboard',
@@ -54,14 +57,15 @@ const Paste = (): React.ReactElement =>
     title: 'Paste',
     onClick: async () => {
       const result = await clipboard.read();
+
       if (result.type.startsWith('text')) {
         return JSON.stringify(await result.text());
       } else if (result.type.startsWith('image')) {
-        const image = document.createElement('img');
-        image.setAttribute('id', 'clipboardImage');
         image.src = URL.createObjectURL(result);
+        image.style.height = '150px';
+        image.style.width = '150px';
         document.body.appendChild(image);
-        return JSON.stringify(image);
+        return JSON.stringify(`Pasted from clipboard with image id: ${image.id}`);
       } else {
         return JSON.stringify('No contents read from clipboard.');
       }
