@@ -29,7 +29,7 @@ export namespace stageView {
     threadId: string;
 
     /**
-     * The title to give the stage view.
+     * The title to give the stage view. Test
      */
     title?: string;
 
