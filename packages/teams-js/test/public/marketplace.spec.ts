@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { v4 as uuid } from 'uuid';
 
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
@@ -10,7 +11,6 @@ import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { MatcherType, validateExpectedArgumentsInRequest } from '../resultValidation';
 import { Utils } from '../utils';
 
-/* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 describe('Testing marketplace capability', () => {
@@ -64,7 +64,7 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.getCart function', () => {
         it('marketplace.getCart should not allow calls before initialization', async () => {
-          await expect(marketplace.getCart()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+          await expect(() => marketplace.getCart()).toThrowError(errorLibraryNotInitialized);
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -72,7 +72,9 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.getCart should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.getCart()).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(new Promise((resolve) => resolve(marketplace.getCart()))).rejects.toEqual(
+                errorNotSupportedOnPlatform,
+              );
             });
 
             it('marketplace.getCart should successfully send the getCart message', async () => {
@@ -90,7 +92,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.getCart should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.getCart()).rejects.toThrowError(
+              await expect(() => marketplace.getCart()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -108,7 +110,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.addOrUpdateCartItems should not allow calls before initialization', async () => {
-          await expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toThrowError(
+          await expect(() => marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -118,17 +120,17 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.addOrUpdateCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toEqual(
-                errorNotSupportedOnPlatform,
-              );
+              expect(
+                new Promise((resolve) => resolve(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams))),
+              ).rejects.toEqual(errorNotSupportedOnPlatform);
             });
 
             it('marketplace.addOrUpdateCartItems should throw error with invalid addOrUpdateCartItemsParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.addOrUpdateCartItems(null as unknown as marketplace.AddOrUpdateCartItemsParams),
-              ).rejects.toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
+              ).toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
             });
 
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
@@ -142,7 +144,10 @@ describe('Testing marketplace capability', () => {
                 addOrUpdateCartItemsMessage,
                 'marketplace.addOrUpdateCartItems',
                 MatcherType.ToStrictEqual,
-                addOrUpdateCartItemsParams,
+                {
+                  ...addOrUpdateCartItemsParams,
+                  cartVersion: marketplace.cartVersion,
+                },
               );
 
               utils.respondToMessage(addOrUpdateCartItemsMessage!);
@@ -151,7 +156,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.addOrUpdateCartItems should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toThrowError(
+              await expect(() => marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -169,7 +174,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.removeCartItems should not allow calls before initialization', async () => {
-          await expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toThrowError(
+          await expect(() => marketplace.removeCartItems(removeCartItemsParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -179,28 +184,30 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.removeCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(
+                new Promise((resolve) => resolve(marketplace.removeCartItems(removeCartItemsParams))),
+              ).rejects.toEqual(errorNotSupportedOnPlatform);
             });
 
             it('marketplace.removeCartItems should throw error with invalid removeCartItemsParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.removeCartItems(null as unknown as marketplace.RemoveCartItemsParams),
-              ).rejects.toThrowError(new Error('removeCartItemsParams must be provided'));
+              ).toThrowError(new Error('removeCartItemsParams must be provided'));
             });
 
             it('marketplace.removeCartItems should throw error with invalid cart item array input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
               const emptyCartItemIds = { cartItemIds: [], cartId: uuid() };
-              expect(marketplace.removeCartItems(emptyCartItemIds)).rejects.toThrowError(
+              expect(() => marketplace.removeCartItems(emptyCartItemIds)).toThrowError(
                 new Error('cartItemIds must be a non-empty array'),
               );
               const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
-              expect(
+              expect(() =>
                 marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
-              ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
+              ).toThrowError(new Error('cartItemIds must be a non-empty array'));
             });
 
             it('marketplace.removeCartItems should successfully send the removeCartItems message', async () => {
@@ -214,7 +221,10 @@ describe('Testing marketplace capability', () => {
                 removeCartItemsMessage,
                 'marketplace.removeCartItems',
                 MatcherType.ToStrictEqual,
-                removeCartItemsParams,
+                {
+                  ...removeCartItemsParams,
+                  cartVersion: marketplace.cartVersion,
+                },
               );
 
               utils.respondToMessage(removeCartItemsMessage!);
@@ -223,7 +233,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.removeCartItems should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toThrowError(
+              await expect(() => marketplace.removeCartItems(removeCartItemsParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -242,7 +252,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.updateCartStatus should not allow calls before initialization', async () => {
-          await expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toThrowError(
+          await expect(() => marketplace.updateCartStatus(cartStatusParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -252,15 +262,17 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.updateCartStatus should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(new Promise((resolve) => resolve(marketplace.updateCartStatus(cartStatusParams)))).rejects.toEqual(
+                errorNotSupportedOnPlatform,
+              );
             });
 
             it('marketplace.updateCartStatus should throw error with invalid updateCartStatusParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.updateCartStatus(null as unknown as marketplace.UpdateCartStatusParams),
-              ).rejects.toThrowError(new Error('updateCartStatusParams must be provided'));
+              ).toThrowError(new Error('updateCartStatusParams must be provided'));
             });
 
             it('marketplace.updateCartStatus should successfully send the updateCartStatus message', async () => {
@@ -274,7 +286,10 @@ describe('Testing marketplace capability', () => {
                 updateCartStatusMessage,
                 'marketplace.updateCartStatus',
                 MatcherType.ToStrictEqual,
-                cartStatusParams,
+                {
+                  ...cartStatusParams,
+                  cartVersion: marketplace.cartVersion,
+                },
               );
 
               utils.respondToMessage(updateCartStatusMessage!);
@@ -283,7 +298,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.updateCartStatus should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toThrowError(
+              await expect(() => marketplace.updateCartStatus(cartStatusParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -335,7 +350,7 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.getCart function', () => {
         it('marketplace.getCart should not allow calls before initialization', async () => {
-          await expect(marketplace.getCart()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+          await expect(() => marketplace.getCart()).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -343,7 +358,9 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.getCart should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.getCart()).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(new Promise((resolve) => resolve(marketplace.getCart()))).rejects.toEqual(
+                errorNotSupportedOnPlatform,
+              );
             });
 
             it('marketplace.getCart should successfully send the getCart message', async () => {
@@ -383,7 +400,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.getCart should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.getCart()).rejects.toThrowError(
+              await expect(() => marketplace.getCart()).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -401,7 +418,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.addOrUpdateCartItems should not allow calls before initialization', async () => {
-          await expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toThrowError(
+          await expect(() => marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -411,17 +428,17 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.addOrUpdateCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toEqual(
-                errorNotSupportedOnPlatform,
-              );
+              expect(
+                new Promise((resolve) => resolve(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams))),
+              ).rejects.toEqual(errorNotSupportedOnPlatform);
             });
 
             it('marketplace.addOrUpdateCartItems should throw error with invalid addOrUpdateCartItemsParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.addOrUpdateCartItems(null as unknown as marketplace.AddOrUpdateCartItemsParams),
-              ).rejects.toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
+              ).toThrowError(new Error('addOrUpdateCartItemsParams must be provided'));
             });
 
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
@@ -461,7 +478,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.addOrUpdateCartItems should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).rejects.toThrowError(
+              await expect(() => marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -479,7 +496,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.removeCartItems should not allow calls before initialization', async () => {
-          await expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toThrowError(
+          await expect(() => marketplace.removeCartItems(removeCartItemsParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -489,28 +506,30 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.removeCartItems should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(
+                new Promise((resolve) => resolve(marketplace.removeCartItems(removeCartItemsParams))),
+              ).rejects.toEqual(errorNotSupportedOnPlatform);
             });
 
             it('marketplace.removeCartItems should throw error with invalid removeCartItemsParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.removeCartItems(null as unknown as marketplace.RemoveCartItemsParams),
-              ).rejects.toThrowError(new Error('removeCartItemsParams must be provided'));
+              ).toThrowError(new Error('removeCartItemsParams must be provided'));
             });
 
             it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
               const emptyRemoveCartItemIds = { cartItemIds: [], cartId: uuid() };
-              expect(marketplace.removeCartItems(emptyRemoveCartItemIds)).rejects.toThrowError(
+              expect(() => marketplace.removeCartItems(emptyRemoveCartItemIds)).toThrowError(
                 new Error('cartItemIds must be a non-empty array'),
               );
               const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
-              expect(
+              expect(() =>
                 marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
-              ).rejects.toThrowError(new Error('cartItemIds must be a non-empty array'));
+              ).toThrowError(new Error('cartItemIds must be a non-empty array'));
             });
 
             it('marketplace.removeCartItems should successfully send the removeCartItems message', async () => {
@@ -550,7 +569,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.removeCartItems should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.removeCartItems(removeCartItemsParams)).rejects.toThrowError(
+              await expect(() => marketplace.removeCartItems(removeCartItemsParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,
@@ -569,7 +588,7 @@ describe('Testing marketplace capability', () => {
         };
 
         it('marketplace.updateCartStatus should not allow calls before initialization', async () => {
-          await expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toThrowError(
+          await expect(() => marketplace.updateCartStatus(cartStatusParams)).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -579,15 +598,17 @@ describe('Testing marketplace capability', () => {
             it(`marketplace.updateCartStatus should throw error when marketplace is not supported when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toEqual(errorNotSupportedOnPlatform);
+              expect(new Promise((resolve) => resolve(marketplace.updateCartStatus(cartStatusParams)))).rejects.toEqual(
+                errorNotSupportedOnPlatform,
+              );
             });
 
             it('marketplace.updateCartStatus should throw error with invalid updateCartStatusParams input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              expect(
+              expect(() =>
                 marketplace.updateCartStatus(null as unknown as marketplace.UpdateCartStatusParams),
-              ).rejects.toThrowError(new Error('updateCartStatusParams must be provided'));
+              ).toThrowError(new Error('updateCartStatusParams must be provided'));
             });
 
             it('marketplace.updateCartStatus should successfully send the updateCartStatus message', async () => {
@@ -628,7 +649,7 @@ describe('Testing marketplace capability', () => {
           } else {
             it(`marketplace.updateCartStatus should not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              await expect(marketplace.updateCartStatus(cartStatusParams)).rejects.toThrowError(
+              await expect(() => marketplace.updateCartStatus(cartStatusParams)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify([
                   FrameContexts.content,
                   FrameContexts.task,

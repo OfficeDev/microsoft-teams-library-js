@@ -12,6 +12,27 @@ import { runtime } from './runtime';
 export namespace marketplace {
   /**
    * @hidden
+   * the version of the current cart interface
+   * which is forced to send to the host in the calls.
+   * @beta
+   */
+  export const cartVersion: CartVersion = {
+    /**
+     * @hidden
+     * Represents the major version of the current cart interface,
+     * it is increased when incompatible interface update happens.
+     */
+    majorVersion: 1,
+    /**
+     * @hidden
+     * The minor version of the current cart interface, which is compatible
+     * with the previous minor version in the same major version.
+     */
+    minorVersion: 1,
+  };
+
+  /**
+   * @hidden
    * Represents the cart object for the app checkout flow.
    * @beta
    */
@@ -40,18 +61,20 @@ export namespace marketplace {
 
   /**
    * @hidden
-   * Version of the cart.
+   * Version of the cart that is used by the app.
    * @beta
    */
   interface CartVersion {
     /**
      * @hidden
-     * Represents the major version number.
+     * Represents the major version of a cart, it
+     * not compatible with the previous major version.
      */
     readonly majorVersion: number;
     /**
      * @hidden
-     * Represents the minor version number.
+     * The minor version of a cart, which is compatible
+     * with the previous minor version in the same major version.
      */
     readonly minorVersion: number;
   }
@@ -271,81 +294,82 @@ export namespace marketplace {
   /**
    * @hidden
    * Get the cart object owned by the host to checkout.
-   * @returns A promise of the cart object.
+   * @returns A promise of the cart object in the cartVersion.
    * @beta
    */
   export function getCart(): Promise<Cart> {
-    return new Promise<Cart>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      resolve(sendAndHandleSdkError('marketplace.getCart'));
-    });
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    return sendAndHandleSdkError('marketplace.getCart', cartVersion);
   }
   /**
    * @hidden
    * Add or update cart items in the cart owned by the host.
    * @param addOrUpdateCartItemsParams Represents the parameters to update the cart items.
-   * @returns A promise of the updated cart object.
+   * @returns A promise of the updated cart object in the cartVersion.
    * @beta
    */
   export function addOrUpdateCartItems(addOrUpdateCartItemsParams: AddOrUpdateCartItemsParams): Promise<Cart> {
-    return new Promise<Cart>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (!addOrUpdateCartItemsParams) {
-        throw new Error('addOrUpdateCartItemsParams must be provided');
-      }
-      validateUuid(addOrUpdateCartItemsParams?.cartId);
-      validateCartItems(addOrUpdateCartItemsParams?.cartItems);
-      resolve(sendAndHandleSdkError('marketplace.addOrUpdateCartItems', addOrUpdateCartItemsParams));
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (!addOrUpdateCartItemsParams) {
+      throw new Error('addOrUpdateCartItemsParams must be provided');
+    }
+    validateUuid(addOrUpdateCartItemsParams?.cartId);
+    validateCartItems(addOrUpdateCartItemsParams?.cartItems);
+    return sendAndHandleSdkError('marketplace.addOrUpdateCartItems', {
+      ...addOrUpdateCartItemsParams,
+      cartVersion,
     });
   }
   /**
    * @hidden
    * Remove cart items from the cart owned by the host.
    * @param removeCartItemsParams The parameters to remove the cart items.
-   * @returns A promise of the updated cart object.
+   * @returns A promise of the updated cart object in the cartVersion.
    * @beta
    */
   export function removeCartItems(removeCartItemsParams: RemoveCartItemsParams): Promise<Cart> {
-    return new Promise<Cart>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (!removeCartItemsParams) {
-        throw new Error('removeCartItemsParams must be provided');
-      }
-      validateUuid(removeCartItemsParams?.cartId);
-      if (!Array.isArray(removeCartItemsParams?.cartItemIds) || removeCartItemsParams?.cartItemIds.length === 0) {
-        throw new Error('cartItemIds must be a non-empty array');
-      }
-      resolve(sendAndHandleSdkError('marketplace.removeCartItems', removeCartItemsParams));
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (!removeCartItemsParams) {
+      throw new Error('removeCartItemsParams must be provided');
+    }
+    validateUuid(removeCartItemsParams?.cartId);
+    if (!Array.isArray(removeCartItemsParams?.cartItemIds) || removeCartItemsParams?.cartItemIds.length === 0) {
+      throw new Error('cartItemIds must be a non-empty array');
+    }
+    return sendAndHandleSdkError('marketplace.removeCartItems', {
+      ...removeCartItemsParams,
+      cartVersion,
     });
   }
   /**
    * @hidden
    * Update cart status in the cart owned by the host.
    * @param updateCartStatusParams The parameters to update the cart status.
-   * @returns A promise of the updated cart object.
+   * @returns A promise of the updated cart object in the cartVersion.
    * @beta
    */
   export function updateCartStatus(updateCartStatusParams: UpdateCartStatusParams): Promise<Cart> {
-    return new Promise<Cart>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (!updateCartStatusParams) {
-        throw new Error('updateCartStatusParams must be provided');
-      }
-      validateUuid(updateCartStatusParams?.cartId);
-      validateCartStatus(updateCartStatusParams?.cartStatus);
-      resolve(sendAndHandleSdkError('marketplace.updateCartStatus', updateCartStatusParams));
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (!updateCartStatusParams) {
+      throw new Error('updateCartStatusParams must be provided');
+    }
+    validateUuid(updateCartStatusParams?.cartId);
+    validateCartStatus(updateCartStatusParams?.cartStatus);
+    return sendAndHandleSdkError('marketplace.updateCartStatus', {
+      ...updateCartStatusParams,
+      cartVersion,
     });
   }
   /**
