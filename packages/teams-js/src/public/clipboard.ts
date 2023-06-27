@@ -21,7 +21,7 @@ export namespace clipboard {
    *          rejects with error stating the reason for failure.
    */
   export function write(blob: Blob): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise<string>((resolve) => {
       ensureInitialized(
         runtime,
         FrameContexts.content,
@@ -39,7 +39,7 @@ export namespace clipboard {
           !blob.type.endsWith('svg+xml')) ||
         (blob.type.startsWith('text') && !blob.type.endsWith('plain') && blob.type.endsWith('html'))
       ) {
-        throw `Blob type ${blob.type} is not supported.`;
+        throw new Error(`Blob type ${blob.type} is not supported.`);
       }
       sendMessageToParent('clipboard.writeToClipboard', [blob], resolve);
     });
