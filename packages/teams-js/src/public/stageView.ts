@@ -31,7 +31,7 @@ export namespace stageView {
     /**
      * The title to give the stage view.
      */
-    title: string;
+    title?: string;
 
     /**
      * The Teams application website URL.
