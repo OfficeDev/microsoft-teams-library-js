@@ -35,7 +35,7 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath)@kx/back_compat_migration_2
 
-      - bash: 'pnpm e2e:test:pull-data'
+      - bash: 'pnpm test:e2e:pull-data'
         displayName: 'Testing data preparation'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -62,7 +62,7 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath)@kx/back_compat_migration_2
 
-      - bash: 'pnpm e2e:test:pull-data'
+      - bash: 'pnpm test:e2e:pull-data'
         displayName: 'Testing data preparation'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -103,7 +103,7 @@ jobs:
             pnpm build-test-app-local
           workingDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'pnpm e2e:test:pull-data'
+      - bash: 'pnpm test:e2e:pull-data'
         displayName: 'Testing data preparation'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -139,7 +139,7 @@ jobs:
             pnpm build-test-app-CDN
           workingDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'pnpm e2e:test:pull-data'
+      - bash: 'pnpm test:e2e:pull-data'
         displayName: 'Testing data preparation'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
