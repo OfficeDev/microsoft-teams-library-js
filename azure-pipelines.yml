@@ -33,7 +33,12 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath)@kx/back_compat_migration_2
+
+      - bash: 'pnpm e2e:test:pull-data'
+        displayName: 'Testing data preparation'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
@@ -55,7 +60,12 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath)@kx/back_compat_migration_2
+
+      - bash: 'pnpm e2e:test:pull-data'
+        displayName: 'Testing data preparation'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
@@ -84,7 +94,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@kx/back_compat_migration_2
 
       - task: CmdLine@2
         displayName: 'Build Test App Local'
@@ -93,8 +103,8 @@ jobs:
             pnpm build-test-app-local
           workingDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
-        displayName: 'Run E2E integration tests with local script tag'
+      - bash: 'pnpm e2e:test:pull-data'
+        displayName: 'Testing data preparation'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
@@ -120,7 +130,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath6)@$kx/back_compat_migration_2
 
       - task: CmdLine@2
         displayName: 'Build Test App CDN'
@@ -128,6 +138,11 @@ jobs:
           script: |
             pnpm build-test-app-CDN
           workingDirectory: '$(ClientSdkProjectDirectory)'
+
+      - bash: 'pnpm e2e:test:pull-data'
+        displayName: 'Testing data preparation'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
         displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
