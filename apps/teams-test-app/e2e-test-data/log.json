@@ -1,0 +1,14 @@
+{
+  "name": "Log",
+  "platforms": "Web",
+  "testCases": [
+    {
+      "title": "registerGetLogHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerGetLogHandler",
+      "eventName": "log.request",
+      "expectedAlertValue": "handleAppLog called with appLog: App log string",
+      "expectedTestAppValue": "Success"
+    }
+  ]
+}

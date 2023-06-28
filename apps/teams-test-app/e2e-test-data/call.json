@@ -1,0 +1,22 @@
+{
+  "name": "Call",
+  "platforms": "Web",
+  "version": ">=2.0.0",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityCall"
+  },
+  "testCases": [
+    {
+      "title": "startCall API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_startCall",
+      "inputValue": {
+        "targets": ["user1", "user2"],
+        "requestedModalities": ["video"],
+        "source": "source"
+      },
+      "expectedAlertValue": "startCall called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "result: true"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Location",
+  "version": ">=2.1.0",
+  "platforms": "*",
+  "checkIsSupported": {},
+  "testCases": [
+    {
+      "title": "getLocation API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "inputValue": { "allowChooseLocation": true },
+      "expectedAlertValue": "location.map.chooseLocation is called.",
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
+      "title": "showLocation API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_showLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "inputValue": {
+        "latitude": 51.50735,
+        "longitude": -0.127758,
+        "accuracy": 2,
+        "timestamp": 200
+      },
+      "expectedAlertValue": "location.map.showLocation called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}
