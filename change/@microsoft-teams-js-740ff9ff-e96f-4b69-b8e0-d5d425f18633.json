@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added support for mediaStream with metadata in `videoEx` module for internal applications",
+  "comment": "Added support for mediaStream with metadata in `videoEx` module for internal applications.",
   "packageName": "@microsoft/teams-js",
   "email": "xuwu@microsoft.com",
   "dependentChangeType": "patch"
