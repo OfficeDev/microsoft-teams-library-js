@@ -1,6 +1,12 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { validateCartItems, validateCartStatus, validateUuid } from '../internal/marketplaceUtils';
+import {
+  deserializeCart,
+  serializeCartItems,
+  validateCartItems,
+  validateCartStatus,
+  validateUuid,
+} from '../internal/marketplaceUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -14,6 +20,8 @@ export namespace marketplace {
    * @hidden
    * the version of the current cart interface
    * which is forced to send to the host in the calls.
+   * @internal
+   * Limited to Microsoft-internal use
    * @beta
    */
   export const cartVersion: CartVersion = {
@@ -62,6 +70,8 @@ export namespace marketplace {
   /**
    * @hidden
    * Version of the cart that is used by the app.
+   * @internal
+   * Limited to Microsoft-internal use
    * @beta
    */
   interface CartVersion {
@@ -161,7 +171,7 @@ export namespace marketplace {
      * @hidden
      * The thumbnail imageURL of the cart item.
      */
-    readonly imageURL?: string;
+    readonly imageURL?: URL;
   }
 
   /**
@@ -175,6 +185,11 @@ export namespace marketplace {
      * Accessories to the item if existing.
      */
     readonly accessories?: Item[];
+    /**
+     * @hidden
+     * The thumbnail imageURL of the cart item.
+     */
+    readonly imageURL?: URL;
   }
 
   /**
@@ -185,14 +200,19 @@ export namespace marketplace {
   export enum Intent {
     /**
      * @hidden
-     * The cart is created by admin of an organization.
+     * The cart is created by admin of an organization in Teams Admin Center.
      */
-    AdminUser = 'AdminUser',
+    TACAdminUser = 'TACAdminUser',
     /**
      * @hidden
-     * The cart is created by end user of an organization.
+     * The cart is created by admin of an organization in Teams.
      */
-    EndUser = 'EndUser',
+    TeamsAdminUser = 'TeamsAdminUser',
+    /**
+     * @hidden
+     * The cart is created by end user of an organization in Teams.
+     */
+    TeamsEndUser = 'TeamsEndUser',
   }
 
   /**
@@ -302,7 +322,7 @@ export namespace marketplace {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('marketplace.getCart', cartVersion);
+    return sendAndHandleSdkError('marketplace.getCart', cartVersion).then(deserializeCart);
   }
   /**
    * @hidden
@@ -323,9 +343,11 @@ export namespace marketplace {
     validateCartItems(addOrUpdateCartItemsParams?.cartItems);
     return sendAndHandleSdkError('marketplace.addOrUpdateCartItems', {
       ...addOrUpdateCartItemsParams,
+      cartItems: serializeCartItems(addOrUpdateCartItemsParams.cartItems),
       cartVersion,
-    });
+    }).then(deserializeCart);
   }
+
   /**
    * @hidden
    * Remove cart items from the cart owned by the host.
@@ -348,7 +370,7 @@ export namespace marketplace {
     return sendAndHandleSdkError('marketplace.removeCartItems', {
       ...removeCartItemsParams,
       cartVersion,
-    });
+    }).then(deserializeCart);
   }
   /**
    * @hidden
@@ -370,7 +392,7 @@ export namespace marketplace {
     return sendAndHandleSdkError('marketplace.updateCartStatus', {
       ...updateCartStatusParams,
       cartVersion,
-    });
+    }).then(deserializeCart);
   }
   /**
    * @hidden

@@ -1,6 +1,75 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { validate } from 'uuid';
 
 import { marketplace } from '../public';
+
+/**
+ * @hidden
+ * deserialize the cart data:
+ * - convert url properties from string to URL
+ * @param cartItems The cart items
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function deserializeCart(cartData: any): marketplace.Cart {
+  try {
+    cartData.cartItems = deserializeCartItems(cartData.cartItems);
+    return cartData as marketplace.Cart;
+  } catch (e) {
+    throw new Error('Error deserializing cart');
+  }
+}
+
+/**
+ * @hidden
+ * deserialize the cart items:
+ * - convert url properties from string to URL
+ * @param cartItems The cart items
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function deserializeCartItems(cartItemsData: any): marketplace.CartItem {
+  return cartItemsData.map((cartItem) => {
+    if (cartItem.imageURL) {
+      const url = new URL(cartItem.imageURL);
+      cartItem.imageURL = url;
+    }
+    if (cartItem.accessories) {
+      cartItem.accessories = deserializeCartItems(cartItem.accessories);
+    }
+    return cartItem;
+  }) as marketplace.CartItem;
+}
+
+/**
+ * @hidden
+ * serialize the cart items:
+ * - make URL properties to string
+ * @param cartItems The cart items
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const serializeCartItems = (cartItems: marketplace.CartItem[]): any => {
+  try {
+    return cartItems.map((cartItem) => {
+      const { imageURL, accessories, ...rest } = cartItem;
+      const cartItemsData: any = { ...rest };
+      if (imageURL) {
+        cartItemsData.imageURL = imageURL.href;
+      }
+      if (accessories) {
+        cartItemsData.accessories = serializeCartItems(accessories);
+      }
+      return cartItemsData;
+    });
+  } catch (e) {
+    throw new Error('Error serializing cart items');
+  }
+};
 
 /**
  * @hidden
@@ -60,7 +129,6 @@ export function validateBasicCartItem(basicCartItem: marketplace.Item): void {
   }
   validatePrice(basicCartItem.price);
   validateQuantity(basicCartItem.quantity);
-  validateUrl(basicCartItem.imageURL);
 }
 
 /**
@@ -111,25 +179,6 @@ export function validatePrice(price: number): void {
 export function validateQuantity(quantity: number): void {
   if (typeof quantity !== 'number' || quantity <= 0 || parseInt(quantity.toString()) !== quantity) {
     throw new Error(`quantity ${quantity} must be an integer greater than 0`);
-  }
-}
-
-/**
- * @hidden
- * Validate url
- * @param url The url to be validated
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function validateUrl(url: string | undefined | null): void {
-  if (url === undefined || url === null) {
-    return;
-  }
-  try {
-    new URL(url);
-  } catch (e) {
-    throw new Error(`url ${url} is not valid`);
   }
 }
 

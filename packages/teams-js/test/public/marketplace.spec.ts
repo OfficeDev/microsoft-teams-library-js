@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { v4 as uuid } from 'uuid';
-
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
@@ -10,6 +8,30 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/con
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { MatcherType, validateExpectedArgumentsInRequest } from '../resultValidation';
 import { Utils } from '../utils';
+
+jest.mock('../../src/internal/marketplaceUtils', () => ({
+  validateCartItems: jest.fn(),
+  validateUuid: jest.fn(),
+  validateCartStatus: jest.fn(),
+  deserializeCart: jest.fn().mockReturnValue({
+    id: '90080f28-53e9-400f-811a-fcadd107891a',
+    version: {
+      majorVersion: 1,
+      minorVersion: 0,
+    },
+    cartInfo: {
+      market: 'US',
+      intent: 'TeamsAdminUser',
+      locale: 'en-US',
+      status: 'Open',
+      currency: 'USD',
+      createdAt: '2023-06-19T22:06:59Z',
+      updatedAt: '2023-06-19T22:06:59Z',
+    },
+    cartItems: [],
+  }),
+  serializeCartItems: jest.fn().mockReturnValue([{ id: '1', name: 'Item 1', price: 10, quantity: 1 }]),
+}));
 
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
@@ -23,11 +45,6 @@ describe('Testing marketplace capability', () => {
       utils.messages = [];
       utils.childMessages = [];
       utils.childWindow.closed = false;
-      jest.mock('../../src/internal/marketplaceUtils', () => ({
-        validateCartItems: jest.fn(),
-        validateUuid: jest.fn(),
-        validateCartStatus: jest.fn(),
-      }));
 
       // Set a mock window for testing
       app._initialize(utils.mockWindow);
@@ -106,7 +123,7 @@ describe('Testing marketplace capability', () => {
       describe('Testing marketplace.addOrUpdateCartItems function', () => {
         const addOrUpdateCartItemsParams = {
           cartItems: [{ id: '1', name: 'Item 1', price: 10, quantity: 1 }],
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
         };
 
         it('marketplace.addOrUpdateCartItems should not allow calls before initialization', async () => {
@@ -170,7 +187,7 @@ describe('Testing marketplace capability', () => {
       describe('Testing marketplace.removeCartItems function', () => {
         const removeCartItemsParams = {
           cartItemIds: ['1'],
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
         };
 
         it('marketplace.removeCartItems should not allow calls before initialization', async () => {
@@ -200,11 +217,11 @@ describe('Testing marketplace capability', () => {
             it('marketplace.removeCartItems should throw error with invalid cart item array input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              const emptyCartItemIds = { cartItemIds: [], cartId: uuid() };
+              const emptyCartItemIds = { cartItemIds: [], cartId: '90080f28-53e9-400f-811a-fcadd107891a' };
               expect(() => marketplace.removeCartItems(emptyCartItemIds)).toThrowError(
                 new Error('cartItemIds must be a non-empty array'),
               );
-              const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+              const nullRemoveCartItemIds = { cartItemIds: null, cartId: '90080f28-53e9-400f-811a-fcadd107891a' };
               expect(() =>
                 marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
               ).toThrowError(new Error('cartItemIds must be a non-empty array'));
@@ -246,7 +263,7 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.updateCartStatus function', () => {
         const cartStatusParams = {
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
           cartStatus: marketplace.CartStatus.Error,
           statusInfo: 'error message',
         };
@@ -318,11 +335,6 @@ describe('Testing marketplace capability', () => {
       utils.mockWindow.parent = undefined;
       utils.messages = [];
       GlobalVars.isFramelessWindow = false;
-      jest.mock('../../src/internal/marketplaceUtils', () => ({
-        validateCartItems: jest.fn(),
-        validateUuid: jest.fn(),
-        validateCartStatus: jest.fn(),
-      }));
     });
     afterEach(() => {
       app._uninitialize();
@@ -365,14 +377,14 @@ describe('Testing marketplace capability', () => {
 
             it('marketplace.getCart should successfully send the getCart message', async () => {
               const cart: marketplace.Cart = {
-                id: uuid(),
+                id: '90080f28-53e9-400f-811a-fcadd107891a',
                 version: {
                   majorVersion: 1,
                   minorVersion: 0,
                 },
                 cartInfo: {
                   market: 'US',
-                  intent: marketplace.Intent.AdminUser,
+                  intent: marketplace.Intent.TeamsAdminUser,
                   locale: 'en-US',
                   status: marketplace.CartStatus.Open,
                   currency: 'USD',
@@ -395,7 +407,7 @@ describe('Testing marketplace capability', () => {
               } as DOMMessageEvent);
 
               await promise;
-              await expect(promise).resolves.toBe(cart);
+              await expect(promise).resolves.toEqual(cart);
             });
           } else {
             it(`marketplace.getCart should not allow calls from ${context} context`, async () => {
@@ -414,7 +426,7 @@ describe('Testing marketplace capability', () => {
       describe('Testing marketplace.addOrUpdateCartItems function', () => {
         const addOrUpdateCartItemsParams = {
           cartItems: [{ id: '1', name: 'Item 1', price: 10, quantity: 1 }],
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
         };
 
         it('marketplace.addOrUpdateCartItems should not allow calls before initialization', async () => {
@@ -443,14 +455,14 @@ describe('Testing marketplace capability', () => {
 
             it('marketplace.addOrUpdateCartItems should successfully send the addOrUpdateCartItems message', async () => {
               const cart: marketplace.Cart = {
-                id: uuid(),
+                id: '90080f28-53e9-400f-811a-fcadd107891a',
                 version: {
                   majorVersion: 1,
                   minorVersion: 0,
                 },
                 cartInfo: {
                   market: 'US',
-                  intent: marketplace.Intent.AdminUser,
+                  intent: marketplace.Intent.TeamsAdminUser,
                   locale: 'en-US',
                   status: marketplace.CartStatus.Open,
                   currency: 'USD',
@@ -473,7 +485,7 @@ describe('Testing marketplace capability', () => {
               } as DOMMessageEvent);
 
               await promise;
-              await expect(promise).resolves.toBe(cart);
+              await expect(promise).resolves.toEqual(cart);
             });
           } else {
             it(`marketplace.addOrUpdateCartItems should not allow calls from ${context} context`, async () => {
@@ -492,7 +504,7 @@ describe('Testing marketplace capability', () => {
       describe('Testing marketplace.removeCartItems function', () => {
         const removeCartItemsParams = {
           cartItemIds: ['1'],
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
         };
 
         it('marketplace.removeCartItems should not allow calls before initialization', async () => {
@@ -522,11 +534,11 @@ describe('Testing marketplace capability', () => {
             it('marketplace.removeCartItems should throw error with empty cart item array input', async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({ apiVersion: 2, supports: { marketplace: {} } });
-              const emptyRemoveCartItemIds = { cartItemIds: [], cartId: uuid() };
+              const emptyRemoveCartItemIds = { cartItemIds: [], cartId: '90080f28-53e9-400f-811a-fcadd107891a' };
               expect(() => marketplace.removeCartItems(emptyRemoveCartItemIds)).toThrowError(
                 new Error('cartItemIds must be a non-empty array'),
               );
-              const nullRemoveCartItemIds = { cartItemIds: null, cartId: uuid() };
+              const nullRemoveCartItemIds = { cartItemIds: null, cartId: '90080f28-53e9-400f-811a-fcadd107891a' };
               expect(() =>
                 marketplace.removeCartItems(nullRemoveCartItemIds as unknown as marketplace.RemoveCartItemsParams),
               ).toThrowError(new Error('cartItemIds must be a non-empty array'));
@@ -534,14 +546,14 @@ describe('Testing marketplace capability', () => {
 
             it('marketplace.removeCartItems should successfully send the removeCartItems message', async () => {
               const cart: marketplace.Cart = {
-                id: uuid(),
+                id: '90080f28-53e9-400f-811a-fcadd107891a',
                 version: {
                   majorVersion: 1,
                   minorVersion: 0,
                 },
                 cartInfo: {
                   market: 'US',
-                  intent: marketplace.Intent.AdminUser,
+                  intent: marketplace.Intent.TeamsAdminUser,
                   locale: 'en-US',
                   status: marketplace.CartStatus.Open,
                   currency: 'USD',
@@ -564,7 +576,7 @@ describe('Testing marketplace capability', () => {
               } as DOMMessageEvent);
 
               await promise;
-              await expect(promise).resolves.toBe(cart);
+              await expect(promise).resolves.toEqual(cart);
             });
           } else {
             it(`marketplace.removeCartItems should not allow calls from ${context} context`, async () => {
@@ -582,7 +594,7 @@ describe('Testing marketplace capability', () => {
 
       describe('Testing marketplace.updateCartStatus function', () => {
         const cartStatusParams = {
-          cartId: uuid(),
+          cartId: '90080f28-53e9-400f-811a-fcadd107891a',
           cartStatus: marketplace.CartStatus.Error,
           statusInfo: 'error message',
         };
@@ -613,14 +625,14 @@ describe('Testing marketplace capability', () => {
 
             it('marketplace.updateCartStatus should successfully send the updateCartStatus message', async () => {
               const cart: marketplace.Cart = {
-                id: uuid(),
+                id: '90080f28-53e9-400f-811a-fcadd107891a',
                 version: {
                   majorVersion: 1,
                   minorVersion: 0,
                 },
                 cartInfo: {
                   market: 'US',
-                  intent: marketplace.Intent.AdminUser,
+                  intent: marketplace.Intent.TeamsAdminUser,
                   locale: 'en-US',
                   status: marketplace.CartStatus.Open,
                   currency: 'USD',
@@ -644,7 +656,7 @@ describe('Testing marketplace capability', () => {
               } as DOMMessageEvent);
 
               await promise;
-              await expect(promise).resolves.toBe(cart);
+              await expect(promise).resolves.toEqual(cart);
             });
           } else {
             it(`marketplace.updateCartStatus should not allow calls from ${context} context`, async () => {
