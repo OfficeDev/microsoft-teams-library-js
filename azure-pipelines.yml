@@ -84,7 +84,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@kx/back_compat_migration_2
 
       - task: CmdLine@2
         displayName: 'Build Test App Local'
