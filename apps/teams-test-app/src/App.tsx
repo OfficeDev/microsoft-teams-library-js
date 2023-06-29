@@ -23,6 +23,7 @@ import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
+import MarketplaceAPIs from './components/MarketplaceAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import MenusAPIs from './components/MenusAPIs';
@@ -143,6 +144,7 @@ const App = (): ReactElement => {
         <LocationAPIs />
         <LogAPIs />
         <MailAPIs />
+        <MarketplaceAPIs />
         <MediaAPIs />
         <MeetingAPIs />
         <MeetingRoomAPIs />
