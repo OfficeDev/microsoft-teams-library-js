@@ -10,7 +10,7 @@ try {
   fs.accessSync('localhost.pem', fs.constants.F_OK);
   useLocalCert = true;
 } catch (err) {
-  console.log('Certificates not found, using default https settings...');
+  console.log('Certificates not found: using default https settings...');
 }
 
 module.exports = {
