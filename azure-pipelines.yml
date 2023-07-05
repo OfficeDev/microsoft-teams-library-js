@@ -35,11 +35,6 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath)@kx/back_compat_migration_2
 
-      - bash: 'pnpm test:e2e:pull-data'
-        displayName: 'Testing data preparation'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
         condition: succeeded()
@@ -61,11 +56,6 @@ jobs:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@kx/back_compat_migration_2
-
-      - bash: 'pnpm test:e2e:pull-data'
-        displayName: 'Testing data preparation'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
@@ -103,11 +93,6 @@ jobs:
             pnpm build-test-app-local
           workingDirectory: '$(ClientSdkProjectDirectory)'
 
-      - bash: 'pnpm test:e2e:pull-data'
-        displayName: 'Testing data preparation'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
         displayName: 'Run E2E integration tests with local script tag'
         condition: succeeded()
@@ -142,11 +127,6 @@ jobs:
           script: |
             pnpm build-test-app-CDN
           workingDirectory: '$(ClientSdkProjectDirectory)'
-
-      - bash: 'pnpm test:e2e:pull-data'
-        displayName: 'Testing data preparation'
-        condition: succeeded()
-        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
         displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
