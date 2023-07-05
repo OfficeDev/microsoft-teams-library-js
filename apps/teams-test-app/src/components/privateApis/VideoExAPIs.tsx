@@ -45,9 +45,15 @@ const RegisterForVideoEffect = (): React.ReactElement =>
     name: 'videoExRegisterForVideoEffect',
     title: 'videoEx - registerForVideoEffect',
     onClick: async (setResult) => {
-      const onVideoEffectChanged = (effectId: string | undefined, effectParam?: string): Promise<void> => {
-        setResult(`video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`);
-        return Promise.resolve();
+      const onVideoEffectChanged = async (effectId: string | undefined, effectParam?: string): Promise<void> => {
+        if (effectId === 'anInvalidEffectId') {
+          setResult(`failed to change effect to ${JSON.stringify(effectId)}, param: ${JSON.stringify(effectParam)}`);
+          throw video.EffectFailureReason.InvalidEffectId;
+        } else {
+          setResult(
+            `video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`,
+          );
+        }
       };
       videoEx.registerForVideoEffect(onVideoEffectChanged);
       return generateRegistrationMsg('it is invoked on video effect changed');
@@ -80,14 +86,11 @@ const CheckIsSupported = (): React.ReactElement =>
     },
   });
 
-const RegisterForVideoFrame = (): React.ReactElement =>
+const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'videoExSharedFrameRegisterForVideoFrame',
-    title: 'registerForVideoFrame',
+    name: 'videoExMediaStreamRegisterForVideoFrame',
+    title: 'medisStream - registerForVideoFrame',
     onClick: async (setResult) => {
-      const onFrameCallback: videoEx.VideoBufferHandler = async () => {
-        setResult('video frame received');
-      };
       try {
         const audioInferenceModel = new ArrayBuffer(8);
         const view = new Uint8Array(audioInferenceModel);
@@ -95,7 +98,43 @@ const RegisterForVideoFrame = (): React.ReactElement =>
           view[i] = i;
         }
         videoEx.registerForVideoFrame({
-          videoBufferHandler: onFrameCallback,
+          videoFrameHandler: async (frame) => {
+            setResult('video frame received');
+            return frame.videoFrame;
+          },
+          videoBufferHandler: (buffer) => buffer,
+          config: {
+            format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
+          },
+        });
+      } catch (error) {
+        return `Failed to register for video frame: ${JSON.stringify(error)}`;
+      }
+      return generateRegistrationMsg('it is invoked on video frame received');
+    },
+  });
+
+// To be removed, use the one below with typo fix
+const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'videoExSharedFrameRegisterForVideoFrame',
+    title: 'sharedFrame - registerForVideoFrame',
+    onClick: async (setResult) => {
+      try {
+        const audioInferenceModel = new ArrayBuffer(8);
+        const view = new Uint8Array(audioInferenceModel);
+        for (let i = 0; i < view.length; i++) {
+          view[i] = i;
+        }
+        videoEx.registerForVideoFrame({
+          videoFrameHandler: async (frame) => {
+            return frame.videoFrame;
+          },
+          videoBufferHandler: () => {
+            setResult('video frame received');
+          },
           config: {
             format: video.VideoFrameFormat.NV12,
             requireCameraStream: false,
@@ -109,12 +148,45 @@ const RegisterForVideoFrame = (): React.ReactElement =>
     },
   });
 
+const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'videoExSharedFrameRegisterForVideoFrame1',
+    title: 'sharedFrame - registerForVideoFrame',
+    onClick: async (setResult) => {
+      try {
+        const audioInferenceModel = new ArrayBuffer(8);
+        const view = new Uint8Array(audioInferenceModel);
+        for (let i = 0; i < view.length; i++) {
+          view[i] = i;
+        }
+        videoEx.registerForVideoFrame({
+          videoFrameHandler: async (frame) => {
+            return frame.videoFrame;
+          },
+          videoBufferHandler: () => {
+            setResult('video frame received');
+          },
+          config: {
+            format: video.VideoFrameFormat.NV12,
+            requireCameraStream: false,
+            audioInferenceModel,
+          },
+        });
+      } catch (error) {
+        return `Failed to register for video frame: ${JSON.stringify(error)}`;
+      }
+      return generateRegistrationMsg('it is invoked on video frame received');
+    },
+  });
+
 const VideoExAPIs = (): React.ReactElement => (
   <ModuleWrapper title="VideoEx">
     <UpdatePersonalizedEffects />
     <NotifySelectedVideoEffectChanged />
     <RegisterForVideoEffect />
-    <RegisterForVideoFrame />
+    <MediaStreamRegisterForVideoFrame />
+    <SharedFrameRegisterForVideoFrameToBeRemoved />
+    <SharedFrameRegisterForVideoFrame />
     <NotifyFatalError />
     <CheckIsSupported />
   </ModuleWrapper>
