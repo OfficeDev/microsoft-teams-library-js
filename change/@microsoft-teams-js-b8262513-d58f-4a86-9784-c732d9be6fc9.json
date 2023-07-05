@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed an issue where `call.startCall` would return an error when it executed successfully in a legacy environment",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
