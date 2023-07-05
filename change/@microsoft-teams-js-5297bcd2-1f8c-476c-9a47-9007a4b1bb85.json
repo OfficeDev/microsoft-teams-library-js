@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed import aliasing of communications.ts functions",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
