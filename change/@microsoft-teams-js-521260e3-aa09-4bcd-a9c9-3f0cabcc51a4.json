@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Made title optional when calling `stageView.open`",
-  "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
-  "dependentChangeType": "patch"
-}
