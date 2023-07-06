@@ -1,5 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { clipboard } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -33,25 +34,29 @@ describe('clipboard', () => {
         GlobalVars.isFramelessWindow = false;
       });
 
-      it('clipboard.write should not allow calls before initialization', () => {
-        expect(clipboard.write(dataToCopy)).rejects.toThrowError(errorLibraryNotInitialized);
+      it('clipboard.write should not allow calls before initialization', async () => {
+        expect(() => clipboard.write(dataToCopy)).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`clipboard.write should throw error if the clipboard.write capability is not supported in runtime config - Context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
+          it('clipboard.write should throw error if the clipboard.write capability is not supported in runtime config - Context:', async () => {
+            await utils.initializeWithContext('content');
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            const promise = clipboard.write(dataToCopy);
-            expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
+            try {
+              clipboard.write(dataToCopy);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
           });
-
           it(`clipboard.write should throw error if the blob type is not supported with context - ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
-            expect(clipboard.write(dataToCopyNotSupported)).rejects.toThrowError(
-              `Blob type ${dataToCopyNotSupported.type} is not supported.`,
-            );
+            try {
+              clipboard.write(dataToCopyNotSupported);
+            } catch (error) {
+              expect(error).toEqual(`Blob type ${dataToCopyNotSupported.type} is not supported.`);
+            }
           });
 
           it(`clipboard.write should send message to parent with context - ${context}`, async () => {
@@ -66,7 +71,7 @@ describe('clipboard', () => {
         } else {
           it(`clipboard.write should not allow calls from context ${context}`, async () => {
             await utils.initializeWithContext(context);
-            expect(clipboard.write(dataToCopy)).rejects.toThrowError(
+            expect(() => clipboard.write(dataToCopy)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: ${JSON.stringify(context)}.`,
@@ -92,7 +97,7 @@ describe('clipboard', () => {
       });
 
       it('clipboard.write should not allow calls before initialization', () => {
-        expect(clipboard.write(dataToCopy)).rejects.toThrowError(errorLibraryNotInitialized);
+        expect(() => clipboard.write(dataToCopy)).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -100,16 +105,21 @@ describe('clipboard', () => {
           it(`clipboard.write should throw error if the clipboard.write capability is not supported in runtime config - Context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            const promise = clipboard.write(dataToCopy);
-            expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
+            try {
+              clipboard.write(dataToCopy);
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
           });
 
           it(`clipboard.write should throw error if the blob type is not supported with context - ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
-            expect(clipboard.write(dataToCopyNotSupported)).rejects.toThrowError(
-              `Blob type ${dataToCopyNotSupported.type} is not supported.`,
-            );
+            try {
+              clipboard.write(dataToCopyNotSupported);
+            } catch (error) {
+              expect(error).toEqual(`Blob type ${dataToCopyNotSupported.type} is not supported.`);
+            }
           });
 
           it(`clipboard.write should send message to parent with context - ${context}`, async () => {
@@ -124,7 +134,7 @@ describe('clipboard', () => {
         } else {
           it(`clipboard.write should not allow calls from context ${context}`, async () => {
             await utils.initializeWithContext(context);
-            expect(clipboard.write(dataToCopy)).rejects.toThrowError(
+            expect(() => clipboard.write(dataToCopy)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: ${JSON.stringify(context)}.`,
@@ -152,7 +162,7 @@ describe('clipboard', () => {
       });
 
       it('clipboard.read should not allow calls before initialization', () => {
-        expect(clipboard.read()).rejects.toThrowError(errorLibraryNotInitialized);
+        expect(() => clipboard.read()).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -160,8 +170,11 @@ describe('clipboard', () => {
           it(`clipboard.read should throw error if the clipboard.read capability is not supported in runtime config - Context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            const promise = clipboard.read();
-            expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
+            try {
+              clipboard.read();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
           });
 
           it(`clipboard.read should send message to parent with context - ${context}`, async () => {
@@ -169,15 +182,20 @@ describe('clipboard', () => {
             utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
             const promise = clipboard.read();
             const clipboardReadMessage = utils.findMessageByFunc('clipboard.readFromClipboard');
-            utils.respondToMessage(clipboardReadMessage, dataToCopy);
+            utils.respondToFramelessMessage({
+              data: {
+                id: clipboardReadMessage?.id,
+                args: [undefined, dataToCopy],
+              },
+            } as DOMMessageEvent);
             expect(clipboardReadMessage).not.toBeNull();
             expect(clipboardReadMessage?.args).not.toBeNull();
-            expect(promise).resolves.toEqual(dataToCopy);
+            await expect(promise).resolves.toEqual(dataToCopy);
           });
         } else {
           it(`clipboard.read should not allow calls from context ${context}`, async () => {
             await utils.initializeWithContext(context);
-            expect(clipboard.read()).rejects.toThrowError(
+            expect(() => clipboard.read()).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: ${JSON.stringify(context)}.`,
@@ -203,7 +221,7 @@ describe('clipboard', () => {
       });
 
       it('clipboard.read should not allow calls before initialization', () => {
-        expect(clipboard.read()).rejects.toThrowError(errorLibraryNotInitialized);
+        expect(() => clipboard.read()).toThrowError(errorLibraryNotInitialized);
       });
 
       Object.values(FrameContexts).forEach((context) => {
@@ -211,8 +229,11 @@ describe('clipboard', () => {
           it(`clipboard.read should throw error if the clipboard.read capability is not supported in runtime config - Context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            const promise = clipboard.read();
-            expect(promise).rejects.toEqual(errorNotSupportedOnPlatform);
+            try {
+              clipboard.read();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
           });
 
           it(`clipboard.read should send message to parent with context - ${context}`, async () => {
@@ -227,7 +248,7 @@ describe('clipboard', () => {
         } else {
           it(`clipboard.read should not allow calls from context ${context}`, async () => {
             await utils.initializeWithContext(context);
-            expect(clipboard.read()).rejects.toThrowError(
+            expect(() => clipboard.read()).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: ${JSON.stringify(context)}.`,

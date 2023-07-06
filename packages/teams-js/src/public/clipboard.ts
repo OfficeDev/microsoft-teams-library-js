@@ -1,4 +1,4 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -21,28 +21,20 @@ export namespace clipboard {
    *          rejects with error stating the reason for failure.
    */
   export function write(blob: Blob): Promise<string> {
-    return new Promise<string>((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.sidePanel,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (
-        (blob.type.startsWith('image') &&
-          !blob.type.endsWith('png') &&
-          !blob.type.endsWith('jpeg') &&
-          !blob.type.endsWith('svg+xml')) ||
-        (blob.type.startsWith('text') && !blob.type.endsWith('plain') && blob.type.endsWith('html'))
-      ) {
-        throw new Error(`Blob type ${blob.type} is not supported.`);
-      }
-      sendMessageToParent('clipboard.writeToClipboard', [blob], resolve);
-    });
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (
+      (blob.type.startsWith('image') &&
+        !blob.type.endsWith('png') &&
+        !blob.type.endsWith('jpeg') &&
+        !blob.type.endsWith('svg+xml')) ||
+      (blob.type.startsWith('text') && !blob.type.endsWith('plain') && blob.type.endsWith('html'))
+    ) {
+      throw new Error(`Blob type ${blob.type} is not supported.`);
+    }
+    return sendAndHandleSdkError('clipboard.writeToClipboard', blob);
   }
 
   /**
@@ -53,19 +45,11 @@ export namespace clipboard {
    *          Note: Returned blob type will contain one of the MIME type `image/png`, `text/plain` or `text/html`.
    */
   export function read(): Promise<Blob> {
-    return new Promise((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.sidePanel,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      sendMessageToParent('clipboard.readFromClipboard', null, resolve);
-    });
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    return sendAndHandleSdkError('clipboard.readFromClipboard');
   }
 
   /**
