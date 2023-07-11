@@ -43,8 +43,7 @@ const CopyImage = (): React.ReactElement =>
         }
       },
       submit: async (imageUrl) => {
-        const blob = await (await fetch(imageUrl as URL)).blob();
-        console.log(blob.type);
+        const blob = await(await fetch(imageUrl as URL)).blob();
         const result = await clipboard.write(blob);
         return JSON.stringify(result);
       },
