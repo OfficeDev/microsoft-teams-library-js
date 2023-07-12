@@ -13,7 +13,8 @@ import { runtime } from './runtime';
  */
 export namespace secondaryBrowser {
   /**
-   * Open a URL in the secondary browser aka in-app browser
+   * Open a URL in the secondary browser, aka in-app browser. 
+   * The user will be redirected to an external browser on web and desktop
    *
    * @param url Url to open in the browser
    * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser
