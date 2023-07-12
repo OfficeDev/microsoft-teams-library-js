@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
@@ -26,8 +26,8 @@ import {
   validateViewImagesInput,
 } from '../internal/mediaUtil';
 import { generateGUID } from '../internal/utils';
-import { FrameContexts, HostClientType } from './constants';
-import { ErrorCode, SdkError } from './interfaces';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
+import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -118,6 +118,53 @@ export namespace media {
     }
 
     sendMessageToParent('captureImage', callback);
+  }
+
+  /**
+   * Checks whether or not media has user permission
+   *
+   * @returns Promise that will resolve with true if the user had granted the app permission to media information, or with false otherwise,
+   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   */
+  export function hasPermission(): Promise<boolean> {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const permissions: DevicePermission = DevicePermission.Media;
+
+    return new Promise<boolean>((resolve) => {
+      resolve(sendAndHandleSdkError('permissions.has', permissions));
+    });
+  }
+
+  /**
+   * Requests user permission for media
+   *
+   * @returns true if the user consented permission for media, false otherwise
+   * @returns Promise that will resolve with true if the user consented permission for media, or with false otherwise,
+   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   */
+  export function requestPermission(): Promise<boolean> {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const permissions: DevicePermission = DevicePermission.Media;
+
+    return new Promise<boolean>((resolve) => {
+      resolve(sendAndHandleSdkError('permissions.request', permissions));
+    });
+  }
+
+  /**
+   * Checks if media capability is supported by the host
+   * @returns boolean to represent whether media is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
+  export function isSupported(): boolean {
+    return ensureInitialized(runtime) && runtime.supports.media && runtime.supports.permissions ? true : false;
   }
 
   /**
