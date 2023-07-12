@@ -33,7 +33,6 @@ interface IRuntimeV1 extends IBaseRuntime {
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
-    readonly appNotification?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
