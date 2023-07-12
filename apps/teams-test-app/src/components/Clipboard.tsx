@@ -56,14 +56,16 @@ const Paste = (): React.ReactElement =>
     title: 'Paste',
     onClick: async () => {
       const result = await clipboard.read();
-
       if (result.type.startsWith('text')) {
         return JSON.stringify(await result.text());
       } else if (result.type.startsWith('image')) {
         image.src = URL.createObjectURL(result);
         image.style.height = '150px';
         image.style.width = '150px';
-        document.body.appendChild(image);
+        const root = document.getElementById('root');
+        if (root) {
+          root.appendChild(image);
+        }
         return JSON.stringify(`Pasted from clipboard with image id: ${image.id}`);
       } else {
         return JSON.stringify('No contents read from clipboard.');
