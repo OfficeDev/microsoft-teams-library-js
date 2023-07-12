@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Add permission functions for media capability",
+  "comment": "Added permission functions for media capability",
   "packageName": "@microsoft/teams-js",
   "email": "liuella@microsoft.com",
   "dependentChangeType": "patch"

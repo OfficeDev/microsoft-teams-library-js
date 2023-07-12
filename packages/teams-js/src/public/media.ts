@@ -141,7 +141,6 @@ export namespace media {
   /**
    * Requests user permission for media
    *
-   * @returns true if the user consented permission for media, false otherwise
    * @returns Promise that will resolve with true if the user consented permission for media, or with false otherwise,
    * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
    */
