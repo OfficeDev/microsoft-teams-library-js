@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Added @Beta tag for media permission functions and remove `isSupported` check for media capability.",
-  "packageName": "@microsoft/teams-js",
-  "email": "liuella@microsoft.com",
-  "dependentChangeType": "none"
-}
