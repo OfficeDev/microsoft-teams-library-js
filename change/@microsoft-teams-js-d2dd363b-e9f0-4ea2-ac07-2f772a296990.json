@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Added in error statement in getNewerPrefix if we make it out of the for loop comparison check between beta prefix and package prefix.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "none"
-}
