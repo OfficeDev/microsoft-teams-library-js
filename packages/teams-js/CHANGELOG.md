@@ -1,8 +1,24 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 07 Jun 2023 19:21:01 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Jul 2023 16:42:51 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.13.0
+
+Wed, 05 Jul 2023 16:42:51 GMT
+
+### Minor changes
+
+- Added support for mediaStream with metadata in `videoEx` module for internal applications.
+- Added `marketplace` capability that helps app developers interact with the checkout flow
+- Added `liveShare` capability, which helps with building real-time collaborative apps
+
+### Patches
+
+- Made title optional when calling `stageView.open`
+- Removed import aliasing of communications.ts functions
+- Fixed an issue where `call.startCall` would return an error when it executed successfully in a legacy environment
 
 ## 2.12.0
 
