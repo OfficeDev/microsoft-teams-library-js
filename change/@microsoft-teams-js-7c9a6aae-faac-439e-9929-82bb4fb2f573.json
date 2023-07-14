@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added `@beta` tags for `media.getPermission` and `media.hasPermission`",
+  "comment": "Added `@beta` tags for `media.requestPermission` and `media.hasPermission`",
   "packageName": "@microsoft/teams-js",
   "email": "liuella@microsoft.com",
   "dependentChangeType": "none"
