@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
@@ -8,6 +8,8 @@ import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 export namespace people {
+  /** Select people callback function type */
+  export type selectPeopleCallbackFunctionType = (error: SdkError, people: PeoplePickerResult[]) => void;
   /**
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
@@ -28,7 +30,7 @@ export namespace people {
    * @param peoplePickerInputs - Input parameters to launch customized people picker
    */
   export function selectPeople(
-    callback: (error: SdkError, people: PeoplePickerResult[]) => void,
+    callback: selectPeopleCallbackFunctionType,
     peoplePickerInputs?: PeoplePickerInputs,
   ): void;
   /**
@@ -41,12 +43,14 @@ export namespace people {
    * @returns Promise of Array of PeoplePickerResult objects.
    */
   export function selectPeople(
-    param1: PeoplePickerInputs | ((error: SdkError, people: PeoplePickerResult[]) => void) | undefined,
+    param1: PeoplePickerInputs | selectPeopleCallbackFunctionType | undefined,
     param2?: PeoplePickerInputs,
   ): Promise<PeoplePickerResult[]> {
-    ensureInitialized(FrameContexts.content, FrameContexts.task, FrameContexts.settings);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
-    let callback: (error: SdkError, people: PeoplePickerResult[]) => void;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    let callback: selectPeopleCallbackFunctionType;
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     let peoplePickerInputs: PeoplePickerInputs;
 
     if (typeof param1 === 'function') {
@@ -63,11 +67,12 @@ export namespace people {
   }
 
   function selectPeopleHelper(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
-    return new Promise<PeoplePickerResult[]>(resolve => {
+    return new Promise<PeoplePickerResult[]>((resolve) => {
       if (!isCurrentSDKVersionAtLeast(peoplePickerRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
 
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       if (!validatePeoplePickerInput(peoplePickerInputs)) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
@@ -75,7 +80,8 @@ export namespace people {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleError('people.selectPeople', peoplePickerInputs));
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      resolve(sendAndHandleSdkError('people.selectPeople', peoplePickerInputs));
     });
   }
 
@@ -129,7 +135,13 @@ export namespace people {
     email?: string;
   }
 
+  /**
+   * Checks if the people capability is supported by the host
+   * @returns boolean to represent whether the people capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.people ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.people ? true : false;
   }
 }

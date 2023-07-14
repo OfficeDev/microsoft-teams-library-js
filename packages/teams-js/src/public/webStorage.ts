@@ -1,6 +1,4 @@
-import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { HostClientType } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -17,22 +15,19 @@ export namespace webStorage {
    * @beta
    */
   export function isWebStorageClearedOnUserLogOut(): boolean {
-    ensureInitialized();
-    // return true as web storage is always cleared on desktop.
-    if (GlobalVars.hostClientType === HostClientType.desktop) {
-      return true;
-    }
+    ensureInitialized(runtime);
     return isSupported();
   }
 
   /**
    * Checks if webStorage capability is supported by the host
-   * @returns true if the webStorage capability is enabled in runtime.supports.webStorage and
-   * false if it is disabled
+   * @returns boolean to represent whether the webStorage capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    *
    * @beta
    */
   export function isSupported(): boolean {
-    return runtime.supports.webStorage ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.webStorage ? true : false;
   }
 }

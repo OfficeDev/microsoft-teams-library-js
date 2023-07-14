@@ -5,26 +5,47 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Namespace to open a share dialog for web content.
+ * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
+ */
 export namespace sharing {
+  /** shareWebContent callback function type */
+  type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
+
+  /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
+    /**
+     * Share web content message.
+     * @internal
+     */
     shareWebContent: 'sharing.shareWebContent',
   };
 
   // More types can be added as we expand share capability
   type ContentType = 'URL';
 
+  /** Represents parameters for base shared content. */
   interface IBaseSharedContent {
+    /** Shared content type  */
     type: ContentType;
   }
 
   // More types can be added as we expand share capability
+  /** IShareRequestContentType defines share request type. */
   export type IShareRequestContentType = IURLContent;
 
+  /** Represents IShareRequest parameters interface.
+   * @typeparam T - The identity type
+   */
   export interface IShareRequest<T> {
+    /** Content of the share request. */
     content: T[];
   }
 
+  /** Represents IURLContent parameters. */
   export interface IURLContent extends IBaseSharedContent {
+    /** Type */
     type: 'URL';
 
     /**
@@ -63,11 +84,11 @@ export namespace sharing {
    */
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback: (err?: SdkError) => void,
+    callback: shareWebContentCallbackFunctionType,
   ): void;
   export function shareWebContent(
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
-    callback?: (err?: SdkError) => void,
+    callback?: shareWebContentCallbackFunctionType,
   ): Promise<void> {
     // validate the given input (synchronous check)
     try {
@@ -80,6 +101,7 @@ export namespace sharing {
       return callCallbackWithSdkErrorFromPromiseAndReturnPromise(wrappedFunction, callback);
     }
     ensureInitialized(
+      runtime,
       FrameContexts.content,
       FrameContexts.sidePanel,
       FrameContexts.task,
@@ -90,7 +112,7 @@ export namespace sharing {
   }
 
   function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -112,15 +134,15 @@ export namespace sharing {
   }
 
   function validateTypeConsistency(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    let err: SdkError;
-    if (shareRequest.content.some(item => !item.type)) {
+    let err: SdkError | undefined;
+    if (shareRequest.content.some((item) => !item.type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'Shared content type cannot be undefined',
       };
       throw err;
     }
-    if (shareRequest.content.some(item => item.type !== shareRequest.content[0].type)) {
+    if (shareRequest.content.some((item) => item.type !== shareRequest.content[0].type)) {
       err = {
         errorCode: ErrorCode.INVALID_ARGUMENTS,
         message: 'Shared content must be of the same type',
@@ -130,9 +152,9 @@ export namespace sharing {
   }
 
   function validateContentForSupportedTypes(shareRequest: IShareRequest<IShareRequestContentType>): void {
-    let err: SdkError;
+    let err: SdkError | undefined;
     if (shareRequest.content[0].type === 'URL') {
-      if (shareRequest.content.some(item => !item.url)) {
+      if (shareRequest.content.some((item) => !item.url)) {
         err = {
           errorCode: ErrorCode.INVALID_ARGUMENTS,
           message: 'URLs are required for URL content types',
@@ -148,7 +170,13 @@ export namespace sharing {
     }
   }
 
+  /**
+   * Checks if the sharing capability is supported by the host
+   * @returns boolean to represent whether the sharing capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
   export function isSupported(): boolean {
-    return runtime.supports.sharing ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
   }
 }

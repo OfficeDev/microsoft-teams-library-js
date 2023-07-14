@@ -4,6 +4,7 @@
  * Shim in definitions used for browser-compat
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface DOMMessageEvent {
@@ -19,6 +20,7 @@ export interface DOMMessageEvent {
  * Hide from docs
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface TeamsNativeClient {
   framelessPostMessage(msg: string): void;
@@ -29,24 +31,31 @@ export interface TeamsNativeClient {
  * Hide from docs
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: DOMMessageEvent): void;
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface MessageRequest {
   id?: number;
   func: string;
   timestamp?: number;
-  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
+  args?: any[];
 }
 
-/** @internal */
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface MessageResponse {
   id: number;
-  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough from OnMessage where we do receive any[]
+  args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 
@@ -55,8 +64,9 @@ export interface MessageResponse {
  * Meant for Message objects that are sent to children without id
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface DOMMessageEvent {
   func: string;
-  args?: any[]; // tslint:disable-line:no-any The args here are a passthrough to postMessage where we do allow any[]
+  args?: any[];
 }

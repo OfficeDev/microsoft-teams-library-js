@@ -1,0 +1,28 @@
+
+name: Check for runtime version changes
+
+on:
+  pull_request:
+    branches: [main]
+    paths: [packages/teams-js/src/public/runtime.ts]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  Check-For-Changes-To-Runtime-File:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Comment on PR'
+        if: github.event.pull_request.head.repo.fork != true
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required.'
+            });

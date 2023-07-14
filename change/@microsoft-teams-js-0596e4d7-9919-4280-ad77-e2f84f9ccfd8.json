@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed broken SDK reference documentation links and added SDK reference documentation validation to build step.",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,0 +1,20 @@
+{
+  "name": "AppInstallDialog",
+  "platforms": "Web",
+  "version": ">2.0.0",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityAppInstallDialog"
+  },
+  "testCases": [
+    {
+      "title": "openAppInstallDialog API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openAppInstallDialog",
+      "inputValue": {
+        "appId": "957f8a7e-fbcd-411d-b69f-acb7eb58b515"
+      },
+      "expectedAlertValue": "openAppInstallDialog called with {\"appId\":\"957f8a7e-fbcd-411d-b69f-acb7eb58b515\"}",
+      "expectedTestAppValue": "called"
+    }
+  ]
+}

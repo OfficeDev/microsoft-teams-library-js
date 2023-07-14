@@ -1,0 +1,111 @@
+{
+  "name": "RemoteCamera",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "expectedOutput": "Remote Camera module is not supported",
+    "version": ">2.0.0-beta.2"
+  },
+  "testUrlParams": [["frameContext", "sidePanel"]],
+  "testCases": [
+    {
+      "title": "getCapableParticipants API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getCapableParticipants",
+      "expectedAlertValue": "getCapableParticipants is called",
+      "expectedTestAppValue": "[{\"id\":\"sampleParticipantID\",\"displayName\":\"SampleDisplayName\",\"active\":true}]"
+    },
+    {
+      "title": "requestControl API Call - Success",
+      "version": ">2.0.0-beta.2",
+      "type": "callResponse",
+      "boxSelector": "#box_requestControl",
+      "inputValue": {
+        "id": "sampleParticipantID",
+        "displayName": "SampleDisplayName",
+        "active": true
+      },
+      "expectedAlertValue": "requestControl is called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "sendControlCommand API Call - Success",
+      "version": ">2.0.0-beta.2",
+      "type": "callResponse",
+      "boxSelector": "#box_sendControlCommand",
+      "inputValue": "Reset",
+      "expectedAlertValue": "sendControlCommand is called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "sendControlCommand API Call - Success",
+      "version": "2.0.0-beta.2",
+      "type": "callResponse",
+      "boxSelector": "#box_sendControlCommand",
+      "inputValue": "Reset",
+      "skipJsonStringifyOnInputValue": true,
+      "expectedAlertValue": "sendControlCommand is called with ##JSON_INPUT_VALUE##"
+    },
+    {
+      "title": "terminateSession API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_terminateSession",
+      "expectedAlertValue": "terminateSession is called"
+    },
+    {
+      "title": "registerOnCapableParticipantsChangeHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerOnCapableParticipantsChangeHandler",
+      "eventName": "capableParticipantsChange",
+      "eventData": [
+        {
+          "id": "Participant_1",
+          "displayName": "SampleDisplayName",
+          "active": false
+        },
+        {
+          "id": "Participant_2",
+          "displayName": "SampleDisplayName",
+          "active": true
+        }
+      ],
+      "expectedTestAppValue": "participantChange: ##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "registerOnErrorHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerOnErrorHandler",
+      "eventName": "handlerError",
+      "eventData": 1,
+      "expectedTestAppValue": "1"
+    },
+    {
+      "title": "registerOnDeviceStateChangeHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerOnDeviceStateChangeHandler",
+      "eventName": "deviceStateChange",
+      "eventData": {
+        "available": true,
+        "error": true,
+        "reset": true,
+        "zoomIn": true,
+        "zoomOut": true,
+        "panLeft": true,
+        "panRight": true,
+        "tiltUp": true,
+        "tiltDown": true
+      },
+      "expectedTestAppValue": "##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "registerOnSessionStatusChangeHandler API Call - Handler",
+      "version": ">2.0.0-beta.2",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerOnSessionStatusChangeHandler",
+      "eventName": "sessionStatusChange",
+      "eventData": {
+        "inControl": true,
+        "terminatedReason": 5
+      },
+      "expectedTestAppValue": "##JSON_EVENT_DATA##"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import { pages, TeamInstanceParameters, teams } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckTeamsFullTrustCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -48,7 +49,7 @@ const GetUserJoinedTeams = (): React.ReactElement =>
   ApiWithTextInput<TeamInstanceParameters | undefined>({
     name: 'getUserJoinedTeams',
     title: 'Get User Joined Teams',
-    onClick: async input => {
+    onClick: async (input) => {
       const result = await teams.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
@@ -75,12 +76,12 @@ const GetConfigSetting = (): React.ReactElement =>
     name: 'getConfigSetting2',
     title: 'Get Config Setting',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input || typeof input !== 'string') {
           throw new Error('the input should be a string.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         const result = await teams.fullTrust.getConfigSetting(input);
         return result;
       },
@@ -88,8 +89,7 @@ const GetConfigSetting = (): React.ReactElement =>
   });
 
 const FullTrustAPIs = (): ReactElement => (
-  <>
-    <h1>FullTrustAPIs</h1>
+  <ModuleWrapper title="FullTrustAPIs">
     <GetUserJoinedTeams />
     <GetConfigSetting />
     <EnterFullScreen />
@@ -99,7 +99,7 @@ const FullTrustAPIs = (): ReactElement => (
     <CheckTeamsFullTrustCapability />
     <CheckLegacyFullTrustCapability />
     <CheckPagesFullTrustCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default FullTrustAPIs;

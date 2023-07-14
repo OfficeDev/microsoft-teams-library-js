@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <h2 style="font-size: 40px;">Starting auth</h2>
+  </head>
+
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const mockOAuth = params.get('mockOAuth');
+      const authId = params.get('authId');
+      const method = params.get('oauthRedirectMethod');
+      const redirectUrl = params.get('hostRedirectUrl')
+      const hostName = params.get('hostName');
+      const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
+
+      if (redirectUrl) {
+        sessionStorage.setItem('hostRedirectUrl', redirectUrl)
+      }
+
+      const getRedirectUri = () => {
+        const idx = window.location.href.lastIndexOf('/');
+        return `${window.location.href.slice(0, idx)}/auth_end.html`;
+      };
+
+      // Redirect to auth_end page if its mockOauth for testing
+      if (mockOAuth === 'true') {
+        window.location.href = getRedirectUri() + `?state=${state}&code=test_auth_code_1234`;
+      } else {
+        // Do actual google login
+        const queryObj = {
+          state,
+          client_id: '1073583513214-oplf5k63msf7at9rcj68vbrh265803vo.apps.googleusercontent.com',
+          response_type: 'code',
+          access_type: 'offline',
+          scope: 'email%20profile',
+        };
+        const query = Object.entries(queryObj)
+          .map(([k, v]) => `&${k}=${v}`)
+          .join('');
+
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=${getRedirectUri()}${query}`;
+      }
+    </script>
+  </body>
+</html>

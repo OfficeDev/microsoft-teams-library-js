@@ -9,6 +9,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const EnablePrintCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -19,7 +20,7 @@ const EnablePrintCapability = (): React.ReactElement =>
         teamsCore.enablePrintCapability();
         return 'called';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         enablePrintCapability();
         setResult('called');
       },
@@ -35,7 +36,7 @@ const Print = (): React.ReactElement =>
         teamsCore.print();
         return 'called';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         print();
         setResult('called');
       },
@@ -47,14 +48,14 @@ const RegisterOnLoadHandler = (): React.ReactElement =>
     name: 'registerOnLoadHandler',
     title: 'Register On Load Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         teamsCore.registerOnLoadHandler((context: LoadContext): void => {
           setResult('successfully called with context:' + JSON.stringify(context));
         });
 
         return 'registered';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerOnLoadHandler((context: LoadContext): void => {
           setResult('successfully called with context:' + JSON.stringify(context));
         });
@@ -69,7 +70,7 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
     name: 'registerBeforeUnload',
     title: 'Register Before Unload',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (typeof input !== 'number') {
           throw new Error('input should be a number');
         }
@@ -111,14 +112,13 @@ const CheckTeamsCoreCapability = (): React.ReactElement =>
   });
 
 const TeamsCoreAPIs = (): ReactElement => (
-  <>
-    <h1>teamsCore</h1>
+  <ModuleWrapper title="TeamsCore">
     <EnablePrintCapability />
     <Print />
     <RegisterOnLoadHandler />
     <RegisterBeforeUnloadHandler />
     <CheckTeamsCoreCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default TeamsCoreAPIs;

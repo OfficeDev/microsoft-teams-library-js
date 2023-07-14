@@ -1,23 +1,30 @@
-# Microsoft Teams JavaScript client SDK
+# Microsoft Teams JavaScript client library
 
 [![Microsoft Teams Library JS CI](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
 [![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
-[![Coverage Status](https://coveralls.io/repos/github/OfficeDev/microsoft-teams-library-js/badge.svg)](https://coveralls.io/github/OfficeDev/microsoft-teams-library-js)
 
-Welcome to the Teams client SDK monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
+Welcome to the Teams client library monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
 ## Getting Started
 
-1. Clone the repo
-2. Run `yarn install` from repo root
-3. Run `yarn build` from repo root
-4. To run Unit tests, run `yarn test`
+The following guide references steps to build the entire project including TeamsJS and all of the included apps. For guidelines on just building an individual app please look at the [Apps](#apps).
 
-TIP: whenever building or testing the Teams client SDK, you can run `yarn build` or `yarn test` from the `packages/teams-js` directory.
+### Building this Project
 
-See also: [Contributing](#Contributing)
+1. Clone this repository `git clone https://github.com/OfficeDev/microsoft-teams-library-js.git`
+2. Run `pnpm install` from repo root
+3. Run `pnpm build` from repo root
+4. To run Unit tests, run `pnpm test`
 
-This JavaScript library is part of the [Microsoft Teams developer platform](https://docs.microsoft.com/en-us/microsoftteams/platform/overview?view=msteams-client-js-beta). See full [SDK reference documentation](https://docs.microsoft.com/en-us/javascript/api/overview/msteams-client?view=msteams-client-js-beta).
+### Submitting a Pull Request
+
+Please look through our [Contributing Guide](CONTRIBUTING.md) for important details on how to submit a pull request and contribute to this repository.
+
+NOTE: Make sure `pnpm@7.30.1` is installed as a global tool, by running `npm install -g pnpm@7.30.1`.
+
+TIP: whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the `packages/teams-js` directory.
+
+This JavaScript library is part of the [Microsoft Teams developer platform](https://learn.microsoft.com/microsoftteams/platform/overview?view=msteams-client-js-latest). See full [library reference documentation](https://learn.microsoft.com/javascript/api/overview/msteams-client?view=msteams-client-js-latest).
 
 # Packages
 
@@ -31,21 +38,25 @@ Used to integrate custom services and applications with Teams, Outlook, and Offi
 
 # Apps
 
-The apps folder contains applications used to test various aspects of the SDK.
+The apps folder contains applications used to test various aspects of the library.
 
 ### [Teams Perf Test App](./apps/teams-perf-test-app/README.md)
 
-React application used to locally test the loading times of the SDK.
+React application used to locally test the loading times of the library.
 
 ### [Teams Test App](./apps/teams-test-app/README.md)
 
-Application used to test the functionality of the various SDK APIs.
+Application used to test the functionality of the various library APIs.
+
+### [SSR Test App](./apps/ssr-test-app/README.md)
+
+Application used to ensure library changes do not break server-side rendering capabilities.
 
 ---
 
 ### Locally generating reference documentation
 
-If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `yarn docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
+If you would like to locally generate reference documentation for TeamsJS v2, simply utilize the script `pnpm run docs` either from the monorepo root or inside the teams-js project root (`packages/teams-js`). This should output the generated documentation to `packages/teams-js/docs`.
 
 # Contributing
 

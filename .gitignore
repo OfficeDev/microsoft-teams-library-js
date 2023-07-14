@@ -16,6 +16,7 @@ dts/
 
 # Test App gitignore areas
 yarn-error.log
+*.log
 
 # bundle analysis folders
 /common/*
@@ -24,6 +25,20 @@ yarn-error.log
 # UT results
 /packages/*/test-results
 /test-results
+/tools/*/test-results
 
 # locally generated docs
 /packages/teams-js/docs
+
+#lerna logs
+lerna-debug.log
+
+# Blazor Test App
+*.binlog
+*.user
+.dotnet/
+.vs/
+.vscode/
+artifacts/
+bin/
+obj/

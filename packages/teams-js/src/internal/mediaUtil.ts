@@ -12,15 +12,16 @@ import { throwExceptionIfMobileApiIsNotSupported } from './internalAPIs';
  * Helper function to create a blob from media chunks based on their sequence
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function createFile(assembleAttachment: media.AssembleAttachment[], mimeType: string): Blob {
   if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
     return null;
   }
-  let file: Blob;
+  let file: Blob | undefined;
   let sequence = 1;
   assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
-  assembleAttachment.forEach(item => {
+  assembleAttachment.forEach((item) => {
     if (item.sequence == sequence) {
       if (file) {
         file = new Blob([file, item.file], { type: mimeType });
@@ -39,6 +40,7 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
  * Converts base 64 encoded string to byte array and then into an array of blobs
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function decodeAttachment(attachment: media.MediaChunk, mimeType: string): media.AssembleAttachment {
   if (attachment == null || mimeType == null) {
@@ -61,8 +63,11 @@ export function decodeAttachment(attachment: media.MediaChunk, mimeType: string)
 /**
  * @hidden
  * Function throws an SdkError if the media call is not supported on current mobile version, else undefined.
+ *
  * @throws an SdkError if the media call is not supported
+ *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: media.MediaInputs): void {
   if (isMediaCallForVideoAndImageInputs(mediaInputs)) {
@@ -79,6 +84,7 @@ export function throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs: med
  * Function returns true if the app has registered to listen to video controller events, else false.
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boolean {
   if (
@@ -96,6 +102,7 @@ export function isVideoControllerRegistered(mediaInputs: media.MediaInputs): boo
  * Returns true if the mediaInput params are valid and false otherwise
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs == null || mediaInputs.maxMediaCount > 10) {
@@ -105,7 +112,11 @@ export function validateSelectMediaInputs(mediaInputs: media.MediaInputs): boole
 }
 
 /**
+ * @hidden
  * Returns true if the mediaInput params are called for mediatype Image and contains Image outputs formats, false otherwise
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export function isMediaCallForImageOutputFormats(mediaInputs: media.MediaInputs): boolean {
   if (mediaInputs?.mediaType == media.MediaType.Image && mediaInputs?.imageProps?.imageOutputFormats) {

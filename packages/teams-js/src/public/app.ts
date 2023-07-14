@@ -5,39 +5,46 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReason as send,
+  sendAndHandleStatusAndReason,
   sendAndUnwrap,
   sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
-import { defaultSDKVersionForCompatCheck, version } from '../internal/constants';
+import { defaultSDKVersionForCompatCheck } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
+import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, runWithTimeout } from '../internal/utils';
+import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { logs } from '../private/logs';
-import { initializePrivateApis } from '../private/privateAPIs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
-import { Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IRuntime } from './runtime';
+import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
+import { version } from './version';
 
 /**
  * Namespace to interact with app initialization and lifecycle.
- *
- * @beta
  */
 export namespace app {
+  const appLogger = getLogger('app');
+
   // ::::::::::::::::::::::: MicrosoftTeams client SDK public API ::::::::::::::::::::
 
+  /** App Initialization Messages */
   export const Messages = {
+    /** App loaded. */
     AppLoaded: 'appInitialization.appLoaded',
+    /** App initialized successfully. */
     Success: 'appInitialization.success',
+    /** App initialization failed. */
     Failure: 'appInitialization.failure',
+    /** App initialization expected failure. */
     ExpectedFailure: 'appInitialization.expectedFailure',
   };
 
@@ -95,7 +102,7 @@ export namespace app {
      */
     reason: FailedReason;
     /**
-     * A message that describes the failure
+     * This property is currently unused.
      */
     message?: string;
   }
@@ -125,7 +132,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme.
+     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
      */
     theme: string;
 
@@ -177,12 +184,12 @@ export namespace app {
    */
   export interface AppHostInfo {
     /**
-     * The name of the host client. Possible values are: Office, Orange, Outlook, Teams
+     * Identifies which host is running your app
      */
     name: HostName;
 
     /**
-     * The type of the host client. Possible values are : android, ios, web, desktop, rigel
+     * The client type on which the host is running
      */
     clientType: HostClientType;
 
@@ -332,6 +339,7 @@ export namespace app {
 
     /**
      * The user's role in the team.
+
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a hint as to the user's role, and never as proof of her role.
      */
@@ -344,8 +352,13 @@ export namespace app {
   export interface UserInfo {
     /**
      * The Azure AD object id of the current user.
-     * Because a malicious party run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
+     *
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
+     *
      * This field is available only when the identity permission is requested in the manifest.
      */
     id: string;
@@ -366,23 +379,32 @@ export namespace app {
     isPSTNCallingAllowed?: boolean;
 
     /**
-     * The license type for the current user.
+     * The license type for the current user. Possible values are:
+     * "Unknown", "Teacher", "Student", "Free", "SmbBusinessVoice", "SmbNonVoice", "FrontlineWorker", "Anonymous"
      */
     licenseType?: string;
 
     /**
-     * A value suitable for use as a login_hint when authenticating with Azure AD.
+     * A value suitable for use when providing a login_hint to Azure Active Directory for authentication purposes.
+     * See [Provide optional claims to your app](https://learn.microsoft.com/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set)
+     * for more information about the use of login_hint
+     *
      * Because a malicious party can run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     loginHint?: string;
 
     /**
      * The UPN of the current user. This may be an externally-authenticated UPN (e.g., guest users).
-     * Because a malicious party run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+
+     * Because a malicious party can run your content in a browser, this value should
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     userPrincipalName?: string;
 
@@ -398,9 +420,12 @@ export namespace app {
   export interface TenantInfo {
     /**
      * The Azure AD tenant ID of the current user.
+
      * Because a malicious party can run your content in a browser, this value should
-     * be used only as a hint as to who the user is and never as proof of identity.
-     * This field is available only when the identity permission is requested in the manifest.
+     * be used only as a optimization hint as to who the user is and never as proof of identity.
+     * Specifically, this value should never be used to determine if a user is authorized to access
+     * a resource; access tokens should be used for that.
+     * See {@link authentication.getAuthToken} and {@link authentication.authenticate} for more information on access tokens.
      */
     id: string;
 
@@ -410,6 +435,7 @@ export namespace app {
     teamsSku?: string;
   }
 
+  /** Represents information about a SharePoint site */
   export interface SharePointSiteInfo {
     /**
      * The root SharePoint site associated with the team.
@@ -447,57 +473,71 @@ export namespace app {
    */
   export interface Context {
     /**
-     * Info of the app
+     * Content Action Info
+     *
+     * @beta
+     */
+    actionInfo?: ActionInfo;
+    /**
+     * Properties about the current session for your app
      */
     app: AppInfo;
 
     /**
-     * Info of the current page of App
+     * Info about the current page context hosting your app
      */
     page: PageInfo;
 
     /**
-     * Info of the user
+     * Info about the currently logged in user running the app.
+     * If the current user is not logged in/authenticated (e.g. a meeting app running for an anonymously-joined partcipant) this will be `undefined`.
      */
     user?: UserInfo;
 
     /**
-     * Info of the Microsoft Teams channel
+     * When running in the context of a Teams channel, provides information about the channel, else `undefined`
      */
     channel?: ChannelInfo;
 
     /**
-     * Info of the Microsoft Teams chat
+     * When running in the context of a Teams chat, provides information about the chat, else `undefined`
      */
     chat?: ChatInfo;
 
     /**
-     * Info of the Microsoft Teams meeting
+     * When running in the context of a Teams meeting, provides information about the meeting, else `undefined`
      */
     meeting?: MeetingInfo;
 
     /**
-     * SharePoint context. This is only available when hosted in SharePoint.
+     * When hosted in SharePoint, this is the [SharePoint PageContext](https://learn.microsoft.com/javascript/api/sp-page-context/pagecontext?view=sp-typescript-latest), else `undefined`
      */
     sharepoint?: any;
 
     /**
-     * Info of the sharePoint site associated with the team.
+     * When running in Teams for an organization with a tenant, provides information about the SharePoint site associated with the team.
+     * Will be `undefined` when not running in Teams for an organization with a tenant.
      */
     sharePointSite?: SharePointSiteInfo;
 
     /**
-     * Info of the Microsoft Teams team
+     * When running in Teams, provides information about the Team context in which your app is running.
+     * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
   }
+
+  /**
+   * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
+   */
+  type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.
    * @returns whether the Teams client SDK has been initialized.
    */
   export function isInitialized(): boolean {
-    return GlobalVars.initializeCalled;
+    return GlobalVars.initializeCompleted;
   }
 
   /**
@@ -517,23 +557,31 @@ export namespace app {
    * Initializes the library.
    *
    * @remarks
-   * This must be called before any other SDK calls
-   * but after the frame is loaded successfully.
+   * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https:www.example.com
+   * https: protocol otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return runWithTimeout(
-      () => initializeHelper(validMessageOrigins),
-      initializationTimeoutInMs,
-      new Error('SDK initialization timed out.'),
-    );
+    if (!inServerSideRenderingEnvironment()) {
+      return runWithTimeout(
+        () => initializeHelper(validMessageOrigins),
+        initializationTimeoutInMs,
+        new Error('SDK initialization timed out.'),
+      );
+    } else {
+      const initializeLogger = appLogger.extend('initialize');
+      // This log statement should NEVER actually be written. This code path exists only to enable compilation in server-side rendering environments.
+      // If you EVER see this statement in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+      initializeLogger('window object undefined at initialization');
+      return Promise.resolve();
+    }
   }
 
+  const initializeHelperLogger = appLogger.extend('initializeHelper');
   function initializeHelper(validMessageOrigins?: string[]): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       // Independent components might not know whether the SDK is initialized so might call it to be safe.
       // Just no-op if that happens to make it easier to use.
       if (!GlobalVars.initializeCalled) {
@@ -556,8 +604,10 @@ export namespace app {
             // so we assume that if we don't have it, we must be running in Teams.
             // After Teams updates its client code, we can remove this default code.
             try {
-              const givenRuntimeConfig: IRuntime = JSON.parse(runtimeConfig);
-              // Check that givenRuntimeConfig is a valid instance of IRuntimeConfig
+              initializeHelperLogger('Parsing %s', runtimeConfig);
+              const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
+              initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
+              // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
               if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
                 throw new Error('Received runtime config is invalid');
               }
@@ -565,6 +615,7 @@ export namespace app {
             } catch (e) {
               if (e instanceof SyntaxError) {
                 try {
+                  initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
                   // if the given runtime config was actually meant to be a SDK version, store it as such.
                   // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
                   // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
@@ -572,8 +623,16 @@ export namespace app {
                   if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
                     GlobalVars.clientSupportedSDKVersion = runtimeConfig;
                   }
-                  const givenRuntimeConfig: IRuntime = JSON.parse(clientSupportedSDKVersion);
-                  clientSupportedSDKVersion && applyRuntimeConfig(givenRuntimeConfig);
+                  const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                  initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
+
+                  if (!givenRuntimeConfig) {
+                    throw new Error(
+                      'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                    );
+                  } else {
+                    applyRuntimeConfig(givenRuntimeConfig);
+                  }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
                     applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
@@ -595,7 +654,6 @@ export namespace app {
         menus.initialize();
         pages.config.initialize();
         dialog.initialize();
-        initializePrivateApis();
       }
 
       // Handle additional valid message origins if specified
@@ -609,11 +667,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to set a mock window for unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _initialize(hostWindow: any): void {
     Communication.currentWindow = hostWindow;
@@ -621,11 +678,10 @@ export namespace app {
 
   /**
    * @hidden
-   * Hide from docs.
-   * ------
    * Undocumented function used to clear state between unit tests
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function _uninitialize(): void {
     if (!GlobalVars.initializeCalled) {
@@ -633,19 +689,23 @@ export namespace app {
     }
 
     if (GlobalVars.frameContext) {
+      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
       registerOnThemeChangeHandler(null);
       pages.backStack.registerBackButtonHandler(null);
       pages.registerFullScreenHandler(null);
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null);
+      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
+      /* eslint-enable strict-null-checks/all */
     }
 
     if (GlobalVars.frameContext === FrameContexts.settings) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnSaveHandler(null);
     }
 
     if (GlobalVars.frameContext === FrameContexts.remove) {
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       pages.config.registerOnRemoveHandler(null);
     }
 
@@ -666,17 +726,17 @@ export namespace app {
    * @returns Promise that will resolve with the {@link app.Context} object.
    */
   export function getContext(): Promise<app.Context> {
-    return new Promise<LegacyContext>(resolve => {
-      ensureInitialized();
+    return new Promise<LegacyContext>((resolve) => {
+      ensureInitializeCalled();
       resolve(sendAndUnwrap('getContext'));
-    }).then(legacyContext => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
+    }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
   /**
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.AppLoaded, [version]);
   }
 
@@ -684,7 +744,7 @@ export namespace app {
    * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.Success, [version]);
   }
 
@@ -695,7 +755,7 @@ export namespace app {
    * during initialization as well as an optional message.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.Failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
@@ -708,7 +768,7 @@ export namespace app {
    * @param expectedFailureRequest - The expected failure request containing the reason and an optional message
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
-    ensureInitialized();
+    ensureInitializeCalled();
     sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
   }
 
@@ -720,8 +780,9 @@ export namespace app {
    *
    * @param handler - The handler to invoke when the user changes their theme.
    */
-  export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
-    ensureInitialized();
+  export function registerOnThemeChangeHandler(handler: themeHandler): void {
+    // allow for registration cleanup even when not called initialize
+    handler && ensureInitializeCalled();
     Handlers.registerOnThemeChangeHandler(handler);
   }
 
@@ -732,8 +793,9 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -741,7 +803,7 @@ export namespace app {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-      resolve(send('executeDeepLink', deepLink));
+      resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
     });
   }
 }
@@ -751,9 +813,11 @@ export namespace app {
  * Transforms the Legacy Context object received from Messages to the structured app.Context object
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.Context {
   const context: app.Context = {
+    actionInfo: legacyContext.actionInfo,
     app: {
       locale: legacyContext.locale,
       sessionId: legacyContext.appSessionId ? legacyContext.appSessionId : '',

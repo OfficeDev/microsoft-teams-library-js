@@ -2,6 +2,7 @@ import { app, Context, executeDeepLink, getContext, registerOnThemeChangeHandler
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
@@ -12,7 +13,7 @@ const GetContext = (): ReactElement =>
         const context = await app.getContext();
         return JSON.stringify(context);
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         const callback = (context: Context): void => {
           setResult(JSON.stringify(context));
         };
@@ -26,13 +27,13 @@ const OpenLink = (): ReactElement =>
     name: 'executeDeepLink2',
     title: 'Open Link',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await app.openLink(input);
           return 'Completed';
         },
@@ -59,11 +60,11 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     name: 'registerOnThemeChangeHandler',
     title: 'Register On Theme Change Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         app.registerOnThemeChangeHandler(setResult);
         return '';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerOnThemeChangeHandler(setResult);
         setResult('');
       },
@@ -71,12 +72,11 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
   });
 
 const AppAPIs = (): ReactElement => (
-  <>
-    <h1>app</h1>
+  <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
     <RegisterOnThemeChangeHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppAPIs;

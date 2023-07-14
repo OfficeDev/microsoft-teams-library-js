@@ -1,8 +1,4 @@
-import {
-  sendAndHandleStatusAndReason as sendAndHandleError,
-  sendAndUnwrap,
-  sendMessageToParent,
-} from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -11,65 +7,86 @@ import { ChatMembersInformation } from './interfaces';
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface OpenConversationRequest {
   /**
    * @hidden
    * The Id of the subEntity where the conversation is taking place
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   subEntityId: string;
 
   /**
    * @hidden
    * The title of the conversation
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   title: string;
 
   /**
    * @hidden
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   conversationId?: string;
 
   /**
    * @hidden
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   channelId?: string;
 
   /**
    * @hidden
    * The entity Id of the tab
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   entityId: string;
 
   /**
    * @hidden
    * A function that is called once the conversation Id has been created
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   onStartConversation?: (conversationResponse: ConversationResponse) => void;
 
   /**
    * @hidden
    * A function that is called if the pane is closed
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   onCloseConversation?: (conversationResponse: ConversationResponse) => void;
 }
 
 /**
  * @hidden
- * Hide from docs.
- * ------
  *
  * @internal
+ * Limited to Microsoft-internal use
  */
 export interface ConversationResponse {
   /**
    * @hidden
+   *
+   * Limited to Microsoft-internal use
    * The Id of the subEntity where the conversation is taking place
    */
   subEntityId: string;
@@ -77,18 +94,27 @@ export interface ConversationResponse {
   /**
    * @hidden
    * The Id of the conversation. This is optional and should be specified whenever a previous conversation about a specific sub-entity has already been started before
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   conversationId?: string;
 
   /**
    * @hidden
    * The Id of the channel. This is optional and should be specified whenever a conversation is started or opened in a personal app scope
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   channelId?: string;
 
   /**
    * @hidden
    * The entity Id of the tab
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   entityId?: string;
 }
@@ -96,6 +122,9 @@ export interface ConversationResponse {
 /**
  * @hidden
  * Namespace to interact with the conversational subEntities inside the tab
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export namespace conversations {
   /**
@@ -105,14 +134,17 @@ export namespace conversations {
    * Allows the user to start or continue a conversation with each subentity inside the tab
    *
    * @returns Promise resolved upon completion
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function openConversation(openConversationRequest: OpenConversationRequest): Promise<void> {
-    return new Promise<void>(resolve => {
-      ensureInitialized(FrameContexts.content);
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const sendPromise = sendAndHandleError('conversations.openConversation', {
+      const sendPromise = sendAndHandleStatusAndReason('conversations.openConversation', {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
         conversationId: openConversationRequest.conversationId,
@@ -149,12 +181,14 @@ export namespace conversations {
 
   /**
    * @hidden
-   * Hide from docs
-   * --------------
+   *
    * Allows the user to close the conversation in the right pane
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function closeConversation(): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -174,10 +208,11 @@ export namespace conversations {
    * @returns Promise resolved with information on all chat members
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function getChatMembers(): Promise<ChatMembersInformation> {
-    return new Promise<ChatMembersInformation>(resolve => {
-      ensureInitialized();
+    return new Promise<ChatMembersInformation>((resolve) => {
+      ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -185,7 +220,16 @@ export namespace conversations {
     });
   }
 
+  /**
+   * Checks if the conversations capability is supported by the host
+   * @returns boolean to represent whether conversations capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
   export function isSupported(): boolean {
-    return runtime.supports.conversations ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.conversations ? true : false;
   }
 }

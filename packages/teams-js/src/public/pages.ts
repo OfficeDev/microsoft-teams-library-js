@@ -1,10 +1,13 @@
 import {
-  sendAndHandleStatusAndReason as send,
-  sendAndHandleStatusAndReasonWithDefaultError as sendAndDefaultError,
+  Communication,
+  sendAndHandleSdkError,
+  sendAndHandleStatusAndReason,
+  sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
+  sendMessageEventToChild,
   sendMessageToParent,
 } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
@@ -14,17 +17,28 @@ import { runtime } from './runtime';
 
 /**
  * Navigation-specific part of the SDK.
- *
- * @beta
  */
 export namespace pages {
+  /** Callback function */
+  type handlerFunctionType = () => void;
+  /** Full screen function */
+  type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
+  /** Back button handler function */
+  type backButtonHandlerFunctionType = () => boolean;
+  /** Save event function */
+  type saveEventType = (evt: pages.config.SaveEvent) => void;
+  /** Remove event function */
+  type removeEventType = (evt: pages.config.RemoveEvent) => void;
+
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
+   * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
+   * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized();
+    ensureInitialized(runtime);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -35,17 +49,20 @@ export namespace pages {
    * @hidden
    *
    * Registers a handler for specifying focus when it passes from the host to the application.
+   * On mobile hosts or hosts where there is no UI notion of "focus" the handler registered with
+   * this function will never be called.
    *
    * @param handler - The handler for placing focus within the application.
    *
    * @internal
+   * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('focusEnter', handler);
+    registerHandlerHelper('focusEnter', handler, [], () => {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
@@ -55,7 +72,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -73,7 +90,7 @@ export namespace pages {
    */
   export function initializeWithFrameContext(
     frameInfo: FrameInfo,
-    callback?: () => void,
+    callback?: handlerFunctionType,
     validMessageOrigins?: string[],
   ): void {
     app.initialize(validMessageOrigins).then(() => callback && callback());
@@ -112,8 +129,14 @@ export namespace pages {
    * @returns Promise that resolves with the {@link InstanceConfig} object.
    */
   export function getConfig(): Promise<InstanceConfig> {
-    return new Promise<InstanceConfig>(resolve => {
-      ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.remove, FrameContexts.sidePanel);
+    return new Promise<InstanceConfig>((resolve) => {
+      ensureInitialized(
+        runtime,
+        FrameContexts.content,
+        FrameContexts.settings,
+        FrameContexts.remove,
+        FrameContexts.sidePanel,
+      );
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -131,8 +154,9 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -146,7 +170,7 @@ export namespace pages {
       }
       const errorMessage =
         'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-      resolve(sendAndDefaultError('navigateCrossDomain', errorMessage, url));
+      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', errorMessage, url));
     });
   }
 
@@ -160,8 +184,9 @@ export namespace pages {
    * @returns a promise that will resolve if the navigation was successful
    */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       ensureInitialized(
+        runtime,
         FrameContexts.content,
         FrameContexts.sidePanel,
         FrameContexts.settings,
@@ -173,20 +198,21 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(send('executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReason('executeDeepLink', createTeamsAppLink(params)));
       } else {
-        resolve(send('pages.navigateToApp', params));
+        resolve(sendAndHandleStatusAndReason('pages.navigateToApp', params));
       }
     });
   }
 
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
+   * Please note that this method does yet work on mobile hosts.
    *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    ensureInitialized(FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -200,23 +226,26 @@ export namespace pages {
   /**
    * Registers a handler for changes from or to full-screen view for a tab.
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   * On hosts where there is no support for making an app full screen, the handler registered
+   * with this function will never be called.
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
-  export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-    ensureInitialized();
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    registerHandler('fullScreenChange', handler);
+  export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
+    registerHandlerHelper('fullScreenChange', handler, [], () => {
+      if (handler && !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    });
   }
 
   /**
    * Checks if the pages capability is supported by the host
-   * @returns true if the pages capability is enabled in runtime.supports.pages and
-   * false if it is disabled
+   * @returns boolean to represent whether the appEntity capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return runtime.supports.pages ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.pages ? true : false;
   }
 
   /**
@@ -261,13 +290,13 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
-      return new Promise<void>(resolve => {
-        ensureInitialized();
+      return new Promise<void>((resolve) => {
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-        resolve(sendAndDefaultError('navigateToTab', errorMessage, tabInstance));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', errorMessage, tabInstance));
       });
     }
     /**
@@ -277,11 +306,12 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>(resolve => {
-        ensureInitialized();
+      return new Promise<TabInformation>((resolve) => {
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
       });
     }
@@ -292,22 +322,28 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>(resolve => {
-        ensureInitialized();
+      return new Promise<TabInformation>((resolve) => {
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
       });
     }
 
     /**
      * Checks if the pages.tab capability is supported by the host
-     * @returns true if the pages.tabs capability is enabled in runtime.supports.pages.tabs and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.tab capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.tabs ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.tabs
+          ? true
+          : false
+        : false;
     }
   }
   /**
@@ -315,15 +351,16 @@ export namespace pages {
    * This object is usable only on the configuration frame.
    */
   export namespace config {
-    let saveHandler: (evt: SaveEvent) => void;
-    let removeHandler: (evt: RemoveEvent) => void;
+    let saveHandler: undefined | ((evt: SaveEvent) => void);
+    let removeHandler: undefined | ((evt: RemoveEvent) => void);
 
     /**
      * @hidden
      * Hide from docs because this function is only used during initialization
-     * ------------------
+     *
      * Adds register handlers for settings.save and settings.remove upon initialization. Function is called in {@link app.initializeHelper}
      * @internal
+     * Limited to Microsoft-internal use
      */
     export function initialize(): void {
       registerHandler('settings.save', handleSave, false);
@@ -336,7 +373,7 @@ export namespace pages {
      * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
-      ensureInitialized(FrameContexts.settings, FrameContexts.remove);
+      ensureInitialized(runtime, FrameContexts.settings, FrameContexts.remove);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -350,12 +387,12 @@ export namespace pages {
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
-      return new Promise<void>(resolve => {
-        ensureInitialized(FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+      return new Promise<void>((resolve) => {
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(send('settings.setSettings', instanceConfig));
+        resolve(sendAndHandleStatusAndReason('settings.setSettings', instanceConfig));
       });
     }
 
@@ -366,10 +403,32 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when the user selects the Save button.
      */
-    export function registerOnSaveHandler(handler: (evt: SaveEvent) => void): void {
-      ensureInitialized(FrameContexts.settings);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+    export function registerOnSaveHandler(handler: saveEventType): void {
+      registerOnSaveHandlerHelper(handler, () => {
+        if (handler && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerOnSaveHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user selects the Save button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerOnSaveHandlerHelper(
+      handler: (evt: SaveEvent) => void,
+      versionSpecificHelper?: () => void,
+    ): void {
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(runtime, FrameContexts.settings);
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       saveHandler = handler;
       handler && sendMessageToParent('registerHandler', ['save']);
@@ -382,22 +441,46 @@ export namespace pages {
      * Only one handler may be registered at a time. Subsequent registrations will override the first.
      * @param handler - The handler to invoke when the user selects the Remove button.
      */
-    export function registerOnRemoveHandler(handler: (evt: RemoveEvent) => void): void {
-      ensureInitialized(FrameContexts.remove, FrameContexts.settings);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+    export function registerOnRemoveHandler(handler: removeEventType): void {
+      registerOnRemoveHandlerHelper(handler, () => {
+        if (handler && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerOnRemoveHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user selects the Remove button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerOnRemoveHandlerHelper(
+      handler: (evt: RemoveEvent) => void,
+      versionSpecificHelper?: () => void,
+    ): void {
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       removeHandler = handler;
       handler && sendMessageToParent('registerHandler', ['remove']);
     }
 
     function handleSave(result?: SaveParameters): void {
-      const saveEvent = new SaveEventImpl(result);
+      const saveEventType = new SaveEventImpl(result);
       if (saveHandler) {
-        saveHandler(saveEvent);
+        saveHandler(saveEventType);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.save', [result]);
       } else {
         // If no handler is registered, we assume success.
-        saveEvent.notifySuccess();
+        saveEventType.notifySuccess();
       }
     }
 
@@ -405,12 +488,12 @@ export namespace pages {
      * Registers a handler for when the tab configuration is changed by the user
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
-    export function registerChangeConfigHandler(handler: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      registerHandler('changeSettings', handler);
+    export function registerChangeConfigHandler(handler: handlerFunctionType): void {
+      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
     }
 
     /**
@@ -487,12 +570,14 @@ export namespace pages {
     }
 
     function handleRemove(): void {
-      const removeEvent = new RemoveEventImpl();
+      const removeEventType = new RemoveEventImpl();
       if (removeHandler) {
-        removeHandler(removeEvent);
+        removeHandler(removeEventType);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('settings.remove', []);
       } else {
         // If no handler is registered, we assume success.
-        removeEvent.notifySuccess();
+        removeEventType.notifySuccess();
       }
     }
 
@@ -517,18 +602,23 @@ export namespace pages {
 
       private ensureNotNotified(): void {
         if (this.notified) {
-          throw new Error('The removeEvent may only notify success or failure once.');
+          throw new Error('The removeEventType may only notify success or failure once.');
         }
       }
     }
 
     /**
      * Checks if the pages.config capability is supported by the host
-     * @returns true if the pages.config capability is enabled in runtime.supports.pages.config and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.config capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.config ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.config
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -536,8 +626,15 @@ export namespace pages {
    * Provides APIs for handling the user's navigational history.
    */
   export namespace backStack {
-    let backButtonPressHandler: () => boolean;
+    let backButtonPressHandler: (() => boolean) | undefined;
 
+    /**
+     * @hidden
+     * Register backButtonPress handler.
+     *
+     * @internal
+     * Limited to Microsoft-internal use.
+     */
     export function _initialize(): void {
       registerHandler('backButtonPress', handleBackButtonPress, false);
     }
@@ -547,13 +644,13 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return new Promise<void>(resolve => {
-        ensureInitialized();
+      return new Promise<void>((resolve) => {
+        ensureInitialized(runtime);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Back navigation is not supported in the current client or context.';
-        resolve(sendAndDefaultError('navigateBack', errorMessage));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', errorMessage));
       });
     }
 
@@ -564,10 +661,29 @@ export namespace pages {
      * method to ask the host client to handle it instead.
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
-    export function registerBackButtonHandler(handler: () => boolean): void {
-      ensureInitialized();
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+    export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
+      registerBackButtonHandlerHelper(handler, () => {
+        if (handler && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
+    }
+
+    /**
+     * @hidden
+     * Undocumented helper function with shared code between deprecated version and current version of the registerBackButtonHandler API.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     *
+     * @param handler - The handler to invoke when the user presses the host client's back button.
+     * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+     */
+    export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
+      // allow for registration cleanup even when not finished initializing
+      handler && ensureInitialized(runtime);
+      if (versionSpecificHelper) {
+        versionSpecificHelper();
       }
       backButtonPressHandler = handler;
       handler && sendMessageToParent('registerHandler', ['backButton']);
@@ -575,17 +691,27 @@ export namespace pages {
 
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
-        navigateBack();
+        if (Communication.childWindow) {
+          // If the current window did not handle it let the child window
+          sendMessageEventToChild('backButtonPress', []);
+        } else {
+          navigateBack();
+        }
       }
     }
 
     /**
      * Checks if the pages.backStack capability is supported by the host
-     * @returns true if the pages.backStack capability is enabled in runtime.supports.pages.backStack and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.backStack capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.backStack ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.backStack
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -603,7 +729,7 @@ export namespace pages {
      * Place the tab into full-screen mode.
      */
     export function enterFullscreen(): void {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -617,7 +743,7 @@ export namespace pages {
      * Reverts the tab into normal-screen mode.
      */
     export function exitFullscreen(): void {
-      ensureInitialized(FrameContexts.content);
+      ensureInitialized(runtime, FrameContexts.content);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -625,14 +751,18 @@ export namespace pages {
     }
     /**
      * @hidden
-     * Hide from docs
-     * ------
+     *
      * Checks if the pages.fullTrust capability is supported by the host
-     * @returns true if the pages.fullTrust capability is enabled in runtime.supports.pages.fullTrust and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.fullTrust capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.fullTrust ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.fullTrust
+          ? true
+          : false
+        : false;
     }
   }
 
@@ -645,12 +775,12 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
-    export function onClick(handler: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      registerHandler('appButtonClick', handler);
+    export function onClick(handler: handlerFunctionType): void {
+      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
     }
 
     /**
@@ -658,12 +788,12 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
-    export function onHoverEnter(handler: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      registerHandler('appButtonHoverEnter', handler);
+    export function onHoverEnter(handler: handlerFunctionType): void {
+      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
     }
 
     /**
@@ -671,21 +801,117 @@ export namespace pages {
      * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
-    export function onHoverLeave(handler: () => void): void {
-      ensureInitialized(FrameContexts.content);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      registerHandler('appButtonHoverLeave', handler);
+    export function onHoverLeave(handler: handlerFunctionType): void {
+      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      });
     }
 
     /**
      * Checks if pages.appButton capability is supported by the host
-     * @returns true if the pages.appButton capability is enabled in runtime.supports.pages.appButton and
-     * false if it is disabled
+     * @returns boolean to represent whether the pages.appButton capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return runtime.supports.pages ? (runtime.supports.pages.appButton ? true : false) : false;
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.appButton
+          ? true
+          : false
+        : false;
+    }
+  }
+
+  /**
+   * Provides functions for navigating without needing to specify your application ID.
+   *
+   * @beta
+   */
+  export namespace currentApp {
+    /**
+     * Parameters for the NavigateWithinApp
+     *
+     * @beta
+     */
+    export interface NavigateWithinAppParams {
+      /**
+       * The developer-defined unique ID for the page defined in the manifest or when first configuring
+       * the page. (Known as {@linkcode Context.entityId} prior to TeamsJS v.2.0.0)
+       */
+      pageId: string;
+
+      /**
+       * Optional developer-defined unique ID describing the content to navigate to within the page. This
+       * can be retrieved from the Context object {@link app.PageInfo.subPageId | app.Context.page.subPageId}
+       */
+      subPageId?: string;
+    }
+
+    /**
+     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
+     * specific content within the page).
+     * @param params - Parameters for the navigation
+     * @returns a promise that will resolve if the navigation was successful
+     *
+     * @beta
+     */
+    export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          runtime,
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+      });
+    }
+
+    /**
+     * Navigate to the currently running application's first static page defined in the application
+     * manifest.
+     * @beta
+     */
+    export function navigateToDefaultPage(): Promise<void> {
+      return new Promise<void>((resolve) => {
+        ensureInitialized(
+          runtime,
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
+        );
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+      });
+    }
+
+    /**
+     * Checks if pages.currentApp capability is supported by the host
+     * @returns boolean to represent whether the pages.currentApp capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.currentApp
+          ? true
+          : false
+        : false;
     }
   }
 }

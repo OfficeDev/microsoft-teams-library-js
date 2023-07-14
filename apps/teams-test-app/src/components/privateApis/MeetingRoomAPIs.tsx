@@ -3,6 +3,7 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckMeetingRoomCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -26,12 +27,12 @@ const SendCommandToPairedMeetingRoom = (): React.ReactElement =>
     name: 'sendCommandToPairedMeetingRoom',
     title: 'Send Command To PairedMeeting Room',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           throw new Error('input is required.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await meetingRoom.sendCommandToPairedMeetingRoom(input);
         return 'sendCommandToPairedMeetingRoom have been called';
       },
@@ -42,7 +43,7 @@ const RegisterMeetingRoomCapabilitiesUpdateHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerMeetingRoomCapabilitiesUpdateHandler',
     title: 'Register MeetingRoom Capabilities Update Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (meetingRoomCapability: meetingRoom.MeetingRoomCapability): void => {
         setResult(`Capabilities of meeting room update ${JSON.stringify(meetingRoomCapability)}`);
       };
@@ -56,7 +57,7 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerMeetingRoomStatesUpdateHandler',
     title: 'Register MeetingRoom States UpdateHandler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (meetingRoomState: meetingRoom.MeetingRoomState): void => {
         setResult(`States of meeting room update ${JSON.stringify(meetingRoomState)}`);
       };
@@ -67,14 +68,13 @@ const RegisterMeetingRoomStatesUpdateHandler = (): React.ReactElement =>
   });
 
 const MeetingRoomAPIs = (): React.ReactElement => (
-  <>
-    <h1>meetingRoom</h1>
+  <ModuleWrapper title="MeetingRoom">
     <GetPairedMeetingRoomInfo />
     <SendCommandToPairedMeetingRoom />
     <RegisterMeetingRoomCapabilitiesUpdateHandler />
     <RegisterMeetingRoomStatesUpdateHandler />
     <CheckMeetingRoomCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MeetingRoomAPIs;

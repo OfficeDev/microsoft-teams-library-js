@@ -2,6 +2,7 @@ import { SdkError, stageView } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckStageViewCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,7 +16,7 @@ const OpenStageView = (): ReactElement =>
     name: 'stageViewOpen',
     title: 'StageView Open',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId are required.');
         }
@@ -30,7 +31,7 @@ const OpenStageView = (): ReactElement =>
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await stageView.open(input);
           return 'opened';
         },
@@ -44,18 +45,17 @@ const OpenStageView = (): ReactElement =>
           stageView
             .open(input)
             .then()
-            .catch(error => callback(error));
+            .catch((error) => callback(error));
         },
       },
     },
   });
 
 const StageViewAPIs = (): ReactElement => (
-  <>
-    <h1>stageView</h1>
+  <ModuleWrapper title="StageView">
     <OpenStageView />
     <CheckStageViewCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default StageViewAPIs;

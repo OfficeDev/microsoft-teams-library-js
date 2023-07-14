@@ -1,4 +1,7 @@
-import { ensureInitialized } from '../internal/internalAPIs';
+import { sendMessageToParent } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
+import { registerHandlerHelper } from '../internal/handlers';
+import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { app } from './app';
 import { FrameContexts } from './constants';
@@ -11,8 +14,23 @@ import {
   TabInstanceParameters,
 } from './interfaces';
 import { pages } from './pages';
+import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 
+/** Execute deep link on complete function type */
+type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
+/** Callback function type */
+type callbackFunctionType = () => void;
+/** Get context callback function type */
+type getContextCallbackFunctionType = (context: Context) => void;
+/** Get tab instances callback function type */
+type getTabInstancesCallbackFunctionType = (tabInfo: TabInformation) => void;
+/** Register back button handler function type */
+type registerBackButtonHandlerFunctionType = () => boolean;
+/** Register full screen handler function type */
+type registerFullScreenHandlerFunctionType = (isFullScreen: boolean) => void;
+/** Register on theme change handler function type */
+type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
 /**
  * @deprecated
  * As of 2.0.0, please use {@link app.initialize app.initialize(validMessageOrigins?: string[]): Promise\<void\>} instead.
@@ -23,43 +41,12 @@ import { teamsCore } from './teamsAPIs';
  * @param validMessageOrigins - Optionally specify a list of cross frame message origins. There must have
  * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
-export function initialize(callback?: () => void, validMessageOrigins?: string[]): void {
+export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
   app.initialize(validMessageOrigins).then(() => {
     if (callback) {
       callback();
     }
   });
-}
-
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app._initialize app._initialize(hostWindow: any): void} instead.
- *
- * @hidden
- * Hide from docs.
- * ------
- * Undocumented function used to set a mock window for unit tests
- *
- * @internal
- */
-// eslint-disable-next-line
-export function _initialize(hostWindow: any): void {
-  app._initialize(hostWindow);
-}
-
-/**
- * @deprecated
- * As of 2.0.0, please use {@link app._uninitialize app._uninitialize(): void} instead.
- *
- * @hidden
- * Hide from docs.
- * ------
- * Undocumented function used to clear state between unit tests
- *
- * @internal
- */
-export function _uninitialize(): void {
-  app._uninitialize();
 }
 
 /**
@@ -90,83 +77,85 @@ export function print(): void {
  *
  * @param callback - The callback to invoke when the {@link Context} object is retrieved.
  */
-export function getContext(callback: (context: Context) => void): void {
-  ensureInitialized();
-  app.getContext().then((context: app.Context) => {
-    if (callback) {
-      callback(transformAppContextToLegacyContext(context));
+export function getContext(callback: getContextCallbackFunctionType): void {
+  ensureInitializeCalled();
+  sendMessageToParent('getContext', (context: Context) => {
+    if (!context.frameContext) {
+      // Fallback logic for frameContext properties
+      context.frameContext = GlobalVars.frameContext;
     }
+    callback(context);
   });
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.registerOnThemeChangeHandler app.registerOnThemeChangeHandler(handler: (theme: string) => void): void} instead.
+ * As of 2.0.0, please use {@link app.registerOnThemeChangeHandler app.registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void} instead.
  *
  * Registers a handler for theme changes.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when the user changes their theme.
  */
-export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
+export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void {
   app.registerOnThemeChangeHandler(handler);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.registerFullScreenHandler pages.registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void} instead.
+ * As of 2.0.0, please use {@link pages.registerFullScreenHandler pages.registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void} instead.
  *
  * Registers a handler for changes from or to full-screen view for a tab.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
-export function registerFullScreenHandler(handler: (isFullScreen: boolean) => void): void {
-  pages.registerFullScreenHandler(handler);
+export function registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void {
+  registerHandlerHelper('fullScreenChange', handler, []);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.appButton.onClick pages.appButton.onClick(handler: () => void): void} instead.
+ * As of 2.0.0, please use {@link pages.appButton.onClick pages.appButton.onClick(handler: callbackFunctionType): void} instead.
  *
  * Registers a handler for clicking the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
-export function registerAppButtonClickHandler(handler: () => void): void {
-  pages.appButton.onClick(handler);
+export function registerAppButtonClickHandler(handler: callbackFunctionType): void {
+  registerHandlerHelper('appButtonClick', handler, [FrameContexts.content]);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.appButton.onHoverEnter pages.appButton.onHoverEnter(handler: () => void): void} instead.
+ * As of 2.0.0, please use {@link pages.appButton.onHoverEnter pages.appButton.onHoverEnter(handler: callbackFunctionType): void} instead.
  *
  * Registers a handler for entering hover of the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  *
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
-export function registerAppButtonHoverEnterHandler(handler: () => void): void {
-  pages.appButton.onHoverEnter(handler);
+export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType): void {
+  registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content]);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.appButton.onHoverLeave pages.appButton.onHoverLeave(handler: () => void): void} instead.
+ * As of 2.0.0, please use {@link pages.appButton.onHoverLeave pages.appButton.onHoverLeave(handler: callbackFunctionType): void} instead.
  *
  * Registers a handler for exiting hover of the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
  * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
  *
  */
-export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
-  pages.appButton.onHoverLeave(handler);
+export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType): void {
+  registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content]);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.backStack.registerBackButtonHandler pages.backStack.registerBackButtonHandler(handler: () => boolean): void} instead.
+ * As of 2.0.0, please use {@link pages.backStack.registerBackButtonHandler pages.backStack.registerBackButtonHandler(handler: registerBackButtonHandlerFunctionType): void} instead.
  *
  * Registers a handler for user presses of the Team client's back button. Experiences that maintain an internal
  * navigation stack should use this handler to navigate the user back within their frame. If an app finds
@@ -175,8 +164,8 @@ export function registerAppButtonHoverLeaveHandler(handler: () => void): void {
  *
  * @param handler - The handler to invoke when the user presses their Team client's back button.
  */
-export function registerBackButtonHandler(handler: () => boolean): void {
-  pages.backStack.registerBackButtonHandler(handler);
+export function registerBackButtonHandler(handler: registerBackButtonHandlerFunctionType): void {
+  pages.backStack.registerBackButtonHandlerHelper(handler);
 }
 
 /**
@@ -189,12 +178,12 @@ export function registerBackButtonHandler(handler: () => boolean): void {
  * @param handler - The handler to invoke when the page is loaded.
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-  teamsCore.registerOnLoadHandler(handler);
+  teamsCore.registerOnLoadHandlerHelper(handler);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link teamsCore.registerBeforeUnloadHandler teamsCore.registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void} instead.
+ * As of 2.0.0, please use {@link teamsCore.registerBeforeUnloadHandler teamsCore.registerBeforeUnloadHandler(handler: (readyToUnload: callbackFunctionType) => boolean): void} instead.
  *
  * @hidden
  * Registers a handler to be called before the page is unloaded.
@@ -202,8 +191,8 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
  */
-export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
-  teamsCore.registerBeforeUnloadHandler(handler);
+export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFunctionType) => boolean): void {
+  teamsCore.registerBeforeUnloadHandlerHelper(handler);
 }
 
 /**
@@ -216,19 +205,19 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  pages.registerFocusEnterHandler(handler);
+  registerHandlerHelper('focusEnter', handler, []);
 }
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.config.registerChangeConfigHandler pages.config.registerChangeConfigHandler(handler: () => void): void} instead.
+ * As of 2.0.0, please use {@link pages.config.registerChangeConfigHandler pages.config.registerChangeConfigHandler(handler: callbackFunctionType): void} instead.
  *
  * Registers a handler for when the user reconfigurated tab.
  *
  * @param handler - The handler to invoke when the user click on Settings.
  */
-export function registerChangeSettingsHandler(handler: () => void): void {
-  pages.config.registerChangeConfigHandler(handler);
+export function registerChangeSettingsHandler(handler: callbackFunctionType): void {
+  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
 }
 
 /**
@@ -242,10 +231,10 @@ export function registerChangeSettingsHandler(handler: () => void): void {
  * @param tabInstanceParameters - OPTIONAL Flags that specify whether to scope call to favorite teams or channels.
  */
 export function getTabInstances(
-  callback: (tabInfo: TabInformation) => void,
+  callback: getTabInstancesCallbackFunctionType,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -261,10 +250,10 @@ export function getTabInstances(
  * @param tabInstanceParameters - OPTIONAL Ignored, kept for future use
  */
 export function getMruTabInstances(
-  callback: (tabInfo: TabInformation) => void,
+  callback: getTabInstancesCallbackFunctionType,
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
-  ensureInitialized();
+  ensureInitialized(runtime);
   pages.tabs.getMruTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
@@ -288,14 +277,15 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.openLink core.openLink(deepLink: string): Promise\<void\>} instead.
+ * As of 2.0.0, please use {@link app.openLink app.openLink(deepLink: string): Promise\<void\>} instead.
  *
  * Execute deep link API.
  *
  * @param deepLink - deep link.
  */
-export function executeDeepLink(deepLink: string, onComplete?: (status: boolean, reason?: string) => void): void {
+export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOnCompleteFunctionType): void {
   ensureInitialized(
+    runtime,
     FrameContexts.content,
     FrameContexts.sidePanel,
     FrameContexts.settings,
@@ -328,9 +318,9 @@ export function setFrameContext(frameContext: FrameContext): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.initializeWithFrameContext pages.initializeWithFrameContext(frameInfo: FrameInfo, callback?: () => void, validMessageOrigins?: string[],): void} instead.
+ * As of 2.0.0, please use {@link pages.initializeWithFrameContext pages.initializeWithFrameContext(frameInfo: FrameInfo, callback?: callbackFunctionType, validMessageOrigins?: string[],): void} instead.
  *
- * Initilize with FrameContext
+ * Initialize with FrameContext
  *
  * @param frameContext - FrameContext information to be set
  * @param callback - The optional callback to be invoked be invoked after initilizing the frame context
@@ -339,100 +329,8 @@ export function setFrameContext(frameContext: FrameContext): void {
  */
 export function initializeWithFrameContext(
   frameContext: FrameContext,
-  callback?: () => void,
+  callback?: callbackFunctionType,
   validMessageOrigins?: string[],
 ): void {
   pages.initializeWithFrameContext(frameContext, callback, validMessageOrigins);
-}
-
-/**
- * Transforms the app.Context object received to the legacy global Context object
- * @param appContext - The app.Context object to be transformed
- * @returns The transformed legacy global Context object
- */
-function transformAppContextToLegacyContext(appContext: app.Context): Context {
-  const context: Context = {
-    // app
-    locale: appContext.app.locale,
-    appSessionId: appContext.app.sessionId,
-    theme: appContext.app.theme,
-    appIconPosition: appContext.app.iconPositionVertical,
-    osLocaleInfo: appContext.app.osLocaleInfo,
-    parentMessageId: appContext.app.parentMessageId,
-    userClickTime: appContext.app.userClickTime,
-    userFileOpenPreference: appContext.app.userFileOpenPreference,
-    appLaunchId: appContext.app.appLaunchId,
-
-    // app.host
-    hostClientType: appContext.app.host.clientType,
-    sessionId: appContext.app.host.sessionId,
-    ringId: appContext.app.host.ringId,
-
-    // page
-    entityId: appContext.page.id,
-    frameContext: appContext.page.frameContext,
-    subEntityId: appContext.page.subPageId,
-    isFullScreen: appContext.page.isFullScreen,
-    isMultiWindow: appContext.page.isMultiWindow,
-    sourceOrigin: appContext.page.sourceOrigin,
-
-    // user
-    userObjectId: appContext.user !== undefined ? appContext.user.id : undefined,
-    isCallingAllowed: appContext.user !== undefined ? appContext.user.isCallingAllowed : undefined,
-    isPSTNCallingAllowed: appContext.user !== undefined ? appContext.user.isPSTNCallingAllowed : undefined,
-    userLicenseType: appContext.user !== undefined ? appContext.user.licenseType : undefined,
-    loginHint: appContext.user !== undefined ? appContext.user.loginHint : undefined,
-    userPrincipalName: appContext.user !== undefined ? appContext.user.userPrincipalName : undefined,
-
-    // user.tenant
-    tid:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.id
-          : undefined
-        : undefined,
-    tenantSKU:
-      appContext.user !== undefined
-        ? appContext.user.tenant !== undefined
-          ? appContext.user.tenant.teamsSku
-          : undefined
-        : undefined,
-
-    // channel
-    channelId: appContext.channel !== undefined ? appContext.channel.id : undefined,
-    channelName: appContext.channel !== undefined ? appContext.channel.displayName : undefined,
-    channelRelativeUrl: appContext.channel !== undefined ? appContext.channel.relativeUrl : undefined,
-    channelType: appContext.channel !== undefined ? appContext.channel.membershipType : undefined,
-    defaultOneNoteSectionId: appContext.channel !== undefined ? appContext.channel.defaultOneNoteSectionId : undefined,
-    hostTeamGroupId: appContext.channel !== undefined ? appContext.channel.ownerGroupId : undefined,
-    hostTeamTenantId: appContext.channel !== undefined ? appContext.channel.ownerTenantId : undefined,
-
-    // chat
-    chatId: appContext.chat !== undefined ? appContext.chat.id : undefined,
-
-    // meeting
-    meetingId: appContext.meeting !== undefined ? appContext.meeting.id : undefined,
-
-    // sharepoint
-    sharepoint: appContext.sharepoint,
-
-    // team
-    teamId: appContext.team !== undefined ? appContext.team.internalId : undefined,
-    teamName: appContext.team !== undefined ? appContext.team.displayName : undefined,
-    teamType: appContext.team !== undefined ? appContext.team.type : undefined,
-    groupId: appContext.team !== undefined ? appContext.team.groupId : undefined,
-    teamTemplateId: appContext.team !== undefined ? appContext.team.templateId : undefined,
-    isTeamArchived: appContext.team !== undefined ? appContext.team.isArchived : undefined,
-    userTeamRole: appContext.team !== undefined ? appContext.team.userRole : undefined,
-
-    // sharepointSite
-    teamSiteUrl: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteUrl : undefined,
-    teamSiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteDomain : undefined,
-    teamSitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSitePath : undefined,
-    teamSiteId: appContext.sharePointSite !== undefined ? appContext.sharePointSite.teamSiteId : undefined,
-    mySitePath: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySitePath : undefined,
-    mySiteDomain: appContext.sharePointSite !== undefined ? appContext.sharePointSite.mySiteDomain : undefined,
-  };
-
-  return context;
 }

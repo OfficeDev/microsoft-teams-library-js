@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.x'
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Extract branch name
         id: extract_branch
@@ -45,3 +45,11 @@ jobs:
           name: 'v${{steps.extract_version.outputs.version}}'
           prerelease: false
           body: '${{steps.extract_changelog.outputs.changelog}}'
+
+      - name: Notify TeamsFx Repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.TEAMSFX_REPO_ACCESS_TOKEN }}
+          repository: OfficeDev/TeamsFx
+          event-type: teamsjs-released
+          client-payload: '{"version": "${{ steps.extract_version.outputs.version }}"}'

@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Replaced prepNextDevRelease.js with prepBetaRelease.js to handle beta version bumps and deprecated use of nextDev tags for releases",
-  "packageName": "@microsoft/teams-js",
-  "email": "jdahiya8719@outlook.com",
-  "dependentChangeType": "none"
-}

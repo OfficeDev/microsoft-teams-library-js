@@ -18,6 +18,7 @@ const AuthApp: React.FC = () => {
         await app.initialize();
         setIsInitialized(true);
       } catch (e) {
+        alert('Initialization Error: App should be sideloaded onto a host');
         appInitializationFailed();
       }
     })();

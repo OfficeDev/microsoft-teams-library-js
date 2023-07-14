@@ -1,0 +1,53 @@
+{
+  "name": "GeoLocation",
+  "platforms": "Web",
+  "version": ">=2.1.0",
+  "checkIsSupported": {
+    "capabilityName": "GeoLocation",
+    "toggleId": "locationToggle",
+    "expectedOutput": "geoLocation module is not supported"
+  },
+  "testCases": [
+    {
+      "title": "hasGeoLocationPermission API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_hasGeoLocationPermission",
+      "expectedTestAppValue": "false"
+    },
+    {
+      "title": "requestGeoLocationPermission API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestGeoLocationPermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": false },
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "repeat requestGeoLocationPermission API Call with no dialog - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestGeoLocationPermission",
+      "isRequestPermissionCall": { "repeatRequestPermissionCall": true },
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "getCurrentLocation API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getCurrentLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "expectedAlertValue": ["getCurrentLocation is called"],
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
+      "title": "getCurrentLocation API Call - Failure",
+      "type": "callResponse",
+      "boxSelector": "#box_getCurrentLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": false
+      },
+      "expectedTestAppValue": "Error: [object Object]"
+    }
+  ]
+}

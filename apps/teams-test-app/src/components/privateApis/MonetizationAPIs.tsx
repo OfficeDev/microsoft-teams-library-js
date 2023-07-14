@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckMonetizationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -16,7 +17,7 @@ const OpenPurchaseExperience = (): React.ReactElement =>
     name: 'monetization_openPurchaseExperience',
     title: 'Open Purchase Experience',
     onClick: {
-      validateInput: planInfo => {
+      validateInput: (planInfo) => {
         if (!planInfo) {
           return; //This API allow for the input not to be provided
         }
@@ -25,7 +26,7 @@ const OpenPurchaseExperience = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async planInfo => {
+        withPromise: async (planInfo) => {
           await monetization.openPurchaseExperience(planInfo);
           return 'monetization.openPurchaseExperience()' + noHostSdkMsg;
         },
@@ -44,11 +45,10 @@ const OpenPurchaseExperience = (): React.ReactElement =>
   });
 
 const MonetizationAPIs = (): ReactElement => (
-  <>
-    <h1>monetization</h1>
+  <ModuleWrapper title="Monetization">
     <OpenPurchaseExperience />
     <CheckMonetizationCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MonetizationAPIs;

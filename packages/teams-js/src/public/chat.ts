@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReason as sendAndHandleError } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -61,22 +61,24 @@ export namespace chat {
    * @param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
+   *
+   * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
-      ensureInitialized(FrameContexts.content);
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleError(
+          sendAndHandleStatusAndReason(
             'executeDeepLink',
             createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
-        const sendPromise = sendAndHandleError('chat.openChat', {
+        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
           members: openChatRequest.user,
           message: openChatRequest.message,
         });
@@ -92,9 +94,11 @@ export namespace chat {
    * @param openChatRequest: {@link OpenGroupChatRequest} - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
+   *
+   * @beta
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
       }
@@ -105,19 +109,19 @@ export namespace chat {
         };
         openChat(chatRequest);
       } else {
-        ensureInitialized(FrameContexts.content);
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
         if (runtime.isLegacyTeams) {
           resolve(
-            sendAndHandleError(
+            sendAndHandleStatusAndReason(
               'executeDeepLink',
               createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
             ),
           );
         } else {
-          const sendPromise = sendAndHandleError('chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,
@@ -128,7 +132,15 @@ export namespace chat {
     });
   }
 
+  /**
+   * Checks if the chat capability is supported by the host
+   * @returns boolean to represent whether the chat capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @beta
+   */
   export function isSupported(): boolean {
-    return runtime.supports.chat ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.chat ? true : false;
   }
 }

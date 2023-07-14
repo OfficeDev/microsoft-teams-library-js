@@ -3,6 +3,7 @@ import React from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const RemoteCameraCapabilityCheck = (): React.ReactElement =>
   ApiWithoutInput({
@@ -35,12 +36,12 @@ const RequestControl = (): React.ReactElement =>
     name: 'requestControl',
     title: 'Request Control',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.id) {
           throw new Error('id is required.');
         }
       },
-      submit: input => {
+      submit: (input) => {
         return new Promise<string>((res, rej) => {
           const callback = (error: SdkError | null, requestResponse: boolean | null): void => {
             if (error) {
@@ -61,7 +62,7 @@ const SendControlCommand = (): React.ReactElement =>
     name: 'sendControlCommand',
     title: 'Send Control Command',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         const controlCommandValues = Object.values(remoteCamera.ControlCommand);
         if (!input || typeof input !== 'string' || !controlCommandValues.includes(input)) {
           throw new Error(
@@ -69,7 +70,7 @@ const SendControlCommand = (): React.ReactElement =>
           );
         }
       },
-      submit: input => {
+      submit: (input) => {
         return new Promise<string>((res, rej) => {
           const callback = (error: SdkError | null): void => {
             if (error) {
@@ -107,7 +108,7 @@ const RegisterOnCapableParticipantsChangeHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerOnCapableParticipantsChangeHandler',
     title: 'Register On Capable Participants Change Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (participantChange: remoteCamera.Participant[]): void => {
         setResult('participantChange: ' + JSON.stringify(participantChange));
       };
@@ -121,7 +122,7 @@ const RegisterOnErrorHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerOnErrorHandler',
     title: 'Register On Error Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (error: remoteCamera.ErrorReason): void => {
         setResult(JSON.stringify(error));
       };
@@ -135,7 +136,7 @@ const RegisterOnDeviceStateChangeHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerOnDeviceStateChangeHandler',
     title: 'Register On Device State Change Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (deviceStateChange: remoteCamera.DeviceState): void => {
         setResult(JSON.stringify(deviceStateChange));
       };
@@ -149,7 +150,7 @@ const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerOnSessionStatusChangeHandler',
     title: 'Register On Session Status Change Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const handler = (sessionStatusChange: remoteCamera.SessionStatus): void => {
         setResult(JSON.stringify(sessionStatusChange));
       };
@@ -160,8 +161,7 @@ const RegisterOnSessionStatusChangeHandler = (): React.ReactElement =>
   });
 
 const RemoteCameraAPIs = (): React.ReactElement => (
-  <>
-    <h1>remoteCamera</h1>
+  <ModuleWrapper title="RemoteCamera">
     <RemoteCameraCapabilityCheck />
     <GetCapableParticipants />
     <RequestControl />
@@ -171,7 +171,7 @@ const RemoteCameraAPIs = (): React.ReactElement => (
     <RegisterOnErrorHandler />
     <RegisterOnDeviceStateChangeHandler />
     <RegisterOnSessionStatusChangeHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default RemoteCameraAPIs;

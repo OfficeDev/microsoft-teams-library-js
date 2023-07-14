@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <h2 style="font-size: 40px;">Ending auth</h2>
+    <div id="errorMessage" style="font-size: 30px;"></div>
+  </head>
+  <body>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const result = params.get('code');
+      const { authId, method, hostName } = JSON.parse(params.get('state'));
+
+      // Redirect back to Orange host
+      if (method === 'deeplink') {
+        const storedRedirectUrl = sessionStorage.getItem('hostRedirectUrl')
+        if (storedRedirectUrl) {
+          window.location.href = storedRedirectUrl.replace('{result}',result)
+        } else if (hostName === 'Orange') {
+          window.location.href = `msorange://testapp.com/auth_callback?authId=${authId}&result=${result}`;
+        }
+      }
+      document.getElementById('errorMessage').textContent = 'Unable to redirect back to the App';
+    </script>
+
+  </body>
+</html>

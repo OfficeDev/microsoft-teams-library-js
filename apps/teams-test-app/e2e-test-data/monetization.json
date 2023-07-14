@@ -1,0 +1,29 @@
+{
+  "name": "Monetization",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityMonetization",
+    "version": "1.x || >2.0.0-beta.2"
+  },
+  "testCases": [
+    {
+      "title": "openPurchaseExperience API Call - Success",
+      "type": "callResponse",
+      "version": "1.x || >2.0.0-beta.2",
+      "boxSelector": "#box_monetization_openPurchaseExperience",
+      "inputValue": {
+        "planId": "abc",
+        "term": "001"
+      },
+      "expectedAlertValue": "openPurchaseExperience called with ##JSON_INPUT_VALUE##"
+    },
+
+    {
+      "title": "openPurchaseExperience API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_monetization_openPurchaseExperience",
+      "expectedAlertValue": "openPurchaseExperience called with undefined"
+    }
+  ]
+}

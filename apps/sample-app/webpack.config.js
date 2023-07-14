@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-
+const fs = require('fs');
 module.exports = {
   mode: 'production',
   entry: './src/index.tsx',
@@ -37,12 +37,14 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    contentBase: path.join(__dirname, 'build'),
-    publicPath: '/',
+    static: {
+      directory: path.join(__dirname, 'build'),
+      publicPath: '/',
+    },
     compress: true,
     port: 4003,
     https: true,
-    disableHostCheck: true,
+    allowedHosts: 'all',
   },
   optimization: {
     minimize: false,

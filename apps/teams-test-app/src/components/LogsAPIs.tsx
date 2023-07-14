@@ -3,12 +3,13 @@ import React, { ReactElement } from 'react';
 
 import { generateRegistrationMsg } from '../App';
 import { ApiWithoutInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const RegisterGetLogHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerGetLogHandler',
     title: 'Register Get Log Handler',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       logs.registerGetLogHandler(() => {
         setResult('Success');
         return 'App log string';
@@ -18,10 +19,9 @@ const RegisterGetLogHandler = (): React.ReactElement =>
   });
 
 const LogsAPIs = (): ReactElement => (
-  <>
-    <h1>logs</h1>
+  <ModuleWrapper title="Logs">
     <RegisterGetLogHandler />
-  </>
+  </ModuleWrapper>
 );
 
 export default LogsAPIs;

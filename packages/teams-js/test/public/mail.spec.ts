@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { mail } from '../../src/public/mail';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 const dataError = 'Something went wrong...';
 
@@ -39,12 +44,12 @@ describe('mail', () => {
       expect.assertions(1);
       await mail
         .openMailItem(openMailItemParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -55,7 +60,7 @@ describe('mail', () => {
 
           await mail
             .openMailItem(openMailItemParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -80,7 +85,7 @@ describe('mail', () => {
 
       await mail
         .openMailItem({ itemId: null })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
     });
 
     it('should throw if an undefined itemId is supplied', async () => {
@@ -90,7 +95,7 @@ describe('mail', () => {
 
       await mail
         .openMailItem({ itemId: undefined })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
     });
 
     it('should throw if an empty itemId is supplied', async () => {
@@ -100,7 +105,7 @@ describe('mail', () => {
 
       await mail
         .openMailItem({ itemId: '' })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openMailItem')));
     });
 
     it('should successfully throw if the openMailItem message sends and fails', async () => {
@@ -118,7 +123,7 @@ describe('mail', () => {
       };
 
       utils.respondToMessage(openMailItemMessage, data.success, data.error);
-      await openMailItemPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
+      await openMailItemPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
     });
 
     it('should successfully send the openMailItem message', async () => {
@@ -168,12 +173,12 @@ describe('mail', () => {
       expect.assertions(1);
       await mail
         .composeMail(composeMailParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -185,7 +190,7 @@ describe('mail', () => {
 
           await mail
             .composeMail(composeMailParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -220,7 +225,7 @@ describe('mail', () => {
       };
 
       utils.respondToMessage(composeMail, data.success, data.error);
-      await composeMailPromise.catch(e => expect(e).toMatchObject(new Error(dataError)));
+      await composeMailPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
     });
 
     it('should successfully send the composeMail message', async () => {
@@ -261,14 +266,21 @@ describe('mail', () => {
   });
 
   describe('isSupported', () => {
-    it('should return false if the runtime says mail is not supported', () => {
+    it('should return false if the runtime says mail is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(mail.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says mail is supported', () => {
+    it('should return true if the runtime says mail is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { mail: {} } });
       expect(mail.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => mail.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

@@ -2,6 +2,7 @@ import { mail } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckMailCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,7 +16,7 @@ const ComposeMail = (): React.ReactElement =>
     name: 'composeMail',
     title: 'Compose Mail',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         const composeMailTypeValues = Object.values(mail.ComposeMailType);
         if (!input.type || !composeMailTypeValues.includes(input.type)) {
           throw new Error(`type is required and has to be one of ${JSON.stringify(composeMailTypeValues)}`);
@@ -29,7 +30,7 @@ const ComposeMail = (): React.ReactElement =>
           throw new Error('itemId is required for Forward, Reply and ReplyAll');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await mail.composeMail(input);
         return 'Completed';
       },
@@ -41,12 +42,12 @@ const OpenMailItem = (): React.ReactElement =>
     name: 'openMailItem',
     title: 'Open Mail Item',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.itemId) {
           throw new Error('itemId is required');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await mail.openMailItem(input);
         return 'Completed';
       },
@@ -54,12 +55,11 @@ const OpenMailItem = (): React.ReactElement =>
   });
 
 const MailAPIs = (): ReactElement => (
-  <>
-    <h1>mail</h1>
+  <ModuleWrapper title="Mail">
     <ComposeMail />
     <OpenMailItem />
     <CheckMailCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default MailAPIs;

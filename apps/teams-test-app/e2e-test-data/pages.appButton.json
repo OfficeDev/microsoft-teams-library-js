@@ -1,0 +1,34 @@
+{
+  "name": "Pages AppButton",
+  "platforms": "Web",
+  "testCases": [
+    {
+      "title": "registerAppButtonClick API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAppButtonClickHandler",
+      "eventName": "appButtonClick",
+      "expectedTestAppValue": "successfully called"
+    },
+    {
+      "title": "registerAppButtonHoverEnterHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAppButtonHoverEnterHandler",
+      "eventName": "appButtonHoverEnter",
+      "expectedTestAppValue": "successfully called"
+    },
+    {
+      "title": "registerAppButtonHoverLeaveHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAppButtonHoverLeaveHandler",
+      "eventName": "appButtonHoverLeave",
+      "expectedTestAppValue": "successfully called"
+    },
+    {
+      "title": "registerAppButtonHoverLeaveHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAppButtonHoverLeaveHandler",
+      "eventName": "appButtonHoverLeave",
+      "expectedTestAppValue": "successfully called"
+    }
+  ]
+}

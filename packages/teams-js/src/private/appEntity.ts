@@ -6,42 +6,62 @@ import { runtime } from '../public/runtime';
 /**
  * @hidden
  * Namespace to interact with the application entities specific part of the SDK.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
  */
 export namespace appEntity {
   /**
    * @hidden
-   * Hide from docs
-   * --------
+   *
    * Information on an app entity
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export interface AppEntity {
     /**
      * @hidden
      * ID of the application
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     appId: string;
 
     /**
      * @hidden
      * URL for the application's icon
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     appIconUrl: string;
 
     /**
      * @hidden
      * Content URL for the app entity
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     contentUrl: string;
 
     /**
      * @hidden
      * The display name for the app entity
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     displayName: string;
 
     /**
      * @hidden
      * Website URL for the app entity. It is meant to be opened by the user in a browser.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
      */
     websiteUrl: string;
   }
@@ -58,6 +78,9 @@ export namespace appEntity {
    * @param callback Callback that will be triggered once the app entity information is available.
    *                 The callback takes two arguments: an SdkError in case something happened (i.e.
    *                 no permissions to execute the API) and the app entity configuration, if available
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function selectAppEntity(
     threadId: string,
@@ -65,7 +88,7 @@ export namespace appEntity {
     subEntityId: string,
     callback: (sdkError?: SdkError, appEntity?: AppEntity) => void,
   ): void {
-    ensureInitialized(FrameContexts.content);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -83,11 +106,17 @@ export namespace appEntity {
   }
 
   /**
-   * Checks if appEntity capability is supported by the host
-   * @returns true if the appEntity capability is enabled in runtime.supports.appEntity and
-   * false if it is disabled
+   * @hidden
+   *
+   * Checks if the appEntity capability is supported by the host
+   * @returns boolean to represent whether the appEntity capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return runtime.supports.appEntity ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.appEntity ? true : false;
   }
 }

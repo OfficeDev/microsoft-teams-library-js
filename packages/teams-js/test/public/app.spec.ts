@@ -1,7 +1,6 @@
-import { version } from '../../src/internal/constants';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as privateAPIs from '../../src/private/privateAPIs';
 import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
@@ -12,10 +11,33 @@ import {
   TeamType,
   UserTeamRole,
 } from '../../src/public/constants';
-import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { _minRuntimeConfigToUninitialize, runtime, teamsRuntimeConfig } from '../../src/public/runtime';
-import { FramelessPostMocks } from '../framelessPostMocks';
+import {
+  ActionObjectType,
+  Context,
+  FileOpenPreference,
+  M365ContentAction,
+  SecondaryM365ContentIdName,
+} from '../../src/public/interfaces';
+import {
+  _minRuntimeConfigToUninitialize,
+  latestRuntimeApiVersion,
+  runtime,
+  teamsRuntimeConfig,
+} from '../../src/public/runtime';
+import { version } from '../../src/public/version';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
+
+/**
+ * Type guard to determine if an action item is of M365Content Type
+ */
+function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction {
+  // eslint-disable-next-line no-prototype-builtins
+  return actionItem && Object.prototype.hasOwnProperty.call(actionItem, 'secondaryId');
+}
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
@@ -47,14 +69,23 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return true after initialized', () => {
-        app.initialize();
+      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
+        expect.assertions(2);
+
+        const initPromise = app.initialize();
+        expect(app.isInitialized()).toBe(false);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
         expect(app.isInitialized()).toBe(true);
       });
     });
 
     describe('Testing app.getFrameContext function', () => {
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getFrameContext should return ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(app.getFrameContext()).toBe(context);
@@ -73,8 +104,9 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -137,7 +169,6 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
@@ -183,7 +214,7 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
@@ -199,7 +230,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -216,7 +247,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
@@ -230,7 +261,20 @@ describe('Testing app capability', () => {
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
-      Object.values(HostClientType).forEach(hostClientType => {
+      it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
+        const initPromise = app.initialize();
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
+
+        await expect(initPromise).rejects.toThrowError(
+          'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+        );
+      });
+
+      Object.values(HostClientType).forEach((hostClientType) => {
         it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
           const initPromise = app.initialize();
 
@@ -286,17 +330,6 @@ describe('Testing app capability', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
       it('app.initialize should assign additionalValidOrigins when supplied', async () => {
         const validOrigin = 'https://www.mydomain.com';
         const initPromise = app.initialize([validOrigin]);
@@ -312,10 +345,29 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      it('app.getContext should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.getContext();
+        let message = utils.findMessageByFunc('getContext');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('getContext');
+        expect(message).not.toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -366,7 +418,47 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
+          const actionObjects = [
+            {
+              itemId: '1',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.DriveId,
+                value: 'secondaryDriveValue',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            { itemId: '2', type: ActionObjectType.M365Content },
+            {
+              itemId: '3',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.GroupId,
+                value: 'secondaryGroupId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            {
+              itemId: '4',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.SiteId,
+                value: 'secondarySiteId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+            {
+              itemId: '5',
+              secondaryId: {
+                name: SecondaryM365ContentIdName.UserId,
+                value: 'secondarySiteId',
+              },
+              type: ActionObjectType.M365Content,
+            },
+          ];
+
           const contextBridge: Context = {
+            actionInfo: {
+              actionId: 'actionId',
+              actionObjects: actionObjects,
+            },
             groupId: 'someGroupId',
             teamId: 'someTeamId',
             teamName: 'someTeamName',
@@ -420,6 +512,7 @@ describe('Testing app capability', () => {
           };
 
           const expectedContext: app.Context = {
+            actionInfo: { actionId: 'actionId', actionObjects: actionObjects },
             app: {
               iconPositionVertical: 5,
               locale: 'someLocale',
@@ -496,19 +589,46 @@ describe('Testing app capability', () => {
           utils.respondToMessage(getContextMessage, contextBridge);
           const actualContext = await contextPromise;
 
+          const firstActionItem =
+            isM365ContentType(actualContext.actionInfo?.actionObjects[0]) && actualContext.actionInfo?.actionObjects[0];
+          const secondActionItem = actualContext.actionInfo?.actionObjects[1];
+
           expect(actualContext).toEqual(expectedContext);
           expect(actualContext.page.frameContext).toBe(context);
-          expect(actualContext.meeting.id).toBe('dummyMeetingId');
+          expect(actualContext.meeting?.id).toBe('dummyMeetingId');
+          expect(actualContext.actionInfo?.actionId).toBe('actionId');
+          expect(actualContext.actionInfo?.actionObjects.length).toBe(5);
+          expect(firstActionItem.secondaryId?.name).toEqual(SecondaryM365ContentIdName.DriveId);
+          expect(isM365ContentType(secondActionItem)).toBe(false);
         });
       });
     });
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      it('app.notifyAppLoaded should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifyAppLoaded();
+        let message = utils.findMessageByFunc('appInitialization.appLoaded');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.appLoaded');
+        expect(message).not.toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyAppLoaded should successfully notify app is loaded with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           app.notifyAppLoaded();
@@ -522,10 +642,29 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      it('app.notifySuccess should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifySuccess();
+        let message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.success');
+        expect(message).not.toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifySuccess should successfully notify success with no error from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           app.notifyAppLoaded();
@@ -544,10 +683,32 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      it('app.notifyFailure should allow calls after initialization called, but before it finished', async () => {
+        expect.assertions(3);
+
+        const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+
+        app.notifyFailure({
+          reason: app.FailedReason.AuthFailed,
+          message: 'Failed message',
+        });
+        let message = utils.findMessageByFunc('appInitialization.failure');
+        expect(message).toBeNull();
+
+        utils.respondToMessage(initMessage, 'content');
+
+        await initPromise;
+
+        message = utils.findMessageByFunc('appInitialization.failure');
+        expect(message).not.toBeNull();
+      });
+
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyFailure should call notify failure correctly with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -581,16 +742,14 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.registerOnThemeChangeHandler should successfully register a theme change handler from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           let newTheme: string;
-          app.registerOnThemeChangeHandler(theme => {
+          app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
           utils.sendMessage('themeChange', 'someTheme');
@@ -625,7 +784,7 @@ describe('Testing app capability', () => {
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {
@@ -680,24 +839,17 @@ describe('Testing app capability', () => {
   });
 
   describe('Frameless - Testing app capbility', () => {
-    // Use to send a mock message from the app.
-    const framelessPostMock = new FramelessPostMocks();
-    const utils = new Utils();
-
-    // const mockErrorMessage = 'Something went wrong...';
-
+    let utils: Utils = new Utils();
     beforeEach(() => {
-      framelessPostMock.messages = [];
-      // Set a mock window for testing
-      app._initialize(framelessPostMock.mockWindow);
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      app._initialize(utils.mockWindow);
+      GlobalVars.isFramelessWindow = false;
     });
-
     afterEach(() => {
-      // Reset the object since it's a singleton
-      if (app._uninitialize) {
-        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
-        app._uninitialize();
-      }
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
     });
 
     describe('Testing app.isInitialized function', () => {
@@ -705,16 +857,30 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
       });
 
-      it('app.isInitialized should return true after initialized', () => {
-        app.initialize();
+      it('app.isInitialized should return false after initialized but before initialization completed, and true once initialization completes', async () => {
+        expect.assertions(2);
+
+        const initPromise = app.initialize();
+        expect(app.isInitialized()).toBe(false);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
+          data: {
+            id: initMessage.id,
+            args: [],
+          },
+        } as DOMMessageEvent);
+
+        await initPromise;
+
         expect(app.isInitialized()).toBe(true);
       });
     });
 
     describe('Testing app.getFrameContext function', () => {
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getFrameContext should return ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
           expect(app.getFrameContext()).toBe(context);
         });
       });
@@ -724,14 +890,15 @@ describe('Testing app capability', () => {
       it('app.initialize should successfully initialize', () => {
         app.initialize();
 
-        expect(framelessPostMock.messages.length).toBe(1);
+        expect(utils.messages.length).toBe(1);
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
+        const initMessage = utils.findMessageByFunc('initialize');
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(1);
+        expect(initMessage.args.length).toEqual(2);
         expect(initMessage.args[0]).toEqual(version);
+        expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
       });
 
@@ -741,7 +908,7 @@ describe('Testing app capability', () => {
         }
 
         // Still only one message actually sent, the extra calls just no-op'ed
-        expect(framelessPostMock.messages.length).toBe(1);
+        expect(utils.messages.length).toBe(1);
       });
 
       it('app.initialize should invoke all callbacks once initialization completes', async () => {
@@ -755,13 +922,13 @@ describe('Testing app capability', () => {
           secondCallbackInvoked = true;
         });
 
-        expect(framelessPostMock.messages.length).toBe(1);
+        expect(utils.messages.length).toBe(1);
 
         expect(firstCallbackInvoked).toBe(false);
         expect(secondCallbackInvoked).toBe(false);
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -776,10 +943,10 @@ describe('Testing app capability', () => {
       it('app.initialize should invoke callback immediately if initialization has already completed', async () => {
         const initPromise = app.initialize();
 
-        expect(framelessPostMock.messages.length).toBe(1);
+        expect(utils.messages.length).toBe(1);
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -797,10 +964,9 @@ describe('Testing app capability', () => {
 
       it('app.initialize should use teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
+        const initMessage = utils.findMessageByFunc('initialize');
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-
-        framelessPostMock.respondToMessage({
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '1.6.0'],
@@ -814,8 +980,8 @@ describe('Testing app capability', () => {
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '', '1.6.0'],
@@ -829,8 +995,8 @@ describe('Testing app capability', () => {
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0'],
@@ -844,8 +1010,8 @@ describe('Testing app capability', () => {
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
         const promise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, null],
@@ -857,8 +1023,8 @@ describe('Testing app capability', () => {
       it('app.initialize should not use the teams config as a default if another proper config is given', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}'],
@@ -867,14 +1033,14 @@ describe('Testing app capability', () => {
         await initPromise;
 
         expect(runtime).not.toEqual(teamsRuntimeConfig);
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
       it('app.initialize should assign clientSupportedSDKVersion correctly when a proper runtime config is given', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}', '1.0.0'],
@@ -882,15 +1048,15 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
       it('app.initialize should initialize with clientSupportedSDKVersion and runtimeConfig arguments flipped', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '1.0.0', '{"apiVersion":1, "supports":{"mail":{}}}'],
@@ -898,15 +1064,15 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual({ apiVersion: 1, supports: { mail: {} } });
+        expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
         expect(GlobalVars.clientSupportedSDKVersion).toBe('1.0.0');
       });
 
       it('app.initialize should initialize with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
         const initPromise = app.initialize();
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr'],
@@ -917,12 +1083,12 @@ describe('Testing app capability', () => {
         expect(runtime).toEqual(teamsRuntimeConfig);
       });
 
-      Object.values(HostClientType).forEach(hostClientType => {
+      Object.values(HostClientType).forEach((hostClientType) => {
         it(`app.initialize should assign hostClientType correctly when ${hostClientType} is given`, async () => {
           const initPromise = app.initialize();
 
-          const initMessage = framelessPostMock.findMessageByFunc('initialize');
-          framelessPostMock.respondToMessage({
+          const initMessage = utils.findMessageByFunc('initialize');
+          utils.respondToFramelessMessage({
             data: {
               id: initMessage.id,
               args: [FrameContexts.content, hostClientType, '', '1.6.0'],
@@ -938,8 +1104,8 @@ describe('Testing app capability', () => {
         const spy = jest.spyOn(authentication, 'initialize');
 
         const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -954,8 +1120,8 @@ describe('Testing app capability', () => {
         const spy = jest.spyOn(menus, 'initialize');
 
         const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -970,8 +1136,8 @@ describe('Testing app capability', () => {
         const spy = jest.spyOn(pages.config, 'initialize');
 
         const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -986,24 +1152,8 @@ describe('Testing app capability', () => {
         const spy = jest.spyOn(dialog, 'initialize');
 
         const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
-      it('app.initialize should call initializePrivateApis', async () => {
-        const spy = jest.spyOn(privateAPIs, 'initializePrivateApis');
-
-        const initPromise = app.initialize();
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1018,8 +1168,8 @@ describe('Testing app capability', () => {
         const validOrigin = 'https://www.mydomain.com';
         const initPromise = app.initialize([validOrigin]);
 
-        const initMessage = framelessPostMock.findMessageByFunc('initialize');
-        framelessPostMock.respondToMessage({
+        const initMessage = utils.findMessageByFunc('initialize');
+        utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1034,19 +1184,19 @@ describe('Testing app capability', () => {
 
     describe('Testing app.getContext function', () => {
       it('app.getContext should not allow calls before initialization', async () => {
-        await expect(app.getContext()).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.getContext()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.getContext should successfully get frame context in ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const contextPromise = app.getContext();
 
-          const getContextMessage = framelessPostMock.findMessageByFunc('getContext');
+          const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{}],
@@ -1058,13 +1208,13 @@ describe('Testing app capability', () => {
         });
 
         it(`app.getContext should successfully get frame context when returned from client from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const contextPromise = app.getContext();
 
-          const getContextMessage = framelessPostMock.findMessageByFunc('getContext');
+          const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{ frameContext: context }],
@@ -1076,14 +1226,14 @@ describe('Testing app capability', () => {
         });
 
         it(`app.getContext should successfully get frame context in ${context} with fallback logic if not returned from client`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const contextPromise = app.getContext();
 
-          const getContextMessage = framelessPostMock.findMessageByFunc('getContext');
+          const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{}],
@@ -1095,11 +1245,11 @@ describe('Testing app capability', () => {
         });
 
         it(`app.getContext should successfully get context with ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           const contextPromise = app.getContext();
 
-          const getContextMessage = framelessPostMock.findMessageByFunc('getContext');
+          const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
           const contextBridge: Context = {
@@ -1221,7 +1371,7 @@ describe('Testing app capability', () => {
             },
           };
 
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [contextBridge],
@@ -1238,14 +1388,14 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifyAppLoaded function', () => {
       it('app.notifyAppLoaded should not allow calls before initialization', () => {
-        expect(() => app.notifyAppLoaded()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifyAppLoaded()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyAppLoaded should successfully notify app is loaded with no error from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
           app.notifyAppLoaded();
-          const message = framelessPostMock.findMessageByFunc(app.Messages.AppLoaded);
+          const message = utils.findMessageByFunc(app.Messages.AppLoaded);
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toEqual(version);
@@ -1255,14 +1405,14 @@ describe('Testing app capability', () => {
 
     describe('Testing app.notifySuccess function', () => {
       it('app.notifySuccess should not allow calls before initialization', () => {
-        expect(() => app.notifySuccess()).toThrowError('The library has not yet been initialized');
+        expect(() => app.notifySuccess()).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifySuccess should successfully notify success with no error from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
           app.notifySuccess();
-          const message = framelessPostMock.findMessageByFunc(app.Messages.Success);
+          const message = utils.findMessageByFunc(app.Messages.Success);
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toEqual(version);
@@ -1277,18 +1427,18 @@ describe('Testing app capability', () => {
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           }),
-        ).toThrowError('The library has not yet been initialized');
+        ).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.notifyFailure should call notify failure correctly with ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           app.notifyFailure({
             reason: app.FailedReason.AuthFailed,
             message: 'Failed message',
           });
-          const message = framelessPostMock.findMessageByFunc(app.Messages.Failure);
+          const message = utils.findMessageByFunc(app.Messages.Failure);
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(2);
           expect(message.args[0]).toEqual(app.FailedReason.AuthFailed);
@@ -1296,13 +1446,13 @@ describe('Testing app capability', () => {
         });
 
         it(`app.notifyFailure should call notify expected failure correctly with ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
 
           app.notifyExpectedFailure({
             reason: app.ExpectedFailureReason.PermissionError,
             message: 'Failed message',
           });
-          const message = framelessPostMock.findMessageByFunc(app.Messages.ExpectedFailure);
+          const message = utils.findMessageByFunc(app.Messages.ExpectedFailure);
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(2);
           expect(message.args[0]).toEqual(app.ExpectedFailureReason.PermissionError);
@@ -1314,19 +1464,17 @@ describe('Testing app capability', () => {
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(
-          'The library has not yet been initialized',
-        );
+        expect(() => app.registerOnThemeChangeHandler(() => {})).toThrowError(new Error(errorLibraryNotInitialized));
       });
 
-      Object.values(FrameContexts).forEach(context => {
+      Object.values(FrameContexts).forEach((context) => {
         it(`app.registerOnThemeChangeHandler should successfully register a theme change handler from ${context} context`, async () => {
-          await framelessPostMock.initializeWithContext(context);
+          await utils.initializeWithContext(context);
           let newTheme: string;
-          app.registerOnThemeChangeHandler(theme => {
+          app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
-          framelessPostMock.respondToMessage({
+          utils.respondToFramelessMessage({
             data: {
               func: 'themeChange',
               args: ['someTheme'],
@@ -1338,35 +1486,35 @@ describe('Testing app capability', () => {
     });
 
     it('should call navigateBack automatically when no back button handler is registered', async () => {
-      await framelessPostMock.initializeWithContext('content');
+      await utils.initializeWithContext('content');
 
-      framelessPostMock.respondToMessage({
+      utils.respondToFramelessMessage({
         data: {
           func: 'backButtonPress',
           args: ['navigateBack'],
         },
       } as DOMMessageEvent);
 
-      const navigateBackMessage = framelessPostMock.findMessageByFunc('navigateBack');
+      const navigateBackMessage = utils.findMessageByFunc('navigateBack');
       expect(navigateBackMessage).not.toBeNull();
     });
 
     describe('Testing app.openLink function', () => {
       const contexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.task];
       it('app.openLink should not allow calls before initialization', async () => {
-        await expect(app.openLink('dummyLink')).rejects.toThrowError('The library has not yet been initialized');
+        await expect(app.openLink('dummyLink')).rejects.toThrowError(new Error(errorLibraryNotInitialized));
       });
       for (const context in contexts) {
         describe(`app.openLink in ${contexts[context]} context `, () => {
           it(`app.openLink should successfully send a request from ${context[context]}`, async () => {
-            await framelessPostMock.initializeWithContext(contexts[context]);
+            await utils.initializeWithContext(contexts[context]);
             const request = 'dummyDeepLink';
 
             // send message request
             const promise = app.openLink(request);
 
             // find message request in jest
-            const message = framelessPostMock.findMessageByFunc('executeDeepLink');
+            const message = utils.findMessageByFunc('executeDeepLink');
 
             // check message is sending correct data
             expect(message).not.toBeUndefined();
@@ -1377,7 +1525,7 @@ describe('Testing app capability', () => {
               success: true,
             };
 
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [data.success],
@@ -1387,14 +1535,14 @@ describe('Testing app capability', () => {
           });
 
           it(`app.openLink should invoke error callback from ${context[context]}`, async () => {
-            await framelessPostMock.initializeWithContext(contexts[context]);
+            await utils.initializeWithContext(contexts[context]);
             const request = 'dummyDeepLink';
 
             // send message request
             const promise = app.openLink(request);
 
             // find message request in jest
-            const message = framelessPostMock.findMessageByFunc('executeDeepLink');
+            const message = utils.findMessageByFunc('executeDeepLink');
 
             // check message is sending correct data
             expect(message).not.toBeUndefined();
@@ -1405,7 +1553,7 @@ describe('Testing app capability', () => {
               success: false,
               error: mockErrorMessage,
             };
-            framelessPostMock.respondToMessage({
+            utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [data.success, data.error],

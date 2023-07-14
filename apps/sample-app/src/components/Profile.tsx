@@ -1,10 +1,13 @@
-import { Text } from '@fluentui/react-components';
+import { Text, Title3 } from '@fluentui/react-components';
 import { AuthProvider, AuthProviderCallback, Client, Options } from '@microsoft/microsoft-graph-client';
-import { Calendar, User } from '@microsoft/microsoft-graph-types';
+import { Calendar, Message, User } from '@microsoft/microsoft-graph-types';
 import React from 'react';
 
+import { CalendarCapability } from './Calendar';
+import { EmailList } from './Emails';
 import { MainPage } from './MainPage';
 import { MeetingList } from './Meetings';
+import { PagesCapability } from './Pages';
 import { PeopleAvatarList } from './PeopleAvatars';
 import { getDates } from './utils';
 
@@ -16,6 +19,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
   const { accessToken } = props;
   const [userInfo, setUserInfo] = React.useState<User>();
   const [calendar, setCalendar] = React.useState<Calendar>();
+  const [emails, setEmails] = React.useState<Message[]>();
   React.useEffect(() => {
     (async () => {
       const authProvider: AuthProvider = (callback: AuthProviderCallback) => {
@@ -29,34 +33,46 @@ export const ProfileContent: React.FC<ProfileContentProps> = (props: ProfileCont
 
       // get Calendar Meeting Info
       const [currDate, tomorrowDate] = getDates();
-      // currently the calendar info does not adjust to time zone. Need to fix such that only meetings for that Pacific Time Zone day show up
       const calendarResponse = await client
         .api('/me/calendarview?startdatetime=' + currDate + '&enddatetime=' + tomorrowDate)
         .get();
       const calendar = calendarResponse as Calendar;
       setCalendar(calendar);
+      // get recent emails
+      const emailResponse = await client.api('/me/messages').top(5).get();
+      const emails = emailResponse.value as Message[];
+      setEmails(emails);
     })();
-  }, [accessToken, setUserInfo, setCalendar]);
+  }, [accessToken, setUserInfo, setCalendar, setEmails]);
+
   return (
     <>
       {!userInfo ? <p>loading user info...</p> : <MainPage userInfo={userInfo} />}
       {!calendar ? (
         <Text as="p"> loading meeting info..</Text>
       ) : (
-        <div className="flex-container">
-          <div className="column">
-            <Text weight="semibold" className="paddingClass" as="p">
-              Your Meetings Today
-            </Text>
-            <MeetingList messages={calendar['value']} />
+        <>
+          <div className="flex-container">
+            <div className="column">
+              <MeetingList messages={calendar['value']} />
+            </div>
+            <div className="column">
+              {!userInfo ? <p> getting info </p> : <PeopleAvatarList messages={calendar['value']} user={userInfo} />}
+            </div>
           </div>
-          <div className="column">
-            <Text weight="semibold" className="paddingClass" as="p">
-              People to Meet Today
-            </Text>
-            {!userInfo ? <p> getting info </p> : <PeopleAvatarList messages={calendar['value']} user={userInfo} />}
+          <div className="flex-container">
+            <div className="column">{emails && <EmailList messages={emails} />}</div>
+            <div className="column">
+              <Title3 className="paddingClass">Other Features</Title3>
+              <div className="flex-container">
+                <div className="column">
+                  <CalendarCapability />
+                </div>
+                <PagesCapability />
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

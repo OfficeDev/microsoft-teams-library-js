@@ -1,0 +1,31 @@
+{
+  "name": "Profile",
+  "platforms": "Web",
+  "version": ">2.5.0",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityProfile"
+  },
+  "testCases": [
+    {
+      "title": "showProfile API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_showProfile",
+      "inputValue": {
+        "modality": "Card",
+        "persona": {
+          "identifiers": {
+            "Smtp": "test@microsoft.com"
+          }
+        },
+        "targetElementBoundingRect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "triggerType": "MouseClick"
+      },
+      "expectedAlertValue": "showProfile called with {\"modality\":\"Card\",\"persona\":{\"identifiers\":{\"Smtp\":\"test@microsoft.com\"}},\"targetElementBoundingRect\":{\"x\":243,\"y\":0,\"width\":0,\"height\":0,\"top\":0,\"right\":243,\"bottom\":0,\"left\":243},\"triggerType\":\"MouseClick\"}"
+    }
+  ]
+}

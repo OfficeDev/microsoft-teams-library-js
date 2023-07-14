@@ -1,8 +1,276 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Fri, 13 May 2022 22:32:13 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Jul 2023 16:42:51 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.13.0
+
+Wed, 05 Jul 2023 16:42:51 GMT
+
+### Minor changes
+
+- Added support for mediaStream with metadata in `videoEx` module for internal applications.
+- Added `marketplace` capability that helps app developers interact with the checkout flow
+- Added `liveShare` capability, which helps with building real-time collaborative apps
+
+### Patches
+
+- Made title optional when calling `stageView.open`
+- Removed import aliasing of communications.ts functions
+- Fixed an issue where `call.startCall` would return an error when it executed successfully in a legacy environment
+
+## 2.12.0
+
+Wed, 07 Jun 2023 19:21:01 GMT
+
+### Minor changes
+
+- Embedded apps no longer incorrectly get their parameters wrapped in an array
+- Added `secondaryBrowser` capability and its open API to enable browsing experience for Apps
+- Deleted unnecessary 'export' from helper functions and deleted unused and unnecessary functions in `dialog` capability.
+- Updated `video.registerForVideoFrame` to support both media stream and shared frame
+- Added `closeSearch` to `search` capability
+
+### Patches
+
+- Added default value for Adaptive Card version to support adaptive card dialogs in Teams V1
+- Fixed exports in `video` capability
+
+## 2.11.0
+
+Wed, 03 May 2023 18:17:38 GMT
+
+### Minor changes
+
+- Added `getClientInfo` to LiveShareHost
+
+### Patches
+
+- Added comments on all exported types and functions and made comments required for all future changes.
+
+## 2.10.1
+
+Thu, 06 Apr 2023 23:07:12 GMT
+
+### Minor changes
+
+- Fixed errors in `video` capability
+- Removed some valid origins
+
+### Patches
+
+- Fixed broken documentation link and invalid markdown.
+- Added `ipados` host client type check for auth flow
+- Removed legacy endpoints from `IFluidTenantInfo` interface
+- Added documentation to interfaces in `mail` capability
+- Removed unnecessary (and outdated) docs on various `enum` properties
+- `meeting.getAuthenticationTokenForAnonymousUser` can now be called from dialogs
+- Added documentation for "Anonymous" as possible value for `UserInfo.licenseType`
+- `sharing.isSupported` now returns the correct value on mobile platforms
+- Clarified documentation on proper use of various user identity properties
+
+## 2.9.1
+
+Fri, 03 Mar 2023 19:57:31 GMT
+
+### Minor changes
+
+- Changed return type of the callback of `registerForVideoEffect` to return a Promise
+- Added a new value to `HostName` enum, `TeamsModern`
+
+### Patches
+
+- Updated documentation for `dialog` and `tasks` capabilities
+- Elaborated on various areas of `authentication` documentation
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+
+## 2.8.0
+
+Wed, 01 Feb 2023 23:22:55 GMT
+
+### Minor changes
+
+- Added `requestAppAudioHandling` and `updateMicState` meeting APIs
+- Fixed a bug where `getContext()` was incorrectly dropping properties by performing a lossy conversion via `app.getContext()`
+- Added adaptive card subcapability to `dialog` capability
+- Restructured `dialog.ts`. Moved all functions previously under `dialog` and `dialog.bot` to be under namespace `url`. Function calls are now `dialog.url.open` and `dialog.url.bot.open` as an example.
+
+### Patches
+
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Updated typedoc version and fixed doc issues raised by it
+- Added documentation for `dialog.submit`
+- Changed user facing documentation associated with `meeting.ts`
+- Unpin the version of the debug package; it was originally pinned unintentionally.
+- Removed deprecated `_initialize` and `_uninitialize` methods only used by unit tests
+- Added unit tests for `communication.uninitializeCommunication`, `communication.sendAndUnwrap`, and `communication.sendMessageToParentAsync` and updated `communication.uninitializeCommunication` to handle `currentWindow` correctly.
+- Removed --emit:none from typedoc command so it would actually output errors
+- Updated documentation links to avoid using locale in URLs and use markdown format for external links
+- Added possible values to documentation for `licenseType` property on `UserInfo` interface
+- Added unit tests for `communication.initializeCommunication`
+- Updated `dialog` and `tasks` documentation to add and fix doc links
+- Added remarks to authentication.authenticate() code comments
+- Added `@hidden` and `@internal` tags for the meeting `requestAppAudioHandling` and `updateMicState` APIs, and improved how the `teams-test-app` app uses the APIs
+- Stopped exporting `communication.processMessage` and `communication.shouldProcessMessage`.
+
+## 2.7.1
+
+Fri, 06 Jan 2023 04:15:12 GMT
+
+### Patches
+
+- Reverted webpack globalObject: this
+
+## 2.7.0
+
+Wed, 04 Jan 2023 19:07:09 GMT
+
+### Minor changes
+
+- Implemented `runtime` interface versioning
+
+### Patches
+
+- Removed `entityId` and `title` as required fields from `openFilePreview` parameters
+- Fixed missing slash in URL in comment on `app.initialize`
+
+## 2.6.1
+
+Tue, 13 Dec 2022 21:28:59 GMT
+
+### Patches
+
+- Added `dataResidency` property to `UserProfile` interface to expose a limited set of data residency information to 1P app developers.
+- Fixed bugs preventing the use of this library in server-side rendered applications
+
+## 2.6.0
+
+Wed, 07 Dec 2022 16:39:58 GMT
+
+### Minor changes
+
+- Added `notifyFatalError` function in videoEx to enable video apps to notify the host of fatal errors.
+- Added support for showing and hiding the app share button to the `meeting` capability
+- Fixed bug where some capabilities were being incorrectly marked as supported
+
+### Patches
+
+- Deleted unnecessary support for `meetingRoom` and `sidePanel` frame contexts in `dialog.submit` API.
+- Fix incorrect profile.IsSupported check
+
+## 2.5.0
+
+Thu, 03 Nov 2022 17:03:30 GMT
+
+### Minor changes
+
+- Updated most APIs to require initialization to be fully finished before they are allowed to be called.
+
+### Patches
+
+- Added Outlook's consumer domain to domains' allowlist
+- Updated documentation for `app.IFailedRequest.message` property to clarify that it is unused
+- Set `PACKAGE_VERSION` to an error value indicating it will be replaced by webpack at build time
+- Fixed `profile.isSupported` and showProfile `TriggerType`
+- Added 'www.microsoft365.com' and '\*.www.microsoft365.com' to the `validOrigins` list.
+- Switched from dynamic import of `LiveShareClient` to using a global window variable. Fixes an issue where dynamic imports stop working for multiple layers of webpack.
+
+## 2.4.2
+
+### Patches
+
+- Fixed integrity hash in README
+
+## 2.4.1
+
+Mon, 10 Oct 2022 19:09:20 GMT
+
+### Minor changes
+
+- Added (moved) `version` as a public constant containing the library version
+- Added new sub capability `pages.currentApp.navigateTo` that enables navigation within an application without specifying application ID. `pages.currentApp.navigateToDefaultPage` that navigates to first static page defined in app manifest
+- Added `OutlookWin32` to `HostName` enum
+
+### Patches
+
+- Added one common `registerHandlerHelper` function to replace several helpers.
+- Clarified possible values for `theme` property on `AppInfo` object in docs
+- Updated documentation for `app.initialize` to clarify that it must have completed before calling other library methods.
+- On the `File` interface changed the type of `lastModified` field from `Date` to `number`
+- Fixed `search` API in test file
+- Enabled proxying of window events to child frames if they are unhandled by current frame
+- Added logging to `runtime` and `app` to make it easier to investigate issues surrounding app initialization.
+- Fixed some locations where `undefined` was properly handled but not explicitly in the type declaration
+- Reverted `liveShare` capability
+- Clarified documentation for `sharepoint` property on `Context` object
+- Enabled `strictNullChecks` as lint rule
+- Updated the URLs for docs links.
+- Enabled save and remove events in the `pages.config` capability to be proxied to child windows
+- Fixed more violations of strictNullChecks warning
+
+## 2.3.0
+
+Thu, 08 Sep 2022 17:11:49 GMT
+
+### Minor changes
+
+- Added support for audio-driven avatars to the `video` API, and the ability to upload personalized video effects to the private folder
+- Added `Search` capability to use global search box in the current app in Outlook
+- Added `timestamp` to `VideoFrame`, sent the `timestamp` back to Teams client after the video frame has been processed.
+
+### Patches
+
+- Fixed an issue with the v1 versions of `register*Handler` functions. Previously if the v2 version of the API's capability was not supported, attempts to call the v1 version would throw an exception, breaking backwards compatibility.
+- Updated documentation for many properties on `Context` interface.
+- Updated comments on items marked with the `@internal` tag to make it clear they are intended for Microsoft use only and removed some `@internal` items from dev documentation. Removed `initializePrivateApis` from the privateAPIs file, an unexported and hidden no-op function.
+- Added missing `HostClientType` values so correct `Runtime` is generated for `teams.fullTrust.joinedTeams` and `webStorage` capabilities.
+- Renamed `filePath` field to `webkitRelativePath`. Removed two validation checks for `destinationFolder` fields. Added an optional field `provider` in callback of `addCloudStorageProvider` API.
+
+## 2.2.0
+
+Wed, 03 Aug 2022 19:21:51 GMT
+
+### Minor changes
+
+- Added an optional error object to `ISpeakingState` interface to align `registerSpeakingStateChangeHandler` API with other API error handling.
+- Added `ActionInfo` object to the `Context` interface. This is used to pass information about an action that was taken on content from the host to the application.
+- Split single `CloudStorageProviderFile` action API into 3 action APIs
+
+### Patches
+
+- Added clarifying comment to `dialog.submit` to indicate the dialog is closed when `submit` is called.
+- Updated reference documentation links for deprecated global `Context` interface to work with typedoc system.
+- Added `FrameContexts.task` to `openChat` and `openGroupChat` in chat.ts
+- Added `@beta` tags to new content action-related interfaces.
+- Exported publicly documented global interfaces to enable use outside the SDK.
+
+## 2.1.0
+
+Fri, 22 Jul 2022 16:36:44 GMT
+
+### Minor changes
+
+- Added `webStorage` capability with APIs to allows apps to discover if web storage is supported by the host client
+- Added 3P cloud storage provider API support to files.ts
+- Added `isSupported` to `stageView`
+- Added `profile.showProfile` API and unit tests
+- Added `meeting.registerMeetingReactionReceivedHandler`
+- Added `scanBarCode` to barCode.ts from media.ts along with permission APIs `hasPermission` and `requestPermission`
+- Added a new capability `geoLocation` that split the location capability into new set of functions and subcapabilities. Added permission-related APIs `hasPermission` and `requestPermission`.
+
+### Patches
+
+- Fixed broken SDK reference documentation links and added SDK reference documentation validation to build step.
+- Ensured `submitHandler` exists before calling it in `dialog.open`, `dialog.bot.open` and `tasks.startTask` APIs.
+- Added frameless unit tests for `authentication.notifySuccess` and `authentication.notifyFailure`
+- Added beta tag to `barCode` capability to accurately reflect level of support offered
+- Added `meeting.registerRaiseHandStateChangedHandler`
+- Updated reference documentation for global deprecated `Context` interface. Each deprecated `Context` property now links to respective mapped property in `app.Context` interface.
+- Enabled `FrameContexts.task` for `startCall` API in call.ts
+- Fixed formatting of reference documentation for `call.StartCallParams` interface.
+- Removing unnecessary `/` in `appInstallDialog.openAppInstallDialog()`
+- Renamed `IRaiseHandStateChangedEvent` interface to `IRaiseHandStateChangedEventData` and changed the error so it can be assigned undefined rather than null
 
 ## 2.0.0
 
@@ -288,7 +556,7 @@ Tue, 19 Apr 2022 16:08:56 GMT
 ### Major changes
 
 - Removed `PostMessageChannel` returned from `dialog.open`, added separate function `sendMessageToDialog` to make up for missing functionality
-- Change DeepLinkParameters not to use subEntity* anymore
+- Change DeepLinkParameters not to use subEntity\* anymore
 - Added `isSupported` checks to all functions and unit test cases in the following capabilities:
   - `chat`
   - `conversations`

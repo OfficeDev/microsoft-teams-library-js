@@ -1,10 +1,12 @@
-import exp from 'constants';
-
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
-import { FrameContexts, pages } from '../../src/public';
+import { app, FrameContexts, pages } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
-import { _uninitialize } from '../../src/public/publicAPIs';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('MicrosoftTeams-Navigation', () => {
   // Use to send a mock message from the app.
@@ -19,17 +21,17 @@ describe('MicrosoftTeams-Navigation', () => {
   });
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      app._uninitialize();
     }
   });
 
   describe('Testing navigation.returnFocus function', () => {
     it('navigation.returnFocus should not allow calls before initialization', () => {
-      expect(() => returnFocus(true)).toThrowError('The library has not yet been initialized');
+      expect(() => returnFocus(true)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.returnFocus should successfully call pages.returnFocus when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
@@ -63,10 +65,10 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigation.navigateToTab function', () => {
     it('navigation.navigateToTab should not allow calls before initialization', () => {
-      expect(() => navigateToTab(null)).toThrowError('The library has not yet been initialized');
+      expect(() => navigateToTab(null)).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
@@ -74,8 +76,8 @@ describe('MicrosoftTeams-Navigation', () => {
         expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
-      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, () => {
-        utils.initializeWithContext(context);
+      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
         navigateToTab(null);
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
         expect(navigateToTabMsg).not.toBeNull();
@@ -114,13 +116,11 @@ describe('MicrosoftTeams-Navigation', () => {
     ];
 
     it('navigation.navigateCrossDomain should not allow calls before initialization', () => {
-      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(
-        'The library has not yet been initialized',
-      );
+      expect(() => navigateCrossDomain('https://valid.origin.com')).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`navigation.navigateCrossDomain should successfully call pages.navigateCrossDomain when initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
           const pagesNavigateCrossDomain = jest.spyOn(pages, 'navigateCrossDomain');
@@ -199,18 +199,18 @@ describe('MicrosoftTeams-Navigation', () => {
 
   describe('Testing navigate.navigateBack function', () => {
     it('navigation.navigateBack should not allow calls before initialization', () => {
-      expect(() => navigateBack()).toThrowError('The library has not yet been initialized');
+      expect(() => navigateBack()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
+    Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateBack should successfully call pages.backStack.navigateBack when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         const pagesBackStackNavigateBack = jest.spyOn(pages.backStack, 'navigateBack');
         navigateBack();
         expect(pagesBackStackNavigateBack).toHaveBeenCalled();
       });
-      it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, () => {
-        utils.initializeWithContext(context);
+      it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
         navigateBack();
         const navigateBackMessage = utils.findMessageByFunc('navigateBack');
         expect(navigateBackMessage).not.toBeNull();

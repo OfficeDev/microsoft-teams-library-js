@@ -7,10 +7,11 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 const libraryName = 'microsoftTeams';
-const expect = require('expect');
+const { expect } = require('expect');
 const path = require('path');
 const { DefinePlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -27,6 +28,8 @@ module.exports = {
       type: 'umd',
       umdNamedDefine: true,
     },
+    //Typically resolves to 'self' unless running in a server side rendered environment
+    globalObject: "typeof self !== 'undefined' ? self : this",
   },
   devtool: 'source-map',
   resolve: {
@@ -83,8 +86,9 @@ module.exports = {
       integrityHashes: ['sha384'],
       output: 'MicrosoftTeams-manifest.json',
     }),
+
     {
-      apply: compiler => {
+      apply: (compiler) => {
         compiler.hooks.done.tap('wsi-test', () => {
           const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosoftTeams-manifest.json'), 'utf-8'));
           // If for some reason hash was not generated for the assets, this test will fail in build.
@@ -92,5 +96,18 @@ module.exports = {
         });
       },
     },
+
+    new FileManagerPlugin({
+      events: {
+        onEnd: {
+          copy: [
+            {
+              source: './dist/MicrosoftTeams.min.js',
+              destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
+            },
+          ],
+        },
+      },
+    }),
   ],
 };

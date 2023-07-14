@@ -2,6 +2,7 @@ import { people, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckPeopleCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,14 +16,14 @@ const SelectPeople = (): React.ReactElement =>
     name: 'selectPeople',
     title: 'Select People',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           return; //API allows for no input to be provided
         }
         return;
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = input ? await people.selectPeople(input) : people.selectPeople();
           return JSON.stringify(result);
         },
@@ -45,11 +46,10 @@ const SelectPeople = (): React.ReactElement =>
   });
 
 const PeopleAPIs = (): ReactElement => (
-  <>
-    <h1>people</h1>
+  <ModuleWrapper title="People">
     <SelectPeople />
     <CheckPeopleCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PeopleAPIs;

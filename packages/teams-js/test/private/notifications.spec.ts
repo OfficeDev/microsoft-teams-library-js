@@ -1,9 +1,14 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { NotificationTypes, ShowNotificationParameters } from '../../src/private/interfaces';
 import { notifications } from '../../src/private/notifications';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 const allowedContexts = [FrameContexts.content];
 describe('notifications', () => {
@@ -23,6 +28,13 @@ describe('notifications', () => {
     }
   });
 
+  describe('isSupported', () => {
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => notifications.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+  });
+
   describe('showNotification', () => {
     const showNotificationParameters: ShowNotificationParameters = {
       message: 'Some Message',
@@ -30,11 +42,11 @@ describe('notifications', () => {
     };
     it('should not allow calls before initialization', () => {
       expect(() => notifications.showNotification(showNotificationParameters)).toThrowError(
-        'The library has not yet been initialized',
+        new Error(errorLibraryNotInitialized),
       );
     });
-    Object.values(FrameContexts).forEach(context => {
-      if (allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`showNotification should throw error if notifications capability is not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           expect.assertions(1);

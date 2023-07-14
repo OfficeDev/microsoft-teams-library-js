@@ -1,0 +1,217 @@
+{
+  "name": "Meeting",
+  "platforms": "Web",
+  "testUrlParams": [["frameContext", "sidePanel"]],
+  "testCases": [
+    {
+      "title": "getIncomingClientAudioState API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getIncomingClientAudioState",
+      "expectedAlertValue": "getIncomingClientAudioState called",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "toggleIncomingClientAudio API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_toggleIncomingClientAudio",
+      "expectedAlertValue": "toggleIncomingClientAudio called",
+      "expectedTestAppValue": "false"
+    },
+    {
+      "title": "getMeetingDetails API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getMeetingDetails",
+      "expectedAlertValue": "getMeetingDetails called",
+      "expectedTestAppValue": "{\"details\":{\"id\":\"testDetailsId\",\"scheduledStartTime\":\"testStartTime\",\"scheduledEndTime\":\"testEndTime\",\"joinUrl\":\"testJoinUrl\",\"title\":\"testTitle\",\"type\":\"Unknown\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
+    },
+    {
+      "title": "getAuthenticationTokenForAnonymousUser API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAuthTokenForAnonymousUser",
+      "expectedAlertValue": "getAuthenticationTokenForAnonymousUser called",
+      "expectedTestAppValue": "testAuthToken"
+    },
+    {
+      "title": "getLiveStreamState API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getLiveStreamState",
+      "expectedAlertValue": "getLiveStreamState called",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "requestStartLiveStreaming API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestStartLiveStreaming",
+      "inputValue": {
+        "streamUrl": "https://www.bing.com",
+        "streamKey": "testStreamKey"
+      },
+      "expectedAlertValue": "requestStartLiveStreaming called with https://www.bing.com + testStreamKey"
+    },
+    {
+      "title": "requestStopLiveStreaming API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_requestStopLiveStreaming",
+      "expectedAlertValue": "requestStopLiveStreaming called"
+    },
+    {
+      "title": "registerLiveStreamChangedHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_registerLiveStreamChangedHandler",
+      "eventName": "liveStreamChanged",
+      "eventData": {
+        "isStreaming": true,
+        "error": {
+          "code": "ServerError404",
+          "message": "Server failed to respond"
+        }
+      },
+      "expectedTestAppValue": "Live StreamState changed to true with error {\"code\":\"ServerError404\",\"message\":\"Server failed to respond\"}"
+    },
+    {
+      "title": "registerLiveStreamChangedHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_registerLiveStreamChangedHandler",
+      "eventName": "liveStreamChanged",
+      "eventData": {
+        "isStreaming": true,
+        "error": {
+          "code": "ServerError404",
+          "message": "Server failed to respond"
+        }
+      },
+      "expectedTestAppValue": "Live StreamState changed to true"
+    },
+    {
+      "title": "registerRaiseHandStateChangedHandler API Call - Handler - Success",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "boxSelector": "#box_registerRaiseHandStateChangedHandler",
+      "eventName": "raiseHandStateChanged",
+      "eventData": {
+        "raiseHandState": { "isHandRaised": true }
+      },
+      "expectedTestAppValue": "RaiseHand state changed to {\"isHandRaised\":true}"
+    },
+    {
+      "title": "registerRaiseHandStateChangedHandler API Call - Handler - Error",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "boxSelector": "#box_registerRaiseHandStateChangedHandler",
+      "eventName": "raiseHandStateChanged",
+      "eventData": {
+        "raiseHandState": { "isHandRaised": false },
+        "error": {
+          "errorCode": 1000,
+          "message": "Encountered an error"
+        }
+      },
+      "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
+    },
+    {
+      "title": "registerMeetingReactionReceivedHandler API Call - Handler - Success",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "boxSelector": "#box_registerMeetingReactionReceivedHandler",
+      "eventName": "meetingReactionReceived",
+      "eventData": {
+        "meetingReactionType": "like"
+      },
+      "expectedTestAppValue": "Received \"like\""
+    },
+    {
+      "title": "registerMeetingReactionReceivedHandler API Call - Handler - Error",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "boxSelector": "#box_registerMeetingReactionReceivedHandler",
+      "eventName": "meetingReactionReceived",
+      "eventData": {
+        "error": {
+          "errorCode": 1000,
+          "message": "Encountered an error"
+        }
+      },
+      "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
+    },
+    {
+      "title": "registerSpeakingStateChangedHandler API Call - Handler - Success",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "boxSelector": "#box_registerSpeakingStateChangedHandler",
+      "eventName": "speakingStateChanged",
+      "eventData": {
+        "isSpeakingDetected": true
+      },
+      "expectedTestAppValue": "Speaking state changed to true"
+    },
+    {
+      "title": "registerSpeakingStateChangedHandler API Call - Handler - Error",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.1.0",
+      "boxSelector": "#box_registerSpeakingStateChangedHandler",
+      "eventName": "speakingStateChanged",
+      "eventData": {
+        "isSpeakingDetected": false,
+        "error": {
+          "errorCode": 1000,
+          "message": "Encountered an error"
+        }
+      },
+      "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
+    },
+    {
+      "title": "shareAppContentToStage API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "getAppContentStageSharingCapabilities API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAppContentStageSharingCapabilities",
+      "expectedAlertValue": "getAppContentStageSharingCapabilities called",
+      "expectedTestAppValue": "getAppContentStageSharingCapabilities() succeeded: {\"doesAppHaveSharePermission\":true}"
+    },
+    {
+      "title": "stopSharingAppContentToStage API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_stopSharingAppContentToStage",
+      "expectedAlertValue": "stopSharingAppContentToStage called",
+      "expectedTestAppValue": "stopSharingAppContentToStage() succeeded: true"
+    },
+    {
+      "title": "getAppContentStageSharingState API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAppContentStageSharingState",
+      "expectedAlertValue": "getAppContentStageSharingState called",
+      "expectedTestAppValue": "getAppContentStageSharingState() succeeded: {\"isAppSharing\":true}"
+    },
+    {
+      "title": "requestAppAudioHandling API Call - Success",
+      "type": "callResponse",
+      "version": ">2.7.1",
+      "boxSelector": "#box_requestAppAudioHandling",
+      "inputValue": {
+        "isMicMuted": true
+      },
+      "expectedAlertValue": "requestAppAudioHandling called",
+      "expectedTestAppValue": "requestAppAudioHandling() succeeded: isHostAudioless=true"
+    },
+    {
+      "title": "updateMicState API Call - Success",
+      "type": "callResponse",
+      "version": ">2.7.1",
+      "boxSelector": "#box_updateMicState",
+      "inputValue": {
+        "isMicMuted": true
+      },
+      "expectedAlertValue": "updateMicState called"
+    }
+  ]
+}

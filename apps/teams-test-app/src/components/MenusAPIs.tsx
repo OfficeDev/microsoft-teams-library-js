@@ -3,6 +3,7 @@ import React from 'react';
 import { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckMenusCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -16,15 +17,15 @@ const SetUpViews = (): React.ReactElement =>
     name: 'menusSetUpViews',
     title: 'Set Up Views',
     onClick: {
-      validateInput: input => {
-        input.forEach(viewConfig => {
+      validateInput: (input) => {
+        input.forEach((viewConfig) => {
           if (!viewConfig?.id || !viewConfig.title) {
             throw new Error('ID and Title are required for each viewConfiguration');
           }
         });
       },
       submit: async (input, setResult) => {
-        menus.setUpViews(input, id => {
+        menus.setUpViews(input, (id) => {
           setResult('handler called with id: ' + id);
           return true;
         });
@@ -38,15 +39,15 @@ const SetNavBarMenu = (): React.ReactElement =>
     name: 'menusSetNavBarMenu',
     title: 'Set Nav Bar Menu',
     onClick: {
-      validateInput: input => {
-        input.forEach(menuItem => {
+      validateInput: (input) => {
+        input.forEach((menuItem) => {
           if (!menuItem?.id || !menuItem?.title || !menuItem?.icon) {
             throw new Error('ID, Title, and Icon are required for each menuItem');
           }
         });
       },
       submit: async (input, setResult) => {
-        menus.setNavBarMenu(input, id => {
+        menus.setNavBarMenu(input, (id) => {
           setResult('handler called with id: ' + id);
           return true;
         });
@@ -60,18 +61,18 @@ const ShowActionMenu = (): React.ReactElement =>
     name: 'menusShowActionMenu',
     title: 'Show Action Menu',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input?.title || !input?.items) {
           throw new Error('Title, and Items are required for actionMenuParameters');
         }
-        input.items.forEach(menuItem => {
+        input.items.forEach((menuItem) => {
           if (!menuItem?.id || !menuItem?.title || !menuItem?.icon) {
             throw new Error('ID, Title, and Icon are required for each menuItem');
           }
         });
       },
       submit: async (input, setResult) => {
-        menus.showActionMenu(input, id => {
+        menus.showActionMenu(input, (id) => {
           setResult('handler called with id: ' + id);
           return true;
         });
@@ -81,13 +82,12 @@ const ShowActionMenu = (): React.ReactElement =>
   });
 
 const MenusAPIs = (): ReactElement => (
-  <>
-    <h1>Menus</h1>
+  <ModuleWrapper title="Menus">
     <CheckMenusCapability />
     <SetUpViews />
     <SetNavBarMenu />
     <ShowActionMenu />
-  </>
+  </ModuleWrapper>
 );
 
 export default MenusAPIs;

@@ -1,0 +1,43 @@
+{
+  "name": "Pages Tabs",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "capabilityName": "PageTabs",
+    "expectedOutput": "Pages.tabs module is not supported"
+  },
+  "testCases": [
+    {
+      "title": "navigateToTab API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_navigateToTab",
+      "inputValue": {
+        "tabName": "TestTab",
+        "internalTabInstanceId": "23",
+        "channelIsFavorite": true,
+        "url": "https://test.com"
+      },
+      "expectedAlertValue": "navigateToTab called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "getTabInstance API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getTabInstance",
+      "inputValue": {
+        "favoriteTeamsOnly": true
+      },
+      "expectedAlertValue": "getTabInstances called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"teamTabs\":[{\"tabName\":\"dummy1\",\"channelId\":\"1\"},{\"tabName\":\"dummy2\",\"channelId\":\"1\"}]}"
+    },
+    {
+      "title": "getMRUTabInstance API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getMRUTabInstance",
+      "inputValue": {
+        "favoriteTeamsOnly": true
+      },
+      "expectedAlertValue": "getMruTabInstances called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"teamTabs\":[{\"tabName\":\"dummy1\",\"channelId\":\"1\"},{\"tabName\":\"dummy2\",\"channelId\":\"1\"}]}"
+    }
+  ]
+}

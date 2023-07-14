@@ -5,12 +5,12 @@
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "yarn lint && webpack",
+    "build": "pnpm lint && webpack",
     "clean": "rimraf ./dist ./bundleAnalysis",
-    "lint": "yarn eslint --max-warnings 0 --fix --ext .ts ./src",
+    "lint": "pnpm eslint --max-warnings 0 --fix --ext .ts ./src",
     "webpack:profile": "webpack"
   },
   "dependencies": {
-    "@microsoft/teams-js": "file:../../../packages/teams-js"
+    "@microsoft/teams-js": "workspace:*"
   }
 }

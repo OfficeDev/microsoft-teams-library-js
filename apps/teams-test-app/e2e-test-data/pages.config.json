@@ -1,0 +1,118 @@
+{
+  "name": "Pages Config",
+  "checkIsSupported": {
+    "capabilityName": "PageConfig",
+    "expectedOutput": "Pages.config module is not supported",
+    "testUrlParams": []
+  },
+  "platforms": "*",
+  "testUrlParams": [["frameContext", "settings"]],
+  "testCases": [
+    {
+      "title": "setConfig API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_config_setConfig",
+      "inputValue": {
+        "contentUrl": "https://www.bing.com",
+        "entityId": "1",
+        "suggestedDisplayName": "M365TestApp"
+      },
+      "expectedAlertValue": "setConfig called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "setValidityState API Call - Success - true",
+      "type": "callResponse",
+      "version": "1.x || >2.0.0-beta.2",
+      "boxSelector": "#box_config_setValidityState2",
+      "checkboxState": true,
+      "expectedAlertValue": "setValidityState called with true",
+      "expectedTestAppValue": "Set validity state to true"
+    },
+    {
+      "title": "setValidityState API Call - Success - true",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_config_setValidityState",
+      "inputValue": true,
+      "expectedAlertValue": "setValidityState called with true",
+      "expectedTestAppValue": "Set validity state to true"
+    },
+    {
+      "title": "setValidityState API Call - Success - false",
+      "type": "callResponse",
+      "version": "1.x || >2.0.0-beta.2",
+      "boxSelector": "#box_config_setValidityState2",
+      "expectedAlertValue": "setValidityState called with false",
+      "expectedTestAppValue": "Set validity state to false"
+    },
+    {
+      "title": "setValidityState API Call - Success - false",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_config_setValidityState",
+      "inputValue": false,
+      "expectedAlertValue": "setValidityState called with false",
+      "expectedTestAppValue": "Set validity state to false"
+    },
+    {
+      "title": "settings.save event without registration",
+      "type": "raiseEvent",
+      "platformsExcluded": ["iOS"],
+      "eventName": "settings.save",
+      "eventData": {
+        "webhookUrl": "sampleWebhook"
+      },
+      "expectedAlertValue": "onSaveSuccess called"
+    },
+    {
+      "title": "settings.remove event without registration",
+      "type": "raiseEvent",
+      "platformsExcluded": ["iOS"],
+      "eventName": "settings.remove",
+      "expectedAlertValue": "onRemoveSuccess called"
+    },
+    {
+      "title": "registerOnSaveHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_config_registerOnSaveHandler",
+      "eventName": "settings.save",
+      "eventData": {
+        "webhookUrl": "sampleWebhook"
+      },
+      "expectedAlertValue": "onSaveSuccess called",
+      "expectedTestAppValue": "Save event received."
+    },
+    {
+      "title": "registerOnRemoveHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_config_registerOnRemoveHandler",
+      "eventName": "settings.remove",
+      "expectedAlertValue": "onRemoveSuccess called",
+      "expectedTestAppValue": "Remove event received."
+    },
+    {
+      "title": "registerOnRemoveHandler API Call - Handler Failure",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_config_registerOnRemoveHandlerFailure",
+      "eventName": "settings.remove",
+      "eventData": null,
+      "expectedAlertValue": "onRemoveFailure called with someReason",
+      "expectedTestAppValue": "Remove event failed."
+    },
+    {
+      "title": "registerChangeConfigsHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.0.0-beta.0",
+      "platformsExcluded": ["iOS"],
+      "testUrlParams": [["frameContext", "content"]],
+      "boxSelector": "#box_config_registerChangeConfigsHandler",
+      "eventName": "changeSettings",
+      "expectedTestAppValue": "successfully called"
+    }
+  ]
+}

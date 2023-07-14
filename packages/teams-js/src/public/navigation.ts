@@ -3,10 +3,13 @@ import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { TabInstance } from './interfaces';
 import { pages } from './pages';
+import { runtime } from './runtime';
 /**
  * Navigation specific part of the SDK.
  */
 
+/** Navigation on complete handler function type */
+type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;
 /**
  * @deprecated
  * As of 2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
@@ -28,8 +31,8 @@ export function returnFocus(navigateForward?: boolean): void {
  * @param tabInstance - The tab instance to navigate to.
  * @param onComplete - The callback to invoke when the action is complete.
  */
-export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized();
+export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
+  ensureInitialized(runtime);
   onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages.tabs
     .navigateToTab(tabInstance)
@@ -54,8 +57,9 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: (status: bo
  * @param url - The URL to navigate the frame to.
  * @param onComplete - The callback to invoke when the action is complete.
  */
-export function navigateCrossDomain(url: string, onComplete?: (status: boolean, reason?: string) => void): void {
+export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(
+    runtime,
     FrameContexts.content,
     FrameContexts.sidePanel,
     FrameContexts.settings,
@@ -84,8 +88,8 @@ export function navigateCrossDomain(url: string, onComplete?: (status: boolean, 
  *
  * @param onComplete - The callback to invoke when the action is complete.
  */
-export function navigateBack(onComplete?: (status: boolean, reason?: string) => void): void {
-  ensureInitialized();
+export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
+  ensureInitialized(runtime);
   onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages.backStack
     .navigateBack()

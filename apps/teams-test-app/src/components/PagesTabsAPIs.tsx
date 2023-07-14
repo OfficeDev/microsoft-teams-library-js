@@ -10,19 +10,20 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NavigateToTab = (): React.ReactElement =>
   ApiWithTextInput<TabInstance>({
     name: 'navigateToTab',
     title: 'Navigate To Tab',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.tabName) {
           throw new Error('tabName is required');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await pages.tabs.navigateToTab(input);
           return 'Completed';
         },
@@ -52,7 +53,7 @@ const GetTabInstances = (): React.ReactElement =>
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = await pages.tabs.getTabInstances(input);
           return JSON.stringify(result);
         },
@@ -74,7 +75,7 @@ const GetMruTabInstances = (): React.ReactElement =>
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: () => {},
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           const result = await pages.tabs.getMruTabInstances(input);
           return JSON.stringify(result);
         },
@@ -96,13 +97,12 @@ const CheckPagesTabsCapability = (): React.ReactElement =>
   });
 
 const PagesTabsAPIs = (): ReactElement => (
-  <>
-    <h1>pages.tabs</h1>
+  <ModuleWrapper title="Pages.tabs">
     <NavigateToTab />
     <GetTabInstances />
     <GetMruTabInstances />
     <CheckPagesTabsCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesTabsAPIs;

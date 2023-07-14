@@ -2,6 +2,7 @@ import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
+import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckNotificationCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,12 +16,12 @@ const ShowNotification = (): React.ReactElement =>
     name: 'showNotification',
     title: 'Show Notification',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.message || !input.notificationType) {
           throw new Error('message and notificationType are required.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         notifications.showNotification(input);
         return 'Called';
       },
@@ -28,11 +29,10 @@ const ShowNotification = (): React.ReactElement =>
   });
 
 const NotificationAPIs = (): ReactElement => (
-  <>
-    <h1>notifications</h1>
+  <ModuleWrapper title="Notifications">
     <ShowNotification />
     <CheckNotificationCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default NotificationAPIs;

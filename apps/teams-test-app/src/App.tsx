@@ -12,9 +12,17 @@ import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import DialogAPIs from './components/DialogAPIs';
+import DialogCardAPIs from './components/DialogCardAPIs';
+import DialogCardBotAPIs from './components/DialogCardBotAPIs';
+import DialogUpdateAPIs from './components/DialogUpdateAPIs';
+import DialogUrlAPIs from './components/DialogUrlAPIs';
+import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
+import GeoLocationAPIs from './components/GeoLocationAPIs';
+import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
 import MailAPIs from './components/MailAPIs';
+import MarketplaceAPIs from './components/MarketplaceAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import MenusAPIs from './components/MenusAPIs';
@@ -22,6 +30,7 @@ import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
 import PagesConfigAPIs from './components/PagesConfigAPIs';
+import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
@@ -32,11 +41,17 @@ import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
+import VideoExAPIs from './components/privateApis/VideoExAPIs';
+import ProfileAPIs from './components/ProfileAPIs';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import SearchAPIs from './components/SearchAPIs';
+import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
+import Version from './components/Version';
+import VideoAPIs from './components/VideoApis';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -86,7 +101,7 @@ export const generateJsonParseErrorMsg = (example?: Record<string, any>): string
       example,
     )}. For example, ${JSON.stringify(example)}`;
   } else {
-    return 'Please JSON format your input. If you\'ve ensured your input is JSON formatted but are still getting this message, please also ensure that your input contains all necessary keys, etc.';
+    return "Please JSON format your input. If you've ensured your input is JSON formatted but are still getting this message, please also ensure that your input contains all necessary keys, etc.";
   }
 };
 
@@ -103,42 +118,59 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 
 const App = (): ReactElement => {
   return (
-    <>
-      <AppAPIs />
-      <AppInitializationAPIs />
-      <AppInstallDialogAPIs />
-      <AuthenticationAPIs />
-      <AppEntityAPIs />
-      <BarCodeAPIs />
-      <CalendarAPIs />
-      <CallAPIs />
-      <ChatAPIs />
-      <DialogAPIs />
-      <FilesAPIs />
-      <FullTrustAPIs />
-      <LocationAPIs />
-      <LogAPIs />
-      <MailAPIs />
-      <MediaAPIs />
-      <MeetingAPIs />
-      <MeetingRoomAPIs />
-      <MenusAPIs />
-      <MonetizationAPIs />
-      <NotificationAPIs />
-      <PagesAPIs />
-      <PagesAppButtonAPIs />
-      <PagesBackStackAPIs />
-      <PagesConfigAPIs />
-      <PagesTabsAPIs />
-      <PeopleAPIs />
-      <PrivateAPIs />
-      <RemoteCameraAPIs />
-      <SharingAPIs />
-      <WebStorageAPIs />
-      <StageViewAPIs />
-      <TeamsCoreAPIs />
-      <TeamsAPIs />
-    </>
+    <div>
+      <div className="App-container">
+        <AppAPIs />
+        <AppInitializationAPIs />
+        <AppInstallDialogAPIs />
+        <AuthenticationAPIs />
+        <AppEntityAPIs />
+        <BarCodeAPIs />
+        <CalendarAPIs />
+        <CallAPIs />
+        <ChatAPIs />
+        <DialogAPIs />
+        <DialogCardAPIs />
+        <DialogCardBotAPIs />
+        <DialogUpdateAPIs />
+        <DialogUrlAPIs />
+        <DialogUrlBotAPIs />
+        <FilesAPIs />
+        <FullTrustAPIs />
+        <GeoLocationAPIs />
+        <Links />
+        <LocationAPIs />
+        <LogAPIs />
+        <MailAPIs />
+        <MarketplaceAPIs />
+        <MediaAPIs />
+        <MeetingAPIs />
+        <MeetingRoomAPIs />
+        <MenusAPIs />
+        <MonetizationAPIs />
+        <NotificationAPIs />
+        <PagesAPIs />
+        <PagesAppButtonAPIs />
+        <PagesBackStackAPIs />
+        <PagesConfigAPIs />
+        <PagesCurrentAppAPIs />
+        <PagesTabsAPIs />
+        <PeopleAPIs />
+        <PrivateAPIs />
+        <ProfileAPIs />
+        <RemoteCameraAPIs />
+        <SearchAPIs />
+        <SecondaryBrowserAPIs />
+        <SharingAPIs />
+        <WebStorageAPIs />
+        <StageViewAPIs />
+        <TeamsCoreAPIs />
+        <TeamsAPIs />
+        <VideoAPIs />
+        <VideoExAPIs />
+      </div>
+      <Version />
+    </div>
   );
 };
 

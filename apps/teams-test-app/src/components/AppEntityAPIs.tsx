@@ -2,6 +2,7 @@ import { app, appEntity, SdkError } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckAppEntityCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -28,12 +29,12 @@ const SelectAppEntity = (): React.ReactElement =>
         if (typeof threadId !== 'string') {
           throw new Error('threadId has to be a string');
         }
-        if (!Array.isArray(categories) || categories.some(x => typeof x !== 'string')) {
+        if (!Array.isArray(categories) || categories.some((x) => typeof x !== 'string')) {
           throw new Error('categories has to be a string array');
         }
       },
-      submit: appEntityParams => {
-        return new Promise(resolve => {
+      submit: (appEntityParams) => {
+        return new Promise((resolve) => {
           const callback = (error?: SdkError, entity?: appEntity.AppEntity): void => {
             if (entity) {
               resolve(JSON.stringify(entity));
@@ -41,7 +42,7 @@ const SelectAppEntity = (): React.ReactElement =>
               resolve(JSON.stringify(error));
             }
           };
-          app.getContext().then(context => {
+          app.getContext().then((context) => {
             appEntity.selectAppEntity(
               appEntityParams.threadId,
               appEntityParams.categories,
@@ -55,11 +56,10 @@ const SelectAppEntity = (): React.ReactElement =>
   });
 
 const AppEntityAPIs = (): ReactElement => (
-  <>
-    <h1>appEntity</h1>
+  <ModuleWrapper title="AppEntity">
     <SelectAppEntity />
     <CheckAppEntityCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppEntityAPIs;

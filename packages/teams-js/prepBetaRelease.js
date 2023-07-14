@@ -75,13 +75,19 @@ function getNewerPrefix(currBetaVer, currPkgJsonVer) {
   const pkgParts = currPkgPrefix.split('.');
 
   for (let i = 0; i < betaParts.length; i++) {
-    if (betaParts[i] > pkgParts[i]) {
+    const betaPart = Number(betaParts[i]);
+    const pkgPart = Number(pkgParts[i]);
+    if (betaPart > pkgPart) {
       return currBetaPrefix;
     }
-    if (pkgParts[i] > betaParts[i]) {
+    if (pkgPart > betaPart) {
       return currPkgPrefix;
     }
   }
+  //If we complete the loop and haven't returned, then there is an error in prefix comparisons
+  throw new Error(
+    `Error in comparing Current Beta Version: ${currBetaVer} with prefix ${currBetaPrefix} to Current Package Version: ${currPkgJsonVer} with prefix ${currPkgPrefix}`,
+  );
 }
 
 /**
@@ -158,7 +164,7 @@ function prepBetaRelease(devStdout) {
 }
 
 (() => {
-  exec(`cd ../../ && yarn beachball bump`).then(() =>
+  exec(`cd ../../ && pnpm beachball bump`).then(() =>
     exec(`npm view @microsoft/teams-js version --tag beta`).then(({ stdout, stderr }) =>
       prepBetaRelease(stdout.trim()),
     ),

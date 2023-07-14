@@ -1,3 +1,4 @@
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -5,6 +6,10 @@ import { calendar } from '../../src/public/calendar';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { validateCalendarDeepLinkPrefix } from '../internal/deepLinkUtilities.spec';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('calendar', () => {
   // Use to send a mock message from the app.
@@ -39,12 +44,12 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem(openCalendarItemParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -56,7 +61,7 @@ describe('calendar', () => {
 
           await calendar
             .openCalendarItem(openCalendarItemParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -83,7 +88,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: null })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an undefined itemId is supplied', async () => {
@@ -94,7 +99,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: undefined })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if an empty itemId is supplied', async () => {
@@ -105,7 +110,7 @@ describe('calendar', () => {
 
       await calendar
         .openCalendarItem({ itemId: '' })
-        .catch(e => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
+        .catch((e) => expect(e).toMatchObject(new Error('Must supply an itemId to openCalendarItem')));
     });
 
     it('should throw if the openCalendarItem message sends and fails', async () => {
@@ -125,7 +130,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
 
-      await openCalendarItemPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      await openCalendarItemPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the openCalendarItem message', async () => {
@@ -173,12 +178,12 @@ describe('calendar', () => {
 
       await calendar
         .composeMeeting(composeMeetingParams)
-        .catch(e => expect(e).toMatchObject(new Error('The library has not yet been initialized')));
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
     Object.keys(FrameContexts)
-      .map(k => FrameContexts[k])
-      .forEach(frameContext => {
+      .map((k) => FrameContexts[k])
+      .forEach((frameContext) => {
         it(`should not allow calls from ${frameContext} context`, async () => {
           if (frameContext === FrameContexts.content) {
             return;
@@ -190,7 +195,7 @@ describe('calendar', () => {
 
           await calendar
             .composeMeeting(composeMeetingParams)
-            .catch(e =>
+            .catch((e) =>
               expect(e).toMatchObject(
                 new Error(
                   `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
@@ -225,7 +230,7 @@ describe('calendar', () => {
 
       utils.respondToMessage(composeMeeting, data.success, data.error);
 
-      await composeMeetingPromise.catch(e => expect(e).toMatchObject(new Error('Something went wrong...')));
+      await composeMeetingPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
 
     it('should successfully send the composeMeeting message: Non-legacy host', async () => {
@@ -257,7 +262,7 @@ describe('calendar', () => {
       expect(executeDeepLinkMessage).not.toBeNull();
       expect(executeDeepLinkMessage.args).toHaveLength(1);
 
-      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0]);
+      const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
       validateCalendarDeepLinkPrefix(calendarDeepLink);
 
       utils.respondToMessage(executeDeepLinkMessage, true);
@@ -297,14 +302,21 @@ describe('calendar', () => {
     });
   });
   describe('isSupported', () => {
-    it('should return false if the runtime says calendar is not supported', () => {
+    it('should return false if the runtime says calendar is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       expect(calendar.isSupported()).not.toBeTruthy();
     });
 
-    it('should return true if the runtime says calendar is supported', () => {
+    it('should return true if the runtime says calendar is supported', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { calendar: {} } });
       expect(calendar.isSupported()).toBeTruthy();
+    });
+
+    it('should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => calendar.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 });

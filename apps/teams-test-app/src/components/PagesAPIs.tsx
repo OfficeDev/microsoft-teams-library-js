@@ -14,6 +14,7 @@ import {
 import React, { ReactElement } from 'react';
 
 import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetConfig = (): React.ReactElement =>
   ApiWithoutInput({
@@ -24,7 +25,7 @@ const GetConfig = (): React.ReactElement =>
         const result = await pages.getConfig();
         return JSON.stringify(result);
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         const callback = (instanceSettings: settings.Settings): void => {
           setResult(JSON.stringify(instanceSettings));
         };
@@ -38,13 +39,13 @@ const NavigateCrossDomain = (): React.ReactElement =>
     name: 'navigateCrossDomain2',
     title: 'Navigate Cross Domain',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           throw new Error('Target URL is required.');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           await pages.navigateCrossDomain(input);
           return 'Completed';
         },
@@ -71,12 +72,12 @@ const NavigateToApp = (): React.ReactElement =>
     name: 'navigateToApp',
     title: 'Navigate To App',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.appId || !input.pageId) {
           throw new Error('AppID and PageID are required.');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await pages.navigateToApp(input);
         return 'Completed';
       },
@@ -85,16 +86,16 @@ const NavigateToApp = (): React.ReactElement =>
 
 const ShareDeepLink = (): ReactElement =>
   ApiWithTextInput<DeepLinkParameters & ShareDeepLinkParameters>({
-    name: 'core.shareDeepLink',
-    title: 'Share Deeplink',
+    name: 'pages.shareDeepLink',
+    title: 'Share Deeplink (Pages)',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!((input.subEntityId && input.subEntityLabel) || (input.subPageId && input.subPageLabel))) {
           throw new Error('subPageId and subPageLabel OR subEntityId and subEntityLabel are required.');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           if (input.subEntityId && input.subEntityLabel) {
             await pages.shareDeepLink({
               subPageId: input.subEntityId,
@@ -128,11 +129,11 @@ const ReturnFocus = (): React.ReactElement =>
     title: 'Return Focus',
     label: 'navigateForward',
     onClick: {
-      withPromise: async input => {
+      withPromise: async (input) => {
         await pages.returnFocus(input);
         return 'Current navigateForward state is ' + input;
       },
-      withCallback: input => {
+      withCallback: (input) => {
         returnFocus(input);
         return 'Current navigateForward state is ' + input;
       },
@@ -144,15 +145,15 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     name: 'registerFocusEnterHandler',
     title: 'Register On Focus Enter Handler',
     onClick: {
-      withPromise: async setResult => {
-        pages.registerFocusEnterHandler(navigateForward => {
+      withPromise: async (setResult) => {
+        pages.registerFocusEnterHandler((navigateForward) => {
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });
         return 'registered';
       },
-      withCallback: setResult => {
-        registerFocusEnterHandler(navigateForward => {
+      withCallback: (setResult) => {
+        registerFocusEnterHandler((navigateForward) => {
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });
@@ -166,13 +167,13 @@ const SetCurrentFrame = (): React.ReactElement =>
     name: 'setCurrentFrame',
     title: 'Set current frame',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.websiteUrl || !input.contentUrl) {
           throw new Error('websiteUrl and contentUrl are required.');
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           pages.setCurrentFrame(input);
           return 'called';
         },
@@ -189,13 +190,13 @@ const RegisterFullScreenChangeHandler = (): React.ReactElement =>
     name: 'registerFullScreenChangeHandler',
     title: 'Register Full Screen Change Handler',
     onClick: {
-      withPromise: async setResult => {
+      withPromise: async (setResult) => {
         pages.registerFullScreenHandler((isFullScreen: boolean): void => {
           setResult('successfully called with isFullScreen:' + isFullScreen);
         });
         return 'registered';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         registerFullScreenHandler((isFullScreen: boolean): void => {
           setResult('successfully called with isFullScreen:' + isFullScreen);
         });
@@ -212,8 +213,7 @@ const CheckPageCapability = (): React.ReactElement =>
   });
 
 const PagesAPIs = (): ReactElement => (
-  <>
-    <h1>pages</h1>
+  <ModuleWrapper title="Pages">
     <GetConfig />
     <NavigateCrossDomain />
     <NavigateToApp />
@@ -223,7 +223,7 @@ const PagesAPIs = (): ReactElement => (
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
     <CheckPageCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default PagesAPIs;

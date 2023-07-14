@@ -1,0 +1,92 @@
+{
+  "name": "App",
+  "platforms": "*",
+  "testCases": [
+    {
+      "title": "openLink API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://bing.com",
+      "expectedWindowOpenTarget": "https://bing.com"
+    },
+    {
+      "title": "openLink startCall API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/call/0/0?users=joe@contoso.com,bob@contoso.com&withVideo=true&source=test",
+      "expectedAlertValue": "startCall called with {\"targets\":[\"joe@contoso.com\",\"bob@contoso.com\"],\"requestedModalities\":[\"audio\",\"video\"],\"source\":\"test\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink openAppInstallDialog API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/app/957f8a7e-fbcd-411d-b69f-acb7eb58b515",
+      "expectedAlertValue": "openAppInstallDialog called with {\"appId\":\"957f8a7e-fbcd-411d-b69f-acb7eb58b515\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink navigateToApp API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "inputValue": "https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22subEntityId%22%3A%20%22task456%22%2C%20%22channelId%22%3A%20%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D",
+      "expectedAlertValue": "navigateToApp called with {\"appId\":\"fe4a8eba-2a31-4737-8e33-e5fae6fee194\",\"pageId\":\"tasklist123\",\"webUrl\":\"https://tasklist.example.com/123\",\"subPageId\":\"task456\",\"channelId\":\"19:cbe3683f25094106b826c9cada3afbe0@thread.skype\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink composeMeeting API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "inputValue": "https://teams.microsoft.com/l/meeting/new?subject=test%20subject&attendees=joe@contoso.com,bob@contoso.com&startTime=10%2F24%2F2018%2010%3A30%3A00&endTime=10%2F24%2F2018%2010%3A30%3A00&content=test%3Acontent",
+      "expectedAlertValue": "composeMeeting called with {\"attendees\":[\"joe@contoso.com\",\"bob@contoso.com\"],\"startTime\":\"10/24/2018 10:30:00\",\"endTime\":\"10/24/2018 10:30:00\",\"subject\":\"test subject\",\"content\":\"test:content\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink openChat API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["Web"],
+      "inputValue": "https://teams.microsoft.com/l/chat/0/0?users=joe@contoso.com,bob@contoso.com&topicName=Prep%20For%20Meeting%20Tomorrow&message=Hi%20folks%2C%20kicking%20off%20a%20chat%20about%20our%20meeting%20tomorrow",
+      "expectedAlertValue": "openChat called with {\"members\":[\"joe@contoso.com\",\"bob@contoso.com\"],\"message\":\"Hi folks, kicking off a chat about our meeting tomorrow\",\"topic\":\"Prep For Meeting Tomorrow\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink openFilePreview API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["Web"],
+      "inputValue": "https://teams.microsoft.com/l/file/5E0154FC-F2B4-4DA5-8CDA-F096E72C0A80?tenantId=0d9b645f-597b-41f0-a2a3-ef103fbd91bb&fileType=pptx&objectUrl=https%3A%2F%2Fmicrosoft.sharepoint.com%2Fteams%2FActionPlatform%2FShared%20Documents%2FFC7-%20Bot%20and%20Action%20Infra%2FKaizala%20Actions%20in%20Adaptive%20Cards%20-%20Deck.pptx&baseUrl=https%3A%2F%2Fmicrosoft.sharepoint.com%2Fteams%2FActionPlatform&serviceName=teams&threadId=19:f8fbfc4d89e24ef5b3b8692538cebeb7@thread.skype&groupId=ae063b79-5315-4ddb-ba70-27328ba6c31e",
+      "expectedAlertValue": "openFilePreview called with {\"baseUrl\":\"https://microsoft.sharepoint.com/teams/ActionPlatform\",\"entityId\":\"5E0154FC-F2B4-4DA5-8CDA-F096E72C0A80\",\"objectUrl\":\"https://microsoft.sharepoint.com/teams/ActionPlatform/Shared Documents/FC7- Bot and Action Infra/Kaizala Actions in Adaptive Cards - Deck.pptx\",\"title\":\"Kaizala Actions in Adaptive Cards - Deck.pptx\",\"type\":\"pptx\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink stageView.open API Call with thread id - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/stage/app-id/0?context=%7B%22contentUrl%22%3A%22https%3A%2F%2Fteams-alb.wakelet.com%22%2C%22websiteUrl%22%3A%22https%3A%2F%2Fteams-alb.wakelet.com%22%2C%22title%22%3A%22TestTitle%22%2C%22threadId%22%3A%22TestThreadId%22%7D",
+      "expectedAlertValue": "stageView.open called with {\"appId\":\"app-id\",\"contentUrl\":\"https://teams-alb.wakelet.com\",\"threadId\":\"TestThreadId\",\"title\":\"TestTitle\",\"websiteUrl\":\"https://teams-alb.wakelet.com\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink stageView.open API Call without thread id - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/stage/app-id/0?context=%7B%22contentUrl%22%3A%22https%3A%2F%2Fteams-alb.wakelet.com%22%2C%22websiteUrl%22%3A%22https%3A%2F%2Fteams-alb.wakelet.com%22%2C%22title%22%3A%22TestTitle%22%7D",
+      "expectedAlertValue": "stageView.open called with {\"appId\":\"app-id\",\"contentUrl\":\"https://teams-alb.wakelet.com\",\"title\":\"TestTitle\",\"websiteUrl\":\"https://teams-alb.wakelet.com\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink appLink domain doesn't match API Call - executeDeepLink called",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "inputValue": "https://contoso.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123",
+      "expectedWindowOpenTarget": "https://contoso.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

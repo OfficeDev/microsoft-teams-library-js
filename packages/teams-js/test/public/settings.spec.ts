@@ -1,7 +1,12 @@
-import { FrameContexts } from '../../src/public';
-import { _uninitialize } from '../../src/public/publicAPIs';
+import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { app, FrameContexts } from '../../src/public';
+import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
+
+/* eslint-disable */
+/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
+   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('settings', () => {
   // Use to send a mock message from the app.
@@ -20,8 +25,9 @@ describe('settings', () => {
 
   afterEach(() => {
     // Reset the object since it's a singleton
-    if (_uninitialize) {
-      _uninitialize();
+    if (app._uninitialize) {
+      utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+      app._uninitialize();
     }
   });
 
@@ -36,8 +42,8 @@ describe('settings', () => {
 
   describe('Testing settings.setValidityState function', () => {
     const allowedContexts = [FrameContexts.settings, FrameContexts.remove];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.setValidityState does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => settings.setValidityState(true)).toThrowError(
@@ -86,14 +92,14 @@ describe('settings', () => {
 
     it('settings.getSettings should not allow calls before initialization', () => {
       expect(() => {
-        settings.getSettings(settings => {
+        settings.getSettings((settings) => {
           expect(settings).toBe(expectedSettings);
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.getSettings does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => settings.getSettings(emptyCallback)).toThrowError(
@@ -105,7 +111,7 @@ describe('settings', () => {
       } else {
         it(`settings.getSettings should successfully get settings from ${context} context`, async () => {
           await utils.initializeWithContext(context);
-          settings.getSettings(settings => {
+          settings.getSettings((settings) => {
             expect(settings).toBe(expectedSettings);
           });
 
@@ -130,11 +136,11 @@ describe('settings', () => {
     it('settings.setSettings should not allow calls before initialization', () => {
       expect(() => {
         settings.setSettings(settingsObj);
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.setSettings does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => {
@@ -167,11 +173,11 @@ describe('settings', () => {
         settings.registerOnSaveHandler(() => {
           handlerCalled = true;
         });
-      }).toThrowError('The library has not yet been initialized');
+      }).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is called`, async () => {
           await utils.initializeWithContext(context);
           let handlerCalled = false;
@@ -184,8 +190,8 @@ describe('settings', () => {
       }
     });
 
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.registerOnSaveHandler does not allow calls from ${context} context when the handler is not called`, async () => {
           await utils.initializeWithContext(context);
           let handlerCalled = true;
@@ -210,11 +216,19 @@ describe('settings', () => {
       expect(handlerCalled).toBe(true);
     });
 
+    it('settings.registerOnSaveHandler should not throw if pages.config is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => settings.registerOnSaveHandler(() => {})).not.toThrowError();
+    });
+
     it('settings.registerOnSaveHandler should successfully register a save handler', async () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
-      settings.registerOnSaveHandler(saveEvent => {
+      settings.registerOnSaveHandler((saveEvent) => {
         handlerCalled = true;
         expect(saveEvent.result['webhookUrl']).not.toBeNull();
       });
@@ -250,7 +264,7 @@ describe('settings', () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
-      settings.registerOnSaveHandler(saveEvent => {
+      settings.registerOnSaveHandler((saveEvent) => {
         saveEvent.notifySuccess();
         handlerCalled = true;
       });
@@ -267,7 +281,7 @@ describe('settings', () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
-      settings.registerOnSaveHandler(saveEvent => {
+      settings.registerOnSaveHandler((saveEvent) => {
         saveEvent.notifyFailure('someReason');
         handlerCalled = true;
       });
@@ -285,7 +299,7 @@ describe('settings', () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
-      settings.registerOnSaveHandler(saveEvent => {
+      settings.registerOnSaveHandler((saveEvent) => {
         saveEvent.notifySuccess();
         expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
         expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');
@@ -304,7 +318,7 @@ describe('settings', () => {
       await utils.initializeWithContext(FrameContexts.settings);
 
       let handlerCalled = false;
-      settings.registerOnSaveHandler(saveEvent => {
+      settings.registerOnSaveHandler((saveEvent) => {
         saveEvent.notifyFailure('someReason');
         expect(() => saveEvent.notifySuccess()).toThrowError('The SaveEvent may only notify success or failure once.');
         expect(() => saveEvent.notifyFailure()).toThrowError('The SaveEvent may only notify success or failure once.');
@@ -323,8 +337,8 @@ describe('settings', () => {
 
   describe('Testing settings.registerOnRemoveHandler function', () => {
     const allowedContexts = [FrameContexts.remove, FrameContexts.settings];
-    Object.values(FrameContexts).forEach(context => {
-      if (!allowedContexts.some(allowedContexts => allowedContexts === context)) {
+    Object.values(FrameContexts).forEach((context) => {
+      if (!allowedContexts.some((allowedContexts) => allowedContexts === context)) {
         it(`settings.registerOnRemoveHandler does not allow calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
           expect(() => settings.registerOnRemoveHandler(() => true)).toThrowError(
@@ -346,11 +360,19 @@ describe('settings', () => {
       expect(message.args.length).toBe(0);
     });
 
+    it('settings.registerOnRemoveHandler should not throw if pages.config is not supported', async () => {
+      await utils.initializeWithContext(FrameContexts.settings);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      expect(() => settings.registerOnRemoveHandler(() => {})).not.toThrowError();
+    });
+
     it('settings.registerOnRemoveHandler should successfully notify success from the registered remove handler', async () => {
       await utils.initializeWithContext(FrameContexts.remove);
 
       let handlerCalled = false;
-      settings.registerOnRemoveHandler(removeEvent => {
+      settings.registerOnRemoveHandler((removeEvent) => {
         removeEvent.notifySuccess();
         handlerCalled = true;
       });
@@ -367,7 +389,7 @@ describe('settings', () => {
       await utils.initializeWithContext(FrameContexts.remove);
 
       let handlerCalled = false;
-      settings.registerOnRemoveHandler(removeEvent => {
+      settings.registerOnRemoveHandler((removeEvent) => {
         removeEvent.notifyFailure('someReason');
         handlerCalled = true;
       });

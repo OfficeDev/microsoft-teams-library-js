@@ -1,0 +1,35 @@
+{
+  "name": "AppEntity",
+  "platforms": "Web",
+  "version": ">=2.0.1",
+  "checkIsSupported": {
+    "expectedOutput": "AppEntity is not supported"
+  },
+  "testCases": [
+    {
+      "title": "SelectAppEntity API Call - Success",
+      "version": ">2.0.0",
+      "type": "callResponse",
+      "boxSelector": "#box_select_appEntity",
+      "inputValue": {
+        "threadId": "123",
+        "categories": ["books", "animals"],
+        "subEntityId": "abc"
+      },
+      "expectedAlertValue": "appEntity.selectAppEntity called with 123 + books,animals + abc",
+      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}"
+    },
+    {
+      "title": "SelectAppEntity API Call - Success",
+      "version": "2.0.0",
+      "type": "callResponse",
+      "boxSelector": "#box_select_appEntity",
+      "inputValue": {
+        "threadId": "123",
+        "categories": ["books", "animals"]
+      },
+      "expectedAlertValue": "appEntity.selectAppEntity called with 123 + books,animals",
+      "expectedTestAppValue": "{\"appId\":\"007\",\"appIconUrl\":\"appIncon_pengiun.com\",\"contentUrl\":\"contentUrl.com\",\"displayName\":\"penguin\",\"websiteUrl\":\"penguin.com\"}"
+    }
+  ]
+}

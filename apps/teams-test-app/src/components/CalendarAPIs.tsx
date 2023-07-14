@@ -2,6 +2,7 @@ import { calendar } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckCalendarCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -14,7 +15,7 @@ const ComposeMeeting = (): React.ReactElement =>
   ApiWithTextInput<calendar.ComposeMeetingParams>({
     name: 'composeMeeting',
     title: 'Compose Meeting',
-    onClick: async input => {
+    onClick: async (input) => {
       await calendar.composeMeeting(input);
       return 'Completed';
     },
@@ -25,11 +26,11 @@ const OpenCalendarItem = (): React.ReactElement =>
     name: 'openCalendarItem',
     title: 'Open CalendarItem',
     onClick: {
-      submit: async input => {
+      submit: async (input) => {
         await calendar.openCalendarItem(input);
         return 'Completed';
       },
-      validateInput: x => {
+      validateInput: (x) => {
         if (!x.itemId) {
           throw new Error('itemId is required');
         }
@@ -38,12 +39,11 @@ const OpenCalendarItem = (): React.ReactElement =>
   });
 
 const CalendarAPIs = (): ReactElement => (
-  <>
-    <h1>calendar</h1>
+  <ModuleWrapper title="Calendar">
     <CheckCalendarCapability />
     <ComposeMeeting />
     <OpenCalendarItem />
-  </>
+  </ModuleWrapper>
 );
 
 export default CalendarAPIs;

@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const NotifyLoaded = (): React.ReactElement =>
   ApiWithoutInput({
@@ -13,7 +14,7 @@ const NotifyLoaded = (): React.ReactElement =>
         app.notifyAppLoaded();
         return 'called';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         appInitialization.notifyAppLoaded();
         setResult('called');
       },
@@ -29,7 +30,7 @@ const NotifySuccess = (): React.ReactElement =>
         app.notifySuccess();
         return 'called';
       },
-      withCallback: setResult => {
+      withCallback: (setResult) => {
         appInitialization.notifySuccess();
         setResult('called');
       },
@@ -41,7 +42,7 @@ const NotifyFailure = (): React.ReactElement =>
     name: 'appInitializationFailure2',
     title: 'appInitialization.failure',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input) {
           // this API actually allow for the input not to be provided
           return;
@@ -54,7 +55,7 @@ const NotifyFailure = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           app.notifyFailure({ reason: input || app.FailedReason.Other });
           return 'called';
         },
@@ -73,7 +74,7 @@ const NotifyExpectedFailure = (): React.ReactElement =>
     name: 'appInitializationExpectedFailure',
     title: 'appInitialization.expectedFailure',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         const acceptableValues = isTestBackCompat()
           ? Object.values(appInitialization.ExpectedFailureReason)
           : Object.values(app.ExpectedFailureReason);
@@ -82,7 +83,7 @@ const NotifyExpectedFailure = (): React.ReactElement =>
         }
       },
       submit: {
-        withPromise: async input => {
+        withPromise: async (input) => {
           app.notifyExpectedFailure({ reason: input || app.ExpectedFailureReason.Other });
           return 'called';
         },
@@ -95,13 +96,12 @@ const NotifyExpectedFailure = (): React.ReactElement =>
   });
 
 const AppInitializationAPIs = (): ReactElement => (
-  <>
-    <h1>appInitialization</h1>
+  <ModuleWrapper title="AppInitialization">
     <NotifyLoaded />
     <NotifySuccess />
     <NotifyFailure />
     <NotifyExpectedFailure />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppInitializationAPIs;

@@ -1,0 +1,15 @@
+{
+  "name": "Video MediaStream",
+  "platforms": "Web",
+  "testUrlParams": [["frameContext", "sidePanel"]],
+  "version": ">2.11.0",
+  "testCases": [
+    {
+      "title": "video.mediaStream.registerForVideoFrame - Throw error",
+      "type": "callResponse",
+      "modulesToDisable": ["videoSharedFrame"],
+      "boxSelector": "#box_videoMediaStreamRegisterForVideoFrame",
+      "expectedTestAppValue": "Faild to register for video frame: {\"errorCode\":100}"
+    }
+  ]
+}

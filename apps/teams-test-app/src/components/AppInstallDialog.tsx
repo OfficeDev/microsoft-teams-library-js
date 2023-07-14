@@ -2,6 +2,7 @@ import { appInstallDialog } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckAppInstallDialogCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -15,12 +16,12 @@ const OpenAppInstallDialog = (): React.ReactElement =>
     name: 'openAppInstallDialog',
     title: 'Open App Install Dialog',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
         }
       },
-      submit: async input => {
+      submit: async (input) => {
         await appInstallDialog.openAppInstallDialog(input);
         return 'called';
       },
@@ -28,11 +29,10 @@ const OpenAppInstallDialog = (): React.ReactElement =>
   });
 
 const AppInstallDialogAPIs: React.FC = () => (
-  <>
-    <h1>appInstallDialog</h1>
+  <ModuleWrapper title="AppInstallDialog">
     <OpenAppInstallDialog />
     <CheckAppInstallDialogCapability />
-  </>
+  </ModuleWrapper>
 );
 
 export default AppInstallDialogAPIs;

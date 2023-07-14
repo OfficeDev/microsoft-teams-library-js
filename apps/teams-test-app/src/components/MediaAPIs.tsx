@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const mediaHelper = (item: string): string => {
   let output = '';
@@ -71,7 +72,7 @@ const CaptureImage = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CaptureImage',
     title: 'Capture Image',
-    onClick: async setResult => {
+    onClick: async (setResult) => {
       const callback = (error?: SdkError, files?: media.File[]): void => {
         if (error) {
           setResult(JSON.stringify(error));
@@ -92,7 +93,7 @@ const SelectMedia = (): React.ReactElement =>
     name: 'selectMedia',
     title: 'Select Media',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.mediaType || !input.maxMediaCount) {
           throw new Error('mediaType and maxMediaCount are required');
         }
@@ -146,7 +147,7 @@ const ViewImagesWithId = (): React.ReactElement =>
     name: 'viewImagesWithId',
     title: 'View Images With Id',
     onClick: {
-      validateInput: input => {
+      validateInput: (input) => {
         if (!input.mediaType || !input.maxMediaCount) {
           throw new Error('mediaType and maxMediaCount are required');
         }
@@ -199,8 +200,8 @@ const ViewImagesWithUrls = (): React.ReactElement =>
     name: 'viewImagesWithUrls',
     title: 'View Images With Urls',
     onClick: {
-      validateInput: input => {
-        if (!input || !Array.isArray(input) || input.length === 0 || input.find(x => typeof x !== 'string')) {
+      validateInput: (input) => {
+        if (!input || !Array.isArray(input) || input.length === 0 || input.find((x) => typeof x !== 'string')) {
           throw new Error('input has to be an array of strings with at least one element');
         }
       },
@@ -212,23 +213,52 @@ const ViewImagesWithUrls = (): React.ReactElement =>
             setResult('media.viewImagesWithUrls() executed');
           }
         };
-        const urlList: media.ImageUri[] = input.map(x => ({ value: x, type: 2 /* ImageUriType.ID */ }));
+        const urlList: media.ImageUri[] = input.map((x) => ({ value: x, type: 2 /* ImageUriType.ID */ }));
         media.viewImages(urlList, callback);
         return '';
       },
     },
   });
 
+const HasMediaPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'hasMediaPermission',
+    title: 'Has Media Permission',
+    onClick: async () => {
+      const result = await media.hasPermission();
+      return JSON.stringify(result);
+    },
+  });
+
+const RequestMediaPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'requestMediaPermission',
+    title: 'Request Media Permission',
+    onClick: async () => {
+      const result = await media.requestPermission();
+      return JSON.stringify(result);
+    },
+  });
+
+const CheckMediaCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkMediaCapability',
+    title: 'Check media Capability',
+    onClick: async () => `media module ${media.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const MediaAPIs = (): ReactElement => (
-  <>
-    <h1>media</h1>
+  <ModuleWrapper title="Media">
     <CaptureImage />
     <SelectMedia />
     <GetMedia />
     <ViewImagesWithId />
     <ViewImagesWithUrls />
     <ScanBarCode />
-  </>
+    <HasMediaPermission />
+    <RequestMediaPermission />
+    <CheckMediaCapability />
+  </ModuleWrapper>
 );
 
 export default MediaAPIs;
