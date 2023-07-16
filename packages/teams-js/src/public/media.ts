@@ -125,10 +125,12 @@ export namespace media {
    *
    * @returns Promise that will resolve with true if the user had granted the app permission to media information, or with false otherwise,
    * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   *
+   * @beta
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
+    if (!isPermissionSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
@@ -143,10 +145,12 @@ export namespace media {
    *
    * @returns Promise that will resolve with true if the user consented permission for media, or with false otherwise,
    * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
+   *
+   * @beta
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
+    if (!isPermissionSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
@@ -157,13 +161,13 @@ export namespace media {
   }
 
   /**
-   * Checks if media capability is supported by the host
-   * @returns boolean to represent whether media is supported
+   * Checks if permission capability is supported by the host
+   * @returns boolean to represent whether permission is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
-  export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.media && runtime.supports.permissions ? true : false;
+  function isPermissionSupported(): boolean {
+    return ensureInitialized(runtime) && runtime.supports.permissions ? true : false;
   }
 
   /**
