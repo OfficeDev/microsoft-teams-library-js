@@ -5,6 +5,9 @@ export class VideoPerformanceMonitor {
     effectParam?: string;
   };
 
+  private startGettingTextureStreamTime: number;
+  private currentSteamId: string;
+
   public constructor(private reportPerformanceEvent: (actionName: string, args: any[]) => void) {}
 
   public reportVideoEffectChanged(effectId: string, effectParam?: string) {
@@ -23,6 +26,18 @@ export class VideoPerformanceMonitor {
         this.currentSelectedEffect?.effectId,
         this.currentSelectedEffect?.effectParam,
       ]);
+    }
+  }
+
+  public reportGettingTextureStream(streamId: string) {
+    this.startGettingTextureStreamTime = performance.now();
+    this.currentSteamId = streamId;
+  }
+
+  public reportTextureStreamAcquired() {
+    if (this.startGettingTextureStreamTime) {
+      const timeTaken = performance.now() - this.startGettingTextureStreamTime;
+      this.reportPerformanceEvent('video.videoExtensibilityTextureStreamAcquired', [this.currentSteamId, timeTaken]);
     }
   }
 }
