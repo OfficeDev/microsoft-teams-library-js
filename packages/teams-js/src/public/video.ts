@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { VideoPerformanceMonitor } from '../internal/videoPeformance';
 import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -11,6 +12,8 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
+  const videoPerformanceMonitor = new VideoPerformanceMonitor(sendMessageToParent);
+
   /** Notify video frame processed function type */
   type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
@@ -256,8 +259,11 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
+    registerHandler(
+      'video.effectParameterChange',
+      createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
+      false,
+    );
     sendMessageToParent('video.registerForVideoEffect');
   }
 
@@ -307,7 +313,8 @@ export namespace video {
       async (mediaStreamInfo: { streamId: string }) => {
         // when a new streamId is ready:
         const { streamId } = mediaStreamInfo;
-        const generator = await processMediaStream(streamId, videoFrameHandler, notifyError);
+        const monitoredVideoFrameHandler = createMonitoredVideoFrameHandler(videoFrameHandler, videoPerformanceMonitor);
+        const generator = await processMediaStream(streamId, monitoredVideoFrameHandler, notifyError);
         // register the video track with processed frames back to the stream:
         !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       },
@@ -315,6 +322,17 @@ export namespace video {
     );
 
     sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (videoFrameData: VideoFrameData): Promise<VideoFrame> => {
+      const processedFrame = await videoFrameHandler(videoFrameData);
+      videoPerformanceMonitor.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   /**
@@ -343,6 +361,7 @@ export namespace video {
           videoBufferHandler(
             normalizeVideoBufferData(videoBufferData),
             () => {
+              videoPerformanceMonitor.reportFrameProcessed();
               notifyVideoFrameProcessed(timestamp);
             },
             notifyError,

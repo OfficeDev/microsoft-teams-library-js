@@ -12,6 +12,7 @@ import {
   VideoFrameInit,
   VideoPixelFormat,
 } from './VideoFrameTypes';
+import { VideoPerformanceMonitor } from './videoPeformance';
 
 /**
  * @hidden
@@ -402,8 +403,13 @@ type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) 
 /**
  * @hidden
  */
-export function createEffectParameterChangeCallback(callback: VideoEffectCallBack) {
+export function createEffectParameterChangeCallback(
+  callback: VideoEffectCallBack,
+  viddoPerformanceMonitor: VideoPerformanceMonitor,
+) {
   return (effectId: string | undefined, effectParam?: string): void => {
+    viddoPerformanceMonitor.reportVideoEffectChanged(effectId, effectParam);
+
     callback(effectId, effectParam)
       .then(() => {
         sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
