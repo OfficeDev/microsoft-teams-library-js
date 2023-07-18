@@ -62,7 +62,7 @@ export class PerformanceStatistics {
       frameWidth: this.currentSession.frameWidth,
       duration: performance.now() - this.currentSession.startedAtInMs,
       sampleCount: this.sampleCount,
-      distributionBins: this.distributionBins,
+      distributionBins: this.distributionBins.slice(),
     };
   }
 
@@ -85,7 +85,10 @@ export class PerformanceStatistics {
     if (this.timeoutId) {
       window.clearTimeout(this.timeoutId);
     }
-    this.timeoutId = window.setTimeout(this.reportAndResetSession, this.currentSession.timeoutInMs);
+    this.timeoutId = window.setTimeout(
+      (() => this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight)).bind(this),
+      this.currentSession.timeoutInMs,
+    );
   }
 
   private resetCurrentSession(timeoutInMs: number, effectId: string, frameWidth: number, frameHeight: number): void {

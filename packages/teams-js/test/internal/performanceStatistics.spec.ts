@@ -4,7 +4,7 @@ import { PerformanceStatistics, PerformanceStatisticsResult } from '../../src/in
 describe('PerformanceStatistics', () => {
   let timeoutCallback: (() => void) | undefined;
   let timeout: number;
-  let result: PerformanceStatisticsResult;
+  let result: PerformanceStatisticsResult | undefined;
   let performanceStatistics: PerformanceStatistics;
 
   window.setTimeout = ((callback: () => void, t: number) => {
@@ -14,6 +14,7 @@ describe('PerformanceStatistics', () => {
   window.clearTimeout = (() => (timeoutCallback = undefined)) as any;
 
   beforeEach(() => {
+    result = undefined;
     performanceStatistics = new PerformanceStatistics(1000, (r) => (result = r));
   });
 
@@ -25,14 +26,15 @@ describe('PerformanceStatistics', () => {
       effectId: 'effectId',
       frameHeight: 100,
       frameWidth: 100,
-      duration: 0,
+      duration: expect.any(Number),
       sampleCount: 1,
-      distributionBins: new Array(1000).fill(0),
+      distributionBins: expect.anything(),
     });
+    expect(result?.distributionBins[0]).toEqual(1);
   });
 
   it('reports statistics on effect change', () => {
-    performanceStatistics.processStarts('effectId', 100, 100);
+    performanceStatistics.processStarts('effectId1', 100, 100);
     performanceStatistics.processEnds();
     performanceStatistics.processStarts('effectId2', 100, 100);
     performanceStatistics.processEnds();
@@ -40,10 +42,11 @@ describe('PerformanceStatistics', () => {
       effectId: 'effectId1',
       frameHeight: 100,
       frameWidth: 100,
-      duration: 0,
+      duration: expect.any(Number),
       sampleCount: 1,
-      distributionBins: new Array(1000).fill(0),
+      distributionBins: expect.anything(),
     });
+    expect(result?.distributionBins[0]).toEqual(1);
   });
 
   it('reports statistics on frame size change', () => {
@@ -55,10 +58,11 @@ describe('PerformanceStatistics', () => {
       effectId: 'effectId',
       frameHeight: 100,
       frameWidth: 100,
-      duration: 0,
+      duration: expect.any(Number),
       sampleCount: 1,
-      distributionBins: new Array(1000).fill(0),
+      distributionBins: expect.anything(),
     });
+    expect(result?.distributionBins[0]).toEqual(1);
   });
 
   it("don't report statistics when session is not created", () => {
@@ -75,15 +79,13 @@ describe('PerformanceStatistics', () => {
   it("don't report statistics when no data", () => {
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processStarts('effectId', 100, 100);
-    timeoutCallback && timeoutCallback();
     expect(result).toBeUndefined();
   });
 
   it('timeout duration is increased over time', () => {
     performanceStatistics.processStarts('effectId', 100, 100);
-    performanceStatistics.processEnds();
-    timeoutCallback && timeoutCallback();
     expect(timeout).toEqual(1000);
+    performanceStatistics.processEnds();
     timeoutCallback && timeoutCallback();
     expect(timeout).toEqual(2000);
     timeoutCallback && timeoutCallback();
