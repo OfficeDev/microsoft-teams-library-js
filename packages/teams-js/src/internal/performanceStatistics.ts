@@ -37,13 +37,14 @@ export class PerformanceStatistics {
   /**
    * Call this function before processing every frame
    */
-  public processStarts(effectId: string, frameWidth: number, frameHeight: number) {
-    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight))
+  public processStarts(effectId: string, frameWidth: number, frameHeight: number): void {
+    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight)) {
       this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight);
+    }
     this.start();
   }
 
-  public processEnds() {
+  public processEnds(): void {
     // calculate duration of the process and record it
     const durationInMillisecond = performance.now() - this.frameProcessingStartedAt;
     const binIndex = Math.floor(Math.max(0, Math.min(this.distributionBins.length - 1, durationInMillisecond)));
@@ -65,11 +66,11 @@ export class PerformanceStatistics {
     };
   }
 
-  private start() {
+  private start(): void {
     this.frameProcessingStartedAt = performance.now();
   }
 
-  private suitableForThisSession(effectId: string, frameWidth: number, frameHeight: number) {
+  private suitableForThisSession(effectId: string, frameWidth: number, frameHeight: number): boolean {
     return (
       this.currentSession &&
       this.currentSession.effectId === effectId &&
@@ -78,7 +79,7 @@ export class PerformanceStatistics {
     );
   }
 
-  private reportAndResetSession(result, effectId, frameWidth, frameHeight) {
+  private reportAndResetSession(result, effectId, frameWidth, frameHeight): void {
     result && this.report(result);
     this.resetCurrentSession(this.getNextTimeout(effectId, this.currentSession), effectId, frameWidth, frameHeight);
     if (this.timeoutId) {
@@ -87,7 +88,7 @@ export class PerformanceStatistics {
     this.timeoutId = window.setTimeout(this.reportAndResetSession, this.currentSession.timeoutInMs);
   }
 
-  private resetCurrentSession(timeoutInMs: number, effectId: string, frameWidth: number, frameHeight: number) {
+  private resetCurrentSession(timeoutInMs: number, effectId: string, frameWidth: number, frameHeight: number): void {
     this.currentSession = {
       startedAtInMs: performance.now(),
       timeoutInMs,
@@ -100,7 +101,7 @@ export class PerformanceStatistics {
   }
 
   // send the statistics result every n second, where n starts from 1, 2, 4...and finally stays at every 30 seconds.
-  private getNextTimeout(effectId: string, currentSession?: { timeoutInMs: number; effectId: string }) {
+  private getNextTimeout(effectId: string, currentSession?: { timeoutInMs: number; effectId: string }): number {
     // only reset timeout when new session or effect changed
     if (!currentSession || currentSession.effectId !== effectId) {
       return 1000;

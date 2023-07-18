@@ -12,13 +12,13 @@ export class VideoPerformanceMonitor {
 
   private performanceStatistics: PerformanceStatistics;
 
-  public constructor(private reportPerformanceEvent: (actionName: string, args: any[]) => void) {
+  public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
     this.performanceStatistics = new PerformanceStatistics(1000, (result) =>
       this.reportPerformanceEvent('video.videoExtensibilityPerformanceDataGenerated', [result]),
     );
   }
 
-  public reportVideoEffectChanged(effectId: string, effectParam?: string) {
+  public reportVideoEffectChanged(effectId: string, effectParam?: string): void {
     this.currentSelectedEffect = {
       effectId,
       effectParam,
@@ -26,11 +26,11 @@ export class VideoPerformanceMonitor {
     this.isFirstFrameProcessed = false;
   }
 
-  public reportStartFrameProcessing(frameWidth: number, frameHeight: number) {
+  public reportStartFrameProcessing(frameWidth: number, frameHeight: number): void {
     this.performanceStatistics.processStarts(this.currentSelectedEffect.effectId, frameWidth, frameHeight);
   }
 
-  public reportFrameProcessed() {
+  public reportFrameProcessed(): void {
     this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
@@ -42,12 +42,12 @@ export class VideoPerformanceMonitor {
     }
   }
 
-  public reportGettingTextureStream(streamId: string) {
+  public reportGettingTextureStream(streamId: string): void {
     this.startGettingTextureStreamTime = performance.now();
     this.currentSteamId = streamId;
   }
 
-  public reportTextureStreamAcquired() {
+  public reportTextureStreamAcquired(): void {
     if (this.startGettingTextureStreamTime) {
       const timeTaken = performance.now() - this.startGettingTextureStreamTime;
       this.reportPerformanceEvent('video.videoExtensibilityTextureStreamAcquired', [this.currentSteamId, timeTaken]);

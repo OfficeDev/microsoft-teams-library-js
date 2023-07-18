@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { VideoPerformanceMonitor } from '../internal/videoPeformanceMonitor';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
@@ -21,6 +22,7 @@ import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnviron
  * Limited to Microsoft-internal use
  */
 export namespace videoEx {
+  const videoPerformanceMonitor = new VideoPerformanceMonitor(sendMessageToParent);
   /**
    * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
@@ -193,8 +195,13 @@ export namespace videoEx {
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
             const generator = metadataInTexture
-              ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
+              ? await processMediaStreamWithMetadata(
+                  streamId,
+                  parameters.videoFrameHandler,
+                  notifyError,
+                  videoPerformanceMonitor,
+                )
+              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
             // register the video track with processed frames back to the stream
             !inServerSideRenderingEnvironment() &&
               window['chrome']?.webview?.registerTextureStream(streamId, generator);
@@ -273,7 +280,11 @@ export namespace videoEx {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
+    registerHandler(
+      'video.effectParameterChange',
+      createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
+      false,
+    );
     sendMessageToParent('video.registerForVideoEffect');
   }
 

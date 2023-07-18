@@ -416,7 +416,7 @@ export function createEffectParameterChangeCallback(
   viddoPerformanceMonitor: VideoPerformanceMonitor,
 ) {
   return (effectId: string | undefined, effectParam?: string): void => {
-    viddoPerformanceMonitor.reportVideoEffectChanged(effectId, effectParam);
+    viddoPerformanceMonitor.reportVideoEffectChanged(effectId || '', effectParam);
 
     callback(effectId, effectParam)
       .then(() => {

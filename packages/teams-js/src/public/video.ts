@@ -334,6 +334,7 @@ export namespace video {
     videoPerformanceMonitor: VideoPerformanceMonitor,
   ): VideoFrameHandler {
     return async (videoFrameData: VideoFrameData): Promise<VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const originalFrame = videoFrameData.videoFrame as any;
       videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
       const processedFrame = await videoFrameHandler(videoFrameData);
