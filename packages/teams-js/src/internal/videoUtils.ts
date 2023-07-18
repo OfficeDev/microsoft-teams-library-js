@@ -12,7 +12,7 @@ import {
   VideoFrameInit,
   VideoPixelFormat,
 } from './VideoFrameTypes';
-import { VideoPerformanceMonitor } from './videoPeformance';
+import { VideoPerformanceMonitor } from './videoPeformanceMonitor';
 
 /**
  * @hidden
@@ -111,11 +111,11 @@ async function getInputVideoTrack(
   try {
     videoPerformanceMonitor.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
-    videoPerformanceMonitor.reportTextureStreamAcquired();
     const tracks = mediaStream.getVideoTracks();
     if (tracks.length === 0) {
       throw new Error(`No video track in stream ${streamId}`);
     }
+    videoPerformanceMonitor.reportTextureStreamAcquired();
     return tracks[0];
   } catch (error) {
     const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;

@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { VideoPerformanceMonitor } from '../internal/videoPeformance';
+import { VideoPerformanceMonitor } from '../internal/videoPeformanceMonitor';
 import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
