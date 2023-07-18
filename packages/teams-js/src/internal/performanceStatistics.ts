@@ -38,8 +38,9 @@ export class PerformanceStatistics {
    * Call this function before processing every frame
    */
   public processStarts(effectId: string, frameWidth: number, frameHeight: number) {
-    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight))
+    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight)) {
       this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight);
+    }
     this.start();
   }
 

@@ -1,9 +1,9 @@
 import { PerformanceStatistics, PerformanceStatisticsResult } from '../../src/internal/performanceStatistics';
 describe('PerformanceStatistics', () => {
-  var timeoutCallback: (() => void) | undefined;
-  var timeout: number;
-  var result: PerformanceStatisticsResult;
-  var performanceStatistics: PerformanceStatistics;
+  let timeoutCallback: (() => void) | undefined;
+  let timeout: number;
+  let result: PerformanceStatisticsResult;
+  let performanceStatistics: PerformanceStatistics;
 
   window.setTimeout = ((callback: () => void, timeout: number) => {
     timeoutCallback = callback;
