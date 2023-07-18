@@ -1,7 +1,7 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 
-type PerformanceStatisticsResult = {
+export type PerformanceStatisticsResult = {
   effectId: string;
   frameWidth: number;
   frameHeight: number;
@@ -99,6 +99,7 @@ export class PerformanceStatistics {
     this.distributionBins.fill(0);
   }
 
+  // send the statistics result every n second, where n starts from 1, 2, 4...and finally stays at every 30 seconds.
   private getNextTimeout(effectId: string, currentSession?: { timeoutInMs: number; effectId: string }) {
     // only reset timeout when new session or effect changed
     if (!currentSession || currentSession.effectId !== effectId) {
