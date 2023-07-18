@@ -334,6 +334,8 @@ export namespace video {
     videoPerformanceMonitor: VideoPerformanceMonitor,
   ): VideoFrameHandler {
     return async (videoFrameData: VideoFrameData): Promise<VideoFrame> => {
+      const originalFrame = videoFrameData.videoFrame as any;
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
       const processedFrame = await videoFrameHandler(videoFrameData);
       videoPerformanceMonitor.reportFrameProcessed();
       return processedFrame;
@@ -363,6 +365,7 @@ export namespace video {
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
         if (videoBufferData) {
           const timestamp = videoBufferData.timestamp;
+          videoPerformanceMonitor.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
           videoBufferHandler(
             normalizeVideoBufferData(videoBufferData),
             () => {

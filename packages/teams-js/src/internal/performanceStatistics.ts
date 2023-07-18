@@ -1,3 +1,6 @@
+import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { errorNotSupportedOnPlatform } from '../public/constants';
+
 type PerformanceStatisticsResult = {
   effectId: string;
   frameWidth: number;
@@ -19,11 +22,15 @@ export class PerformanceStatistics {
   private frameProcessingStartedAt: number;
   private distributionBins: Uint32Array;
   private sampleCount = 0;
+  private timeoutId: number;
 
   public constructor(
     distributionBinSize: number,
-    private report: (result: PerformanceStatisticsResult) => Promise<void>, // post event to the host
+    private report: (result: PerformanceStatisticsResult) => void, // post event to the host
   ) {
+    if (inServerSideRenderingEnvironment()) {
+      throw errorNotSupportedOnPlatform;
+    }
     this.distributionBins = new Uint32Array(distributionBinSize);
   }
 
@@ -73,8 +80,11 @@ export class PerformanceStatistics {
 
   private reportAndResetSession(result, effectId, frameWidth, frameHeight) {
     result && this.report(result);
-    this.resetCurrentSession(this.getNextTimeout(this.currentSession), effectId, frameWidth, frameHeight);
-    setTimeout(this.reportAndResetSession, this.currentSession.timeoutInMs);
+    this.resetCurrentSession(this.getNextTimeout(effectId, this.currentSession), effectId, frameWidth, frameHeight);
+    if (this.timeoutId) {
+      window.clearTimeout(this.timeoutId);
+    }
+    this.timeoutId = window.setTimeout(this.reportAndResetSession, this.currentSession.timeoutInMs);
   }
 
   private resetCurrentSession(timeoutInMs: number, effectId: string, frameWidth: number, frameHeight: number) {
@@ -89,8 +99,9 @@ export class PerformanceStatistics {
     this.distributionBins.fill(0);
   }
 
-  private getNextTimeout(currentSession?: { timeoutInMs: number }) {
-    if (!currentSession) {
+  private getNextTimeout(effectId: string, currentSession?: { timeoutInMs: number; effectId: string }) {
+    // only reset timeout when new session or effect changed
+    if (!currentSession || currentSession.effectId !== effectId) {
       return 1000;
     }
     return Math.min(1000 * 30, currentSession.timeoutInMs * 2);

@@ -1,3 +1,5 @@
+import { PerformanceStatistics } from './performanceStatistics';
+
 export class VideoPerformanceMonitor {
   private isFirstFrameProcessed = false;
   private currentSelectedEffect: {
@@ -8,7 +10,13 @@ export class VideoPerformanceMonitor {
   private startGettingTextureStreamTime: number;
   private currentSteamId: string;
 
-  public constructor(private reportPerformanceEvent: (actionName: string, args: any[]) => void) {}
+  private performanceStatistics: PerformanceStatistics;
+
+  public constructor(private reportPerformanceEvent: (actionName: string, args: any[]) => void) {
+    this.performanceStatistics = new PerformanceStatistics(1000, (result) =>
+      this.reportPerformanceEvent('video.videoExtensibilityPerformanceDataGenerated', [result]),
+    );
+  }
 
   public reportVideoEffectChanged(effectId: string, effectParam?: string) {
     this.currentSelectedEffect = {
@@ -18,7 +26,12 @@ export class VideoPerformanceMonitor {
     this.isFirstFrameProcessed = false;
   }
 
+  public reportStartFrameProcessing(frameWidth: number, frameHeight: number) {
+    this.performanceStatistics.processStarts(this.currentSelectedEffect.effectId, frameWidth, frameHeight);
+  }
+
   public reportFrameProcessed() {
+    this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
       this.reportPerformanceEvent('video.videoExtensibilityFirstFrameProcessed', [
