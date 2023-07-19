@@ -144,7 +144,7 @@ interface IRuntimeV2 extends IBaseRuntime {
   };
 }
 
-// Test change
+// Test change 2
 
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
