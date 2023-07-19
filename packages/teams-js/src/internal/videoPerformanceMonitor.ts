@@ -9,6 +9,9 @@ export class VideoPerformanceMonitor {
 
   private startGettingTextureStreamTime: number;
   private currentSteamId: string;
+  private frameProcessingStartedAt: number;
+  private frameProcessingTimeCost: number;
+  private processedFrameCount = 0;
 
   private performanceStatistics: PerformanceStatistics;
 

@@ -12,7 +12,7 @@ import {
   VideoFrameInit,
   VideoPixelFormat,
 } from './VideoFrameTypes';
-import { VideoPerformanceMonitor } from './videoPeformanceMonitor';
+import { VideoPerformanceMonitor } from './videoPerformanceMonitor';
 
 /**
  * @hidden

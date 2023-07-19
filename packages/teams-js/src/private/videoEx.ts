@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { VideoPerformanceMonitor } from '../internal/videoPeformanceMonitor';
+import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
