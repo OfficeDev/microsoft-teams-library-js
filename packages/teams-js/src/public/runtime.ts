@@ -144,8 +144,6 @@ interface IRuntimeV2 extends IBaseRuntime {
   };
 }
 
-// Test change 3
-
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
