@@ -41,11 +41,17 @@ export class VideoPerformanceMonitor {
   }
 
   public reportStartFrameProcessing(frameWidth: number, frameHeight: number): void {
+    if (!this.currentSelectedEffect) {
+      return;
+    }
     this.frameProcessingStartedAt = performance.now();
     this.performanceStatistics.processStarts(this.currentSelectedEffect.effectId, frameWidth, frameHeight);
   }
 
   public reportFrameProcessed(): void {
+    if (!this.currentSelectedEffect) {
+      return;
+    }
     this.processedFrameCount++;
     this.frameProcessingTimeCost += performance.now() - this.frameProcessingStartedAt;
     this.performanceStatistics.processEnds();
