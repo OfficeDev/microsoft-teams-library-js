@@ -33,6 +33,9 @@ export class VideoPerformanceMonitor {
   }
 
   public reportVideoEffectChanged(effectId: string, effectParam?: string): void {
+    if (this.currentSelectedEffect?.effectId === effectId && this.currentSelectedEffect?.effectParam === effectParam) {
+      return;
+    }
     this.currentSelectedEffect = {
       effectId,
       effectParam,
@@ -57,6 +60,7 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
+      // it is sent twice
       this.reportPerformanceEvent('video.videoExtensibilityFirstFrameProcessed', [
         Date.now(),
         this.currentSelectedEffect?.effectId,
