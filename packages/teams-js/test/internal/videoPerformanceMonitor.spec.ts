@@ -27,7 +27,7 @@ describe('VideoPerformanceMonitor', () => {
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
     jest.advanceTimersByTime(10);
     videoPerformanceMonitor.reportFrameProcessed();
-    expect(reportPerformanceEvent).toBeCalledWith('video.videoExtensibilityFirstFrameProcessed', [
+    expect(reportPerformanceEvent).toBeCalledWith('video.performance.firstFrameProcessed', [
       expect.any(Number), // timestamp
       'effectId',
       'effectParam',
@@ -45,7 +45,7 @@ describe('VideoPerformanceMonitor', () => {
     videoPerformanceMonitor.reportGettingTextureStream('streamId');
     jest.advanceTimersByTime(10);
     videoPerformanceMonitor.reportTextureStreamAcquired();
-    expect(reportPerformanceEvent).toBeCalledWith('video.videoExtensibilityTextureStreamAcquired', ['streamId', 10]);
+    expect(reportPerformanceEvent).toBeCalledWith('video.performance.textureStreamAcquired', ['streamId', 10]);
   });
 
   it('should report videoExtensibilityFrameProcessingSlow event', async () => {
@@ -55,6 +55,6 @@ describe('VideoPerformanceMonitor', () => {
       jest.advanceTimersByTime(101);
       videoPerformanceMonitor.reportFrameProcessed();
     }
-    expect(reportPerformanceEvent).toBeCalledWith('video.videoExtensibilityFrameProcessingSlow', [101]);
+    expect(reportPerformanceEvent).toBeCalledWith('video.performance.frameProcessingSlow', [101]);
   });
 });

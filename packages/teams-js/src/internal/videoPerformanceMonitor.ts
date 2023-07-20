@@ -22,7 +22,7 @@ export class VideoPerformanceMonitor {
       throw errorNotSupportedOnPlatform;
     }
     this.performanceStatistics = new PerformanceStatistics(1000, (result) =>
-      this.reportPerformanceEvent('video.videoExtensibilityPerformanceDataGenerated', [result]),
+      this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
     window.setInterval(() => {
       if (this.processedFrameCount === 0) {
@@ -30,7 +30,7 @@ export class VideoPerformanceMonitor {
       }
       const averageFrameProcessingTime = this.frameProcessingTimeCost / this.processedFrameCount;
       if (averageFrameProcessingTime > 100) {
-        this.reportPerformanceEvent('video.videoExtensibilityFrameProcessingSlow', [averageFrameProcessingTime]);
+        this.reportPerformanceEvent('video.performance.frameProcessingSlow', [averageFrameProcessingTime]);
       }
       this.frameProcessingTimeCost = 0;
       this.processedFrameCount = 0;
@@ -66,7 +66,7 @@ export class VideoPerformanceMonitor {
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
       // it is sent twice
-      this.reportPerformanceEvent('video.videoExtensibilityFirstFrameProcessed', [
+      this.reportPerformanceEvent('video.performance.firstFrameProcessed', [
         Date.now(),
         this.currentSelectedEffect?.effectId,
         this.currentSelectedEffect?.effectParam,
@@ -82,7 +82,7 @@ export class VideoPerformanceMonitor {
   public reportTextureStreamAcquired(): void {
     if (this.startGettingTextureStreamTime !== undefined) {
       const timeTaken = performance.now() - this.startGettingTextureStreamTime;
-      this.reportPerformanceEvent('video.videoExtensibilityTextureStreamAcquired', [this.currentSteamId, timeTaken]);
+      this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentSteamId, timeTaken]);
     }
   }
 }
