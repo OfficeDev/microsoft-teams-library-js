@@ -67,7 +67,7 @@ export async function processMediaStream(
   streamId: string,
   videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
-  videoPerformanceMonitor: VideoPerformanceMonitor,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
@@ -87,7 +87,7 @@ export async function processMediaStreamWithMetadata(
   streamId: string,
   videoFrameHandler: videoEx.VideoFrameHandler,
   notifyError: (string) => void,
-  videoPerformanceMonitor: VideoPerformanceMonitor,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
@@ -101,7 +101,7 @@ export async function processMediaStreamWithMetadata(
 async function getInputVideoTrack(
   streamId: string,
   notifyError: (string) => void,
-  videoPerformanceMonitor: VideoPerformanceMonitor,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<MediaStreamTrack> {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
@@ -109,13 +109,13 @@ async function getInputVideoTrack(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chrome = window['chrome'] as any;
   try {
-    videoPerformanceMonitor.reportGettingTextureStream(streamId);
+    videoPerformanceMonitor?.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
     const tracks = mediaStream.getVideoTracks();
     if (tracks.length === 0) {
       throw new Error(`No video track in stream ${streamId}`);
     }
-    videoPerformanceMonitor.reportTextureStreamAcquired();
+    videoPerformanceMonitor?.reportTextureStreamAcquired();
     return tracks[0];
   } catch (error) {
     const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
@@ -413,10 +413,10 @@ type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) 
  */
 export function createEffectParameterChangeCallback(
   callback: VideoEffectCallBack,
-  viddoPerformanceMonitor: VideoPerformanceMonitor,
+  viddoPerformanceMonitor?: VideoPerformanceMonitor,
 ) {
   return (effectId: string | undefined, effectParam?: string): void => {
-    viddoPerformanceMonitor.reportVideoEffectChanged(effectId || '', effectParam);
+    viddoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
 
     callback(effectId, effectParam)
       .then(() => {

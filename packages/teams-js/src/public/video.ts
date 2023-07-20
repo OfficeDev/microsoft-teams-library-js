@@ -12,7 +12,9 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
-  const videoPerformanceMonitor = new VideoPerformanceMonitor(sendMessageToParent);
+  const videoPerformanceMonitor = inServerSideRenderingEnvironment()
+    ? undefined
+    : new VideoPerformanceMonitor(sendMessageToParent);
 
   /** Notify video frame processed function type */
   type notifyVideoFrameProcessedFunctionType = () => void;
@@ -331,14 +333,14 @@ export namespace video {
 
   function createMonitoredVideoFrameHandler(
     videoFrameHandler: VideoFrameHandler,
-    videoPerformanceMonitor: VideoPerformanceMonitor,
+    videoPerformanceMonitor?: VideoPerformanceMonitor,
   ): VideoFrameHandler {
     return async (videoFrameData: VideoFrameData): Promise<VideoFrame> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const originalFrame = videoFrameData.videoFrame as any;
-      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      videoPerformanceMonitor?.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
       const processedFrame = await videoFrameHandler(videoFrameData);
-      videoPerformanceMonitor.reportFrameProcessed();
+      videoPerformanceMonitor?.reportFrameProcessed();
       return processedFrame;
     };
   }
@@ -366,11 +368,11 @@ export namespace video {
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
         if (videoBufferData) {
           const timestamp = videoBufferData.timestamp;
-          videoPerformanceMonitor.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
+          videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
           videoBufferHandler(
             normalizeVideoBufferData(videoBufferData),
             () => {
-              videoPerformanceMonitor.reportFrameProcessed();
+              videoPerformanceMonitor?.reportFrameProcessed();
               notifyVideoFrameProcessed(timestamp);
             },
             notifyError,

@@ -1,3 +1,5 @@
+import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { PerformanceStatistics } from './performanceStatistics';
 
 export class VideoPerformanceMonitor {
@@ -16,6 +18,9 @@ export class VideoPerformanceMonitor {
   private performanceStatistics: PerformanceStatistics;
 
   public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
+    if (inServerSideRenderingEnvironment()) {
+      throw errorNotSupportedOnPlatform;
+    }
     this.performanceStatistics = new PerformanceStatistics(1000, (result) =>
       this.reportPerformanceEvent('video.videoExtensibilityPerformanceDataGenerated', [result]),
     );

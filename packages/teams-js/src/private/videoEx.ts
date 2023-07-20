@@ -22,7 +22,9 @@ import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnviron
  * Limited to Microsoft-internal use
  */
 export namespace videoEx {
-  const videoPerformanceMonitor = new VideoPerformanceMonitor(sendMessageToParent);
+  const videoPerformanceMonitor = inServerSideRenderingEnvironment()
+    ? undefined
+    : new VideoPerformanceMonitor(sendMessageToParent);
   /**
    * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
