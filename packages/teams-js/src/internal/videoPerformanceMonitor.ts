@@ -9,6 +9,7 @@ export class VideoPerformanceMonitor {
     effectParam?: string;
   };
 
+  private frameProcessTimeLimit = 100;
   private startGettingTextureStreamTime: number;
   private currentSteamId: string;
   private frameProcessingStartedAt = 0;
@@ -29,12 +30,16 @@ export class VideoPerformanceMonitor {
         return;
       }
       const averageFrameProcessingTime = this.frameProcessingTimeCost / this.processedFrameCount;
-      if (averageFrameProcessingTime > 100) {
+      if (averageFrameProcessingTime > this.frameProcessTimeLimit) {
         this.reportPerformanceEvent('video.performance.frameProcessingSlow', [averageFrameProcessingTime]);
       }
       this.frameProcessingTimeCost = 0;
       this.processedFrameCount = 0;
     }, 1000);
+  }
+
+  public setFrameProcessTimeLimit(timeLimit: number): void {
+    this.frameProcessTimeLimit = timeLimit;
   }
 
   public reportVideoEffectChanged(effectId: string, effectParam?: string): void {
@@ -65,10 +70,9 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
-      // it is sent twice
       this.reportPerformanceEvent('video.performance.firstFrameProcessed', [
         Date.now(),
-        this.currentSelectedEffect?.effectId,
+        this.currentSelectedEffect.effectId,
         this.currentSelectedEffect?.effectParam,
       ]);
     }
