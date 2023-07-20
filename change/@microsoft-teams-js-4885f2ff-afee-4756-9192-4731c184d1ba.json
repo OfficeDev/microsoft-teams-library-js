@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added code to collect video performance data",
+  "packageName": "@microsoft/teams-js",
+  "email": "wenghe@microsoft.com",
+  "dependentChangeType": "patch"
+}
