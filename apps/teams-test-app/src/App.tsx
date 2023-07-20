@@ -85,7 +85,7 @@ if (
 export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
 
 /**
- * Generates and returns an error message explaining that a string input was expected
+ * Gene rates and returns an error message explaining that a string input was expected
  * to be parsed into a JSON object but there was a parsing error.
  * If there is an example JSON object provided, it gives the keys needed in a
  * correctly formatted JSON object parameter of the desired function. If possible,
