@@ -239,7 +239,7 @@ export namespace app {
     ownerTenantId?: string;
 
     /**
-     * The AAD group ID of the team which owns the channel.
+     * The Microsoft Entra group ID of the team which owns the channel.
      */
     ownerGroupId?: string;
   }
@@ -351,7 +351,7 @@ export namespace app {
    */
   export interface UserInfo {
     /**
-     * The Azure AD object id of the current user.
+     * The Microsoft Entra object id of the current user.
      *
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a optimization hint as to who the user is and never as proof of identity.
@@ -385,7 +385,7 @@ export namespace app {
     licenseType?: string;
 
     /**
-     * A value suitable for use when providing a login_hint to Azure Active Directory for authentication purposes.
+     * A value suitable for use when providing a login_hint to Microsoft Entra for authentication purposes.
      * See [Provide optional claims to your app](https://learn.microsoft.com/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set)
      * for more information about the use of login_hint
      *
@@ -419,7 +419,7 @@ export namespace app {
    */
   export interface TenantInfo {
     /**
-     * The Azure AD tenant ID of the current user.
+     * The Microsoft Entra tenant ID of the current user.
 
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a optimization hint as to who the user is and never as proof of identity.

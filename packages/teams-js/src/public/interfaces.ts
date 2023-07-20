@@ -399,7 +399,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.TenantInfo.id | app.Context.user.tenant.id} instead
    *
-   * The Azure AD tenant ID of the current user.
+   * The Microsoft Entra tenant ID of the current user.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
    * This field is available only when the identity permission is requested in the manifest.
@@ -466,7 +466,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.ChannelInfo.ownerGroupId | app.Context.channel.ownerGroupId} instead
    *
-   * The AAD group ID of the host team.
+   * The Microsoft Entra group ID of the host team.
    */
   hostTeamGroupId?: string;
 
@@ -508,7 +508,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.UserInfo.loginHint | app.Context.user.loginHint} instead
    *
-   * A value suitable for use as a login_hint when authenticating with Azure AD.
+   * A value suitable for use as a login_hint when authenticating with Microsoft Entra.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
    * This field is available only when the identity permission is requested in the manifest.
@@ -530,7 +530,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.UserInfo.id | app.Context.user.id} instead
    *
-   * The Azure AD object id of the current user.
+   * The Microsoft Entra object id of the current user.
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
    * This field is available only when the identity permission is requested in the manifest.
