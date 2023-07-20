@@ -3,6 +3,9 @@ import { errorNotSupportedOnPlatform } from '../public/constants';
 import { PerformanceStatistics } from './performanceStatistics';
 
 export class VideoPerformanceMonitor {
+  private static readonly distributionBinSize = 1000;
+  private static readonly calculateFPSInterval = 1000;
+
   private isFirstFrameProcessed = false;
   private currentSelectedEffect: {
     effectId: string;
@@ -22,7 +25,7 @@ export class VideoPerformanceMonitor {
     if (inServerSideRenderingEnvironment()) {
       throw errorNotSupportedOnPlatform;
     }
-    this.performanceStatistics = new PerformanceStatistics(1000, (result) =>
+    this.performanceStatistics = new PerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
       this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
     window.setInterval(() => {
@@ -35,7 +38,7 @@ export class VideoPerformanceMonitor {
       }
       this.frameProcessingTimeCost = 0;
       this.processedFrameCount = 0;
-    }, 1000);
+    }, VideoPerformanceMonitor.calculateFPSInterval);
   }
 
   public setFrameProcessTimeLimit(timeLimit: number): void {
