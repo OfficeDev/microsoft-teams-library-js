@@ -1,5 +1,3 @@
-import { ErrorCode } from '@microsoft/teams-js';
-
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -22,7 +20,7 @@ export namespace appNotification {
      */
     content: string;
     /**
-     * This would represent an optional icon that can be displayed on the notification.It should have a max size of 49 pixels by 49 pixels
+     * This would represent an optional icon that can be displayed on the notification. It should have a max size of 49 pixels by 49 pixels
      * If no icon is provided, the notification card would be displayed without an icon
      * The url link to where the icon is stored should be provided as the input string
      */
@@ -36,6 +34,50 @@ export namespace appNotification {
      * A url link to the page in which the notification would direct the user to.
      */
     notificationActionUrl: URL;
+  }
+
+  /**
+   * Data structure with simplified parameters that would be passed across the iframe
+   */
+  export interface NotificationDisplayParamForAppHost {
+    /**
+     * Notification title(maximum length: 20 characters)
+     */
+    title: string;
+    /**
+     * Notification content (maximum length: 40 characters)
+     */
+    content: string;
+    /**
+     * This would represent an optional icon that can be displayed on the notification. It should have a max size of 49 pixels by 49 pixels
+     * If no icon is provided, the notification card would be displayed without an icon
+     * The url link to where the icon is stored should be provided as the input string
+     */
+    icon?: string;
+    /**
+     * This would specify how long a notification would be displayed on the screen for (unit: seconds)
+     *
+     */
+    displayDurationInSeconds: number;
+    /**
+     * A url link to the page in which the notification would direct the user to.
+     */
+    notificationActionUrlAsString: string;
+  }
+
+  /**
+   * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
+   * @param ndParam
+   * @returns a NotificationDisplay object with a string type parameter for the notificationAtionUrl
+   */
+  function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
+    return {
+      title: notificationDisplayParam.title,
+      content: notificationDisplayParam.content,
+      icon: notificationDisplayParam.icon,
+      displayDurationInSeconds: notificationDisplayParam.displayDurationInSeconds,
+      notificationActionUrlAsString: notificationDisplayParam.notificationActionUrl.href,
+    };
   }
 
   /**
@@ -53,7 +95,7 @@ export namespace appNotification {
    * Validates that the input string is of property length
    *
    * @param inputString and maximumLength
-   * @returns True if title length is within specified limit
+   * @returns True if string length is within specified limit
    */
   function isValidLength(inputString: string, maxLength: number): boolean {
     return inputString.length <= maxLength;
@@ -61,64 +103,59 @@ export namespace appNotification {
 
   /**
    * Validates that all the required appNotification display parameters are either supplied or satisfy the required checks
-   * @param notificationDisplayparam
+   * @param notificationDisplayParam
    * @throws Error if any of the required parameters aren't supplied
    * @throws Error if content or title length is beyond specific limit
    * @throws Error if invalid url is passed
    * @returns void
    */
-  function validateNotificationDisplayParams(notificationDisplayparam: NotificationDisplayParam): void {
-    const maxTitleLength = 20;
-    const maxContentLength = 40;
-    if (!notificationDisplayparam.title) {
-      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Must supply  notification title to be displayed' };
-    }
-    if (!isValidLength(notificationDisplayparam.title, maxTitleLength)) {
-      throw {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: `Invalid notification title length: Maximum title length ${maxTitleLength}, title length supplied ${notificationDisplayparam.title.length}`,
-      };
+  function validateNotificationDisplayParams(notificationDisplayParam: NotificationDisplayParam): void {
+    const maxTitleLength = 75;
+    const maxContentLength = 1500;
+
+    if (!notificationDisplayParam.title) {
+      throw new Error('Must supply notification title');
     }
 
-    if (!notificationDisplayparam.content) {
-      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Must supply notification content to be displayed' };
-    }
-    if (!isValidLength(notificationDisplayparam.content, maxContentLength)) {
-      throw {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: `Maximum content length ${maxContentLength}, content length supplied ${notificationDisplayparam.content.length}`,
-      };
+    if (!isValidLength(notificationDisplayParam.title, maxTitleLength)) {
+      throw new Error(
+        `Invalid notification title length: Maximum title length ${maxTitleLength}, title length supplied ${notificationDisplayParam.title.length}`,
+      );
     }
 
-    if (!notificationDisplayparam.notificationActionUrl) {
-      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Must supply notification url to be displayed' };
+    if (!notificationDisplayParam.content) {
+      throw new Error('Must supply notification content');
     }
-    if (!isValidUrl(notificationDisplayparam.notificationActionUrl)) {
-      throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid url' };
-    }
-
-    if (!notificationDisplayparam.displayDurationInSeconds) {
-      throw {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: 'Must supply display duration in seconds to be displayed',
-      };
+    if (!isValidLength(notificationDisplayParam.content, maxContentLength)) {
+      throw new Error(
+        `Invalid notification content length: Maximum content length ${maxContentLength}, content length supplied ${notificationDisplayParam.content.length}`,
+      );
     }
 
-    if (notificationDisplayparam.displayDurationInSeconds <= 0) {
-      throw {
-        errorCode: ErrorCode.INVALID_ARGUMENTS,
-        message: 'Notification display time must be greater than zero',
-      };
+    if (!notificationDisplayParam.notificationActionUrl) {
+      throw new Error('Must supply notification url');
+    }
+    if (!isValidUrl(notificationDisplayParam.notificationActionUrl)) {
+      throw new Error('Invalid url');
+    }
+
+    if (!notificationDisplayParam.displayDurationInSeconds) {
+      throw new Error('Must supply display duration in seconds');
+    }
+
+    if (notificationDisplayParam.displayDurationInSeconds <= 0) {
+      throw new Error('Notification display time must be greater than zero');
     }
   }
 
   /**
    * Displays appNotification after making a validiity check on all of the required parameters, by calling the validateNotificationDisplayParams helper function
    * An interface object containing all the required parameters to be displayed on the notification would be passed in here
+   * The notificationDisplayParam would be serialized before passing across to the message handler to ensure all objects passed contain simple parameters that would properly pass across the Iframe
    * @param notificationdisplayparam - Interface object with all the parameters required to display an appNotificiation
    * @returns a promise resolution upon conclusion
    */
-  export function displayInAppNotification(notificationDisplayparam: NotificationDisplayParam): Promise<void> {
+  export function displayInAppNotification(notificationDisplayParam: NotificationDisplayParam): Promise<void> {
     ensureInitialized(
       runtime,
       FrameContexts.content,
@@ -130,8 +167,8 @@ export namespace appNotification {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateNotificationDisplayParams(notificationDisplayparam);
-    return sendAndHandleSdkError('appNotification.displayNotification', notificationDisplayparam);
+    validateNotificationDisplayParams(notificationDisplayParam);
+    return sendAndHandleSdkError('appNotification.displayNotification', serializeParam(notificationDisplayParam));
   }
 
   /**

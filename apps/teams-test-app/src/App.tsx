@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react';
 
 import AppAPIs from './components/AppAPIs';
 import AppEntityAPIs from './components/AppEntityAPIs';
+import AppNotificationAPIs from './components/AppNotification';
 import AppInitializationAPIs from './components/AppInitialization';
 import AppInstallDialogAPIs from './components/AppInstallDialog';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
@@ -121,6 +122,7 @@ const App = (): ReactElement => {
     <div>
       <div className="App-container">
         <AppAPIs />
+        <AppNotificationAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
         <AuthenticationAPIs />
