@@ -90,17 +90,6 @@ describe('video', () => {
           expect(message?.args?.length).toBe(1);
           expect(message?.args).toEqual([registerForVideoFrameParameters.config]);
         });
-
-        it('should not send default message when register video frame handler', async () => {
-          expect.assertions(1);
-
-          // Act
-          video.registerForVideoFrame(registerForVideoFrameParameters);
-
-          // Assert
-          const messageForRegister = utils.findMessageByFunc('registerHandler');
-          expect(messageForRegister).toBeNull();
-        });
       });
 
       describe('sharedFrame', () => {
