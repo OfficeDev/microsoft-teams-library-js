@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
-import { PerformanceStatistics, PerformanceStatisticsResult } from '../../src/internal/videoPerformanceStatistics';
+import {
+  VideoPerformanceStatistics,
+  VideoPerformanceStatisticsResult,
+} from '../../src/internal/videoPerformanceStatistics';
 
 describe('PerformanceStatistics', () => {
-  let result: PerformanceStatisticsResult | undefined;
-  let performanceStatistics: PerformanceStatistics;
+  let result: VideoPerformanceStatisticsResult | undefined;
+  let performanceStatistics: VideoPerformanceStatistics;
   const reportFunc = jest.fn();
   reportFunc.mockImplementation((r) => (result = r));
 
   beforeEach(() => {
     jest.useFakeTimers();
     result = undefined;
-    performanceStatistics = new PerformanceStatistics(1000, reportFunc);
+    performanceStatistics = new VideoPerformanceStatistics(1000, reportFunc);
   });
   afterEach(() => {
     jest.clearAllMocks();

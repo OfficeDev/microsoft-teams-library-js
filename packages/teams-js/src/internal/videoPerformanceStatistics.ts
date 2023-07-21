@@ -1,7 +1,7 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 
-export type PerformanceStatisticsResult = {
+export type VideoPerformanceStatisticsResult = {
   effectId: string;
   frameWidth: number;
   frameHeight: number;
@@ -10,7 +10,10 @@ export type PerformanceStatisticsResult = {
   distributionBins: Uint32Array; // an array that presents counts of frames that were finished in n milliseconds: distributionBins[frameProcessingDurationInMs]=frameCount. For example, distributionBins[10] = 5 means that 5 frames were processed in 10 milliseconds.
 };
 
-export class PerformanceStatistics {
+export class VideoPerformanceStatistics {
+  private static readonly initialSessionTimeoutInMs = 1000;
+  private static readonly maxSessionTimeoutInMs = 1000 * 30;
+
   private currentSession: {
     startedAtInMs: number;
     timeoutInMs: number;
@@ -26,7 +29,7 @@ export class PerformanceStatistics {
 
   public constructor(
     distributionBinSize: number,
-    private report: (result: PerformanceStatisticsResult) => void, // post event to the host
+    private report: (result: VideoPerformanceStatisticsResult) => void, // post event to the host
   ) {
     if (inServerSideRenderingEnvironment()) {
       throw errorNotSupportedOnPlatform;
@@ -52,7 +55,7 @@ export class PerformanceStatistics {
     this.sampleCount += 1;
   }
 
-  private getStatistics(): PerformanceStatisticsResult {
+  private getStatistics(): VideoPerformanceStatisticsResult {
     if (!this.currentSession) {
       return null;
     }
@@ -107,8 +110,8 @@ export class PerformanceStatistics {
   private getNextTimeout(effectId: string, currentSession?: { timeoutInMs: number; effectId: string }): number {
     // only reset timeout when new session or effect changed
     if (!currentSession || currentSession.effectId !== effectId) {
-      return 1000;
+      return VideoPerformanceStatistics.initialSessionTimeoutInMs;
     }
-    return Math.min(1000 * 30, currentSession.timeoutInMs * 2);
+    return Math.min(VideoPerformanceStatistics.maxSessionTimeoutInMs, currentSession.timeoutInMs * 2);
   }
 }

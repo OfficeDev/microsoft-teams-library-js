@@ -1,6 +1,6 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { PerformanceStatistics } from './videoPerformanceStatistics';
+import { VideoPerformanceStatistics } from './videoPerformanceStatistics';
 
 export class VideoPerformanceMonitor {
   private static readonly distributionBinSize = 1000;
@@ -19,13 +19,13 @@ export class VideoPerformanceMonitor {
   private frameProcessingTimeCost = 0;
   private processedFrameCount = 0;
 
-  private performanceStatistics: PerformanceStatistics;
+  private performanceStatistics: VideoPerformanceStatistics;
 
   public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
     if (inServerSideRenderingEnvironment()) {
       throw errorNotSupportedOnPlatform;
     }
-    this.performanceStatistics = new PerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
+    this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
       this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
     window.setInterval(() => {
