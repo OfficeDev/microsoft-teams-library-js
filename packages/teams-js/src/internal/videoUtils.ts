@@ -413,10 +413,10 @@ type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) 
  */
 export function createEffectParameterChangeCallback(
   callback: VideoEffectCallBack,
-  viddoPerformanceMonitor?: VideoPerformanceMonitor,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ) {
   return (effectId: string | undefined, effectParam?: string): void => {
-    viddoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
+    videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
 
     callback(effectId, effectParam)
       .then(() => {
