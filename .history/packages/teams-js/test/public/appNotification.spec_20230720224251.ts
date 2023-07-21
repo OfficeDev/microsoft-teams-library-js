@@ -166,8 +166,7 @@ describe('appNotification', () => {
                      We recommend that you plan accordingly for this extended maintenance and notify your team about the possible impact on their work. It is essential to ensure all critical operations are completed before the maintenance window to avoid any potential data loss or service disruptions.
                      Once the maintenance is complete, you can expect enhanced performance, improved stability, and better security measures. Our goal at Microsoft is to provide you with the best possible service, and these upgrades are a crucial step towards achieving that objective.
                      If you have any questions or concerns regarding the upcoming maintenance or its impact on your business, please don't hesitate to contact our support team. We are here to assist you and address any queries you may have.
-                     Thank you for your cooperation and continued support as we work to deliver a more robust and secure service. We value your business and are committed to delivering exceptional experiences to all our users.
-
+                     Thank you for your cooperation and continued support as we work to deliver a more robust and secure service. We value your business and are committed to delivering exceptional experiences to all our users
                      Best regards,
                      Microsoft`,
             displayDurationInSeconds: 30,
