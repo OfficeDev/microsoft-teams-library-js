@@ -1,0 +1,12 @@
+{
+  "name":"AppNotification",
+  "version":">2.0.0-beta.0",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "version": ">=2.1.0",
+  },
+  "testCases":[
+
+  ]
+}
+*/

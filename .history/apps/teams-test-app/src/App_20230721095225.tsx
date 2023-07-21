@@ -7,7 +7,7 @@ import AppAPIs from './components/AppAPIs';
 import AppEntityAPIs from './components/AppEntityAPIs';
 import AppInitializationAPIs from './components/AppInitialization';
 import AppInstallDialogAPIs from './components/AppInstallDialog';
-import AppNotificationAPIs from './components/AppNotificationAPIs';
+import AppNotificationAPIs from './components/AppNotification';
 import AuthenticationAPIs from './components/AuthenticationAPIs';
 import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
@@ -124,7 +124,6 @@ const App = (): ReactElement => {
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
-        <AppNotificationAPIs />
         <AuthenticationAPIs />
         <AppEntityAPIs />
         <BarCodeAPIs />
