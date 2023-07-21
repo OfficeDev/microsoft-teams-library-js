@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
-import { PerformanceStatistics, PerformanceStatisticsResult } from '../../src/internal/performanceStatistics';
+import { PerformanceStatistics, PerformanceStatisticsResult } from '../../src/internal/videoPerformanceStatistics';
 
 describe('PerformanceStatistics', () => {
   let result: PerformanceStatisticsResult | undefined;

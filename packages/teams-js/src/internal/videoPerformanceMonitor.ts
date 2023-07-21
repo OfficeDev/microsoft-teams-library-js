@@ -1,6 +1,6 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { PerformanceStatistics } from './performanceStatistics';
+import { PerformanceStatistics } from './videoPerformanceStatistics';
 
 export class VideoPerformanceMonitor {
   private static readonly distributionBinSize = 1000;
