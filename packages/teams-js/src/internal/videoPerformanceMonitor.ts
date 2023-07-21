@@ -1,6 +1,4 @@
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { VideoFrameTick } from '../private/videoFrameTick';
-import { errorNotSupportedOnPlatform } from '../public/constants';
 import { VideoPerformanceStatistics } from './videoPerformanceStatistics';
 
 export class VideoPerformanceMonitor {
@@ -14,7 +12,7 @@ export class VideoPerformanceMonitor {
   };
 
   private frameProcessTimeLimit = 100;
-  private startGettingTextureStreamTime: number;
+  private gettingTextureStreamStartedAt: number;
   private currentStreamId: string;
   private frameProcessingStartedAt = 0;
   private frameProcessingTimeCost = 0;
@@ -23,9 +21,6 @@ export class VideoPerformanceMonitor {
   private performanceStatistics: VideoPerformanceStatistics;
 
   public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
-    if (inServerSideRenderingEnvironment()) {
-      throw errorNotSupportedOnPlatform;
-    }
     this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
       this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
@@ -84,13 +79,13 @@ export class VideoPerformanceMonitor {
   }
 
   public reportGettingTextureStream(streamId: string): void {
-    this.startGettingTextureStreamTime = performance.now();
+    this.gettingTextureStreamStartedAt = performance.now();
     this.currentStreamId = streamId;
   }
 
   public reportTextureStreamAcquired(): void {
-    if (this.startGettingTextureStreamTime !== undefined) {
-      const timeTaken = performance.now() - this.startGettingTextureStreamTime;
+    if (this.gettingTextureStreamStartedAt !== undefined) {
+      const timeTaken = performance.now() - this.gettingTextureStreamStartedAt;
       this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentStreamId, timeTaken]);
     }
   }

@@ -1,6 +1,4 @@
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { VideoFrameTick } from '../private/videoFrameTick';
-import { errorNotSupportedOnPlatform } from '../public/constants';
 
 export type VideoPerformanceStatisticsResult = {
   effectId: string;
@@ -32,9 +30,6 @@ export class VideoPerformanceStatistics {
     distributionBinSize: number,
     private report: (result: VideoPerformanceStatisticsResult) => void, // post event to the host
   ) {
-    if (inServerSideRenderingEnvironment()) {
-      throw errorNotSupportedOnPlatform;
-    }
     this.distributionBins = new Uint32Array(distributionBinSize);
   }
 
