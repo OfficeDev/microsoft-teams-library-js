@@ -1,4 +1,5 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { VideoFrameTick } from '../private/videoFrameTick';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { VideoPerformanceStatistics } from './videoPerformanceStatistics';
 
@@ -28,7 +29,7 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
       this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
-    window.setInterval(() => {
+    VideoFrameTick.setInterval(() => {
       if (this.processedFrameCount === 0) {
         return;
       }
@@ -57,6 +58,7 @@ export class VideoPerformanceMonitor {
   }
 
   public reportStartFrameProcessing(frameWidth: number, frameHeight: number): void {
+    VideoFrameTick.tick();
     if (!this.currentSelectedEffect) {
       return;
     }

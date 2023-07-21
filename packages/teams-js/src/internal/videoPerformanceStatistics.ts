@@ -1,4 +1,5 @@
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
+import { VideoFrameTick } from '../private/videoFrameTick';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 
 export type VideoPerformanceStatisticsResult = {
@@ -25,7 +26,7 @@ export class VideoPerformanceStatistics {
   private frameProcessingStartedAt: number;
   private distributionBins: Uint32Array;
   private sampleCount = 0;
-  private timeoutId: number;
+  private timeoutId: string;
 
   public constructor(
     distributionBinSize: number,
@@ -41,6 +42,7 @@ export class VideoPerformanceStatistics {
    * Call this function before processing every frame
    */
   public processStarts(effectId: string, frameWidth: number, frameHeight: number): void {
+    VideoFrameTick.tick();
     if (!this.suitableForThisSession(effectId, frameWidth, frameHeight)) {
       this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight);
     }
@@ -86,9 +88,9 @@ export class VideoPerformanceStatistics {
     result && this.report(result);
     this.resetCurrentSession(this.getNextTimeout(effectId, this.currentSession), effectId, frameWidth, frameHeight);
     if (this.timeoutId) {
-      window.clearTimeout(this.timeoutId);
+      VideoFrameTick.clearTimeout(this.timeoutId);
     }
-    this.timeoutId = window.setTimeout(
+    this.timeoutId = VideoFrameTick.setTimeout(
       (() => this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight)).bind(this),
       this.currentSession.timeoutInMs,
     );
