@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Included appNotification.ts file alongside  changes",
-  "packageName": "@microsoft/teams-js",
-  "email": "t-bchiaha@microsoft.com",
-  "dependentChangeType": "patch"
-}
