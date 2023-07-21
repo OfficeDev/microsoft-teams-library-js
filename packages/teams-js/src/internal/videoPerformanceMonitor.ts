@@ -14,7 +14,7 @@ export class VideoPerformanceMonitor {
 
   private frameProcessTimeLimit = 100;
   private startGettingTextureStreamTime: number;
-  private currentSteamId: string;
+  private currentStreamId: string;
   private frameProcessingStartedAt = 0;
   private frameProcessingTimeCost = 0;
   private processedFrameCount = 0;
@@ -83,13 +83,13 @@ export class VideoPerformanceMonitor {
 
   public reportGettingTextureStream(streamId: string): void {
     this.startGettingTextureStreamTime = performance.now();
-    this.currentSteamId = streamId;
+    this.currentStreamId = streamId;
   }
 
   public reportTextureStreamAcquired(): void {
     if (this.startGettingTextureStreamTime !== undefined) {
       const timeTaken = performance.now() - this.startGettingTextureStreamTime;
-      this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentSteamId, timeTaken]);
+      this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentStreamId, timeTaken]);
     }
   }
 }
