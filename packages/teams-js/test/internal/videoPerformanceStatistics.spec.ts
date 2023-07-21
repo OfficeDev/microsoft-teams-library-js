@@ -4,16 +4,24 @@ import {
   VideoPerformanceStatistics,
   VideoPerformanceStatisticsResult,
 } from '../../src/internal/videoPerformanceStatistics';
+import { VideoFrameTick } from '../../src/private/videoFrameTick';
+
+jest.useFakeTimers();
+function advanceTimersByTime(time: number): void {
+  jest.advanceTimersByTime(time);
+  VideoFrameTick.tick();
+}
 
 describe('PerformanceStatistics', () => {
   let result: VideoPerformanceStatisticsResult | undefined;
   let performanceStatistics: VideoPerformanceStatistics;
-  const reportFunc = jest.fn();
+  let reportFunc = jest.fn();
   reportFunc.mockImplementation((r) => (result = r));
 
   beforeEach(() => {
-    jest.useFakeTimers();
     result = undefined;
+    reportFunc = jest.fn();
+    reportFunc.mockImplementation((r) => (result = r));
     performanceStatistics = new VideoPerformanceStatistics(1000, reportFunc);
   });
   afterEach(() => {
@@ -24,7 +32,7 @@ describe('PerformanceStatistics', () => {
   it('reports statistics on timeout', () => {
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(1000);
+    advanceTimersByTime(1000);
     expect(result).toEqual({
       effectId: 'effectId',
       frameHeight: 100,
@@ -38,10 +46,10 @@ describe('PerformanceStatistics', () => {
 
   it('reports statistics on effect change', () => {
     performanceStatistics.processStarts('effectId1', 100, 100);
-    jest.advanceTimersByTime(10);
+    advanceTimersByTime(10);
     performanceStatistics.processEnds();
     performanceStatistics.processStarts('effectId2', 100, 100);
-    jest.advanceTimersByTime(20);
+    advanceTimersByTime(20);
     performanceStatistics.processEnds();
     expect(result).toEqual({
       effectId: 'effectId1',
@@ -56,10 +64,10 @@ describe('PerformanceStatistics', () => {
 
   it('reports statistics on frame size change', () => {
     performanceStatistics.processStarts('effectId', 100, 100);
-    jest.advanceTimersByTime(10);
+    advanceTimersByTime(10);
     performanceStatistics.processEnds();
     performanceStatistics.processStarts('effectId', 200, 200);
-    jest.advanceTimersByTime(20);
+    advanceTimersByTime(20);
     performanceStatistics.processEnds();
     expect(result).toEqual({
       effectId: 'effectId',
@@ -79,7 +87,7 @@ describe('PerformanceStatistics', () => {
 
   it("don't report statistics before timeout", () => {
     performanceStatistics.processStarts('effectId', 100, 100);
-    jest.advanceTimersByTime(10);
+    advanceTimersByTime(10);
     performanceStatistics.processEnds();
     expect(result).toBeUndefined();
   });
@@ -93,31 +101,31 @@ describe('PerformanceStatistics', () => {
   it('timeout duration is increased over time when effectId is not changed', () => {
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(1000);
+    advanceTimersByTime(1000);
     expect(reportFunc).toBeCalledTimes(1);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(2000);
+    advanceTimersByTime(2000);
     expect(reportFunc).toBeCalledTimes(2);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(4000);
+    advanceTimersByTime(4000);
     expect(reportFunc).toBeCalledTimes(3);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(8000);
+    advanceTimersByTime(8000);
     expect(reportFunc).toBeCalledTimes(4);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(16000);
+    advanceTimersByTime(16000);
     expect(reportFunc).toBeCalledTimes(5);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(30000);
+    advanceTimersByTime(30000);
     expect(reportFunc).toBeCalledTimes(6);
     performanceStatistics.processStarts('effectId', 100, 100);
     performanceStatistics.processEnds();
-    jest.advanceTimersByTime(30000);
+    advanceTimersByTime(30000);
     expect(reportFunc).toBeCalledTimes(7);
   });
 });

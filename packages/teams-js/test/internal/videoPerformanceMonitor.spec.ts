@@ -1,12 +1,17 @@
 /* eslint-disable strict-null-checks/all */
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
+import { VideoFrameTick } from '../../src/private/videoFrameTick';
 
 jest.useFakeTimers();
+function advanceTimersByTime(time: number): void {
+  jest.advanceTimersByTime(time);
+  VideoFrameTick.tick();
+}
 const processStartsMock = jest.fn();
 const processEndsMock = jest.fn();
-jest.mock('../../src/internal/performanceStatistics', () => {
+jest.mock('../../src/internal/videoPerformanceStatistics', () => {
   return {
-    PerformanceStatistics: jest.fn().mockImplementation(() => {
+    VideoPerformanceStatistics: jest.fn().mockImplementation(() => {
       return {
         processStarts: processStartsMock,
         processEnds: processEndsMock,
@@ -25,7 +30,7 @@ describe('VideoPerformanceMonitor', () => {
 
   it('should report firstFrameProcessed event', () => {
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
-    jest.advanceTimersByTime(10);
+    advanceTimersByTime(10);
     videoPerformanceMonitor.reportFrameProcessed();
     expect(reportPerformanceEvent).toBeCalledWith('video.performance.firstFrameProcessed', [
       expect.any(Number), // timestamp
@@ -43,16 +48,17 @@ describe('VideoPerformanceMonitor', () => {
 
   it('should report TextureStreamAcquired event', () => {
     videoPerformanceMonitor.reportGettingTextureStream('streamId');
-    jest.advanceTimersByTime(10);
+    advanceTimersByTime(10);
     videoPerformanceMonitor.reportTextureStreamAcquired();
     expect(reportPerformanceEvent).toBeCalledWith('video.performance.textureStreamAcquired', ['streamId', 10]);
   });
 
   it('should report videoExtensibilityFrameProcessingSlow event', async () => {
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
+    advanceTimersByTime(101);
     for (let i = 0; i < 10; i++) {
       videoPerformanceMonitor.reportStartFrameProcessing(100, 100);
-      jest.advanceTimersByTime(101);
+      advanceTimersByTime(101);
       videoPerformanceMonitor.reportFrameProcessed();
     }
     expect(reportPerformanceEvent).toBeCalledWith('video.performance.frameProcessingSlow', [101]);
