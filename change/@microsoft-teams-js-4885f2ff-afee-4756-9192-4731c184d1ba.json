@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Started collection `video` performance data",
+  "comment": "Started collection of `video` performance data",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"
