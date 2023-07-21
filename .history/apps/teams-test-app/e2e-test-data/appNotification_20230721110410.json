@@ -1,0 +1,27 @@
+{
+  "name":"AppNotification",
+  "version":">2.0.0-beta.0",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkBarCodeCapability"
+  },
+
+  "testCases":[
+   {
+    "title": "DisplayAppNotification API call- Success",
+    "type": "callResponse",
+    "boxSelector": "#box_checkAppNotificationCapability",
+    "version" : "inquire about this",
+    "inputValue": {
+      "title": "sampleAppNotificationTitle",
+      "content": "sampleAppNotficationContent",
+      "displayDurationInSeconds": 30,
+      "notificationActionUrl": "https://www.someAppNotificationUrl.com"
+    },
+    
+    "expectedAlertValue": "DisplayAppNotification called with title,content,displayDurationInSeconds,notificationActionUrl",
+    "expectedTestAppValue": "Completed"
+   }
+  ]
+}
+ 

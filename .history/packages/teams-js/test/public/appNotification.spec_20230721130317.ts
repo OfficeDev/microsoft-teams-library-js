@@ -35,7 +35,7 @@ describe('appNotification', () => {
 
   const displayNotificationParam: appNotification.NotificationDisplayParam = {
     title: 'New Missed Call',
-    content: 'You just received a missed call',
+    content: 'You just received a missed call from',
     displayDurationInSeconds: 30,
     notificationActionUrl: new URL('https://www.example.com'),
   };
@@ -127,7 +127,7 @@ describe('appNotification', () => {
             We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
             Expected Downtime: Approximately 4 hours.
             We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,   
-            displayDurationInSeconds: 0,
+            displayDurationInSeconds: -1,
             notificationActionUrl: new URL('http://www.example.com'),
           };
           expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
@@ -200,8 +200,6 @@ describe('appNotification', () => {
           } as DOMMessageEvent);
           await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         });
-
-        
       } else {
         it(`should not allow appNotification calls from the wrong context. context: ${context}`, async () => {
           await utils.initializeWithContext(context);

@@ -37,7 +37,8 @@ export namespace appNotification {
   }
 
   /**
-   * Data structure to represent appNotification information that would be sent to the host SDK
+   * Data structure to represent appNotification information that would be sent across the iframe to the hubsdk
+   * The notificationActionUrl in this data structure has been been serialized from a URL type to a string type for efficient transfer of data across the iframe
    */
   export interface NotificationDisplayParamForAppHost {
     /**
@@ -68,13 +69,13 @@ export namespace appNotification {
   /**
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
    * @param notificationDisplayParam
-   * @returns a serialized object that can be sent to the host SDK
+   * @returns a NotificationDisplay object with a string type parameter for the notificationAtionUrl
    */
   function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
     return {
       title: notificationDisplayParam.title,
       content: notificationDisplayParam.content,
-      notificationIconAsSring: notificationDisplayParam.icon?.href,
+      notificationIconAsSring: notificationDisplayParam.icon,
       displayDurationInSeconds: notificationDisplayParam.displayDurationInSeconds,
       notificationActionUrlAsString: notificationDisplayParam.notificationActionUrl.href,
     };
@@ -87,7 +88,7 @@ export namespace appNotification {
    * @returns True if a valid url was passed
    */
   function isValidUrl(url: URL): boolean {
-    const validProtocols = ['https:'];
+    const validProtocols = ['http:', 'https:'];
     return validProtocols.includes(url.protocol);
   }
 
@@ -137,10 +138,6 @@ export namespace appNotification {
     }
     if (!isValidUrl(notificationDisplayParam.notificationActionUrl)) {
       throw new Error('Invalid notificationAction url');
-    }
-
-    if (notificationDisplayParam.icon !== undefined && !isValidUrl(notificationDisplayParam.icon)) {
-      throw new Error('Invalid icon url');
     }
 
     if (!notificationDisplayParam.displayDurationInSeconds) {

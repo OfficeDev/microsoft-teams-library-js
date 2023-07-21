@@ -37,7 +37,8 @@ export namespace appNotification {
   }
 
   /**
-   * Data structure to represent appNotification information that would be sent to the host SDK
+   * Data structure to represent appNotification information that would be sent across the iframe to the hubsdk
+   * The notificationActionUrl to be stored in this data structure would be serialized from a URL type to a string type for efficient transfer of data across the iframe
    */
   export interface NotificationDisplayParamForAppHost {
     /**
@@ -68,7 +69,7 @@ export namespace appNotification {
   /**
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
    * @param notificationDisplayParam
-   * @returns a serialized object that can be sent to the host SDK
+   * @returns a NotificationDisplay object that has been serizialed and would be ; the notificationActionUrl has been converted from a URl type to a string type to allow for efficient transmission of data across the iframe
    */
   function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
     return {

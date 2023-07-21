@@ -37,7 +37,8 @@ export namespace appNotification {
   }
 
   /**
-   * Data structure to represent appNotification information that would be sent to the host SDK
+   * Data structure to represent appNotification information that would be sent across the iframe to the hubsdk
+   * The notificationActionUrl in this data structure has been been serialized from a URL type to a string type for efficient transfer of data across the iframe
    */
   export interface NotificationDisplayParamForAppHost {
     /**
@@ -68,7 +69,7 @@ export namespace appNotification {
   /**
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
    * @param notificationDisplayParam
-   * @returns a serialized object that can be sent to the host SDK
+   * @returns a NotificationDisplay object with a string type parameter for the notificationAtionUrl
    */
   function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
     return {
@@ -139,7 +140,7 @@ export namespace appNotification {
       throw new Error('Invalid notificationAction url');
     }
 
-    if (notificationDisplayParam.icon !== undefined && !isValidUrl(notificationDisplayParam.icon)) {
+    if (!isValidUrl(notificationDisplayParam.icon)) {
       throw new Error('Invalid icon url');
     }
 

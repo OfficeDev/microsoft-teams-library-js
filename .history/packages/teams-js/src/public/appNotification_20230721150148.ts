@@ -38,6 +38,7 @@ export namespace appNotification {
 
   /**
    * Data structure to represent appNotification information that would be sent to the host SDK
+   * The notificationActionUrl to be stored in this data structure would be serialized from a URL type to a string type for efficient transfer of data across the iframe
    */
   export interface NotificationDisplayParamForAppHost {
     /**

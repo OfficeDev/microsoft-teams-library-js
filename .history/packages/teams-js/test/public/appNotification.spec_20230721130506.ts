@@ -200,8 +200,6 @@ describe('appNotification', () => {
           } as DOMMessageEvent);
           await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         });
-
-        
       } else {
         it(`should not allow appNotification calls from the wrong context. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
