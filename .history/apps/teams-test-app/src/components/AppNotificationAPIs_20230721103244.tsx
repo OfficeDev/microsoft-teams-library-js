@@ -11,7 +11,7 @@ const CheckAppNotificationCapability = (): React.ReactElement =>
     onClick: async () => `Notification module ${appNotification.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const DisplayInAppNotification = (): React.ReactElement =>
+const DisplayAppNotification = (): React.ReactElement =>
   ApiWithTextInput<appNotification.NotificationDisplayParam>({
     name: 'display  AppNotificationCapability',
     title: 'Display App Notification Capability',
