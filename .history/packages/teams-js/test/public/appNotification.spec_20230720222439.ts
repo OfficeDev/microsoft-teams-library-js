@@ -63,7 +63,7 @@ describe('appNotification', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should throw error when appNotification is not supported in runtime config. context: ${context}`, async () => {
+        it(`should throw error when appNotification is  not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
@@ -90,6 +90,7 @@ describe('appNotification', () => {
               args: [undefined, null],
             },
           } as DOMMessageEvent);
+          //loook up a similar syntax for promise resolution
           await expect(promise).resolves.toBe(null);
         });
 

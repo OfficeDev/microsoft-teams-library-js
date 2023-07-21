@@ -60,7 +60,7 @@ export namespace appNotification {
      */
     displayDurationInSeconds: number;
     /**
-     * A url string type to the page in which the notification would direct the user to.
+     * A url  to the page in which the notification would direct the user to.
      */
     notificationActionUrlAsString: string;
   }

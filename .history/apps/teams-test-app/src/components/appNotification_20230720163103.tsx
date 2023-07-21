@@ -6,7 +6,7 @@ import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const CheckAppNotificationCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkNotificationCapability',
+    name: 'checkNotificationCapabilityCall',
     title: 'Check Notification Capability ',
     onClick: async () => `Notification module ${appNotification.isSupported() ? 'is' : 'is not'} supported`,
   });

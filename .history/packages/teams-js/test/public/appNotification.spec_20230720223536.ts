@@ -90,6 +90,7 @@ describe('appNotification', () => {
               args: [undefined, null],
             },
           } as DOMMessageEvent);
+          //loook up a similar syntax for promise resolution
           await expect(promise).resolves.toBe(null);
         });
 

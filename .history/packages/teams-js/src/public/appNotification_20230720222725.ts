@@ -37,7 +37,7 @@ export namespace appNotification {
   }
 
   /**
-   * Data structure with simplified parameters that would be passed across the iframe
+   * Data structure with simplified parameters that would be passed across the 
    */
   export interface NotificationDisplayParamForAppHost {
     /**
@@ -60,7 +60,7 @@ export namespace appNotification {
      */
     displayDurationInSeconds: number;
     /**
-     * A url string type to the page in which the notification would direct the user to.
+     * A url link to the page in which the notification would direct the user to.
      */
     notificationActionUrlAsString: string;
   }

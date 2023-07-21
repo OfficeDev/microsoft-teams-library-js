@@ -7,10 +7,6 @@ import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
-/* eslint-disable */
-/* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
-   large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
-
 // Unit Test cases for AppNotifications API
 describe('appNotification', () => {
   let utils = new Utils();
@@ -48,7 +44,7 @@ describe('appNotification', () => {
   };
 
   describe('Testing isSupported function', () => {
-    it('should throw if isSupported is called before initialization', () => {
+    it('should throw if called before initialization', () => {
       setUnitializedRuntime();
       expect(() => appNotification.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
@@ -63,7 +59,7 @@ describe('appNotification', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should throw error when appNotification is not supported in runtime config. context: ${context}`, async () => {
+        it(`should throw error when appNotification is  not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
@@ -80,7 +76,7 @@ describe('appNotification', () => {
           const promise = appNotification.displayInAppNotification(displayNotificationParam);
           const message = utils.findMessageByFunc('appNotification.displayNotification');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
+          expect(message?.args?.length).toBe(1);
           expect(message.args[0]).toEqual(displayNotificationParamForAppHost);
           //representation of what hubsdk sends to us in the teamsJS
           const callbackId = message?.id;
@@ -90,6 +86,7 @@ describe('appNotification', () => {
               args: [undefined, null],
             },
           } as DOMMessageEvent);
+          //loook up a similar syntax for promise resolution
           await expect(promise).resolves.toBe(null);
         });
 
@@ -116,17 +113,14 @@ describe('appNotification', () => {
           );
         });
 
-        it(' should not display notification with zero DurationInSeconds"', async () => {
+        it(' should not display in-app notification with zero DurationInSeconds"', async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
 
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
-            We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
-            Expected Downtime: Approximately 4 hours.
-            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,   
+              'Dear valued users,We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security Expected Downtime: Approximately 4 hours. We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible',
             displayDurationInSeconds: -1,
             notificationActionUrl: new URL('http://www.example.com'),
           };
@@ -142,10 +136,7 @@ describe('appNotification', () => {
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
-            We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
-            Expected Downtime: Approximately 4 hours.
-            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
+              'Dear valued users,We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security Expected Downtime: Approximately 4 hours. We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible',
             displayDurationInSeconds: -1,
             notificationActionUrl: new URL('http://www.example.com'),
           };
@@ -188,7 +179,7 @@ describe('appNotification', () => {
 
           const message = utils.findMessageByFunc('appNotification.displayNotification');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(1);
+          expect(message?.args?.length).toBe(1);
           expect(message.args[0]).toEqual(displayNotificationParamForAppHost);
 
           const callbackId = message.id;

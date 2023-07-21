@@ -63,7 +63,7 @@ describe('appNotification', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should throw error when appNotification is not supported in runtime config. context: ${context}`, async () => {
+        it(`should throw error when appNotification is  not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           expect.assertions(1);
@@ -90,6 +90,7 @@ describe('appNotification', () => {
               args: [undefined, null],
             },
           } as DOMMessageEvent);
+          //loook up a similar syntax for promise resolution
           await expect(promise).resolves.toBe(null);
         });
 
@@ -116,17 +117,14 @@ describe('appNotification', () => {
           );
         });
 
-        it(' should not display notification with zero DurationInSeconds"', async () => {
+        it(' should not display in-app notification with zero DurationInSeconds"', async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
 
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
-            We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
-            Expected Downtime: Approximately 4 hours.
-            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,   
+              'Dear valued users,We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security Expected Downtime: Approximately 4 hours. We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible',
             displayDurationInSeconds: -1,
             notificationActionUrl: new URL('http://www.example.com'),
           };
@@ -142,10 +140,7 @@ describe('appNotification', () => {
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
-            We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
-            Expected Downtime: Approximately 4 hours.
-            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
+              'Dear valued users,We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security Expected Downtime: Approximately 4 hours. We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible',
             displayDurationInSeconds: -1,
             notificationActionUrl: new URL('http://www.example.com'),
           };
