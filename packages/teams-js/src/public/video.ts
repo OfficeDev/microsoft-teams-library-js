@@ -222,8 +222,10 @@ export namespace video {
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
-    registerHandler('video.setFrameProcessTimeLimit', (timeLimit: number) =>
-      videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
+    registerHandler(
+      'video.setFrameProcessTimeLimit',
+      (timeLimit: number) => videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
+      false,
     );
     if (doesSupportMediaStream()) {
       registerForMediaStream(parameters.videoFrameHandler, parameters.config);
