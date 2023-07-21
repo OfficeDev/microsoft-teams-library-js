@@ -102,6 +102,18 @@ describe('video', () => {
           const messageForRegister = utils.findMessageByFunc('registerHandler');
           expect(messageForRegister).toBeNull();
         });
+
+        it('should listen to video.setFrameProcessTimeLimit', () => {
+          expect.assertions(2);
+          const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
+          // Act
+          video.registerForVideoFrame(registerForVideoFrameParameters);
+          sendMessage('video.setFrameProcessTimeLimit', 100);
+
+          // Assert
+          expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);
+          expect(setFrameProcessTimeLimitSpy.mock.calls[0][0]).toEqual(100);
+        });
       });
 
       describe('sharedFrame', () => {
@@ -201,18 +213,6 @@ describe('video', () => {
         beforeEach(async () => {
           await utils.initializeWithContext(FrameContexts.sidePanel);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
-        });
-
-        it('should listen to video.setFrameProcessTimeLimit', () => {
-          expect.assertions(2);
-          const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
-          // Act
-          video.registerForVideoFrame(registerForVideoFrameParameters);
-          sendMessage('video.setFrameProcessTimeLimit', 100);
-
-          // Assert
-          expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);
-          expect(setFrameProcessTimeLimitSpy.mock.calls[0][0]).toEqual(100);
         });
 
         it('should successfully invoke videoFrameHandler', async () => {

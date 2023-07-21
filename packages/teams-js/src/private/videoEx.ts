@@ -191,6 +191,11 @@ export namespace videoEx {
     }
 
     if (ensureInitialized(runtime, FrameContexts.sidePanel)) {
+      registerHandler(
+        'video.setFrameProcessTimeLimit',
+        (timeLimit: number) => videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
+        false,
+      );
       if (runtime.supports.video?.mediaStream) {
         registerHandler(
           'video.startVideoExtensibilityVideoStream',
@@ -216,10 +221,12 @@ export namespace videoEx {
           'video.newVideoFrame',
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
             if (videoBufferData) {
+              videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
               const timestamp = videoBufferData.timestamp;
               parameters.videoBufferHandler(
                 normalizedVideoBufferData(videoBufferData),
                 () => {
+                  videoPerformanceMonitor?.reportFrameProcessed();
                   notifyVideoFrameProcessed(timestamp);
                 },
                 notifyError,
