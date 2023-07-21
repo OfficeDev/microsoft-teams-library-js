@@ -20,7 +20,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            commentBody = 'This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required.'
+            commentBody = 'This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required.';
             comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
