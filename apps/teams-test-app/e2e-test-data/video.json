@@ -28,6 +28,7 @@
     },
     {
       "title": "registerForVideoEffect - Handler - Success",
+      "version": ">2.12.0",
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_registerForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -35,10 +36,11 @@
         "effectId": "nextEffectId"
       },
       "expectedTestAppValue": "video effect changed to \"nextEffectId\"",
-      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined"
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined, effectParameter: undefined"
     },
     {
       "title": "registerForVideoEffect - Handler - Failed",
+      "version": ">2.12.0",
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_registerForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -46,7 +48,7 @@
         "effectId": "anInvalidEffectId"
       },
       "expectedTestAppValue": "failed to change effect to \"anInvalidEffectId\"",
-      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: false, effectId: anInvalidEffectId, detail: InvalidEffectId"
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: false, effectId: anInvalidEffectId, detail: InvalidEffectId, effectParameter: undefined"
     },
     {
       "title": "updatePersonalizedEffects - Success",
@@ -71,6 +73,7 @@
     },
     {
       "title": "videoEx.registerForVideoEffect - Handler - Success",
+      "version": ">2.12.0",
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_videoExRegisterForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -79,7 +82,20 @@
         "effectParameter": "nextEffectParam"
       },
       "expectedTestAppValue": "video effect changed to \"nextEffectId\", effect param: \"nextEffectParam\"",
-      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined"
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined, effectParameter: nextEffectParam"
+    },
+    {
+      "title": "videoEx.registerForVideoEffect - Handler - Failed",
+      "version": ">2.12.0",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_videoExRegisterForVideoEffect",
+      "eventName": "videoEffectToApply",
+      "eventData": {
+        "effectId": "anInvalidEffectId",
+        "effectParameter": "anInvalidEffectParam"
+      },
+      "expectedTestAppValue": "failed to change effect to \"anInvalidEffectId\", param: \"anInvalidEffectParam\"",
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: false, effectId: anInvalidEffectId, detail: InvalidEffectId, effectParameter: anInvalidEffectParam"
     },
     {
       "title": " videoEx.NotifyFatalError - Success",
