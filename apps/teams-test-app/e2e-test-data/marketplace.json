@@ -1,0 +1,136 @@
+{
+  "name": "Marketplace",
+  "platforms": "Web",
+  "version": ">2.12.0",
+  "checkIsSupported": {
+    "capabilityName": "Marketplace",
+    "toggleId": "marketplaceToggle",
+    "expectedOutput": "marketplace module is not supported"
+  },
+  "testCases": [
+    {
+      "title": "GetCart API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getCart",
+      "expectedTestAppValue": "{\"id\":\"90dccefe-d23a-497d-9cb7-881bb5aaf729\",\"version\":{\"majorVersion\":1,\"minorVersion\":0},\"cartInfo\":{\"status\":\"Open\",\"market\":\"US\",\"currency\":\"USD\",\"intent\":\"TeamsAdminUser\",\"locale\":\"en-US\",\"createdAt\":\"2021-09-30T15:00:00.000Z\",\"updatedAt\":\" 2021-09-30T15:00:00.000Z\"},\"cartItems\":[{\"id\":\"1\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1,\"imageURL\":\"https://via.placeholder.com/150\"}]}]}"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": {
+        "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729",
+        "cartItems": [
+          {
+            "id": "2",
+            "name": "Item 1",
+            "price": 10,
+            "quantity": 1,
+            "accessories": [{ "id": "11", "name": "Item 11", "price": 5, "quantity": 1 }]
+          }
+        ]
+      },
+      "expectedTestAppValue": "{\"id\":\"90dccefe-d23a-497d-9cb7-881bb5aaf729\",\"version\":{\"majorVersion\":1,\"minorVersion\":0},\"cartInfo\":{\"status\":\"Open\",\"market\":\"US\",\"currency\":\"USD\",\"intent\":\"TeamsAdminUser\",\"locale\":\"en-US\",\"createdAt\":\"2021-09-30T15:00:00.000Z\",\"updatedAt\":\" 2021-09-30T15:00:00.000Z\"},\"cartItems\":[{\"id\":\"1\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1,\"imageURL\":\"https://via.placeholder.com/150\"}]},{\"id\":\"2\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1}]}]}"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Invalid Quantity",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": {
+        "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729",
+        "cartItems": [
+          {
+            "id": "2",
+            "name": "Item 1",
+            "price": 10,
+            "quantity": 1,
+            "accessories": [{ "id": "11", "name": "Item 11", "price": 5, "quantity": 0 }]
+          }
+        ]
+      },
+      "expectedTestAppValue": "Error: Error: quantity 0 must be an integer greater than 0"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Invalid Price",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": {
+        "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729",
+        "cartItems": [
+          {
+            "id": "2",
+            "name": "Item 1",
+            "price": 10,
+            "quantity": 1,
+            "accessories": [{ "id": "11", "name": "Item 11", "price": -5, "quantity": 0 }]
+          }
+        ]
+      },
+      "expectedTestAppValue": "Error: Error: price -5 must be a number not less than 0"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": {
+        "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729",
+        "cartItems": [
+          {
+            "id": "2",
+            "name": "Item 1",
+            "price": 10,
+            "quantity": 1,
+            "accessories": [{ "id": "11", "name": "Item 11", "price": 5, "quantity": 1 }]
+          }
+        ]
+      },
+      "expectedTestAppValue": "{\"id\":\"90dccefe-d23a-497d-9cb7-881bb5aaf729\",\"version\":{\"majorVersion\":1,\"minorVersion\":0},\"cartInfo\":{\"status\":\"Open\",\"market\":\"US\",\"currency\":\"USD\",\"intent\":\"TeamsAdminUser\",\"locale\":\"en-US\",\"createdAt\":\"2021-09-30T15:00:00.000Z\",\"updatedAt\":\" 2021-09-30T15:00:00.000Z\"},\"cartItems\":[{\"id\":\"1\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1,\"imageURL\":\"https://via.placeholder.com/150\"}]},{\"id\":\"2\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1}]}]}"
+    },
+    {
+      "title": "RemoveCartItems API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_removeCartItems",
+      "inputValue": { "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729", "cartItemIds": ["1"] },
+      "expectedTestAppValue": "{\"id\":\"90dccefe-d23a-497d-9cb7-881bb5aaf729\",\"version\":{\"majorVersion\":1,\"minorVersion\":0},\"cartInfo\":{\"status\":\"Open\",\"market\":\"US\",\"currency\":\"USD\",\"intent\":\"TeamsAdminUser\",\"locale\":\"en-US\",\"createdAt\":\"2021-09-30T15:00:00.000Z\",\"updatedAt\":\" 2021-09-30T15:00:00.000Z\"},\"cartItems\":[]}"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Invalid ID",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": {
+        "cartId": "90dccefe",
+        "cartItems": [
+          {
+            "id": "2",
+            "name": "Item 1",
+            "price": 10,
+            "quantity": 1,
+            "accessories": [{ "id": "11", "name": "Item 11", "price": 5, "quantity": 1 }]
+          }
+        ]
+      },
+      "expectedTestAppValue": "Error: Error: id must be a valid UUID"
+    },
+    {
+      "title": "AddOrUpdateCartItems API Call - Empty Array",
+      "type": "callResponse",
+      "boxSelector": "#box_addOrUpdateCartItems",
+      "inputValue": { "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729", "cartItems": [] },
+      "expectedTestAppValue": "Error: Error: cartItems must be a non-empty array"
+    },
+    {
+      "title": "UpdateCartStatus API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_updateCartStatus",
+      "inputValue": { "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729", "cartStatus": "Processed" },
+      "expectedTestAppValue": "{\"id\":\"90dccefe-d23a-497d-9cb7-881bb5aaf729\",\"version\":{\"majorVersion\":1,\"minorVersion\":0},\"cartInfo\":{\"status\":\"Processed\",\"market\":\"US\",\"currency\":\"USD\",\"intent\":\"TeamsAdminUser\",\"locale\":\"en-US\",\"createdAt\":\"2021-09-30T15:00:00.000Z\",\"updatedAt\":\" 2021-09-30T15:00:00.000Z\"},\"cartItems\":[{\"id\":\"1\",\"name\":\"Item 1\",\"price\":10,\"quantity\":1,\"accessories\":[{\"id\":\"11\",\"name\":\"Item 11\",\"price\":5,\"quantity\":1,\"imageURL\":\"https://via.placeholder.com/150\"}]}]}"
+    },
+    {
+      "title": "UpdateCartStatus API Call - Invalid Status",
+      "type": "callResponse",
+      "boxSelector": "#box_updateCartStatus",
+      "inputValue": { "cartId": "90dccefe-d23a-497d-9cb7-881bb5aaf729", "cartStatus": "InvalidStatus" },
+      "expectedTestAppValue": "Error: Error: cartStatus InvalidStatus is not valid"
+    }
+  ]
+}
