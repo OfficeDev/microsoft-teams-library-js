@@ -25,7 +25,7 @@ const CopyText = (): React.ReactElement =>
         }
       },
       submit: async (text) => {
-        const blob = new Blob([text], { type: 'text/plain' });
+        const blob = new Blob([text], { type: 'text/html' });
         const result = await clipboard.write(blob);
         return JSON.stringify(result);
       },
@@ -43,7 +43,7 @@ const CopyImage = (): React.ReactElement =>
         }
       },
       submit: async (imageUrl) => {
-        const blob = await(await fetch(imageUrl as URL)).blob();
+        const blob = await (await fetch(imageUrl as URL)).blob();
         const result = await clipboard.write(blob);
         return JSON.stringify(result);
       },

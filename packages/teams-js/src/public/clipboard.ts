@@ -1,6 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -20,7 +21,7 @@ export namespace clipboard {
    * @returns A string promise which resolves to success message from the clipboard or
    *          rejects with error stating the reason for failure.
    */
-  export function write(blob: Blob): Promise<string> {
+  export async function write(blob: Blob): Promise<string> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -30,11 +31,38 @@ export namespace clipboard {
         !blob.type.endsWith('png') &&
         !blob.type.endsWith('jpeg') &&
         !blob.type.endsWith('svg+xml')) ||
-      (blob.type.startsWith('text') && !blob.type.endsWith('plain') && blob.type.endsWith('html'))
+      (blob.type.startsWith('text') && !blob.type.endsWith('plain') && !blob.type.endsWith('html'))
     ) {
       throw new Error(`Blob type ${blob.type} is not supported.`);
     }
-    return sendAndHandleSdkError('clipboard.writeToClipboard', blob);
+    if (GlobalVars.hostClientType === HostClientType.android) {
+      const data: string | ArrayBuffer = await getBase64StringFromBlob(blob);
+      return sendAndHandleSdkError('clipboard.writeToClipboard', data);
+    } else {
+      return sendAndHandleSdkError('clipboard.writeToClipboard', blob);
+    }
+  }
+
+  /**
+   * Converts blob to base64 string.
+   * @param blob Blob to convert to base64 string.
+   * @param callback function to set the data.
+   */
+  function getBase64StringFromBlob(blob: Blob): Promise<string | ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to read the blob'));
+        }
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+      };
+      reader.readAsDataURL(blob);
+    });
   }
 
   /**
@@ -49,7 +77,11 @@ export namespace clipboard {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('clipboard.readFromClipboard');
+    if (GlobalVars.hostClientType === HostClientType.android) {
+      return sendAndHandleSdkError('clipboard.readFromClipboard');
+    } else {
+      return sendAndHandleSdkError('clipboard.readFromClipboard');
+    }
   }
 
   /**
