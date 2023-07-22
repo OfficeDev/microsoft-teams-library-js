@@ -158,6 +158,7 @@ export namespace appNotification {
    * The notificationDisplayParam would be serialized before passing across to the message handler to ensure all objects passed contain simple parameters that would properly pass across the Iframe
    * @param notificationdisplayparam - Interface object with all the parameters required to display an appNotificiation
    * @returns a promise resolution upon conclusion
+   * @throws
    */
   export function displayInAppNotification(notificationDisplayParam: NotificationDisplayParam): Promise<void> {
     ensureInitialized(

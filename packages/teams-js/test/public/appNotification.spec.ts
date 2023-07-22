@@ -123,10 +123,10 @@ describe('appNotification', () => {
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
+              `Dear valued users,
             We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
             Expected Downtime: Approximately 4 hours.
-            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,   
+            We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
             displayDurationInSeconds: 0,
             notificationActionUrl: new URL('http://www.example.com'),
           };
@@ -142,7 +142,7 @@ describe('appNotification', () => {
           const displayNotificationParam: appNotification.NotificationDisplayParam = {
             title: 'Update: Maintenance extended to include server upgrades.',
             content:
-            `Dear valued users,
+              `Dear valued users,
             We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
             Expected Downtime: Approximately 4 hours.
             We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
@@ -201,7 +201,7 @@ describe('appNotification', () => {
           await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         });
 
-        
+
       } else {
         it(`should not allow appNotification calls from the wrong context. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
