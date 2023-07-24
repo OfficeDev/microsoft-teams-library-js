@@ -5,7 +5,6 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { DevicePermission, ErrorCode, SdkError } from '../../src/public/interfaces';
 import { media } from '../../src/public/media';
-import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -39,13 +38,6 @@ describe('media', () => {
       app._uninitialize();
       jest.clearAllMocks();
       GlobalVars.isFramelessWindow = false;
-    });
-
-    describe('Testing isSupported', () => {
-      it('should not be supported before initialization', () => {
-        setUnitializedRuntime();
-        expect(() => media.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-      });
     });
 
     describe('captureImage', () => {
@@ -169,7 +161,7 @@ describe('media', () => {
   
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`should throw error when media is not supported in runtime config. context: ${context}`, async () => {
+          it(`media should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
@@ -179,18 +171,7 @@ describe('media', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
-  
-          it(`media should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { media: {} } });
-            expect.assertions(1);
-            try {
-              media.hasPermission();
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-  
+
           it('hasPermission call in default version of platform support fails', async () => {
             await utils.initializeWithContext(context);
             expect.assertions(1);
@@ -205,7 +186,7 @@ describe('media', () => {
           it('hasPermission call with successful result', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { media: {}, permissions: {} } });
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
   
             const promise = media.hasPermission();
   
@@ -228,7 +209,7 @@ describe('media', () => {
           it('HasPermission rejects promise with Error when error received from host', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { media: {}, permissions: {} } });
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
   
             const promise = media.hasPermission();
   
@@ -265,7 +246,7 @@ describe('media', () => {
           it('should not allow requestPermission calls before initialization', () => {
             expect(() => media.requestPermission()).toThrowError(new Error(errorLibraryNotInitialized));
           });
-  
+
           it('requestPermission call in default version of platform support fails', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
@@ -279,7 +260,7 @@ describe('media', () => {
   
           it(`requestPermission should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { media: {} } });
+            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
             expect.assertions(1);
             try {
               media.requestPermission();
@@ -287,22 +268,11 @@ describe('media', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
-  
-          it(`should throw error when media is not supported in runtime config. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            expect.assertions(1);
-            try {
-              media.hasPermission();
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-  
+
           it('requestPermission call with successful result', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { media: {}, permissions: {} } });
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
   
             const promise = media.requestPermission();
   
@@ -325,7 +295,7 @@ describe('media', () => {
           it('requestPermission rejects promise with Error when error received from host', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { media: {}, permissions: {} } });
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
   
             const promise = media.requestPermission();
   

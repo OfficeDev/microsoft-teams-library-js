@@ -240,13 +240,6 @@ const RequestMediaPermission = (): React.ReactElement =>
     },
   });
 
-const CheckMediaCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkMediaCapability',
-    title: 'Check media Capability',
-    onClick: async () => `media module ${media.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const MediaAPIs = (): ReactElement => (
   <ModuleWrapper title="Media">
     <CaptureImage />
@@ -257,7 +250,6 @@ const MediaAPIs = (): ReactElement => (
     <ScanBarCode />
     <HasMediaPermission />
     <RequestMediaPermission />
-    <CheckMediaCapability />
   </ModuleWrapper>
 );
 
