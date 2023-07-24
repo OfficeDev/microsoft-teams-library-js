@@ -1,8 +1,28 @@
 import { sendAndHandleSdkError } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
+import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * Currently supported Mime type
+ */
+enum SupportedMimeType {
+  TextPlain = 'text/plain',
+  TextHtml = 'text/html',
+  ImagePNG = 'image/png',
+  ImageJPEG = 'image/jpeg',
+  ImageSVG = 'image/svg+xml',
+}
+
+/**
+ * Clipboard wirte parameters
+ */
+interface ClipboardParams {
+  /** Mime Type of data to be copied to Clipboard */
+  mimeType: SupportedMimeType;
+  /** Blob content in Base64 string format */
+  content: string;
+}
 
 /**
  * Namespace to interact with the clipboard specific part of the SDK.
@@ -26,34 +46,26 @@ export namespace clipboard {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (
-      (blob.type.startsWith('image') &&
-        !blob.type.endsWith('png') &&
-        !blob.type.endsWith('jpeg') &&
-        !blob.type.endsWith('svg+xml')) ||
-      (blob.type.startsWith('text') && !blob.type.endsWith('plain') && !blob.type.endsWith('html'))
-    ) {
+    if (!(blob.type && Object.values(SupportedMimeType).includes(blob.type as SupportedMimeType))) {
       throw new Error(`Blob type ${blob.type} is not supported.`);
     }
-    if (GlobalVars.hostClientType === HostClientType.android) {
-      const data: string | ArrayBuffer = await getBase64StringFromBlob(blob);
-      return sendAndHandleSdkError('clipboard.writeToClipboard', data);
-    } else {
-      return sendAndHandleSdkError('clipboard.writeToClipboard', blob);
-    }
+    const writeParams: ClipboardParams = {
+      mimeType: blob.type as SupportedMimeType,
+      content: await getBase64StringFromBlob(blob),
+    };
+    return sendAndHandleSdkError('clipboard.writeToClipboard', writeParams);
   }
 
   /**
    * Converts blob to base64 string.
    * @param blob Blob to convert to base64 string.
-   * @param callback function to set the data.
    */
-  function getBase64StringFromBlob(blob: Blob): Promise<string | ArrayBuffer> {
-    return new Promise((resolve, reject) => {
+  function getBase64StringFromBlob(blob: Blob): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (reader.result) {
-          resolve(reader.result);
+          resolve(reader.result.toString().split(',')[1]);
         } else {
           reject(new Error('Failed to read the blob'));
         }
@@ -66,19 +78,40 @@ export namespace clipboard {
   }
 
   /**
+   * Convert base64 string to blob
+   * @param base64Data string respresenting the content
+   * @param contentType Mimetype
+   * @returns Promise
+   */
+  function base64ToBlob(data: ClipboardParams): Promise<Blob> {
+    return new Promise<Blob>((resolve) => {
+      const byteCharacters = atob(data.content);
+      if (data.mimeType.startsWith('image/')) {
+        const byteArray = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteArray[i] = byteCharacters.charCodeAt(i);
+        }
+        resolve(new Blob([byteArray], { type: data.mimeType }));
+      }
+      resolve(new Blob([byteCharacters], { type: data.mimeType }));
+    });
+  }
+
+  /**
    * Function to read data from clipboard.
    *
    * @returns A promise blob which resolves to the data read from the clipboard or
    *          rejects stating the reason for failure.
    *          Note: Returned blob type will contain one of the MIME type `image/png`, `text/plain` or `text/html`.
    */
-  export function read(): Promise<Blob> {
+  export async function read(): Promise<Blob> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (GlobalVars.hostClientType === HostClientType.android) {
-      return sendAndHandleSdkError('clipboard.readFromClipboard');
+    if (isHostClientMobile()) {
+      const response = await sendAndHandleSdkError('clipboard.readFromClipboard');
+      return base64ToBlob(JSON.parse(response as string) as ClipboardParams);
     } else {
       return sendAndHandleSdkError('clipboard.readFromClipboard');
     }
