@@ -323,12 +323,13 @@ describe('video', () => {
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
-        expect.assertions(4);
+        expect.assertions(6);
 
         // Arrange
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
-        const videoPerformanceMonitorSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportVideoEffectChanged');
+        const reportApplyingVideoEffectSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportApplyingVideoEffect');
+        const reportVideoEffectChangedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportVideoEffectChanged');
 
         // Act
         video.registerForVideoEffect(videoEffectCallBack);
@@ -336,10 +337,13 @@ describe('video', () => {
         sendMessage('video.effectParameterChange', effectId);
 
         // Assert
+        expect(reportApplyingVideoEffectSpy).toHaveBeenCalledTimes(1);
+        expect(reportApplyingVideoEffectSpy.mock.calls[0][0]).toEqual(effectId);
         expect(videoEffectCallBack).toHaveBeenCalledTimes(1);
         expect(videoEffectCallBack.mock.lastCall[0]).toEqual(effectId);
-        expect(videoPerformanceMonitorSpy).toHaveBeenCalledTimes(1);
-        expect(videoPerformanceMonitorSpy.mock.calls[0][0]).toEqual(effectId);
+        await utils.flushPromises();
+        expect(reportVideoEffectChangedSpy).toHaveBeenCalledTimes(1);
+        expect(reportVideoEffectChangedSpy.mock.calls[0][0]).toEqual(effectId);
       });
 
       it('should invoke videoEffectReadiness handler on callback resolved', async () => {

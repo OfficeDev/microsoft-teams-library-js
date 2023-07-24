@@ -29,17 +29,21 @@ describe('VideoPerformanceMonitor', () => {
   });
 
   it('should report firstFrameProcessed event', () => {
-    videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
+    videoPerformanceMonitor.reportApplyingVideoEffect('effectId1', 'effectParam');
+    videoPerformanceMonitor.reportApplyingVideoEffect('effectId2', 'effectParam');
+    videoPerformanceMonitor.reportVideoEffectChanged('effectId2', 'effectParam');
+    videoPerformanceMonitor.reportVideoEffectChanged('effectId1', 'effectParam');
     advanceTimersByTime(10);
     videoPerformanceMonitor.reportFrameProcessed();
     expect(reportPerformanceEvent).toBeCalledWith('video.performance.firstFrameProcessed', [
       expect.any(Number), // timestamp
-      'effectId',
+      'effectId2',
       'effectParam',
     ]);
   });
 
   it('should report processStarts/ends', () => {
+    videoPerformanceMonitor.reportApplyingVideoEffect('effectId', 'effectParam');
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
     videoPerformanceMonitor.reportStartFrameProcessing(100, 100);
     videoPerformanceMonitor.reportFrameProcessed();
@@ -54,6 +58,7 @@ describe('VideoPerformanceMonitor', () => {
   });
 
   it('should report videoExtensibilityFrameProcessingSlow event', async () => {
+    videoPerformanceMonitor.reportApplyingVideoEffect('effectId', 'effectParam');
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
     advanceTimersByTime(101);
     for (let i = 0; i < 10; i++) {

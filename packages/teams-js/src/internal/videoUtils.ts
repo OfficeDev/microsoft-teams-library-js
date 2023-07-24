@@ -416,10 +416,11 @@ export function createEffectParameterChangeCallback(
   videoPerformanceMonitor?: VideoPerformanceMonitor,
 ) {
   return (effectId: string | undefined, effectParam?: string): void => {
-    videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
+    videoPerformanceMonitor?.reportApplyingVideoEffect(effectId || '', effectParam);
 
     callback(effectId, effectParam)
       .then(() => {
+        videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
         sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
       })
       .catch((reason) => {

@@ -6,7 +6,15 @@ export class VideoPerformanceMonitor {
   private static readonly calculateFPSInterval = 1000;
 
   private isFirstFrameProcessed = false;
-  private currentSelectedEffect: {
+
+  // The effect that the user last selected:
+  private applyingEffect: {
+    effectId: string;
+    effectParam?: string;
+  };
+
+  // The effect that is currently applied to the video:
+  private appliedEffect: {
     effectId: string;
     effectParam?: string;
   };
@@ -41,28 +49,44 @@ export class VideoPerformanceMonitor {
     this.frameProcessTimeLimit = timeLimit;
   }
 
-  public reportVideoEffectChanged(effectId: string, effectParam?: string): void {
-    if (this.currentSelectedEffect?.effectId === effectId && this.currentSelectedEffect?.effectParam === effectParam) {
+  public reportApplyingVideoEffect(effectId: string, effectParam?: string): void {
+    if (this.applyingEffect?.effectId === effectId && this.applyingEffect?.effectParam === effectParam) {
       return;
     }
-    this.currentSelectedEffect = {
+    this.applyingEffect = {
       effectId,
       effectParam,
     };
+    this.appliedEffect = undefined;
+  }
+
+  public reportVideoEffectChanged(effectId: string, effectParam?: string): void {
+    if (
+      this.applyingEffect === undefined ||
+      (this.applyingEffect.effectId !== effectId && this.applyingEffect.effectParam !== effectParam)
+    ) {
+      // don't handle obsoleted event
+      return;
+    }
+    this.appliedEffect = {
+      effectId,
+      effectParam,
+    };
+    this.applyingEffect = undefined;
     this.isFirstFrameProcessed = false;
   }
 
   public reportStartFrameProcessing(frameWidth: number, frameHeight: number): void {
     VideoFrameTick.tick();
-    if (!this.currentSelectedEffect) {
+    if (!this.appliedEffect) {
       return;
     }
     this.frameProcessingStartedAt = performance.now();
-    this.performanceStatistics.processStarts(this.currentSelectedEffect.effectId, frameWidth, frameHeight);
+    this.performanceStatistics.processStarts(this.appliedEffect.effectId, frameWidth, frameHeight);
   }
 
   public reportFrameProcessed(): void {
-    if (!this.currentSelectedEffect) {
+    if (!this.appliedEffect) {
       return;
     }
     this.processedFrameCount++;
@@ -72,8 +96,8 @@ export class VideoPerformanceMonitor {
       this.isFirstFrameProcessed = true;
       this.reportPerformanceEvent('video.performance.firstFrameProcessed', [
         Date.now(),
-        this.currentSelectedEffect.effectId,
-        this.currentSelectedEffect?.effectParam,
+        this.appliedEffect.effectId,
+        this.appliedEffect?.effectParam,
       ]);
     }
   }
