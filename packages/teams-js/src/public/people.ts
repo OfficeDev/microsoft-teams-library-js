@@ -96,7 +96,7 @@ export namespace people {
     title?: string;
 
     /**
-     * Optional; Microsoft Entra ids of the users to be pre-populated in the search box of people picker control
+     * Optional; Microsoft Entra IDs of the users to be pre-populated in the search box of people picker control
      * If single select is enabled this value, only the first user in the list will be pre-populated
      * Default value is null
      */
@@ -120,7 +120,7 @@ export namespace people {
    */
   export interface PeoplePickerResult {
     /**
-     * user object Id (also known as Microsoft Entra id) of the selected user
+     * user object ID (also known as Microsoft Entra ID) of the selected user
      */
     objectId: string;
 

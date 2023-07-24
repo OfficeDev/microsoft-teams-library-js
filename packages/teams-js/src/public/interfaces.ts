@@ -508,7 +508,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.UserInfo.loginHint | app.Context.user.loginHint} instead
    *
-   * A value suitable for use as a login_hint when authenticating with Microsoft Entra.
+   * A value suitable for use as a login_hint when authenticating with Microsoft Entra ID.
    * Because a malicious party can run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
    * This field is available only when the identity permission is requested in the manifest.
@@ -530,7 +530,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.UserInfo.id | app.Context.user.id} instead
    *
-   * The Microsoft Entra object id of the current user.
+   * The Microsoft Entra object ID of the current user.
    * Because a malicious party run your content in a browser, this value should
    * be used only as a hint as to who the user is and never as proof of identity.
    * This field is available only when the identity permission is requested in the manifest.

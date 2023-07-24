@@ -46,7 +46,7 @@ export namespace authentication {
   /**
    * Initiates an authentication flow which requires a new window.
    * There are two primary uses for this function:
-   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Microsoft Entra)
+   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Microsoft Entra ID)
    * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Microsoft Entra consent prompts)
    *
    * For more details, see [Enable authentication using third-party OAuth provider](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)

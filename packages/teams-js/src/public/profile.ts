@@ -67,7 +67,7 @@ export namespace profile {
    * The set of identifiers that are supported for resolving the persona.
    *
    * At least one is required, and if multiple are provided then only the highest
-   * priority one will be used (AadObjectId > Upn > Smtp). AAD is now known as "Microsoft Entra"
+   * priority one will be used (AadObjectId > Upn > Smtp). AAD is now known as "Microsoft Entra ID"
    *
    * @beta
    */

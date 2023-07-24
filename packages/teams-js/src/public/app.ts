@@ -385,7 +385,7 @@ export namespace app {
     licenseType?: string;
 
     /**
-     * A value suitable for use when providing a login_hint to Microsoft Entra for authentication purposes.
+     * A value suitable for use when providing a login_hint to Microsoft Entra ID for authentication purposes.
      * See [Provide optional claims to your app](https://learn.microsoft.com/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set)
      * for more information about the use of login_hint
      *
