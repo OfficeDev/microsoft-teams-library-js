@@ -67,7 +67,7 @@ export namespace appNotification {
 
   /**
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
-   * @param notificationDisplayParam - appNotification display parameter with the notificationActionUrl as a URL type
+   * @param notificationDisplayParam - appNotification display parameter with the notificationActionUrl as a URL type 
    * @returns a serialized object that can be sent to the host SDK
    */
   function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
@@ -160,6 +160,7 @@ export namespace appNotification {
    * @returns a promise resolution upon conclusion
    * @throws Error if appNotification capability is not supported
    * @throws Error if notficationDisplayParam was not validated successfully
+   * @throws Error if
    */
   export function displayInAppNotification(notificationDisplayParam: NotificationDisplayParam): Promise<void> {
     ensureInitialized(

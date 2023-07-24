@@ -67,7 +67,7 @@ export namespace appNotification {
 
   /**
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
-   * @param notificationDisplayParam - appNotification display parameter with the notificationActionUrl as a URL type
+   * @param notificationDisplayParam - appNotification display parameter with the notificationActionUrl as a URL type 
    * @returns a serialized object that can be sent to the host SDK
    */
   function serializeParam(notificationDisplayParam: NotificationDisplayParam): NotificationDisplayParamForAppHost {
