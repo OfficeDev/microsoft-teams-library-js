@@ -137,17 +137,13 @@ export namespace appNotification {
     }
     if (!isValidUrl(notificationDisplayParam.notificationActionUrl)) {
       throw new Error('Invalid notificationAction url');
-    }
-
-    if (notificationDisplayParam?.icon !== undefined && !isValidUrl(notificationDisplayParam?.icon)) {
-      throw new Error('Invalid icon url');
-    }
+    }?
 
     if (!notificationDisplayParam.displayDurationInSeconds) {
-      throw new Error('Must supply notification display duration in seconds');
+      throw new Error('Must supply display duration in seconds');
     }
 
-    if (notificationDisplayParam.displayDurationInSeconds < 0) {
+    if (notificationDisplayParam.displayDurationInSeconds <= 0) {
       throw new Error('Notification display time must be greater than zero');
     }
   }

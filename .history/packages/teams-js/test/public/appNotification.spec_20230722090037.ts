@@ -106,7 +106,7 @@ describe('appNotification', () => {
                 Expected Downtime: Approximately 4 hours.
                 We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
             displayDurationInSeconds: 30,
-            notificationActionUrl: new URL('https://www.example.com'),
+            notificationActionUrl: new URL('http://www.example.com'),
           };
 
           expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
@@ -116,7 +116,7 @@ describe('appNotification', () => {
           );
         });
 
-        it('should not display notification with zero DurationInSeconds', async () => {
+        it(' should not display notification with zero DurationInSeconds"', async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
 
@@ -128,10 +128,10 @@ describe('appNotification', () => {
             Expected Downtime: Approximately 4 hours.
             We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
             displayDurationInSeconds: 0,
-            notificationActionUrl: new URL('https://www.example.com'),
+            notificationActionUrl: new URL('http://www.example.com'),
           };
           expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
-            new Error('Must supply notification display duration in seconds'),
+            new Error('Notification display time must be greater than zero'),
           );
         });
 
@@ -147,33 +147,12 @@ describe('appNotification', () => {
             Expected Downtime: Approximately 4 hours.
             We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
             displayDurationInSeconds: -1,
-            notificationActionUrl: new URL('https://www.example.com'),
+            notificationActionUrl: new URL('http://www.example.com'),
           };
           expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
             new Error('Notification display time must be greater than zero'),
           );
         });
-
-        it(' should not display in-app notification with invalid icon URL', async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
-
-          const displayNotificationParam: appNotification.NotificationDisplayParam = {
-            title: 'Update: Maintenance extended to include server upgrades.',
-            content:
-              `Dear valued users,
-             We would like to inform you that scheduled maintenance will take place on our Microsoft platform tomorrow, August 1st, 2023, starting at 10:00 AM UTC. During this time, Microsoft services will be temporarily unavailable as we perform necessary upgrades to enhance performance and security.
-             Expected Downtime: Approximately 4 hours.
-             We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
-            displayDurationInSeconds: 40,
-            notificationActionUrl: new URL('https://www.example.com'),
-            icon: new URL('fttp://example.com')
-          };
-          expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
-            new Error('Invalid icon url'),
-          );
-        });
-
 
         it('displayInAppNotification call should not be with successful with invalid content length', async () => {
           const maxContentLength = 1500;
@@ -192,7 +171,7 @@ describe('appNotification', () => {
                      Best regards,
                      Microsoft`,
             displayDurationInSeconds: 30,
-            notificationActionUrl: new URL('https://www.example.com'),
+            notificationActionUrl: new URL('http://www.example.com'),
           };
 
           expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(

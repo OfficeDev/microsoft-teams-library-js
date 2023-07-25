@@ -143,11 +143,11 @@ export namespace appNotification {
       throw new Error('Invalid icon url');
     }
 
-    if (!notificationDisplayParam.displayDurationInSeconds) {
+    if (notificationDisplayParam.displayDurationInSeconds) {
       throw new Error('Must supply notification display duration in seconds');
     }
 
-    if (notificationDisplayParam.displayDurationInSeconds < 0) {
+    if (notificationDisplayParam.displayDurationInSeconds <= 0) {
       throw new Error('Notification display time must be greater than zero');
     }
   }
