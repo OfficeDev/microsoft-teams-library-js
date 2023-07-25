@@ -93,7 +93,7 @@ describe('appNotification', () => {
           await expect(promise).resolves.toBe(null);
         });
 
-        it('displayInNotification call should not be successful with invalid title length', async () => {
+        it('displayInNotification call should not be successful with Invalid notification title length', async () => {
           const maxTitleLength = 75;
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
