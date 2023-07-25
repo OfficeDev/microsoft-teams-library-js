@@ -224,7 +224,8 @@ export namespace video {
     }
     registerHandler(
       'video.setFrameProcessTimeLimit',
-      (timeLimit: number) => videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
+      (timeLimitInfo: { timeLimit: number }) =>
+        videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimitInfo.timeLimit),
       false,
     );
     if (doesSupportMediaStream()) {
