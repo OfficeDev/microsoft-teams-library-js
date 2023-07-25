@@ -1,4 +1,4 @@
-import { generateGUID } from '../internal/utils';
+import { generateGUID } from './utils';
 
 export class VideoFrameTick {
   private static readonly setTimeoutCallbacks: {

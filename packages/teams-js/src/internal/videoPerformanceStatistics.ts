@@ -1,4 +1,4 @@
-import { VideoFrameTick } from '../private/videoFrameTick';
+import { VideoFrameTick } from './videoFrameTick';
 
 export type VideoPerformanceStatisticsResult = {
   effectId: string;

@@ -1,6 +1,6 @@
 /* eslint-disable strict-null-checks/all */
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
-import { VideoFrameTick } from '../../src/private/videoFrameTick';
+import { VideoFrameTick } from '../../src/internal/videoFrameTick';
 
 jest.useFakeTimers();
 function advanceTimersByTime(time: number): void {

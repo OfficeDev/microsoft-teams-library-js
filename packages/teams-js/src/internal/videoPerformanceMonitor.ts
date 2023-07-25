@@ -1,4 +1,4 @@
-import { VideoFrameTick } from '../private/videoFrameTick';
+import { VideoFrameTick } from './videoFrameTick';
 import { VideoPerformanceStatistics } from './videoPerformanceStatistics';
 
 export class VideoPerformanceMonitor {
