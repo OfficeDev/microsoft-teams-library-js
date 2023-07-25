@@ -108,7 +108,7 @@ describe('video', () => {
           const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
           // Act
           video.registerForVideoFrame(registerForVideoFrameParameters);
-          sendMessage('video.setFrameProcessTimeLimit', 100);
+          sendMessage('video.setFrameProcessTimeLimit', { timeLimit: 100 });
 
           // Assert
           expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);

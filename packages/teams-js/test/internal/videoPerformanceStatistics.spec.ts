@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
+import { VideoFrameTick } from '../../src/internal/videoFrameTick';
 import {
   VideoPerformanceStatistics,
   VideoPerformanceStatisticsResult,
 } from '../../src/internal/videoPerformanceStatistics';
-import { VideoFrameTick } from '../../src/private/videoFrameTick';
 
 jest.useFakeTimers();
 function advanceTimersByTime(time: number): void {

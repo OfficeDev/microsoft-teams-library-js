@@ -1,4 +1,4 @@
-import { VideoFrameTick } from '../../src/private/videoFrameTick';
+import { VideoFrameTick } from '../../src/internal/videoFrameTick';
 jest.useFakeTimers();
 describe('videoFrameTick', () => {
   describe('setTimeout', () => {
