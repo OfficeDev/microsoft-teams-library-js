@@ -167,7 +167,7 @@ describe('appNotification', () => {
              We apologize for any inconvenience this may cause and assure you that our team at Microsoft is working diligently to complete the maintenance as quickly as possible.`,
              displayDurationInSeconds: 40,
              notificationActionUrl: new URL('https://www.example.com'),
-             icon: new URL('fttp:example.com')
+             icon: new URL('fttp://example.com')
            };
            expect(() => appNotification.displayInAppNotification(displayNotificationParam)).toThrowError(
              new Error('Invalid icon url'),
