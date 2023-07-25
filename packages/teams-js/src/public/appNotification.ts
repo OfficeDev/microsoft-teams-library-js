@@ -139,7 +139,7 @@ export namespace appNotification {
       throw new Error('Invalid notificationAction url');
     }
 
-    if (notificationDisplayParam?.icon !== undefined && !isValidUrl(notificationDisplayParam?.icon)) {
+    if (notificationDisplayParam?.icon != undefined && !isValidUrl(notificationDisplayParam?.icon)) {
       throw new Error('Invalid icon url');
     }
 
