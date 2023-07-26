@@ -13,7 +13,7 @@ const CheckAppNotificationCapability = (): React.ReactElement =>
 
 const DisplayAppNotification = (): React.ReactElement =>
   ApiWithTextInput<appNotification.NotificationDisplayParam>({
-    name: 'display  AppNotificationCapability',
+    name: 'displayAppNotificationCapability',
     title: 'Display App Notification Capability',
     onClick: {
       validateInput: (input) => {
