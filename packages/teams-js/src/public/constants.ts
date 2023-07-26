@@ -10,6 +10,8 @@ export enum HostClientType {
   ios = 'ios',
   /** Represents the iPadOS client of host, which runs on iOS devices such as iPads. */
   ipados = 'ipados',
+  /** Represents the macOS client of host, which runs on macOS devices such as Macbook. */
+  macos = 'macos',
   /**
    * @deprecated
    * As of 2.0.0, please use {@link teamsRoomsWindows} instead.

@@ -232,6 +232,7 @@ export const v1HostClientTypes = [
   HostClientType.web,
   HostClientType.android,
   HostClientType.ios,
+  HostClientType.macos,
   HostClientType.rigel,
   HostClientType.surfaceHub,
   HostClientType.teamsRoomsWindows,
