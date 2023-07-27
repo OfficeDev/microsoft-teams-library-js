@@ -11,5 +11,5 @@
   "typescript.preferences.quoteStyle": "single",
   "prettier.singleQuote": true,
   "cSpell.words": ["adal", "uninitialize"],
-  "jest.jestCommandLine": "pnpm test -- --",
+  "jest.jestCommandLine": "pnpm test -- --"
 }
