@@ -4,149 +4,185 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
- * @hidden
- * Allowed roles during a meeting.
+ * APIs involving Live Share, a framework for building real-time collaborative apps.
+ * For more information, visit https://aka.ms/teamsliveshare
  *
- * @beta
+ * @see LiveShareHost
  */
-export enum UserMeetingRole {
-  guest = 'Guest',
-  attendee = 'Attendee',
-  presenter = 'Presenter',
-  organizer = 'Organizer',
+export namespace liveShare {
+  /**
+   * @hidden
+   * The meeting roles of a user.
+   * Used in Live Share for its role verification feature.
+   * For more information, visit https://learn.microsoft.com/microsoftteams/platform/apps-in-teams-meetings/teams-live-share-capabilities?tabs=javascript#role-verification-for-live-data-structures
+   */
+  export enum UserMeetingRole {
+    /**
+     * Guest role.
+     */
+    guest = 'Guest',
+    /**
+     * Attendee role.
+     */
+    attendee = 'Attendee',
+    /**
+     * Presenter role.
+     */
+    presenter = 'Presenter',
+    /**
+     * Organizer role.
+     */
+    organizer = 'Organizer',
+  }
+
+  /**
+   * @hidden
+   * State of the current Live Share session's Fluid container.
+   * This is used internally by the `LiveShareClient` when joining a Live Share session.
+   */
+  export enum ContainerState {
+    /**
+     * The call to `LiveShareHost.setContainerId()` successfully created the container mapping
+     * for the current Live Share session.
+     */
+    added = 'Added',
+
+    /**
+     * A container mapping for the current Live Share session already exists.
+     * This indicates to Live Share that a new container does not need be created.
+     */
+    alreadyExists = 'AlreadyExists',
+
+    /**
+     * The call to `LiveShareHost.setContainerId()` failed to create the container mapping.
+     * This happens when another client has already set the container ID for the session.
+     */
+    conflict = 'Conflict',
+
+    /**
+     * A container mapping for the current Live Share session does not yet exist.
+     * This indicates to Live Share that a new container should be created.
+     */
+    notFound = 'NotFound',
+  }
+
+  /**
+   * @hidden
+   * Returned from `LiveShareHost.getFluidContainerId()` and `LiveShareHost.setFluidContainerId`.
+   * This response specifies the container mapping information for the current Live Share session.
+   */
+  export interface IFluidContainerInfo {
+    /**
+     * State of the containerId mapping.
+     */
+    containerState: ContainerState;
+
+    /**
+     * ID of the container to join for the meeting. Undefined if the container hasn't been
+     * created yet.
+     */
+    containerId: string | undefined;
+
+    /**
+     * If true, the local client should create the container and then save the created containers
+     * ID to the mapping service.
+     */
+    shouldCreate: boolean;
+
+    /**
+     * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready
+     * but another client is creating it. In this case, the local client should wait the specified
+     * amount of time before calling `LiveShareHost.getFluidContainerId()` again.
+     */
+    retryAfter: number;
+  }
+
+  /**
+   * @hidden
+   * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
+   * Live Share session.
+   */
+  export interface INtpTimeInfo {
+    /**
+     * ISO 8601 formatted server time. For example: '2019-09-07T15:50-04:00'
+     */
+    ntpTime: string;
+
+    /**
+     * Server time expressed as the number of milliseconds since the ECMAScript epoch.
+     */
+    ntpTimeInUTC: number;
+  }
+
+  /**
+   * @hidden
+   * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
+   * current Live Share session.
+   */
+  export interface IFluidTenantInfo {
+    /**
+     * The Fluid Tenant ID Live Share should use.
+     */
+    tenantId: string;
+
+    /**
+     * The Fluid service endpoint Live Share should use.
+     */
+    serviceEndpoint: string;
+  }
+
+  /**
+   * @hidden
+   * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
+   * particular client in a Live Share session.
+   */
+  export interface IClientInfo {
+    /**
+     * The host user's `userId` associated with a given `clientId`
+     */
+    userId: string;
+    /**
+     * User's meeting roles associated with a given `clientId`
+     */
+    roles: UserMeetingRole[];
+    /**
+     * The user's display name associated with a given `clientId`.
+     * If this returns as `undefined`, the user may need to update their host client.
+     */
+    displayName?: string;
+  }
+
+  /**
+   * Checks if the interactive capability is supported by the host
+   * @returns boolean to represent whether the interactive capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
+  export function isSupported(): boolean {
+    return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) &&
+      runtime.supports.interactive
+      ? true
+      : false;
+  }
 }
 
 /**
- * @hidden
- * State of the current Live Share sessions backing fluid container.
+ * Live Share host implementation for connecting to real-time collaborative sessions.
+ * Designed for use with the `LiveShareClient` class in the `@microsoft/live-share` package.
+ * Learn more at https://aka.ms/teamsliveshare
  *
- * @beta
- */
-export enum ContainerState {
-  /**
-   * The call to `LiveShareHost.setContainerId()` successfully created the container mapping
-   * for the current Live Share session.
-   */
-  added = 'Added',
-
-  /**
-   * A container mapping for the current Live Share Session already exists and should be used
-   * when joining the sessions Fluid container.
-   */
-  alreadyExists = 'AlreadyExists',
-
-  /**
-   * The call to `LiveShareHost.setContainerId()` failed to create the container mapping due to
-   * another client having already set the container ID for the current Live Share session.
-   */
-  conflict = 'Conflict',
-
-  /**
-   * A container mapping for the current Live Share session doesn't exist yet.
-   */
-  notFound = 'NotFound',
-}
-
-/**
- * @hidden
- * Returned from `LiveShareHost.get/setFluidContainerId()` to specify the container mapping for the
- * current Live Share session.
- *
- * @beta
- */
-export interface IFluidContainerInfo {
-  /**
-   * State of the containerId mapping.
-   */
-  containerState: ContainerState;
-
-  /**
-   * ID of the container to join for the meeting. Undefined if the container hasn't been
-   * created yet.
-   */
-  containerId: string | undefined;
-
-  /**
-   * If true, the local client should create the container and then save the created containers
-   * ID to the mapping service.
-   */
-  shouldCreate: boolean;
-
-  /**
-   * If `containerId` is undefined and `shouldCreate` is false, the container isn't ready but
-   * another client is creating it. The local client should wait the specified amount of time and
-   * then ask for the container info again.
-   */
-  retryAfter: number;
-}
-
-/**
- * @hidden
- * Returned from `LiveShareHost.getNtpTime()` to specify the global timestamp for the current
- * Live Share session.
- *
- * @beta
- */
-export interface INtpTimeInfo {
-  /**
-   * ISO 8601 formatted server time. For example: '2019-09-07T15:50-04:00'
-   */
-  ntpTime: string;
-
-  /**
-   * Server time expressed as the number of milliseconds since the ECMAScript epoch.
-   */
-  ntpTimeInUTC: number;
-}
-
-/**
- * @hidden
- * Returned from `LiveShareHost.getFluidTenantInfo()` to specify the Fluid service to use for the
- * current Live Share session.
- *
- * @beta
- */
-export interface IFluidTenantInfo {
-  /**
-   * The Fluid Tenant ID Live Share should use.
-   */
-  tenantId: string;
-
-  /**
-   * The Fluid service endpoint Live Share should use.
-   */
-  serviceEndpoint: string;
-}
-
-/**
- * @hidden
- * Returned from `LiveShareHost.getClientInfo()` to specify the client info for a
- * particular client in a Live Share session.
- *
- * @beta
- */
-export interface IClientInfo {
-  userId: string;
-  roles: UserMeetingRole[];
-  displayName?: string;
-}
-
-/**
- * @hidden
- * Live Share host implementation for O365 and Teams clients.
- *
- * @beta
+ * @remarks
+ * The `LiveShareClient` class from Live Share uses the hidden API's to join/manage the session.
+ * To create a new `LiveShareHost` instance use the static `LiveShareHost.create()` function.
  */
 export class LiveShareHost {
   /**
    * @hidden
    * Returns the Fluid Tenant connection info for user's current context.
-   *
-   * @beta
    */
-  public getFluidTenantInfo(): Promise<IFluidTenantInfo> {
+  public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
     ensureSupported();
-    return new Promise<IFluidTenantInfo>((resolve) => {
+    return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
     });
   }
@@ -157,8 +193,6 @@ export class LiveShareHost {
    *
    * @param containerId Fluid's container Id for the request. Undefined for new containers.
    * @returns token for connecting to Fluid's session.
-   *
-   * @beta
    */
   public getFluidToken(containerId?: string): Promise<string> {
     ensureSupported();
@@ -171,12 +205,10 @@ export class LiveShareHost {
   /**
    * @hidden
    * Returns the ID of the fluid container associated with the user's current context.
-   *
-   * @beta
    */
-  public getFluidContainerId(): Promise<IFluidContainerInfo> {
+  public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
     ensureSupported();
-    return new Promise<IFluidContainerInfo>((resolve) => {
+    return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
     });
   }
@@ -190,12 +222,10 @@ export class LiveShareHost {
    * `getFluidContainerId()` to get the ID of the container being used.
    * @param containerId ID of the fluid container the client created.
    * @returns A data structure with a `containerState` indicating the success or failure of the request.
-   *
-   * @beta
    */
-  public setFluidContainerId(containerId: string): Promise<IFluidContainerInfo> {
+  public setFluidContainerId(containerId: string): Promise<liveShare.IFluidContainerInfo> {
     ensureSupported();
-    return new Promise<IFluidContainerInfo>((resolve) => {
+    return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
     });
   }
@@ -203,12 +233,10 @@ export class LiveShareHost {
   /**
    * @hidden
    * Returns the shared clock server's current time.
-   *
-   * @beta
    */
-  public getNtpTime(): Promise<INtpTimeInfo> {
+  public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
     ensureSupported();
-    return new Promise<INtpTimeInfo>((resolve) => {
+    return new Promise<liveShare.INtpTimeInfo>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.getNtpTime'));
     });
   }
@@ -219,12 +247,10 @@ export class LiveShareHost {
    *
    * @param clientId The ID for the current user's Fluid client. Changes on reconnects.
    * @returns The roles for the current user.
-   *
-   * @beta
    */
-  public registerClientId(clientId: string): Promise<UserMeetingRole[]> {
+  public registerClientId(clientId: string): Promise<liveShare.UserMeetingRole[]> {
     ensureSupported();
-    return new Promise<UserMeetingRole[]>((resolve) => {
+    return new Promise<liveShare.UserMeetingRole[]>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
     });
   }
@@ -235,12 +261,10 @@ export class LiveShareHost {
    *
    * @param clientId The Client ID the message was received from.
    * @returns The roles for a given client. Returns `undefined` if the client ID hasn't been registered yet.
-   *
-   * @beta
    */
-  public getClientRoles(clientId: string): Promise<UserMeetingRole[] | undefined> {
+  public getClientRoles(clientId: string): Promise<liveShare.UserMeetingRole[] | undefined> {
     ensureSupported();
-    return new Promise<UserMeetingRole[] | undefined>((resolve) => {
+    return new Promise<liveShare.UserMeetingRole[] | undefined>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
     });
   }
@@ -251,23 +275,21 @@ export class LiveShareHost {
    *
    * @param clientId The Client ID the message was received from.
    * @returns The info for a given client. Returns `undefined` if the client ID hasn't been registered yet.
-   *
-   * @beta
    */
-  public getClientInfo(clientId: string): Promise<IClientInfo | undefined> {
+  public getClientInfo(clientId: string): Promise<liveShare.IClientInfo | undefined> {
     ensureSupported();
-    return new Promise<IClientInfo | undefined>((resolve) => {
+    return new Promise<liveShare.IClientInfo | undefined>((resolve) => {
       resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
     });
   }
 
   /**
-   * Returns a host instance for the client that can be passed to the `LiveShareClient` class.
+   * Factories a new `LiveShareHost` instance for use with the `LiveShareClient` class
+   * in the `@microsoft/live-share` package.
    *
    * @remarks
-   * The application must first be initialized and may only be called from `meetingStage` or `sidePanel` contexts.
-   *
-   * @beta
+   * `app.initialize()` must first be called before using this API.
+   * This API can only be called from `meetingStage` or `sidePanel` contexts.
    */
   public static create(): LiveShareHost {
     ensureSupported();
@@ -275,25 +297,9 @@ export class LiveShareHost {
     return new LiveShareHost();
   }
 }
-/**
- * @hidden
- *
- * Checks if the interactive capability is supported by the host
- * @returns boolean to represent whether the interactive capability is supported
- *
- * @throws Error if {@linkcode app.initialize} has not successfully completed
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function isSupported(): boolean {
-  return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) && runtime.supports.interactive
-    ? true
-    : false;
-}
 
 function ensureSupported(): void {
-  if (!isSupported()) {
+  if (!liveShare.isSupported()) {
     throw new Error('LiveShareHost Not supported');
   }
 }

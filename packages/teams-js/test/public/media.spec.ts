@@ -1,9 +1,9 @@
-import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { errorLibraryNotInitialized, permissionsAPIsRequiredVersion } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { app } from '../../src/public/app';
-import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { ErrorCode, SdkError } from '../../src/public/interfaces';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
+import { DevicePermission, ErrorCode, SdkError } from '../../src/public/interfaces';
 import { media } from '../../src/public/media';
 import { Utils } from '../utils';
 
@@ -22,6 +22,8 @@ describe('media', () => {
   const mediaAPISupportVersion = '1.8.0';
   const nonFullScreenVideoModeAPISupportVersion = '2.0.3';
   const imageOutputFormatsAPISupportVersion = '2.0.4';
+  const allowedContexts = [FrameContexts.content, FrameContexts.task];
+  const minVersionForPermissionsAPIs = permissionsAPIsRequiredVersion;
 
   const emptyCallback = () => {};
   describe('frameless', () => {
@@ -149,6 +151,178 @@ describe('media', () => {
             args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
           },
         } as DOMMessageEvent);
+      });
+    });
+
+    describe('Testing HasPermisison API', () => {
+      it('should not allow hasPermission calls before initialization', () => {
+        return expect(() => media.hasPermission()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+  
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`media should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            expect.assertions(1);
+            try {
+              media.hasPermission();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it('hasPermission call in default version of platform support fails', async () => {
+            await utils.initializeWithContext(context);
+            expect.assertions(1);
+            utils.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+            try {
+              media.hasPermission();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+  
+          it('hasPermission call with successful result', async () => {
+            await utils.initializeWithContext(context);
+            utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+  
+            const promise = media.hasPermission();
+  
+            const message = utils.findMessageByFunc('permissions.has');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toEqual(DevicePermission.Media);
+  
+            const callbackId = message.id;
+            utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [undefined, true],
+              },
+            } as DOMMessageEvent);
+  
+            await expect(promise).resolves.toBe(true);
+          });
+  
+          it('HasPermission rejects promise with Error when error received from host', async () => {
+            await utils.initializeWithContext(context);
+            utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+  
+            const promise = media.hasPermission();
+  
+            const message = utils.findMessageByFunc('permissions.has');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+  
+            const callbackId = message.id;
+            utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
+              },
+            } as DOMMessageEvent);
+  
+            await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+          });
+        } else {
+          it(`should not allow hasPermission calls from the wrong context. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            expect(() => media.hasPermission()).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('Testing RequestPermisison API', () => {
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it('should not allow requestPermission calls before initialization', () => {
+            expect(() => media.requestPermission()).toThrowError(new Error(errorLibraryNotInitialized));
+          });
+
+          it('requestPermission call in default version of platform support fails', async () => {
+            await utils.initializeWithContext(context);
+            utils.setClientSupportedSDKVersion(originalDefaultPlatformVersion);
+            expect.assertions(1);
+            try {
+              media.requestPermission();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+  
+          it(`requestPermission should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            expect.assertions(1);
+            try {
+              media.requestPermission();
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it('requestPermission call with successful result', async () => {
+            await utils.initializeWithContext(context);
+            utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+  
+            const promise = media.requestPermission();
+  
+            const message = utils.findMessageByFunc('permissions.request');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+            expect(message.args[0]).toEqual(DevicePermission.Media);
+  
+            const callbackId = message.id;
+            utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [undefined, true],
+              },
+            } as DOMMessageEvent);
+  
+            await expect(promise).resolves.toBe(true);
+          });
+  
+          it('requestPermission rejects promise with Error when error received from host', async () => {
+            await utils.initializeWithContext(context);
+            utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
+            utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
+  
+            const promise = media.requestPermission();
+  
+            const message = utils.findMessageByFunc('permissions.request');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(1);
+  
+            const callbackId = message.id;
+            utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
+              },
+            } as DOMMessageEvent);
+  
+            await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+          });
+        } else {
+          it(`should not allow requestPermission calls from the wrong context. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            expect(() => media.requestPermission()).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
       });
     });
 

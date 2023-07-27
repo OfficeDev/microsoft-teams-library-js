@@ -1,0 +1,25 @@
+{
+  "name": "Video SharedFrame",
+  "platforms": "Web",
+  "testUrlParams": [["frameContext", "sidePanel"]],
+  "version": ">2.11.0",
+  "testCases": [
+    {
+      "title": "video.sharedFrame.registerForVideoFrame - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_videoSharedFrameRegisterForVideoFrame",
+      "modulesToDisable": ["videoMediaStream"],
+      "expectedTestAppValue": "Registration attempt has been initiated. If successful, this message will change when it is invoked on video frame received.",
+      "expectedAlertValue": "sharedFrame.registerForVideoFrame called with config: {\"format\":\"NV12\"}"
+    },
+    {
+      "title": "videoEx.sharedFrame.registerForVideoFrame - Success",
+      "type": "callResponse",
+      "version": ">2.12.0",
+      "boxSelector": "#box_videoExSharedFrameRegisterForVideoFrame1",
+      "modulesToDisable": ["videoMediaStream"],
+      "expectedTestAppValue": "Registration attempt has been initiated. If successful, this message will change when it is invoked on video frame received.",
+      "expectedAlertValue": "sharedFrame.registerForVideoFrame called with config: {\"format\":\"NV12\",\"requireCameraStream\":false,\"audioInferenceModel\":{}}"
+    }
+  ]
+}

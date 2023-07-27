@@ -1,0 +1,35 @@
+{
+  "name": "Mail",
+  "version": ">2.0.0-beta.0",
+  "platforms": "*",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityMail"
+  },
+  "testCases": [
+    {
+      "title": "openMailItem API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_openMailItem",
+      "inputValue": {
+        "itemId": "123"
+      },
+      "expectedAlertValue": "openMailItem called with itemId: 123",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "composeMail API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_composeMail",
+      "inputValue": {
+        "type": "new",
+        "toRecipients": ["toRecipients"],
+        "ccRecipients": ["ccRecipients"],
+        "bccRecipients": ["bccRecipients"],
+        "subject": "subject",
+        "message": "message"
+      },
+      "expectedAlertValue": "composeMail called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    }
+  ]
+}

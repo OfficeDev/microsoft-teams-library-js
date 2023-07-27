@@ -40,18 +40,19 @@ describe('videoEx', () => {
         audioInferenceModel: new ArrayBuffer(100),
       };
 
+      const registerForVideoFrameParameters: videoEx.RegisterForVideoFrameParameters = {
+        videoBufferHandler: (_bufferData, _onSuccess, _onError) => {},
+        videoFrameHandler: (data) => Promise.resolve(data.videoFrame),
+        config: videoFrameConfig,
+      };
+
       const allowedContexts = [FrameContexts.sidePanel];
       Object.values(FrameContexts).forEach((context) => {
         if (!allowedContexts.some((allowedContext) => allowedContext === context)) {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() =>
-              videoEx.registerForVideoFrame({
-                videoBufferHandler: emptyVideoFrameCallback,
-                config: videoFrameConfig,
-              }),
-            ).toThrowError(
+            expect(() => videoEx.registerForVideoFrame(registerForVideoFrameParameters)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -65,10 +66,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame({
-            videoBufferHandler: emptyVideoFrameCallback,
-            config: videoFrameConfig,
-          });
+          videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -76,10 +74,7 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame({
-          videoBufferHandler: emptyVideoFrameCallback,
-          config: videoFrameConfig,
-        });
+        videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
         expect(message?.args?.[0]).toHaveProperty('audioInferenceModel');
@@ -89,10 +84,7 @@ describe('videoEx', () => {
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame({
-          videoBufferHandler: emptyVideoFrameCallback,
-          config: videoFrameConfig,
-        });
+        videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
@@ -102,7 +94,7 @@ describe('videoEx', () => {
         let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
         //callback
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -111,8 +103,8 @@ describe('videoEx', () => {
           returnedVideoFrame = _videoBufferData;
         };
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -131,7 +123,7 @@ describe('videoEx', () => {
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -140,8 +132,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -162,7 +154,7 @@ describe('videoEx', () => {
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _frame: video.VideoFrame,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -171,8 +163,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -196,7 +188,7 @@ describe('videoEx', () => {
       it('should invoke video frame event handler and successfully send notifyError', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const errorMessage = 'Error occurs when processing the video frame';
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -205,8 +197,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -230,7 +222,7 @@ describe('videoEx', () => {
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let handlerInvoked = false;
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -238,8 +230,8 @@ describe('videoEx', () => {
           handlerInvoked = true;
         };
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         utils.respondToFramelessMessage({
           data: {
@@ -248,6 +240,115 @@ describe('videoEx', () => {
           },
         } as DOMMessageEvent);
         expect(handlerInvoked).toBe(false);
+      });
+
+      describe('mediaStream', () => {
+        let restoreMediaStreamAPI: () => void;
+        beforeEach(async () => {
+          await utils.initializeWithContext(FrameContexts.sidePanel);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+        beforeAll(() => {
+          restoreMediaStreamAPI = mockMediaStreamAPI();
+        });
+        afterAll(() => {
+          restoreMediaStreamAPI();
+        });
+
+        it('should register for audioInferenceDiscardStatusChange and get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(6);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id', metadataInTexture: true }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+          const msgRegisterAudioInferenceDiscardStatusChange = utils.findMessageByFunc('registerHandler');
+          expect(msgRegisterAudioInferenceDiscardStatusChange).not.toBeNull();
+          expect(msgRegisterAudioInferenceDiscardStatusChange?.args?.[0]).toBe(
+            'video.mediaStream.audioInferenceDiscardStatusChange',
+          );
+        });
+
+        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(5);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id' }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+          // no registerHandler message for audioInferenceDiscardStatusChange
+          expect(utils.findMessageByFunc('registerHandler')).toBeNull();
+        });
+
+        it('should notify error when callback rejects', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const errorMessage = 'error message';
+          const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id' }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          const message = utils.findMessageByFunc('video.notifyError');
+          expect(message).not.toBeNull();
+          expect(message?.args?.length).toBe(2);
+          expect(message?.args?.[0]).toEqual(errorMessage);
+          expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
+        });
       });
     });
 
@@ -335,23 +436,81 @@ describe('videoEx', () => {
       it('should successfully invoke effectParameterChange handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string | undefined;
+        let returnedEffectParam: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
+        const videoEffectCallBack = (effectId: string | undefined, effectParam?: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          returnedEffectParam = effectParam;
           return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
         utils.respondToFramelessMessage({
           data: {
             func: 'video.effectParameterChange',
-            args: [effectId],
+            args: [effectId, effectParameter],
           },
         } as DOMMessageEvent);
         expect(returnedEffectId).toEqual(effectId);
+        expect(returnedEffectParam).toEqual(effectParameter);
         expect(handlerInvoked).toBeTruthy();
+      });
+
+      it('should invoke videoEffectReadiness handler on callback resolved', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
+
+        // Act
+        videoEx.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.effectParameterChange',
+            args: [effectId, effectParameter],
+          },
+        } as DOMMessageEvent);
+        await videoEffectCallBack.mock.results[0].value;
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([true, effectId, null, effectParameter]);
+      });
+
+      it('should invoke videoEffectReadiness handler on callback rejects', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest
+          .fn<Promise<void>, unknown[]>()
+          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+
+        // Act
+        video.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.effectParameterChange',
+            args: [effectId, effectParameter],
+          },
+        } as DOMMessageEvent);
+        await videoEffectCallBack.mock.results[0].value.catch(() => {});
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId', effectParameter]);
       });
     });
 
@@ -439,6 +598,11 @@ describe('videoEx', () => {
         requireCameraStream: false,
         audioInferenceModel: new ArrayBuffer(100),
       };
+      const registerForVideoFrameParameters: videoEx.RegisterForVideoFrameParameters = {
+        videoBufferHandler: (_bufferData, _onSuccess, _onError) => {},
+        videoFrameHandler: (data) => Promise.resolve(data.videoFrame),
+        config: videoFrameConfig,
+      };
 
       const allowedContexts = [FrameContexts.sidePanel];
       Object.values(FrameContexts).forEach((context) => {
@@ -446,12 +610,7 @@ describe('videoEx', () => {
           it('should not allow registerForVideoFrame calls from the wrong context', async () => {
             await utils.initializeWithContext(context);
 
-            expect(() =>
-              videoEx.registerForVideoFrame({
-                videoBufferHandler: emptyVideoFrameCallback,
-                config: videoFrameConfig,
-              }),
-            ).toThrowError(
+            expect(() => videoEx.registerForVideoFrame(registerForVideoFrameParameters)).toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
@@ -465,10 +624,7 @@ describe('videoEx', () => {
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
         try {
-          videoEx.registerForVideoFrame({
-            videoBufferHandler: emptyVideoFrameCallback,
-            config: videoFrameConfig,
-          });
+          videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -476,10 +632,7 @@ describe('videoEx', () => {
 
       it('should successfully send registerForVideoFrame message', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        videoEx.registerForVideoFrame({
-          videoBufferHandler: emptyVideoFrameCallback,
-          config: videoFrameConfig,
-        });
+        videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         const message = utils.findMessageByFunc('video.registerForVideoFrame');
         expect(message).not.toBeNull();
         expect(message?.args?.length).toBe(1);
@@ -488,10 +641,7 @@ describe('videoEx', () => {
 
       it('should not send default message when register video frame handler', async () => {
         await utils.initializeWithContext('sidePanel');
-        videoEx.registerForVideoFrame({
-          videoBufferHandler: emptyVideoFrameCallback,
-          config: videoFrameConfig,
-        });
+        videoEx.registerForVideoFrame(registerForVideoFrameParameters);
         const messageForRegister = utils.findMessageByFunc('registerHandler');
         expect(messageForRegister).toBeNull();
       });
@@ -501,7 +651,7 @@ describe('videoEx', () => {
         let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
 
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -511,8 +661,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -526,7 +676,7 @@ describe('videoEx', () => {
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -535,8 +685,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -553,7 +703,7 @@ describe('videoEx', () => {
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _frame: video.VideoFrame,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -562,8 +712,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -582,7 +732,7 @@ describe('videoEx', () => {
       it('should invoke video frame event handler and successfully send notifyError', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const errorMessage = 'Error occurs when processing the video frame';
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -591,8 +741,8 @@ describe('videoEx', () => {
         };
 
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         const videoFrameMock = {
           width: 30,
@@ -611,7 +761,7 @@ describe('videoEx', () => {
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let handlerInvoked = false;
-        const videoFrameCallback = (
+        const videoBufferCallback = (
           _videoBufferData: videoEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
@@ -619,11 +769,73 @@ describe('videoEx', () => {
           handlerInvoked = true;
         };
         videoEx.registerForVideoFrame({
-          videoBufferHandler: videoFrameCallback,
-          config: videoFrameConfig,
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
         });
         utils.sendMessage('video.newVideoFrame', undefined);
         expect(handlerInvoked).toBe(false);
+      });
+
+      describe('mediaStream', () => {
+        let restoreMediaStreamAPI: () => void;
+        beforeEach(async () => {
+          await utils.initializeWithContext(FrameContexts.sidePanel);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { video: { mediaStream: true } } });
+        });
+        beforeAll(() => {
+          restoreMediaStreamAPI = mockMediaStreamAPI();
+        });
+        afterAll(() => {
+          restoreMediaStreamAPI();
+        });
+
+        it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const webview = window['chrome']['webview'] as unknown as {
+            getTextureStream: jest.Mock;
+            registerTextureStream: jest.Mock;
+          };
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.flushPromises();
+
+          // Assert
+          expect(webview.getTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.getTextureStream.mock.lastCall[0]).toBe('stream id');
+          expect(webview.registerTextureStream).toHaveBeenCalledTimes(1);
+          expect(webview.registerTextureStream.mock.lastCall[0]).toBe('stream id');
+        });
+
+        it('should notify error when callback rejects', async () => {
+          expect.assertions(4);
+
+          // Arrange
+          const errorMessage = 'error message';
+          const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
+
+          // Act
+          videoEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.flushPromises();
+
+          // Assert
+          const message = utils.findMessageByFunc('video.notifyError');
+          expect(message).not.toBeNull();
+          expect(message?.args?.length).toBe(2);
+          expect(message?.args?.[0]).toEqual(errorMessage);
+          expect(message?.args?.[1]).toEqual(videoEx.ErrorLevel.Warn);
+        });
       });
     });
 
@@ -707,20 +919,69 @@ describe('videoEx', () => {
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
+        expect.assertions(3);
         await utils.initializeWithContext(FrameContexts.sidePanel);
         let returnedEffectId: string | undefined;
+        let returnedEffectParameter: string | undefined;
         let handlerInvoked = false;
-        const videoEffectCallBack = (effectId: string | undefined): Promise<void> => {
+        const videoEffectCallBack = (effectId: string | undefined, effectParam?: string): Promise<void> => {
           handlerInvoked = true;
           returnedEffectId = effectId;
+          returnedEffectParameter = effectParam;
           return Promise.resolve();
         };
 
         videoEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
-        utils.sendMessage('video.effectParameterChange', effectId);
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
         expect(returnedEffectId).toEqual(effectId);
+        expect(returnedEffectParameter).toEqual(effectParameter);
         expect(handlerInvoked).toBeTruthy();
+      });
+
+      it('should invoke videoEffectReadiness handler on callback resolved', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
+
+        // Act
+        videoEx.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await videoEffectCallBack.mock.results[0].value;
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([true, effectId, undefined, effectParameter]);
+      });
+
+      it('should invoke videoEffectReadiness handler on callback rejects', async () => {
+        expect.assertions(3);
+
+        // Arrange
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const videoEffectCallBack = jest
+          .fn<Promise<void>, unknown[]>()
+          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+
+        // Act
+        video.registerForVideoEffect(videoEffectCallBack);
+        const effectId = 'sampleEffectId';
+        const effectParameter = 'sampleEffectParameter';
+        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await videoEffectCallBack.mock.results[0].value.catch(() => {});
+
+        // Assert
+        const messageForRegister = utils.findMessageByFunc('video.videoEffectReadiness');
+        expect(messageForRegister).not.toBeNull();
+        expect(messageForRegister?.args?.length).toBe(4);
+        expect(messageForRegister?.args).toEqual([false, effectId, 'InvalidEffectId', effectParameter]);
       });
     });
 
@@ -779,3 +1040,142 @@ describe('videoEx', () => {
     });
   });
 });
+
+function mockMediaStreamAPI() {
+  // Jest doesn't support MediaStream API yet, so we need to mock it.
+  // Reference:
+  //   https://stackoverflow.com/questions/57424190/referenceerror-mediastream-is-not-defined-in-unittest-with-jest
+  //   https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+
+  // eslint-disable-next-line strict-null-checks/all
+  let transform;
+
+  const originalMediaStream = window['MediaStream'];
+
+  Object.defineProperty(window, 'MediaStream', {
+    value: jest.fn().mockImplementation((tracks: MediaStreamTrack[]) => ({
+      getVideoTracks: () => tracks,
+    })),
+
+    writable: true,
+  });
+
+  const originalMediaStreamTrack = window['MediaStreamTrack'];
+
+  Object.defineProperty(window, 'MediaStreamTrack', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  const originalReadableStream = window['ReadableStream'];
+
+  Object.defineProperty(window, 'ReadableStream', {
+    value: jest.fn().mockImplementation(() => ({
+      pipeThrough: () => ({
+        pipeTo: () =>
+          transform &&
+          transform(
+            /* mock VideoFrame */
+            {
+              timestamp: 0,
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              close: () => {},
+            },
+            /* mock TransformStreamDefaultController */
+            {
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              enqueue: () => {},
+            },
+          ),
+      }),
+    })),
+    writable: true,
+  });
+
+  const originalWritableStream = window['WritableStream'];
+
+  Object.defineProperty(window, 'WritableStream', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  const originalMediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
+
+  Object.defineProperty(window, 'MediaStreamTrackProcessor', {
+    value: jest.fn().mockImplementation(() => ({
+      readable: new ReadableStream(),
+    })),
+    writable: true,
+  });
+
+  const originalMediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+
+  Object.defineProperty(window, 'MediaStreamTrackGenerator', {
+    value: jest.fn().mockImplementation(() => ({
+      writable: new WritableStream(),
+    })),
+    writable: true,
+  });
+
+  const originalTransformStream = window['TransformStream'];
+
+  Object.defineProperty(window, 'TransformStream', {
+    value: jest.fn().mockImplementation((transformer) => (transform = transformer.transform)),
+    writable: true,
+  });
+
+  const originalChrome = window['chrome'];
+
+  Object.defineProperty(window, 'chrome', {
+    value: {
+      webview: {
+        getTextureStream: jest.fn(() => {
+          const videoTrack = new MediaStreamTrack();
+          const videoStream = new MediaStream([videoTrack]);
+          return Promise.resolve(videoStream);
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        registerTextureStream: jest.fn(),
+      },
+    },
+    writable: true,
+  });
+
+  // restore original APIs
+  return () => {
+    Object.defineProperties(window, {
+      MediaStream: {
+        value: originalMediaStream,
+        writable: true,
+      },
+      MediaStreamTrack: {
+        value: originalMediaStreamTrack,
+        writable: true,
+      },
+      ReadableStream: {
+        value: originalReadableStream,
+        writable: true,
+      },
+      WritableStream: {
+        value: originalWritableStream,
+        writable: true,
+      },
+      MediaStreamTrackProcessor: {
+        value: originalMediaStreamTrackProcessor,
+        writable: true,
+      },
+      MediaStreamTrackGenerator: {
+        value: originalMediaStreamTrackGenerator,
+        writable: true,
+      },
+      TransformStream: {
+        value: originalTransformStream,
+        writable: true,
+      },
+      chrome: {
+        value: originalChrome,
+        writable: true,
+      },
+    });
+  };
+}

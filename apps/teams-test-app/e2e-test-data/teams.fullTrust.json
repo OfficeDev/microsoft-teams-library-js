@@ -1,0 +1,25 @@
+{
+  "name": "Teams FullTrust",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.0",
+  "testCases": [
+    {
+      "title": "getConfigSetting API Call - Success",
+      "type": "callResponse",
+      "version": ">2.0.0-beta.2",
+      "boxSelector": "#box_getConfigSetting2",
+      "inputValue": "testKey",
+      "expectedAlertValue": "getConfigSetting called",
+      "expectedTestAppValue": "testValue"
+    },
+    {
+      "title": "getConfigSetting API Call - Success",
+      "type": "callResponse",
+      "version": "2.0.0-beta.2",
+      "boxSelector": "#box_getConfigSetting",
+      "inputValue": "testKey",
+      "expectedAlertValue": "getConfigSetting called",
+      "expectedTestAppValue": "testValue"
+    }
+  ]
+}

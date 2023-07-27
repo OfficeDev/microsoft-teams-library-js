@@ -1,8 +1,10 @@
+
 name: Check for runtime version changes
 
 on:
   pull_request:
     branches: [main]
+    paths: [packages/teams-js/src/public/runtime.ts]
 
 permissions:
   contents: read
@@ -12,22 +14,24 @@ jobs:
   Check-For-Changes-To-Runtime-File:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: tj-actions/changed-files@v35
-        id: changed_files
-      - name: Check if runtime.ts has been modified
-        id: detect_runtime_change
-        run: |
-          runtime_changed='false'
-          for changed_file in ${{ steps.changed_files.outputs.all_changed_files }}; do
-            if [ "$changed_file" = "packages/teams-js/src/public/runtime.ts" ]; then
-              runtime_changed='true'
-            fi
-          done
-          echo "runtime_changed=$runtime_changed" >> $GITHUB_OUTPUT
-      - name: Comment on PR
-        if: steps.detect_runtime_change.outputs.runtime_changed == 'true'
-        uses: mb2dev/github-action-comment-pull-request@1.0.0
+      - name: 'Comment on PR'
+        if: github.event.pull_request.head.repo.fork != true
+        uses: actions/github-script@v6
         with:
-          message: "This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required."
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            commentBody = 'This pull request contains changes to the runtime.ts file. If you, as the author of this PR, have made changes to the Runtime interface please review RUNTIME.md to determine if a new runtime version is required. Please reply to this comment stating what changes, if any, were made to the runtime object and whether a new runtime version was required.';
+            comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            if (comments.data.some(comment => comment.body.includes(commentBody))) {
+              return;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });

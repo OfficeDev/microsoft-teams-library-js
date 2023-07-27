@@ -220,6 +220,26 @@ const ViewImagesWithUrls = (): React.ReactElement =>
     },
   });
 
+const HasMediaPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'hasMediaPermission',
+    title: 'Has Media Permission',
+    onClick: async () => {
+      const result = await media.hasPermission();
+      return JSON.stringify(result);
+    },
+  });
+
+const RequestMediaPermission = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'requestMediaPermission',
+    title: 'Request Media Permission',
+    onClick: async () => {
+      const result = await media.requestPermission();
+      return JSON.stringify(result);
+    },
+  });
+
 const MediaAPIs = (): ReactElement => (
   <ModuleWrapper title="Media">
     <CaptureImage />
@@ -228,6 +248,8 @@ const MediaAPIs = (): ReactElement => (
     <ViewImagesWithId />
     <ViewImagesWithUrls />
     <ScanBarCode />
+    <HasMediaPermission />
+    <RequestMediaPermission />
   </ModuleWrapper>
 );
 
