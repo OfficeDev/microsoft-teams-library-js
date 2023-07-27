@@ -65,7 +65,7 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   }
 }
 
-// for AppInitialization tests we need a way to stop the Test App from sending these
+// for Ap pInitialization tests we need a way to stop the Test App from sending these
 // we do it by adding appInitializationTest=true to query string
 if (
   (urlParams.has('customInit') && urlParams.get('customInit')) ||
