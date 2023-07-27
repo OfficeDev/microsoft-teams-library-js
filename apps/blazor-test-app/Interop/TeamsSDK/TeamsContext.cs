@@ -99,7 +99,7 @@ public class TeamsContext
     public string Locale { get; set; }
 
     /// <summary>
-    /// A value suitable for use as a login_hint when authenticating with Azure AD. Because a malicious party can run your
+    /// A value suitable for use as a login_hint when authenticating with Microsoft Entra. Because a malicious party can run your
     /// content in a browser, this value should be used only as a hint as to who the user is and never as proof of identity.
     /// This field is available only when the identity permission is requested in the manifest.
     /// </summary>
@@ -183,7 +183,7 @@ public class TeamsContext
     public string Theme { get; set; }
 
     /// <summary>
-    /// The Azure AD tenant ID of the current user. Because a malicious party can run your content in a browser,
+    /// The Microsoft Entra tenant ID of the current user. Because a malicious party can run your content in a browser,
     /// this value should be used only as a hint as to who the user is and never as proof of identity. This field
     /// is available only when the identity permission is requested in the manifest.
     /// </summary>
@@ -200,7 +200,7 @@ public class TeamsContext
     public string UserLicenseType { get; set; }
 
     /// <summary>
-    /// The Azure AD object id of the current user. Because a malicious party run your content in a browser,
+    /// The Microsoft Entra object id of the current user. Because a malicious party run your content in a browser,
     /// this value should be used only as a hint as to who the user is and never as proof of identity. This field
     /// is available only when the identity permission is requested in the manifest.
     /// </summary>
