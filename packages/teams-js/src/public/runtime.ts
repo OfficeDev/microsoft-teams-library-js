@@ -88,6 +88,7 @@ interface IRuntimeV2 extends IBaseRuntime {
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
+    readonly appNotification?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
@@ -143,6 +144,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly webStorage?: {};
   };
 }
+
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
