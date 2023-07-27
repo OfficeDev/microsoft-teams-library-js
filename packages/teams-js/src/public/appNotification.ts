@@ -5,10 +5,13 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the appNotification specific part of the SDK
- */
+ * @beta
+*/
 export namespace appNotification {
   /**
    * Data structure to represent appNotification information
+   *
+   * @beta
    */
   export interface NotificationDisplayParam {
     /**
@@ -37,9 +40,16 @@ export namespace appNotification {
   }
 
   /**
+   * @internal
+   *
+   * @hidden
+   * 
+   * @beta
+   * 
    * Data structure to represent appNotification information that would be sent to the host SDK
    */
   export interface NotificationDisplayParamForAppHost {
+
     /**
      * Notification title(maximum length: 75 characters)
      */
@@ -66,6 +76,12 @@ export namespace appNotification {
   }
 
   /**
+   * @internal
+   *
+   * @hidden
+   *
+   * @beta
+   * 
    * This converts the notifcationActionUrl from a URL type to a string type for proper flow across the iframe
    * @param notificationDisplayParam - appNotification display parameter with the notificationActionUrl as a URL type
    * @returns a serialized object that can be sent to the host SDK
@@ -85,6 +101,8 @@ export namespace appNotification {
    *
    * @param url
    * @returns True if a valid url was passed
+   * 
+   * @beta
    */
   function isValidUrl(url: URL): boolean {
     const validProtocols = ['https:'];
@@ -96,6 +114,8 @@ export namespace appNotification {
    *
    * @param inputString and maximumLength
    * @returns True if string length is within specified limit
+   * 
+   * @beta
    */
   function isValidLength(inputString: string, maxLength: number): boolean {
     return inputString.length <= maxLength;
@@ -108,6 +128,8 @@ export namespace appNotification {
    * @throws Error if content or title length is beyond specific limit
    * @throws Error if invalid url is passed
    * @returns void
+   * 
+   * @beta
    */
   function validateNotificationDisplayParams(notificationDisplayParam: NotificationDisplayParam): void {
     const maxTitleLength = 75;
@@ -160,6 +182,8 @@ export namespace appNotification {
    * @returns a promise resolution upon conclusion
    * @throws Error if appNotification capability is not supported
    * @throws Error if notficationDisplayParam was not validated successfully
+   * 
+   * @beta
    */
   export function displayInAppNotification(notificationDisplayParam: NotificationDisplayParam): Promise<void> {
     ensureInitialized(
@@ -181,6 +205,8 @@ export namespace appNotification {
    * Checks if appNotification is supported by the host
    * @returns boolean to represent whether the appNotification capability is supported
    * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * 
+   * @beta
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.appNotification ? true : false;
