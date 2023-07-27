@@ -14,7 +14,7 @@ export namespace people {
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
    
-   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
+   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of Microsoft Entra IDs, display names and emails of the selected users
    * @param peoplePickerInputs - Input parameters to launch customized people picker
    * @returns Promise that will be fulfilled when the operation has completed
    */
@@ -26,7 +26,7 @@ export namespace people {
    * Launches a people picker and allows the user to select one or more people from the list
    * If the app is added to personal app scope the people picker launched is org wide and if the app is added to a chat/channel, people picker launched is also limited to the members of chat/channel
    
-   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of AAD IDs, display names and emails of the selected users
+   * @param callback - Returns list of JSON object of type PeoplePickerResult which consists of Microsoft Entra IDs, display names and emails of the selected users
    * @param peoplePickerInputs - Input parameters to launch customized people picker
    */
   export function selectPeople(
@@ -96,7 +96,7 @@ export namespace people {
     title?: string;
 
     /**
-     * Optional; AAD ids of the users to be pre-populated in the search box of people picker control
+     * Optional; Microsoft Entra IDs of the users to be pre-populated in the search box of people picker control
      * If single select is enabled this value, only the first user in the list will be pre-populated
      * Default value is null
      */
@@ -120,7 +120,7 @@ export namespace people {
    */
   export interface PeoplePickerResult {
     /**
-     * user object Id (also known as aad id) of the selected user
+     * user object ID (also known as Microsoft Entra ID) of the selected user
      */
     objectId: string;
 

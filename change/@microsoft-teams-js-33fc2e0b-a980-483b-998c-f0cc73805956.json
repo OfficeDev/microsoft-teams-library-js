@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated documentation to refer to 'Microsoft Entra' instead of 'AAD'",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}
