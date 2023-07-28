@@ -60,6 +60,7 @@ describe('VideoPerformanceMonitor', () => {
   it('should report videoExtensibilityFrameProcessingSlow event', async () => {
     videoPerformanceMonitor.reportApplyingVideoEffect('effectId', 'effectParam');
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
+    videoPerformanceMonitor.startMonitorSlowFrameProcessing();
     advanceTimersByTime(101);
     for (let i = 0; i < 10; i++) {
       videoPerformanceMonitor.reportStartFrameProcessing(100, 100);
