@@ -55,12 +55,13 @@ describe('videoFrameTick', () => {
       const intervalInMs = 1000;
       VideoFrameTick.setInterval(callback, intervalInMs);
       expect(callback).not.toBeCalled();
-      jest.advanceTimersByTime(intervalInMs);
-      VideoFrameTick.tick();
-      expect(callback).toBeCalled();
-      jest.advanceTimersByTime(intervalInMs);
-      VideoFrameTick.tick();
-      expect(callback).toBeCalled();
+      for (let i = 1; i <= 100; i++) {
+        jest.advanceTimersByTime(intervalInMs);
+        VideoFrameTick.tick();
+        expect(callback).toBeCalledTimes(i);
+        VideoFrameTick.tick();
+        expect(callback).toBeCalledTimes(i);
+      }
     });
   });
 });

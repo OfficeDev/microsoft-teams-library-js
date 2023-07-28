@@ -25,21 +25,26 @@ export class VideoFrameTick {
   }
 
   public static setInterval(callback: () => void, intervalInMs: number): void {
-    VideoFrameTick.setTimeout(() => {
+    VideoFrameTick.setTimeout(function next() {
       callback();
-      VideoFrameTick.setTimeout(callback, intervalInMs);
+      VideoFrameTick.setTimeout(next, intervalInMs);
     }, intervalInMs);
   }
 
   public static tick(): void {
     const now = performance.now();
+    const timeoutIds = [];
     for (const key in VideoFrameTick.setTimeoutCallbacks) {
       const callback = VideoFrameTick.setTimeoutCallbacks[key];
       const start = callback.startedAtInMs;
       if (now - start >= callback.timeoutInMs) {
-        callback.callback();
-        delete VideoFrameTick.setTimeoutCallbacks[key];
+        timeoutIds.push(key);
       }
+    }
+    for (const id of timeoutIds) {
+      const callback = VideoFrameTick.setTimeoutCallbacks[id];
+      callback.callback();
+      delete VideoFrameTick.setTimeoutCallbacks[id];
     }
   }
 }
