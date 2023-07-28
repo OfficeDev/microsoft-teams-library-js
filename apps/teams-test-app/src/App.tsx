@@ -53,6 +53,7 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
+import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -170,6 +171,7 @@ const App = (): ReactElement => {
         <TeamsAPIs />
         <VideoAPIs />
         <VideoExAPIs />
+        <VisualMediaAPIs />
       </div>
       <Version />
     </div>

@@ -106,6 +106,10 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly geoLocation?: {
       readonly map?: {};
     };
+    readonly visualMedia?: {
+      readonly image?: {};
+      readonly video?: {};
+    };
     readonly interactive?: {};
     readonly secondaryBrowser?: {};
     readonly location?: {};
