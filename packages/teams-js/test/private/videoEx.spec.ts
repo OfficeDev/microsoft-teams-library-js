@@ -97,6 +97,10 @@ describe('videoEx', () => {
           'reportStartFrameProcessing',
         );
         const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+        const startMonitorSlowFrameProcessingSpy = jest.spyOn(
+          VideoPerformanceMonitor.prototype,
+          'startMonitorSlowFrameProcessing',
+        );
         let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
         //callback
@@ -127,6 +131,7 @@ describe('videoEx', () => {
         expect(handlerInvoked).toBeTruthy();
         expect(returnedVideoFrame!).toEqual(videoFrameMock);
         expect(reportStartFrameProcessingSpy).toBeCalledWith(30, 40);
+        expect(startMonitorSlowFrameProcessingSpy).toBeCalledTimes(1);
         expect(reportFrameProcessedSpy).toBeCalledTimes(1);
       });
 

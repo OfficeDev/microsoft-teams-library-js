@@ -148,7 +148,7 @@ describe('video', () => {
         });
 
         it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
-          expect.assertions(5);
+          expect.assertions(6);
 
           // Arrange
           const videoBufferHandler: video.VideoBufferHandler = (_frame, onSuccess) => onSuccess();
@@ -157,6 +157,10 @@ describe('video', () => {
             'reportStartFrameProcessing',
           );
           const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+          const startMonitorSlowFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'startMonitorSlowFrameProcessing',
+          );
 
           // Act
           video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
@@ -166,6 +170,7 @@ describe('video', () => {
           // Assert
           expect(reportStartFrameProcessingSpy).toBeCalledWith(30, 40);
           expect(reportFrameProcessedSpy).toBeCalledTimes(1);
+          expect(startMonitorSlowFrameProcessingSpy).toBeCalledTimes(1);
           const message = utils.findMessageByFunc('video.videoFrameProcessed');
           expect(message).not.toBeNull();
           expect(message?.args?.length).toBe(1);
