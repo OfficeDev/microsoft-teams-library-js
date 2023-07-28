@@ -240,6 +240,7 @@ export namespace videoEx {
         // should not happen if isSupported() is true
         throw errorNotSupportedOnPlatform;
       }
+      videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
     }
   }
 

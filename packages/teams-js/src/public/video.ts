@@ -114,6 +114,16 @@ export namespace video {
    */
   export type VideoEffectCallback = (effectId: string | undefined) => Promise<void>;
 
+  type PreviewStatusCallback = (inPreview: boolean) => void;
+
+  /**
+   * Register the preview status callback, host client uses this to notify the video extension if the video is shown in a preview.
+   */
+  export function registerForPreviewStatus(callback: PreviewStatusCallback): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    registerHandler('video.previewStatusChanged', callback);
+  }
+
   /**
    * @beta
    * Video frame call back function definition
@@ -236,6 +246,7 @@ export namespace video {
       // should not happen if isSupported() is true
       throw errorNotSupportedOnPlatform;
     }
+    videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
   }
 
   /**

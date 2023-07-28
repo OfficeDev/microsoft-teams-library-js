@@ -32,6 +32,9 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
       this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
     );
+  }
+
+  public startMonitorSlowFrameProcessing(): void {
     VideoFrameTick.setInterval(() => {
       if (this.processedFrameCount === 0) {
         return;
