@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new `appNotification` capability for apps to send notifications to the user through the host",
+  "packageName": "@microsoft/teams-js",
+  "email": "t-bchiaha@microsoft.com",
+  "dependentChangeType": "patch"
+}

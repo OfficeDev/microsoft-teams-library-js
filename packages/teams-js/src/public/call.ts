@@ -29,7 +29,7 @@ export namespace call {
      * Comma-separated list of user IDs representing the participants of the call.
      *
      * @remarks
-     * Currently the User ID field supports the Azure AD UserPrincipalName,
+     * Currently the User ID field supports the Microsoft Entra UserPrincipalName,
      * typically an email address, or in case of a PSTN call, it supports a pstn
      * mri 4:\<phonenumber>.
      */
