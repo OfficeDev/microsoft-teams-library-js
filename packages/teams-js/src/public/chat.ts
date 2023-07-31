@@ -25,7 +25,7 @@ interface OpenChatRequest {
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
-   * The Azure Active Directory UPN (e-mail address) of the user to chat with
+   * The Microsoft Entra UPN (e-mail address) of the user to chat with
    */
   user: string;
 }
@@ -39,7 +39,7 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
-   * Array containing Azure Active Directory UPNs (e-mail addresss) of users to open chat with
+   * Array containing Microsoft Entra UPNs (e-mail addresss) of users to open chat with
    */
   users: string[];
   /**
