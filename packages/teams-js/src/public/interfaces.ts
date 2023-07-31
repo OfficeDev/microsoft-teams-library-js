@@ -1053,3 +1053,23 @@ export interface AdaptiveCardVersion {
   /** Represents the minor version number. */
   minorVersion: number;
 }
+
+/**
+ * Currently supported Mime type
+ */
+export enum SupportedMimeType {
+  TextPlain = 'text/plain',
+  TextHtml = 'text/html',
+  ImagePNG = 'image/png',
+  ImageJPEG = 'image/jpeg',
+}
+
+/**
+ * Clipboard wirte parameters
+ */
+export interface ClipboardParams {
+  /** Mime Type of data to be copied to Clipboard */
+  mimeType: SupportedMimeType;
+  /** Blob content in Base64 string format */
+  content: string;
+}

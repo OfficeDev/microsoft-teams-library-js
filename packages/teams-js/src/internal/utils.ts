@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
-import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
+import { AdaptiveCardVersion, ClipboardParams, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { validOrigins } from './constants';
 
@@ -370,4 +370,45 @@ export function isHostAdaptiveCardSchemaVersionUnsupported(
  */
 export function isValidHttpsURL(url: URL): boolean {
   return url.protocol === 'https:';
+}
+
+/**
+ * Convert base64 string to blob
+ * @param base64Data string respresenting the content
+ * @param contentType Mimetype
+ * @returns Promise
+ */
+export function base64ToBlob(data: ClipboardParams): Promise<Blob> {
+  return new Promise<Blob>((resolve) => {
+    const byteCharacters = atob(data.content);
+    if (data.mimeType.startsWith('image/')) {
+      const byteArray = new Uint8Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteArray[i] = byteCharacters.charCodeAt(i);
+      }
+      resolve(new Blob([byteArray], { type: data.mimeType }));
+    }
+    resolve(new Blob([byteCharacters], { type: data.mimeType }));
+  });
+}
+
+/**
+ * Converts blob to base64 string.
+ * @param blob Blob to convert to base64 string.
+ */
+export function getBase64StringFromBlob(blob: Blob): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        resolve(reader.result.toString().split(',')[1]);
+      } else {
+        reject(new Error('Failed to read the blob'));
+      }
+    };
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+    reader.readAsDataURL(blob);
+  });
 }

@@ -1,6 +1,13 @@
 import { GlobalVars } from '../../src/internal/globalVars';
-import { compareSDKVersions, createTeamsAppLink, validateOrigin } from '../../src/internal/utils';
+import {
+  base64ToBlob,
+  compareSDKVersions,
+  createTeamsAppLink,
+  getBase64StringFromBlob,
+  validateOrigin,
+} from '../../src/internal/utils';
 import { pages } from '../../src/public';
+import { ClipboardParams, SupportedMimeType } from '../../src/public/interfaces';
 
 describe('utils', () => {
   test('compareSDKVersions', () => {
@@ -162,6 +169,100 @@ describe('utils', () => {
       const expected =
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D';
       expect(createTeamsAppLink(params)).toBe(expected);
+    });
+  });
+
+  describe('base64ToBlob', () => {
+    it('should convert base64 string to Blob for image/png MIME type', async () => {
+      const base64Data = 'SGVsbG8=';
+
+      const data: ClipboardParams = {
+        mimeType: SupportedMimeType.ImagePNG,
+        content: base64Data,
+      };
+
+      const result = await base64ToBlob(data);
+
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(SupportedMimeType.ImagePNG);
+    });
+
+    it('should convert base64 string to Blob for image/jpeg MIME type', async () => {
+      const base64Data = 'SGVsbG8=';
+
+      const data: ClipboardParams = {
+        mimeType: SupportedMimeType.ImageJPEG,
+        content: base64Data,
+      };
+
+      const result = await base64ToBlob(data);
+
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(SupportedMimeType.ImageJPEG);
+    });
+
+    it('should convert base64 string to Blob for non-image MIME type', async () => {
+      const base64Data = 'SGVsbG8=';
+      const data: ClipboardParams = {
+        mimeType: SupportedMimeType.TextPlain,
+        content: base64Data,
+      };
+
+      const result = await base64ToBlob(data);
+
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(SupportedMimeType.TextPlain);
+    });
+
+    it('should convert base64 string to Blob for non-image MIME type', async () => {
+      const base64Data = 'PHA+SGVsbG8sIHdvcmxkITwvcD4=';
+      const data: ClipboardParams = {
+        mimeType: SupportedMimeType.TextHtml,
+        content: base64Data,
+      };
+
+      const result = await base64ToBlob(data);
+
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(SupportedMimeType.TextHtml);
+    });
+  });
+
+  describe('getBase64StringFromBlob', () => {
+    it('should resolve with base64 string when reading a text/plain Blob', async () => {
+      const content = 'Hello, world!';
+      const blob = new Blob([content], { type: 'text/plain' });
+
+      const result = await getBase64StringFromBlob(blob);
+
+      expect(result).toEqual('SGVsbG8sIHdvcmxkIQ==');
+    });
+
+    it('should resolve with base64 string when reading a text/html Blob', async () => {
+      const content = '<p>Hello, world!</p>';
+      const blob = new Blob([content], { type: 'text/html' });
+
+      const result = await getBase64StringFromBlob(blob);
+
+      expect(result).toEqual('PHA+SGVsbG8sIHdvcmxkITwvcD4=');
+    });
+
+    it('should resolve with base64 string when reading a image/png Blob', async () => {
+      const content = '<p>Hello, world!</p>';
+      const blob = new Blob([content], { type: 'image/png' });
+
+      const result = await getBase64StringFromBlob(blob);
+
+      expect(result).toEqual('PHA+SGVsbG8sIHdvcmxkITwvcD4=');
+    });
+
+    it('should resolve with base64 string when reading a image/jpeg Blob', async () => {
+      const content = '<p>Hello, world!</p>';
+      const blob = new Blob([content], { type: 'image/jpeg' });
+
+      const result = await getBase64StringFromBlob(blob);
+
+      expect(result).toEqual('PHA+SGVsbG8sIHdvcmxkITwvcD4=');
     });
   });
 });

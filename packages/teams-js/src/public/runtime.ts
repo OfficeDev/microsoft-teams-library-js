@@ -187,7 +187,6 @@ export const teamsRuntimeConfig: Runtime = {
     call: {},
     chat: {},
     conversations: {},
-    clipboard: {},
     dialog: {
       card: {
         bot: {},
