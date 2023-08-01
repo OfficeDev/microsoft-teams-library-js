@@ -1,6 +1,5 @@
 import { appNotification } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
-
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
@@ -26,9 +25,8 @@ const DisplayAppNotification = (): React.ReactElement =>
         if (!input.displayDurationInSeconds) {
           throw new Error('displayDurationInSeconds is required');
         }
-        if (!input.notificationActionUrl) {
-          throw new Error('notificationActionUrl is required');
-        }
+        input.notificationActionUrl = new URL('https://www.example.com')
+        
       },
       submit: async (input) => {
         await appNotification.displayInAppNotification(input);
