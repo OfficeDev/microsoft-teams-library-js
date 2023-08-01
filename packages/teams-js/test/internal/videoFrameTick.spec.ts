@@ -2,7 +2,7 @@ import { VideoFrameTick } from '../../src/internal/videoFrameTick';
 jest.useFakeTimers();
 describe('videoFrameTick', () => {
   describe('setTimeout', () => {
-    it('should involke callback after timeout', () => {
+    it('should invoke callback after timeout', () => {
       const callback = jest.fn();
       const timeoutInMs = 1000;
       const id = VideoFrameTick.setTimeout(callback, timeoutInMs);
@@ -13,7 +13,7 @@ describe('videoFrameTick', () => {
       expect(id).toBeDefined();
     });
 
-    it('should not involke callback before timeout', () => {
+    it('should not invoke callback before timeout', () => {
       const callback1 = jest.fn();
       const timeoutInMs1 = 1000;
       const callback2 = jest.fn();
@@ -26,7 +26,7 @@ describe('videoFrameTick', () => {
       expect(callback2).not.toBeCalled();
     });
 
-    it('should not involke callback when it is cleared before timeout', () => {
+    it('should not invoke callback when it is cleared before timeout', () => {
       const callback = jest.fn();
       const timeoutInMs = 1000;
       const id = VideoFrameTick.setTimeout(callback, timeoutInMs);
@@ -50,7 +50,7 @@ describe('videoFrameTick', () => {
     });
   });
   describe('setInterval', () => {
-    it('should involke callback after interval', () => {
+    it('should invoke callback after interval', () => {
       const callback = jest.fn();
       const intervalInMs = 1000;
       VideoFrameTick.setInterval(callback, intervalInMs);

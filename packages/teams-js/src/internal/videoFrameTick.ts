@@ -31,9 +31,14 @@ export class VideoFrameTick {
     }, intervalInMs);
   }
 
+  /**
+   * Call this function whenever a frame comes in, it will check if any timeout is due and call the callback
+   */
   public static tick(): void {
     const now = performance.now();
     const timeoutIds = [];
+    // find all the timeouts that are due,
+    // not to invoke them in the loop to avoid modifying the collection while iterating
     for (const key in VideoFrameTick.setTimeoutCallbacks) {
       const callback = VideoFrameTick.setTimeoutCallbacks[key];
       const start = callback.startedAtInMs;
@@ -41,6 +46,7 @@ export class VideoFrameTick {
         timeoutIds.push(key);
       }
     }
+    // invoke the callbacks
     for (const id of timeoutIds) {
       const callback = VideoFrameTick.setTimeoutCallbacks[id];
       callback.callback();

@@ -4,9 +4,20 @@ export type VideoPerformanceStatisticsResult = {
   effectId: string;
   frameWidth: number;
   frameHeight: number;
-  duration: number; // the duration in milliseconds that the data were collected
-  sampleCount: number; // the number of frames that were processed in the duration
-  distributionBins: Uint32Array; // an array that presents counts of frames that were finished in n milliseconds: distributionBins[frameProcessingDurationInMs]=frameCount. For example, distributionBins[10] = 5 means that 5 frames were processed in 10 milliseconds.
+  /**
+   * The duration in milliseconds that the data were collected
+   */
+  duration: number;
+  /**
+   * The number of frames that were processed in the duration
+   */
+  sampleCount: number;
+  /**
+   * An array that presents counts of frames that were finished in n milliseconds:
+   * distributionBins[frameProcessingDurationInMs]=frameCount.
+   * For example, distributionBins[10] = 5 means that 5 frames were processed in 10 milliseconds.
+   */
+  distributionBins: Uint32Array;
 };
 
 export class VideoPerformanceStatistics {
@@ -28,7 +39,10 @@ export class VideoPerformanceStatistics {
 
   public constructor(
     distributionBinSize: number,
-    private report: (result: VideoPerformanceStatisticsResult) => void, // post event to the host
+    /**
+     * Function to report the statistics result
+     */
+    private reportStatisticsResult: (result: VideoPerformanceStatisticsResult) => void,
   ) {
     this.distributionBins = new Uint32Array(distributionBinSize);
   }
@@ -80,7 +94,7 @@ export class VideoPerformanceStatistics {
   }
 
   private reportAndResetSession(result, effectId, frameWidth, frameHeight): void {
-    result && this.report(result);
+    result && this.reportStatisticsResult(result);
     this.resetCurrentSession(this.getNextTimeout(effectId, this.currentSession), effectId, frameWidth, frameHeight);
     if (this.timeoutId) {
       VideoFrameTick.clearTimeout(this.timeoutId);
