@@ -62,6 +62,25 @@ describe('PerformanceStatistics', () => {
     expect(result?.distributionBins[10]).toEqual(1);
   });
 
+  it('reports statistics on effect parameters change', () => {
+    performanceStatistics.processStarts('effectId1', 100, 100, 'param1');
+    advanceTimersByTime(10);
+    performanceStatistics.processEnds();
+    performanceStatistics.processStarts('effectId1', 100, 100, 'param2');
+    advanceTimersByTime(20);
+    performanceStatistics.processEnds();
+    expect(result).toEqual({
+      effectId: 'effectId1',
+      effectParam: 'param1',
+      frameHeight: 100,
+      frameWidth: 100,
+      duration: 10,
+      sampleCount: 1,
+      distributionBins: expect.anything(),
+    });
+    expect(result?.distributionBins[10]).toEqual(1);
+  });
+
   it('reports statistics on frame size change', () => {
     performanceStatistics.processStarts('effectId', 100, 100);
     advanceTimersByTime(10);

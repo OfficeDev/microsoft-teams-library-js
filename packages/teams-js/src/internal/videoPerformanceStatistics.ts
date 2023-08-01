@@ -2,6 +2,7 @@ import { VideoFrameTick } from './videoFrameTick';
 
 export type VideoPerformanceStatisticsResult = {
   effectId: string;
+  effectParam?: string;
   frameWidth: number;
   frameHeight: number;
   /**
@@ -28,6 +29,7 @@ export class VideoPerformanceStatistics {
     startedAtInMs: number;
     timeoutInMs: number;
     effectId: string;
+    effectParam?: string;
     frameWidth: number;
     frameHeight: number;
   };
@@ -50,10 +52,10 @@ export class VideoPerformanceStatistics {
   /**
    * Call this function before processing every frame
    */
-  public processStarts(effectId: string, frameWidth: number, frameHeight: number): void {
+  public processStarts(effectId: string, frameWidth: number, frameHeight: number, effectParam?: string): void {
     VideoFrameTick.tick();
-    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight)) {
-      this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight);
+    if (!this.suitableForThisSession(effectId, frameWidth, frameHeight, effectParam)) {
+      this.reportAndResetSession(this.getStatistics(), effectId, effectParam, frameWidth, frameHeight);
     }
     this.start();
   }
@@ -72,6 +74,7 @@ export class VideoPerformanceStatistics {
     }
     return {
       effectId: this.currentSession.effectId,
+      effectParam: this.currentSession.effectParam,
       frameHeight: this.currentSession.frameHeight,
       frameWidth: this.currentSession.frameWidth,
       duration: performance.now() - this.currentSession.startedAtInMs,
@@ -84,32 +87,53 @@ export class VideoPerformanceStatistics {
     this.frameProcessingStartedAt = performance.now();
   }
 
-  private suitableForThisSession(effectId: string, frameWidth: number, frameHeight: number): boolean {
+  private suitableForThisSession(
+    effectId: string,
+    frameWidth: number,
+    frameHeight: number,
+    effectParam?: string,
+  ): boolean {
     return (
       this.currentSession &&
       this.currentSession.effectId === effectId &&
+      this.currentSession.effectParam === effectParam &&
       this.currentSession.frameWidth === frameWidth &&
       this.currentSession.frameHeight === frameHeight
     );
   }
 
-  private reportAndResetSession(result, effectId, frameWidth, frameHeight): void {
+  private reportAndResetSession(result, effectId, effectParam, frameWidth, frameHeight): void {
     result && this.reportStatisticsResult(result);
-    this.resetCurrentSession(this.getNextTimeout(effectId, this.currentSession), effectId, frameWidth, frameHeight);
+    this.resetCurrentSession(
+      this.getNextTimeout(effectId, this.currentSession),
+      effectId,
+      effectParam,
+      frameWidth,
+      frameHeight,
+    );
     if (this.timeoutId) {
       VideoFrameTick.clearTimeout(this.timeoutId);
     }
     this.timeoutId = VideoFrameTick.setTimeout(
-      (() => this.reportAndResetSession(this.getStatistics(), effectId, frameWidth, frameHeight)).bind(this),
+      (() => this.reportAndResetSession(this.getStatistics(), effectId, effectParam, frameWidth, frameHeight)).bind(
+        this,
+      ),
       this.currentSession.timeoutInMs,
     );
   }
 
-  private resetCurrentSession(timeoutInMs: number, effectId: string, frameWidth: number, frameHeight: number): void {
+  private resetCurrentSession(
+    timeoutInMs: number,
+    effectId: string,
+    effectParam: string,
+    frameWidth: number,
+    frameHeight: number,
+  ): void {
     this.currentSession = {
       startedAtInMs: performance.now(),
       timeoutInMs,
       effectId,
+      effectParam,
       frameWidth,
       frameHeight,
     };

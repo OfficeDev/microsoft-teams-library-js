@@ -106,7 +106,12 @@ export class VideoPerformanceMonitor {
       return;
     }
     this.frameProcessingStartedAt = performance.now();
-    this.performanceStatistics.processStarts(this.appliedEffect.effectId, frameWidth, frameHeight);
+    this.performanceStatistics.processStarts(
+      this.appliedEffect.effectId,
+      frameWidth,
+      frameHeight,
+      this.appliedEffect.effectParam,
+    );
   }
 
   /**

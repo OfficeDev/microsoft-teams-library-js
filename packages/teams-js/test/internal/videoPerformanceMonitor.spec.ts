@@ -47,7 +47,7 @@ describe('VideoPerformanceMonitor', () => {
     videoPerformanceMonitor.reportVideoEffectChanged('effectId', 'effectParam');
     videoPerformanceMonitor.reportStartFrameProcessing(100, 100);
     videoPerformanceMonitor.reportFrameProcessed();
-    expect(processStartsMock).toBeCalledWith('effectId', 100, 100);
+    expect(processStartsMock).toBeCalledWith('effectId', 100, 100, 'effectParam');
   });
 
   it('should report TextureStreamAcquired event', () => {
