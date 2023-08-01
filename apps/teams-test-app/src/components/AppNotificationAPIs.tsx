@@ -25,10 +25,10 @@ const DisplayAppNotification = (): React.ReactElement =>
         if (!input.displayDurationInSeconds) {
           throw new Error('displayDurationInSeconds is required');
         }
-        input.notificationActionUrl = new URL('https://www.example.com')
-        
       },
+      
       submit: async (input) => {
+        input.notificationActionUrl = new URL('https://www.example.com')
         await appNotification.displayInAppNotification(input);
         return 'Completed';
       },
