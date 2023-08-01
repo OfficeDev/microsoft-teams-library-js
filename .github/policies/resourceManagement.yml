@@ -182,7 +182,7 @@ configuration:
           label: teams-developer-support
       then:
       - addReply:
-          reply: "### Tell us about your experience! \n\nHi ${issueAuthor}! We've closed this issue in our system, but we'd love to hear your feedback. To let us know how we did, simply use one of the following emoji icons: :thumbsup: for resolved, :thumbsdown: for unresolved, or :heart: for a great experience.. Please use the [link for more detailed feeback](https://aka.ms/DevSupportFeedback). \n\nBest regards, \nTeams Platform "
+          reply: "### Tell us about your experience! \n\nHi ${issueAuthor}! We've closed this issue in our system, but we'd love to hear your feedback. To let us know how we did, simply use one of the following emoji icons: :thumbsup: for resolved, :thumbsdown: for unresolved, or :heart: for a great experience on this message.. Please use the [link for more detailed feeback](https://aka.ms/DevSupportFeedback). \n\nBest regards, \nTeams Platform "
       description: 
 onFailure: 
 onSuccess: 
