@@ -1065,7 +1065,7 @@ export enum SupportedMimeType {
 }
 
 /**
- * Clipboard wirte parameters
+ * Clipboard write parameters
  */
 export interface ClipboardParams {
   /** Mime Type of data to be copied to Clipboard */
