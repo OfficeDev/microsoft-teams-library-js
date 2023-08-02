@@ -1057,7 +1057,7 @@ export interface AdaptiveCardVersion {
 /**
  * Currently supported Mime type
  */
-export enum SupportedMimeType {
+export enum ClipboardSupportedMimeType {
   TextPlain = 'text/plain',
   TextHtml = 'text/html',
   ImagePNG = 'image/png',
@@ -1069,7 +1069,7 @@ export enum SupportedMimeType {
  */
 export interface ClipboardParams {
   /** Mime Type of data to be copied to Clipboard */
-  mimeType: SupportedMimeType;
+  mimeType: ClipboardSupportedMimeType;
   /** Blob content in Base64 string format */
   content: string;
 }

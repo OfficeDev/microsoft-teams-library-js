@@ -7,7 +7,7 @@ import {
   validateOrigin,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
-import { ClipboardParams, SupportedMimeType } from '../../src/public/interfaces';
+import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 
 describe('utils', () => {
   test('compareSDKVersions', () => {
@@ -175,39 +175,58 @@ describe('utils', () => {
   describe('base64ToBlob', () => {
     it('should convert base64 string to Blob for image/png MIME type', async () => {
       const base64Data = 'SGVsbG8=';
-      const mimeType = SupportedMimeType.ImagePNG;
+      const mimeType = ClipboardSupportedMimeType.ImagePNG;
       const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
-      expect(result.type).toBe(SupportedMimeType.ImagePNG);
+      expect(result.type).toBe(ClipboardSupportedMimeType.ImagePNG);
+    });
+    it('should throw error if MIME type is not provided', async () => {
+      const base64Data = 'SGVsbG8=';
+      const mimeType = '';
+      try {
+        await base64ToBlob(mimeType, base64Data);
+      } catch (error) {
+        expect(error).toEqual('MimeType cannot be null or empty.');
+      }
+    });
+
+    it('should throw error if base64 string is not provided', async () => {
+      const base64Data = '';
+      const mimeType = ClipboardSupportedMimeType.ImageJPEG;
+      try {
+        await base64ToBlob(mimeType, base64Data);
+      } catch (error) {
+        expect(error).toEqual('Base64 string cannot be null or empty.');
+      }
     });
 
     it('should convert base64 string to Blob for image/jpeg MIME type', async () => {
       const base64Data = 'SGVsbG8=';
-      const mimeType = SupportedMimeType.ImageJPEG;
+      const mimeType = ClipboardSupportedMimeType.ImageJPEG;
 
       const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
-      expect(result.type).toBe(SupportedMimeType.ImageJPEG);
+      expect(result.type).toBe(ClipboardSupportedMimeType.ImageJPEG);
     });
 
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'SGVsbG8=';
-      const mimeType = SupportedMimeType.TextPlain;
+      const mimeType = ClipboardSupportedMimeType.TextPlain;
       const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
-      expect(result.type).toBe(SupportedMimeType.TextPlain);
+      expect(result.type).toBe(ClipboardSupportedMimeType.TextPlain);
     });
 
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'PHA+SGVsbG8sIHdvcmxkITwvcD4=';
-      const mimeType = SupportedMimeType.TextHtml;
+      const mimeType = ClipboardSupportedMimeType.TextHtml;
       const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
-      expect(result.type).toBe(SupportedMimeType.TextHtml);
+      expect(result.type).toBe(ClipboardSupportedMimeType.TextHtml);
     });
   });
 
@@ -246,6 +265,15 @@ describe('utils', () => {
       const result = await getBase64StringFromBlob(blob);
 
       expect(result).toEqual('PHA+SGVsbG8sIHdvcmxkITwvcD4=');
+    });
+
+    it('should throw error when blob is empty', async () => {
+      const blob = new Blob([], { type: 'image/jpeg' });
+      try {
+        await getBase64StringFromBlob(blob);
+      } catch (error) {
+        expect(error).toEqual(new Error('Blob cannot be empty.'));
+      }
     });
   });
 });

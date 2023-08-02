@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
-import { AdaptiveCardVersion, ClipboardParams, SdkError } from '../public/interfaces';
+import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { validOrigins } from './constants';
 
@@ -379,7 +379,13 @@ export function isValidHttpsURL(url: URL): boolean {
  * @returns Promise
  */
 export function base64ToBlob(mimeType: string, base64String: string): Promise<Blob> {
-  return new Promise<Blob>((resolve) => {
+  return new Promise<Blob>((resolve, reject) => {
+    if (!mimeType) {
+      reject('MimeType cannot be null or empty.');
+    }
+    if (!base64String) {
+      reject('Base64 string cannot be null or empty.');
+    }
     const byteCharacters = atob(base64String);
     /**
      * For images we need to convert binary data to image to achieve that:
@@ -387,7 +393,7 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
      *      The byteCharacters is a string representing the base64 data decoded using atob.
      *   2. Then loop iterates over each character in the byteCharacters string and assigns the
      *      corresponding character code to the corresponding index in the byteArray. The purpose
-     *      of this loop is to convert the base64 string to a binary representation, as the Blob 
+     *      of this loop is to convert the base64 string to a binary representation, as the Blob
      *      constructor expects binary data.
      */
     if (mimeType.startsWith('image/')) {
@@ -407,6 +413,9 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
  */
 export function getBase64StringFromBlob(blob: Blob): Promise<string> {
   return new Promise<string>((resolve, reject) => {
+    if (blob.size === 0) {
+      reject(new Error('Blob cannot be empty.'));
+    }
     const reader = new FileReader();
     reader.onloadend = () => {
       if (reader.result) {

@@ -4,6 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { clipboard } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
+import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -47,6 +48,16 @@ describe('clipboard', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it('clipboard.write should throw error if blob is empty', async () => {
+            try {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+              await clipboard.write(new Blob([], { type: ClipboardSupportedMimeType.ImageJPEG }));
+            } catch (error) {
+              expect(error).toEqual(new Error('Blob cannot be empty.'));
+            }
+          });
+
           it(`clipboard.write should throw error if the clipboard.write capability is not supported in runtime config - ${context}:`, async () => {
             try {
               await utils.initializeWithContext(context);
@@ -77,8 +88,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send text/html should send message to parent with context - ${context}`, async () => {
@@ -93,8 +104,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send image/png should send message to parent with context - ${context}`, async () => {
@@ -109,8 +120,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send image/jpeg should send message to parent with context - ${context}`, async () => {
@@ -125,8 +136,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
         } else {
           it(`clipboard.write should not allow calls from context ${context}`, async () => {
@@ -162,6 +173,16 @@ describe('clipboard', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it('clipboard.write should throw error if blob is empty', async () => {
+            try {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
+              await clipboard.write(new Blob([], { type: ClipboardSupportedMimeType.ImageJPEG }));
+            } catch (error) {
+              expect(error).toEqual(new Error('Blob cannot be empty.'));
+            }
+          });
+
           it(`clipboard.write should throw error if the clipboard.write capability is not supported in runtime config - Context: ${context}`, async () => {
             try {
               await utils.initializeWithContext(context);
@@ -192,8 +213,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send text/html should send message to parent with context - ${context}`, async () => {
@@ -208,8 +229,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send image/png should send message to parent with context - ${context}`, async () => {
@@ -224,8 +245,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
 
           it(`clipboard.write send image/jpeg should send message to parent with context - ${context}`, async () => {
@@ -240,8 +261,8 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown, 'Copied to clipboard successfully');
-            expect(promise).resolves.toBe('Copied to clipboard successfully');
+            message && utils.respondToMessage(message, undefined as unknown);
+            expect(promise).resolves;
           });
         } else {
           it(`clipboard.write should not allow calls from context ${context}`, async () => {

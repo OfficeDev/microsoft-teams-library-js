@@ -2,7 +2,7 @@ import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
 import * as utils from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { ClipboardParams, SupportedMimeType } from './interfaces';
+import { ClipboardParams, ClipboardSupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -27,14 +27,16 @@ export namespace clipboard {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (!(blob.type && Object.values(SupportedMimeType).includes(blob.type as SupportedMimeType))) {
+    if (!(blob.type && Object.values(ClipboardSupportedMimeType).includes(blob.type as ClipboardSupportedMimeType))) {
       throw new Error(
-        `Blob type ${blob.type} is not supported. Supported blob types are ${Object.values(SupportedMimeType)}`,
+        `Blob type ${blob.type} is not supported. Supported blob types are ${Object.values(
+          ClipboardSupportedMimeType,
+        )}`,
       );
     }
     const base64StringContent = await utils.getBase64StringFromBlob(blob);
     const writeParams: ClipboardParams = {
-      mimeType: blob.type as SupportedMimeType,
+      mimeType: blob.type as ClipboardSupportedMimeType,
       content: base64StringContent,
     };
     return sendAndHandleSdkError('clipboard.writeToClipboard', writeParams);
