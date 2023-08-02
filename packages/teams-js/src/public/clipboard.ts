@@ -6,7 +6,7 @@ import { ClipboardParams, SupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the clipboard specific part of the SDK.
+ * Interact with the system clipboard
  *
  * @beta
  */
