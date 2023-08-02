@@ -1,6 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
-import * as clipboardUtils from '../internal/utils';
+import * as utils from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ClipboardParams, SupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
@@ -22,15 +22,17 @@ export namespace clipboard {
    * @returns A string promise which resolves to success message from the clipboard or
    *          rejects with error stating the reason for failure.
    */
-  export async function write(blob: Blob): Promise<string> {
+  export async function write(blob: Blob): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     if (!(blob.type && Object.values(SupportedMimeType).includes(blob.type as SupportedMimeType))) {
-      throw new Error(`Blob type ${blob.type} is not supported.`);
+      throw new Error(
+        `Blob type ${blob.type} is not supported. Supported blob types are ${Object.values(SupportedMimeType)}`,
+      );
     }
-    const base64StringContent = await clipboardUtils.getBase64StringFromBlob(blob);
+    const base64StringContent = await utils.getBase64StringFromBlob(blob);
     const writeParams: ClipboardParams = {
       mimeType: blob.type as SupportedMimeType,
       content: base64StringContent,
@@ -51,8 +53,8 @@ export namespace clipboard {
       throw errorNotSupportedOnPlatform;
     }
     if (isHostClientMobile()) {
-      const response = await sendAndHandleSdkError('clipboard.readFromClipboard');
-      return clipboardUtils.base64ToBlob(JSON.parse(response as string) as ClipboardParams);
+      const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
+      return utils.base64ToBlob(response.mimeType, response.content);
     } else {
       return sendAndHandleSdkError('clipboard.readFromClipboard');
     }

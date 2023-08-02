@@ -175,13 +175,8 @@ describe('utils', () => {
   describe('base64ToBlob', () => {
     it('should convert base64 string to Blob for image/png MIME type', async () => {
       const base64Data = 'SGVsbG8=';
-
-      const data: ClipboardParams = {
-        mimeType: SupportedMimeType.ImagePNG,
-        content: base64Data,
-      };
-
-      const result = await base64ToBlob(data);
+      const mimeType = SupportedMimeType.ImagePNG;
+      const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
       expect(result.type).toBe(SupportedMimeType.ImagePNG);
@@ -189,13 +184,9 @@ describe('utils', () => {
 
     it('should convert base64 string to Blob for image/jpeg MIME type', async () => {
       const base64Data = 'SGVsbG8=';
+      const mimeType = SupportedMimeType.ImageJPEG;
 
-      const data: ClipboardParams = {
-        mimeType: SupportedMimeType.ImageJPEG,
-        content: base64Data,
-      };
-
-      const result = await base64ToBlob(data);
+      const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
       expect(result.type).toBe(SupportedMimeType.ImageJPEG);
@@ -203,12 +194,8 @@ describe('utils', () => {
 
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'SGVsbG8=';
-      const data: ClipboardParams = {
-        mimeType: SupportedMimeType.TextPlain,
-        content: base64Data,
-      };
-
-      const result = await base64ToBlob(data);
+      const mimeType = SupportedMimeType.TextPlain;
+      const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
       expect(result.type).toBe(SupportedMimeType.TextPlain);
@@ -216,12 +203,8 @@ describe('utils', () => {
 
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'PHA+SGVsbG8sIHdvcmxkITwvcD4=';
-      const data: ClipboardParams = {
-        mimeType: SupportedMimeType.TextHtml,
-        content: base64Data,
-      };
-
-      const result = await base64ToBlob(data);
+      const mimeType = SupportedMimeType.TextHtml;
+      const result = await base64ToBlob(mimeType, base64Data);
 
       expect(result).toBeInstanceOf(Blob);
       expect(result.type).toBe(SupportedMimeType.TextHtml);

@@ -378,17 +378,26 @@ export function isValidHttpsURL(url: URL): boolean {
  * @param contentType Mimetype
  * @returns Promise
  */
-export function base64ToBlob(data: ClipboardParams): Promise<Blob> {
+export function base64ToBlob(mimeType: string, base64String: string): Promise<Blob> {
   return new Promise<Blob>((resolve) => {
-    const byteCharacters = atob(data.content);
-    if (data.mimeType.startsWith('image/')) {
+    const byteCharacters = atob(base64String);
+    /**
+     * For images we need to convert binary data to image to achieve that:
+     *   1. A new Uint8Array is created with a length equal to the length of byteCharacters.
+     *      The byteCharacters is a string representing the base64 data decoded using atob.
+     *   2. Then loop iterates over each character in the byteCharacters string and assigns the
+     *      corresponding character code to the corresponding index in the byteArray. The purpose
+     *      of this loop is to convert the base64 string to a binary representation, as the Blob 
+     *      constructor expects binary data.
+     */
+    if (mimeType.startsWith('image/')) {
       const byteArray = new Uint8Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteArray[i] = byteCharacters.charCodeAt(i);
       }
-      resolve(new Blob([byteArray], { type: data.mimeType }));
+      resolve(new Blob([byteArray], { type: mimeType }));
     }
-    resolve(new Blob([byteCharacters], { type: data.mimeType }));
+    resolve(new Blob([byteCharacters], { type: mimeType }));
   });
 }
 
