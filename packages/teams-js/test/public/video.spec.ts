@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { video } from '../../src/public/video';
@@ -101,6 +102,18 @@ describe('video', () => {
           const messageForRegister = utils.findMessageByFunc('registerHandler');
           expect(messageForRegister).toBeNull();
         });
+
+        it('should listen to video.setFrameProcessTimeLimit', () => {
+          expect.assertions(2);
+          const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
+          // Act
+          video.registerForVideoFrame(registerForVideoFrameParameters);
+          sendMessage('video.setFrameProcessTimeLimit', { timeLimit: 100 });
+
+          // Assert
+          expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);
+          expect(setFrameProcessTimeLimitSpy.mock.calls[0][0]).toEqual(100);
+        });
       });
 
       describe('sharedFrame', () => {
@@ -135,10 +148,19 @@ describe('video', () => {
         });
 
         it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
-          expect.assertions(3);
+          expect.assertions(6);
 
           // Arrange
           const videoBufferHandler: video.VideoBufferHandler = (_frame, onSuccess) => onSuccess();
+          const reportStartFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'reportStartFrameProcessing',
+          );
+          const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+          const startMonitorSlowFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'startMonitorSlowFrameProcessing',
+          );
 
           // Act
           video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
@@ -146,6 +168,9 @@ describe('video', () => {
           sendMessage('video.newVideoFrame', videoFrameMock);
 
           // Assert
+          expect(reportStartFrameProcessingSpy).toBeCalledWith(30, 40);
+          expect(reportFrameProcessedSpy).toBeCalledTimes(1);
+          expect(startMonitorSlowFrameProcessingSpy).toBeCalledTimes(1);
           const message = utils.findMessageByFunc('video.videoFrameProcessed');
           expect(message).not.toBeNull();
           expect(message?.args?.length).toBe(1);
@@ -196,11 +221,15 @@ describe('video', () => {
         });
 
         it('should successfully invoke videoFrameHandler', async () => {
-          expect.assertions(1);
+          expect.assertions(3);
 
           // Arrange
           const videoFrameHandler = jest.fn();
-
+          const reportStartFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'reportStartFrameProcessing',
+          );
+          const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
           // Act
           video.registerForVideoFrame({
             ...registerForVideoFrameParameters,
@@ -210,6 +239,8 @@ describe('video', () => {
           await utils.flushPromises();
 
           // Assert
+          expect(reportStartFrameProcessingSpy).toBeCalledWith(100, 100);
+          expect(reportFrameProcessedSpy).toBeCalledTimes(1);
           expect(videoFrameHandler).toHaveBeenCalledTimes(1);
         });
 
@@ -297,11 +328,13 @@ describe('video', () => {
       });
 
       it('should successfully invoke effectParameterChange handler', async () => {
-        expect.assertions(2);
+        expect.assertions(6);
 
         // Arrange
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
+        const reportApplyingVideoEffectSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportApplyingVideoEffect');
+        const reportVideoEffectChangedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportVideoEffectChanged');
 
         // Act
         video.registerForVideoEffect(videoEffectCallBack);
@@ -309,8 +342,13 @@ describe('video', () => {
         sendMessage('video.effectParameterChange', effectId);
 
         // Assert
+        expect(reportApplyingVideoEffectSpy).toHaveBeenCalledTimes(1);
+        expect(reportApplyingVideoEffectSpy.mock.calls[0][0]).toEqual(effectId);
         expect(videoEffectCallBack).toHaveBeenCalledTimes(1);
         expect(videoEffectCallBack.mock.lastCall[0]).toEqual(effectId);
+        await utils.flushPromises();
+        expect(reportVideoEffectChangedSpy).toHaveBeenCalledTimes(1);
+        expect(reportVideoEffectChangedSpy.mock.calls[0][0]).toEqual(effectId);
       });
 
       it('should invoke videoEffectReadiness handler on callback resolved', async () => {
@@ -451,6 +489,8 @@ function mockMediaStreamAPI() {
             /* mock VideoFrame */
             {
               timestamp: 0,
+              codedWidth: 100,
+              codedHeight: 100,
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               close: () => {},
             },
