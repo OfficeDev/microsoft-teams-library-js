@@ -1,5 +1,6 @@
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
+import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { videoEx } from '../../src/private/videoEx';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -91,6 +92,15 @@ describe('videoEx', () => {
 
       it('should successfully invoke video frame event handler', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
+        const reportStartFrameProcessingSpy = jest.spyOn(
+          VideoPerformanceMonitor.prototype,
+          'reportStartFrameProcessing',
+        );
+        const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+        const startMonitorSlowFrameProcessingSpy = jest.spyOn(
+          VideoPerformanceMonitor.prototype,
+          'startMonitorSlowFrameProcessing',
+        );
         let returnedVideoFrame: videoEx.VideoBufferData;
         let handlerInvoked = false;
         //callback
@@ -101,6 +111,7 @@ describe('videoEx', () => {
         ): void => {
           handlerInvoked = true;
           returnedVideoFrame = _videoBufferData;
+          _notifyVideoFrameProcessed();
         };
         videoEx.registerForVideoFrame({
           ...registerForVideoFrameParameters,
@@ -119,6 +130,9 @@ describe('videoEx', () => {
         } as DOMMessageEvent);
         expect(handlerInvoked).toBeTruthy();
         expect(returnedVideoFrame!).toEqual(videoFrameMock);
+        expect(reportStartFrameProcessingSpy).toBeCalledWith(30, 40);
+        expect(startMonitorSlowFrameProcessingSpy).toBeCalledTimes(1);
+        expect(reportFrameProcessedSpy).toBeCalledTimes(1);
       });
 
       it('should invoke video frame event handler and successfully send videoFrameProcessed', async () => {
@@ -240,6 +254,24 @@ describe('videoEx', () => {
           },
         } as DOMMessageEvent);
         expect(handlerInvoked).toBe(false);
+      });
+
+      it('should listen to video.setFrameProcessTimeLimit', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
+        // Act
+        videoEx.registerForVideoFrame(registerForVideoFrameParameters);
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.setFrameProcessTimeLimit',
+            args: [100],
+          },
+        } as DOMMessageEvent);
+
+        // Assert
+        expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);
+        expect(setFrameProcessTimeLimitSpy.mock.calls[0][0]).toEqual(100);
       });
 
       describe('mediaStream', () => {
