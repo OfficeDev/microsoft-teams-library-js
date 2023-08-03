@@ -249,7 +249,7 @@ export namespace dialog {
      */
     export namespace bot {
       /**
-       * Allows an app to open the dialog module using bot.
+       * Allows an app to open the dialog module that sends the submit data to the bot.
        *
        * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
        * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
