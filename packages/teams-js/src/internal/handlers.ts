@@ -180,5 +180,7 @@ function handleBeforeUnload(): void {
     } else {
       readyToUnload();
     }
+  } else if (Communication.childWindow) {
+    sendMessageEventToChild('beforeUnload');
   }
 }

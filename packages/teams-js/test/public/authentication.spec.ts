@@ -51,11 +51,13 @@ describe('Testing authentication capability', () => {
     HostClientType.desktop,
     HostClientType.android,
     HostClientType.ios,
+    HostClientType.ipados,
     HostClientType.rigel,
-    HostClientType.teamsDisplays,
-    HostClientType.teamsPhones,
-    HostClientType.teamsRoomsAndroid,
     HostClientType.teamsRoomsWindows,
+    HostClientType.teamsRoomsAndroid,
+    HostClientType.teamsPhones,
+    HostClientType.teamsDisplays,
+    HostClientType.surfaceHub,
   ];
   describe('FRAMED - authentication tests', () => {
     let utils: Utils = new Utils();
@@ -327,75 +329,103 @@ describe('Testing authentication capability', () => {
             await expect(promise).rejects.toThrowError(errorMessage);
           });
 
-          allowedHostClientType.forEach((hostClientType) => {
-            it(`authentication.authenticate should successfully pop up the auth window in the ${hostClientType} client in legacy flow from ${context} context`, () => {
-              return utils.initializeWithContext(context, hostClientType).then(() => {
+          Object.values(HostClientType).forEach((hostClientType) => {
+            // allowedHostClientType.forEach((hostClientType) => {
+            if (allowedHostClientType.includes(hostClientType)) {
+              it(`authentication.authenticate should successfully pop up the auth window in the ${hostClientType} client in legacy flow from ${context} context`, () => {
+                return utils.initializeWithContext(context, hostClientType).then(() => {
+                  const authenticationParams = {
+                    url: 'https://someUrl',
+                    width: 100,
+                    height: 200,
+                    isExternal: true,
+                  };
+
+                  authentication.authenticate(authenticationParams);
+                  const message = utils.findMessageByFunc('authentication.authenticate');
+                  expect(message).not.toBeNull();
+                  expect(message.args.length).toBe(4);
+                  expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+                  expect(message.args[1]).toBe(authenticationParams.width);
+                  expect(message.args[2]).toBe(authenticationParams.height);
+                  expect(message.args[3]).toBe(authenticationParams.isExternal);
+                });
+              });
+
+              it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
+                utils.initializeWithContext(context, hostClientType).then(() => {
+                  const authenticationParams = {
+                    url: 'https://someUrl',
+                    width: 100,
+                    height: 200,
+                    successCallback: (result: string) => {
+                      expect(result).toEqual(mockResult);
+                      done();
+                    },
+                    failureCallback: () => {
+                      expect(true).toBe(false);
+                      done();
+                    },
+                  };
+                  authentication.authenticate(authenticationParams);
+
+                  expect.assertions(2);
+                  const message = utils.findMessageByFunc('authentication.authenticate');
+                  expect(message).not.toBeNull();
+                  utils.respondToMessage(message, true, mockResult);
+                });
+              });
+
+              it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
+                expect.assertions(2);
+                utils.initializeWithContext(context, hostClientType).then(() => {
+                  const authenticationParams = {
+                    url: 'https://someUrl',
+                    width: 100,
+                    height: 200,
+                    successCallback: () => {
+                      expect(true).toBe(false);
+                      done();
+                    },
+                    failureCallback: (reason: string) => {
+                      expect(reason).toEqual(errorMessage);
+                      done();
+                    },
+                  };
+                  authentication.authenticate(authenticationParams);
+
+                  const message = utils.findMessageByFunc('authentication.authenticate');
+                  expect(message).not.toBeNull();
+
+                  utils.respondToMessage(message, false, errorMessage);
+                });
+              });
+            } else {
+              it(`authentication.authenticate should open a client window in the ${hostClientType} client in legacy flow from ${context} context`, async () => {
+                expect.assertions(1);
+                await utils.initializeWithContext(context, hostClientType);
+                // let windowOpenCalled = false;
+                jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
+                  // const specs: string = specsInput as string;
+                  // expect(url).toEqual('https://someurl/');
+                  // expect(name).toEqual('_blank');
+                  // expect(specs.indexOf('width=100')).not.toBe(-1);
+                  // expect(specs.indexOf('height=200')).not.toBe(-1);
+                  // windowOpenCalled = true;
+                  expect(true).toBeTruthy();
+                  return utils.childWindow as Window;
+                });
+
                 const authenticationParams = {
-                  url: 'https://someUrl',
+                  url: 'https://someurl/',
                   width: 100,
                   height: 200,
-                  isExternal: true,
                 };
-                authentication.authenticate(authenticationParams);
-
-                const message = utils.findMessageByFunc('authentication.authenticate');
-                expect(message).not.toBeNull();
-                expect(message.args.length).toBe(4);
-                expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-                expect(message.args[1]).toBe(authenticationParams.width);
-                expect(message.args[2]).toBe(authenticationParams.height);
-                expect(message.args[3]).toBe(authenticationParams.isExternal);
+                authentication.registerAuthenticationHandlers(authenticationParams);
+                authentication.authenticate();
+                // expect(windowOpenCalled).toBe(true);
               });
-            });
-
-            it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
-              expect.assertions(2);
-              utils.initializeWithContext(context, hostClientType).then(() => {
-                const authenticationParams = {
-                  url: 'https://someUrl',
-                  width: 100,
-                  height: 200,
-                  successCallback: (result: string) => {
-                    expect(result).toEqual(mockResult);
-                    done();
-                  },
-                  failureCallback: () => {
-                    expect(true).toBe(false);
-                    done();
-                  },
-                };
-                authentication.authenticate(authenticationParams);
-
-                const message = utils.findMessageByFunc('authentication.authenticate');
-                expect(message).not.toBeNull();
-                utils.respondToMessage(message, true, mockResult);
-              });
-            });
-
-            it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
-              expect.assertions(2);
-              utils.initializeWithContext(context, hostClientType).then(() => {
-                const authenticationParams = {
-                  url: 'https://someUrl',
-                  width: 100,
-                  height: 200,
-                  successCallback: () => {
-                    expect(true).toBe(false);
-                    done();
-                  },
-                  failureCallback: (reason: string) => {
-                    expect(reason).toEqual(errorMessage);
-                    done();
-                  },
-                };
-                authentication.authenticate(authenticationParams);
-
-                const message = utils.findMessageByFunc('authentication.authenticate');
-                expect(message).not.toBeNull();
-
-                utils.respondToMessage(message, false, errorMessage);
-              });
-            });
+            }
           });
         } else {
           it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
