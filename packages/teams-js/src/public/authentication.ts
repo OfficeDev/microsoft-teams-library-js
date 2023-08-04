@@ -141,7 +141,8 @@ export namespace authentication {
         GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
         GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
         GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays
+        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
+        GlobalVars.hostClientType === HostClientType.surfaceHub
       ) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         const link = document.createElement('a');
