@@ -402,28 +402,27 @@ describe('Testing authentication capability', () => {
               });
             } else {
               it(`authentication.authenticate should open a client window in the ${hostClientType} client in legacy flow from ${context} context`, async () => {
-                expect.assertions(1);
+                expect.assertions(5);
                 await utils.initializeWithContext(context, hostClientType);
-                // let windowOpenCalled = false;
+
+                let windowOpenCalled = false;
                 jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-                  // const specs: string = specsInput as string;
-                  // expect(url).toEqual('https://someurl/');
-                  // expect(name).toEqual('_blank');
-                  // expect(specs.indexOf('width=100')).not.toBe(-1);
-                  // expect(specs.indexOf('height=200')).not.toBe(-1);
-                  // windowOpenCalled = true;
-                  expect(true).toBeTruthy();
+                  const specs: string = specsInput as string;
+                  expect(url).toEqual('https://someurl/');
+                  expect(name).toEqual('_blank');
+                  expect(specs.indexOf('width=100')).not.toBe(-1);
+                  expect(specs.indexOf('height=200')).not.toBe(-1);
+                  windowOpenCalled = true;
                   return utils.childWindow as Window;
                 });
 
-                const authenticationParams = {
+                const authenticationParams: authentication.AuthenticatePopUpParameters = {
                   url: 'https://someurl/',
                   width: 100,
                   height: 200,
                 };
-                authentication.registerAuthenticationHandlers(authenticationParams);
-                authentication.authenticate();
-                // expect(windowOpenCalled).toBe(true);
+                authentication.authenticate(authenticationParams);
+                expect(windowOpenCalled).toBe(true);
               });
             }
           });
