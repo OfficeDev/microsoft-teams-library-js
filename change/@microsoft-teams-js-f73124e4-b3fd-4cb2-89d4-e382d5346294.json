@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added surfacehub to the list of host client types that send authenticate requests to the host instead of opening a window",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}
