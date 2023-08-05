@@ -109,6 +109,14 @@ describe('Testing authentication capability', () => {
     });
 
     describe('Testing authentication.authenticate function', () => {
+      beforeEach(() => {
+        // For *almost* all of these tests we want setInterval to be a no-op, so we set it to immediately return 0
+        utils.mockWindow.setInterval = (handler: Function, timeout: number): number => 0;
+      });
+      afterEach(() => {
+        // After each test we reset setInterval to its normal value
+        utils.mockWindow.setInterval = (handler: Function, timeout: number): number => setInterval(handler, timeout);
+      });
       it('authentication.authenticate should not allow calls before initialization', () => {
         const authenticationParams: authentication.AuthenticatePopUpParameters = {
           url: 'https://someurl/',
@@ -229,6 +237,9 @@ describe('Testing authentication capability', () => {
           });
 
           it(`authentication.authenticate should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called from ${context} context`, async () => {
+            // This test actually needs the interval to work so that the window "closes"
+            utils.mockWindow.setInterval = (handler: Function, timeout: number): number =>
+              setInterval(handler, timeout);
             expect.assertions(6);
             await utils.initializeWithContext(context);
 
