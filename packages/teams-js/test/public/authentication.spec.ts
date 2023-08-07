@@ -238,8 +238,7 @@ describe('Testing authentication capability', () => {
 
           it(`authentication.authenticate should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called from ${context} context`, async () => {
             // This test actually needs the interval to work so that the window "closes"
-            utils.mockWindow.setInterval = (handler: Function, timeout: number): number =>
-              setInterval(handler, timeout);
+            utils.mockWindow.setInterval = (handler: Function, timeout: number): number => setInterval(handler, 0);
             expect.assertions(6);
             await utils.initializeWithContext(context);
 
@@ -341,9 +340,8 @@ describe('Testing authentication capability', () => {
           });
 
           Object.values(HostClientType).forEach((hostClientType) => {
-            // allowedHostClientType.forEach((hostClientType) => {
             if (allowedHostClientType.includes(hostClientType)) {
-              it(`authentication.authenticate should successfully pop up the auth window in the ${hostClientType} client in legacy flow from ${context} context`, () => {
+              it(`authentication.authenticate should successfully send authenticate message to ${hostClientType} client in legacy flow from ${context} context`, () => {
                 return utils.initializeWithContext(context, hostClientType).then(() => {
                   const authenticationParams = {
                     url: 'https://someUrl',
