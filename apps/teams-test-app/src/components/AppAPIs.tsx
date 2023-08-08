@@ -1,4 +1,11 @@
-import { app, Context, executeDeepLink, getContext, registerOnThemeChangeHandler } from '@microsoft/teams-js';
+import {
+  app,
+  Context,
+  executeDeepLink,
+  getContext,
+  registerOnThemeChangeHandler,
+  ResumeContext,
+} from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -71,11 +78,60 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
+const RegisterOnResumeHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'RegisterOnResumeHandler',
+    title: 'Register On Resume Handler',
+    onClick: async (setResult) => {
+      app.lifecycle.caching.registerOnResumeHandler((context: ResumeContext): void => {
+        setResult('successfully called with context:' + JSON.stringify(context));
+        app.notifySuccess();
+      });
+
+      return 'registered';
+    },
+  });
+
+const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'RegisterBeforeSuspendOrTerminateHandler',
+    title: 'Register Before Suspend/Terminate Handler',
+    onClick: async (setResult) => {
+      app.lifecycle.registerBeforeSuspendOrTerminateHandler((readyToSuspendOrTerminate): void => {
+        setTimeout(() => {
+          readyToSuspendOrTerminate();
+        }, 20);
+        alert('beforeSuspendOrTerminate received; calling readyToSuspendOrTerminate in 2 seconds');
+        setResult('Success');
+      });
+
+      return 'registered';
+    },
+  });
+
+const CheckLifecycleCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkLifecycleCapability',
+    title: 'Check LifeCycle Capability',
+    onClick: async () => `app.lifecycle ${app.lifecycle.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
+const CheckCachingCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkTeamsCoreCapability',
+    title: 'Check LifeCycle.Caching Capability',
+    onClick: async () => `app.lifecycle.caching ${app.lifecycle.caching.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
     <RegisterOnThemeChangeHandler />
+    <RegisterBeforeSuspendOrTerminateHandler />
+    <RegisterOnResumeHandler />
+    <CheckLifecycleCapability />
+    <CheckCachingCapability />
   </ModuleWrapper>
 );
 

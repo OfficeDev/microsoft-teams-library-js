@@ -58,6 +58,9 @@ export namespace teamsCore {
    *
    * @param handler - The handler to invoke when the page is loaded.
    *
+   * @deprecated
+   * As of 2.14.1, please use {@link app.lifecycle.caching.registerOnResumeHandler} instead.
+   *
    * @beta
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
@@ -77,6 +80,8 @@ export namespace teamsCore {
    *
    * @param handler - The handler to invoke when the page is loaded.
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   *
+   * @deprecated
    */
   export function registerOnLoadHandlerHelper(
     handler: registerOnLoadHandlerFunctionType,
@@ -101,6 +106,7 @@ export namespace teamsCore {
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
+   * @deprecated
    * @beta
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
@@ -121,6 +127,8 @@ export namespace teamsCore {
    * @param handler - - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   *
+   * @deprecated
    */
   export function registerBeforeUnloadHandlerHelper(
     handler: registerBeforeUnloadHandlerFunctionType,

@@ -19,9 +19,17 @@ import { compareSDKVersions, runWithTimeout } from '../internal/utils';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { logs } from '../private/logs';
 import { authentication } from './authentication';
-import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  ChannelType,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { dialog } from './dialog';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
@@ -695,6 +703,8 @@ export namespace app {
       pages.registerFullScreenHandler(null);
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
+      lifecycle.registerBeforeSuspendOrTerminateHandler(null);
+      lifecycle.caching.registerOnResumeHandler(null);
       logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
       /* eslint-enable strict-null-checks/all */
     }
@@ -805,6 +815,93 @@ export namespace app {
       );
       resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
     });
+  }
+
+  /**
+   * Namespace to opt into full-caching or delayed-termination of an app.
+   *
+   * @beta
+   */
+  export namespace lifecycle {
+    /**
+     * Register on resume handler function type
+     *
+     * @param context - Data structure to be used to pass the context to the app.
+     */
+    type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+
+    /**
+     * Register before suspendOrTerminate handler function type
+     *
+     * @param readyToSuspendOrTerminate - a function that handler is called with. Apps suppose to call this function when they are ready.
+     */
+    type registerBeforeSuspendOrTerminateHandlerFunctionType = (readyToSuspendOrTerminate: () => void) => void;
+
+    /**
+     * Registers a handler to be called before the page is suspended or terminatd.
+     *
+     * @param handler - The handler to invoke before the page is suspended or terminated. The page should
+     * invoke the readyToSuspendOrTerminate function provided to it once it's ready.
+     *
+     */
+    export function registerBeforeSuspendOrTerminateHandler(
+      handler: registerBeforeSuspendOrTerminateHandlerFunctionType,
+    ): void {
+      handler && ensureInitialized(runtime);
+      if (handler && !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerBeforeSuspendOrTerminateHandler(handler);
+    }
+
+    /**
+     * Checks if app.lifecycle is supported by the host.
+     * @returns boolean to represent whether the lifecycle capability is supported
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.app && runtime.supports.app.lifecycle ? true : false;
+    }
+
+    /**
+     * Namespace to opt into full caching of an app
+     *
+     * @beta
+     */
+    export namespace caching {
+      /**
+       * Registers a handler to be called when the page has been requested to load.
+       *
+       * @param handler - The handler to invoke when the page is loaded.
+       *
+       * @beta
+       */
+      export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
+        handler && ensureInitialized(runtime);
+        if (handler && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+        Handlers.registerOnResumeHandler(handler);
+      }
+
+      /**
+       * Checks if app.lifecycle.caching is supported by the host
+       * @returns boolean to represent whether the subcapability caching is supported
+       * @throws Error if {@linkcode app.lifecycle.caching} has not successfully completed
+       *
+       * @beta
+       */
+      export function isSupported(): boolean {
+        return ensureInitialized(runtime) &&
+          runtime.supports.app &&
+          runtime.supports.app.lifecycle &&
+          runtime.supports.app.lifecycle.caching
+          ? true
+          : false;
+      }
+    }
   }
 }
 
