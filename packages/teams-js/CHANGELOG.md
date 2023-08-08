@@ -1,8 +1,22 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 05 Jul 2023 16:42:51 GMT and should not be manually modified.
+This log was last generated on Wed, 02 Aug 2023 14:49:19 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.14.0
+
+Wed, 02 Aug 2023 14:49:19 GMT
+
+### Minor changes
+
+- Added permission functions for media capability
+- Added new `appNotification` capability for apps to send notifications to the user through the host
+
+### Patches
+
+- Updated documentation to refer to 'Microsoft Entra' instead of 'AAD'
+- Started collection of `video` performance data
 
 ## 2.13.0
 
