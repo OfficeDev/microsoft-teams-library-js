@@ -10,7 +10,7 @@ export enum HostClientType {
   ios = 'ios',
   /** Represents the iPadOS client of host, which runs on iOS devices such as iPads. */
   ipados = 'ipados',
-  /** Represents the macOS client of host, which runs on macOS devices such as Macbook. */
+  /** Represents the macOS client of host that utilizes MacHubSDK, which runs on macOS devices such as MacBooks. */
   macos = 'macos',
   /**
    * @deprecated
