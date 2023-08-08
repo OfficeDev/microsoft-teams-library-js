@@ -27,6 +27,7 @@ const CheckAppNotificationCapability = (): React.ReactElement =>
 
 const DisplayAppNotification = (): React.ReactElement =>
   ApiWithTextInput<appNotification.NotificationDisplayParamForAppHost>({
+
     name: 'displayAppNotificationCapability',
     title: 'Display AppNotification Capability',
     onClick: {
@@ -47,6 +48,7 @@ const DisplayAppNotification = (): React.ReactElement =>
 
       submit: async (input) => {
         await appNotification.displayInAppNotification(deserializeParam(input));
+
         return 'Completed';
       },
     },
