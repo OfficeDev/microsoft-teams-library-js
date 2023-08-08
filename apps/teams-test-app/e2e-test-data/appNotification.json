@@ -15,7 +15,7 @@
       "title": "sampleAppNotificationTitle",
       "content": "sampleAppNotficationContent",
       "displayDurationInSeconds": 30,
-      "notificationActionUrl": "https://www.someAppNotificationUrl.com"
+      "notificationActionUrl": "https://localhost:4000"
     },
 
     "expectedAlertValue": "DisplayAppNotification called with  ##JSON_INPUT_VALUE##",
