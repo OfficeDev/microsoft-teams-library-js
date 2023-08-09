@@ -4,6 +4,20 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
+function deserializeParam(
+  notificationDisplayParam: appNotification.NotificationDisplayParamForAppHost,
+): appNotification.NotificationDisplayParam {
+  return {
+    title: notificationDisplayParam.title,
+    content: notificationDisplayParam.content,
+    icon: notificationDisplayParam.notificationIconAsString
+      ? new URL(notificationDisplayParam.notificationIconAsString)
+      : undefined,
+    displayDurationInSeconds: notificationDisplayParam.displayDurationInSeconds,
+    notificationActionUrl: new URL(notificationDisplayParam.notificationActionUrlAsString),
+  };
+}
+
 const CheckAppNotificationCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkAppNotificationCapability',
@@ -12,9 +26,9 @@ const CheckAppNotificationCapability = (): React.ReactElement =>
   });
 
 const DisplayAppNotification = (): React.ReactElement =>
-  ApiWithTextInput<appNotification.NotificationDisplayParam>({
+  ApiWithTextInput<appNotification.NotificationDisplayParamForAppHost>({
     name: 'displayAppNotificationCapability',
-    title: 'Display App Notification Capability',
+    title: 'Display AppNotification Capability',
     onClick: {
       validateInput: (input) => {
         if (!input.title) {
@@ -26,12 +40,14 @@ const DisplayAppNotification = (): React.ReactElement =>
         if (!input.displayDurationInSeconds) {
           throw new Error('displayDurationInSeconds is required');
         }
-        if (!input.notificationActionUrl) {
-          throw new Error('notificationActionUrl is required');
+        if (!input.notificationActionUrlAsString) {
+          throw new Error('notification URL is required');
         }
       },
+
       submit: async (input) => {
-        await appNotification.displayInAppNotification(input);
+        await appNotification.displayInAppNotification(deserializeParam(input));
+
         return 'Completed';
       },
     },
