@@ -5,6 +5,7 @@ import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
+  errorNotSupportedOnPlatform,
   FrameContexts,
   HostClientType,
   HostName,
@@ -835,6 +836,97 @@ describe('Testing app capability', () => {
           });
         });
       }
+    });
+    describe('Testing app.lifecycle subcapability', () => {
+      describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() =>
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+              return false;
+            }),
+          ).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and call readyToSuspendOrTerminate. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let handlerInvoked = false;
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler((readyToSuspendOrTerminate) => {
+              readyToSuspendOrTerminate();
+              handlerInvoked = true;
+            });
+
+            utils.sendMessage('beforeSuspendOrTerminate');
+
+            let readyToSuspendOrTerminateMessage = utils.findMessageByFunc('readyToSuspendOrTerminate');
+            expect(readyToSuspendOrTerminateMessage).not.toBeNull();
+            expect(handlerInvoked).toBe(true);
+          });
+        });
+      });
+      describe('Testing app.lifecycle.caching.registerOnResumeHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() =>
+            app.lifecycle.caching.registerOnResumeHandler(() => {
+              return false;
+            }),
+          ).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.caching.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.caching.registerOnResumeHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.caching.registerOnResumeHandler should throw error when app.lifecycle.caching is not supported. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: { lifecycle: {} } } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.caching.registerOnResumeHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.caching.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let handlerInvoked = false;
+            app.lifecycle.caching.registerOnResumeHandler(() => {
+              handlerInvoked = true;
+            });
+
+            utils.sendMessage('resume');
+            expect(handlerInvoked).toBe(true);
+          });
+        });
+      });
     });
   });
 

@@ -829,13 +829,20 @@ export namespace app {
      * @param context - Data structure to be used to pass the context to the app.
      */
     type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+    /**
+     * A function that is called when the app is ready to be suspended or terminated.
+     */
+    type ReadyToSuspendOrTerminateFunction = () => void;
 
     /**
      * Register before suspendOrTerminate handler function type
      *
-     * @param readyToSuspendOrTerminate - a function that handler is called with. Apps suppose to call this function when they are ready.
+     * @param readyToSuspendOrTerminate - A function that the handler is called with. Apps should call this function when they are ready.
+     * @returns void
      */
-    type registerBeforeSuspendOrTerminateHandlerFunctionType = (readyToSuspendOrTerminate: () => void) => void;
+    type registerBeforeSuspendOrTerminateHandlerFunctionType = (
+      readyToSuspendOrTerminate: ReadyToSuspendOrTerminateFunction,
+    ) => void;
 
     /**
      * Registers a handler to be called before the page is suspended or terminatd.
