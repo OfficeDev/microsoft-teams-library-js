@@ -27,7 +27,7 @@ function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion;
 }
 
-export interface IRuntimeV1 extends IBaseRuntime {
+interface IRuntimeV1 extends IBaseRuntime {
   readonly apiVersion: 1;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
@@ -81,7 +81,7 @@ export interface IRuntimeV1 extends IBaseRuntime {
   };
 }
 
-export interface IRuntimeV2 extends IBaseRuntime {
+interface IRuntimeV2 extends IBaseRuntime {
   readonly apiVersion: 2;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
@@ -310,7 +310,7 @@ export const v1HostClientTypes = [
  * @internal
  * Limited to Microsoft-internal use
  */
-export interface IRuntimeUpgrade {
+interface IRuntimeUpgrade {
   versionToUpgradeFrom: number;
   upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
 }
