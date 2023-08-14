@@ -37,7 +37,7 @@ describe('runtime', () => {
   describe('runtime versioning', () => {
     it('latestRuntimeVersion should match Runtime interface apiVersion', () => {
       const runtime: Runtime = {
-        apiVersion: 2,
+        apiVersion: latestRuntimeApiVersion,
         supports: {},
       };
       expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
@@ -67,7 +67,7 @@ describe('runtime', () => {
       }
     });
 
-    it('applyRuntime fast-forwards v1 to v2 runtime config to latest version', () => {
+    it('applyRuntime fast-forwards v1 to latest version', () => {
       const runtimeV1 = {
         apiVersion: 1,
         isLegacyTeams: false,
@@ -81,7 +81,7 @@ describe('runtime', () => {
 
       const fastForwardConfig = fastForwardRuntime(runtimeV1);
       expect(fastForwardConfig).toEqual({
-        apiVersion: 2,
+        apiVersion: 3,
         hostVersionsInfo: undefined,
         isLegacyTeams: false,
         supports: { dialog: { card: undefined, url: { bot: {}, update: {} }, update: {} } },

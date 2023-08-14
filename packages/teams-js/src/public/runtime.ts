@@ -19,15 +19,15 @@ export interface IBaseRuntime {
 /**
  * Latest runtime interface version
  */
-export type Runtime = IRuntimeV2;
+export type Runtime = IRuntimeV3;
 
-export const latestRuntimeApiVersion = 2;
+export const latestRuntimeApiVersion = 3;
 
 function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion;
 }
 
-interface IRuntimeV1 extends IBaseRuntime {
+export interface IRuntimeV1 extends IBaseRuntime {
   readonly apiVersion: 1;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
@@ -81,8 +81,72 @@ interface IRuntimeV1 extends IBaseRuntime {
   };
 }
 
-interface IRuntimeV2 extends IBaseRuntime {
+export interface IRuntimeV2 extends IBaseRuntime {
   readonly apiVersion: 2;
+  readonly hostVersionsInfo?: HostVersionsInfo;
+  readonly isLegacyTeams?: boolean;
+  readonly supports: {
+    readonly appEntity?: {};
+    readonly appInstallDialog?: {};
+    readonly appNotification?: {};
+    readonly barCode?: {};
+    readonly calendar?: {};
+    readonly call?: {};
+    readonly chat?: {};
+    readonly conversations?: {};
+    readonly dialog?: {
+      readonly card?: {
+        readonly bot?: {};
+      };
+      readonly url?: {
+        readonly bot?: {};
+      };
+      readonly update?: {};
+    };
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
+    readonly interactive?: {};
+    readonly secondaryBrowser?: {};
+    readonly location?: {};
+    readonly logs?: {};
+    readonly mail?: {};
+    readonly marketplace?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly monetization?: {};
+    readonly notifications?: {};
+    readonly pages?: {
+      readonly appButton?: {};
+      readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
+      readonly fullTrust?: {};
+      readonly tabs?: {};
+    };
+    readonly people?: {};
+    readonly permissions?: {};
+    readonly profile?: {};
+    readonly remoteCamera?: {};
+    readonly search?: {};
+    readonly sharing?: {};
+    readonly stageView?: {};
+    readonly teams?: {
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
+    };
+    readonly teamsCore?: {};
+    readonly video?: {
+      readonly mediaStream?: {};
+      readonly sharedFrame?: {};
+    };
+    readonly webStorage?: {};
+  };
+}
+
+interface IRuntimeV3 extends IBaseRuntime {
+  readonly apiVersion: 3;
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
@@ -179,7 +243,7 @@ export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime 
 export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const teamsRuntimeConfig: Runtime = {
-  apiVersion: 2,
+  apiVersion: 3,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
@@ -247,7 +311,7 @@ export const v1HostClientTypes = [
  * @internal
  * Limited to Microsoft-internal use
  */
-interface IRuntimeUpgrade {
+export interface IRuntimeUpgrade {
   versionToUpgradeFrom: number;
   upgradeToNextVersion: (previousVersionRuntime: IBaseRuntime) => IBaseRuntime;
 }
@@ -287,7 +351,6 @@ export function fastForwardRuntime(outdatedRuntime: IBaseRuntime): Runtime {
  * Limited to Microsoft-internal use
  */
 export const upgradeChain: IRuntimeUpgrade[] = [
-  // This upgrade has been included for testing, it may be removed when there is a real upgrade implemented
   {
     versionToUpgradeFrom: 1,
     upgradeToNextVersion: (previousVersionRuntime: IRuntimeV1): IRuntimeV2 => {
@@ -305,6 +368,19 @@ export const upgradeChain: IRuntimeUpgrade[] = [
               }
             : undefined,
         },
+      };
+    },
+  },
+  {
+    versionToUpgradeFrom: 2,
+    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV2): IRuntimeV3 => {
+      /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ /* Intentionally assigned to unused variable to delete propery when destructuring */
+      const { appNotification: _, ...newSupports } = previousVersionRuntime.supports;
+      return {
+        apiVersion: 3,
+        hostVersionsInfo: undefined,
+        isLegacyTeams: previousVersionRuntime.isLegacyTeams,
+        supports: newSupports,
       };
     },
   },
@@ -389,7 +465,7 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
   });
 
   const backCompatRuntimeConfig: Runtime = {
-    apiVersion: 2,
+    apiVersion: latestRuntimeApiVersion,
     hostVersionsInfo: teamsMinAdaptiveCardVersion,
     isLegacyTeams: true,
     supports: newSupports,
@@ -432,7 +508,7 @@ export function setUnitializedRuntime(): void {
  * Limited to Microsoft-internal use
  */
 export const _minRuntimeConfigToUninitialize: Runtime = {
-  apiVersion: 2,
+  apiVersion: latestRuntimeApiVersion,
   supports: {
     pages: {
       appButton: {},
