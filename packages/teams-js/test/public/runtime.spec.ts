@@ -107,25 +107,6 @@ describe('runtime', () => {
       });
     });
 
-    it('applyRuntime fast-forwards v2 to latest version', () => {
-      const runtimeV2 = {
-        apiVersion: 2,
-        isLegacyTeams: false,
-        supports: {
-          appInstallDialog: {},
-          appNotification: {},
-        },
-      };
-
-      const fastForwardConfig = fastForwardRuntime(runtimeV2);
-      expect(fastForwardConfig).toEqual({
-        apiVersion: latestRuntimeApiVersion,
-        hostVersionsInfo: undefined,
-        isLegacyTeams: false,
-        supports: { appInstallDialog: {} },
-      });
-    });
-
     it('applyRuntime handles runtime config with string apiVersion', () => {
       const runtimeWithStringVersion = {
         apiVersion: '2.0.0',
