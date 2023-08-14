@@ -152,7 +152,6 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly supports: {
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
-    readonly appNotification?: {};
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
@@ -377,9 +376,8 @@ export const upgradeChain: IRuntimeUpgrade[] = [
       /* eslint-disable-next-line @typescript-eslint/no-unused-vars */ /* Intentionally assigned to unused variable to delete propery when destructuring */
       const { appNotification: _, ...newSupports } = previousVersionRuntime.supports;
       return {
+        ...previousVersionRuntime,
         apiVersion: 3,
-        hostVersionsInfo: undefined,
-        isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: newSupports,
       };
     },

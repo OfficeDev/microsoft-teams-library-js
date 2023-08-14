@@ -79,8 +79,8 @@ describe('runtime', () => {
       applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
-        // eslint-disable-next-line strict-null-checks/all
-        expect(runtime.supports.appNotification).toBeUndefined();
+        /* eslint-disable-next-line strict-null-checks/all, @typescript-eslint/no-explicit-any*/ /* must use any here since appNotification isn't supposed to be a property anymore */
+        expect((runtime.supports as any).appNotification).toBeUndefined();
         // eslint-disable-next-line strict-null-checks/all
         expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
       }
