@@ -137,6 +137,7 @@ export namespace authentication {
         GlobalVars.hostClientType === HostClientType.android ||
         GlobalVars.hostClientType === HostClientType.ios ||
         GlobalVars.hostClientType === HostClientType.ipados ||
+        GlobalVars.hostClientType === HostClientType.macos ||
         GlobalVars.hostClientType === HostClientType.rigel ||
         GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
         GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
