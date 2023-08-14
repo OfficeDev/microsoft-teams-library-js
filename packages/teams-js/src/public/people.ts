@@ -81,7 +81,7 @@ export namespace people {
         throw errorNotSupportedOnPlatform;
       }
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      resolve(sendAndHandleSdkError('people.selectPeople', peoplePickerInputs));
+      resolve(sendAndHandleSdkError('people.selectPeople', 'v2', peoplePickerInputs));
     });
   }
 

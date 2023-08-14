@@ -89,10 +89,10 @@ export namespace search {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler(onClosedHandlerName, onClosedHandler);
-    registerHandler(onExecutedHandlerName, onExecuteHandler);
+    registerHandler(onClosedHandlerName, 'v1', onClosedHandler);
+    registerHandler(onExecutedHandlerName, 'v1', onExecuteHandler);
     if (onChangeHandler) {
-      registerHandler(onChangeHandlerName, onChangeHandler);
+      registerHandler(onChangeHandlerName, 'v1', onChangeHandler);
     }
   }
 
@@ -110,7 +110,7 @@ export namespace search {
     }
     // This should let the host know to stop making the app scope show up in the search experience
     // Can also be used to clean up handlers on the host if desired
-    sendMessageToParent('search.unregister');
+    sendMessageToParent('search.unregister', 'v1');
     removeHandler(onChangeHandlerName);
     removeHandler(onClosedHandlerName);
     removeHandler(onExecutedHandlerName);
@@ -140,7 +140,7 @@ export namespace search {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleStatusAndReason('search.closeSearch'));
+      resolve(sendAndHandleStatusAndReason('search.closeSearch', 'v1'));
     });
   }
 }

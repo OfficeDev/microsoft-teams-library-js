@@ -80,7 +80,7 @@ export namespace monetization {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', planInfo));
+        resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', 'v2', planInfo));
       });
     };
 

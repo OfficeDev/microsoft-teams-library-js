@@ -42,10 +42,10 @@ export namespace tasks {
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent('tasks.startTask', 'v1', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.card) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent('tasks.startTask', 'v1', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {

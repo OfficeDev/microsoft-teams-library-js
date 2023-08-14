@@ -224,6 +224,7 @@ export namespace video {
     }
     registerHandler(
       'video.setFrameProcessTimeLimit',
+      'v1',
       (timeLimitInfo: { timeLimit: number }) =>
         videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimitInfo.timeLimit),
       false,
@@ -255,7 +256,7 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId]);
+    sendMessageToParent('video.videoEffectChanged', 'v1', [effectChangeType, effectId]);
   }
 
   /**
@@ -270,10 +271,11 @@ export namespace video {
     }
     registerHandler(
       'video.effectParameterChange',
+      'v1',
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
       false,
     );
-    sendMessageToParent('video.registerForVideoEffect');
+    sendMessageToParent('video.registerForVideoEffect', 'v1');
   }
 
   /**
@@ -282,7 +284,7 @@ export namespace video {
    * @beta
    */
   function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
+    sendMessageToParent('video.videoFrameProcessed', 'v1', [timestamp]);
   }
 
   /**
@@ -291,7 +293,7 @@ export namespace video {
    * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
-    sendMessageToParent('video.notifyError', [errorMessage]);
+    sendMessageToParent('video.notifyError', 'v1', [errorMessage]);
   }
 
   /**
@@ -319,6 +321,7 @@ export namespace video {
 
     registerHandler(
       'video.startVideoExtensibilityVideoStream',
+      'v1',
       async (mediaStreamInfo: { streamId: string }) => {
         // when a new streamId is ready:
         const { streamId } = mediaStreamInfo;
@@ -335,7 +338,7 @@ export namespace video {
       false,
     );
 
-    sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
+    sendMessageToParent('video.mediaStream.registerForVideoFrame', 'v1', [config]);
   }
 
   function createMonitoredVideoFrameHandler(
@@ -371,6 +374,7 @@ export namespace video {
 
     registerHandler(
       'video.newVideoFrame',
+      'v1',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
         if (videoBufferData) {
@@ -388,7 +392,7 @@ export namespace video {
       },
       false,
     );
-    sendMessageToParent('video.registerForVideoFrame', [config]);
+    sendMessageToParent('video.registerForVideoFrame', 'v1', [config]);
   }
 
   function normalizeVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {

@@ -78,7 +78,7 @@ export namespace chat {
           ),
         );
       } else {
-        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
+        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', '??? v2', {
           members: openChatRequest.user,
           message: openChatRequest.message,
         });
@@ -121,7 +121,7 @@ export namespace chat {
             ),
           );
         } else {
-          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', '??? v2', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,

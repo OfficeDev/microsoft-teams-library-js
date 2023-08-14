@@ -44,7 +44,7 @@ export namespace barCode {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
-      resolve(sendAndHandleSdkError('media.scanBarCode', barCodeConfig));
+      resolve(sendAndHandleSdkError('media.scanBarCode', '??? v2', barCodeConfig));
     });
   }
 

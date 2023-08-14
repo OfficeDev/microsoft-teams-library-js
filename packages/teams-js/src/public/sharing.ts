@@ -116,7 +116,7 @@ export namespace sharing {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
+      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, 'v2', shareWebContentRequest));
     });
   }
 

@@ -40,7 +40,7 @@ export namespace profile {
         },
       };
 
-      resolve(sendAndHandleSdkError('profile.showProfile', requestInternal));
+      resolve(sendAndHandleSdkError('profile.showProfile', 'v1', requestInternal));
     });
   }
 

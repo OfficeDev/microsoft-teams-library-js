@@ -117,7 +117,7 @@ export namespace media {
       return;
     }
 
-    sendMessageToParent('captureImage', callback);
+    sendMessageToParent('captureImage', '??? v2', callback);
   }
 
   /**
@@ -253,7 +253,7 @@ export namespace media {
           }
         }
       }
-      sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
+      sendMessageToParent('getMedia', '??? v2', localUriId, handleGetMediaCallbackRequest);
     }
 
     /** Function to retrieve media content, such as images or videos, via handler. */
@@ -264,7 +264,7 @@ export namespace media {
         assembleAttachment: [],
       };
       const params = [actionName, this.content];
-      this.content && callback && sendMessageToParent('getMedia', params);
+      this.content && callback && sendMessageToParent('getMedia', '??? v2', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -295,7 +295,7 @@ export namespace media {
         }
       }
 
-      registerHandler('getMedia' + actionName, handleGetMediaRequest);
+      registerHandler('getMedia' + actionName, '??? v1', handleGetMediaRequest);
     }
   }
 
@@ -485,7 +485,7 @@ export namespace media {
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
+      sendMessageToParent('media.controller', '??? v2', [params], (err?: SdkError) => {
         if (callback) {
           callback(err);
         }
@@ -719,6 +719,7 @@ export namespace media {
     // What comes back from native as attachments would just be objects and will be missing getMedia method on them
     sendMessageToParent(
       'selectMedia',
+      '??? v2',
       params,
       (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
         // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
@@ -770,7 +771,7 @@ export namespace media {
     }
 
     const params = [uriList];
-    sendMessageToParent('viewImages', params, callback);
+    sendMessageToParent('viewImages', '??? v2', params, callback);
   }
 
   /**
@@ -833,6 +834,6 @@ export namespace media {
       return;
     }
 
-    sendMessageToParent('media.scanBarCode', [config], callback);
+    sendMessageToParent('media.scanBarCode', '??? v3', [config], callback);
   }
 }

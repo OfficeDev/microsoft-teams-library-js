@@ -84,7 +84,7 @@ export namespace dialog {
    * @beta
    */
   export function initialize(): void {
-    registerHandler('messageForChild', handleDialogMessage, false);
+    registerHandler('messageForChild', '???', handleDialogMessage, false);
   }
 
   function handleDialogMessage(message: string): void {
@@ -125,10 +125,10 @@ export namespace dialog {
       }
 
       if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
+        registerHandler('messageForParent', '???', messageFromChildHandler);
       }
       const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+      sendMessageToParent('tasks.startTask', 'v2', [dialogInfo], (err: string, result: string | object) => {
         submitHandler?.({ err, result });
         removeHandler('messageForParent');
       });
@@ -157,7 +157,10 @@ export namespace dialog {
       }
 
       // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-      sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+      sendMessageToParent('tasks.completeTask', 'v2', [
+        result,
+        appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
+      ]);
     }
 
     /**
@@ -179,7 +182,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForParent', [message]);
+      sendMessageToParent('messageForParent', '??? v2', [message]);
     }
 
     /**
@@ -198,7 +201,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForChild', [message]);
+      sendMessageToParent('messageForChild', '??? v2', [message]);
     }
 
     /**
@@ -221,7 +224,7 @@ export namespace dialog {
       // handler since the original does not allow for post messages.
       // It is replaced by the user specified listener that is passed in.
       removeHandler('messageForChild');
-      registerHandler('messageForChild', listener);
+      registerHandler('messageForChild', '???', listener);
       storedMessages.reverse();
       while (storedMessages.length > 0) {
         const message = storedMessages.pop();
@@ -269,11 +272,11 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
         if (messageFromChildHandler) {
-          registerHandler('messageForParent', messageFromChildHandler);
+          registerHandler('messageForParent', '???', messageFromChildHandler);
         }
         const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
 
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        sendMessageToParent('tasks.startTask', 'v2', [dialogInfo], (err: string, result: string | object) => {
           submitHandler?.({ err, result });
           removeHandler('messageForParent');
         });
@@ -365,7 +368,7 @@ export namespace dialog {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('tasks.updateTask', [dimensions]);
+      sendMessageToParent('tasks.updateTask', '??? v2', [dimensions]);
     }
 
     /**
@@ -407,7 +410,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+      sendMessageToParent('tasks.startTask', 'v2', [dialogInfo], (err: string, result: string | object) => {
         submitHandler?.({ err, result });
       });
     }
@@ -457,7 +460,7 @@ export namespace dialog {
 
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        sendMessageToParent('tasks.startTask', 'v2', [dialogInfo], (err: string, result: string | object) => {
           submitHandler?.({ err, result });
         });
       }

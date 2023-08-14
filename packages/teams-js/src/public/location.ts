@@ -86,7 +86,7 @@ export namespace location {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('location.getLocation', [props], callback);
+    sendMessageToParent('location.getLocation', '??? v1', [props], callback);
   }
 
   /**
@@ -113,7 +113,7 @@ export namespace location {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParent('location.showLocation', [location], callback);
+    sendMessageToParent('location.showLocation', '??? v1', [location], callback);
   }
 
   /**

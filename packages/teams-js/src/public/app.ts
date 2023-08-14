@@ -728,7 +728,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(sendAndUnwrap('getContext'));
+      resolve(sendAndUnwrap('getContext', 'v2'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -737,7 +737,7 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParent(Messages.AppLoaded, [version]);
+    sendMessageToParent(Messages.AppLoaded, 'v2', [version]);
   }
 
   /**
@@ -745,7 +745,7 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParent(Messages.Success, [version]);
+    sendMessageToParent(Messages.Success, 'v2', [version]);
   }
 
   /**
@@ -756,7 +756,7 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParent(Messages.Failure, [
+    sendMessageToParent(Messages.Failure, 'v2', [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
     ]);
@@ -769,7 +769,10 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParent(Messages.ExpectedFailure, [expectedFailureRequest.reason, expectedFailureRequest.message]);
+    sendMessageToParent(Messages.ExpectedFailure, 'v2', [
+      expectedFailureRequest.reason,
+      expectedFailureRequest.message,
+    ]);
   }
 
   /**

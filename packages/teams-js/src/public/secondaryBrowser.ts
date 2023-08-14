@@ -32,7 +32,7 @@ export namespace secondaryBrowser {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
 
-    return sendAndHandleSdkError('secondaryBrowser.open', url.toString());
+    return sendAndHandleSdkError('secondaryBrowser.open', 'v1', url.toString());
   }
 
   /**

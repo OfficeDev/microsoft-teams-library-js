@@ -26,8 +26,8 @@ export namespace authentication {
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
   export function initialize(): void {
-    registerHandler('authentication.authenticate.success', handleSuccess, false);
-    registerHandler('authentication.authenticate.failure', handleFailure, false);
+    registerHandler('authentication.authenticate.success', '??? v2', handleSuccess, false);
+    registerHandler('authentication.authenticate.failure', '??? v2', handleFailure, false);
   }
 
   let authParams: AuthenticateParameters | undefined;
@@ -149,7 +149,7 @@ export namespace authentication {
         link.href = authenticateParameters.url;
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
-          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
+          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', 'v2', [
             link.href,
             authenticateParameters.width,
             authenticateParameters.height,
@@ -221,7 +221,7 @@ export namespace authentication {
   function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>((resolve) => {
       resolve(
-        sendMessageToParentAsync('authentication.getAuthToken', [
+        sendMessageToParentAsync('authentication.getAuthToken', 'v2', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
@@ -279,7 +279,7 @@ export namespace authentication {
 
   function getUserHelper(): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>((resolve) => {
-      resolve(sendMessageToParentAsync('authentication.getUser'));
+      resolve(sendMessageToParentAsync('authentication.getUser', 'v2'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
         return result as UserProfile;
@@ -372,21 +372,21 @@ export namespace authentication {
         const savedChildOrigin = Communication.childOrigin;
         try {
           Communication.childOrigin = '*';
-          sendMessageEventToChild('ping');
+          sendMessageEventToChild('ping', '');
         } finally {
           Communication.childOrigin = savedChildOrigin;
         }
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    registerHandler('initialize', () => {
+    registerHandler('initialize', '??? v2', () => {
       return [FrameContexts.authentication, GlobalVars.hostClientType];
     });
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    registerHandler('navigateCrossDomain', () => {
+    registerHandler('navigateCrossDomain', '??? v2', () => {
       return false;
     });
   }
@@ -408,7 +408,7 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.success', [result]);
+    sendMessageToParent('authentication.authenticate.success', 'v2', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -431,7 +431,7 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.failure', [reason]);
+    sendMessageToParent('authentication.authenticate.failure', 'v2', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }

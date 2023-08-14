@@ -42,7 +42,7 @@ export namespace pages {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('returnFocus', [navigateForward]);
+    sendMessageToParent('returnFocus', 'v2', [navigateForward]);
   }
 
   /**
@@ -58,7 +58,7 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    registerHandlerHelper('focusEnter', handler, [], () => {
+    registerHandlerHelper('focusEnter', '??? v2', handler, [], () => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -76,7 +76,7 @@ export namespace pages {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('setFrameContext', [frameInfo]);
+    sendMessageToParent('setFrameContext', 'v2', [frameInfo]);
   }
 
   /**
@@ -140,7 +140,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndUnwrap('settings.getSettings'));
+      resolve(sendAndUnwrap('settings.getSettings', 'v2'));
     });
   }
 
@@ -170,7 +170,7 @@ export namespace pages {
       }
       const errorMessage =
         'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', errorMessage, url));
+      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', 'v2', errorMessage, url));
     });
   }
 
@@ -198,9 +198,9 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReason('executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReason('executeDeepLink', '???', createTeamsAppLink(params)));
       } else {
-        resolve(sendAndHandleStatusAndReason('pages.navigateToApp', params));
+        resolve(sendAndHandleStatusAndReason('pages.navigateToApp', '??? v2', params));
       }
     });
   }
@@ -216,7 +216,7 @@ export namespace pages {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('shareDeepLink', [
+    sendMessageToParent('shareDeepLink', 'v2', [
       deepLinkParameters.subPageId,
       deepLinkParameters.subPageLabel,
       deepLinkParameters.subPageWebUrl,
@@ -231,7 +231,7 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
-    registerHandlerHelper('fullScreenChange', handler, [], () => {
+    registerHandlerHelper('fullScreenChange', '??? v2', handler, [], () => {
       if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -296,7 +296,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', errorMessage, tabInstance));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', 'v2', errorMessage, tabInstance));
       });
     }
     /**
@@ -312,7 +312,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
+        resolve(sendAndUnwrap('getTabInstances', 'v2', tabInstanceParameters));
       });
     }
 
@@ -328,7 +328,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
+        resolve(sendAndUnwrap('getMruTabInstances', 'v2', tabInstanceParameters));
       });
     }
 
@@ -363,8 +363,8 @@ export namespace pages {
      * Limited to Microsoft-internal use
      */
     export function initialize(): void {
-      registerHandler('settings.save', handleSave, false);
-      registerHandler('settings.remove', handleRemove, false);
+      registerHandler('settings.save', '??? v2', handleSave, false);
+      registerHandler('settings.remove', '??? v2', handleRemove, false);
     }
 
     /**
@@ -377,7 +377,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('settings.setValidityState', [validityState]);
+      sendMessageToParent('settings.setValidityState', 'v2', [validityState]);
     }
 
     /**
@@ -392,7 +392,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleStatusAndReason('settings.setSettings', instanceConfig));
+        resolve(sendAndHandleStatusAndReason('settings.setSettings', 'v2', instanceConfig));
       });
     }
 
@@ -431,7 +431,7 @@ export namespace pages {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['save']);
+      handler && sendMessageToParent('registerHandler', 'v2', ['save']);
     }
 
     /**
@@ -469,7 +469,7 @@ export namespace pages {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['remove']);
+      handler && sendMessageToParent('registerHandler', 'v2', ['remove']);
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -477,7 +477,7 @@ export namespace pages {
       if (saveHandler) {
         saveHandler(saveEventType);
       } else if (Communication.childWindow) {
-        sendMessageEventToChild('settings.save', [result]);
+        sendMessageEventToChild('settings.save', '??? v1', [result]);
       } else {
         // If no handler is registered, we assume success.
         saveEventType.notifySuccess();
@@ -489,7 +489,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
-      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
+      registerHandlerHelper('changeSettings', '??? v2', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -554,12 +554,12 @@ export namespace pages {
       }
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.save.success');
+        sendMessageToParent('settings.save.success', '??? v1');
         this.notified = true;
       }
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.save.failure', [reason]);
+        sendMessageToParent('settings.save.failure', '??? v1', [reason]);
         this.notified = true;
       }
       private ensureNotNotified(): void {
@@ -574,7 +574,7 @@ export namespace pages {
       if (removeHandler) {
         removeHandler(removeEventType);
       } else if (Communication.childWindow) {
-        sendMessageEventToChild('settings.remove', []);
+        sendMessageEventToChild('settings.remove', '??? v1', []);
       } else {
         // If no handler is registered, we assume success.
         removeEventType.notifySuccess();
@@ -590,13 +590,13 @@ export namespace pages {
 
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.remove.success');
+        sendMessageToParent('settings.remove.success', '??? v1');
         this.notified = true;
       }
 
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.remove.failure', [reason]);
+        sendMessageToParent('settings.remove.failure', '??? v1', [reason]);
         this.notified = true;
       }
 
@@ -636,7 +636,7 @@ export namespace pages {
      * Limited to Microsoft-internal use.
      */
     export function _initialize(): void {
-      registerHandler('backButtonPress', handleBackButtonPress, false);
+      registerHandler('backButtonPress', '??? v2', handleBackButtonPress, false);
     }
 
     /**
@@ -650,7 +650,7 @@ export namespace pages {
           throw errorNotSupportedOnPlatform;
         }
         const errorMessage = 'Back navigation is not supported in the current client or context.';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', errorMessage));
+        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', 'v2', errorMessage));
       });
     }
 
@@ -686,14 +686,14 @@ export namespace pages {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['backButton']);
+      handler && sendMessageToParent('registerHandler', 'v2', ['backButton']);
     }
 
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
         if (Communication.childWindow) {
           // If the current window did not handle it let the child window
-          sendMessageEventToChild('backButtonPress', []);
+          sendMessageEventToChild('backButtonPress', '', []);
         } else {
           navigateBack();
         }
@@ -733,7 +733,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('enterFullscreen', []);
+      sendMessageToParent('enterFullscreen', '??? v2', []);
     }
 
     /**
@@ -747,7 +747,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('exitFullscreen', []);
+      sendMessageToParent('exitFullscreen', '??? v2', []);
     }
     /**
      * @hidden
@@ -776,7 +776,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
+      registerHandlerHelper('appButtonClick', '??? v2', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -789,7 +789,7 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
+      registerHandlerHelper('appButtonHoverEnter', '??? v2', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -802,7 +802,7 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
+      registerHandlerHelper('appButtonHoverLeave', '??? v2', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -871,7 +871,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', 'v1', params));
       });
     }
 
@@ -894,7 +894,7 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage', 'v1'));
       });
     }
 

@@ -183,7 +183,7 @@ export class LiveShareHost {
   public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
     ensureSupported();
     return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
+      resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo', 'v1'));
     });
   }
 
@@ -209,7 +209,7 @@ export class LiveShareHost {
   public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
     ensureSupported();
     return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
+      resolve(sendAndHandleSdkError('interactive.getFluidContainerId', 'v1'));
     });
   }
 
@@ -237,7 +237,7 @@ export class LiveShareHost {
   public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
     ensureSupported();
     return new Promise<liveShare.INtpTimeInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getNtpTime'));
+      resolve(sendAndHandleSdkError('interactive.getNtpTime', 'v1'));
     });
   }
 

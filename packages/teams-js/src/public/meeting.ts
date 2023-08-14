@@ -386,7 +386,7 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('getIncomingClientAudioState', callback);
+    sendMessageToParent('getIncomingClientAudioState', '??? v2', callback);
   }
 
   /**
@@ -402,7 +402,7 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('toggleIncomingClientAudio', callback);
+    sendMessageToParent('toggleIncomingClientAudio', '??? v2', callback);
   }
 
   /**
@@ -429,7 +429,7 @@ export namespace meeting {
       FrameContexts.settings,
       FrameContexts.content,
     );
-    sendMessageToParent('meeting.getMeetingDetails', callback);
+    sendMessageToParent('meeting.getMeetingDetails', '??? v2', callback);
   }
 
   /**
@@ -450,7 +450,7 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.task);
-    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
+    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', '??? v2', callback);
   }
 
   /**
@@ -465,7 +465,7 @@ export namespace meeting {
       throw new Error('[get live stream state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.getLiveStreamState', callback);
+    sendMessageToParent('meeting.getLiveStreamState', '??? v2', callback);
   }
 
   /**
@@ -487,7 +487,7 @@ export namespace meeting {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey], callback);
+    sendMessageToParent('meeting.requestStartLiveStreaming', '??? v2', [streamUrl, streamKey], callback);
   }
 
   /**
@@ -503,7 +503,7 @@ export namespace meeting {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.requestStopLiveStreaming', callback);
+    sendMessageToParent('meeting.requestStopLiveStreaming', '??? v2', callback);
   }
 
   /**
@@ -519,7 +519,7 @@ export namespace meeting {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    registerHandler('meeting.liveStreamChanged', handler);
+    registerHandler('meeting.liveStreamChanged', '??? v1', handler);
   }
 
   /**
@@ -535,7 +535,7 @@ export namespace meeting {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+    sendMessageToParent('meeting.shareAppContentToStage', '??? v2', [appContentUrl], callback);
   }
 
   /**
@@ -551,7 +551,7 @@ export namespace meeting {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
+    sendMessageToParent('meeting.getAppContentStageSharingCapabilities', '??? v2', callback);
   }
 
   /**
@@ -568,7 +568,7 @@ export namespace meeting {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
+    sendMessageToParent('meeting.stopSharingAppContentToStage', '??? v2', callback);
   }
 
   /**
@@ -584,7 +584,7 @@ export namespace meeting {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.getAppContentStageSharingState', callback);
+    sendMessageToParent('meeting.getAppContentStageSharingState', '??? v2', callback);
   }
 
   /**
@@ -599,7 +599,7 @@ export namespace meeting {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.speakingStateChanged', handler);
+    registerHandler('meeting.speakingStateChanged', '??? v1', handler);
   }
 
   /**
@@ -625,7 +625,7 @@ export namespace meeting {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.raiseHandStateChanged', handler);
+    registerHandler('meeting.raiseHandStateChanged', '??? v1', handler);
   }
 
   /**
@@ -649,7 +649,7 @@ export namespace meeting {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.meetingReactionReceived', handler);
+    registerHandler('meeting.meetingReactionReceived', '??? v1', handler);
   }
 
   /**
@@ -689,7 +689,7 @@ export namespace meeting {
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
-      sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
+      sendMessageToParent('meeting.appShareButton.setOptions', '??? v2', [shareInformation]);
     }
   }
 
@@ -765,12 +765,13 @@ export namespace meeting {
           setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
         }
       };
-      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+      registerHandler('meeting.micStateChanged', '??? v1', micStateChangedCallback);
 
       callback(isHostAudioless);
     };
     sendMessageToParent(
       'meeting.requestAppAudioHandling',
+      '??? v2',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalRequest,
     );
@@ -800,6 +801,7 @@ export namespace meeting {
 
     sendMessageToParent(
       'meeting.requestAppAudioHandling',
+      '??? v2',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalStop,
     );
@@ -824,6 +826,6 @@ export namespace meeting {
 
   function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.updateMicState', [micState, reason]);
+    sendMessageToParent('meeting.updateMicState', '??? v2', [micState, reason]);
   }
 }

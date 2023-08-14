@@ -46,7 +46,7 @@ export class ChildAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime);
-    sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    sendMessageToParent('messageForChild', 'v1', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
   /**
    * Add a listener that will be called when an event is received from the ChildAppWindow.
@@ -57,7 +57,7 @@ export class ChildAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime);
     if (type === 'message') {
-      registerHandler('messageForParent', listener);
+      registerHandler('messageForParent', '???', listener);
     }
   }
 }
@@ -84,7 +84,7 @@ export class ParentAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
-    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    sendMessageToParent('messageForParent', 'v1', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
   }
 
   /**
@@ -96,7 +96,7 @@ export class ParentAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
     if (type === 'message') {
-      registerHandler('messageForChild', listener);
+      registerHandler('messageForChild', '???', listener);
     }
   }
 }

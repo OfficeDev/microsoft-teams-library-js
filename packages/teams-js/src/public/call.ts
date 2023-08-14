@@ -76,7 +76,7 @@ export namespace call {
           }),
         );
       } else {
-        return sendMessageToParent('call.startCall', [startCallParams], resolve);
+        return sendMessageToParent('call.startCall', 'v1', [startCallParams], resolve);
       }
     });
   }

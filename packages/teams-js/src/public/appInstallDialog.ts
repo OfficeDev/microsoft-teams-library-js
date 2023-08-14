@@ -39,7 +39,7 @@ export namespace appInstallDialog {
           ),
         );
       } else {
-        sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+        sendMessageToParent('appInstallDialog.openAppInstallDialog', 'v1', [openAPPInstallDialogParams]);
         resolve();
       }
     });

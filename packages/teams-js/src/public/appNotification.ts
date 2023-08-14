@@ -197,7 +197,11 @@ export namespace appNotification {
       throw errorNotSupportedOnPlatform;
     }
     validateNotificationDisplayParams(notificationDisplayParam);
-    return sendAndHandleSdkError('appNotification.displayInAppNotification', serializeParam(notificationDisplayParam));
+    return sendAndHandleSdkError(
+      'appNotification.displayInAppNotification',
+      'v1',
+      serializeParam(notificationDisplayParam),
+    );
   }
 
   /**

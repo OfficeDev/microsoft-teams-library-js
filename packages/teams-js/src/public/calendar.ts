@@ -24,7 +24,7 @@ export namespace calendar {
         throw new Error('Must supply an itemId to openCalendarItem');
       }
 
-      resolve(sendAndHandleStatusAndReason('calendar.openCalendarItem', openCalendarItemParams));
+      resolve(sendAndHandleStatusAndReason('calendar.openCalendarItem', 'v1', openCalendarItemParams));
     });
   }
 
@@ -53,7 +53,7 @@ export namespace calendar {
           ),
         );
       } else {
-        resolve(sendAndHandleStatusAndReason('calendar.composeMeeting', composeMeetingParams));
+        resolve(sendAndHandleStatusAndReason('calendar.composeMeeting', 'v1', composeMeetingParams));
       }
     });
   }

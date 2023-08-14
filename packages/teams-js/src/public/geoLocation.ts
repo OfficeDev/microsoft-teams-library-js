@@ -46,7 +46,7 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: false, showMap: false });
+    return sendAndHandleSdkError('location.getLocation', '??? v2', { allowChooseLocation: false, showMap: false });
   }
 
   /**
@@ -120,7 +120,7 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: true, showMap: true });
+      return sendAndHandleSdkError('location.getLocation', '??? v2', { allowChooseLocation: true, showMap: true });
     }
 
     /**
@@ -139,7 +139,7 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkError('location.showLocation', location);
+      return sendAndHandleSdkError('location.showLocation', '??? v2', location);
     }
 
     /**

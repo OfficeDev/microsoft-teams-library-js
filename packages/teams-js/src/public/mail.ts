@@ -23,7 +23,7 @@ export namespace mail {
         throw new Error('Must supply an itemId to openMailItem');
       }
 
-      resolve(sendAndHandleStatusAndReason('mail.openMailItem', openMailItemParams));
+      resolve(sendAndHandleStatusAndReason('mail.openMailItem', 'v1', openMailItemParams));
     });
   }
 
@@ -40,7 +40,7 @@ export namespace mail {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleStatusAndReason('mail.composeMail', composeMailParams));
+      resolve(sendAndHandleStatusAndReason('mail.composeMail', 'v1', composeMailParams));
     });
   }
 

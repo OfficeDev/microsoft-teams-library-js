@@ -79,7 +79,7 @@ export function print(): void {
  */
 export function getContext(callback: getContextCallbackFunctionType): void {
   ensureInitializeCalled();
-  sendMessageToParent('getContext', (context: Context) => {
+  sendMessageToParent('getContext', 'v1', (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
@@ -111,7 +111,7 @@ export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandl
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void {
-  registerHandlerHelper('fullScreenChange', handler, []);
+  registerHandlerHelper('fullScreenChange', 'v1', handler, []);
 }
 
 /**
@@ -124,7 +124,7 @@ export function registerFullScreenHandler(handler: registerFullScreenHandlerFunc
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonClick', handler, [FrameContexts.content]);
+  registerHandlerHelper('appButtonClick', 'v1', handler, [FrameContexts.content]);
 }
 
 /**
@@ -137,7 +137,7 @@ export function registerAppButtonClickHandler(handler: callbackFunctionType): vo
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content]);
+  registerHandlerHelper('appButtonHoverEnter', 'v1', handler, [FrameContexts.content]);
 }
 
 /**
@@ -150,7 +150,7 @@ export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content]);
+  registerHandlerHelper('appButtonHoverLeave', 'v1', handler, [FrameContexts.content]);
 }
 
 /**
@@ -205,7 +205,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  registerHandlerHelper('focusEnter', handler, []);
+  registerHandlerHelper('focusEnter', 'v1', handler, []);
 }
 
 /**
@@ -217,7 +217,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
+  registerHandlerHelper('changeSettings', 'v1', handler, [FrameContexts.content]);
 }
 
 /**

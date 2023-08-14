@@ -19,7 +19,7 @@ import { FilePreviewParameters, UserSettingTypes } from './interfaces';
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParent('uploadCustomApp', [manifestBlob], onComplete ? onComplete : getGenericOnCompleteHandler());
+  sendMessageToParent('uploadCustomApp', 'v1', [manifestBlob], onComplete ? onComplete : getGenericOnCompleteHandler());
 }
 
 /**
@@ -34,10 +34,15 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
+export function sendCustomMessage(
+  actionName: string,
+  apiVersion: string,
+  args?: any[],
+  callback?: (...args: any[]) => void,
+): void {
   ensureInitialized(runtime);
 
-  sendMessageToParent(actionName, args, callback);
+  sendMessageToParent(actionName, apiVersion, args, callback);
 }
 
 /**
@@ -52,14 +57,14 @@ export function sendCustomMessage(actionName: string, args?: any[], callback?: (
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendCustomEvent(actionName: string, args?: any[]): void {
+export function sendCustomEvent(actionName: string, apiVersion: string, args?: any[]): void {
   ensureInitialized(runtime);
 
   //validate childWindow
   if (!Communication.childWindow) {
     throw new Error('The child window has not yet been initialized or is not present');
   }
-  sendMessageEventToChild(actionName, args);
+  sendMessageEventToChild(actionName, apiVersion, args);
 }
 
 /**
@@ -72,9 +77,13 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
+export function registerCustomHandler(
+  actionName: string,
+  apiVersion: string,
+  customHandler: (...args: any[]) => any[],
+): void {
   ensureInitialized(runtime);
-  registerHandler(actionName, (...args: any[]) => {
+  registerHandler(actionName, apiVersion, (...args: any[]) => {
     return customHandler.apply(this, args);
   });
 }
@@ -95,7 +104,7 @@ export function registerUserSettingsChangeHandler(
 ): void {
   ensureInitialized(runtime);
 
-  registerHandler('userSettingsChange', handler, true, [settingTypes]);
+  registerHandler('userSettingsChange', '??? v1', handler, true, [settingTypes]);
 }
 
 /**
@@ -127,5 +136,5 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.conversationId,
   ];
 
-  sendMessageToParent('openFilePreview', params);
+  sendMessageToParent('openFilePreview', 'v1', params);
 }

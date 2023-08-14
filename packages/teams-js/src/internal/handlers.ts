@@ -39,14 +39,14 @@ const callHandlerLogger = handlersLogger.extend('callHandler');
  * @internal
  * Limited to Microsoft-internal use
  */
-export function callHandler(name: string, args?: unknown[]): [true, unknown] | [false, undefined] {
+export function callHandler(name: string, apiVersion: string, args?: unknown[]): [true, unknown] | [false, undefined] {
   const handler = HandlersPrivate.handlers[name];
   if (handler) {
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
   } else if (Communication.childWindow) {
-    sendMessageEventToChild(name, args);
+    sendMessageEventToChild(name, apiVersion, args);
     return [false, undefined];
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
@@ -58,10 +58,16 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
+export function registerHandler(
+  name: string,
+  apiVersion: string,
+  handler: Function,
+  sendMessage = true,
+  args: unknown[] = [],
+): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
+    sendMessage && sendMessageToParent('registerHandler', apiVersion, [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -97,6 +103,7 @@ export function doesHandlerExist(name: string): boolean {
  */
 export function registerHandlerHelper(
   name: string,
+  apiVersion: string,
   handler: Function,
   contexts: FrameContexts[],
   registrationHelper?: () => void,
@@ -107,7 +114,7 @@ export function registerHandlerHelper(
     registrationHelper();
   }
 
-  registerHandler(name, handler);
+  registerHandler(name, apiVersion, handler);
 }
 
 /**
@@ -116,7 +123,7 @@ export function registerHandlerHelper(
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['themeChange']);
+  handler && sendMessageToParent('registerHandler', 'v2', ['themeChange']);
 }
 
 /**
@@ -129,7 +136,7 @@ export function handleThemeChange(theme: string): void {
   }
 
   if (Communication.childWindow) {
-    sendMessageEventToChild('themeChange', [theme]);
+    sendMessageEventToChild('themeChange', 'v2', [theme]);
   }
 }
 
@@ -139,7 +146,7 @@ export function handleThemeChange(theme: string): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['load']);
+  handler && sendMessageToParent('registerHandler', 'v2', ['load']);
 }
 
 /**
@@ -152,7 +159,7 @@ function handleLoad(context: LoadContext): void {
   }
 
   if (Communication.childWindow) {
-    sendMessageEventToChild('load', [context]);
+    sendMessageEventToChild('load', 'v2', [context]);
   }
 }
 
@@ -162,7 +169,7 @@ function handleLoad(context: LoadContext): void {
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+  handler && sendMessageToParent('registerHandler', 'v2', ['beforeUnload']);
 }
 
 /**
@@ -171,12 +178,12 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
-    sendMessageToParent('readyToUnload', []);
+    sendMessageToParent('readyToUnload', 'v2', []);
   };
 
   if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
     if (Communication.childWindow) {
-      sendMessageEventToChild('beforeUnload');
+      sendMessageEventToChild('beforeUnload', 'v2');
     } else {
       readyToUnload();
     }

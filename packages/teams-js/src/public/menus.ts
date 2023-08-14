@@ -154,9 +154,9 @@ export namespace menus {
    * Limited to Microsoft-internal use.
    */
   export function initialize(): void {
-    registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
-    registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
-    registerHandler('setModuleView', handleViewConfigItemPress, false);
+    registerHandler('navBarMenuItemPress', '??? v2', handleNavBarMenuItemPress, false);
+    registerHandler('actionMenuItemPress', '??? v2', handleActionMenuItemPress, false);
+    registerHandler('setModuleView', '??? v2', handleViewConfigItemPress, false);
   }
 
   /**
@@ -173,13 +173,13 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     viewConfigItemPressHandler = handler;
-    sendMessageToParent('setUpViews', [viewConfig]);
+    sendMessageToParent('setUpViews', '??? v2', [viewConfig]);
   }
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('viewConfigItemPress', [id]);
+      sendMessageToParent('viewConfigItemPress', '??? v2', [id]);
     }
   }
 
@@ -196,13 +196,13 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     navBarMenuItemPressHandler = handler;
-    sendMessageToParent('setNavBarMenu', [items]);
+    sendMessageToParent('setNavBarMenu', '??? v2', [items]);
   }
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleNavBarMenuItemPress', [id]);
+      sendMessageToParent('handleNavBarMenuItemPress', '??? v2', [id]);
     }
   }
 
@@ -233,13 +233,13 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     actionMenuItemPressHandler = handler;
-    sendMessageToParent('showActionMenu', [params]);
+    sendMessageToParent('showActionMenu', '??? v2', [params]);
   }
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleActionMenuItemPress', [id]);
+      sendMessageToParent('handleActionMenuItemPress', '??? v2', [id]);
     }
   }
 

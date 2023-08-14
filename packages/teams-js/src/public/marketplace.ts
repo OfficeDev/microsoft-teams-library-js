@@ -322,7 +322,7 @@ export namespace marketplace {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('marketplace.getCart', cartVersion).then(deserializeCart);
+    return sendAndHandleSdkError('marketplace.getCart', 'v1', cartVersion).then(deserializeCart);
   }
   /**
    * @hidden
@@ -341,7 +341,7 @@ export namespace marketplace {
     }
     validateUuid(addOrUpdateCartItemsParams?.cartId);
     validateCartItems(addOrUpdateCartItemsParams?.cartItems);
-    return sendAndHandleSdkError('marketplace.addOrUpdateCartItems', {
+    return sendAndHandleSdkError('marketplace.addOrUpdateCartItems', 'v1', {
       ...addOrUpdateCartItemsParams,
       cartItems: serializeCartItems(addOrUpdateCartItemsParams.cartItems),
       cartVersion,
@@ -367,7 +367,7 @@ export namespace marketplace {
     if (!Array.isArray(removeCartItemsParams?.cartItemIds) || removeCartItemsParams?.cartItemIds.length === 0) {
       throw new Error('cartItemIds must be a non-empty array');
     }
-    return sendAndHandleSdkError('marketplace.removeCartItems', {
+    return sendAndHandleSdkError('marketplace.removeCartItems', 'v1', {
       ...removeCartItemsParams,
       cartVersion,
     }).then(deserializeCart);
@@ -389,7 +389,7 @@ export namespace marketplace {
     }
     validateUuid(updateCartStatusParams?.cartId);
     validateCartStatus(updateCartStatusParams?.cartStatus);
-    return sendAndHandleSdkError('marketplace.updateCartStatus', {
+    return sendAndHandleSdkError('marketplace.updateCartStatus', 'v1', {
       ...updateCartStatusParams,
       cartVersion,
     }).then(deserializeCart);

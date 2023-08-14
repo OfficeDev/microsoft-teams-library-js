@@ -65,7 +65,7 @@ export namespace stageView {
         throw new Error('[stageView.open] Stage view params cannot be null');
       }
 
-      resolve(sendAndHandleSdkError('stageView.open', stageViewParams));
+      resolve(sendAndHandleSdkError('stageView.open', 'v1', stageViewParams));
     });
   }
 

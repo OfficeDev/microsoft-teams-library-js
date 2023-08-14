@@ -90,7 +90,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', '', [
       version,
       latestRuntimeApiVersion,
     ]).then(
@@ -128,12 +128,12 @@ export function uninitializeCommunication(): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+export function sendAndUnwrap<T>(actionName: string, apiVersion: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, apiVersion, args).then(([result]: [T]) => result);
 }
 
-export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
+export function sendAndHandleStatusAndReason(actionName: string, apiVersion: string, ...args: any[]): Promise<void> {
+  return sendMessageToParentAsync(actionName, apiVersion, args).then(([wasSuccessful, reason]: [boolean, string]) => {
     if (!wasSuccessful) {
       throw new Error(reason);
     }
@@ -147,9 +147,10 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
 export function sendAndHandleStatusAndReasonWithDefaultError(
   actionName: string,
   defaultError: string,
+  apiVersion: string,
   ...args: any[]
 ): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
+  return sendMessageToParentAsync(actionName, apiVersion, args).then(([wasSuccessful, reason]: [boolean, string]) => {
     if (!wasSuccessful) {
       throw new Error(reason ? reason : defaultError);
     }
@@ -160,8 +161,8 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
+export function sendAndHandleSdkError<T>(actionName: string, apiVersion: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(actionName, apiVersion, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
       throw error;
     }
@@ -176,9 +177,13 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
+export function sendMessageToParentAsync<T>(
+  actionName: string,
+  apiVersion: string,
+  args: any[] = undefined,
+): Promise<T> {
   return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(actionName, args);
+    const request = sendMessageToParentHelper(actionName, apiVersion, args);
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     resolve(waitForResponse<T>(request.id));
   });
@@ -198,7 +203,7 @@ function waitForResponse<T>(requestId: number): Promise<T> {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, callback?: Function): void;
+export function sendMessageToParent(actionName: string, apiVersion: string, callback?: Function): void;
 
 /**
  * @hidden
@@ -207,13 +212,18 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
+export function sendMessageToParent(actionName: string, apiVersion: string, args: any[], callback?: Function): void;
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
+export function sendMessageToParent(
+  actionName: string,
+  apiVersion: string,
+  argsOrCallback?: any[] | Function,
+  callback?: Function,
+): void {
   let args: any[] | undefined;
   if (argsOrCallback instanceof Function) {
     callback = argsOrCallback;
@@ -222,7 +232,7 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const request = sendMessageToParentHelper(actionName, args);
+  const request = sendMessageToParentHelper(actionName, apiVersion, args);
   if (callback) {
     CommunicationPrivate.callbacks[request.id] = callback;
   }
@@ -234,11 +244,11 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
+function sendMessageToParentHelper(actionName: string, apiVersion: string, args: any[]): MessageRequest {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(actionName, args);
+  const request = createMessageRequest(actionName, apiVersion, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
@@ -394,7 +404,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
     logger('Received an action message %s from parent', message.func);
-    callHandler(message.func, message.args);
+    callHandler(message.func, '???', message.args);
   } else {
     logger('Received an unknown message: %O', evt);
   }
@@ -416,13 +426,13 @@ function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = evt.data as MessageRequest;
-    const [called, result] = callHandler(message.func, message.args);
+    const [called, result] = callHandler(message.func, '???', message.args);
     if (called && typeof result !== 'undefined') {
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      sendMessageToParent(message.func, message.args, (...args: any[]): void => {
+      sendMessageToParent(message.func, '???', message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -512,10 +522,10 @@ function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageEventToChild(actionName: string, args?: any[]): void {
+export function sendMessageEventToChild(actionName: string, apiVersion: string, args?: any[]): void {
   const targetWindow = Communication.childWindow;
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const customEvent = createMessageEvent(actionName, args);
+  const customEvent = createMessageEvent(actionName, apiVersion, args);
   const targetOrigin = getTargetOrigin(targetWindow);
 
   // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
@@ -531,12 +541,13 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageRequest(func: string, args: any[]): MessageRequest {
+function createMessageRequest(func: string, apiVersion: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
     timestamp: Date.now(),
     args: args || [],
+    apiversion: apiVersion,
   };
 }
 
@@ -559,9 +570,10 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageEvent(func: string, args: any[]): MessageRequest {
+function createMessageEvent(func: string, apiVersion: string, args: any[]): MessageRequest {
   return {
     func: func,
     args: args || [],
+    apiversion: apiVersion,
   };
 }

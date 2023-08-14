@@ -31,9 +31,11 @@ export class VideoPerformanceMonitor {
 
   private performanceStatistics: VideoPerformanceStatistics;
 
-  public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
+  public constructor(
+    private reportPerformanceEvent: (actionName: string, apiVersion: string, args: unknown[]) => void,
+  ) {
     this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
-      this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
+      this.reportPerformanceEvent('video.performance.performanceDataGenerated', 'v1', [result]),
     );
   }
 
@@ -48,7 +50,7 @@ export class VideoPerformanceMonitor {
       }
       const averageFrameProcessingTime = this.frameProcessingTimeCost / this.processedFrameCount;
       if (averageFrameProcessingTime > this.frameProcessTimeLimit) {
-        this.reportPerformanceEvent('video.performance.frameProcessingSlow', [averageFrameProcessingTime]);
+        this.reportPerformanceEvent('video.performance.frameProcessingSlow', 'v1', [averageFrameProcessingTime]);
       }
       this.frameProcessingTimeCost = 0;
       this.processedFrameCount = 0;
@@ -126,7 +128,7 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
-      this.reportPerformanceEvent('video.performance.firstFrameProcessed', [
+      this.reportPerformanceEvent('video.performance.firstFrameProcessed', 'v1', [
         Date.now(),
         this.appliedEffect.effectId,
         this.appliedEffect?.effectParam,
@@ -148,7 +150,7 @@ export class VideoPerformanceMonitor {
   public reportTextureStreamAcquired(): void {
     if (this.gettingTextureStreamStartedAt !== undefined) {
       const timeTaken = performance.now() - this.gettingTextureStreamStartedAt;
-      this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentStreamId, timeTaken]);
+      this.reportPerformanceEvent('video.performance.textureStreamAcquired', 'v1', [this.currentStreamId, timeTaken]);
     }
   }
 }
