@@ -43,11 +43,28 @@ describe('runtime', () => {
       expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
     });
 
+    it('applyRuntime fast-forwards v3 runtime config to latest version', () => {
+      const runtimeV3 = {
+        apiVersion: 3,
+        isLegacyTeams: false,
+        supports: {
+          appEntity: {},
+        },
+      };
+      applyRuntimeConfig(runtimeV3);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+      if (isRuntimeInitialized(runtime)) {
+        // eslint-disable-next-line strict-null-checks/all
+        expect(runtime.supports.appEntity).toEqual(runtimeV3.supports.appEntity);
+      }
+    });
+
     it('applyRuntime fast-forwards v2 runtime config to latest version', () => {
       const runtimeV2 = {
         apiVersion: 2,
         isLegacyTeams: false,
         supports: {
+          appNotification: {},
           dialog: {
             card: {
               bot: {},
@@ -62,6 +79,8 @@ describe('runtime', () => {
       applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
+        // eslint-disable-next-line strict-null-checks/all
+        expect(runtime.supports.appNotification).toBeUndefined();
         // eslint-disable-next-line strict-null-checks/all
         expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
       }
@@ -81,10 +100,29 @@ describe('runtime', () => {
 
       const fastForwardConfig = fastForwardRuntime(runtimeV1);
       expect(fastForwardConfig).toEqual({
-        apiVersion: 3,
+        apiVersion: latestRuntimeApiVersion,
         hostVersionsInfo: undefined,
         isLegacyTeams: false,
         supports: { dialog: { card: undefined, url: { bot: {}, update: {} }, update: {} } },
+      });
+    });
+
+    it('applyRuntime fast-forwards v2 to latest version', () => {
+      const runtimeV2 = {
+        apiVersion: 2,
+        isLegacyTeams: false,
+        supports: {
+          appInstallDialog: {},
+          appNotification: {},
+        },
+      };
+
+      const fastForwardConfig = fastForwardRuntime(runtimeV2);
+      expect(fastForwardConfig).toEqual({
+        apiVersion: latestRuntimeApiVersion,
+        hostVersionsInfo: undefined,
+        isLegacyTeams: false,
+        supports: { appInstallDialog: {} },
       });
     });
 
