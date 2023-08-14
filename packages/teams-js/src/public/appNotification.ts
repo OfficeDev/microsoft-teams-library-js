@@ -62,7 +62,7 @@ export namespace appNotification {
      * If no icon is provided, the notification card would be displayed without an icon
      * The url link to where the icon is stored should be provided as the input string
      */
-    notificationIconAsSring?: string;
+    notificationIconAsString?: string;
     /**
      * This would specify how long a notification would be displayed on the screen for (unit: seconds)
      *
@@ -89,7 +89,7 @@ export namespace appNotification {
     return {
       title: notificationDisplayParam.title,
       content: notificationDisplayParam.content,
-      notificationIconAsSring: notificationDisplayParam.icon?.href,
+      notificationIconAsString: notificationDisplayParam.icon?.href,
       displayDurationInSeconds: notificationDisplayParam.displayDurationInSeconds,
       notificationActionUrlAsString: notificationDisplayParam.notificationActionUrl.href,
     };
@@ -197,7 +197,7 @@ export namespace appNotification {
       throw errorNotSupportedOnPlatform;
     }
     validateNotificationDisplayParams(notificationDisplayParam);
-    return sendAndHandleSdkError('appNotification.displayNotification', serializeParam(notificationDisplayParam));
+    return sendAndHandleSdkError('appNotification.displayInAppNotification', serializeParam(notificationDisplayParam));
   }
 
   /**

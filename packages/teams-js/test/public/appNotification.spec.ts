@@ -78,7 +78,8 @@ describe('appNotification', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
           const promise = appNotification.displayInAppNotification(displayNotificationParam);
-          const message = utils.findMessageByFunc('appNotification.displayNotification');
+          const message = utils.findMessageByFunc('appNotification.displayInAppNotification');
+
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toEqual(displayNotificationParamForAppHost);
@@ -207,7 +208,7 @@ describe('appNotification', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { appNotification: {} } });
           const promise = appNotification.displayInAppNotification(displayNotificationParam);
 
-          const message = utils.findMessageByFunc('appNotification.displayNotification');
+          const message = utils.findMessageByFunc('appNotification.displayInAppNotification');
           expect(message).not.toBeNull();
           expect(message.args.length).toBe(1);
           expect(message.args[0]).toEqual(displayNotificationParamForAppHost);

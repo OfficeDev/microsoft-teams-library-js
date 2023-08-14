@@ -51,6 +51,7 @@ describe('Testing authentication capability', () => {
     HostClientType.desktop,
     HostClientType.android,
     HostClientType.ios,
+    HostClientType.macos,
     HostClientType.rigel,
     HostClientType.teamsDisplays,
     HostClientType.teamsPhones,
@@ -705,12 +706,12 @@ describe('Testing authentication capability', () => {
         const message = utils.findMessageByFunc('authentication.authenticate.success');
         expect(message).not.toBeNull();
 
-        // Wait 300ms for the close delay
+        // Wait 450ms for the close delay
         await new Promise<void>((resolve) =>
           setTimeout(() => {
             expect(closeWindowSpy).toHaveBeenCalled();
             resolve();
-          }, 350),
+          }, 450),
         );
       });
 
