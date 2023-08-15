@@ -51,6 +51,7 @@ describe('Testing authentication capability', () => {
     HostClientType.desktop,
     HostClientType.android,
     HostClientType.ios,
+    HostClientType.macos,
     HostClientType.rigel,
     HostClientType.teamsDisplays,
     HostClientType.teamsPhones,

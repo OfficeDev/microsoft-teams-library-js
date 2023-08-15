@@ -155,7 +155,7 @@ export interface TeamInformation {
  */
 export interface LocaleInfo {
   /** Represents the user's platform on which the app is running. */
-  platform: HostClientType.android | HostClientType.ios | 'macos' | 'windows';
+  platform: HostClientType.android | HostClientType.ios | HostClientType.macos | 'windows';
   /**
    * Represents the regional format used by the user's locale.
    * @example `en-us`.

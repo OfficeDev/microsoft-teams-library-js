@@ -1,0 +1,26 @@
+{
+  "name":"AppNotification",
+  "version":">=2.14.0",  
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkappNotificationCapability"
+  },
+
+  "testCases":[
+   {
+    "title": "DisplayAppNotification API call- Success",
+    "type": "callResponse",
+    "boxSelector": "#box_checkAppNotificationCapability",
+    "inputValue": {
+      "title": "sampleAppNotificationTitle",
+      "content": "sampleAppNotficationContent",
+      "displayDurationInSeconds": 30,
+      "notificationActionUrl": "https://localhost:4000"
+    },
+
+    "expectedAlertValue": "DisplayAppNotification called with  ##JSON_INPUT_VALUE##",
+    "expectedTestAppValue": "Completed"
+   }
+  ]
+}
+ 
