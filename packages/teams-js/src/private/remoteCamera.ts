@@ -231,7 +231,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.getCapableParticipants', callback);
+    sendMessageToParent('remoteCamera.getCapableParticipants', '??? v2', callback);
   }
 
   /**
@@ -261,7 +261,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.requestControl', [participant], callback);
+    sendMessageToParent('remoteCamera.requestControl', '??? v2', [participant], callback);
   }
 
   /**
@@ -285,7 +285,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
+    sendMessageToParent('remoteCamera.sendControlCommand', '??? v2', [ControlCommand], callback);
   }
 
   /**
@@ -305,7 +305,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.terminateSession', callback);
+    sendMessageToParent('remoteCamera.terminateSession', '??? v2', callback);
   }
 
   /**
@@ -328,7 +328,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.capableParticipantsChange', handler);
+    registerHandler('remoteCamera.capableParticipantsChange', '??? v2', handler);
   }
 
   /**
@@ -349,7 +349,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.handlerError', handler);
+    registerHandler('remoteCamera.handlerError', '??? v2', handler);
   }
 
   /**
@@ -370,7 +370,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.deviceStateChange', handler);
+    registerHandler('remoteCamera.deviceStateChange', '??? v2', handler);
   }
 
   /**
@@ -391,7 +391,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.sessionStatusChange', handler);
+    registerHandler('remoteCamera.sessionStatusChange', '??? v2', handler);
   }
 
   /**

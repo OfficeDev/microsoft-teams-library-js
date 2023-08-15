@@ -102,7 +102,7 @@ export namespace appEntity {
       throw new Error('[appEntity.selectAppEntity] Callback cannot be null');
     }
 
-    sendMessageToParent('appEntity.selectAppEntity', [threadId, categories, subEntityId], callback);
+    sendMessageToParent('appEntity.selectAppEntity', '??? v1', [threadId, categories, subEntityId], callback);
   }
 
   /**

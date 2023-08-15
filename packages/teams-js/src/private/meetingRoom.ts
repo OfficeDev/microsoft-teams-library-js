@@ -185,7 +185,7 @@ export namespace meetingRoom {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
+      resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo', '??? v2'));
     });
   }
 
@@ -232,7 +232,7 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
+    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', '??? v2', (capabilities: MeetingRoomCapability) => {
       ensureInitialized(runtime);
       handler(capabilities);
     });
@@ -257,7 +257,7 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
+    registerHandler('meetingRoom.meetingRoomStatesUpdate', '??? v2', (states: MeetingRoomState) => {
       ensureInitialized(runtime);
       handler(states);
     });

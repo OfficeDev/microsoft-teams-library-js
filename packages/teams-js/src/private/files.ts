@@ -572,7 +572,7 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolders] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getCloudStorageFolders', [channelId], callback);
+    sendMessageToParent('files.getCloudStorageFolders', '??? v2', [channelId], callback);
   }
 
   /**
@@ -600,7 +600,7 @@ export namespace files {
       throw new Error('[files.addCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.addCloudStorageFolder', [channelId], callback);
+    sendMessageToParent('files.addCloudStorageFolder', '??? v2', [channelId], callback);
   }
 
   /**
@@ -634,7 +634,7 @@ export namespace files {
       throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
+    sendMessageToParent('files.deleteCloudStorageFolder', '??? v2', [channelId, folderToDelete], callback);
   }
 
   /**
@@ -670,7 +670,7 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
     }
 
-    sendMessageToParent('files.getCloudStorageFolderContents', [folder, providerCode], callback);
+    sendMessageToParent('files.getCloudStorageFolderContents', '??? v2', [folder, providerCode], callback);
   }
 
   /**
@@ -702,7 +702,7 @@ export namespace files {
       throw new Error('[files.openCloudStorageFile] provided file is a subDirectory');
     }
 
-    sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
+    sendMessageToParent('files.openCloudStorageFile', '??? v2', [file, providerCode, fileOpenPreference]);
   }
 
   /**
@@ -725,7 +725,7 @@ export namespace files {
       throw new Error('[files.getExternalProviders] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getExternalProviders', [excludeAddedProviders], callback);
+    sendMessageToParent('files.getExternalProviders', '??? v2', [excludeAddedProviders], callback);
   }
 
   /**
@@ -762,6 +762,7 @@ export namespace files {
     }
     sendMessageToParent(
       'files.copyMoveFiles',
+      '??? v2',
       [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
       callback,
     );
@@ -785,7 +786,7 @@ export namespace files {
       throw new Error('[files.getFileDownloads] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getFileDownloads', [], callback);
+    sendMessageToParent('files.getFileDownloads', '??? v2', [], callback);
   }
 
   /**
@@ -806,7 +807,7 @@ export namespace files {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
+    sendMessageToParent('files.openDownloadFolder', '??? v2', [fileObjectId], callback);
   }
 
   /**
@@ -832,7 +833,7 @@ export namespace files {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProvider] callback cannot be null');
     }
 
-    sendMessageToParent('files.addCloudStorageProvider', [], callback);
+    sendMessageToParent('files.addCloudStorageProvider', '??? v2', [], callback);
   }
 
   /**
@@ -866,7 +867,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.removeCloudStorageProvider', [logoutRequest], callback);
+    sendMessageToParent('files.removeCloudStorageProvider', '??? v2', [logoutRequest], callback);
   }
 
   /**
@@ -898,7 +899,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.addCloudStorageProviderFile', [addNewFileRequest], callback);
+    sendMessageToParent('files.addCloudStorageProviderFile', '??? v2', [addNewFileRequest], callback);
   }
 
   /**
@@ -930,7 +931,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.renameCloudStorageProviderFile', [renameFileRequest], callback);
+    sendMessageToParent('files.renameCloudStorageProviderFile', '??? v2', [renameFileRequest], callback);
   }
 
   /**
@@ -970,7 +971,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.deleteCloudStorageProviderFile', [deleteFileRequest], callback);
+    sendMessageToParent('files.deleteCloudStorageProviderFile', '??? v2', [deleteFileRequest], callback);
   }
 
   /**
@@ -1013,7 +1014,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.downloadCloudStorageProviderFile', [downloadFileRequest], callback);
+    sendMessageToParent('files.downloadCloudStorageProviderFile', '??? v2', [downloadFileRequest], callback);
   }
 
   /**
@@ -1060,7 +1061,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.uploadCloudStorageProviderFile', [uploadFileRequest], callback);
+    sendMessageToParent('files.uploadCloudStorageProviderFile', '??? v2', [uploadFileRequest], callback);
   }
 
   /**
@@ -1081,7 +1082,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderListChange', handler);
+    registerHandler('files.cloudStorageProviderListChange', '??? v2', handler);
   }
 
   /**
@@ -1103,7 +1104,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderContentChange', handler);
+    registerHandler('files.cloudStorageProviderContentChange', '??? v2', handler);
   }
 
   function getSdkError(errorCode: ErrorCode, message: string): SdkError {

@@ -59,7 +59,7 @@ export namespace teams {
       throw new Error('[teams.getTeamChannels] Callback cannot be null');
     }
 
-    sendMessageToParent('teams.getTeamChannels', [groupId], callback);
+    sendMessageToParent('teams.getTeamChannels', '??? v2', [groupId], callback);
   }
 
   /**
@@ -88,7 +88,7 @@ export namespace teams {
       throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
     }
 
-    sendMessageToParent('teams.refreshSiteUrl', [threadId], callback);
+    sendMessageToParent('teams.refreshSiteUrl', '??? v2', [threadId], callback);
   }
 
   /**
@@ -149,7 +149,7 @@ export namespace teams {
           }
 
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-          resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
+          resolve(sendAndUnwrap('getUserJoinedTeams', '??? v2', teamInstanceParameters));
         });
       }
       /**

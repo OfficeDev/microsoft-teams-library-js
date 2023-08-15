@@ -31,9 +31,9 @@ export namespace logs {
     }
 
     if (handler) {
-      registerHandler('log.request', () => {
+      registerHandler('log.request', '??? v1', () => {
         const log: string = handler();
-        sendMessageToParent('log.receive', [log]);
+        sendMessageToParent('log.receive', '??? v1', [log]);
       });
     } else {
       removeHandler('log.request');

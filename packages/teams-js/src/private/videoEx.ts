@@ -193,12 +193,14 @@ export namespace videoEx {
     if (ensureInitialized(runtime, FrameContexts.sidePanel)) {
       registerHandler(
         'video.setFrameProcessTimeLimit',
+        'v1',
         (timeLimit: number) => videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
         false,
       );
       if (runtime.supports.video?.mediaStream) {
         registerHandler(
           'video.startVideoExtensibilityVideoStream',
+          'v1',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
             const generator = metadataInTexture
@@ -215,10 +217,11 @@ export namespace videoEx {
           },
           false,
         );
-        sendMessageToParent('video.mediaStream.registerForVideoFrame', [parameters.config]);
+        sendMessageToParent('video.mediaStream.registerForVideoFrame', 'v1', [parameters.config]);
       } else if (runtime.supports.video?.sharedFrame) {
         registerHandler(
           'video.newVideoFrame',
+          'v1',
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
             if (videoBufferData) {
               videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
@@ -235,7 +238,7 @@ export namespace videoEx {
           },
           false,
         );
-        sendMessageToParent('video.registerForVideoFrame', [parameters.config]);
+        sendMessageToParent('video.registerForVideoFrame', 'v1', [parameters.config]);
       } else {
         // should not happen if isSupported() is true
         throw errorNotSupportedOnPlatform;
@@ -272,7 +275,7 @@ export namespace videoEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId, effectParam]);
+    sendMessageToParent('video.videoEffectChanged', 'v1', [effectChangeType, effectId, effectParam]);
   }
 
   /**
@@ -292,10 +295,11 @@ export namespace videoEx {
 
     registerHandler(
       'video.effectParameterChange',
+      'v1',
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
       false,
     );
-    sendMessageToParent('video.registerForVideoEffect');
+    sendMessageToParent('video.registerForVideoEffect', 'v1');
   }
 
   /**
@@ -338,7 +342,7 @@ export namespace videoEx {
     if (!video.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('video.personalizedEffectsChanged', [effects]);
+    sendMessageToParent('video.personalizedEffectsChanged', 'v1', [effects]);
   }
 
   /**
@@ -369,7 +373,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
+    sendMessageToParent('video.videoFrameProcessed', 'v1', [timestamp]);
   }
 
   /**
@@ -383,7 +387,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   function notifyError(errorMessage: string, errorLevel: ErrorLevel = ErrorLevel.Warn): void {
-    sendMessageToParent('video.notifyError', [errorMessage, errorLevel]);
+    sendMessageToParent('video.notifyError', 'v1', [errorMessage, errorLevel]);
   }
 
   /**

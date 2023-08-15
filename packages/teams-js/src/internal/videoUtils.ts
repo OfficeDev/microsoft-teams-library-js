@@ -280,6 +280,7 @@ class TransformerWithMetadata {
   public constructor(private notifyError: (string) => void, private videoFrameHandler: videoEx.VideoFrameHandler) {
     registerHandler(
       'video.mediaStream.audioInferenceDiscardStatusChange',
+      'v1',
       ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
         this.shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
       },
@@ -421,12 +422,12 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
+        sendMessageToParent('video.videoEffectReadiness', 'v1', [true, effectId, undefined, effectParam]);
       })
       .catch((reason) => {
         const validReason =
           reason in video.EffectFailureReason ? reason : video.EffectFailureReason.InitializationFailure;
-        sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason, effectParam]);
+        sendMessageToParent('video.videoEffectReadiness', 'v1', [false, effectId, validReason, effectParam]);
       });
   };
 }

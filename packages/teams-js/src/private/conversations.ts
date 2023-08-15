@@ -144,7 +144,7 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const sendPromise = sendAndHandleStatusAndReason('conversations.openConversation', {
+      const sendPromise = sendAndHandleStatusAndReason('conversations.openConversation', '??? v2', {
         title: openConversationRequest.title,
         subEntityId: openConversationRequest.subEntityId,
         conversationId: openConversationRequest.conversationId,
@@ -154,6 +154,7 @@ export namespace conversations {
       if (openConversationRequest.onStartConversation) {
         registerHandler(
           'startConversation',
+          '??? v2',
           (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
             openConversationRequest.onStartConversation({
               subEntityId,
@@ -166,6 +167,7 @@ export namespace conversations {
       if (openConversationRequest.onCloseConversation) {
         registerHandler(
           'closeConversation',
+          '??? v2',
           (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
             openConversationRequest.onCloseConversation({
               subEntityId,
@@ -192,7 +194,7 @@ export namespace conversations {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('conversations.closeConversation');
+    sendMessageToParent('conversations.closeConversation', '??? v2');
     removeHandler('startConversation');
     removeHandler('closeConversation');
   }
@@ -216,7 +218,7 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndUnwrap('getChatMembers'));
+      resolve(sendAndUnwrap('getChatMembers', '??? v2'));
     });
   }
 

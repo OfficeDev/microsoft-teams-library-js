@@ -21,7 +21,7 @@ export namespace notifications {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParent('notifications.showNotification', [showNotificationParameters]);
+    sendMessageToParent('notifications.showNotification', 'v1', [showNotificationParameters]);
   }
 
   /**
