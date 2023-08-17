@@ -199,11 +199,23 @@ function waitForResponse<T>(requestId: number): Promise<T> {
   });
 }
 
+export function sendMessageToParentWithVersion(
+  actionName: string,
+  apiVersion: string,
+  args: any[],
+  callback?: Function,
+): void {
+  const request = sendMessageToParentHelper(actionName, apiVersion, args);
+  if (callback) {
+    CommunicationPrivate.callbacks[request.id] = callback;
+  }
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, callback?: Function, apiVersion?: string): void;
+export function sendMessageToParent(actionName: string, callback?: Function): void;
 
 /**
  * @hidden
@@ -212,42 +224,21 @@ export function sendMessageToParent(actionName: string, callback?: Function, api
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function, apiVersion?: string): void;
+export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(
-  actionName: string,
-  argsOrCallbackOrApiVersion?: any[] | Function | string,
-  callbackOrApiVersion?: Function | string,
-  apiVersion?: string,
-): void {
+export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
   let args: any[] | undefined;
-  let callback: Function | undefined;
-
-  if (argsOrCallbackOrApiVersion instanceof Function) {
-    callback = argsOrCallbackOrApiVersion;
-    if (typeof callbackOrApiVersion === 'string') {
-      apiVersion = callbackOrApiVersion;
-    }
-  } else if (argsOrCallbackOrApiVersion instanceof Array) {
-    args = argsOrCallbackOrApiVersion;
-    if (callbackOrApiVersion instanceof Function) {
-      callback = callbackOrApiVersion;
-    } else if (typeof callbackOrApiVersion === 'string') {
-      apiVersion = callbackOrApiVersion;
-    }
-  } else if (typeof argsOrCallbackOrApiVersion === 'string') {
-    apiVersion = argsOrCallbackOrApiVersion;
+  if (argsOrCallback instanceof Function) {
+    callback = argsOrCallback;
+  } else if (argsOrCallback instanceof Array) {
+    args = argsOrCallback;
   }
 
-  if (!apiVersion) {
-    apiVersion = 'v0';
-  }
-
-  const request = sendMessageToParentHelper(apiVersion, actionName, args);
+  const request = sendMessageToParentHelper(getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),, actionName, args);
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
