@@ -122,7 +122,6 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
-        <ClipboardAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
@@ -133,6 +132,7 @@ const App = (): ReactElement => {
         <CalendarAPIs />
         <CallAPIs />
         <ChatAPIs />
+        <ClipboardAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
         <DialogCardBotAPIs />
