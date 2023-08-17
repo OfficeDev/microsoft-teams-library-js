@@ -21,7 +21,7 @@ const CopyText = (): React.ReactElement =>
     onClick: {
       validateInput: (input) => {
         if (!input) {
-          throw new Error("String can't be empty");
+          throw "String can't be empty";
         }
       },
       submit: async (text) => {
@@ -39,12 +39,18 @@ const CopyImage = (): React.ReactElement =>
     onClick: {
       validateInput: (input) => {
         if (!input) {
-          throw new Error("Image url can't be empty.");
+          throw "mimeType can't be empty";
         }
       },
-      submit: async (imageUrl) => {
-        const blob = await (await fetch(imageUrl as URL)).blob();
-        await clipboard.write(blob);
+      submit: async (mimeType) => {
+        const byteCharacters = atob(
+          'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        );
+        const byteArray = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteArray[i] = byteCharacters.charCodeAt(i);
+        }
+        await clipboard.write(new Blob([byteArray], { type: mimeType as string }));
         return JSON.stringify(true);
       },
     },
