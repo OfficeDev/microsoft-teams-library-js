@@ -41,7 +41,6 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
-export { appNotification } from './appNotification';
 export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { dialog } from './dialog';
