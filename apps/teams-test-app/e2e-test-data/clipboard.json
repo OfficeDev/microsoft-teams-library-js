@@ -1,1 +1,43 @@
-{}
+{
+  "name": "Clipboard",
+  "version": ">2.14.0",
+  "testCases": [
+    {
+      "title": "Copy Text - success",
+      "type": "callResponse",
+      "boxSelector": "#box_copyText",
+      "inputValue": "Hello VSR Team",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "Copy Text - failure",
+      "type": "callResponse",
+      "boxSelector": "#box_copyText",
+      "inputValue": "\"\"",
+      "skipJsonStringifyOnInputValue": true,
+      "expectedTestAppValue": "Error: String can't be empty"
+    },
+    {
+      "title": "Copy JPEG Image - success",
+      "type": "callResponse",
+      "boxSelector": "#box_copyImage",
+      "inputValue": "image/jpeg",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "Copy PNG Image - success",
+      "type": "callResponse",
+      "boxSelector": "#box_copyImage",
+      "inputValue": "image/png",
+      "expectedTestAppValue": "true"
+    },
+    {
+      "title": "Copy Image - failure",
+      "type": "callResponse",
+      "boxSelector": "#box_copyImage",
+      "inputValue": "\"\"",
+      "skipJsonStringifyOnInputValue": true,
+      "expectedTestAppValue": "Error: mimeType can't be empty"
+    }
+  ]
+}
