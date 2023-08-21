@@ -156,6 +156,7 @@ interface IRuntimeV3 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly clipboard?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
