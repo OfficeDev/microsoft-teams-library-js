@@ -31,7 +31,11 @@ export const ApiWithoutInput = (props: ApiWithoutInputProps): React.ReactElement
         }
       }
     } catch (err) {
-      setResult('Error: ' + (typeof err === 'string' ? err : JSON.stringify(err)));
+      let error = `${err}`;
+      if (error === '[object Object]') {
+        error = JSON.stringify(err);
+      }
+      setResult('Error: ' + error);
     }
   }, [setResult, onClick]);
 
