@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
@@ -47,10 +47,10 @@ export namespace tasks {
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParentWithVersion('v1', 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.card) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParentWithVersion('v1', 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {

@@ -130,8 +130,30 @@ export function uninitializeCommunication(): void {
  * @internal
  * Limited to Microsoft-internal use
  */
+export function sendAndUnwrapWithVersion<T>(apiVersion: string, actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([result]: [T]) => result);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+}
+
+export function sendAndHandleStatusAndReasonWithVersion(
+  apiVersion: string,
+  actionName: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+    ([wasSuccessful, reason]: [boolean, string]) => {
+      if (!wasSuccessful) {
+        throw new Error(reason);
+      }
+    },
+  );
 }
 
 export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
@@ -140,6 +162,25 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
       throw new Error(reason);
     }
   });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+  apiVersion: string,
+  actionName: string,
+  defaultError: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+    ([wasSuccessful, reason]: [boolean, string]) => {
+      if (!wasSuccessful) {
+        throw new Error(reason ? reason : defaultError);
+      }
+    },
+  );
 }
 
 /**
@@ -155,6 +196,23 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
     if (!wasSuccessful) {
       throw new Error(reason ? reason : defaultError);
     }
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendAndHandleSdkErrorWithVersion<T>(
+  apiVersion: string,
+  actionName: string,
+  ...args: any[]
+): Promise<T> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([error, result]: [SdkError, T]) => {
+    if (error) {
+      throw error;
+    }
+    return result;
   });
 }
 

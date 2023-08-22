@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -101,7 +101,73 @@ export namespace dialog {
     }
   }
 
+  function updateResizeHelper(apiVersion = 'v1', dimensions: DialogSize): void {
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.task,
+      FrameContexts.meetingStage,
+    );
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    sendMessageToParentWithVersion(apiVersion, 'tasks.updateTask', [dimensions]);
+  }
+
   export namespace url {
+    function urlOpenHelper(
+      apiVersion = 'v1',
+      urlDialogInfo: UrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): void {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      if (messageFromChildHandler) {
+        registerHandler('messageForParent', messageFromChildHandler);
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+      sendMessageToParentWithVersion(
+        apiVersion,
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+          removeHandler('messageForParent');
+        },
+      );
+    }
+
+    function botUrlOpenHelper(
+      apiVersion = 'v1',
+      urlDialogInfo: BotUrlDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+      messageFromChildHandler?: PostMessageChannel,
+    ): void {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      if (messageFromChildHandler) {
+        registerHandler('messageForParent', messageFromChildHandler);
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
+      sendMessageToParentWithVersion(
+        apiVersion,
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+          removeHandler('messageForParent');
+        },
+      );
+    }
+
     /**
      * Allows app to open a url based dialog.
      *
@@ -119,19 +185,7 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-        removeHandler('messageForParent');
-      });
+      urlOpenHelper('v2', urlDialogInfo, submitHandler, messageFromChildHandler);
     }
 
     /**
@@ -264,19 +318,7 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        if (messageFromChildHandler) {
-          registerHandler('messageForParent', messageFromChildHandler);
-        }
-        const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
-
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-          removeHandler('messageForParent');
-        });
+        botUrlOpenHelper('v2', botUrlDialogInfo, submitHandler, messageFromChildHandler);
       }
 
       /**
@@ -355,17 +397,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.task,
-        FrameContexts.meetingStage,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      sendMessageToParent('tasks.updateTask', [dimensions]);
+      updateResizeHelper('v2', dimensions);
     }
 
     /**
@@ -390,6 +422,47 @@ export namespace dialog {
    * @beta
    */
   export namespace adaptiveCard {
+    function adaptiveCardOpenHelper(
+      apiVersion = 'v1',
+      adaptiveCardDialogInfo: AdaptiveCardDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+    ): void {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
+      sendMessageToParentWithVersion(
+        apiVersion,
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+        },
+      );
+    }
+
+    function botAdaptiveCardOpenHelper(
+      apiVersion = 'v1',
+      botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
+      submitHandler?: DialogSubmitHandler,
+    ): void {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+
+      sendMessageToParentWithVersion(
+        apiVersion,
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+        },
+      );
+    }
     /**
      * Allows app to open an adaptive card based dialog.
      *
@@ -402,14 +475,7 @@ export namespace dialog {
      * @beta
      */
     export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-      });
+      adaptiveCardOpenHelper('v2', adaptiveCardDialogInfo, submitHandler);
     }
 
     /**
@@ -450,16 +516,7 @@ export namespace dialog {
         botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
         submitHandler?: DialogSubmitHandler,
       ): void {
-        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-
-        const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
-
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-        });
+        botAdaptiveCardOpenHelper('v2', botAdaptiveCardDialogInfo, submitHandler);
       }
 
       /**

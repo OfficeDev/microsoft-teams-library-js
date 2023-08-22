@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
@@ -46,7 +46,10 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: false, showMap: false });
+    return sendAndHandleSdkErrorWithVersion('v2', 'location.getLocation', {
+      allowChooseLocation: false,
+      showMap: false,
+    });
   }
 
   /**
@@ -65,7 +68,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.has', permissions));
     });
   }
 
@@ -86,7 +89,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.request', permissions));
     });
   }
 
@@ -120,7 +123,10 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: true, showMap: true });
+      return sendAndHandleSdkErrorWithVersion('v2', 'location.getLocation', {
+        allowChooseLocation: true,
+        showMap: true,
+      });
     }
 
     /**
@@ -139,7 +145,7 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkError('location.showLocation', location);
+      return sendAndHandleSdkErrorWithVersion('v2', 'location.showLocation', location);
     }
 
     /**
