@@ -168,6 +168,22 @@ export namespace dialog {
       );
     }
 
+    function urlSubmitHelper(apiVersion = 'v1', result?: string | object, appIds?: string | string[]): void {
+      // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
+      // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
+      // FrameContexts.content will be removed once the bug is fixed.
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+      sendMessageToParentWithVersion(apiVersion, 'tasks.completeTask', [
+        result,
+        appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
+      ]);
+    }
+
     /**
      * Allows app to open a url based dialog.
      *
@@ -202,16 +218,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
-      // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
-      // FrameContexts.content will be removed once the bug is fixed.
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-      sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+      urlSubmitHelper('v2', result, appIds);
     }
 
     /**
