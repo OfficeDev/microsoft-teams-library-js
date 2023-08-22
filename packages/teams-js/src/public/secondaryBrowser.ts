@@ -8,6 +8,8 @@ import { runtime } from './runtime';
 /**
  * Namespace to power up the in-app browser experiences in the host app.
  * For e.g., opening a URL in the host app inside a browser
+ * Namespace to power up the in-app browser experiences in the host app.
+ * For e.g., opening a URL in the host app inside a browser
  *
  * @beta
  */
