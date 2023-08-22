@@ -1,0 +1,7 @@
+{
+  "type": "major",
+  "comment": "draft solution with optional apiVersion",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
