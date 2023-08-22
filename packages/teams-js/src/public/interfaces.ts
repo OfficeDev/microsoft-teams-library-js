@@ -155,7 +155,7 @@ export interface TeamInformation {
  */
 export interface LocaleInfo {
   /** Represents the user's platform on which the app is running. */
-  platform: HostClientType.android | HostClientType.ios | 'macos' | 'windows';
+  platform: HostClientType.android | HostClientType.ios | HostClientType.macos | 'windows';
   /**
    * Represents the regional format used by the user's locale.
    * @example `en-us`.
@@ -1052,4 +1052,24 @@ export interface AdaptiveCardVersion {
   majorVersion: number;
   /** Represents the minor version number. */
   minorVersion: number;
+}
+
+/**
+ * Currently supported Mime type
+ */
+export enum ClipboardSupportedMimeType {
+  TextPlain = 'text/plain',
+  TextHtml = 'text/html',
+  ImagePNG = 'image/png',
+  ImageJPEG = 'image/jpeg',
+}
+
+/**
+ * Clipboard write parameters
+ */
+export interface ClipboardParams {
+  /** Mime Type of data to be copied to Clipboard */
+  mimeType: ClipboardSupportedMimeType;
+  /** Blob content in Base64 string format */
+  content: string;
 }
