@@ -12,6 +12,15 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
+  /**
+   *
+   * @param callback
+   */
+  export function registerForPreviewStatus(callback: (isPreview: boolean) => void): void {
+    ensureInitialized(runtime, FrameContexts.sidePanel);
+    registerHandler('previewStatusChange', callback);
+  }
+
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);
