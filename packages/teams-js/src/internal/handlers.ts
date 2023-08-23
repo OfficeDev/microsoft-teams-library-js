@@ -27,7 +27,7 @@ class HandlersPrivate {
    * @deprecated
    */
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-  public static beforeSuspedOrTerminateHandler: (readyToSuspendOrTerminate: () => void) => void;
+  public static beforeSuspendOrTerminateHandler: (readyToSuspendOrTerminate: () => void) => void;
   public static resumeHandler: (context: ResumeContext) => void;
 }
 
@@ -215,8 +215,8 @@ function handleBeforeUnload(): void {
 export function registerBeforeSuspendOrTerminateHandler(
   handler: (readyToSuspendOrTerminate: () => void) => void,
 ): void {
-  HandlersPrivate.beforeSuspedOrTerminateHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeSuspedOrTerminate']);
+  HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['beforeSuspendOrTerminate']);
 }
 
 /**
@@ -228,12 +228,12 @@ function handleBeforeSuspendOrTerminate(): void {
     sendMessageToParent('readyToSuspendOrTerminate', []);
   };
 
-  if (HandlersPrivate.beforeSuspedOrTerminateHandler) {
-    HandlersPrivate.beforeSuspedOrTerminateHandler(readyToSuspendOrTerminate);
+  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
+    HandlersPrivate.beforeSuspendOrTerminateHandler(readyToSuspendOrTerminate);
   }
 
   if (Communication.childWindow) {
-    sendMessageEventToChild('readyToSuspendOrTerminate');
+    sendMessageEventToChild('beforeSuspendOrTerminate');
   }
 }
 

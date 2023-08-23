@@ -845,7 +845,7 @@ export namespace app {
     ) => void;
 
     /**
-     * Registers a handler to be called before the page is suspended or terminatd.
+     * Registers a handler to be called before the page is suspended or terminated.
      *
      * @param handler - The handler to invoke before the page is suspended or terminated. The page should
      * invoke the readyToSuspendOrTerminate function provided to it once it's ready.
@@ -879,7 +879,7 @@ export namespace app {
      */
     export namespace caching {
       /**
-       * Registers a handler to be called when the page has been requested to load.
+       * Registers a handler to be called when the page has been requested to resume from being suspended.
        *
        * @param handler - The handler to invoke when the page is loaded.
        *
