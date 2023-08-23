@@ -97,11 +97,8 @@ const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
     name: 'RegisterBeforeSuspendOrTerminateHandler',
     title: 'Register Before Suspend/Terminate Handler',
     onClick: async (setResult) => {
-      app.lifecycle.registerBeforeSuspendOrTerminateHandler((readyToSuspendOrTerminate): void => {
-        setTimeout(() => {
-          readyToSuspendOrTerminate();
-        }, 20);
-        alert('beforeSuspendOrTerminate received; calling readyToSuspendOrTerminate in 2 seconds');
+      app.lifecycle.registerBeforeSuspendOrTerminateHandler((): void => {
+        alert('beforeSuspendOrTerminate received');
         setResult('Success');
       });
 

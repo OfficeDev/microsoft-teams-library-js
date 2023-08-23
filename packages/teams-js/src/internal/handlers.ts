@@ -27,7 +27,7 @@ class HandlersPrivate {
    * @deprecated
    */
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-  public static beforeSuspendOrTerminateHandler: (readyToSuspendOrTerminate: () => void) => void;
+  public static beforeSuspendOrTerminateHandler: () => void;
   public static resumeHandler: (context: ResumeContext) => void;
 }
 
@@ -212,9 +212,7 @@ function handleBeforeUnload(): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerBeforeSuspendOrTerminateHandler(
-  handler: (readyToSuspendOrTerminate: () => void) => void,
-): void {
+export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
   handler && sendMessageToParent('registerHandler', ['beforeSuspendOrTerminate']);
 }
@@ -229,11 +227,13 @@ function handleBeforeSuspendOrTerminate(): void {
   };
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
-    HandlersPrivate.beforeSuspendOrTerminateHandler(readyToSuspendOrTerminate);
+    HandlersPrivate.beforeSuspendOrTerminateHandler();
   }
 
   if (Communication.childWindow) {
     sendMessageEventToChild('beforeSuspendOrTerminate');
+  } else {
+    readyToSuspendOrTerminate();
   }
 }
 
