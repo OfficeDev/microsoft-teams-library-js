@@ -41,9 +41,9 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
-export { appNotification } from './appNotification';
 export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
+export { clipboard } from './clipboard';
 export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
