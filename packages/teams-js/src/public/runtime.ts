@@ -86,11 +86,6 @@ interface IRuntimeV2 extends IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly app?: {
-      readonly lifecycle?: {
-        readonly caching?: {};
-      };
-    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly appNotification?: {};
@@ -155,6 +150,11 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      readonly lifecycle?: {
+        readonly caching?: {};
+      };
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
