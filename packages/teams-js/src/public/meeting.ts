@@ -623,8 +623,7 @@ export namespace meeting {
    *
    * @param callback - Callback contains 2 parameters, `error` and `appContentStageSharingState`.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * `appContentStageSharingState` can either contain an `IAppContentStageSharingState` object
-   * (indication of successful retrieval), or null (indication of failed retrieval)
+   * `appContentStageSharingState` can either contain an `IAppContentStageSharingState` object if the request succeeds, or null if it failed
    */
   export function getAppContentStageSharingState(callback: getAppContentStageCallbackFunctionType): void {
     if (!callback) {
