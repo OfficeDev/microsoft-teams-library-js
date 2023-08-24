@@ -584,9 +584,8 @@ export namespace meeting {
    * For channel meetings, include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest.
    *
    * @param callback - Completion callback contains 2 parameters: `error` and `appContentStageSharingCapabilities`.
-   * `error` can either contain an error of type `SdkError` (error indication), or null (non-error indication)
-   * `appContentStageSharingCapabilities`` can either contain an `IAppContentStageSharingCapabilities` object
-   * (indication of successful retrieval), or null (indication of failed retrieval)
+   * `error` can either contain an error of type `SdkError` (error indication), or null (non-error indication).
+   * `appContentStageSharingCapabilities` will contain an {@link IAppContentStageSharingCapabilities} object if the request succeeds, or null if it failed.
    */
   export function getAppContentStageSharingCapabilities(callback: getAppContentCallbackFunctionType): void {
     if (!callback) {
