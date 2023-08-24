@@ -109,7 +109,7 @@ export namespace dialog {
       FrameContexts.task,
       FrameContexts.meetingStage,
     );
-    if (!isSupported()) {
+    if (!update.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     sendMessageToParentWithVersion(apiVersion, 'tasks.updateTask', [dimensions]);
