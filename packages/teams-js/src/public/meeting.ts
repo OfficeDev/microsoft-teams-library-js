@@ -9,7 +9,7 @@ import { runtime } from './runtime';
  * Interact with meetings, including retrieving meeting details, getting mic status, and sharing app content.
  * This namespace is used to handle meeting related functionality like
  * get meeting details, get/update state of mic, sharing app content and more.
- * 
+ *
  * To learn more, visit https://aka.ms/teamsmeetingapps
  */
 export namespace meeting {
@@ -378,11 +378,10 @@ export namespace meeting {
    * To learn more, visit https://aka.ms/teamsjs/getIncomingClientAudioState
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * 
+   *
    * @remarks
    * Use {@link toggleIncomingClientAudio} to toggle the current audio state.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Chat` RSC permission in your app manifest.
-   * For channel meetings, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Group` RSC permission in your app manifest.
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
    * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
@@ -399,11 +398,10 @@ export namespace meeting {
   /**
    * Allows an app to toggle the incoming audio speaker setting for the meeting user from mute to unmute or vice-versa.
    * To learn more, visit https://aka.ms/teamsjs/toggleIncomingClientAudio
-   * 
+   *
    * @remarks
    * Use {@link getIncomingClientAudioState} to get the current audio state.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Chat` RSC permission in your app manifest.
-   * For channel meetings, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Group` RSC permission in your app manifest.
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
@@ -468,7 +466,7 @@ export namespace meeting {
 
   /**
    * Allows an app to get the state of the outgoing live stream in the current meeting.
-   * 
+   *
    * @remarks
    * Use {@link requestStartLiveStreaming} or {@link requestStopLiveStreaming} to start/stop a live stream.
    * This API can only be used in the `sidePanel` frame context.
@@ -532,7 +530,7 @@ export namespace meeting {
 
   /**
    * Registers an event handler for state changes to the live stream.
-   * 
+   *
    * @remarks
    * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
    * Use {@link requestStartLiveStreaming} or {@link requestStopLiveStreaming} to start/stop a live stream.
@@ -552,7 +550,7 @@ export namespace meeting {
   /**
    * Allows an app to share a given URL to the meeting stage for all users in the meeting.
    * To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
-   * 
+   *
    * @remarks
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
@@ -577,7 +575,7 @@ export namespace meeting {
   /**
    * Allows an app to request whether the local user is eligible to share app content to the meeting stage.
    * To learn more, visit https://aka.ms/teamsjs/getAppContentStageSharingCapabilities
-   * 
+   *
    * @remarks
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
@@ -615,7 +613,7 @@ export namespace meeting {
   /**
    * Provides information related to current stage sharing state for your app.
    * To learn more, visit https://aka.ms/teamsjs/getAppContentStageSharingState
-   * 
+   *
    * @remarks
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
@@ -636,7 +634,7 @@ export namespace meeting {
   /**
    * Registers a handler for changes to paticipant speaking states.
    * To learn more, visit https://aka.ms/teamsjs/registerSpeakingStateChangeHandler
-   * 
+   *
    * @remarks
    * This API returns {@link ISpeakingState}, which will have `isSpeakingDetected` and/or an error object.
    * If any participant is speaking, `isSpeakingDetected` will be true, or false if no participants are speaking.
@@ -707,10 +705,10 @@ export namespace meeting {
 
   /**
    * Nested namespace for functions to control behavior of the app share button
-   * 
+   *
    * @hidden
    * Hide from docs.
-   * 
+   *
    * @internal
    * Limited to Microsoft-internal use
    *
@@ -719,10 +717,10 @@ export namespace meeting {
   export namespace appShareButton {
     /**
      * Property bag for the setVisibilityInfo
-     * 
+     *
      * @hidden
      * Hide from docs.
-     * 
+     *
      * @internal
      * Limited to Microsoft-internal use
      *
@@ -747,13 +745,13 @@ export namespace meeting {
      * @throws standard Invalid Url error
      * @param shareInformation has two elements, one isVisible boolean flag and another
      * optional string contentUrl, which will override contentUrl coming from Manifest
-     * 
+     *
      * @hidden
      * Hide from docs.
-     * 
+     *
      * @internal
      * Limited to Microsoft-internal use
-     * 
+     *
      * @beta
      */
     export function setOptions(shareInformation: ShareInformation): void {
