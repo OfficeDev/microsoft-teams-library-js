@@ -46,7 +46,11 @@ const validateOriginLogger = getLogger('validateOrigin');
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
-    validateOriginLogger('Origin %s is invalid because it is not using https protocol', messageOrigin);
+    validateOriginLogger(
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
+      messageOrigin,
+      messageOrigin.protocol,
+    );
     return false;
   }
   const messageOriginHost = messageOrigin.host;
@@ -63,8 +67,10 @@ export function validateOrigin(messageOrigin: URL): boolean {
   }
 
   validateOriginLogger(
-    'Origin %s is invalid because it is not an origin approved by this library or the call to app.initialize',
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
     messageOrigin,
+    validOrigins,
+    GlobalVars.additionalValidOrigins,
   );
   return false;
 }

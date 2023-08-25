@@ -276,7 +276,7 @@ const processMessageLogger = communicationLogger.extend('processMessage');
 function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
-    processMessageLogger('Unrecognized message format received by app, message being ignored');
+    processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
     return;
   }
 
@@ -287,7 +287,7 @@ function processMessage(evt: DOMMessageEvent): void {
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
     processMessageLogger(
-      'Message being ignored by app because it is not coming from a different window with a valid origin',
+      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
     return;
   }
@@ -316,7 +316,7 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
-    shouldProcessMessageLogger('Should not process message because it is coming from the same window');
+    shouldProcessMessageLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
