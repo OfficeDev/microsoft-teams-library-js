@@ -840,11 +840,9 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() =>
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
-              return false;
-            }),
-          ).toThrowError(new Error(errorLibraryNotInitialized));
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
         });
 
         Object.values(FrameContexts).forEach((context) => {
@@ -853,28 +851,21 @@ describe('Testing app capability', () => {
             utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
             expect.assertions(1);
             try {
-              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
-                return false;
-              });
+              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
             } catch (e) {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
 
-          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and call readyToSuspendOrTerminate. context: ${context}`, async () => {
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToSuspendOrTerminate should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            let handlerInvoked = false;
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler((readyToSuspendOrTerminate) => {
-              readyToSuspendOrTerminate();
-              handlerInvoked = true;
-            });
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
 
             utils.sendMessage('beforeSuspendOrTerminate');
 
             let readyToSuspendOrTerminateMessage = utils.findMessageByFunc('readyToSuspendOrTerminate');
             expect(readyToSuspendOrTerminateMessage).not.toBeNull();
-            expect(handlerInvoked).toBe(true);
           });
         });
       });

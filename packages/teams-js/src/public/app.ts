@@ -851,11 +851,8 @@ export namespace app {
     export function registerBeforeSuspendOrTerminateHandler(
       handler: registerBeforeSuspendOrTerminateHandlerFunctionType,
     ): void {
-      if (!handler) {
-        throw new Error('Handler for registerBeforeSuspendOrTerminateHandler cannot be null');
-      }
-      ensureInitialized(runtime);
-      if (!isSupported()) {
+      handler && ensureInitialized(runtime);
+      if (handler && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
       Handlers.registerBeforeSuspendOrTerminateHandler(handler);
@@ -887,11 +884,8 @@ export namespace app {
        * @beta
        */
       export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
-        if (!handler) {
-          throw new Error('Handler for registerOnResumeHandler cannot be null');
-        }
-        ensureInitialized(runtime);
-        if (!isSupported()) {
+        handler && ensureInitialized(runtime);
+        if (handler && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
         Handlers.registerOnResumeHandler(handler);
