@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Improved reference docs for the `meeting` namespace, including `LiveStreamState`, `ISpeakingState`, `getIncomingClientAudioState`, `toggleIncomingClientAudio`, `getLiveStreamState`, `requestStartLiveStreaming`, `requestStopLiveStreaming`, `registerLiveStreamChangedHandler`, `shareAppContentToStage`, `getAppContentSharingCapabilities`, and `getAppContentStageSharingState`. Also hid the `appSharingButton` from the documentation, as that API is not supported in public rings.",
+  "packageName": "@microsoft/teams-js",
+  "email": "ryanbliss@microsoft.com",
+  "dependentChangeType": "patch"
+}
