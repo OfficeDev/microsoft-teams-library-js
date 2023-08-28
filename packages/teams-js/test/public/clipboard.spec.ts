@@ -299,7 +299,12 @@ describe('clipboard', () => {
       });
 
       Object.values(FrameContexts).forEach((context) => {
-        Object.values([HostClientType.android, HostClientType.ios, HostClientType.ipados]).forEach((mobilePlatform) => {
+        Object.values([
+          HostClientType.android,
+          HostClientType.ios,
+          HostClientType.ipados,
+          HostClientType.macos,
+        ]).forEach((mobilePlatform) => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {
             it(`clipboard.read should throw error if the clipboard.read capability is not supported in runtime config - Context: ${context}`, async () => {
               try {
