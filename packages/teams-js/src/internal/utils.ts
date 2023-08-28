@@ -7,6 +7,7 @@ import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { validOrigins } from './constants';
+import { getLogger } from './telemetry';
 
 /**
  * @param pattern - reference pattern
@@ -36,6 +37,8 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
   return false;
 }
 
+const validateOriginLogger = getLogger('validateOrigin');
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -43,6 +46,11 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
+    validateOriginLogger(
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
+      messageOrigin,
+      messageOrigin.protocol,
+    );
     return false;
   }
   const messageOriginHost = messageOrigin.host;
@@ -58,6 +66,12 @@ export function validateOrigin(messageOrigin: URL): boolean {
     }
   }
 
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOrigin,
+    validOrigins,
+    GlobalVars.additionalValidOrigins,
+  );
   return false;
 }
 
