@@ -53,6 +53,11 @@ export enum HostName {
   orange = 'Orange',
 
   /**
+   * Microsoft connected workplace platform
+   */
+  places = 'Places',
+
+  /**
    * Teams
    */
   teams = 'Teams',
