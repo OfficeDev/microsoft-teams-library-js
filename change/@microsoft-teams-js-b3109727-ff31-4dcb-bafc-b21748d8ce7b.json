@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Changed the other of registering texture stream",
+  "packageName": "@microsoft/teams-js",
+  "email": "wenghe@microsoft.com",
+  "dependentChangeType": "patch"
+}
