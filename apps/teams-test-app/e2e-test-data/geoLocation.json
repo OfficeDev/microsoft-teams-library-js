@@ -1,6 +1,6 @@
 {
   "name": "GeoLocation",
-  "platforms": "Web",
+  "platforms": "*",
   "version": ">=2.1.0",
   "checkIsSupported": {
     "capabilityName": "GeoLocation",
@@ -17,6 +17,7 @@
     {
       "title": "requestGeoLocationPermission API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_requestGeoLocationPermission",
       "isRequestPermissionCall": { "repeatRequestPermissionCall": false },
       "expectedTestAppValue": "true"
@@ -24,6 +25,7 @@
     {
       "title": "repeat requestGeoLocationPermission API Call with no dialog - Success",
       "type": "callResponse",
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_requestGeoLocationPermission",
       "isRequestPermissionCall": { "repeatRequestPermissionCall": true },
       "expectedTestAppValue": "true"
@@ -31,6 +33,7 @@
     {
       "title": "getCurrentLocation API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getCurrentLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
@@ -40,8 +43,22 @@
       "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
     },
     {
+      "title": "getCurrentLocation API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_getCurrentLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
+      },
+      "expectedAlertValue": ["getCurrentLocation is called"],
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
       "title": "getCurrentLocation API Call - Failure",
       "type": "callResponse",
+      "platformsExcluded": ["Web", "iOS"],
       "boxSelector": "#box_getCurrentLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",

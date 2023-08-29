@@ -1,6 +1,6 @@
 {
   "name": "GeoLocation Map",
-  "platforms": "Web",
+  "platforms": "*",
   "version": ">=2.1.0",
   "checkIsSupported": {
     "capabilityName": "LocationMap"
@@ -9,6 +9,7 @@
     {
       "title": "chooseLocationOnMap API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_chooseLocationOnMap",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
@@ -18,8 +19,22 @@
       "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
     },
     {
+      "title": "chooseLocationOnMap API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_chooseLocationOnMap",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
+      },
+      "expectedAlertValue": "location.map.chooseLocation is called.",
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
       "title": "chooseLocationOnMap API Call - Failure",
       "type": "callResponse",
+      "platformsExcluded": ["Web", "iOS"],
       "boxSelector": "#box_chooseLocationOnMap",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
@@ -30,13 +45,33 @@
     {
       "title": "showLocationOnMap API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_showLocationOnMap",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
         "consentPermission": true
       },
       "inputValue": {
-        "latitude": 51.507351,
+        "latitude": 51.50735,
+        "longitude": -0.127758,
+        "accuracy": 2,
+        "timestamp": 200
+      },
+      "expectedAlertValue": "location.map.showLocation called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "showLocationOnMap API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_showLocationOnMap",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
+      },
+      "inputValue": {
+        "latitude": 51.50735,
         "longitude": -0.127758,
         "accuracy": 2,
         "timestamp": 200
