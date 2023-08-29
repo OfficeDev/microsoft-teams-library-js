@@ -1,9 +1,9 @@
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
+import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
   AllowSharedBufferSource,
   PlaneLayout,
@@ -107,7 +107,7 @@ async function getInputVideoTrack(
     throw errorNotSupportedOnPlatform;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const chrome = window['chrome'] as any;
+  const chrome = ssrSafeWindow()['chrome'] as any;
   try {
     videoPerformanceMonitor?.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
@@ -137,10 +137,10 @@ function createProcessedStreamGenerator(
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
-  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
+  const MediaStreamTrackProcessor = ssrSafeWindow()['MediaStreamTrackProcessor'];
   const processor = new MediaStreamTrackProcessor({ track: videoTrack });
   const source = processor.readable;
-  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+  const MediaStreamTrackGenerator = ssrSafeWindow()['MediaStreamTrackGenerator'];
   const generator = new MediaStreamTrackGenerator({ kind: 'video' });
   const sink = generator.writable;
 

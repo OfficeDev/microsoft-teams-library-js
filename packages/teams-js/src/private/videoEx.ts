@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
@@ -11,7 +12,6 @@ import {
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { video } from '../public/video';
-import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
 
 /**
  * @hidden
@@ -211,7 +211,7 @@ export namespace videoEx {
               : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
             // register the video track with processed frames back to the stream
             !inServerSideRenderingEnvironment() &&
-              window['chrome']?.webview?.registerTextureStream(streamId, generator);
+              ssrSafeWindow()['chrome']?.webview?.registerTextureStream(streamId, generator);
           },
           false,
         );
