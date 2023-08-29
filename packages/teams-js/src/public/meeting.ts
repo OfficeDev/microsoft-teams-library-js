@@ -170,7 +170,8 @@ export namespace meeting {
   /** Represents app permission to share contents to meeting. */
   export interface IAppContentStageSharingCapabilities {
     /**
-     * indicates whether app has permission to share contents to meeting stage
+     * indicates whether app has permission to share contents to meeting stage.
+     * true when your `configurableTabs` or `staticTabs` entry's `context` array includes `meetingStage`.
      */
     doesAppHaveSharePermission: boolean;
   }
@@ -573,13 +574,16 @@ export namespace meeting {
   }
 
   /**
-   * Allows an app to request whether the local user is eligible to share app content to the meeting stage.
+   * Allows an app to request whether the app has the required app manifest permissions to share content to meeting stage.
    * To learn more, visit https://aka.ms/teamsjs/getAppContentStageSharingCapabilities
    *
    * @remarks
-   * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
-   * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
-   * For channel meetings, include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest.
+   * If your published app is being updated to include the share to stage feature, you can use this API to prompt users to update their app.
+   * Your app's `configurableTabs` or `staticTabs` entry's `context` array must include `meetingStage` for `doesAppHaveSharePermission` to be `true` in the `callback` response.
+   *
+   * @throws error if API is being used outside of `sidePanel` or `meetingStage` frame contexts.
+   * @throws error if your app manifest does not include the `MeetingStage.Write.Chat` RSC permission in your app manifest in a private scheduled meetings, meet now, or calls.
+   * @throws error if your app manifest does not include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest in channel meetings.
    *
    * @param callback - Completion callback contains 2 parameters: `error` and `appContentStageSharingCapabilities`.
    * `error` can either contain an error of type `SdkError` (error indication), or null (non-error indication).
