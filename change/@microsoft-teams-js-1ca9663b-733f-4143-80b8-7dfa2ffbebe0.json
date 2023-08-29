@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "replaced window references with ssrSafeWindow, updated blazor sdk version",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
