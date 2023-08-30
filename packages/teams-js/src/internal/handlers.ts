@@ -4,7 +4,12 @@ import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import {
+  Communication,
+  sendMessageEventToChild,
+  sendMessageToParent,
+  sendMessageToParentWithVersion,
+} from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -156,7 +161,7 @@ export function registerHandlerHelper(
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['themeChange']);
 }
 
 /**
@@ -181,7 +186,7 @@ export function handleThemeChange(theme: string): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['load']);
 }
 
 /**
@@ -208,7 +213,7 @@ function handleLoad(context: LoadContext): void {
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['beforeUnload']);
 }
 
 /**

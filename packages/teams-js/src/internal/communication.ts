@@ -92,7 +92,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>('v2', 'initialize', [
       version,
       latestRuntimeApiVersion,
     ]).then(
@@ -282,7 +282,30 @@ export function sendMessageToParentWithVersion(
   actionName: string,
   args: any[],
   callback?: Function,
+): void;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendMessageToParentWithVersion(apiVersion: string, actionName: string, callback?: Function): void;
+
+export function sendMessageToParentWithVersion(
+  apiVersion: string,
+  actionName: string,
+  argsOrCallback?: any[] | Function,
+  callback?: Function,
 ): void {
+  let args: any[] | undefined;
+  if (argsOrCallback instanceof Function) {
+    callback = argsOrCallback;
+  } else if (argsOrCallback instanceof Array) {
+    args = argsOrCallback;
+  }
+
+  // APIs with v0 represents beta changes haven't been implemented on them
+  // Otherwise, minimum version number will be v1
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(apiVersion, actionName, args);
   if (callback) {
     CommunicationPrivate.callbacks[request.id] = callback;

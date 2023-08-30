@@ -5,8 +5,8 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReason,
-  sendAndUnwrap,
+  sendAndHandleStatusAndReasonWithVersion,
+  sendAndUnwrapWithVersion,
   sendMessageToParentWithVersion,
   uninitializeCommunication,
 } from '../internal/communication';
@@ -744,7 +744,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(sendAndUnwrap('getContext'));
+      resolve(sendAndUnwrapWithVersion('v2', 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -822,7 +822,7 @@ export namespace app {
         FrameContexts.stage,
         FrameContexts.meetingStage,
       );
-      resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
+      resolve(sendAndHandleStatusAndReasonWithVersion('v2', 'executeDeepLink', deepLink));
     });
   }
 

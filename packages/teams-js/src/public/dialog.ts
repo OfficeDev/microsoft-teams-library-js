@@ -240,7 +240,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForParent', [message]);
+      sendMessageToParentWithVersion('v1', 'messageForParent', [message]);
     }
 
     /**
@@ -259,7 +259,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForChild', [message]);
+      sendMessageToParentWithVersion('V1', 'messageForChild', [message]);
     }
 
     /**
