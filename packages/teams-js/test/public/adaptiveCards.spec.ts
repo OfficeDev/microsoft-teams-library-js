@@ -1,6 +1,7 @@
 import { isHostAdaptiveCardSchemaVersionUnsupported } from '../../src/internal/utils';
 import { getAdaptiveCardSchemaVersion } from '../../src/public';
 import { minAdaptiveCardVersion } from '../../src/public/constants';
+import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { Utils } from '../utils';
 /* eslint-disable */
 
@@ -9,7 +10,7 @@ describe('Testing Adaptive Cards', () => {
   describe('getAdaptiveCardSchemaVersion', () => {
     it('should return the Adaptive Card Version supported by hosts', () => {
       utils.setRuntimeConfig({
-        apiVersion: 2,
+        apiVersion: latestRuntimeApiVersion,
         hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
         supports: {},
       });

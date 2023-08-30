@@ -12,6 +12,7 @@ import {
   VideoFrameInit,
   VideoPixelFormat,
 } from './VideoFrameTypes';
+import { VideoPerformanceMonitor } from './videoPerformanceMonitor';
 
 /**
  * @hidden
@@ -66,9 +67,10 @@ export async function processMediaStream(
   streamId: string,
   videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
-    await getInputVideoTrack(streamId, notifyError),
+    await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new DefaultTransformer(notifyError, videoFrameHandler),
   );
 }
@@ -85,9 +87,10 @@ export async function processMediaStreamWithMetadata(
   streamId: string,
   videoFrameHandler: videoEx.VideoFrameHandler,
   notifyError: (string) => void,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<MediaStreamTrack> {
   return createProcessedStreamGenerator(
-    await getInputVideoTrack(streamId, notifyError),
+    await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new TransformerWithMetadata(notifyError, videoFrameHandler),
   );
 }
@@ -95,18 +98,24 @@ export async function processMediaStreamWithMetadata(
 /**
  * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
  */
-async function getInputVideoTrack(streamId: string, notifyError: (string) => void): Promise<MediaStreamTrack> {
+async function getInputVideoTrack(
+  streamId: string,
+  notifyError: (string) => void,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+): Promise<MediaStreamTrack> {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chrome = window['chrome'] as any;
   try {
+    videoPerformanceMonitor?.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
     const tracks = mediaStream.getVideoTracks();
     if (tracks.length === 0) {
       throw new Error(`No video track in stream ${streamId}`);
     }
+    videoPerformanceMonitor?.reportTextureStreamAcquired();
     return tracks[0];
   } catch (error) {
     const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
@@ -402,10 +411,16 @@ type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) 
 /**
  * @hidden
  */
-export function createEffectParameterChangeCallback(callback: VideoEffectCallBack) {
+export function createEffectParameterChangeCallback(
+  callback: VideoEffectCallBack,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+) {
   return (effectId: string | undefined, effectParam?: string): void => {
+    videoPerformanceMonitor?.reportApplyingVideoEffect(effectId || '', effectParam);
+
     callback(effectId, effectParam)
       .then(() => {
+        videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
         sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
       })
       .catch((reason) => {

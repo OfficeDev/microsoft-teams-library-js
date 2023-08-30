@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -11,6 +12,10 @@ import { runtime } from './runtime';
  * @beta
  */
 export namespace video {
+  const videoPerformanceMonitor = inServerSideRenderingEnvironment()
+    ? undefined
+    : new VideoPerformanceMonitor(sendMessageToParent);
+
   /** Notify video frame processed function type */
   type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
@@ -217,6 +222,12 @@ export namespace video {
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
+    registerHandler(
+      'video.setFrameProcessTimeLimit',
+      (timeLimitInfo: { timeLimit: number }) =>
+        videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimitInfo.timeLimit),
+      false,
+    );
     if (doesSupportMediaStream()) {
       registerForMediaStream(parameters.videoFrameHandler, parameters.config);
     } else if (doesSupportSharedFrame()) {
@@ -225,6 +236,7 @@ export namespace video {
       // should not happen if isSupported() is true
       throw errorNotSupportedOnPlatform;
     }
+    videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
   }
 
   /**
@@ -256,8 +268,11 @@ export namespace video {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
+    registerHandler(
+      'video.effectParameterChange',
+      createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
+      false,
+    );
     sendMessageToParent('video.registerForVideoEffect');
   }
 
@@ -307,7 +322,13 @@ export namespace video {
       async (mediaStreamInfo: { streamId: string }) => {
         // when a new streamId is ready:
         const { streamId } = mediaStreamInfo;
-        const generator = await processMediaStream(streamId, videoFrameHandler, notifyError);
+        const monitoredVideoFrameHandler = createMonitoredVideoFrameHandler(videoFrameHandler, videoPerformanceMonitor);
+        const generator = await processMediaStream(
+          streamId,
+          monitoredVideoFrameHandler,
+          notifyError,
+          videoPerformanceMonitor,
+        );
         // register the video track with processed frames back to the stream:
         !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
       },
@@ -315,6 +336,20 @@ export namespace video {
     );
 
     sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor?: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (videoFrameData: VideoFrameData): Promise<VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = videoFrameData.videoFrame as any;
+      videoPerformanceMonitor?.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(videoFrameData);
+      videoPerformanceMonitor?.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   /**
@@ -340,9 +375,11 @@ export namespace video {
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
         if (videoBufferData) {
           const timestamp = videoBufferData.timestamp;
+          videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
           videoBufferHandler(
             normalizeVideoBufferData(videoBufferData),
             () => {
+              videoPerformanceMonitor?.reportFrameProcessed();
               notifyVideoFrameProcessed(timestamp);
             },
             notifyError,

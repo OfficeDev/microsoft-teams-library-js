@@ -7,6 +7,7 @@ import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { validOrigins } from './constants';
+import { getLogger } from './telemetry';
 
 /**
  * @param pattern - reference pattern
@@ -36,6 +37,8 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
   return false;
 }
 
+const validateOriginLogger = getLogger('validateOrigin');
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -43,6 +46,11 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
+    validateOriginLogger(
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
+      messageOrigin,
+      messageOrigin.protocol,
+    );
     return false;
   }
   const messageOriginHost = messageOrigin.host;
@@ -58,6 +66,12 @@ export function validateOrigin(messageOrigin: URL): boolean {
     }
   }
 
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOrigin,
+    validOrigins,
+    GlobalVars.additionalValidOrigins,
+  );
   return false;
 }
 
@@ -370,4 +384,63 @@ export function isHostAdaptiveCardSchemaVersionUnsupported(
  */
 export function isValidHttpsURL(url: URL): boolean {
   return url.protocol === 'https:';
+}
+
+/**
+ * Convert base64 string to blob
+ * @param base64Data string respresenting the content
+ * @param contentType Mimetype
+ * @returns Promise
+ */
+export function base64ToBlob(mimeType: string, base64String: string): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    if (!mimeType) {
+      reject('MimeType cannot be null or empty.');
+    }
+    if (!base64String) {
+      reject('Base64 string cannot be null or empty.');
+    }
+    const byteCharacters = atob(base64String);
+    /**
+     * For images we need to convert binary data to image to achieve that:
+     *   1. A new Uint8Array is created with a length equal to the length of byteCharacters.
+     *      The byteCharacters is a string representing the base64 data decoded using atob.
+     *   2. Then loop iterates over each character in the byteCharacters string and assigns the
+     *      corresponding character code to the corresponding index in the byteArray. The purpose
+     *      of this loop is to convert the base64 string to a binary representation, as the Blob
+     *      constructor expects binary data.
+     */
+    if (mimeType.startsWith('image/')) {
+      const byteArray = new Uint8Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteArray[i] = byteCharacters.charCodeAt(i);
+      }
+      resolve(new Blob([byteArray], { type: mimeType }));
+    }
+    resolve(new Blob([byteCharacters], { type: mimeType }));
+  });
+}
+
+/**
+ * Converts blob to base64 string.
+ * @param blob Blob to convert to base64 string.
+ */
+export function getBase64StringFromBlob(blob: Blob): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    if (blob.size === 0) {
+      reject(new Error('Blob cannot be empty.'));
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        resolve(reader.result.toString().split(',')[1]);
+      } else {
+        reject(new Error('Failed to read the blob'));
+      }
+    };
+    reader.onerror = () => {
+      reject(reader.error);
+    };
+    reader.readAsDataURL(blob);
+  });
 }
