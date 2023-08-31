@@ -135,14 +135,12 @@ async function getInputVideoTrack(
  * The generator can then get the processed frames as media stream source.
  * The generator can be registered back to the media stream so that the host can get the processed frames.
  */
-function createProcessedStreamGeneratorWithoutSource(): MediaStreamTrack {
+function createProcessedStreamGeneratorWithoutSource(): WritableStream {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
   const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
-  const generator = new MediaStreamTrackGenerator({ kind: 'video' });
-
-  return generator;
+  return new MediaStreamTrackGenerator({ kind: 'video' }).writable;
 }
 
 /**
@@ -153,13 +151,11 @@ function createProcessedStreamGeneratorWithoutSource(): MediaStreamTrack {
 function pipeVideoSourceToGenerator(
   videoTrack: unknown,
   transformer: TransformerWithMetadata | DefaultTransformer,
-  generator: MediaStreamTrack,
+  sink: WritableStream,
 ): void {
   const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
   const processor = new MediaStreamTrackProcessor({ track: videoTrack });
   const source = processor.readable;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sink = (generator as any).writable;
 
   source.pipeThrough(new TransformStream(transformer)).pipeTo(sink);
 }
