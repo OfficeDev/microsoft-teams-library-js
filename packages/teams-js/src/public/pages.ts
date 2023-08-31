@@ -2,9 +2,7 @@ import {
   Communication,
   sendAndHandleSdkError,
   sendAndHandleStatusAndReason,
-  sendAndHandleStatusAndReasonWithDefaultError,
   sendAndHandleStatusAndReasonWithVersion,
-  sendAndUnwrap,
   sendAndUnwrapWithVersion,
   sendMessageEventToChild,
   sendMessageToParent,
@@ -12,6 +10,12 @@ import {
 } from '../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import {
+  backStackNavigateBackHelper,
+  navigateCrossDomainHelper,
+  returnFocusHelper,
+  tabsNavigateToTabHelper,
+} from '../internal/pageUtil';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
@@ -42,11 +46,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized(runtime);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParentWithVersion('v2', 'returnFocus', [navigateForward]);
+    return returnFocusHelper('v2', navigateForward);
   }
 
   /**
@@ -158,24 +158,7 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.settings,
-        FrameContexts.remove,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.meetingStage,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      const errorMessage =
-        'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', errorMessage, url));
-    });
+    return navigateCrossDomainHelper('v2', url);
   }
 
   /**
@@ -294,14 +277,7 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', errorMessage, tabInstance));
-      });
+      return tabsNavigateToTabHelper('v2', tabInstance);
     }
     /**
      * Retrieves application tabs for the current user.
@@ -648,14 +624,7 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        const errorMessage = 'Back navigation is not supported in the current client or context.';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', errorMessage));
-      });
+      return backStackNavigateBackHelper('v2');
     }
 
     /**

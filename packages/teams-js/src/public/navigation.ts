@@ -1,8 +1,13 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import {
+  backStackNavigateBackHelper,
+  navigateCrossDomainHelper,
+  returnFocusHelper,
+  tabsNavigateToTabHelper,
+} from '../internal/pageUtil';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { TabInstance } from './interfaces';
-import { pages } from './pages';
 import { runtime } from './runtime';
 /**
  * Navigation specific part of the SDK.
@@ -19,7 +24,7 @@ export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) =
  * @param navigateForward - Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  pages.returnFocus(navigateForward);
+  returnFocusHelper('v1', navigateForward);
 }
 
 /**
@@ -33,9 +38,14 @@ export function returnFocus(navigateForward?: boolean): void {
  */
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
+<<<<<<< HEAD
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages.tabs
     .navigateToTab(tabInstance)
+=======
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  tabsNavigateToTabHelper('v1', tabInstance)
+>>>>>>> 072d29ba (update API related to pages and navigation capabilities)
     .then(() => {
       completionHandler(true);
     })
@@ -68,9 +78,14 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
+<<<<<<< HEAD
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages
     .navigateCrossDomain(url)
+=======
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  navigateCrossDomainHelper('v1', url)
+>>>>>>> 072d29ba (update API related to pages and navigation capabilities)
     .then(() => {
       completionHandler(true);
     })
@@ -90,9 +105,14 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
  */
 export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
+<<<<<<< HEAD
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages.backStack
     .navigateBack()
+=======
+  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  backStackNavigateBackHelper('v1')
+>>>>>>> 072d29ba (update API related to pages and navigation capabilities)
     .then(() => {
       completionHandler(true);
     })
