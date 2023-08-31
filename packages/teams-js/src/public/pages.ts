@@ -1,7 +1,6 @@
 import {
   Communication,
   sendAndHandleSdkError,
-  sendAndHandleStatusAndReason,
   sendAndHandleStatusAndReasonWithVersion,
   sendAndUnwrapWithVersion,
   sendMessageEventToChild,
@@ -185,7 +184,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReason('v2', 'executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReasonWithVersion('v2', 'executeDeepLink', createTeamsAppLink(params)));
       } else {
         resolve(sendAndHandleStatusAndReasonWithVersion('v1', 'pages.navigateToApp', params));
       }
