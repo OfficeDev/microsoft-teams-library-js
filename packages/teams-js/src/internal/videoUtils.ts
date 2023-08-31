@@ -74,7 +74,7 @@ export async function processMediaStream(
   pipeVideoSourceToGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new DefaultTransformer(notifyError, videoFrameHandler),
-    generator,
+    generator.writable,
   );
 }
 
@@ -97,7 +97,7 @@ export async function processMediaStreamWithMetadata(
   pipeVideoSourceToGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new TransformerWithMetadata(notifyError, videoFrameHandler),
-    generator,
+    generator.writable,
   );
 }
 
@@ -135,12 +135,15 @@ async function getInputVideoTrack(
  * The generator can then get the processed frames as media stream source.
  * The generator can be registered back to the media stream so that the host can get the processed frames.
  */
-function createProcessedStreamGeneratorWithoutSource(): WritableStream {
+function createProcessedStreamGeneratorWithoutSource(): MediaStreamTrack & { writable: WritableStream } {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
   const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
-  return new MediaStreamTrackGenerator({ kind: 'video' }).writable;
+  if (!MediaStreamTrackGenerator) {
+    throw errorNotSupportedOnPlatform;
+  }
+  return new MediaStreamTrackGenerator({ kind: 'video' });
 }
 
 /**
