@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as pagesUtil from '../../src/internal/pagesUtil';
 import * as utilFunc from '../../src/internal/utils';
-import { app, FrameContexts, pages } from '../../src/public';
+import { app, FrameContexts } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
 import { Utils } from '../utils';
 
