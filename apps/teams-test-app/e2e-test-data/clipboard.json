@@ -6,7 +6,7 @@
       "title": "Copy Text - success",
       "type": "callResponse",
       "boxSelector": "#box_copyText",
-      "inputValue": "Hello VSR Team",
+      "inputValue": "Hello Team",
       "expectedTestAppValue": "true"
     },
     {

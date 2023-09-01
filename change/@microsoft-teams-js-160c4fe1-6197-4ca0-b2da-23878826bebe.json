@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added macOS to mobile list as macOS is also frameless.",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
