@@ -287,6 +287,35 @@ describe('videoEx', () => {
           restoreMediaStreamAPI();
         });
 
+        it('should successfully invoke videoFrameHandler', async () => {
+          expect.assertions(3);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const reportStartFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'reportStartFrameProcessing',
+          );
+          const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+          // Act
+          video.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id', metadataInTexture: true }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(reportStartFrameProcessingSpy).toBeCalledWith(100, 100);
+          expect(reportFrameProcessedSpy).toBeCalledTimes(1);
+          expect(videoFrameHandler).toHaveBeenCalledTimes(1);
+        });
+
         it('should register for audioInferenceDiscardStatusChange and get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
           expect.assertions(6);
 
@@ -821,6 +850,30 @@ describe('videoEx', () => {
           restoreMediaStreamAPI();
         });
 
+        it('should successfully invoke videoFrameHandler', async () => {
+          expect.assertions(3);
+
+          // Arrange
+          const videoFrameHandler = jest.fn();
+          const reportStartFrameProcessingSpy = jest.spyOn(
+            VideoPerformanceMonitor.prototype,
+            'reportStartFrameProcessing',
+          );
+          const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
+          // Act
+          video.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.flushPromises();
+
+          // Assert
+          expect(reportStartFrameProcessingSpy).toBeCalledWith(100, 100);
+          expect(reportFrameProcessedSpy).toBeCalledTimes(1);
+          expect(videoFrameHandler).toHaveBeenCalledTimes(1);
+        });
+
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
           expect.assertions(4);
 
@@ -1110,6 +1163,8 @@ function mockMediaStreamAPI() {
             /* mock VideoFrame */
             {
               timestamp: 0,
+              codedWidth: 100,
+              codedHeight: 100,
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               close: () => {},
             },

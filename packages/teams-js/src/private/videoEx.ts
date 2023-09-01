@@ -204,11 +204,16 @@ export namespace videoEx {
             const generator = metadataInTexture
               ? await processMediaStreamWithMetadata(
                   streamId,
-                  parameters.videoFrameHandler,
+                  createMonitoredVideoFrameHandler(parameters.videoFrameHandler),
                   notifyError,
                   videoPerformanceMonitor,
                 )
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
+              : await processMediaStream(
+                  streamId,
+                  createMonitoredVideoFrameHandler(parameters.videoFrameHandler),
+                  notifyError,
+                  videoPerformanceMonitor,
+                );
             // register the video track with processed frames back to the stream
             !inServerSideRenderingEnvironment() &&
               window['chrome']?.webview?.registerTextureStream(streamId, generator);
@@ -242,6 +247,20 @@ export namespace videoEx {
       }
       videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
     }
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor?: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = receivedVideoFrame.videoFrame as any;
+      videoPerformanceMonitor?.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      videoPerformanceMonitor?.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   function normalizedVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {
