@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added telemetry for frame processing in videoEx",
+  "comment": "Added telemetry for video frame processing",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"
