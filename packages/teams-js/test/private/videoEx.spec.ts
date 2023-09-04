@@ -298,14 +298,14 @@ describe('videoEx', () => {
           );
           const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
           // Act
-          video.registerForVideoFrame({
+          videoEx.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
           utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
-              args: [{ streamId: 'stream id', metadataInTexture: true }],
+              args: [{ streamId: 'stream id' }],
             },
           } as DOMMessageEvent);
           await utils.flushPromises();
@@ -861,7 +861,7 @@ describe('videoEx', () => {
           );
           const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
           // Act
-          video.registerForVideoFrame({
+          videoEx.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });

@@ -204,13 +204,17 @@ export namespace videoEx {
             const generator = metadataInTexture
               ? await processMediaStreamWithMetadata(
                   streamId,
-                  createMonitoredVideoFrameHandler(parameters.videoFrameHandler),
+                  videoPerformanceMonitor
+                    ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+                    : parameters.videoFrameHandler,
                   notifyError,
                   videoPerformanceMonitor,
                 )
               : await processMediaStream(
                   streamId,
-                  createMonitoredVideoFrameHandler(parameters.videoFrameHandler),
+                  videoPerformanceMonitor
+                    ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+                    : parameters.videoFrameHandler,
                   notifyError,
                   videoPerformanceMonitor,
                 );
@@ -251,14 +255,14 @@ export namespace videoEx {
 
   function createMonitoredVideoFrameHandler(
     videoFrameHandler: VideoFrameHandler,
-    videoPerformanceMonitor?: VideoPerformanceMonitor,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
   ): VideoFrameHandler {
     return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const originalFrame = receivedVideoFrame.videoFrame as any;
-      videoPerformanceMonitor?.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
       const processedFrame = await videoFrameHandler(receivedVideoFrame);
-      videoPerformanceMonitor?.reportFrameProcessed();
+      videoPerformanceMonitor.reportFrameProcessed();
       return processedFrame;
     };
   }
