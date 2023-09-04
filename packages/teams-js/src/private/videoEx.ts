@@ -201,26 +201,12 @@ export namespace videoEx {
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
-            const generator = metadataInTexture
-              ? await processMediaStreamWithMetadata(
-                  streamId,
-                  videoPerformanceMonitor
-                    ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
-                    : parameters.videoFrameHandler,
-                  notifyError,
-                  videoPerformanceMonitor,
-                )
-              : await processMediaStream(
-                  streamId,
-                  videoPerformanceMonitor
-                    ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
-                    : parameters.videoFrameHandler,
-                  notifyError,
-                  videoPerformanceMonitor,
-                );
-            // register the video track with processed frames back to the stream
-            !inServerSideRenderingEnvironment() &&
-              window['chrome']?.webview?.registerTextureStream(streamId, generator);
+            const handler = videoPerformanceMonitor
+              ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+              : parameters.videoFrameHandler;
+            metadataInTexture
+              ? await processMediaStreamWithMetadata(streamId, handler, notifyError, videoPerformanceMonitor)
+              : await processMediaStream(streamId, handler, notifyError, videoPerformanceMonitor);
           },
           false,
         );
