@@ -201,14 +201,12 @@ export namespace videoEx {
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
+            const handler = videoPerformanceMonitor
+              ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+              : parameters.videoFrameHandler;
             metadataInTexture
-              ? await processMediaStreamWithMetadata(
-                  streamId,
-                  parameters.videoFrameHandler,
-                  notifyError,
-                  videoPerformanceMonitor,
-                )
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
+              ? await processMediaStreamWithMetadata(streamId, handler, notifyError, videoPerformanceMonitor)
+              : await processMediaStream(streamId, handler, notifyError, videoPerformanceMonitor);
           },
           false,
         );
@@ -239,6 +237,20 @@ export namespace videoEx {
       }
       videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
     }
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = receivedVideoFrame.videoFrame as any;
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      videoPerformanceMonitor.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   function normalizedVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {
