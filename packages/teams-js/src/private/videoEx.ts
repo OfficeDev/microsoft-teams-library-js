@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
+import { inServerSideRenderingEnvironment } from '../internal/utils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
@@ -201,17 +201,12 @@ export namespace videoEx {
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
-            const generator = metadataInTexture
-              ? await processMediaStreamWithMetadata(
-                  streamId,
-                  parameters.videoFrameHandler,
-                  notifyError,
-                  videoPerformanceMonitor,
-                )
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
-            // register the video track with processed frames back to the stream
-            !inServerSideRenderingEnvironment() &&
-              ssrSafeWindow()['chrome']?.webview?.registerTextureStream(streamId, generator);
+            const handler = videoPerformanceMonitor
+              ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+              : parameters.videoFrameHandler;
+            metadataInTexture
+              ? await processMediaStreamWithMetadata(streamId, handler, notifyError, videoPerformanceMonitor)
+              : await processMediaStream(streamId, handler, notifyError, videoPerformanceMonitor);
           },
           false,
         );
@@ -242,6 +237,20 @@ export namespace videoEx {
       }
       videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
     }
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = receivedVideoFrame.videoFrame as any;
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      videoPerformanceMonitor.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   function normalizedVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {
