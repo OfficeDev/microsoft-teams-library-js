@@ -406,12 +406,8 @@ export namespace video {
   }
 
   function isTextureStreamAvailable(): boolean {
-    return (
-      !inServerSideRenderingEnvironment() &&
-      !!(
-        ssrSafeWindow()['chrome']?.webview?.getTextureStream &&
-        ssrSafeWindow()['chrome']?.webview?.registerTextureStream
-      )
+    return !!(
+      ssrSafeWindow()['chrome']?.webview?.getTextureStream && ssrSafeWindow()['chrome']?.webview?.registerTextureStream
     );
   }
 
