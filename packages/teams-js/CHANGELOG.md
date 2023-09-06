@@ -13,7 +13,7 @@ Wed, 06 Sep 2023 20:30:49 GMT
 - Removed `appNotification` capability and collateral
 - Added `clipboard` capability, allowing access to the system clipboard programmatically
 - Fixed bugs within the `appNotification` capability and its validation
-- Add MacOS support
+- Added MacOS support
 
 ### Patches
 
