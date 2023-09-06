@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added support for `location` to Teams v1",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
