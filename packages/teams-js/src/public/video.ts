@@ -323,14 +323,7 @@ export namespace video {
         // when a new streamId is ready:
         const { streamId } = mediaStreamInfo;
         const monitoredVideoFrameHandler = createMonitoredVideoFrameHandler(videoFrameHandler, videoPerformanceMonitor);
-        const generator = await processMediaStream(
-          streamId,
-          monitoredVideoFrameHandler,
-          notifyError,
-          videoPerformanceMonitor,
-        );
-        // register the video track with processed frames back to the stream:
-        !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+        await processMediaStream(streamId, monitoredVideoFrameHandler, notifyError, videoPerformanceMonitor);
       },
       false,
     );
