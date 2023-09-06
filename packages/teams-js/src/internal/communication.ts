@@ -9,7 +9,7 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import { validateOrigin } from './utils';
+import { ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -63,7 +63,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
-  Communication.currentWindow = Communication.currentWindow || window;
+  Communication.currentWindow = Communication.currentWindow || ssrSafeWindow();
   Communication.parentWindow =
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
