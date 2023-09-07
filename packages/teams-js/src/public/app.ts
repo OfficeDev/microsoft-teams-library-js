@@ -685,7 +685,7 @@ export namespace app {
       return;
     }
 
-    Handlers.uninitiliazeHandlers();
+    Handlers.uninitializeHandlers();
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
