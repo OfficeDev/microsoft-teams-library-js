@@ -922,7 +922,7 @@ export type TaskInfo = DialogInfo;
 
 /**
  * @beta
- * Data structure to be used with the {@link app.lifecycle.caching.registerOnResumeHandler app.lifecycle.caching.registerOnResumeHandler(handler: (context: ResumeContext) => void): void} to pass the context to the app.
+ * Data structure to be used with the {@link app.lifecycle.registerOnResumeHandler app.lifecycle.registerOnResumeHandler(handler: (context: ResumeContext) => void): void} to pass the context to the app.
  */
 export interface ResumeContext {
   /**

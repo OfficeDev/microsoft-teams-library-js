@@ -83,7 +83,7 @@ const RegisterOnResumeHandler = (): React.ReactElement =>
     name: 'RegisterOnResumeHandler',
     title: 'Register On Resume Handler',
     onClick: async (setResult) => {
-      app.lifecycle.caching.registerOnResumeHandler((context: ResumeContext): void => {
+      app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
         setResult('successfully called with context:' + JSON.stringify(context));
         app.notifySuccess();
       });
@@ -113,13 +113,6 @@ const CheckLifecycleCapability = (): React.ReactElement =>
     onClick: async () => `app.lifecycle ${app.lifecycle.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const CheckCachingCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkTeamsCoreCapability',
-    title: 'Check LifeCycle.Caching Capability',
-    onClick: async () => `app.lifecycle.caching ${app.lifecycle.caching.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
@@ -128,7 +121,6 @@ const AppAPIs = (): ReactElement => (
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />
     <CheckLifecycleCapability />
-    <CheckCachingCapability />
   </ModuleWrapper>
 );
 

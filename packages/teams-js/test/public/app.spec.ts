@@ -869,22 +869,22 @@ describe('Testing app capability', () => {
           });
         });
       });
-      describe('Testing app.lifecycle.caching.registerOnResumeHandler function', () => {
+      describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
         it('should not allow calls before initialization', () => {
           expect(() =>
-            app.lifecycle.caching.registerOnResumeHandler(() => {
+            app.lifecycle.registerOnResumeHandler(() => {
               return false;
             }),
           ).toThrowError(new Error(errorLibraryNotInitialized));
         });
 
         Object.values(FrameContexts).forEach((context) => {
-          it(`app.lifecycle.caching.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
+          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
             expect.assertions(1);
             try {
-              app.lifecycle.caching.registerOnResumeHandler(() => {
+              app.lifecycle.registerOnResumeHandler(() => {
                 return false;
               });
             } catch (e) {
@@ -892,24 +892,11 @@ describe('Testing app capability', () => {
             }
           });
 
-          it(`app.lifecycle.caching.registerOnResumeHandler should throw error when app.lifecycle.caching is not supported. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: { lifecycle: {} } } });
-            expect.assertions(1);
-            try {
-              app.lifecycle.caching.registerOnResumeHandler(() => {
-                return false;
-              });
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it(`app.lifecycle.caching.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
+          it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
             let handlerInvoked = false;
-            app.lifecycle.caching.registerOnResumeHandler(() => {
+            app.lifecycle.registerOnResumeHandler(() => {
               handlerInvoked = true;
             });
 

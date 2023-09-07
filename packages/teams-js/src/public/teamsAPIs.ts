@@ -54,7 +54,7 @@ export namespace teamsCore {
    * @param handler - The handler to invoke when the page is loaded.
    *
    * @deprecated
-   * As of 2.14.1, please use {@link app.lifecycle.caching.registerOnResumeHandler} instead.
+   * As of 2.14.1, please use {@link app.lifecycle.registerOnResumeHandler} instead.
    *
    * @beta
    */

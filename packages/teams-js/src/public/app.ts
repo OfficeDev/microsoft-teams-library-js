@@ -703,7 +703,7 @@ export namespace app {
       teamsCore.registerBeforeUnloadHandler(null);
       teamsCore.registerOnLoadHandler(null);
       lifecycle.registerBeforeSuspendOrTerminateHandler(null);
-      lifecycle.caching.registerOnResumeHandler(null);
+      lifecycle.registerOnResumeHandler(null);
       logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
       /* eslint-enable strict-null-checks/all */
     }
@@ -821,7 +821,7 @@ export namespace app {
    * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
    * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .
    * Please note that selecting suspension doesn't guarantee prevention of background termination.
-   * The outcome is influenced by factors such as available memory and the number of cached apps.
+   * The outcome is influenced by factors such as available memory and the number of suspended apps.
    *
    * @beta
    */
@@ -844,7 +844,8 @@ export namespace app {
      * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,
      * the handler will be invoked. App developers can use this handler to save unsaved data, pause sync calls etc.
      *
-     * @param handler - The handler to invoke before the page is suspended or terminated.
+     * @param handler - The handler to invoke before the page is suspended or terminated. When invoked, app can perform tasks like cleanups, logging etc.
+     * Upon returning, the app will be suspended or terminated.
      *
      */
     export function registerBeforeSuspendOrTerminateHandler(
@@ -858,6 +859,22 @@ export namespace app {
     }
 
     /**
+     * Registers a handler to be called when the page has been requested to resume from being suspended.
+     *
+     * @param handler - The handler to invoke when the page is requested to be resumed. The app is supposed to navigate to
+     * the appropriate page using the ResumeContext. Once done, the app should then call {@link notifySuccess}.
+     *
+     * @beta
+     */
+    export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
+      handler && ensureInitialized(runtime);
+      if (handler && !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerOnResumeHandler(handler);
+    }
+
+    /**
      * Checks if app.lifecycle is supported by the host.
      * @returns boolean to represent whether the lifecycle capability is supported
      * @throws Error if {@linkcode app.initialize} has not successfully completed
@@ -865,46 +882,7 @@ export namespace app {
      * @beta
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.app && runtime.supports.app.lifecycle ? true : false;
-    }
-
-    /**
-     * Namespace to opt into full caching of an app
-     *
-     * @beta
-     */
-    export namespace caching {
-      /**
-       * Registers a handler to be called when the page has been requested to resume from being suspended.
-       *
-       * @param handler - The handler to invoke when the page is requested to be resumed. The app is supposed to navigate to
-       * the appropriate page using the ResumeContext. Once done, the app should then call {@link notifySuccess}.
-       *
-       * @beta
-       */
-      export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
-        handler && ensureInitialized(runtime);
-        if (handler && !isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        Handlers.registerOnResumeHandler(handler);
-      }
-
-      /**
-       * Checks if app.lifecycle.caching is supported by the host
-       * @returns boolean to represent whether the subcapability caching is supported
-       * @throws Error if {@linkcode app.lifecycle.caching} has not successfully completed
-       *
-       * @beta
-       */
-      export function isSupported(): boolean {
-        return ensureInitialized(runtime) &&
-          runtime.supports.app &&
-          runtime.supports.app.lifecycle &&
-          runtime.supports.app.lifecycle.caching
-          ? true
-          : false;
-      }
+      return ensureInitialized(runtime) && !!runtime.supports.app?.lifecycle;
     }
   }
 }
