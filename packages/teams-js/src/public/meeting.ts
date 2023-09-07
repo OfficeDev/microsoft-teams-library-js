@@ -157,7 +157,7 @@ export namespace meeting {
    */
   export interface LiveStreamState {
     /**
-     * indicates whether meeting is being streamed through RTMP
+     * true when the current meeting is being streamed through RTMP, or false if it is not.
      */
     isStreaming: boolean;
 
