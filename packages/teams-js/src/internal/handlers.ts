@@ -33,6 +33,12 @@ export function initializeHandlers(): void {
   HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
   pages.backStack._initialize();
 }
+export function uninitiliazeHandlers(): void {
+  HandlersPrivate.handlers = {};
+  HandlersPrivate.themeChangeHandler = null;
+  HandlersPrivate.loadHandler = null;
+  HandlersPrivate.beforeUnloadHandler = null;
+}
 
 const callHandlerLogger = handlersLogger.extend('callHandler');
 /**

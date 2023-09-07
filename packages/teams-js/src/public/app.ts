@@ -16,7 +16,6 @@ import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
-import { logs } from '../private/logs';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -24,7 +23,6 @@ import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } 
 import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
 /**
@@ -689,23 +687,7 @@ export namespace app {
 
     if (GlobalVars.frameContext) {
       /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
-      registerOnThemeChangeHandler(null);
-      pages.backStack.registerBackButtonHandler(null);
-      pages.registerFullScreenHandler(null);
-      teamsCore.registerBeforeUnloadHandler(null);
-      teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
-      /* eslint-enable strict-null-checks/all */
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.settings) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnSaveHandler(null);
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.remove) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnRemoveHandler(null);
+      Handlers.uninitiliazeHandlers();
     }
 
     GlobalVars.initializeCalled = false;
