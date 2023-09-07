@@ -149,7 +149,12 @@ export namespace meeting {
     tenantId?: string;
   }
 
-  /** Represents the current RTMP live streaming state of a meeting */
+  /**
+   * Represents the current Real-Time Messaging Protocol (RTMP) live streaming state of a meeting.
+   *
+   * @remarks
+   * RTMP is a popular communication protocol for streaming audio, video, and data over the Internet.
+   */
   export interface LiveStreamState {
     /**
      * indicates whether meeting is being streamed through RTMP
@@ -378,13 +383,13 @@ export namespace meeting {
    * Allows an app to get the incoming audio speaker setting for the meeting user.
    * To learn more, visit https://aka.ms/teamsjs/getIncomingClientAudioState
    *
-   * @param callback - Callback contains 2 parameters, `error` and `result`.
-   *
    * @remarks
    * Use {@link toggleIncomingClientAudio} to toggle the current audio state.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Chat` RSC permission in your app manifest.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
+   * @param callback - Callback contains 2 parameters, `error` and `result`.
    * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
    * `result` will be true when incoming audio is muted and false when incoming audio is unmuted, or null when the request fails.
    */
@@ -403,10 +408,11 @@ export namespace meeting {
    * @remarks
    * Use {@link getIncomingClientAudioState} to get the current audio state.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingParticipant.ToggleIncomingAudio.Chat` RSC permission in your app manifest.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * `error` can either contain an error of type `SdkError`, incase of an error, or null when toggle is successful.
+   * `error` can either contain an error of type `SdkError`, in case of an error, or null when toggle is successful.
    * `result` will be true when incoming audio is muted and false when incoming audio is unmuted, or null when the toggling fails.
    */
   export function toggleIncomingClientAudio(callback: errorCallbackFunctionType): void {
@@ -422,7 +428,7 @@ export namespace meeting {
    * Allows an app to get the meeting details for the meeting
    *
    * @param callback - Callback contains 2 parameters, `error` and `meetingDetailsResponse`.
-   * `error` can either contain an error of type `SdkError`, incase of an error, or null when get is successful
+   * `error` can either contain an error of type `SdkError`, in case of an error, or null when get is successful
    * `result` can either contain a {@link IMeetingDetailsResponse} value, in case of a successful get or null when the get fails
    *
    * @internal
@@ -449,8 +455,8 @@ export namespace meeting {
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
    *
    * @param callback - Callback contains 2 parameters, `error` and `authenticationTokenOfAnonymousUser`.
-   * `error` can either contain an error of type `SdkError`, incase of an error, or null when get is successful
-   * `authenticationTokenOfAnonymousUser` can either contain a string value, incase of a successful get or null when the get fails
+   * `error` can either contain an error of type `SdkError`, in case of an error, or null when get is successful
+   * `authenticationTokenOfAnonymousUser` can either contain a string value, in case of a successful get or null when the get fails
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -472,6 +478,7 @@ export namespace meeting {
    * Use {@link requestStartLiveStreaming} or {@link requestStopLiveStreaming} to start/stop a live stream.
    * This API can only be used in the `sidePanel` frame context.
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
    * @param callback - Callback contains 2 parameters: `error` and `liveStreamState`.
    * `error` can either contain an error of type `SdkError`, in case of an error, or null when the request is successful
@@ -486,14 +493,16 @@ export namespace meeting {
   }
 
   /**
-   * Allows an app to request the meeting to start live streaming to the given RTMP streaming url.
+   * Allows an app to ask the local user to begin live streaming the current meeting to the given Real-Time Messaging Protocol (RTMP) stream url.
+   * A confirmation dialog will be shown to the local user with options to "Allow" or "Cancel" this request.
    *
    * @remarks
-   * Meeting content (e.g., user video, screenshare, audio, etc.) can be externally streamed to any platform that supports the RTMP standard.
+   * Meeting content (e.g., user video, screenshare, audio, etc.) can be externally streamed to any platform that supports the popular RTMP standard.
    * Content broadcasted through RTMP is automatically formatted and cannot be customized.
    * Use {@link getLiveStreamState} or {@link registerLiveStreamChangedHandler} to get updates on the live stream state.
    * This API can only be used in the `sidePanel` frame context.
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
    * @param callback - completion callback that contains an `error` parameter, which can be of type `SdkError` in case of an error, or null when operation is successful
    * @param streamUrl - the url to the RTMP stream resource
@@ -518,6 +527,7 @@ export namespace meeting {
    * Use {@link getLiveStreamState} or {@link registerLiveStreamChangedHandler} to get updates on the live stream state.
    * This API can only be used in the `sidePanel` frame context.
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
    * @param callback - completion callback that contains an error parameter, which can be of type `SdkError` in case of an error, or null when operation is successful
    */
@@ -537,6 +547,7 @@ export namespace meeting {
    * Use {@link requestStartLiveStreaming} or {@link requestStopLiveStreaming} to start/stop a live stream.
    * This API can only be used in the `sidePanel` frame context.
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
    * @param handler - The handler to invoke when the live stream state changes
    */
@@ -556,12 +567,13 @@ export namespace meeting {
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
    * For channel meetings, include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    * Use {@link getAppContentStageSharingCapabilities} to determine if the local user is eligible to use this API.
    * Use {@link getAppContentStageSharingState} to determine whether app content is already being shared to the meeting stage.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * `error` can either contain an error of type `SdkError`, incase of an error, or null when share is successful
-   * `result` can either contain a true value, incase of a successful share or null when the share fails
+   * `error` can either contain an error of type `SdkError`, in case of an error, or null when share is successful
+   * `result` can either contain a true value, in case of a successful share or null when the share fails
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
    */
@@ -582,8 +594,9 @@ export namespace meeting {
    * Your app's `configurableTabs` or `staticTabs` entry's `context` array must include `meetingStage` for `doesAppHaveSharePermission` to be `true` in the `callback` response.
    *
    * @throws error if API is being used outside of `sidePanel` or `meetingStage` frame contexts.
-   * @throws error if your app manifest does not include the `MeetingStage.Write.Chat` RSC permission in your app manifest in a private scheduled meetings, meet now, or calls.
-   * @throws error if your app manifest does not include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest in channel meetings.
+   * @throws error if your app manifest does not include the `MeetingStage.Write.Chat` RSC permission in your app manifest in a private scheduled meeting, meet now, or call --
+   * or if it does not include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest in a channel meeting.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    *
    * @param callback - Completion callback contains 2 parameters: `error` and `appContentStageSharingCapabilities`.
    * `error` can either contain an error of type `SdkError` (error indication), or null (non-error indication).
@@ -622,6 +635,7 @@ export namespace meeting {
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `MeetingStage.Write.Chat` RSC permission in your app manifest.
    * For channel meetings, include the `ChannelMeetingStage.Write.Group` RSC permission in your app manifest.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    *
    * @param callback - Callback contains 2 parameters, `error` and `appContentStageSharingState`.
    * error can either contain an error of type SdkError (error indication), or null (non-error indication)
@@ -636,7 +650,7 @@ export namespace meeting {
   }
 
   /**
-   * Registers a handler for changes to paticipant speaking states.
+   * Registers a handler for changes to participant speaking states.
    * To learn more, visit https://aka.ms/teamsjs/registerSpeakingStateChangeHandler
    *
    * @remarks
@@ -646,6 +660,7 @@ export namespace meeting {
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingIncomingAudio.Detect.Chat` RSC permission in your app manifest.
    * For channel meetings, include the `OnlineMeetingIncomingAudio.Detect.Group` RSC permission in your app manifest.
+   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    *
    * @param handler The handler to invoke when the speaking state of any participant changes (start/stop speaking).
    */
