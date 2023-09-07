@@ -685,10 +685,7 @@ export namespace app {
       return;
     }
 
-    if (GlobalVars.frameContext) {
-      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
-      Handlers.uninitiliazeHandlers();
-    }
+    Handlers.uninitiliazeHandlers();
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
