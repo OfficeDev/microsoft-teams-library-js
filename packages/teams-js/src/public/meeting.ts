@@ -574,11 +574,11 @@ export namespace meeting {
   }
 
   /**
-   * Allows an app to request whether the app has the required app manifest permissions to share content to meeting stage.
+   * Allows an app to request whether the local user's app version has the required app manifest permissions to share content to meeting stage.
    * To learn more, visit https://aka.ms/teamsjs/getAppContentStageSharingCapabilities
    *
    * @remarks
-   * If your published app is being updated to include the share to stage feature, you can use this API to prompt users to update their app.
+   * If you are updating your published app to include the share to stage feature, you can use this API to prompt users to update their app if they are using an older version.
    * Your app's `configurableTabs` or `staticTabs` entry's `context` array must include `meetingStage` for `doesAppHaveSharePermission` to be `true` in the `callback` response.
    *
    * @throws error if API is being used outside of `sidePanel` or `meetingStage` frame contexts.
