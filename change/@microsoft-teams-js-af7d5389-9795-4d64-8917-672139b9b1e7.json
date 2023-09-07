@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added telemetry for video frame processing",
+  "packageName": "@microsoft/teams-js",
+  "email": "wenghe@microsoft.com",
+  "dependentChangeType": "patch"
+}

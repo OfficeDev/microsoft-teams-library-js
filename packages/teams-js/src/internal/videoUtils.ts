@@ -1,9 +1,9 @@
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
+import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
   AllowSharedBufferSource,
   PlaneLayout,
@@ -68,10 +68,13 @@ export async function processMediaStream(
   videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
   videoPerformanceMonitor?: VideoPerformanceMonitor,
-): Promise<MediaStreamTrack> {
-  return createProcessedStreamGenerator(
+): Promise<void> {
+  const generator = createProcessedStreamGeneratorWithoutSource();
+  !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+  pipeVideoSourceToGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new DefaultTransformer(notifyError, videoFrameHandler),
+    generator.writable,
   );
 }
 
@@ -88,10 +91,13 @@ export async function processMediaStreamWithMetadata(
   videoFrameHandler: videoEx.VideoFrameHandler,
   notifyError: (string) => void,
   videoPerformanceMonitor?: VideoPerformanceMonitor,
-): Promise<MediaStreamTrack> {
-  return createProcessedStreamGenerator(
+): Promise<void> {
+  const generator = createProcessedStreamGeneratorWithoutSource();
+  !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+  pipeVideoSourceToGenerator(
     await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new TransformerWithMetadata(notifyError, videoFrameHandler),
+    generator.writable,
   );
 }
 
@@ -107,7 +113,7 @@ async function getInputVideoTrack(
     throw errorNotSupportedOnPlatform;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const chrome = window['chrome'] as any;
+  const chrome = ssrSafeWindow()['chrome'] as any;
   try {
     videoPerformanceMonitor?.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
@@ -125,27 +131,36 @@ async function getInputVideoTrack(
 }
 
 /**
- * The function to create a processed video track from the original video track.
- * It reads frames from the video track and pipes them to the video frame callback to process the frames.
- * The processed frames are then enqueued to the generator.
+ * The function to create a MediaStreamTrack generator.
+ * The generator can then get the processed frames as media stream source.
  * The generator can be registered back to the media stream so that the host can get the processed frames.
  */
-function createProcessedStreamGenerator(
-  videoTrack: unknown,
-  transformer: TransformerWithMetadata | DefaultTransformer,
-): MediaStreamTrack {
+function createProcessedStreamGeneratorWithoutSource(): MediaStreamTrack & { writable: WritableStream } {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
-  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
+  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+  if (!MediaStreamTrackGenerator) {
+    throw errorNotSupportedOnPlatform;
+  }
+  return new MediaStreamTrackGenerator({ kind: 'video' });
+}
+
+/**
+ * The function to create a processed video track from the original video track.
+ * It reads frames from the video track and pipes them to the video frame callback to process the frames.
+ * The processed frames are then enqueued to the generator.
+ */
+function pipeVideoSourceToGenerator(
+  videoTrack: unknown,
+  transformer: TransformerWithMetadata | DefaultTransformer,
+  sink: WritableStream,
+): void {
+  const MediaStreamTrackProcessor = ssrSafeWindow()['MediaStreamTrackProcessor'];
   const processor = new MediaStreamTrackProcessor({ track: videoTrack });
   const source = processor.readable;
-  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
-  const generator = new MediaStreamTrackGenerator({ kind: 'video' });
-  const sink = generator.writable;
 
   source.pipeThrough(new TransformStream(transformer)).pipeTo(sink);
-  return generator;
 }
 
 /**

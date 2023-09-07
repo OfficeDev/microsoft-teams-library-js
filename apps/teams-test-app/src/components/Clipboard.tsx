@@ -1,6 +1,7 @@
 import { clipboard } from '@microsoft/teams-js';
 import React from 'react';
 
+import { noHostSdkMsg } from '../App';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
@@ -56,14 +57,25 @@ const CopyImage = (): React.ReactElement =>
     },
   });
 
+const pasteHelper = (blob: Blob, setResult: (result: string) => void): void => {
+  const reader = new FileReader();
+  reader.readAsText(blob);
+  reader.onloadend = () => {
+    if (reader.result) {
+      setResult(JSON.stringify(reader.result));
+    }
+  };
+};
+
 const Paste = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'paste',
     title: 'Paste',
-    onClick: async () => {
+    onClick: async (setResult) => {
       const result = await clipboard.read();
       if (result.type.startsWith('text')) {
-        return JSON.stringify(await result.text());
+        pasteHelper(result, setResult);
+        return 'clipboard.read()' + noHostSdkMsg;
       } else if (result.type.startsWith('image')) {
         image.src = URL.createObjectURL(result);
         image.style.height = '150px';
