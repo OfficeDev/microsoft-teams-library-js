@@ -47,10 +47,18 @@ class HandlersPrivate {
   }
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function initializeHandlers(): void {
   HandlersPrivate.initializeHandlers();
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function uninitializeHandlers(): void {
   HandlersPrivate.uninitializeHandlers();
 }
