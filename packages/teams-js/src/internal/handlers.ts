@@ -29,6 +29,35 @@ class HandlersPrivate {
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
   public static beforeSuspendOrTerminateHandler: () => void;
   public static resumeHandler: (context: ResumeContext) => void;
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Initializes the handlers.
+   */
+  public static initializeHandlers(): void {
+    // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+    HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['load'] = handleLoad;
+    HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+    HandlersPrivate.handlers['beforeSuspendOrTerminate'] = handleBeforeSuspendOrTerminate;
+    HandlersPrivate.handlers['resume'] = handleResume;
+    pages.backStack._initialize();
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Uninitializes the handlers.
+   */
+  public static uninitializeHandlers(): void {
+    HandlersPrivate.handlers = {};
+    HandlersPrivate.themeChangeHandler = null;
+    HandlersPrivate.loadHandler = null;
+    HandlersPrivate.beforeUnloadHandler = null;
+    HandlersPrivate.beforeSuspendOrTerminateHandler = null;
+    HandlersPrivate.resumeHandler = null;
+  }
 }
 
 /**
@@ -36,21 +65,16 @@ class HandlersPrivate {
  * Limited to Microsoft-internal use
  */
 export function initializeHandlers(): void {
-  // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-  HandlersPrivate.handlers['themeChange'] = handleThemeChange;
-  /**
-   * @deprecated
-   */
-  HandlersPrivate.handlers['load'] = handleLoad;
-  /**
-   * @deprecated
-   */
-  HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-  HandlersPrivate.handlers['beforeSuspendOrTerminate'] = handleBeforeSuspendOrTerminate;
-  HandlersPrivate.handlers['resume'] = handleResume;
-  pages.backStack._initialize();
+  HandlersPrivate.initializeHandlers();
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function uninitializeHandlers(): void {
+  HandlersPrivate.uninitializeHandlers();
+}
 const callHandlerLogger = handlersLogger.extend('callHandler');
 /**
  * @internal
