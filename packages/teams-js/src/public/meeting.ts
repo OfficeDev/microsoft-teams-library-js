@@ -355,27 +355,85 @@ export namespace meeting {
     applause = 'applause',
   }
 
-  /** Represents the type of a meeting */
+  /**
+   * Represents the type of a meeting
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @remarks
+   * Teams has several types of meetings to account for different user scenarios and requirements.
+   */
   export enum MeetingType {
-    /** Used when the meeting type is not known. */
+    /**
+     * Used when the meeting type is not known.
+     *
+     * @remarks
+     * This response is not an expected case.
+     */
     Unknown = 'Unknown',
-    /** Used for ad hoc meetings that are created on the fly. */
+    /**
+     * Used for group call meeting types.
+     *
+     * @remarks
+     * To test this meeting type in Teams, start a chat with two or more users and click the "Call" button.
+     * Note that a group call may return as this or {@link CallType.GroupCall}. These two different response types should be considered as equal.
+     */
     Adhoc = 'Adhoc',
-    /** Used for meetings that have been scheduled in advance. */
+    /**
+     * Used for single-occurrence meetings that have been scheduled in advance.
+     *
+     * @remarks
+     * To create a meeting of this type in Teams, press the "New meeting" button from the calendar and enter a meeting title.
+     * Before saving, ensure that the "Online Meeting" field is checked.
+     */
     Scheduled = 'Scheduled',
-    /** Used for meetings that occur on a recurring basis. */
+    /**
+     * Used for meetings that occur on a recurring basis.
+     *
+     * @remarks
+     * To create a meeting of this type in Teams, press the "New meeting" button from the calendar, enter a meeting title, and then change the field labeled "Does not repeat" to some other value.
+     * Before saving, ensure that the "Online Meeting" field is checked.
+     */
     Recurring = 'Recurring',
-    /** Used for live events or webinars. */
+    /**
+     * Used for webinars.
+     *
+     * @remarks
+     * Meeting apps are only supported for those in the "event group" of a webinar, which are those who'll be presenting and producing the webinar.
+     * To learn how to create a meeting of this type, visit https://aka.ms/teams/howto/webinars.
+     */
     Broadcast = 'Broadcast',
-    /** Used for meetings that are created on the fly, but with a more polished experience than ad hoc meetings. */
+    /**
+     * Used for meet now meetings, which are meetings users create on the fly.
+     *
+     * @remarks
+     * To create a meeting of this type, click the "Meet now" button from the calendar in Teams or the "Teams call" button in Outlook.
+     */
     MeetNow = 'MeetNow',
   }
 
-  /** Represents the type of a call. */
+  /**
+   * Represents the type of a call.
+   *
+   * @hidden
+   * Hide from docs.
+   */
   export enum CallType {
-    /** Represents a call between two people. */
+    /**
+     * Represents a call between two people.
+     *
+     * @remarks
+     * To test this feature, start a chat with one other user and click the "Call" button.
+     */
     OneOnOneCall = 'oneOnOneCall',
-    /** Represents a call between more than two people. */
+    /**
+     * Represents a call between more than two people.
+     *
+     * @remarks
+     * To test this meeting type in Teams, start a chat with two or more users and click the "Call" button.
+     * Note that a group call may return as this or {@link MeetingType.Adhoc}. These two different response types should be considered as equal.
+     */
     GroupCall = 'groupCall',
   }
 
