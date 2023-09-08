@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Reset registered handlers for unit testing ",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}

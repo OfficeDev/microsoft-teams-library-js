@@ -20,6 +20,31 @@ class HandlersPrivate {
   public static themeChangeHandler: (theme: string) => void;
   public static loadHandler: (context: LoadContext) => void;
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Initializes the handlers.
+   */
+  public static initializeHandlers(): void {
+    // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+    HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['load'] = handleLoad;
+    HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+    pages.backStack._initialize();
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Uninitializes the handlers.
+   */
+  public static uninitializeHandlers(): void {
+    HandlersPrivate.handlers = {};
+    HandlersPrivate.themeChangeHandler = null;
+    HandlersPrivate.loadHandler = null;
+    HandlersPrivate.beforeUnloadHandler = null;
+  }
 }
 
 /**
@@ -27,13 +52,16 @@ class HandlersPrivate {
  * Limited to Microsoft-internal use
  */
 export function initializeHandlers(): void {
-  // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-  HandlersPrivate.handlers['themeChange'] = handleThemeChange;
-  HandlersPrivate.handlers['load'] = handleLoad;
-  HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-  pages.backStack._initialize();
+  HandlersPrivate.initializeHandlers();
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function uninitializeHandlers(): void {
+  HandlersPrivate.uninitializeHandlers();
+}
 const callHandlerLogger = handlersLogger.extend('callHandler');
 /**
  * @internal

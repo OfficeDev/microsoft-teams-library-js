@@ -8,6 +8,7 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import { ssrSafeWindow } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
@@ -471,7 +472,7 @@ export namespace authentication {
       link.href = decodeURIComponent(callbackUrl);
       if (
         link.host &&
-        link.host !== window.location.host &&
+        link.host !== ssrSafeWindow().location.host &&
         link.host === 'outlook.office.com' &&
         link.search.indexOf('client_type=Win32_Outlook') > -1
       ) {
