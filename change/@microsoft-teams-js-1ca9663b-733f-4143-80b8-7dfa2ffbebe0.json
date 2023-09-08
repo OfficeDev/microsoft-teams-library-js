@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Replaced `window` references with `ssrSafeWindow`",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
