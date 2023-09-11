@@ -120,7 +120,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath6)@$kx/fix_pull_data_bug
+          appHostGitPath: git://$(AppHostingSdkGitPath6)@kx/fix_pull_data_bug
 
       - task: CmdLine@2
         displayName: 'Build Test App CDN'
