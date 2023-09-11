@@ -444,3 +444,26 @@ export function getBase64StringFromBlob(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
+/**
+ *  Returns an SSR safe reference to the window object
+ * @returns Window object reference
+ */
+
+export function ssrSafeWindow(): Window {
+  if (!inServerSideRenderingEnvironment()) {
+    return window;
+  } else {
+    // This should NEVER actually be written.
+    // If you EVER see this error in ANY log file, something has gone horribly wrong and a bug needs to be filed.
+    throw new Error('window object undefined at SSR check');
+  }
+}
+
+/**
+ * Checks if running in a Server Side Environment
+ * @returns True if running in a Server Side Environment
+ */
+export function inServerSideRenderingEnvironment(): boolean {
+  return typeof window === 'undefined';
+}

@@ -178,8 +178,6 @@ configuration:
       - payloadType: Issues
       - isAction:
           action: Closed
-      - hasLabel:
-          label: teams-developer-support
       then:
       - addReply:
           reply: "### Tell us about your experience! \n\nHi ${issueAuthor}! This issue is closed in our system. We would like your [feedback on your experience with our support team and Platform](https://aka.ms/DevSupportFeedback). \n\nBest regards, \nTeams Platform "

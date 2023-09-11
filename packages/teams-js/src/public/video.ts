@@ -1,9 +1,9 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -406,9 +406,8 @@ export namespace video {
   }
 
   function isTextureStreamAvailable(): boolean {
-    return (
-      !inServerSideRenderingEnvironment() &&
-      !!(window['chrome']?.webview?.getTextureStream && window['chrome']?.webview?.registerTextureStream)
+    return !!(
+      ssrSafeWindow()['chrome']?.webview?.getTextureStream && ssrSafeWindow()['chrome']?.webview?.registerTextureStream
     );
   }
 

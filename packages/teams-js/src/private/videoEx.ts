@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment } from '../internal/utils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
@@ -11,7 +12,6 @@ import {
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { video } from '../public/video';
-import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
 
 /**
  * @hidden
