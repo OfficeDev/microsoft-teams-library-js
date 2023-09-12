@@ -153,6 +153,9 @@ export function compareSDKVersions(v1: string, v2: string): number {
  * Limited to Microsoft-internal use
  */
 export function generateGUID(): string {
+  if (inServerSideRenderingEnvironment()) {
+    return 'Placeholder id, should only see when used in SSR environment';
+  }
   return uuid.v4();
 }
 

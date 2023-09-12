@@ -9,7 +9,7 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import { ssrSafeWindow, validateOrigin } from './utils';
+import { generateGUID, ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -32,7 +32,7 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
-  public static nextMessageId = 0;
+  public static nextMessageId = generateGUID();
   public static callbacks: {
     [id: number]: Function; // (arg1, arg2, ...etc) => void
   } = {};
@@ -66,7 +66,8 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
   Communication.currentWindow = Communication.currentWindow || ssrSafeWindow();
   Communication.parentWindow =
     Communication.currentWindow.parent !== Communication.currentWindow.self
-      ? Communication.currentWindow.parent
+      ? Communication.currentWindow
+          .top /* Obviously, don't want to call this Communication.parentWindow anymore. Also, frameless */
       : Communication.currentWindow.opener;
 
   // Listen to messages from the parent or child frame.
@@ -119,7 +120,7 @@ export function uninitializeCommunication(): void {
   Communication.childOrigin = null;
   CommunicationPrivate.parentMessageQueue = [];
   CommunicationPrivate.childMessageQueue = [];
-  CommunicationPrivate.nextMessageId = 0;
+  CommunicationPrivate.nextMessageId = generateGUID();
   CommunicationPrivate.callbacks = {};
   CommunicationPrivate.promiseCallbacks = {};
 }
@@ -188,7 +189,7 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] = un
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForResponse<T>(requestId: number): Promise<T> {
+function waitForResponse<T>(requestId: string): Promise<T> {
   return new Promise<T>((resolve) => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
@@ -241,30 +242,51 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   const request = createMessageRequest(actionName, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  logger('Message %i information: %o', request.id, { actionName, args });
+  logger('Message %s information: %o', request.id, { actionName, args });
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      logger('Sending message %i to parent via framelessPostMessage interface', request.id);
+      logger('Sending message %s to parent via framelessPostMessage interface', request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
+    // When we message directly to the top level host, we aren't currently receiving the "correct" origin to put on
+    // future messages because the outer host is talking to our parent instead of us
     const targetOrigin = getTargetOrigin(targetWindow);
 
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      logger('Sending message %i to parent via postMessage', request.id);
+      logger('Sending message %s to parent via postMessage', request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      logger('Adding message %i to parent message queue', request.id);
+      logger('Adding message %s to parent message queue', request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
   return request;
+}
+
+const registerWithParentLogger = communicationLogger.extend('registerWithParent');
+
+export function registerWithParentIfNecessary(): void {
+  const parent = ssrSafeWindow().parent;
+  if (parent && parent === ssrSafeWindow().top) {
+    registerWithParentLogger('Not in an embedded iframe, no parent registration needed');
+    return;
+  }
+
+  registerWithParentLogger('Registering with parent app');
+  // Since we can't check our parent's origin and we haven't received anything from them yet, this first
+  // message needs to go to *
+  // eslint-disable-next-line @microsoft/sdl/no-postmessage-star-origin
+  parent.postMessage(
+    { message: 'This message serves no purpose except to get noticed by the parent who receives it' },
+    '*',
+  );
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -296,7 +318,8 @@ function processMessage(evt: DOMMessageEvent): void {
   updateRelationships(messageSource, messageOrigin);
 
   // Handle the message
-  if (messageSource === Communication.parentWindow) {
+  if (messageSource === Communication.parentWindow || ssrSafeWindow().parent) {
+    // ssrSafeWindow().parent needed because for now, Communication.parentWindow is actually the top if you are an embedded app
     handleParentMessage(evt);
   } else if (messageSource === Communication.childWindow) {
     handleChildMessage(evt);
@@ -381,28 +404,33 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
 function handleParentMessage(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
 
-  if ('id' in evt.data && typeof evt.data.id === 'number') {
+  if ('id' in evt.data && (typeof evt.data.id === 'number' || typeof evt.data.id === 'string')) {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
     const callback = CommunicationPrivate.callbacks[message.id];
-    logger('Received a response from parent for message %i', message.id);
+    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
+    logger('Received a response from parent for message %s', message.id);
     if (callback) {
-      logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
+      logger('Invoking the registered callback for message %s with arguments %o', message.id, message.args);
       callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
-        logger('Removing registered callback for message %i', message.id);
+        logger('Removing registered callback for message %s', message.id);
         delete CommunicationPrivate.callbacks[message.id];
       }
-    }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
-    if (promiseCallback) {
-      logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
+    } else if (promiseCallback) {
+      logger('Invoking the registered promise callback for message %s with arguments %o', message.id, message.args);
       promiseCallback(message.args);
 
-      logger('Removing registered promise callback for message %i', message.id);
+      logger('Removing registered promise callback for message %s', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
+    } else {
+      // pass to child even though this instance of teamsjs has never seen this message before
+      // We were sent a response from our parent, maybe our child needs to see it?
+      logger('Uh what is this? Sending to my child maybe they want it', message.id, message.args);
+      sendMessageResponseToChild(message.id, message.args, message.isPartialResponse);
+      // The child never registered with us so there's no child to send it to!
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -483,7 +511,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
+    flushMessageQueueLogger('Flushing message %s from ' + target + ' message queue via postMessage.', request.id);
     targetWindow.postMessage(request, targetOrigin);
   }
 }
@@ -501,6 +529,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
   }, 100);
 }
 
+const sendToChildLogger = communicationLogger.extend('flushMessageQueue');
 /**
  * @hidden
  * Send a response to child for a message request that was from child
@@ -508,12 +537,16 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
+function sendMessageResponseToChild(id: string, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
+  if (Communication.childWindow) {
+    sendToChildLogger('ChildWindow found');
+  }
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
+    sendToChildLogger('Sending %o to child with origin %s', response, targetOrigin);
     targetWindow.postMessage(response, targetOrigin);
   }
 }
@@ -546,8 +579,9 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * Limited to Microsoft-internal use
  */
 function createMessageRequest(func: string, args: any[]): MessageRequest {
+  CommunicationPrivate.nextMessageId = generateGUID();
   return {
-    id: CommunicationPrivate.nextMessageId++,
+    id: CommunicationPrivate.nextMessageId,
     func: func,
     timestamp: Date.now(),
     args: args || [],
@@ -558,7 +592,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
+function createMessageResponse(id: string, args: any[], isPartialResponse: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],

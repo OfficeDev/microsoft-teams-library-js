@@ -117,10 +117,24 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
+const sandbox =
+  'allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-scripts allow-same-origin allow-modals';
+
 const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        {!urlParams.has('appInitializationTest') && (
+          <div>
+            <iframe
+              sandbox={sandbox}
+              src="https://localhost:4000?customInit=true&appInitializationTest=true"
+              style={{ width: 1400, height: 800 }}
+            ></iframe>
+            <iframe sandbox={sandbox} src=""></iframe>
+          </div>
+        )}
+        {urlParams.has('appInitializationTest') && <h1>Embedded App!</h1>}
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />

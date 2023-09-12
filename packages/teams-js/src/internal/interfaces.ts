@@ -43,7 +43,7 @@ export interface ExtendedWindow extends Window {
  * Limited to Microsoft-internal use
  */
 export interface MessageRequest {
-  id?: number;
+  id?: string;
   func: string;
   timestamp?: number;
   args?: any[];
@@ -54,7 +54,7 @@ export interface MessageRequest {
  * Limited to Microsoft-internal use
  */
 export interface MessageResponse {
-  id: number;
+  id: string;
   args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }

@@ -5,6 +5,7 @@
 import {
   Communication,
   initializeCommunication,
+  registerWithParentIfNecessary,
   sendAndHandleStatusAndReason,
   sendAndUnwrap,
   sendMessageToParent,
@@ -583,6 +584,11 @@ export namespace app {
       // Just no-op if that happens to make it easier to use.
       if (!GlobalVars.initializeCalled) {
         GlobalVars.initializeCalled = true;
+        // After initialize has succeeded, now check if we are a nested iframe. if we are, send a message up to
+        // our parent letting them know we exist
+        // Race condition here unless we do something like make the parent reply. Would require parent on a specific
+        // version of this sdk
+        registerWithParentIfNecessary();
 
         Handlers.initializeHandlers();
         GlobalVars.initializePromise = initializeCommunication(validMessageOrigins).then(
