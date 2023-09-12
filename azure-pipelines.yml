@@ -33,7 +33,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath)@kx/fix_pull_data_bug
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
