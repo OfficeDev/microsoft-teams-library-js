@@ -28,6 +28,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     fileType: 'mockFileType',
     fileIndex: 1, // for now it means last file we can remove
     isLastFile: true,
+    fileName: 'TestFile',
   };
 
   afterAll(() => {
@@ -60,6 +61,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
         fileType: 'mockFileType',
         fileIndex: i + 1,
         isLastFile: false,
+        fileName: 'TestFile',
       };
 
       mockFileResults.push(mockFileResult);
@@ -146,6 +148,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
       },
       fileIndex: 0,
       isLastFile: false,
+      fileName: 'TestFile',
     };
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');

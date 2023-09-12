@@ -6,14 +6,12 @@ import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
- * @hidden
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
  * @beta
  */
 export namespace filesExtensionsFor3PStorageproviders {
   /**
-   * @hidden
    * Object used to represent a file
    * @beta
    *
@@ -30,7 +28,7 @@ export namespace filesExtensionsFor3PStorageproviders {
     /**
      * file type
      */
-    fileType: string;
+    type: string;
     /**
      * A string containing the path of the file relative to the ancestor directory the user selected
      */
@@ -67,6 +65,10 @@ export namespace filesExtensionsFor3PStorageproviders {
      * Will tell if this is the last file
      */
     isLastFile: boolean;
+    /**
+     * Will tell the name of the file
+     */
+    fileName: string;
   }
   export interface AttachmentListHelper {
     fileType: string;
@@ -87,7 +89,7 @@ export namespace filesExtensionsFor3PStorageproviders {
    */
   export function getDragAndDropFilesHandler(
     dragAndDropInput: string,
-    callback: (attachments: Blob[], error?: SdkError) => void,
+    callback: (attachments: File[], error?: SdkError) => void,
   ): void {
     if (!callback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
@@ -106,9 +108,9 @@ export namespace filesExtensionsFor3PStorageproviders {
 
   function getFilesDragAndDropViaCallback(
     dragAndDropInput: string,
-    callback: (attachments: Blob[], error?: SdkError) => void,
+    callback: (attachments: File[], error?: SdkError) => void,
   ): void {
-    const files: Blob[] = [];
+    const files: File[] = [];
     let helper: filesExtensionsFor3PStorageproviders.AttachmentListHelper = {
       fileType: '',
       assembleAttachment: [],
@@ -130,10 +132,16 @@ export namespace filesExtensionsFor3PStorageproviders {
               helper.assembleAttachment.push(assemble);
 
               if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
-                const file = createFile(helper.assembleAttachment, fileResult.fileType);
-                files.push(file);
+                const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
 
                 if (fileResult.isLastFile) {
+                  // conver blob to File
+                  const receivedFile = new File([fileBlob], fileResult.fileName, {
+                    type: fileBlob.type,
+                  });
+
+                  files.push(receivedFile);
+
                   callback(files, fileResult.error);
                 }
 
