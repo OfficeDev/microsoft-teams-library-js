@@ -111,9 +111,7 @@ jobs:
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
     # This check will run on the PR to merge the release branch back into main
     condition: and(
-      eq(variables['Build.Reason'], 'PullRequest'),
-      startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
-      eq(variables['System.PullRequest.TargetBranch'], 'main')
+      eq(variables['Build.Reason'], 'PullRequest')
       )
     pool:
       vmImage: 'ubuntu-latest'
