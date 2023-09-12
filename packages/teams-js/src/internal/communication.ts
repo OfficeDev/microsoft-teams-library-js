@@ -270,25 +270,6 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   return request;
 }
 
-const registerWithParentLogger = communicationLogger.extend('registerWithParent');
-
-export function registerWithParentIfNecessary(): void {
-  const parent = ssrSafeWindow().parent;
-  if (parent && parent === ssrSafeWindow().top) {
-    registerWithParentLogger('Not in an embedded iframe, no parent registration needed');
-    return;
-  }
-
-  registerWithParentLogger('Registering with parent app');
-  // Since we can't check our parent's origin and we haven't received anything from them yet, this first
-  // message needs to go to *
-  // eslint-disable-next-line @microsoft/sdl/no-postmessage-star-origin
-  parent.postMessage(
-    { message: 'This message serves no purpose except to get noticed by the parent who receives it' },
-    '*',
-  );
-}
-
 const processMessageLogger = communicationLogger.extend('processMessage');
 
 /**
@@ -318,8 +299,7 @@ function processMessage(evt: DOMMessageEvent): void {
   updateRelationships(messageSource, messageOrigin);
 
   // Handle the message
-  if (messageSource === Communication.parentWindow || ssrSafeWindow().parent) {
-    // ssrSafeWindow().parent needed because for now, Communication.parentWindow is actually the top if you are an embedded app
+  if (messageSource === Communication.parentWindow) {
     handleParentMessage(evt);
   } else if (messageSource === Communication.childWindow) {
     handleChildMessage(evt);
@@ -425,12 +405,6 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
       logger('Removing registered promise callback for message %s', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
-    } else {
-      // pass to child even though this instance of teamsjs has never seen this message before
-      // We were sent a response from our parent, maybe our child needs to see it?
-      logger('Uh what is this? Sending to my child maybe they want it', message.id, message.args);
-      sendMessageResponseToChild(message.id, message.args, message.isPartialResponse);
-      // The child never registered with us so there's no child to send it to!
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -529,7 +503,6 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
   }, 100);
 }
 
-const sendToChildLogger = communicationLogger.extend('flushMessageQueue');
 /**
  * @hidden
  * Send a response to child for a message request that was from child
@@ -539,14 +512,10 @@ const sendToChildLogger = communicationLogger.extend('flushMessageQueue');
  */
 function sendMessageResponseToChild(id: string, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
-  if (Communication.childWindow) {
-    sendToChildLogger('ChildWindow found');
-  }
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
-    sendToChildLogger('Sending %o to child with origin %s', response, targetOrigin);
     targetWindow.postMessage(response, targetOrigin);
   }
 }
