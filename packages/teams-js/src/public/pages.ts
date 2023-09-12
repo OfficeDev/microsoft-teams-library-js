@@ -207,7 +207,7 @@ export namespace pages {
 
   /**
    * Shares a deep link that a user can use to navigate back to a specific state in this page.
-   * Please note that this method does yet work on mobile hosts.
+   * Please note that this method does not yet work on mobile hosts.
    *
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */

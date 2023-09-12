@@ -1,6 +1,8 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { inServerSideRenderingEnvironment } from '../internal/utils';
+import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
@@ -10,7 +12,6 @@ import {
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { video } from '../public/video';
-import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
 
 /**
  * @hidden
@@ -21,6 +22,9 @@ import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnviron
  * Limited to Microsoft-internal use
  */
 export namespace videoEx {
+  const videoPerformanceMonitor = inServerSideRenderingEnvironment()
+    ? undefined
+    : new VideoPerformanceMonitor(sendMessageToParent);
   /**
    * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
@@ -187,17 +191,22 @@ export namespace videoEx {
     }
 
     if (ensureInitialized(runtime, FrameContexts.sidePanel)) {
+      registerHandler(
+        'video.setFrameProcessTimeLimit',
+        (timeLimit: number) => videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimit),
+        false,
+      );
       if (runtime.supports.video?.mediaStream) {
         registerHandler(
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
-            const generator = metadataInTexture
-              ? await processMediaStreamWithMetadata(streamId, parameters.videoFrameHandler, notifyError)
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError);
-            // register the video track with processed frames back to the stream
-            !inServerSideRenderingEnvironment() &&
-              window['chrome']?.webview?.registerTextureStream(streamId, generator);
+            const handler = videoPerformanceMonitor
+              ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+              : parameters.videoFrameHandler;
+            metadataInTexture
+              ? await processMediaStreamWithMetadata(streamId, handler, notifyError, videoPerformanceMonitor)
+              : await processMediaStream(streamId, handler, notifyError, videoPerformanceMonitor);
           },
           false,
         );
@@ -207,10 +216,12 @@ export namespace videoEx {
           'video.newVideoFrame',
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
             if (videoBufferData) {
+              videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
               const timestamp = videoBufferData.timestamp;
               parameters.videoBufferHandler(
                 normalizedVideoBufferData(videoBufferData),
                 () => {
+                  videoPerformanceMonitor?.reportFrameProcessed();
                   notifyVideoFrameProcessed(timestamp);
                 },
                 notifyError,
@@ -224,7 +235,22 @@ export namespace videoEx {
         // should not happen if isSupported() is true
         throw errorNotSupportedOnPlatform;
       }
+      videoPerformanceMonitor?.startMonitorSlowFrameProcessing();
     }
+  }
+
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = receivedVideoFrame.videoFrame as any;
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      videoPerformanceMonitor.reportFrameProcessed();
+      return processedFrame;
+    };
   }
 
   function normalizedVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {
@@ -273,7 +299,11 @@ export namespace videoEx {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler('video.effectParameterChange', createEffectParameterChangeCallback(callback), false);
+    registerHandler(
+      'video.effectParameterChange',
+      createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
+      false,
+    );
     sendMessageToParent('video.registerForVideoEffect');
   }
 

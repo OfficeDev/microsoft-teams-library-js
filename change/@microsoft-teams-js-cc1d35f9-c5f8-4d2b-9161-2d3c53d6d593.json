@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Fixed bugs within the `appNotification` capability and its validation",
+  "packageName": "@microsoft/teams-js",
+  "email": "t-bchiaha@microsoft.com",
+  "dependentChangeType": "patch"
+}

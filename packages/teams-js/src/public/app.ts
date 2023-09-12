@@ -15,9 +15,7 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
-import { compareSDKVersions, runWithTimeout } from '../internal/utils';
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
-import { logs } from '../private/logs';
+import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -25,7 +23,6 @@ import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } 
 import { menus } from './menus';
 import { pages } from './pages';
 import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
 import { version } from './version';
 
 /**
@@ -239,7 +236,7 @@ export namespace app {
     ownerTenantId?: string;
 
     /**
-     * The AAD group ID of the team which owns the channel.
+     * The Microsoft Entra group ID of the team which owns the channel.
      */
     ownerGroupId?: string;
   }
@@ -351,7 +348,7 @@ export namespace app {
    */
   export interface UserInfo {
     /**
-     * The Azure AD object id of the current user.
+     * The Microsoft Entra object id of the current user.
      *
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a optimization hint as to who the user is and never as proof of identity.
@@ -385,7 +382,7 @@ export namespace app {
     licenseType?: string;
 
     /**
-     * A value suitable for use when providing a login_hint to Azure Active Directory for authentication purposes.
+     * A value suitable for use when providing a login_hint to Microsoft Entra ID for authentication purposes.
      * See [Provide optional claims to your app](https://learn.microsoft.com/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set)
      * for more information about the use of login_hint
      *
@@ -419,7 +416,7 @@ export namespace app {
    */
   export interface TenantInfo {
     /**
-     * The Azure AD tenant ID of the current user.
+     * The Microsoft Entra tenant ID of the current user.
 
      * Because a malicious party can run your content in a browser, this value should
      * be used only as a optimization hint as to who the user is and never as proof of identity.
@@ -688,26 +685,7 @@ export namespace app {
       return;
     }
 
-    if (GlobalVars.frameContext) {
-      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
-      registerOnThemeChangeHandler(null);
-      pages.backStack.registerBackButtonHandler(null);
-      pages.registerFullScreenHandler(null);
-      teamsCore.registerBeforeUnloadHandler(null);
-      teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
-      /* eslint-enable strict-null-checks/all */
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.settings) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnSaveHandler(null);
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.remove) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnRemoveHandler(null);
-    }
+    Handlers.uninitializeHandlers();
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;

@@ -1,9 +1,9 @@
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
 import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { video } from '../public/video';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
+import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
   AllowSharedBufferSource,
   PlaneLayout,
@@ -12,6 +12,7 @@ import {
   VideoFrameInit,
   VideoPixelFormat,
 } from './VideoFrameTypes';
+import { VideoPerformanceMonitor } from './videoPerformanceMonitor';
 
 /**
  * @hidden
@@ -66,10 +67,14 @@ export async function processMediaStream(
   streamId: string,
   videoFrameHandler: video.VideoFrameHandler,
   notifyError: (string) => void,
-): Promise<MediaStreamTrack> {
-  return createProcessedStreamGenerator(
-    await getInputVideoTrack(streamId, notifyError),
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+): Promise<void> {
+  const generator = createProcessedStreamGeneratorWithoutSource();
+  !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+  pipeVideoSourceToGenerator(
+    await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new DefaultTransformer(notifyError, videoFrameHandler),
+    generator.writable,
   );
 }
 
@@ -85,28 +90,38 @@ export async function processMediaStreamWithMetadata(
   streamId: string,
   videoFrameHandler: videoEx.VideoFrameHandler,
   notifyError: (string) => void,
-): Promise<MediaStreamTrack> {
-  return createProcessedStreamGenerator(
-    await getInputVideoTrack(streamId, notifyError),
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+): Promise<void> {
+  const generator = createProcessedStreamGeneratorWithoutSource();
+  !inServerSideRenderingEnvironment() && window['chrome']?.webview?.registerTextureStream(streamId, generator);
+  pipeVideoSourceToGenerator(
+    await getInputVideoTrack(streamId, notifyError, videoPerformanceMonitor),
     new TransformerWithMetadata(notifyError, videoFrameHandler),
+    generator.writable,
   );
 }
 
 /**
  * Get the video track from the media stream gotten from chrome.webview.getTextureStream(streamId).
  */
-async function getInputVideoTrack(streamId: string, notifyError: (string) => void): Promise<MediaStreamTrack> {
+async function getInputVideoTrack(
+  streamId: string,
+  notifyError: (string) => void,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+): Promise<MediaStreamTrack> {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const chrome = window['chrome'] as any;
+  const chrome = ssrSafeWindow()['chrome'] as any;
   try {
+    videoPerformanceMonitor?.reportGettingTextureStream(streamId);
     const mediaStream = await chrome.webview.getTextureStream(streamId);
     const tracks = mediaStream.getVideoTracks();
     if (tracks.length === 0) {
       throw new Error(`No video track in stream ${streamId}`);
     }
+    videoPerformanceMonitor?.reportTextureStreamAcquired();
     return tracks[0];
   } catch (error) {
     const errorMsg = `Failed to get video track from stream ${streamId}, error: ${error}`;
@@ -116,27 +131,36 @@ async function getInputVideoTrack(streamId: string, notifyError: (string) => voi
 }
 
 /**
- * The function to create a processed video track from the original video track.
- * It reads frames from the video track and pipes them to the video frame callback to process the frames.
- * The processed frames are then enqueued to the generator.
+ * The function to create a MediaStreamTrack generator.
+ * The generator can then get the processed frames as media stream source.
  * The generator can be registered back to the media stream so that the host can get the processed frames.
  */
-function createProcessedStreamGenerator(
-  videoTrack: unknown,
-  transformer: TransformerWithMetadata | DefaultTransformer,
-): MediaStreamTrack {
+function createProcessedStreamGeneratorWithoutSource(): MediaStreamTrack & { writable: WritableStream } {
   if (inServerSideRenderingEnvironment()) {
     throw errorNotSupportedOnPlatform;
   }
-  const MediaStreamTrackProcessor = window['MediaStreamTrackProcessor'];
+  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
+  if (!MediaStreamTrackGenerator) {
+    throw errorNotSupportedOnPlatform;
+  }
+  return new MediaStreamTrackGenerator({ kind: 'video' });
+}
+
+/**
+ * The function to create a processed video track from the original video track.
+ * It reads frames from the video track and pipes them to the video frame callback to process the frames.
+ * The processed frames are then enqueued to the generator.
+ */
+function pipeVideoSourceToGenerator(
+  videoTrack: unknown,
+  transformer: TransformerWithMetadata | DefaultTransformer,
+  sink: WritableStream,
+): void {
+  const MediaStreamTrackProcessor = ssrSafeWindow()['MediaStreamTrackProcessor'];
   const processor = new MediaStreamTrackProcessor({ track: videoTrack });
   const source = processor.readable;
-  const MediaStreamTrackGenerator = window['MediaStreamTrackGenerator'];
-  const generator = new MediaStreamTrackGenerator({ kind: 'video' });
-  const sink = generator.writable;
 
   source.pipeThrough(new TransformStream(transformer)).pipeTo(sink);
-  return generator;
 }
 
 /**
@@ -402,10 +426,16 @@ type VideoEffectCallBack = (effectId: string | undefined, effectParam?: string) 
 /**
  * @hidden
  */
-export function createEffectParameterChangeCallback(callback: VideoEffectCallBack) {
+export function createEffectParameterChangeCallback(
+  callback: VideoEffectCallBack,
+  videoPerformanceMonitor?: VideoPerformanceMonitor,
+) {
   return (effectId: string | undefined, effectParam?: string): void => {
+    videoPerformanceMonitor?.reportApplyingVideoEffect(effectId || '', effectParam);
+
     callback(effectId, effectParam)
       .then(() => {
+        videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
         sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
       })
       .catch((reason) => {

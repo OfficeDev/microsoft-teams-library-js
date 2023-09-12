@@ -8,6 +8,7 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import { ssrSafeWindow } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
@@ -46,12 +47,12 @@ export namespace authentication {
   /**
    * Initiates an authentication flow which requires a new window.
    * There are two primary uses for this function:
-   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Azure Active Directory)
-   * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Azure Active Directory consent prompts)
+   * 1. When your app needs to authenticate using a 3rd-party identity provider (not Microsoft Entra ID)
+   * 2. When your app needs to show authentication UI that is blocked from being shown in an iframe (e.g., Microsoft Entra consent prompts)
    *
    * For more details, see [Enable authentication using third-party OAuth provider](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/auth-flow-tab)
    *
-   * This function is *not* needed for "standard" Azure SSO usage. Using {@link getAuthToken} is usually sufficient in that case. For more, see
+   * This function is *not* needed for "standard" Microsoft Entra SSO usage. Using {@link getAuthToken} is usually sufficient in that case. For more, see
    * [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview))
    *
    * @remarks
@@ -137,11 +138,13 @@ export namespace authentication {
         GlobalVars.hostClientType === HostClientType.android ||
         GlobalVars.hostClientType === HostClientType.ios ||
         GlobalVars.hostClientType === HostClientType.ipados ||
+        GlobalVars.hostClientType === HostClientType.macos ||
         GlobalVars.hostClientType === HostClientType.rigel ||
         GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
         GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
         GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays
+        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
+        GlobalVars.hostClientType === HostClientType.surfaceHub
       ) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         const link = document.createElement('a');
@@ -173,8 +176,8 @@ export namespace authentication {
   }
 
   /**
-   * Requests an Azure AD token to be issued on behalf of your app in an SSO flow.
-   * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Azure AD to
+   * Requests an Microsoft Entra token to be issued on behalf of your app in an SSO flow.
+   * The token is acquired from the cache if it is not expired. Otherwise a request is sent to Microsoft Entra to
    * obtain a new token.
    * This function is used to enable SSO scenarios. See [Enable SSO for tab apps](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/authentication/tab-sso-overview)
    * for more details.
@@ -237,7 +240,7 @@ export namespace authentication {
 
   /**
    * @hidden
-   * Requests the decoded Azure AD user identity on behalf of the app.
+   * Requests the decoded Microsoft Entra user identity on behalf of the app.
    *
    * @returns Promise that resolves with the {@link UserProfile}.
    *
@@ -250,7 +253,7 @@ export namespace authentication {
    * As of 2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
-   * Requests the decoded Azure AD user identity on behalf of the app.
+   * Requests the decoded Microsoft Entra user identity on behalf of the app.
    *
    * @param userRequest - It passes success/failure callbacks in the userRequest object(deprecated)
    * @internal
@@ -469,7 +472,7 @@ export namespace authentication {
       link.href = decodeURIComponent(callbackUrl);
       if (
         link.host &&
-        link.host !== window.location.host &&
+        link.host !== ssrSafeWindow().location.host &&
         link.host === 'outlook.office.com' &&
         link.search.indexOf('client_type=Win32_Outlook') > -1
       ) {
@@ -574,7 +577,7 @@ export namespace authentication {
      */
     resources?: string[];
     /**
-     * An optional list of claims which to pass to AAD when requesting the access token.
+     * An optional list of claims which to pass to Microsoft Entra when requesting the access token.
      */
     claims?: string[];
     /**
@@ -623,8 +626,8 @@ export namespace authentication {
     iat: number;
     /**
      * @hidden
-     * Identifies the security token service (STS) that constructs and returns the token. In the tokens that Azure AD
-     * returns, the issuer is sts.windows.net. The GUID in the issuer claim value is the tenant ID of the Azure AD
+     * Identifies the security token service (STS) that constructs and returns the token. In the tokens that Microsoft Entra
+     * returns, the issuer is sts.windows.net. The GUID in the issuer claim value is the tenant ID of the Microsoft Entra
      * directory. The tenant ID is an immutable and reliable identifier of the directory.
      *
      * @internal
@@ -633,7 +636,7 @@ export namespace authentication {
     iss: string;
     /**
      * @hidden
-     * Provides the last name, surname, or family name of the user as defined in the Azure AD user object.
+     * Provides the last name, surname, or family name of the user as defined in the Microsoft Entra user object.
      *
      * @internal
      * Limited to Microsoft-internal use
@@ -641,7 +644,7 @@ export namespace authentication {
     family_name: string;
     /**
      * @hidden
-     * Provides the first or "given" name of the user, as set on the Azure AD user object.
+     * Provides the first or "given" name of the user, as set on the Microsoft Entra user object.
      *
      * @internal
      * Limited to Microsoft-internal use
@@ -658,8 +661,8 @@ export namespace authentication {
     unique_name: string;
     /**
      * @hidden
-     * Contains a unique identifier of an object in Azure AD. This value is immutable and cannot be reassigned or
-     * reused. Use the object ID to identify an object in queries to Azure AD.
+     * Contains a unique identifier of an object in Microsoft Entra. This value is immutable and cannot be reassigned or
+     * reused. Use the object ID to identify an object in queries to Microsoft Entra.
      *
      * @internal
      * Limited to Microsoft-internal use
@@ -669,7 +672,7 @@ export namespace authentication {
      * @hidden
      * Identifies the principal about which the token asserts information, such as the user of an application.
      * This value is immutable and cannot be reassigned or reused, so it can be used to perform authorization
-     * checks safely. Because the subject is always present in the tokens the Azure AD issues, we recommended
+     * checks safely. Because the subject is always present in the tokens the Microsoft Entra issues, we recommended
      * using this value in a general-purpose authorization system.
      *
      * @internal
@@ -691,7 +694,7 @@ export namespace authentication {
      * Defines the end of the time interval within which a token is valid. The service that validates the token
      * should verify that the current date is within the token lifetime; otherwise it should reject the token. The
      * service might allow for up to five minutes beyond the token lifetime to account for any differences in clock
-     * time ("time skew") between Azure AD and the service.
+     * time ("time skew") between Microsoft Entra and the service.
      *
      * @internal
      * Limited to Microsoft-internal use
@@ -702,7 +705,7 @@ export namespace authentication {
      * Defines the start of the time interval within which a token is valid. The service that validates the token
      * should verify that the current date is within the token lifetime; otherwise it should reject the token. The
      * service might allow for up to five minutes beyond the token lifetime to account for any differences in clock
-     * time ("time skew") between Azure AD and the service.
+     * time ("time skew") between Microsoft Entra and the service.
      *
      * @internal
      * Limited to Microsoft-internal use
