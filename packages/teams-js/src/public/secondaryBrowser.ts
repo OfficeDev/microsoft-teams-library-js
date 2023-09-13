@@ -19,7 +19,7 @@ export namespace secondaryBrowser {
    *  
    * On mobile, this is the in-app browser.
    * 
-   * On web and desktop, the user will be redirected to an external browser.
+   * On web and desktop, please use the Window.open() method or other native external browser methods.
    *
    * @param url Url to open in the browser
    * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser
