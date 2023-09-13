@@ -180,7 +180,7 @@ configuration:
           action: Closed
       then:
       - addReply:
-          reply: "### Tell us about your experience! \n\nHi ${issueAuthor}! This issue is closed in our system. We would like your [feedback on your experience with our support team and Platform](https://aka.ms/DevSupportFeedback). \n\nBest regards, \nTeams Platform "
+          reply: "### Tell us about your experience! \n\nHi ${issueAuthor}! We have closed this issue in our system, but we would love to hear your feedback. To let us know how we did, simply use one of the following emoji icons: :thumbsup: for resolved, :thumbsdown: for unresolved, or :heart: for a great experience on this message.. Please use the [link for more detailed feeback](https://aka.ms/DevSupportFeedback). \n\nBest regards, \nTeams Platform "
       description: 
 onFailure: 
 onSuccess: 
