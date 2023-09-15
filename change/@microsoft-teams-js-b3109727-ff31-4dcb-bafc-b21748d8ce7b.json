@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed issue that resulted in dropping first few frames when using the video capability",
-  "packageName": "@microsoft/teams-js",
-  "email": "wenghe@microsoft.com",
-  "dependentChangeType": "patch"
-}
