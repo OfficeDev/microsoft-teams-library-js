@@ -3,7 +3,6 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
-import { NaaMock } from './utils/naaMock';
 
 const GetContext = (): ReactElement =>
   ApiWithoutInput({
@@ -11,22 +10,8 @@ const GetContext = (): ReactElement =>
     title: 'Get Context',
     onClick: {
       withPromise: async () => {
-        const naaMock = new NaaMock();
-        const listener = (response): void => {
-          alert('Received response: ' + JSON.stringify(response));
-          naaMock.removeEventListener(listener);
-        };
-        try {
-          naaMock.addEventListener(listener);
-        } catch (e) {
-          return 'Error while adding event listener: ' + e;
-        }
-        try {
-          naaMock.postMessage('{"json":"data"}');
-        } catch (e) {
-          return 'Error while posting message: ' + e;
-        }
-        return 'done';
+        const context = await app.getContext();
+        return JSON.stringify(context);
       },
       withCallback: (setResult) => {
         const callback = (context: Context): void => {
