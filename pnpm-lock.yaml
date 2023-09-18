@@ -5,6 +5,7 @@ overrides:
   glob-parent: ^5.1.2
   lodash: ^4.17.21
   merge: ^2.1.1
+  minimist: ^0.2.4
   semver: ^7.5.2
   serialize-javascript: ^3.1.0
   set-value: ^2.0.1
@@ -6295,7 +6296,7 @@ packages:
     hasBin: true
     dependencies:
       get-stdin: 0.1.0
-      minimist: 0.1.0
+      minimist: 0.2.4
     dev: true
 
   /detect-indent/5.0.0:
@@ -7672,7 +7673,7 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
       neo-async: 2.6.2
       source-map: 0.6.1
       wordwrap: 1.0.0
@@ -9705,12 +9706,8 @@ packages:
       kind-of: 6.0.3
     dev: true
 
-  /minimist/0.1.0:
-    resolution: {integrity: sha512-wR5Ipl99t0mTGwLjQJnBjrP/O7zBbLZqvA3aw32DmLx+nXHfWctUjzDjnDx09pX1Po86WFQazF9xUzfMea3Cnw==}
-    dev: true
-
-  /minimist/1.2.8:
-    resolution: {integrity: sha1-waRk52kzAuCCoHXO4MBXdBrEdyw=}
+  /minimist/0.2.4:
+    resolution: {integrity: sha1-AIXVUB4pAzdIovKk2gGAFCaXpHU=}
     dev: true
 
   /minipass-collect/1.0.2:
@@ -9808,7 +9805,7 @@ packages:
     resolution: {integrity: sha1-fe8D0kMtyuS6HWEURcSDlgYiVfY=}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
     dev: true
 
   /mkdirp/1.0.4:
@@ -11728,7 +11725,7 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
       shelljs: 0.8.5
     dev: true
 
@@ -12087,7 +12084,7 @@ packages:
     hasBin: true
     dependencies:
       duplexer: 0.1.2
-      minimist: 1.2.8
+      minimist: 0.2.4
       through: 2.3.8
     dev: true
 
@@ -12455,7 +12452,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       json5: 2.2.3
-      minimist: 1.2.8
+      minimist: 0.2.4
       strip-bom: 3.0.0
     dev: true
 

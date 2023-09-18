@@ -104,6 +104,7 @@
     "glob-parent": "^5.1.2",
     "lodash": "^4.17.21",
     "merge": "^2.1.1",
+    "minimist": "^0.2.4",
     "semver": "^7.5.2",
     "serialize-javascript": "^3.1.0",
     "set-value": "^2.0.1",
