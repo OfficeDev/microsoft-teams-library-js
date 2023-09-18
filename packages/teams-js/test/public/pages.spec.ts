@@ -1254,6 +1254,7 @@ describe('Testing pages module', () => {
 
             it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
               await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
+              pages.config.registerOnSaveHandler(undefined);
               utils.processMessage({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
