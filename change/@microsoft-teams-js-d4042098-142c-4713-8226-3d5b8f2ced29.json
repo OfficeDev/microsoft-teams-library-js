@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Fixed documentation in `dialog.url.bot` section of `dialog.ts` file",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "none"
-}

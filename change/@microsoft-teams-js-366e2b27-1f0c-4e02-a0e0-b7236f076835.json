@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Fixed documentation for `pages.shareDeepLink` API",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "none"
-}
