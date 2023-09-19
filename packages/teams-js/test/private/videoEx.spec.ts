@@ -4,7 +4,7 @@ import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMoni
 import { videoEx } from '../../src/private/videoEx';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { video } from '../../src/public/video';
+import { videoEffects } from '../../src/public/video';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -36,7 +36,7 @@ describe('videoEx', () => {
         _notifyError: (errorMessage: string) => void,
       ): void => {};
       const videoFrameConfig: videoEx.VideoFrameConfig = {
-        format: video.VideoFrameFormat.NV12,
+        format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
         audioInferenceModel: new ArrayBuffer(100),
       };
@@ -79,7 +79,7 @@ describe('videoEx', () => {
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
         expect(message?.args?.[0]).toHaveProperty('audioInferenceModel');
-        expect(message?.args?.[0].format).toBe(video.VideoFrameFormat.NV12);
+        expect(message?.args?.[0].format).toBe(videoEffects.VideoFrameFormat.NV12);
         expect(message?.args?.[0].requireCameraStream).toBe(false);
       });
 
@@ -169,7 +169,7 @@ describe('videoEx', () => {
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoBufferCallback = (
-          _frame: video.VideoFrame,
+          _frame: videoEffects.VideoFrame,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
@@ -256,7 +256,7 @@ describe('videoEx', () => {
         expect(handlerInvoked).toBe(false);
       });
 
-      it('should listen to video.setFrameProcessTimeLimit', async () => {
+      it('should listen to videoEffects.setFrameProcessTimeLimit', async () => {
         expect.assertions(2);
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
@@ -414,7 +414,7 @@ describe('videoEx', () => {
     });
 
     describe('notifySelectedVideoEffectChanged', () => {
-      const effectChangeType = video.EffectChangeType.EffectChanged;
+      const effectChangeType = videoEffects.EffectChangeType.EffectChanged;
       const effectId = 'effectId';
 
       const allowedContexts = [FrameContexts.sidePanel];
@@ -553,10 +553,10 @@ describe('videoEx', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoEffectCallBack = jest
           .fn<Promise<void>, unknown[]>()
-          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+          .mockRejectedValue(videoEffects.EffectFailureReason.InvalidEffectId);
 
         // Act
-        video.registerForVideoEffect(videoEffectCallBack);
+        videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
         utils.respondToFramelessMessage({
@@ -655,7 +655,7 @@ describe('videoEx', () => {
         _notifyError: (errorMessage: string) => void,
       ): void => {};
       const videoFrameConfig: videoEx.VideoFrameConfig = {
-        format: video.VideoFrameFormat.NV12,
+        format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
         audioInferenceModel: new ArrayBuffer(100),
       };
@@ -765,7 +765,7 @@ describe('videoEx', () => {
       it('should invoke video frame event handler and successfully send videoFrameProcessed with timestamp', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoBufferCallback = (
-          _frame: video.VideoFrame,
+          _frame: videoEffects.VideoFrame,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
@@ -925,7 +925,7 @@ describe('videoEx', () => {
     });
 
     describe('notifySelectedVideoEffectChanged', () => {
-      const effectChangeType = video.EffectChangeType.EffectChanged;
+      const effectChangeType = videoEffects.EffectChangeType.EffectChanged;
       const effectId = 'effectId';
 
       const allowedContexts = [FrameContexts.sidePanel];
@@ -1053,10 +1053,10 @@ describe('videoEx', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoEffectCallBack = jest
           .fn<Promise<void>, unknown[]>()
-          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+          .mockRejectedValue(videoEffects.EffectFailureReason.InvalidEffectId);
 
         // Act
-        video.registerForVideoEffect(videoEffectCallBack);
+        videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
         utils.sendMessage('video.effectParameterChange', effectId, effectParameter);

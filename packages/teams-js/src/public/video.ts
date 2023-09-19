@@ -11,7 +11,7 @@ import { runtime } from './runtime';
  * Namespace to video extensibility of the SDK
  * @beta
  */
-export namespace video {
+export namespace videoEffects {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);
@@ -186,7 +186,7 @@ export namespace video {
    *
    * @example
    * ```typescript
-   * video.registerForVideoFrame({
+   * videoEffects.registerForVideoFrame({
    *   videoFrameHandler: async (videoFrameData) => {
    *     const originalFrame = videoFrameData.videoFrame as VideoFrame;
    *     try {
@@ -209,7 +209,7 @@ export namespace video {
    *       }
    *     },
    *   config: {
-   *     format: video.VideoPixelFormat.NV12,
+   *     format: videoEffects.VideoPixelFormat.NV12,
    *   }
    * });
    * ```

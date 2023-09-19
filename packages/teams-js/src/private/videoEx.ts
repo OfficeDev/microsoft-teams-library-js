@@ -11,7 +11,8 @@ import {
 } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { video } from '../public/video';
+import { videoEffects } from '../public/video';
+import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
 
 /**
  * @hidden
@@ -45,7 +46,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoFrameConfig extends video.VideoFrameConfig {
+  export interface VideoFrameConfig extends videoEffects.VideoFrameConfig {
     /**
      * @hidden
      * Flag to indicate use camera stream to synthesize video frame or not.
@@ -75,7 +76,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoBufferData extends video.VideoBufferData {
+  export interface VideoBufferData extends videoEffects.VideoBufferData {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -123,7 +124,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameData = video.VideoFrameData & {
+  export type VideoFrameData = videoEffects.VideoFrameData & {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -146,7 +147,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameHandler = (receivedVideoFrame: VideoFrameData) => Promise<video.VideoFrame>;
+  export type VideoFrameHandler = (receivedVideoFrame: VideoFrameData) => Promise<videoEffects.VideoFrame>;
 
   /**
    * @hidden
@@ -273,7 +274,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function notifySelectedVideoEffectChanged(
-    effectChangeType: video.EffectChangeType,
+    effectChangeType: videoEffects.EffectChangeType,
     effectId: string | undefined,
     effectParam?: string,
   ): void {
@@ -344,7 +345,7 @@ export namespace videoEx {
    */
   export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!video.isSupported()) {
+    if (!videoEffects.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     sendMessageToParent('video.personalizedEffectsChanged', [effects]);
@@ -365,7 +366,7 @@ export namespace videoEx {
    */
   export function isSupported(): boolean {
     ensureInitialized(runtime);
-    return video.isSupported();
+    return videoEffects.isSupported();
   }
 
   /**
@@ -407,7 +408,7 @@ export namespace videoEx {
    */
   export function notifyFatalError(errorMessage: string): void {
     ensureInitialized(runtime);
-    if (!video.isSupported()) {
+    if (!videoEffects.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     notifyError(errorMessage, ErrorLevel.Fatal);
