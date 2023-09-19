@@ -12,7 +12,6 @@ import {
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { videoEffects } from '../public/video';
-import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
 
 /**
  * @hidden
@@ -244,7 +243,7 @@ export namespace videoEx {
     videoFrameHandler: VideoFrameHandler,
     videoPerformanceMonitor: VideoPerformanceMonitor,
   ): VideoFrameHandler {
-    return async (receivedVideoFrame: VideoFrameData): Promise<video.VideoFrame> => {
+    return async (receivedVideoFrame: VideoFrameData): Promise<videoEffects.VideoFrame> => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const originalFrame = receivedVideoFrame.videoFrame as any;
       videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
