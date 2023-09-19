@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `lifecycle` subcapability in `app.ts` to support caching",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
