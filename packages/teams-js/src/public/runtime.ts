@@ -150,6 +150,11 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      readonly lifecycle?: {
+        readonly caching?: {};
+      };
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -247,6 +252,11 @@ export const teamsRuntimeConfig: Runtime = {
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
+    app: {
+      lifecycle: {
+        caching: {},
+      },
+    },
     appInstallDialog: {},
     appEntity: {},
     call: {},
