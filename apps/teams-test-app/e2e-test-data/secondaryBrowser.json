@@ -1,6 +1,6 @@
 {
   "name": "SecondaryBrowser",
-  "version": ">2.12.0",
+  "version": ">=2.12.0",
   "platforms": "iOS",
   "checkIsSupported": {},
   "testCases": [
@@ -8,7 +8,7 @@
       "title": "openUrl API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_secondaryBrowser_open",
-      "inputValue": "http://www.bing.com",
+      "inputValue": "https://www.bing.com",
       "expectedSecondViewTarget": "SFSafariViewController"
     }
   ]
