@@ -264,7 +264,6 @@ export const teamsRuntimeConfig: Runtime = {
     interactive: {},
     logs: {},
     location: {},
-    geoLocation: {},
     meetingRoom: {},
     menus: {},
     monetization: {},
@@ -276,7 +275,6 @@ export const teamsRuntimeConfig: Runtime = {
       backStack: {},
       fullTrust: {},
     },
-    permissions: {},
     remoteCamera: {},
     stageView: {},
     teams: {

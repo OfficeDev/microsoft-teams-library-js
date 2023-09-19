@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added `location`, `geoLocation` and `permissions` to `teamsRuntimeConfig` to return true for isSupported in geolocation in v1",
+  "comment": "Added support for `location` to Teams v1",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
