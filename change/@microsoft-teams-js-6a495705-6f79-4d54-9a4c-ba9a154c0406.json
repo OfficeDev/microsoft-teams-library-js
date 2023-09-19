@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added logging to help investigate dropped messages from hosts or embedded apps.",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}
