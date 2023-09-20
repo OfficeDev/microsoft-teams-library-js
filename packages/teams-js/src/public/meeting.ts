@@ -327,6 +327,22 @@ export namespace meeting {
      * @returns A promise with the updated microphone state
      */
     micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
+    /**
+     * Callback for the host to tell the app to change its speaker selection
+     */
+    audioDeviceSelectionChangedCallback?: (selection: AudioDeviceSelection) => Promise<AudioDeviceSelection>;
+  }
+
+  export interface AudioDeviceSelection {
+    speaker?: AudioDeviceInfo;
+    microphone?: AudioDeviceInfo;
+    error?: SdkError;
+  }
+
+  export interface AudioDeviceInfo {
+    deviceId: string;
+    deviceName: string;
+    isSystemDefault: boolean;
   }
 
   /**
@@ -767,6 +783,16 @@ export namespace meeting {
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
+      const audioDeviceSelectionChangedCallback = async (
+        audioDeviceSelectionFromHost: AudioDeviceSelection,
+      ): Promise<void> => {
+        const appDevices = await navigator.mediaDevices.enumerateDevices();
+        console.log('appDevices', appDevices);
+        console.log('audioDeviceSelectionFromHost', audioDeviceSelectionFromHost);
+        await requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(audioDeviceSelectionFromHost);
+      };
+      registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
+
       callback(isHostAudioless);
     };
     sendMessageToParent(
@@ -793,6 +819,10 @@ export namespace meeting {
 
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
+      }
+
+      if (doesHandlerExist('meeting.audioDeviceSelectionChanged')) {
+        removeHandler('meeting.audioDeviceSelectionChanged');
       }
 
       callback(isHostAudioless);
