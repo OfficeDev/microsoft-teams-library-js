@@ -3,7 +3,7 @@ import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
+import { generateVersionBasedTeamsRuntimeConfig } from '../../src/public/runtime';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
@@ -389,13 +389,13 @@ describe('sharing_v2', () => {
           if (compareSDKVersions(version, minDesktopAndWebVersionForSharing) >= 0) {
             it(`sharing.isSupported() should return true for web and desktop when version is greater than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
               await utils.initializeWithContext(FrameContexts.content, clientType);
-              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
               expect(sharing.isSupported()).toBeTruthy();
             });
           } else {
             it(`sharing.isSupported() should return false for web and desktop when version is lower than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
               await utils.initializeWithContext(FrameContexts.content, clientType);
-              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
               expect(sharing.isSupported()).toBeFalsy();
             });
           }
