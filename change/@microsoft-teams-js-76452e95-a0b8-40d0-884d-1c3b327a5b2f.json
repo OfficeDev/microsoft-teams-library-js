@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Improved reference docs for the `meeting` namespace and hid the `appSharingButton` module.",
+  "comment": "Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.",
   "packageName": "@microsoft/teams-js",
   "email": "ryanbliss@microsoft.com",
   "dependentChangeType": "patch"
