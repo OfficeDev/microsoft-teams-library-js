@@ -922,9 +922,9 @@ export type TaskInfo = DialogInfo;
 
 /**
  * @beta
- * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
+ * Data structure to be used with the {@link app.lifecycle.registerOnResumeHandler app.lifecycle.registerOnResumeHandler(handler: (context: ResumeContext) => void): void} to pass the context to the app.
  */
-export interface LoadContext {
+export interface ResumeContext {
   /**
    * The entity that is requested to be loaded
    */
@@ -935,6 +935,12 @@ export interface LoadContext {
    */
   contentUrl: string;
 }
+
+/**
+ * @deprecated
+ * As of 2.14.1, please use ResumeContext instead.
+ */
+export type LoadContext = ResumeContext;
 
 /** Represents information about a frame within a tab or dialog module. */
 export interface FrameInfo {
