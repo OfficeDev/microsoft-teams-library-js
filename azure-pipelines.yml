@@ -110,7 +110,11 @@ jobs:
     displayName: 'E2E Test - CDN (only runs on release builds)'
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
     # This check will run on the PR to merge the release branch back into main
-    condition: eq(variables['Build.Reason'], 'PullRequest')
+    condition: and(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+      eq(variables['System.PullRequest.TargetBranch'], 'main')
+      )
     pool:
       vmImage: 'ubuntu-latest'
     steps:
