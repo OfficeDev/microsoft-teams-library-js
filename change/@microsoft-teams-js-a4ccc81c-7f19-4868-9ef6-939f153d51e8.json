@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Changed namespace \"video\" to \"videoEffects\"",
+  "packageName": "@microsoft/teams-js",
+  "email": "wenghe@microsoft.com",
+  "dependentChangeType": "patch"
+}
