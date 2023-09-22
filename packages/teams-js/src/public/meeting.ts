@@ -330,7 +330,7 @@ export namespace meeting {
     /**
      * Callback for the host to tell the app to change its speaker selection
      */
-    audioDeviceSelectionChangedCallback?: (selection: AudioDeviceSelection) => Promise<AudioDeviceSelection>;
+    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection) => Promise<void>;
   }
 
   export interface AudioDeviceSelection {
@@ -340,9 +340,7 @@ export namespace meeting {
   }
 
   export interface AudioDeviceInfo {
-    deviceId: string;
-    deviceName: string;
-    isSystemDefault: boolean;
+    deviceLabel: string;
   }
 
   /**
@@ -784,12 +782,12 @@ export namespace meeting {
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
       const audioDeviceSelectionChangedCallback = async (
-        audioDeviceSelectionFromHost: AudioDeviceSelection,
+        selectedDevicesInHost: AudioDeviceSelection,
       ): Promise<void> => {
         const appDevices = await navigator.mediaDevices.enumerateDevices();
         console.log('appDevices', appDevices);
-        console.log('audioDeviceSelectionFromHost', audioDeviceSelectionFromHost);
-        await requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(audioDeviceSelectionFromHost);
+        console.log('audioDeviceSelectionFromHost', selectedDevicesInHost);
+        await requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
       };
       registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
 
