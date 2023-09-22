@@ -33,7 +33,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath)@kx/fix_chrome_connection_issue
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
         displayName: 'Run E2E Perf tests'
@@ -55,7 +55,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath2)@kx/fix_chrome_connection_issue
 
       - bash: 'node tools/cli/runAppsWithE2ETests.js'
         displayName: 'Run E2E integration tests'
@@ -84,8 +84,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
-
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@kx/fix_chrome_connection_issue
       - task: CmdLine@2
         displayName: 'Build Test App Local'
         inputs:
@@ -110,17 +109,13 @@ jobs:
     displayName: 'E2E Test - CDN (only runs on release builds)'
     # This test only runs after deployment from a release branch and the new CDN version has been deployed
     # This check will run on the PR to merge the release branch back into main
-    condition: and(
-      eq(variables['Build.Reason'], 'PullRequest'),
-      startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
-      eq(variables['System.PullRequest.TargetBranch'], 'main')
-      )
+    condition: eq(variables['Build.Reason'], 'PullRequest')
     pool:
       vmImage: 'ubuntu-latest'
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
+          appHostGitPath: git://$(AppHostingSdkGitPath6)@kx/fix_chrome_connection_issue
 
       - task: CmdLine@2
         displayName: 'Build Test App CDN'
