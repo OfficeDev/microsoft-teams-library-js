@@ -11,7 +11,7 @@ import {
 } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { videoEffects } from '../public/video';
+import { videoEffects } from '../public/videoEffects';
 
 /**
  * @hidden

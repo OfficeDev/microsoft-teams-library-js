@@ -1,6 +1,6 @@
 import { videoEx } from '../private/videoEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { videoEffects } from '../public/video';
+import { videoEffects } from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
