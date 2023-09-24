@@ -1,12 +1,12 @@
 import {
   Communication,
   sendMessageEventToChild,
-  sendMessageToParent,
-  sendMessageToParentAsync,
+  sendMessageToParentAsyncWithVersion,
+  sendMessageToParentWithVersion,
   waitForMessageQueue,
 } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
-import { registerHandler, removeHandler } from '../internal/handlers';
+import { registerHandler, registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ssrSafeWindow } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
@@ -27,8 +27,8 @@ export namespace authentication {
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
   export function initialize(): void {
-    registerHandler('authentication.authenticate.success', handleSuccess, false);
-    registerHandler('authentication.authenticate.failure', handleFailure, false);
+    registerHandlerWithVersion('v1', 'authentication.authenticate.success', handleSuccess, false);
+    registerHandlerWithVersion('v1', 'authentication.authenticate.failure', handleFailure, false);
   }
 
   let authParams: AuthenticateParameters | undefined;
@@ -151,7 +151,7 @@ export namespace authentication {
         link.href = authenticateParameters.url;
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
-          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
+          sendMessageToParentAsyncWithVersion<[boolean, string]>('v2', 'authentication.authenticate', [
             link.href,
             authenticateParameters.width,
             authenticateParameters.height,
@@ -223,7 +223,7 @@ export namespace authentication {
   function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>((resolve) => {
       resolve(
-        sendMessageToParentAsync('authentication.getAuthToken', [
+        sendMessageToParentAsyncWithVersion('v2', 'authentication.getAuthToken', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
@@ -281,7 +281,7 @@ export namespace authentication {
 
   function getUserHelper(): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>((resolve) => {
-      resolve(sendMessageToParentAsync('authentication.getUser'));
+      resolve(sendMessageToParentAsyncWithVersion('v2', 'authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
         return result as UserProfile;
@@ -410,7 +410,7 @@ export namespace authentication {
   export function notifySuccess(result?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'result', result);
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.success', [result]);
+    sendMessageToParentWithVersion('v1', 'authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -433,7 +433,7 @@ export namespace authentication {
   export function notifyFailure(reason?: string, callbackUrl?: string): void {
     redirectIfWin32Outlook(callbackUrl, 'reason', reason);
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.failure', [reason]);
+    sendMessageToParentWithVersion('v1', 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
