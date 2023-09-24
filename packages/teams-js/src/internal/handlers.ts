@@ -4,7 +4,12 @@ import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import {
+  Communication,
+  sendMessageEventToChild,
+  sendMessageToParent,
+  sendMessageToParentWithVersion,
+} from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 
@@ -92,6 +97,25 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
     return [false, undefined];
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerHandlerWithVersion(
+  apiVersion: string,
+  name: string,
+  handler: Function,
+  sendMessage = true,
+  args: unknown[] = [],
+): void {
+  if (handler) {
+    HandlersPrivate.handlers[name] = handler;
+    sendMessage && sendMessageToParentWithVersion(apiVersion, 'registerHandler', [name, ...args]);
+  } else {
+    delete HandlersPrivate.handlers[name];
   }
 }
 

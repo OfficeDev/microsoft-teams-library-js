@@ -1,5 +1,5 @@
-import { sendAndHandleSdkError } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -185,7 +185,7 @@ export namespace meetingRoom {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'meetingRoom.getPairedMeetingRoomInfo'));
     });
   }
 
@@ -208,7 +208,7 @@ export namespace meetingRoom {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('meetingRoom.sendCommandToPairedMeetingRoom', commandName));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'meetingRoom.sendCommandToPairedMeetingRoom', commandName));
     });
   }
 
@@ -232,10 +232,14 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
-      ensureInitialized(runtime);
-      handler(capabilities);
-    });
+    registerHandlerWithVersion(
+      'v1',
+      'meetingRoom.meetingRoomCapabilitiesUpdate',
+      (capabilities: MeetingRoomCapability) => {
+        ensureInitialized(runtime);
+        handler(capabilities);
+      },
+    );
   }
 
   /**
@@ -257,7 +261,7 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
+    registerHandlerWithVersion('v1', 'meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
       ensureInitialized(runtime);
       handler(states);
     });
