@@ -9,7 +9,7 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import { ssrSafeWindow, validateOrigin } from './utils';
+import { validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -63,7 +63,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
-  Communication.currentWindow = Communication.currentWindow || ssrSafeWindow();
+  Communication.currentWindow = Communication.currentWindow || window;
   Communication.parentWindow =
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
@@ -90,7 +90,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsync<[FrameContexts, string, string, string]>('initialize', [
+    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>('v2', 'initialize', [
       version,
       latestRuntimeApiVersion,
     ]).then(
@@ -128,8 +128,30 @@ export function uninitializeCommunication(): void {
  * @internal
  * Limited to Microsoft-internal use
  */
+export function sendAndUnwrapWithVersion<T>(apiVersion: string, actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([result]: [T]) => result);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+}
+
+export function sendAndHandleStatusAndReasonWithVersion(
+  apiVersion: string,
+  actionName: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+    ([wasSuccessful, reason]: [boolean, string]) => {
+      if (!wasSuccessful) {
+        throw new Error(reason);
+      }
+    },
+  );
 }
 
 export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
@@ -138,6 +160,25 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
       throw new Error(reason);
     }
   });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+  apiVersion: string,
+  actionName: string,
+  defaultError: string,
+  ...args: any[]
+): Promise<void> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+    ([wasSuccessful, reason]: [boolean, string]) => {
+      if (!wasSuccessful) {
+        throw new Error(reason ? reason : defaultError);
+      }
+    },
+  );
 }
 
 /**
@@ -160,12 +201,45 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
  * @internal
  * Limited to Microsoft-internal use
  */
+export function sendAndHandleSdkErrorWithVersion<T>(
+  apiVersion: string,
+  actionName: string,
+  ...args: any[]
+): Promise<T> {
+  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([error, result]: [SdkError, T]) => {
+    if (error) {
+      throw error;
+    }
+    return result;
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
       throw error;
     }
     return result;
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendMessageToParentAsyncWithVersion<T>(
+  apiVersion: string,
+  actionName: string,
+  args: any[] = undefined,
+): Promise<T> {
+  return new Promise((resolve) => {
+    const request = sendMessageToParentHelper(apiVersion, actionName, args);
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(waitForResponse<T>(request.id));
   });
 }
 
@@ -178,7 +252,9 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  */
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
   return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(actionName, args);
+    // APIs with v0 represents beta changes haven't been implemented on them
+    // Otherwise, minimum version number will be v1
+    const request = sendMessageToParentHelper('v0', actionName, args);
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     resolve(waitForResponse<T>(request.id));
   });
@@ -192,6 +268,45 @@ function waitForResponse<T>(requestId: number): Promise<T> {
   return new Promise<T>((resolve) => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendMessageToParentWithVersion(
+  apiVersion: string,
+  actionName: string,
+  args: any[],
+  callback?: Function,
+): void;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendMessageToParentWithVersion(apiVersion: string, actionName: string, callback?: Function): void;
+
+export function sendMessageToParentWithVersion(
+  apiVersion: string,
+  actionName: string,
+  argsOrCallback?: any[] | Function,
+  callback?: Function,
+): void {
+  let args: any[] | undefined;
+  if (argsOrCallback instanceof Function) {
+    callback = argsOrCallback;
+  } else if (argsOrCallback instanceof Array) {
+    args = argsOrCallback;
+  }
+
+  // APIs with v0 represents beta changes haven't been implemented on them
+  // Otherwise, minimum version number will be v1
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+  const request = sendMessageToParentHelper(apiVersion, actionName, args);
+  if (callback) {
+    CommunicationPrivate.callbacks[request.id] = callback;
+  }
 }
 
 /**
@@ -221,8 +336,10 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
+  // APIs with v0 represents beta changes haven't been implemented on them
+  // Otherwise, minimum version number will be v1
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const request = sendMessageToParentHelper(actionName, args);
+  const request = sendMessageToParentHelper('v0', actionName, args);
   if (callback) {
     CommunicationPrivate.callbacks[request.id] = callback;
   }
@@ -234,11 +351,11 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
+function sendMessageToParentHelper(apiVersion: string, actionName: string, args: any[]): MessageRequest {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(actionName, args);
+  const request = createMessageRequest(apiVersion, actionName, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
@@ -267,8 +384,6 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   return request;
 }
 
-const processMessageLogger = communicationLogger.extend('processMessage');
-
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -276,19 +391,14 @@ const processMessageLogger = communicationLogger.extend('processMessage');
 function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
-    processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
     return;
   }
 
   // Process only if the message is coming from a different window and a valid origin
-  // valid origins are either a pre-known origin or one specified by the app developer
-  // in their call to app.initialize
+  // valid origins are either a pre-known
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
-    processMessageLogger(
-      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
-    );
     return;
   }
 
@@ -303,8 +413,6 @@ function processMessage(evt: DOMMessageEvent): void {
   }
 }
 
-const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
-
 /**
  * @hidden
  * Validates the message source and origin, if it should be processed
@@ -316,7 +424,6 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
-    shouldProcessMessageLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
@@ -326,11 +433,7 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   ) {
     return true;
   } else {
-    const isOriginValid = validateOrigin(new URL(messageOrigin));
-    if (!isOriginValid) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
-    }
-    return isOriginValid;
+    return validateOrigin(new URL(messageOrigin));
   }
 }
 
@@ -545,12 +648,13 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageRequest(func: string, args: any[]): MessageRequest {
+function createMessageRequest(apiVersion: string, func: string, args: any[]): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
     timestamp: Date.now(),
     args: args || [],
+    apiversion: apiVersion,
   };
 }
 
@@ -568,7 +672,7 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
 
 /**
  * @hidden
- * Creates a message object without any id, used for custom actions being sent to child frame/window
+ * Creates a message object without any id and api version, used for custom actions being sent to child frame/window
  *
  * @internal
  * Limited to Microsoft-internal use
