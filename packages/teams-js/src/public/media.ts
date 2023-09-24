@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import {
+  sendAndHandleSdkErrorWithVersion,
+  sendMessageToParent,
+  sendMessageToParentWithVersion,
+} from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
@@ -9,7 +13,7 @@ import {
   scanBarCodeAPIMobileSupportVersion,
 } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
-import { registerHandler, removeHandler } from '../internal/handlers';
+import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import {
   ensureInitialized,
   isCurrentSDKVersionAtLeast,
@@ -117,7 +121,7 @@ export namespace media {
       return;
     }
 
-    sendMessageToParent('captureImage', callback);
+    sendMessageToParentWithVersion('v1', 'captureImage', callback);
   }
 
   /**
@@ -136,7 +140,7 @@ export namespace media {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.has', permissions));
     });
   }
 
@@ -156,7 +160,7 @@ export namespace media {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.request', permissions));
     });
   }
 
@@ -253,7 +257,7 @@ export namespace media {
           }
         }
       }
-      sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
+      sendMessageToParentWithVersion('v1', 'getMedia', localUriId, handleGetMediaCallbackRequest);
     }
 
     /** Function to retrieve media content, such as images or videos, via handler. */
@@ -295,7 +299,7 @@ export namespace media {
         }
       }
 
-      registerHandler('getMedia' + actionName, handleGetMediaRequest);
+      registerHandlerWithVersion('v1', 'getMedia' + actionName, handleGetMediaRequest);
     }
   }
 
@@ -485,7 +489,7 @@ export namespace media {
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
+      sendMessageToParentWithVersion('v1', 'media.controller', [params], (err?: SdkError) => {
         if (callback) {
           callback(err);
         }
@@ -717,7 +721,8 @@ export namespace media {
 
     const params = [mediaInputs];
     // What comes back from native as attachments would just be objects and will be missing getMedia method on them
-    sendMessageToParent(
+    sendMessageToParentWithVersion(
+      'v1',
       'selectMedia',
       params,
       (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
@@ -770,7 +775,7 @@ export namespace media {
     }
 
     const params = [uriList];
-    sendMessageToParent('viewImages', params, callback);
+    sendMessageToParentWithVersion('v1', 'viewImages', params, callback);
   }
 
   /**
@@ -833,6 +838,6 @@ export namespace media {
       return;
     }
 
-    sendMessageToParent('media.scanBarCode', [config], callback);
+    sendMessageToParentWithVersion('v1', 'media.scanBarCode', [config], callback);
   }
 }

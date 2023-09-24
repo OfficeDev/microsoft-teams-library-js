@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -44,7 +44,7 @@ export namespace barCode {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
-      resolve(sendAndHandleSdkError('media.scanBarCode', barCodeConfig));
+      resolve(sendAndHandleSdkErrorWithVersion('v2', 'media.scanBarCode', barCodeConfig));
     });
   }
 
@@ -63,7 +63,7 @@ export namespace barCode {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.has', permissions));
     });
   }
 
@@ -82,7 +82,7 @@ export namespace barCode {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.request', permissions));
     });
   }
 
