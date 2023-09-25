@@ -23,6 +23,27 @@
         "full": "${{CONFIG__MANIFEST__DESCRIPTION__FULL}}"
     },
     "accentColor": "#FFFFFF",
+    "configurableTabs": [
+        {
+            "configurationUrl": "${{STATE__FX_RESOURCE_FRONTEND_HOSTING__ENDPOINT}}${{STATE__FX_RESOURCE_FRONTEND_HOSTING__INDEXPATH}}/config",
+            "canUpdateConfiguration": true,
+            "scopes": [
+                "team",
+                "groupchat"
+            ],
+            "context": [
+                "channelTab",
+                "meetingChatTab",
+                "meetingDetailsTab",
+                "meetingSidePanel",
+                "meetingStage"
+            ],
+            "meetingSurfaces": [
+                "sidePanel",
+                "stage"
+            ]
+        }
+    ],
     "bots": [],
     "composeExtensions": [],
     "staticTabs": [
