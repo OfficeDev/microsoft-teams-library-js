@@ -30,7 +30,7 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
+import { applyRuntimeConfig, generateVersionBasedTeamsRuntimeConfig, IBaseRuntime, runtime } from './runtime';
 import { version } from './version';
 
 /**
@@ -640,7 +640,7 @@ export namespace app {
                   }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
+                    applyRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
                   } else {
                     throw e;
                   }
