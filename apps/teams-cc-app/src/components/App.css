@@ -10,7 +10,12 @@
   padding-right: 0.2rem;
 }
 
-.ui_action .ui-table__cell__content {
+.ui-icon svg {
+  width: 18px;
+}
+
+.ui_action,
+.ui-table__cell__content {
   display: flex;
   align-items: center;
 }
