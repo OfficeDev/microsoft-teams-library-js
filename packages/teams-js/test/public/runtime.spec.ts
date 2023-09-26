@@ -6,15 +6,15 @@ import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
   fastForwardRuntime,
-  generateBackCompatRuntimeConfig,
+  generateVersionBasedTeamsRuntimeConfig,
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
+  mapTeamsVersionToSupportedCapabilities,
   Runtime,
   runtime,
   setUnitializedRuntime,
   upgradeChain,
-  versionConstants,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -132,8 +132,8 @@ describe('runtime', () => {
     });
   });
 
-  describe('generateBackCompatRuntimeConfig', () => {
-    Object.entries(versionConstants).forEach(([version, capabilities]) => {
+  describe('generateVersionBasedTeamsRuntimeConfig', () => {
+    Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilities]) => {
       capabilities.forEach((supportedCapability) => {
         const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
         supportedCapability.hostClientTypes.forEach((clientType) => {
@@ -143,7 +143,7 @@ describe('runtime', () => {
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
             const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig(version).supports,
+              generateVersionBasedTeamsRuntimeConfig(version).supports,
             ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
           });
@@ -154,23 +154,23 @@ describe('runtime', () => {
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
             const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig('1.4.0').supports,
+              generateVersionBasedTeamsRuntimeConfig('1.4.0').supports,
             ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
           });
 
-          const lowerVersions = Object.keys(versionConstants).filter(
+          const lowerVersions = Object.keys(mapTeamsVersionToSupportedCapabilities).filter(
             (otherVer) => compareSDKVersions(version, otherVer) >= 0,
           );
 
           lowerVersions.forEach((lowerVersion) => {
-            versionConstants[lowerVersion].forEach((lowerCap) => {
+            mapTeamsVersionToSupportedCapabilities[lowerVersion].forEach((lowerCap) => {
               it(`Back compat host client type ${clientType} supporting up to ${version} should ALSO support ${JSON.stringify(
                 lowerCap.capability,
               ).replace(/[{:}]/g, ' ')} capability`, async () => {
                 await utils.initializeWithContext('content', clientType);
                 const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-                  generateBackCompatRuntimeConfig(version).supports,
+                  generateVersionBasedTeamsRuntimeConfig(version).supports,
                 ).replace(/[{}]/g, '');
                 expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
               });
@@ -189,7 +189,7 @@ describe('runtime', () => {
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
             const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig(version).supports,
+              generateVersionBasedTeamsRuntimeConfig(version).supports,
             ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
           });

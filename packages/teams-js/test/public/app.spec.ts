@@ -23,7 +23,7 @@ import {
   _minRuntimeConfigToUninitialize,
   latestRuntimeApiVersion,
   runtime,
-  teamsRuntimeConfig,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
@@ -170,7 +170,7 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
@@ -180,7 +180,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -190,7 +190,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -214,7 +214,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -259,7 +259,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
@@ -1044,7 +1044,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
@@ -1059,7 +1059,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -1074,7 +1074,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -1102,7 +1102,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -1150,7 +1150,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {

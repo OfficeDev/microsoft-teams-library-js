@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
+import { generateVersionBasedTeamsRuntimeConfig } from '../../src/public/runtime';
 import { webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
@@ -58,13 +58,13 @@ describe('webStorage', () => {
 
                   it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                     await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                     expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
                   });
                 } else {
                   it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                     await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                     expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
                   });
                 }
@@ -72,7 +72,7 @@ describe('webStorage', () => {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                   await utils.initializeWithContext(frameContext, clientType);
-                  utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                   expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
@@ -125,13 +125,13 @@ describe('webStorage', () => {
                   });
                   it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                     await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                     expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
                   });
                 } else {
                   it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                     await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                    utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                     expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
                   });
                 }
@@ -139,7 +139,7 @@ describe('webStorage', () => {
                 // not supported for any client type with invalid version
                 it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
                   await utils.initializeWithContext(frameContext, clientType);
-                  utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+                  utils.setRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(version));
                   expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
                 });
               }
