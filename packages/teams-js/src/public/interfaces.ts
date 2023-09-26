@@ -616,7 +616,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.AppInfo.sessionId | app.Context.app.sessionId} instead
    *
-   * Unique ID for the current session for use in correlating telemetry data.
+   * Unique ID for the current session for use in correlating telemetry data. A session corresponds to Teams app life cycle and gets created afresh when a new webview/iframe is created and ends upon the destruction of the said webview/iframe in which the app lives.
    */
   appSessionId?: string;
 
