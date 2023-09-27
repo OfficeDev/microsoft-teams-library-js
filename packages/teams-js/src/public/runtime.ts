@@ -396,6 +396,12 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
+  '1.0.0': [
+    {
+      capability: { pages: { tabs: {} } },
+      hostClientTypes: v1HostClientTypes,
+    },
+  ],
   '1.9.0': [
     {
       capability: { location: {} },
