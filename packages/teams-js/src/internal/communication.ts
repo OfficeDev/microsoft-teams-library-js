@@ -9,7 +9,7 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import { validateOrigin } from './utils';
+import { ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -63,7 +63,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
-  Communication.currentWindow = Communication.currentWindow || window;
+  Communication.currentWindow = Communication.currentWindow || ssrSafeWindow();
   Communication.parentWindow =
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
@@ -267,6 +267,8 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
   return request;
 }
 
+const processMessageLogger = communicationLogger.extend('processMessage');
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -274,14 +276,19 @@ function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequ
 function processMessage(evt: DOMMessageEvent): void {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
+    processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
     return;
   }
 
   // Process only if the message is coming from a different window and a valid origin
-  // valid origins are either a pre-known
+  // valid origins are either a pre-known origin or one specified by the app developer
+  // in their call to app.initialize
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
+    processMessageLogger(
+      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+    );
     return;
   }
 
@@ -296,6 +303,8 @@ function processMessage(evt: DOMMessageEvent): void {
   }
 }
 
+const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
+
 /**
  * @hidden
  * Validates the message source and origin, if it should be processed
@@ -307,6 +316,7 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
+    shouldProcessMessageLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
@@ -316,7 +326,11 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   ) {
     return true;
   } else {
-    return validateOrigin(new URL(messageOrigin));
+    const isOriginValid = validateOrigin(new URL(messageOrigin));
+    if (!isOriginValid) {
+      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+    }
+    return isOriginValid;
   }
 }
 

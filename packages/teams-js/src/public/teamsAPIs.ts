@@ -1,6 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ssrSafeWindow } from '../internal/utils';
 import { errorNotSupportedOnPlatform } from './constants';
 import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
@@ -41,13 +42,7 @@ export namespace teamsCore {
    * default print handler
    */
   export function print(): void {
-    if (typeof window !== 'undefined') {
-      window.print();
-    } else {
-      // This codepath only exists to enable compilation in a server-side redered environment. In standard usage, the window object should never be undefined so this code path should never run.
-      // If this error has actually been thrown, something has gone very wrong and it is a bug
-      throw new Error('window object undefined at print call');
-    }
+    ssrSafeWindow().print();
   }
 
   /**
@@ -57,6 +52,9 @@ export namespace teamsCore {
    * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke when the page is loaded.
+   *
+   * @deprecated
+   * As of 2.14.1, please use {@link app.lifecycle.registerOnResumeHandler} instead.
    *
    * @beta
    */
@@ -77,6 +75,8 @@ export namespace teamsCore {
    *
    * @param handler - The handler to invoke when the page is loaded.
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   *
+   * @deprecated
    */
   export function registerOnLoadHandlerHelper(
     handler: registerOnLoadHandlerFunctionType,
@@ -101,6 +101,7 @@ export namespace teamsCore {
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
+   * @deprecated
    * @beta
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
@@ -121,6 +122,8 @@ export namespace teamsCore {
    * @param handler - - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
+   *
+   * @deprecated
    */
   export function registerBeforeUnloadHandlerHelper(
     handler: registerBeforeUnloadHandlerFunctionType,

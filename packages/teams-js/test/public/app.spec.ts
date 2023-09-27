@@ -5,6 +5,7 @@ import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
+  errorNotSupportedOnPlatform,
   FrameContexts,
   HostClientType,
   HostName,
@@ -22,7 +23,7 @@ import {
   _minRuntimeConfigToUninitialize,
   latestRuntimeApiVersion,
   runtime,
-  teamsRuntimeConfig,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
@@ -169,7 +170,7 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
         await initPromise;
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
@@ -179,7 +180,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -189,7 +190,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -213,7 +214,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -258,7 +259,7 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr');
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
@@ -836,6 +837,75 @@ describe('Testing app capability', () => {
         });
       }
     });
+    describe('Testing app.lifecycle subcapability', () => {
+      describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToSuspendOrTerminate should be called. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+
+            utils.sendMessage('beforeSuspendOrTerminate');
+
+            let readyToSuspendOrTerminateMessage = utils.findMessageByFunc('readyToSuspendOrTerminate');
+            expect(readyToSuspendOrTerminateMessage).not.toBeNull();
+          });
+        });
+      });
+      describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() =>
+            app.lifecycle.registerOnResumeHandler(() => {
+              return false;
+            }),
+          ).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerOnResumeHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let handlerInvoked = false;
+            app.lifecycle.registerOnResumeHandler(() => {
+              handlerInvoked = true;
+            });
+
+            utils.sendMessage('resume');
+            expect(handlerInvoked).toBe(true);
+          });
+        });
+      });
+    });
   });
 
   describe('Frameless - Testing app capbility', () => {
@@ -974,7 +1044,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
@@ -989,7 +1059,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -1004,7 +1074,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -1032,7 +1102,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -1080,7 +1150,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
