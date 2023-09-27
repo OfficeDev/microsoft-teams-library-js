@@ -1,4 +1,4 @@
-import { videoEffects, videoEx } from '@microsoft/teams-js';
+import { videoEffects, videoEffectsEx } from '@microsoft/teams-js';
 import React from 'react';
 
 import { generateRegistrationMsg } from '../../App';
@@ -15,8 +15,8 @@ const UpdatePersonalizedEffects = (): React.ReactElement =>
           throw new Error('input is required and it has to be an array.');
         }
       },
-      submit: async (input: videoEx.PersonalizedEffect[]) => {
-        videoEx.updatePersonalizedEffects(input);
+      submit: async (input: videoEffectsEx.PersonalizedEffect[]) => {
+        videoEffectsEx.updatePersonalizedEffects(input);
         return 'Success';
       },
     },
@@ -34,7 +34,11 @@ const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
       },
       submit: async (input: string) => {
         const [effectId, effectParam] = input.split(',').map((item) => item.trim());
-        videoEx.notifySelectedVideoEffectChanged(videoEffects.EffectChangeType.EffectChanged, effectId, effectParam);
+        videoEffectsEx.notifySelectedVideoEffectChanged(
+          videoEffects.EffectChangeType.EffectChanged,
+          effectId,
+          effectParam,
+        );
         return 'Success';
       },
     },
@@ -55,7 +59,7 @@ const RegisterForVideoEffect = (): React.ReactElement =>
           );
         }
       };
-      videoEx.registerForVideoEffect(onVideoEffectChanged);
+      videoEffectsEx.registerForVideoEffect(onVideoEffectChanged);
       return generateRegistrationMsg('it is invoked on video effect changed');
     },
   });
@@ -71,7 +75,7 @@ const NotifyFatalError = (): React.ReactElement =>
         }
       },
       submit: async (input: string) => {
-        videoEx.notifyFatalError(input);
+        videoEffectsEx.notifyFatalError(input);
         return 'Success';
       },
     },
@@ -82,7 +86,7 @@ const CheckIsSupported = (): React.ReactElement =>
     name: 'videoExIsSupported',
     title: 'videoEx - isSupported',
     onClick: async () => {
-      return `videoEx is ${videoEx.isSupported() ? 'supported' : 'not supported'}`;
+      return `videoEx is ${videoEffectsEx.isSupported() ? 'supported' : 'not supported'}`;
     },
   });
 
@@ -97,7 +101,7 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             setResult('video frame received');
             return frame.videoFrame;
@@ -128,7 +132,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
           },
@@ -159,7 +163,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
           },

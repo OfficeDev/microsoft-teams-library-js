@@ -21,7 +21,7 @@ import { videoEffects } from '../public/videoEffects';
  * @internal
  * Limited to Microsoft-internal use
  */
-export namespace videoEx {
+export namespace videoEffectsEx {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);

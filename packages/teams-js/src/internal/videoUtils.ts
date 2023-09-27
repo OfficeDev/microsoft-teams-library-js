@@ -1,4 +1,4 @@
-import { videoEx } from '../private/videoEx';
+import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
@@ -88,7 +88,7 @@ export async function processMediaStream(
  */
 export async function processMediaStreamWithMetadata(
   streamId: string,
-  videoFrameHandler: videoEx.VideoFrameHandler,
+  videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   notifyError: (string) => void,
   videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<void> {
@@ -295,7 +295,10 @@ class OneTextureMetadata {
 class TransformerWithMetadata {
   private shouldDiscardAudioInferenceResult = false;
 
-  public constructor(private notifyError: (string) => void, private videoFrameHandler: videoEx.VideoFrameHandler) {
+  public constructor(
+    private notifyError: (string) => void,
+    private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
+  ) {
     registerHandler(
       'video.mediaStream.audioInferenceDiscardStatusChange',
       ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
