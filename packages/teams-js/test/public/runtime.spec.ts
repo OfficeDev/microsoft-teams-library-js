@@ -154,7 +154,7 @@ describe('runtime', () => {
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
             const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateVersionBasedTeamsRuntimeConfig('1.4.0').supports,
+              generateVersionBasedTeamsRuntimeConfig(`0.${version}`).supports,
             ).replace(/[{}]/g, '');
             expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
           });
