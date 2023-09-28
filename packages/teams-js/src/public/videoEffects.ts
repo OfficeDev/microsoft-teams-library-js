@@ -2,8 +2,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
+import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoEffectsUtils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
-import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 

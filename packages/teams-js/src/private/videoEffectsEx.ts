@@ -2,13 +2,13 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { inServerSideRenderingEnvironment } from '../internal/utils';
-import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
   processMediaStream,
   processMediaStreamWithMetadata,
-} from '../internal/videoUtils';
+} from '../internal/videoEffectsUtils';
+import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { videoEffects } from '../public/videoEffects';
