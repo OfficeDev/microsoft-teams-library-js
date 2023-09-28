@@ -1,4 +1,4 @@
-import { video } from '@microsoft/teams-js';
+import { videoEffects } from '@microsoft/teams-js';
 import React from 'react';
 
 import { generateRegistrationMsg } from '../App';
@@ -16,7 +16,7 @@ const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, input);
+        videoEffects.notifySelectedVideoEffectChanged(videoEffects.EffectChangeType.EffectChanged, input);
         return 'Success';
       },
     },
@@ -30,12 +30,12 @@ const RegisterForVideoEffect = (): React.ReactElement =>
       const onVideoEffectChanged = async (effectId: string | undefined): Promise<void> => {
         if (effectId === 'anInvalidEffectId') {
           setResult(`failed to change effect to ${JSON.stringify(effectId)}`);
-          throw video.EffectFailureReason.InvalidEffectId;
+          throw videoEffects.EffectFailureReason.InvalidEffectId;
         } else {
           setResult(`video effect changed to ${JSON.stringify(effectId)}`);
         }
       };
-      video.registerForVideoEffect(onVideoEffectChanged);
+      videoEffects.registerForVideoEffect(onVideoEffectChanged);
       return generateRegistrationMsg('it is invoked on video effect changed');
     },
   });
@@ -45,7 +45,7 @@ const CheckIsSupported = (): React.ReactElement =>
     name: 'videoIsSupported',
     title: 'video - isSupported',
     onClick: async () => {
-      return `video is ${video.isSupported() ? 'supported' : 'not supported'}`;
+      return `video is ${videoEffects.isSupported() ? 'supported' : 'not supported'}`;
     },
   });
 
@@ -55,14 +55,14 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
     title: 'medisStream - registerForVideoFrame',
     onClick: async (setResult) => {
       try {
-        video.registerForVideoFrame({
+        videoEffects.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             setResult('video frame received');
             return frame.videoFrame;
           },
           videoBufferHandler: (buffer) => buffer,
           config: {
-            format: video.VideoFrameFormat.NV12,
+            format: videoEffects.VideoFrameFormat.NV12,
           },
         });
       } catch (error) {
@@ -78,7 +78,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
     title: 'sharedFrame - registerForVideoFrame',
     onClick: async (setResult) => {
       try {
-        video.registerForVideoFrame({
+        videoEffects.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
           },
@@ -86,7 +86,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
             setResult('video frame received');
           },
           config: {
-            format: video.VideoFrameFormat.NV12,
+            format: videoEffects.VideoFrameFormat.NV12,
           },
         });
       } catch (error) {
