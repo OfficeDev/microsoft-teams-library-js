@@ -1,4 +1,14 @@
-import { ExternalAppDialogInfo } from '../public/interfaces';
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { FrameContexts } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
+import { BaseDialogInfo } from '../public/interfaces';
+import { runtime } from '../public/runtime';
 
 /**
  * @hidden
@@ -8,47 +18,96 @@ import { ExternalAppDialogInfo } from '../public/interfaces';
  *
  *  capability that allows an app (restricted to bizchat for now) to show a modal dialog.
  *  Unlike traditional URL-based dialogs that limit opening URLs with the same domain,
- *  this capability allows any URL pointing to a teams-js app to be opened within the dialog.
+ *  this capability allows ME that has a different url domain to be opened within the dialog.
+ *
+ * It also allows chaining
  */
 export namespace externalAppDialog {
   export interface ISdkResponse {
     err?: string;
     result?: string | object;
   }
-  export type DialogSubmitHandler = (result: ISdkResponse) => void;
+
+  export enum DialogContentType {
+    Card = 'card',
+    Url = 'url',
+    Text = 'text',
+  }
 
   /**
-   * Allows app to open a dialog.
-   *
-   * @remarks
-   * This function cannot be called from inside of a dialog
-   *
-   * @param externalAppDialogInfo - An object containing the parameters of the dialog module.
-   * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-   *
-   * @beta
+   * Base of a discriminated union between a URL based, an Adaptive Card and Text based Dialog info
    */
-  export function open(externalAppDialogInfo: ExternalAppDialogInfo, submitHandler: DialogSubmitHandler): void;
+  interface DialogBase<T extends DialogContentType> extends BaseDialogInfo {
+    type: T;
+  }
 
   /**
-   * Submit the dialog module and close the dialog
-   *
-   * @remarks
-   * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
-   *
-   * @param result - The result to be sent to the bot or the app. Typically a JSON object or a serialized version of it,
-   *  If this function is called from a dialog while {@link M365ContentAction} is set in the context object by the host, result will be ignored
-   *
-   * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
-   *
-   * @beta
+   * URL based Dialog info
    */
-  export function submit(result?: string | object, appIds?: string | string[]): void;
+  interface DialogWithUrl extends DialogBase<DialogContentType.Url> {
+    url: string;
+    appId: string;
+  }
+  interface DialogWithAdaptiveCard extends DialogBase<DialogContentType.Card> {
+    card: string;
+  }
+  interface DialogWithText extends DialogBase<DialogContentType.Text> {
+    text: string;
+  }
+  interface CloseDialog {
+    type: 'close';
+  }
+  export type ExternalAppDialogInfo = DialogWithUrl | DialogWithAdaptiveCard | DialogWithText;
+  export type ChainDialogInfo = CloseDialog | ExternalAppDialogInfo;
 
-  export function isSupported(): boolean;
+  export type DialogSubmitHandler = (result: ISdkResponse) => ChainDialogInfo;
 
-  export namespace bot {
-    export function open(externalAppDialogInfo: BotExternalAppDialogInfo, submitHandler: DialogSubmitHandler): void;
-    export function isSupported(): boolean;
+  export function open(externalAppDialogInfo: ExternalAppDialogInfo, submitHandler: DialogSubmitHandler): void {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    // event is dispatched from hub when they recieve submit from dialog - with the submit data
+    // when event reaches teams-js it calls the submitHandler
+    // submitHandler returns url/card/text dialogProps. teams-js take it, and call the chain function.
+    // If the user closes the dialog, call submitHandler with the err
+
+    const handlerCalledWhenSubmitDispatched = (sdkResponse: ISdkResponse): void => {
+      const chainDialogprops = submitHandler?.(sdkResponse);
+      chainDialogprops.type == 'close' ? close() : chain(chainDialogprops);
+    };
+
+    registerHandler('submit', handlerCalledWhenSubmitDispatched);
+
+    //If user x-out of dialog, teams-js still calls the submitHandler with the err message
+    //when the dialog is closed with close API, the submitHandler will not be called
+    sendMessageToParent('externalAppDialog.open', [externalAppDialogInfo], (sdkResponse) => {
+      if (sdkResponse.err) {
+        submitHandler(sdkResponse);
+      }
+      removeHandler('handlerCalledWhenSubmitDispatched');
+    });
+  }
+
+  export function chain(externalAppDialogInfo: ExternalAppDialogInfo): void {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    sendMessageToParent('externalAppDialog.chain', [externalAppDialogInfo]);
+  }
+
+  export function close(): void {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    removeHandler('handlerCalledWhenSubmitDispatched');
+    sendMessageToParent('externalAppDialog.close');
+  }
+
+  export function isSupported(): boolean {
+    return ensureInitialized(runtime) && (runtime.supports.dialog && runtime.supports.dialog.url) !== undefined;
   }
 }

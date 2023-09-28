@@ -855,30 +855,6 @@ export interface UrlDialogInfo extends BaseDialogInfo {
    */
   fallbackUrl?: string;
 }
-/**
- * Parameters to open an external app as a dialog
- */
-export interface ExternalAppDialogInfo extends BaseDialogInfo {
-  /**
-   * The url to be rendered in the webview/iframe.
-   *
-   */
-  url: string;
-
-  /**
-   * Id of the app that needs to be opened in the external app dialog
-   */
-  appId: string;
-}
-
-export interface BotExternalAppDialogInfo extends ExternalAppDialogInfo {
-  /**
-   * Specifies a bot ID to send the result of the user's interaction with the task module.
-   * The bot will receive a task/complete invoke event with a JSON object
-   * in the event payload.
-   */
-  completionBotId: string;
-}
 
 /**
  * Data structure to describe dialog information needed to open a bot based dialog.
