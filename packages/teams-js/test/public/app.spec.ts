@@ -1161,16 +1161,17 @@ describe('Testing app capability', () => {
       it('app.initialize should initialize with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr'],
+            args: [FrameContexts.content, HostClientType.web, highestSupportedVersion, 'nonJSONStr'],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
