@@ -1,4 +1,4 @@
-import { video, videoEx } from '@microsoft/teams-js';
+import { videoEffects, videoEffectsEx } from '@microsoft/teams-js';
 import React from 'react';
 
 import { generateRegistrationMsg } from '../../App';
@@ -15,8 +15,8 @@ const UpdatePersonalizedEffects = (): React.ReactElement =>
           throw new Error('input is required and it has to be an array.');
         }
       },
-      submit: async (input: videoEx.PersonalizedEffect[]) => {
-        videoEx.updatePersonalizedEffects(input);
+      submit: async (input: videoEffectsEx.PersonalizedEffect[]) => {
+        videoEffectsEx.updatePersonalizedEffects(input);
         return 'Success';
       },
     },
@@ -34,7 +34,11 @@ const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
       },
       submit: async (input: string) => {
         const [effectId, effectParam] = input.split(',').map((item) => item.trim());
-        videoEx.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, effectId, effectParam);
+        videoEffectsEx.notifySelectedVideoEffectChanged(
+          videoEffects.EffectChangeType.EffectChanged,
+          effectId,
+          effectParam,
+        );
         return 'Success';
       },
     },
@@ -48,14 +52,14 @@ const RegisterForVideoEffect = (): React.ReactElement =>
       const onVideoEffectChanged = async (effectId: string | undefined, effectParam?: string): Promise<void> => {
         if (effectId === 'anInvalidEffectId') {
           setResult(`failed to change effect to ${JSON.stringify(effectId)}, param: ${JSON.stringify(effectParam)}`);
-          throw video.EffectFailureReason.InvalidEffectId;
+          throw videoEffects.EffectFailureReason.InvalidEffectId;
         } else {
           setResult(
             `video effect changed to ${JSON.stringify(effectId)}, effect param: ${JSON.stringify(effectParam)}`,
           );
         }
       };
-      videoEx.registerForVideoEffect(onVideoEffectChanged);
+      videoEffectsEx.registerForVideoEffect(onVideoEffectChanged);
       return generateRegistrationMsg('it is invoked on video effect changed');
     },
   });
@@ -71,7 +75,7 @@ const NotifyFatalError = (): React.ReactElement =>
         }
       },
       submit: async (input: string) => {
-        videoEx.notifyFatalError(input);
+        videoEffectsEx.notifyFatalError(input);
         return 'Success';
       },
     },
@@ -82,7 +86,7 @@ const CheckIsSupported = (): React.ReactElement =>
     name: 'videoExIsSupported',
     title: 'videoEx - isSupported',
     onClick: async () => {
-      return `videoEx is ${videoEx.isSupported() ? 'supported' : 'not supported'}`;
+      return `videoEx is ${videoEffectsEx.isSupported() ? 'supported' : 'not supported'}`;
     },
   });
 
@@ -97,14 +101,14 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             setResult('video frame received');
             return frame.videoFrame;
           },
           videoBufferHandler: (buffer) => buffer,
           config: {
-            format: video.VideoFrameFormat.NV12,
+            format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
           },
@@ -128,7 +132,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
           },
@@ -136,7 +140,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
             setResult('video frame received');
           },
           config: {
-            format: video.VideoFrameFormat.NV12,
+            format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
           },
@@ -159,7 +163,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
         }
-        videoEx.registerForVideoFrame({
+        videoEffectsEx.registerForVideoFrame({
           videoFrameHandler: async (frame) => {
             return frame.videoFrame;
           },
@@ -167,7 +171,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
             setResult('video frame received');
           },
           config: {
-            format: video.VideoFrameFormat.NV12,
+            format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
           },
