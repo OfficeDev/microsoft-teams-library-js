@@ -41,6 +41,7 @@
               },
               "expectedWindowOpenTarget": { "type": "string" },
               "expectedIFrameTarget": { "type": "string" },
+              "expectedSecondViewTarget": { "type": "string" },
               "modulesToDisable": {
                 "type": "array",
                 "items": { "type": "string" }
