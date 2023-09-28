@@ -21,6 +21,7 @@ import {
 } from '../../src/public/interfaces';
 import {
   _minRuntimeConfigToUninitialize,
+  generateVersionBasedTeamsRuntimeConfig,
   latestRuntimeApiVersion,
   runtime,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
@@ -164,33 +165,42 @@ describe('Testing app capability', () => {
         expect(callbackInvoked).toBe(true);
       });
 
-      it('app.initialize should use teams runtime config if no runtime config is given', async () => {
+      it('app.initialize should use version and platform-specific Teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, highestSupportedVersion);
         await initPromise;
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
-      it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
+      it('app.initialize should use version and platform-specific Teams runtime config if an empty runtime config is given', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', highestSupportedVersion);
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(
+          initMessage,
+          FrameContexts.content,
+          HostClientType.web,
+          'nonJSONStr',
+          highestSupportedVersion,
+        );
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -256,10 +266,17 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(
+          initMessage,
+          FrameContexts.content,
+          HostClientType.web,
+          highestSupportedVersion,
+          'nonJSONStr',
+        );
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
@@ -1036,45 +1053,48 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
 
+        const highestSupportedVersion = '1.6.0';
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '', '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, '', highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
+        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
