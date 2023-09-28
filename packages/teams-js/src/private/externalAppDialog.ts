@@ -7,7 +7,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { BaseDialogInfo } from '../public/interfaces';
+import { DialogSize } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -28,39 +28,40 @@ export namespace externalAppDialog {
     result?: string | object;
   }
 
-  export enum DialogContentType {
+  export enum DialogActionType {
     Card = 'card',
     Url = 'url',
     Text = 'text',
+    Close = 'close',
   }
 
-  /**
-   * Base of a discriminated union between a URL based, an Adaptive Card and Text based Dialog info
-   */
-  interface DialogBase<T extends DialogContentType> extends BaseDialogInfo {
+  export interface BaseDialogInfo {
+    size?: DialogSize;
+    title?: string;
+  }
+
+  interface DialogType<T extends DialogActionType> {
     type: T;
   }
 
-  /**
-   * URL based Dialog info
-   */
-  interface DialogWithUrl extends DialogBase<DialogContentType.Url> {
+  interface DialogWithUrl extends DialogType<DialogActionType.Url>, BaseDialogInfo {
     url: string;
     appId: string;
   }
-  interface DialogWithAdaptiveCard extends DialogBase<DialogContentType.Card> {
+  interface DialogWithAdaptiveCard extends DialogType<DialogActionType.Card>, BaseDialogInfo {
     card: string;
   }
-  interface DialogWithText extends DialogBase<DialogContentType.Text> {
+  interface DialogWithText extends DialogType<DialogActionType.Text> {
     text: string;
   }
-  interface CloseDialog {
-    type: 'close';
-  }
-  export type ExternalAppDialogInfo = DialogWithUrl | DialogWithAdaptiveCard | DialogWithText;
-  export type ChainDialogInfo = CloseDialog | ExternalAppDialogInfo;
 
-  export type DialogSubmitHandler = (result: ISdkResponse) => ChainDialogInfo;
+  export type ExternalAppDialogInfo = DialogWithUrl | DialogWithAdaptiveCard | DialogWithText;
+
+  type CloseDialogInfo = DialogType<DialogActionType.Close>;
+
+  export type ChainDialogInfo = CloseDialogInfo | ExternalAppDialogInfo;
+
+  export type DialogSubmitHandler = (result: ISdkResponse) => Promise<ChainDialogInfo>;
 
   export function open(externalAppDialogInfo: ExternalAppDialogInfo, submitHandler: DialogSubmitHandler): void {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -68,17 +69,17 @@ export namespace externalAppDialog {
       throw errorNotSupportedOnPlatform;
     }
 
-    // event is dispatched from hub when they recieve submit from dialog - with the submit data
-    // when event reaches teams-js it calls the submitHandler
+    // Hub dispatches an event when it recieve submit from dialog
+    // when event reaches teams-js, submitHandler is called
     // submitHandler returns url/card/text dialogProps. teams-js take it, and call the chain function.
-    // If the user closes the dialog, call submitHandler with the err
+    // submitHandler can also return type: close. In that case, 'close' fucntion is called
 
-    const handlerCalledWhenSubmitDispatched = (sdkResponse: ISdkResponse): void => {
-      const chainDialogprops = submitHandler?.(sdkResponse);
+    const handlerCalledWhenSubmitDispatched = async (sdkResponse: ISdkResponse): Promise<void> => {
+      const chainDialogprops = await submitHandler?.(sdkResponse);
       chainDialogprops.type == 'close' ? close() : chain(chainDialogprops);
     };
 
-    registerHandler('submit', handlerCalledWhenSubmitDispatched);
+    registerHandler('externalAppDialog.submit', handlerCalledWhenSubmitDispatched);
 
     //If user x-out of dialog, teams-js still calls the submitHandler with the err message
     //when the dialog is closed with close API, the submitHandler will not be called
