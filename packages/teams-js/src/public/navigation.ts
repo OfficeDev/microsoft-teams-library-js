@@ -32,6 +32,7 @@ export function returnFocus(navigateForward?: boolean): void {
  * @param onComplete - The callback to invoke when the action is complete.
  */
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
+  console.log('HELLLLLLLLLLLO!!!!!!!!!!!!!!!!!');
   ensureInitialized(runtime);
   onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
   pages.tabs

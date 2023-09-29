@@ -278,8 +278,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     monetization: {},
     notifications: {},
     pages: {
-      appButton: {},
-      tabs: {},
       config: {},
       backStack: {},
       fullTrust: {},
@@ -400,7 +398,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   // we can just effectively consider them always supported (on the specified platforms)
   '1.0.0': [
     {
-      capability: { stageView: {} },
+      capability: { pages: { appButton: {}, tabs: {} }, stageView: {} },
       hostClientTypes: v1NonMobileHostClientTypes,
     },
   ],
@@ -447,6 +445,25 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
+
+function mergeCapabilities(baselineSupports: any, supportsToMergeIntoBaseline: any): any {
+  const merged: any = { ...baselineSupports };
+
+  for (const key in supportsToMergeIntoBaseline) {
+    if (supportsToMergeIntoBaseline.hasOwnProperty(key)) {
+      if (typeof supportsToMergeIntoBaseline[key] === 'object' && !Array.isArray(supportsToMergeIntoBaseline[key])) {
+        merged[key] = mergeCapabilities(baselineSupports[key] || {}, supportsToMergeIntoBaseline[key]);
+      } else {
+        if (!(key in baselineSupports)) {
+          merged[key] = supportsToMergeIntoBaseline[key];
+        }
+      }
+    }
+  }
+
+  return merged;
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -468,14 +485,14 @@ export function generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion: 
     newSupports,
   );
 
+  console.log(`Considering merging, version: ${highestSupportedVersion}, hostClientType: ${GlobalVars.hostClientType}`);
+
   Object.keys(mapTeamsVersionToSupportedCapabilities).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
       mapTeamsVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
-          newSupports = {
-            ...newSupports,
-            ...capabilityReqs.capability,
-          };
+          console.log(`Merging, capability: ${JSON.stringify(capabilityReqs.capability)}`);
+          newSupports = mergeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
     }
@@ -491,6 +508,10 @@ export function generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion: 
   generateBackCompatRuntimeConfigLogger(
     'Runtime config after updating based on highestSupportedVersion: %o',
     teamsBackCompatRuntimeConfig,
+  );
+
+  console.log(
+    `Runtime config after updating based on highestSupportedVersion: ${JSON.stringify(teamsBackCompatRuntimeConfig)}`,
   );
 
   return teamsBackCompatRuntimeConfig;
