@@ -4,7 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { video } from '../../src/public/video';
+import { videoEffects } from '../../src/public/videoEffects';
 import { Utils } from '../utils';
 
 /* eslint-disable */
@@ -56,10 +56,10 @@ describe('video', () => {
     });
 
     describe('registerForVideoFrame', () => {
-      const registerForVideoFrameParameters: video.RegisterForVideoFrameParameters = {
+      const registerForVideoFrameParameters: videoEffects.RegisterForVideoFrameParameters = {
         videoBufferHandler: (_bufferData, _onSuccess, _onError) => {},
         videoFrameHandler: (data) => Promise.resolve(data.videoFrame),
-        config: { format: video.VideoFrameFormat.NV12 },
+        config: { format: videoEffects.VideoFrameFormat.NV12 },
       };
 
       describe.each([
@@ -83,7 +83,7 @@ describe('video', () => {
           expect.assertions(3);
 
           // Act
-          video.registerForVideoFrame(registerForVideoFrameParameters);
+          videoEffects.registerForVideoFrame(registerForVideoFrameParameters);
 
           // Assert
           const message = utils.findMessageByFunc(eventName);
@@ -96,18 +96,18 @@ describe('video', () => {
           expect.assertions(1);
 
           // Act
-          video.registerForVideoFrame(registerForVideoFrameParameters);
+          videoEffects.registerForVideoFrame(registerForVideoFrameParameters);
 
           // Assert
           const messageForRegister = utils.findMessageByFunc('registerHandler');
           expect(messageForRegister).toBeNull();
         });
 
-        it('should listen to video.setFrameProcessTimeLimit', () => {
+        it('should listen to videoEffects.setFrameProcessTimeLimit', () => {
           expect.assertions(2);
           const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
           // Act
-          video.registerForVideoFrame(registerForVideoFrameParameters);
+          videoEffects.registerForVideoFrame(registerForVideoFrameParameters);
           sendMessage('video.setFrameProcessTimeLimit', { timeLimit: 100 });
 
           // Assert
@@ -132,7 +132,7 @@ describe('video', () => {
           const videoBufferHandler = jest.fn();
 
           // Act
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoBufferHandler,
           });
@@ -151,7 +151,7 @@ describe('video', () => {
           expect.assertions(6);
 
           // Arrange
-          const videoBufferHandler: video.VideoBufferHandler = (_frame, onSuccess) => onSuccess();
+          const videoBufferHandler: videoEffects.VideoBufferHandler = (_frame, onSuccess) => onSuccess();
           const reportStartFrameProcessingSpy = jest.spyOn(
             VideoPerformanceMonitor.prototype,
             'reportStartFrameProcessing',
@@ -163,7 +163,7 @@ describe('video', () => {
           );
 
           // Act
-          video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
+          videoEffects.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
           const videoFrameMock = { width: 30, height: 40, data: 101, timestamp: 200 };
           sendMessage('video.newVideoFrame', videoFrameMock);
 
@@ -182,10 +182,11 @@ describe('video', () => {
 
           // Arrange
           const errorMessage = 'Error occurs when processing the video frame';
-          const videoBufferHandler: video.VideoBufferHandler = (_frame, _onSuccess, onError) => onError(errorMessage);
+          const videoBufferHandler: videoEffects.VideoBufferHandler = (_frame, _onSuccess, onError) =>
+            onError(errorMessage);
 
           // Act
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoBufferHandler,
           });
@@ -206,7 +207,7 @@ describe('video', () => {
           const videoBufferHandler = jest.fn();
 
           // Act
-          video.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
+          videoEffects.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
           sendMessage('video.newVideoFrame', undefined);
 
           // Assert
@@ -231,7 +232,7 @@ describe('video', () => {
           );
           const reportFrameProcessedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportFrameProcessed');
           // Act
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
@@ -255,7 +256,7 @@ describe('video', () => {
           };
 
           // Act
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
@@ -277,7 +278,7 @@ describe('video', () => {
           const videoFrameHandler = jest.fn().mockRejectedValue(errorMessage);
 
           // Act
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
@@ -301,13 +302,13 @@ describe('video', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
 
         // Act
-        video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'effectId');
+        videoEffects.notifySelectedVideoEffectChanged(videoEffects.EffectChangeType.EffectChanged, 'effectId');
 
         // Assert
         const message = utils.findMessageByFunc('video.videoEffectChanged');
         expect(message).not.toBeNull();
         expect(message?.args?.length).toBe(2);
-        expect(message?.args).toEqual([video.EffectChangeType.EffectChanged, 'effectId']);
+        expect(message?.args).toEqual([videoEffects.EffectChangeType.EffectChanged, 'effectId']);
       });
     });
 
@@ -319,7 +320,7 @@ describe('video', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
 
         // Act
-        video.registerForVideoEffect(() => Promise.resolve());
+        videoEffects.registerForVideoEffect(() => Promise.resolve());
 
         const messageForRegister = utils.findMessageByFunc('video.registerForVideoEffect');
         expect(messageForRegister).not.toBeNull();
@@ -337,7 +338,7 @@ describe('video', () => {
         const reportVideoEffectChangedSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'reportVideoEffectChanged');
 
         // Act
-        video.registerForVideoEffect(videoEffectCallBack);
+        videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         sendMessage('video.effectParameterChange', effectId);
 
@@ -359,7 +360,7 @@ describe('video', () => {
         const videoEffectCallBack = jest.fn().mockResolvedValue(undefined);
 
         // Act
-        video.registerForVideoEffect(videoEffectCallBack);
+        videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         sendMessage('video.effectParameterChange', effectId);
         await videoEffectCallBack.mock.results[0].value;
@@ -379,10 +380,10 @@ describe('video', () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
         const videoEffectCallBack = jest
           .fn<Promise<void>, unknown[]>()
-          .mockRejectedValue(video.EffectFailureReason.InvalidEffectId);
+          .mockRejectedValue(videoEffects.EffectFailureReason.InvalidEffectId);
 
         // Act
-        video.registerForVideoEffect(videoEffectCallBack);
+        videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         sendMessage('video.effectParameterChange', effectId);
         await videoEffectCallBack.mock.results[0].value.catch(() => {});
@@ -400,7 +401,7 @@ describe('video', () => {
     describe('isSupported', () => {
       it('should throw if called before initialization', () => {
         utils.uninitializeRuntimeConfig();
-        expect(() => video.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+        expect(() => videoEffects.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       });
     });
 
@@ -409,19 +410,20 @@ describe('video', () => {
       {
         apiName: 'registerForVideoFrame',
         callApi: () =>
-          video.registerForVideoFrame({
+          videoEffects.registerForVideoFrame({
             videoBufferHandler: jest.fn(),
             videoFrameHandler: jest.fn(),
-            config: { format: video.VideoFrameFormat.NV12 },
+            config: { format: videoEffects.VideoFrameFormat.NV12 },
           }),
       },
       {
         apiName: 'notifySelectedVideoEffectChanged',
-        callApi: () => video.notifySelectedVideoEffectChanged(video.EffectChangeType.EffectChanged, 'effectId'),
+        callApi: () =>
+          videoEffects.notifySelectedVideoEffectChanged(videoEffects.EffectChangeType.EffectChanged, 'effectId'),
       },
       {
         apiName: 'registerForVideoEffect',
-        callApi: () => video.registerForVideoEffect(() => Promise.resolve()),
+        callApi: () => videoEffects.registerForVideoEffect(() => Promise.resolve()),
       },
     ])(`$apiName`, ({ callApi }) => {
       it.each(notAllowedContexts)('is not allowed in wrong context: FrameContext.%s', async (wrongContext) => {

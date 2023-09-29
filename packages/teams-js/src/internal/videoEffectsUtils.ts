@@ -1,6 +1,6 @@
-import { videoEx } from '../private/videoEx';
+import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { video } from '../public/video';
+import { videoEffects } from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
@@ -54,9 +54,9 @@ interface VideoFrame {
  */
 // eslint-disable-next-line strict-null-checks/all
 declare const VideoFrame: {
-  prototype: video.VideoFrame;
-  new (source: CanvasImageSource, init?: VideoFrameInit): video.VideoFrame;
-  new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): video.VideoFrame;
+  prototype: videoEffects.VideoFrame;
+  new (source: CanvasImageSource, init?: VideoFrameInit): videoEffects.VideoFrame;
+  new (data: AllowSharedBufferSource, init: VideoFrameBufferInit): videoEffects.VideoFrame;
 };
 
 /**
@@ -65,7 +65,7 @@ declare const VideoFrame: {
  */
 export async function processMediaStream(
   streamId: string,
-  videoFrameHandler: video.VideoFrameHandler,
+  videoFrameHandler: videoEffects.VideoFrameHandler,
   notifyError: (string) => void,
   videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<void> {
@@ -88,7 +88,7 @@ export async function processMediaStream(
  */
 export async function processMediaStreamWithMetadata(
   streamId: string,
-  videoFrameHandler: videoEx.VideoFrameHandler,
+  videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   notifyError: (string) => void,
   videoPerformanceMonitor?: VideoPerformanceMonitor,
 ): Promise<void> {
@@ -173,7 +173,10 @@ enum VideoFrameTransformErrors {
 }
 
 class DefaultTransformer {
-  public constructor(private notifyError: (string) => void, private videoFrameHandler: video.VideoFrameHandler) {}
+  public constructor(
+    private notifyError: (string) => void,
+    private videoFrameHandler: videoEffects.VideoFrameHandler,
+  ) {}
 
   public transform = async (originalFrame, controller): Promise<void> => {
     const timestamp = originalFrame.timestamp;
@@ -292,7 +295,10 @@ class OneTextureMetadata {
 class TransformerWithMetadata {
   private shouldDiscardAudioInferenceResult = false;
 
-  public constructor(private notifyError: (string) => void, private videoFrameHandler: videoEx.VideoFrameHandler) {
+  public constructor(
+    private notifyError: (string) => void,
+    private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
+  ) {
     registerHandler(
       'video.mediaStream.audioInferenceDiscardStatusChange',
       ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
@@ -440,7 +446,7 @@ export function createEffectParameterChangeCallback(
       })
       .catch((reason) => {
         const validReason =
-          reason in video.EffectFailureReason ? reason : video.EffectFailureReason.InitializationFailure;
+          reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
         sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason, effectParam]);
       });
   };
