@@ -70,7 +70,6 @@ describe('MicrosoftTeams-Navigation', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
-        console.log('GOOOOOOOOODDDDDDBYEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!');
         await utils.initializeWithContext(context, 'desktop');
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
         navigateToTab(null);
