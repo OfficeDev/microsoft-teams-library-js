@@ -97,7 +97,7 @@ describe('stageView', () => {
     });
 
     it('should properly handle errors', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
+      await utils.initializeWithContext(FrameContexts.content, 'desktop');
 
       const promise = stageView.open(stageViewParams);
 
@@ -111,7 +111,7 @@ describe('stageView', () => {
     });
 
     it('should throw error when stageView is not supported.', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
+      await utils.initializeWithContext(FrameContexts.content, 'ios');
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
       expect.assertions(1);

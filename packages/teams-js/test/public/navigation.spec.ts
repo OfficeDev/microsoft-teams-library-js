@@ -70,21 +70,21 @@ describe('MicrosoftTeams-Navigation', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context);
+        await utils.initializeWithContext(context, 'desktop');
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
         navigateToTab(null);
         expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
       it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context);
+        await utils.initializeWithContext(context, 'desktop');
         navigateToTab(null);
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
         expect(navigateToTabMsg).not.toBeNull();
       });
 
       it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context);
+        await utils.initializeWithContext(context, 'desktop');
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
             if (!success) {

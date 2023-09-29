@@ -278,6 +278,8 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     monetization: {},
     notifications: {},
     pages: {
+      appButton: {},
+      tabs: {},
       config: {},
       backStack: {},
       fullTrust: {},
