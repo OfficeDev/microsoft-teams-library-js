@@ -132,7 +132,7 @@ describe('runtime', () => {
     });
   });
 
-  function isSubset(subset: any, superset: any): boolean {
+  function isSubset(subset: object, superset: object): boolean {
     for (const key in subset) {
       if (typeof subset[key] === 'object' && typeof superset[key] === 'object') {
         if (!isSubset(subset[key], superset[key])) {
@@ -145,16 +145,16 @@ describe('runtime', () => {
     return true;
   }
 
-  function decomposeObject(obj: any): any[] {
-    const result: any[] = [];
+  function decomposeObject(obj: object): object[] {
+    const result: object[] = [];
 
-    function recurse(current: any, path: string[] = []): any {
+    function recurse(current: object, path: string[] = []): void {
       for (const key in current) {
         const newPath = [...path, key];
         if (typeof current[key] === 'object' && Object.keys(current[key]).length > 0) {
           recurse(current[key], newPath);
         } else {
-          const entry: any = {};
+          const entry: object = {};
           let temp = entry;
           for (const [i, prop] of newPath.entries()) {
             temp[prop] = i === newPath.length - 1 ? current[key] : {};
@@ -230,7 +230,9 @@ describe('runtime', () => {
           (type) => !capabilityAdditionsForClientTypesInASpecificVersion.hostClientTypes.includes(type),
         );
 
-        const individualCapabilityAdditionsForThisVersion: any[] = decomposeObject(capabilityAdditionsForThisVersion);
+        const individualCapabilityAdditionsForThisVersion: object[] = decomposeObject(
+          capabilityAdditionsForThisVersion,
+        );
 
         notSupportedHostClientTypes.forEach((clientType) => {
           it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${JSON.stringify(
