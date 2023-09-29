@@ -170,10 +170,10 @@ describe('runtime', () => {
   }
 
   describe('generateVersionBasedTeamsRuntimeConfig', () => {
-    Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilities]) => {
-      capabilities.forEach((capabilityAdditions) => {
-        const capabilityAdditionsForThisVersion = capabilityAdditions.capability;
-        capabilityAdditions.hostClientTypes.forEach((clientType) => {
+    Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilityAdditionsForEachVersion]) => {
+      capabilityAdditionsForEachVersion.forEach((capabilityAdditionsForClientTypesInASpecificVersion) => {
+        const capabilityAdditionsForThisVersion = capabilityAdditionsForClientTypesInASpecificVersion.capability;
+        capabilityAdditionsForClientTypesInASpecificVersion.hostClientTypes.forEach((clientType) => {
           it(`Back compat host client type ${clientType} supporting up to ${version} should support ${JSON.stringify(
             capabilityAdditionsForThisVersion,
           )}`, async () => {
@@ -226,22 +226,28 @@ describe('runtime', () => {
           });
         });
 
-        // const notSupportedHostClientTypes = Object.values(HostClientType).filter(
-        //   (type) => !supportedCapability.hostClientTypes.includes(type),
-        // );
+        const notSupportedHostClientTypes = Object.values(HostClientType).filter(
+          (type) => !capabilityAdditionsForClientTypesInASpecificVersion.hostClientTypes.includes(type),
+        );
 
-        // notSupportedHostClientTypes.forEach((clientType) => {
-        //   it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(
-        //     /[{:}]/g,
-        //     ' ',
-        //   )} capability`, async () => {
-        //     await utils.initializeWithContext('content', clientType);
-        //     const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-        //       generateVersionBasedTeamsRuntimeConfig(version).supports,
-        //     ).replace(/[{}]/g, '');
-        //     expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
-        //   });
-        // });
+        const individualCapabilityAdditionsForThisVersion: any[] = decomposeObject(capabilityAdditionsForThisVersion);
+
+        notSupportedHostClientTypes.forEach((clientType) => {
+          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${JSON.stringify(
+            capabilityAdditionsForThisVersion,
+          )} capability`, async () => {
+            await utils.initializeWithContext('content', clientType);
+
+            individualCapabilityAdditionsForThisVersion.forEach((singleCapabilityAdditionForThisVersion) => {
+              expect(
+                isSubset(
+                  singleCapabilityAdditionForThisVersion,
+                  generateVersionBasedTeamsRuntimeConfig(version).supports,
+                ),
+              ).toBe(false);
+            });
+          });
+        });
       });
     });
   });
