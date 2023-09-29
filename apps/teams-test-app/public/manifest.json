@@ -4,7 +4,7 @@
   "manifestVersion": "1.16",
   "id": "a79a2374-ec2a-486e-a3dc-b913fdb1f365",
   "packageName": "com.package.name",
-  "name": { "short": "M365 Test App", "full": "" },
+  "name": { "short": "M365 Test App", "full": "M365 Test Application" },
   "developer": {
     "name": "M365",
     "mpnId": "",
@@ -44,9 +44,5 @@
     { "entityId": "about", "scopes": ["personal"] }
   ],
   "validDomains": [],
-  "webApplicationInfo": {
-    "id": "34d8e67c-2758-40b5-836f-eb7defa875d3",
-    "resource": ""
-  },
   "devicePermissions": ["openExternal", "midi", "notifications", "media", "geolocation"]
 }
