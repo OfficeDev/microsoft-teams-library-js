@@ -185,7 +185,7 @@ describe('runtime', () => {
           it(`Back compat host client type ${clientType} supporting lower than up to ${version} should NOT support ${JSON.stringify(
             capabilityAdditionsForThisVersion,
           )} capability`, async () => {
-            const individualCapabilityAdditionsForThisVersion: any[] = decomposeObject(
+            const individualCapabilityAdditionsForThisVersion: object[] = decomposeObject(
               capabilityAdditionsForThisVersion,
             );
 

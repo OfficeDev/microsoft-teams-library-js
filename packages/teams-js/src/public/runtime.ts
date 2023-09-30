@@ -446,11 +446,11 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
 
-function mergeCapabilities(baselineSupports: any, supportsToMergeIntoBaseline: any): any {
-  const merged: any = { ...baselineSupports };
+function mergeCapabilities(baselineSupports: object, supportsToMergeIntoBaseline: object): object {
+  const merged: object = { ...baselineSupports };
 
   for (const key in supportsToMergeIntoBaseline) {
-    if (supportsToMergeIntoBaseline.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(supportsToMergeIntoBaseline, key)) {
       if (typeof supportsToMergeIntoBaseline[key] === 'object' && !Array.isArray(supportsToMergeIntoBaseline[key])) {
         merged[key] = mergeCapabilities(baselineSupports[key] || {}, supportsToMergeIntoBaseline[key]);
       } else {
