@@ -12,6 +12,10 @@ describe('MicrosoftTeams-Navigation', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
+  function makeRuntimeSupportNavigationCapability() {
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
+  }
+
   beforeEach(() => {
     utils.processMessage = null;
     utils.messages = [];
@@ -71,7 +75,7 @@ describe('MicrosoftTeams-Navigation', () => {
     Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
-        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
+        makeRuntimeSupportNavigationCapability();
 
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
         navigateToTab(null);
@@ -80,7 +84,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
       it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
-        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
+        makeRuntimeSupportNavigationCapability();
 
         navigateToTab(null);
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
@@ -89,7 +93,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
       it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
-        utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
+        makeRuntimeSupportNavigationCapability();
 
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
