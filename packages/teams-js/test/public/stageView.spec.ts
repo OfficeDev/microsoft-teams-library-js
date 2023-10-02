@@ -68,7 +68,9 @@ describe('stageView', () => {
 
     it('should not allow a null StageViewParams parameter', async () => {
       expect.assertions(1);
-      await utils.initializeWithContext(FrameContexts.content, 'desktop');
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
+
       expect(() => stageView.open(null)).rejects.toThrowError('[stageView.open] Stage view params cannot be null');
     });
 
@@ -84,7 +86,8 @@ describe('stageView', () => {
     });
 
     it('should return promise and resolve', async () => {
-      await utils.initializeWithContext(FrameContexts.content, 'desktop');
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
 
       const promise = stageView.open(stageViewParams);
 
@@ -97,7 +100,8 @@ describe('stageView', () => {
     });
 
     it('should properly handle errors', async () => {
-      await utils.initializeWithContext(FrameContexts.content, 'desktop');
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
 
       const promise = stageView.open(stageViewParams);
 
@@ -111,7 +115,7 @@ describe('stageView', () => {
     });
 
     it('should throw error when stageView is not supported.', async () => {
-      await utils.initializeWithContext(FrameContexts.content, 'ios');
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
       expect.assertions(1);
