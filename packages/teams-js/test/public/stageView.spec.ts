@@ -75,7 +75,9 @@ describe('stageView', () => {
     });
 
     it('should pass along entire StageViewParams parameter in content context', async () => {
-      await utils.initializeWithContext(FrameContexts.content, 'desktop');
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
+
       const promise = stageView.open(stageViewParams);
 
       const openStageViewMessage = utils.findMessageByFunc('stageView.open');

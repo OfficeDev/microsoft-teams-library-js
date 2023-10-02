@@ -78,7 +78,7 @@ describe('MicrosoftTeams-Navigation', () => {
         expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
-      it.skip(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
+      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
 
@@ -87,7 +87,7 @@ describe('MicrosoftTeams-Navigation', () => {
         expect(navigateToTabMsg).not.toBeNull();
       });
 
-      it.skip(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
+      it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
 
