@@ -60,7 +60,7 @@ export { mail } from './mail';
 export { teamsCore } from './teamsAPIs';
 export { people } from './people';
 export { profile } from './profile';
-export { video } from './video';
+export { videoEffects } from './videoEffects';
 export { search } from './search';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
