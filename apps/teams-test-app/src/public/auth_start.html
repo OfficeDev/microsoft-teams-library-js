@@ -25,7 +25,7 @@
 
       // Redirect to auth_end page if its mockOauth for testing
       if (mockOAuth === 'true') {
-        window.location.href = getRedirectUri() + `?state=${state}&code=test_auth_code_1234`;
+        window.location.href = getRedirectUri() + `?state=${state}&code=testauthcode1234`;
       } else {
         // Do actual google login
         const queryObj = {
