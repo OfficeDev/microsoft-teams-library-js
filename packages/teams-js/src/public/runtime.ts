@@ -439,6 +439,42 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Merges the capabilities of two runtime objects. Fully supports arbitrarily nested capabilities/subcapabilities.
+ *
+ * Note that the two parameters are named "baselineRuntime" and "runtimeToMergeIntoBaseline" to make it easier
+ * to understand what this function is doing -- but the order of the parameters does not matter, it's just merging
+ * the two runtime objects together.
+ *
+ * Also note that this function isn't actually doing anything specific to capabilities/runtime. It's just doing a
+ * generic merge of two objects.
+ *
+ * @param baselineRuntime the baseline runtime object
+ * @param runtimeToMergeIntoBaseline the runtime object to merge into the baseline
+ * @returns the merged runtime object
+ */
+function mergeRuntimeCapabilities(baselineRuntime: object, runtimeToMergeIntoBaseline: object): object {
+  const merged: object = { ...baselineRuntime };
+
+  for (const key in runtimeToMergeIntoBaseline) {
+    if (Object.prototype.hasOwnProperty.call(runtimeToMergeIntoBaseline, key)) {
+      if (typeof runtimeToMergeIntoBaseline[key] === 'object' && !Array.isArray(runtimeToMergeIntoBaseline[key])) {
+        merged[key] = mergeRuntimeCapabilities(baselineRuntime[key] || {}, runtimeToMergeIntoBaseline[key]);
+      } else {
+        if (!(key in baselineRuntime)) {
+          merged[key] = runtimeToMergeIntoBaseline[key];
+        }
+      }
+    }
+  }
+
+  return merged;
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -464,10 +500,7 @@ export function generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion: 
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
       mapTeamsVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
-          newSupports = {
-            ...newSupports,
-            ...capabilityReqs.capability,
-          };
+          newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
     }
