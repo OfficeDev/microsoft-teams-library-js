@@ -1,0 +1,41 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "medium",
+      "weight": "bolder",
+      "text": "Application Login",
+      "horizontalAlignment": "center",
+      "wrap": true,
+      "style": "heading"
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "id": "UserVal",
+      "label": "Username",
+      "isRequired": true,
+      "errorMessage": "Username is required"
+    },
+    {
+      "type": "Input.Text",
+      "id": "PassVal",
+      "style": "password",
+      "label": "Password",
+      "isRequired": true,
+      "errorMessage": "Password is required"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Login",
+      "data": {
+        "id": "LoginVal"
+      }
+    }
+  ]
+}
