@@ -142,7 +142,7 @@ export namespace app {
     theme: string;
 
     /**
-     * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams desktop) or iframe (in Teams mobile) hosting the app, and ends when it is destroyed.
+     * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
      */
     sessionId: string;
 
