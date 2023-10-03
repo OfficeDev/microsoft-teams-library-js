@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Adding bing domains to the list of valid origins",
+  "comment": "Added `bing` and `edgeservices.bing` domains to the list of valid origins",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
