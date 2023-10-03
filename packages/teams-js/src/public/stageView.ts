@@ -42,6 +42,20 @@ export namespace stageView {
      * The entity ID of the Teams application content being opened.
      */
     entityId?: string;
+
+    /**
+     * The open mode for stage content.
+     */
+    openMode?: StageVieweOpenMode;
+  }
+
+  /**
+   * The open mode for stage content.
+   */
+  export enum StageVieweOpenMode {
+    modal = 'modal',
+    popoutWithChat = 'popoutWithChat',
+    popoutWithoutChat = 'popoutWithoutChat',
   }
 
   /**
