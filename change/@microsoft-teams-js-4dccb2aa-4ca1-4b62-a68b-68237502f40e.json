@@ -1,6 +1,6 @@
 {
-  "type": "minor",
-  "comment": "Removed `appNotification` capability and collateral",
+  "type": "patch",
+  "comment": "Rename Teams back-compat config for clarity",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"

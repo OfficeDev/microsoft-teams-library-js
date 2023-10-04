@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { FrameContexts, LoadContext } from '../public';
+import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
@@ -18,8 +19,16 @@ class HandlersPrivate {
     [func: string]: Function;
   } = {};
   public static themeChangeHandler: (theme: string) => void;
+  /**
+   * @deprecated
+   */
   public static loadHandler: (context: LoadContext) => void;
+  /**
+   * @deprecated
+   */
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+  public static beforeSuspendOrTerminateHandler: () => void;
+  public static resumeHandler: (context: ResumeContext) => void;
 
   /**
    * @internal
@@ -31,6 +40,8 @@ class HandlersPrivate {
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+    HandlersPrivate.handlers['beforeSuspendOrTerminate'] = handleBeforeSuspendOrTerminate;
+    HandlersPrivate.handlers['resume'] = handleResume;
     pages.backStack._initialize();
   }
 
@@ -44,6 +55,8 @@ class HandlersPrivate {
     HandlersPrivate.themeChangeHandler = null;
     HandlersPrivate.loadHandler = null;
     HandlersPrivate.beforeUnloadHandler = null;
+    HandlersPrivate.beforeSuspendOrTerminateHandler = null;
+    HandlersPrivate.resumeHandler = null;
   }
 }
 
@@ -164,6 +177,8 @@ export function handleThemeChange(theme: string): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
@@ -173,6 +188,8 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 function handleLoad(context: LoadContext): void {
   if (HandlersPrivate.loadHandler) {
@@ -187,6 +204,8 @@ function handleLoad(context: LoadContext): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
@@ -196,6 +215,8 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
@@ -208,5 +229,57 @@ function handleBeforeUnload(): void {
     } else {
       readyToUnload();
     }
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
+  HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['beforeSuspendOrTerminate']);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function handleBeforeSuspendOrTerminate(): void {
+  const readyToSuspendOrTerminate = (): void => {
+    sendMessageToParent('readyToSuspendOrTerminate', []);
+  };
+
+  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
+    HandlersPrivate.beforeSuspendOrTerminateHandler();
+  }
+
+  if (Communication.childWindow) {
+    sendMessageEventToChild('beforeSuspendOrTerminate');
+  } else {
+    readyToSuspendOrTerminate();
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
+  HandlersPrivate.loadHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['resume']);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function handleResume(context: LoadContext): void {
+  if (HandlersPrivate.loadHandler) {
+    HandlersPrivate.loadHandler(context);
+  }
+
+  if (Communication.childWindow) {
+    sendMessageEventToChild('resume', [context]);
   }
 }
