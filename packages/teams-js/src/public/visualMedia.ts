@@ -1,100 +1,72 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { errorInvalidCount, errorInvalidResponse, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission } from './interfaces';
 import { runtime } from './runtime';
 
 /**
  * Interact with image and video. It lets the app developer ask the user to get images or video from their camera / camera roll / file system.
+ * @hidden
  * @beta
  */
 export namespace visualMedia {
+  const maxVisualMediaSelectionLimit = 10;
   /**
    * @hidden
    * Hide from docs
    * --------
    * All properties common to Image and Video Props
+   *
    * @beta
    */
   interface VisualMediaProps {
     /**
-     * @hidden
-     * Lets the developer specify the media source
+     * max limit of media allowed to be selected in one go, only values <= maxVisualMediaSelectionLimit are supported.
      */
-    source: Source;
+    maxVisualMediaCount: number;
+  }
 
+  /**
+   * The required value of the visualMedia files from gallery
+   *
+   * @beta
+   */
+  export interface GalleryProps {
     /**
-     * @hidden
-     * Optional; Specify in which mode the camera will be opened.
-     * Default value is Photo
+     * The visualMedia source
      */
-    startMode?: CameraStartMode;
-
+    source: Source.Gallery;
+  }
+  /**
+   * The required value of the visualMedia files from camera
+   *
+   * @beta
+   */
+  export interface CameraProps {
     /**
-     * @hidden
+     * The visualMedia source
+     */
+    source: Source.Camera;
+    /**
      * Optional; indicate if user is allowed to move between front and back camera
-     * Default value is true
+     * Default value is FrontOrRear
      */
-    cameraSwitcher?: boolean;
-    /**
-     * max limit of media allowed to be selected in one go, current max limit is 10 set by lens-sdk.
-     */
-    visualMediaCount: number;
-  }
-  /**
-   *  All properties in ImageProps are optional and have default values in the platform
-   *  Additional properties for image in mobile devices
-   * @beta
-   */
-  export interface ImageProperties extends VisualMediaProps {
-    /**
-     * Optional; indicate if inking on the selected Image is allowed or not
-     * Default value is true
-     */
-    ink?: boolean;
-
-    /**
-     * Optional; indicate if putting text stickers on the selected Image is allowed or not
-     * Default value is true
-     */
-    textSticker?: boolean;
-
-    /**
-     * Optional; indicate if image filtering mode is enabled on the selected image
-     * Default value is false
-     */
-    enableFilter?: boolean;
-
-    /**
-     * Optional; Lets the developer specify the image output formats, more than one can be specified.
-     * Default value is Image.
-     */
-    imageOutputFormats?: ImageOutputFormats[];
+    cameraRestriction?: CameraRestriction;
   }
 
   /**
-   * The modes in which camera can be launched
+   * Indicate if user is allowed to move between front and back camera or stay in front/back camera only
+   * If the camera option requested by the app isn't available, the SDK will silently default to the platform's standard camera.
+   *
    * @beta
    */
-  export enum CameraStartMode {
-    /** Photo mode. */
-    Photo = 1,
-    /** Document mode. */
-    Document = 2,
-    /** Whiteboard mode. */
-    Whiteboard = 3,
-    /** Business card mode. */
-    BusinessCard = 4,
-  }
-  /**
-   * Enum for file formats supported
-   * @beta
-   */
-  export enum FileFormat {
-    /** Base64 encoding */
-    Base64 = 'base64',
-    /** File id */
-    ID = 'id',
+  export enum CameraRestriction {
+    /** User can move between front and back camera */
+    FrontOrRear = 1,
+    /** User can only use the front camera */
+    FrontOnly = 2,
+    /** User can only use the back camera */
+    RearOnly = 3,
   }
   /**
    * Specifies the image source
@@ -106,152 +78,199 @@ export namespace visualMedia {
     /** visual media source is gallery. */
     Gallery = 2,
   }
-  /**
-   * Specifies the image output formats.
-   * @beta
-   */
-  export enum ImageOutputFormats {
-    /** Outputs image.  */
-    IMAGE = 1,
-    /** Outputs pdf. */
-    PDF = 2,
-  }
 
   /**
-   * VisualMediaFile object that can be used to represent image or video
+   * VisualMediaFile object that can be used to represent image or video from host apps.
    *
    * @beta
    */
-  export class VisualMediaFile {
+  export interface VisualMediaFile {
     /**
-     * Content of the file. When format is Base64, this is the base64 content
-     * When format is ID, this is id mapping to the URI
-     * When format is base64 and app needs to use this directly in HTML tags, it should convert this to dataUrl.
+     * This is the base64 content of file.
+     * If app needs to use this directly in HTML tags, it should convert this to a data url.
      */
-    public content: string;
+    content: string;
+    /**
+     * The size of file represented in VisualMediaFile in KB
+     */
+    sizeInKB: number;
 
     /**
-     * Format of the content
+     * Name of the file (does not include the extension)
      */
-    public format: FileFormat;
+    name: string;
 
     /**
-     * Size of the file in KB
+     * File's MIME type.
+     * Please check https://docs.lens.xyz/docs/metadata-standards#supported-mime-types-for-imagesaudiovideos about more information of mimeType.
      */
-    public size: number;
-
-    /**
-     * MIME type. This can be used for constructing a dataUrl, if needed.
-     */
-    public mimeType: string;
-
-    /**
-     * Optional: Name of the file
-     */
-    public name?: string;
-    /**
-     * A preview of the file which is a lightweight representation.
-     * In case of images this will be a thumbnail/compressed image in base64 encoding.
-     */
-    public preview: string;
+    mimeType: string;
   }
 
   /**
    * Checks whether or not visualMedia has user permission
+   * @returns Promise that will resolve with true if the user had granted the app permission to media information(including Camera and Gallery permission), or with false otherwise,
+   * In case of an error, promise will reject with the error.
+   * @throws NOT_SUPPORTED_ON_PLATFORM Error if the DevicePermission.Media permission has not successfully granted.
    *
    * @beta
-   * @returns Promise that will resolve with true if the user had granted the app permission to media information, or with false otherwise,
-   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
    */
   export function hasPermission(): Promise<boolean> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
+    if (!image.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
-
-    return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
-    });
+    return sendAndHandleSdkError('permissions.has', permissions);
   }
 
   /**
    * Requests user permission for visualMedia
+   * @returns Promise that will resolve with true if the user consented permission for media(including Camera and Gallery permission), or with false otherwise,
+   * In case of an error, promise will reject with the error.
+   * @throws NOT_SUPPORTED_ON_PLATFORM Error if the DevicePermission.Media permission has not successfully granted.
+   *
    * @beta
-   * @returns Promise that will resolve with true if the user consented permission for media, or with false otherwise,
-   * In case of an error, promise will reject with the error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error
    */
   export function requestPermission(): Promise<boolean> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-    if (!isSupported()) {
+    if (!image.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
-
-    return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
-    });
-  }
-
-  /**
-   * Checks if visualMedia capability is supported by the host
-   * @returns boolean to represent whether media is supported
-   * @beta
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   */
-  export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.visualMedia && runtime.supports.permissions ? true : false;
+    return sendAndHandleSdkError('permissions.request', permissions);
   }
 
   /**
    * To enable this image capability will let the app developer ask the user to get images from camera/local storage
+   *
    * @beta
    */
   export namespace image {
     /**
-     * Capture one or multiple image(s) throughing camera.
+     * CameraImageProperties is for the image taken from the camera
+     *
      * @beta
-     * @param imageInputs - The input params to customize the image(s) to be captured
-     * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
      */
-    export function captureImages(imageInputs: ImageProperties): Promise<VisualMediaFile[]> {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (!imageInputs || imageInputs == null || imageInputs.visualMediaCount > 10) {
-        throw new Error('Must supply the valid image(s)');
-      }
-      // waiting and return the response from hub-SDK
-      return sendAndHandleSdkError<VisualMediaFile[]>('visualMedia.image.captureImages', imageInputs);
+    export interface CameraImageProperties extends VisualMediaProps {
+      /**
+       * The source in CameraImageProperties should always be CameraProps
+       */
+      sourceProps: CameraProps;
+
+      /**
+       * Optional; The common additional properties for image
+       */
+      commonImageProps?: ImageProperties;
     }
 
     /**
-     * Upload the existing image(s) from camera roll to the mos app.
+     * CameraImageProperties is for the image taken from the camera
+     *
      * @beta
-     * @param imageInputs - The input params to customize the image(s) to be captured
-     * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
      */
-    export function uploadImages(imageInputs: ImageProperties): Promise<VisualMediaFile[]> {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      if (
-        !imageInputs ||
-        imageInputs == null ||
-        imageInputs.visualMediaCount > 10 ||
-        imageInputs.source != Source.Gallery
-      ) {
-        throw new Error('Must supply the valid image(s)');
-      }
-      // waiting and return the response from hub-SDK
-      return sendAndHandleSdkError<VisualMediaFile[]>('visualMedia.image.uploadImages', imageInputs);
+    export interface GalleryImageProperties extends VisualMediaProps {
+      /**
+       * The source in GalleryImageProperties should always be GalleryProps
+       */
+      sourceProps: GalleryProps;
+
+      /**
+       * Optional; The common additional properties for image
+       */
+      commonImageProps?: ImageProperties;
     }
+
+    /**
+     * Additional properties for image
+     * All properties in ImageProperties are optional and have default values
+     *
+     * @beta
+     */
+    export interface ImageProperties {
+      /**
+       * Optional; indicate if inking on the selected Image is allowed or not
+       * Default value is false
+       */
+      shouldAllowInkingOnImages?: boolean;
+
+      /**
+       * Optional; indicate if putting text stickers on the selected Image is allowed or not
+       * Default value is false
+       */
+      shouldAllowTextStickersOnImages?: boolean;
+
+      /**
+       * Optional; indicate if the filter mode is enabled on the selected image.
+       * Enabling this value allows the host app to apply filters to images when selecting them from the gallery or taking photos with the camera.
+       * Default value is false
+       */
+      enableFilterOnImages?: boolean;
+
+      /**
+       * Optional; Specifies which formats the user is allowed to choose, more than one can be specified.
+       * Default value is [ImageOutputFormats.Image].
+       */
+      imageFormatsAllowedToBeSelected?: ImageOutputFormats[];
+    }
+
+    /**
+     * Specifies the image output formats.
+     *
+     * @beta
+     */
+    export enum ImageOutputFormats {
+      /** Outputs image.  */
+      Image = 1,
+      /** Outputs pdf. */
+      PDF = 2,
+    }
+
+    /**
+     * Capture one or multiple image(s) using camera.
+     * @param cameraImageInputs - The input params to customize the image(s) to be captured
+     * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
+     * @throws INVALID_ARGUMENTS Error if imageInputs is null or imageInputs.maxVisualMediaCount is greater than maxVisualMediaSelectionLimit or lesser than 1.
+     *
+     * @beta
+     */
+    export async function captureImages(cameraImageInputs: CameraImageProperties): Promise<VisualMediaFile[]> {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+      ensureSupported();
+      ensureImageInputValided(cameraImageInputs);
+      // waiting the response from host apps
+      const files = await sendAndHandleSdkError<VisualMediaFile[]>(
+        'visualMedia.image.captureImages',
+        cameraImageInputs,
+      );
+      ensureResponseValided(cameraImageInputs.maxVisualMediaCount, files);
+      return files;
+    }
+
+    /**
+     * Upload the existing image(s) from the gallery.
+     * @param galleryImageInputs - The input params to customize the image(s) to be captured
+     * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
+     * @throws INVALID_ARGUMENTS Error if imageInputs is null or imageInputs.maxVisualMediaCount is greater than maxVisualMediaSelectionLimit or lesser than 1.
+     *
+     * @beta
+     */
+    export async function retrieveImages(galleryImageInputs: GalleryImageProperties): Promise<VisualMediaFile[]> {
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+      ensureSupported();
+      ensureImageInputValided(galleryImageInputs);
+      // waiting the response from host apps
+      const files = await sendAndHandleSdkError<VisualMediaFile[]>(
+        'visualMedia.image.retrieveImages',
+        galleryImageInputs,
+      );
+      ensureResponseValided(galleryImageInputs.maxVisualMediaCount, files);
+      return files;
+    }
+
     /**
      * Checks if visualMedia.image capability is supported by the host
      * @returns boolean to represent whether visualMedia.image is supported
-     *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      * @beta
@@ -264,11 +283,48 @@ export namespace visualMedia {
         ? true
         : false;
     }
-  }
 
-  /**
-   * TODO: more function will be complete in the video capture capability feature
-   * @beta
-   */
-  export namespace video {}
+    /**
+     * Ensure visualMedia.image capability is supported by the host
+     * @throws errorNotSupportedOnPlatform error if isSupported() fails.
+     *
+     * @beta
+     */
+    function ensureSupported(): void {
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+    }
+    /**
+     *
+     * @param imageInput the input can be either CameraImageProperties or GalleryImageProperties
+     * @param source the expected Source
+     * @throws error if the input check fails.
+     * @beta
+     */
+    function ensureImageInputValided(imageInput: CameraImageProperties | GalleryImageProperties): void {
+      if (
+        !imageInput ||
+        imageInput.maxVisualMediaCount > maxVisualMediaSelectionLimit ||
+        imageInput.maxVisualMediaCount < 1
+      ) {
+        throw errorInvalidCount;
+      }
+    }
+
+    /**
+     * Ensure the number of images in the response is within the maximum limit.
+     * @throws error if length check fails.
+     * @param maxCount the maxVisualMediaCount set in the imageInpus
+     * @param response the response passed from host app
+     *
+     * @beta
+     */
+    function ensureResponseValided(maxCount: number, response: VisualMediaFile[]): void {
+      // to ensure the number of images in the response is within the maximum limit.
+      if (response.length > maxCount) {
+        throw errorInvalidResponse;
+      }
+    }
+  }
 }

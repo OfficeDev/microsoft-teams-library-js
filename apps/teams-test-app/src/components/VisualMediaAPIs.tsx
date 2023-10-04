@@ -4,50 +4,36 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
-const imagePreviewHelper = (item: string): string => {
-  let output = '';
-  let len = 20;
-  if (item) {
-    len = Math.min(len, item.length);
-    output = item.substr(0, len);
-  }
-  return output;
-};
-
-const imagesHelper = (medias: visualMedia.VisualMediaFile[]): string => {
+const imagesMessageBuilder = (medias: visualMedia.VisualMediaFile[]): string => {
   let message = '';
-  for (let i = 0; i < medias.length; i++) {
-    const media: visualMedia.VisualMediaFile = medias[i];
-    const preview = imagePreviewHelper(media.preview);
+  for (const media of medias) {
     message +=
-      '[format: ' +
-      media.format +
+      '[content: ' +
+      JSON.stringify(media.content) +
       ', size: ' +
-      media.size +
+      media.sizeInKB +
+      ', name: ' +
+      media.name +
       ', mimeType: ' +
       media.mimeType +
-      ', content: ' +
-      media.content +
-      ', preview: ' +
-      preview +
       '],';
   }
   return message;
 };
 
 const CaptureImages = (): React.ReactElement =>
-  ApiWithTextInput<visualMedia.ImageProperties>({
+  ApiWithTextInput<visualMedia.image.CameraImageProperties>({
     name: 'captureImages',
     title: 'Capture Images',
     onClick: {
       validateInput: (input) => {
-        if (!input || !input.visualMediaCount) {
+        if (!input || !input.maxVisualMediaCount) {
           throw new Error('maxMediaCount are required');
         }
       },
       submit: async (input) => {
         const result = await visualMedia.image.captureImages(input);
-        const output = imagesHelper(result);
+        const output = imagesMessageBuilder(result);
         if (output == '') {
           return JSON.stringify(result);
         }
@@ -57,18 +43,18 @@ const CaptureImages = (): React.ReactElement =>
   });
 
 const UploadImages = (): React.ReactElement =>
-  ApiWithTextInput<visualMedia.ImageProperties>({
+  ApiWithTextInput<visualMedia.image.GalleryImageProperties>({
     name: 'uploadImages',
     title: 'Upload Images',
     onClick: {
       validateInput: (input) => {
-        if (!input || !input.visualMediaCount) {
+        if (!input || !input.maxVisualMediaCount) {
           throw new Error('maxMediaCount are required');
         }
       },
       submit: async (input) => {
-        const result = await visualMedia.image.uploadImages(input);
-        const output = imagesHelper(result);
+        const result = await visualMedia.image.retrieveImages(input);
+        const output = imagesMessageBuilder(result);
         if (output == '') {
           return JSON.stringify(result);
         }
@@ -97,13 +83,6 @@ const RequestVisualMediaPermission = (): React.ReactElement =>
     },
   });
 
-const CheckVisualMediaCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkVisualMediaCapability',
-    title: 'Check Visual Media Capability',
-    onClick: async () => `visual media module ${visualMedia.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const CheckVisualMediaImageCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkVisualMediaImageCapability',
@@ -117,7 +96,6 @@ const VisualMediaAPIs = (): ReactElement => (
     <UploadImages />
     <HasVisualMediaPermission />
     <RequestVisualMediaPermission />
-    <CheckVisualMediaCapability />
     <CheckVisualMediaImageCapability />
   </ModuleWrapper>
 );
