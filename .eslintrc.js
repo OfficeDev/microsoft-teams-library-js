@@ -25,7 +25,7 @@ module.exports = {
     curly: 'error',
     'simple-import-sort/imports': 'error',
     quotes: ['error', 'single', { avoidEscape: true }],
-    'no-restricted-syntax': ['warn', 'CallExpression[callee.name="window"]'],
+    //'no-restricted-syntax': ['warn', 'CallExpression[callee.name="window"]'],
   },
   env: {
     node: true,
