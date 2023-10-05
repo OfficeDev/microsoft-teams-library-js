@@ -486,19 +486,23 @@ function mergeRuntimeCapabilities(baselineRuntime: object, runtimeToMergeIntoBas
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion: string): Runtime {
+export function generateVersionBasedTeamsRuntimeConfig(
+  highestSupportedVersion: string,
+  versionAgnosticRuntimeConfig: Runtime,
+  mapVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>>,
+): Runtime {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
-  let newSupports = { ...versionAndPlatformAgnosticTeamsRuntimeConfig.supports };
+  let newSupports = { ...versionAgnosticRuntimeConfig.supports };
 
   generateBackCompatRuntimeConfigLogger(
     'Supported capabilities in config before updating based on highestSupportedVersion: %o',
     newSupports,
   );
 
-  Object.keys(mapTeamsVersionToSupportedCapabilities).forEach((versionNumber) => {
+  Object.keys(mapVersionToSupportedCapabilities).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      mapTeamsVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
+      mapVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
           newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }

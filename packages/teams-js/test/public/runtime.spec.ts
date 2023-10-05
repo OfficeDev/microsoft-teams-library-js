@@ -15,6 +15,7 @@ import {
   runtime,
   setUnitializedRuntime,
   upgradeChain,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -197,7 +198,11 @@ describe('runtime', () => {
             capabilityAdditionsForThisVersion,
           )}`, async () => {
             await utils.initializeWithContext('content', clientType);
-            const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(version).supports;
+            const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(
+              version,
+              versionAndPlatformAgnosticTeamsRuntimeConfig,
+              mapTeamsVersionToSupportedCapabilities,
+            ).supports;
             expect(isSubset(capabilityAdditionsForThisVersion, generatedCapabilityObjectForThisVersion)).toBe(true);
           });
 
@@ -210,8 +215,11 @@ describe('runtime', () => {
 
             await utils.initializeWithContext('content', clientType);
 
-            const generatedRuntimeConfigSupportedCapabilities =
-              generateVersionBasedTeamsRuntimeConfig('1.4.0').supports;
+            const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
+              '1.4.0',
+              versionAndPlatformAgnosticTeamsRuntimeConfig,
+              mapTeamsVersionToSupportedCapabilities,
+            ).supports;
 
             individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
               expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
@@ -235,7 +243,11 @@ describe('runtime', () => {
                   expect(
                     isSubset(
                       capabilityAdditionsForThisVersion,
-                      generateVersionBasedTeamsRuntimeConfig(version).supports,
+                      generateVersionBasedTeamsRuntimeConfig(
+                        version,
+                        versionAndPlatformAgnosticTeamsRuntimeConfig,
+                        mapTeamsVersionToSupportedCapabilities,
+                      ).supports,
                     ),
                   ).toBe(true);
                 });
@@ -262,7 +274,11 @@ describe('runtime', () => {
               expect(
                 isSubset(
                   singleCapabilityAdditionForThisVersion,
-                  generateVersionBasedTeamsRuntimeConfig(version).supports,
+                  generateVersionBasedTeamsRuntimeConfig(
+                    version,
+                    versionAndPlatformAgnosticTeamsRuntimeConfig,
+                    mapTeamsVersionToSupportedCapabilities,
+                  ).supports,
                 ),
               ).toBe(false);
             });
