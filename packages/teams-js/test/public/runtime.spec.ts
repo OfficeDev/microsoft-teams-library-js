@@ -221,21 +221,21 @@ describe('runtime', () => {
   const versionForUnnestedPagesCapability = '4.0.0';
 
   const mapVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
-    versionWithoutPagesCapability: [
+    versionForNoPagesCapability: [
       {
         capability: { newCapability: {} },
-        hostClientTypes: [clientTypeForRuntimeTesting],
-      },
-    ],
-    versionWithNestedPagesCapability: [
-      {
-        capability: { pages: { appButton: {} }, newCapability: {} },
         hostClientTypes: [clientTypeForRuntimeTesting],
       },
     ],
     versionWithUnnestedPagesCapability: [
       {
         capability: { pages: {}, newCapability: {} },
+        hostClientTypes: [clientTypeForRuntimeTesting],
+      },
+    ],
+    versionWithNestedPagesCapability: [
+      {
+        capability: { pages: { appButton: {} }, newCapability: {} },
         hostClientTypes: [clientTypeForRuntimeTesting],
       },
     ],
