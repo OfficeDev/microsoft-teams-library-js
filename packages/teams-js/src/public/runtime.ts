@@ -296,7 +296,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   },
 };
 
-interface ICapabilityReqs {
+export interface ICapabilityReqs {
   readonly capability: object;
   readonly hostClientTypes: Array<string>;
 }
