@@ -217,23 +217,23 @@ describe('runtime', () => {
 
   const clientTypeForRuntimeTesting = HostClientType.desktop;
   const versionForNoPagesCapability = '2.0.0';
-  const versionForNestedPagesCapability = '3.0.0';
-  const versionForUnnestedPagesCapability = '4.0.0';
+  const versionForUnnestedPagesCapability = '3.0.0';
+  const versionForNestedPagesCapability = '4.0.0';
 
   const mapVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
-    versionForNoPagesCapability: [
+    [versionForNoPagesCapability]: [
       {
         capability: { newCapability: {} },
         hostClientTypes: [clientTypeForRuntimeTesting],
       },
     ],
-    versionWithUnnestedPagesCapability: [
+    [versionForUnnestedPagesCapability]: [
       {
         capability: { pages: {}, newCapability: {} },
         hostClientTypes: [clientTypeForRuntimeTesting],
       },
     ],
-    versionWithNestedPagesCapability: [
+    [versionForNestedPagesCapability]: [
       {
         capability: { pages: { appButton: {} }, newCapability: {} },
         hostClientTypes: [clientTypeForRuntimeTesting],
