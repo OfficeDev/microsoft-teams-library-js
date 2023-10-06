@@ -106,7 +106,7 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
 export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
+    sendMessage && sendMessageToParentWithVersion('v2', 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
