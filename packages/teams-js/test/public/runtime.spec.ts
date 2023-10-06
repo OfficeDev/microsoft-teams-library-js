@@ -308,7 +308,7 @@ describe('runtime', () => {
         mapVersionToSupportedCapabilities,
       ).supports;
 
-      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: { appButton: {} }, newCapability: {} });
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: {}, newCapability: {} });
     });
 
     it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing NO pages capability with version-specific runtime with NESTED pages capability', async () => {
