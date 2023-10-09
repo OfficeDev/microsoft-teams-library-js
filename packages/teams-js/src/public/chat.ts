@@ -79,7 +79,7 @@ export namespace chat {
         );
       } else {
         const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
-          members: openChatRequest.user,
+          members: [openChatRequest.user],
           message: openChatRequest.message,
         });
         resolve(sendPromise);
