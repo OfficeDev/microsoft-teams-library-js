@@ -37,9 +37,6 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-          - repository: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
-          - repository: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
-          - repository: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
           - repository: git://$(AndroidAppHostingSdkGitPath)
           - repository: git://$(IOSAppHostingSdkGitPath)
     customBuildTags:
