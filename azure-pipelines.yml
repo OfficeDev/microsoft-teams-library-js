@@ -365,7 +365,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
+                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
@@ -484,7 +484,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
+                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
@@ -604,7 +604,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: git://$(AppHostingSdkGitPath6)@$(AppHostingSdkGitRef)
+                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
