@@ -12,3 +12,8 @@ FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.messages
 FakesAssemblies/Microsoft.AspNetCore.Components.Server.6.0.0.0.Fakes.xml
 subscriptionInfo.json
 wwwroot/js/MicrosoftTeams.min.js
+
+env/.env.*.user
+env/.env.local
+.backup/*
+/devTools/
