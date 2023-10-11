@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Adding openMode in StageViewParams",
+  "packageName": "@microsoft/teams-js",
+  "email": "email not defined",
+  "dependentChangeType": "patch"
+}
