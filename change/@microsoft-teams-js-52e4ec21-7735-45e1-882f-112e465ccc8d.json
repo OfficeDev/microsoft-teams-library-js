@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated typedocs for several modules",
+  "packageName": "@microsoft/teams-js",
+  "email": "vikramtha@microsoft.com",
+  "dependentChangeType": "patch"
+}
