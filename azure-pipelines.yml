@@ -37,6 +37,7 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          - repository: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
