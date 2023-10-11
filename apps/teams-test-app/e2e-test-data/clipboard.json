@@ -14,7 +14,7 @@
       "title": "Copy Text - failure",
       "type": "callResponse",
       "boxSelector": "#box_copyText",
-      "inputValue": "\"\"",
+      "inputValue": {},
       "skipJsonStringifyOnInputValue": true,
       "expectedTestAppValue": "Error: String can't be empty"
     },
@@ -36,7 +36,7 @@
       "title": "Copy Image - failure",
       "type": "callResponse",
       "boxSelector": "#box_copyImage",
-      "inputValue": "\"\"",
+      "inputValue": {},
       "skipJsonStringifyOnInputValue": true,
       "expectedTestAppValue": "Error: mimeType can't be empty"
     }
