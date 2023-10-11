@@ -37,8 +37,8 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-          - repository: git://$(AndroidAppHostingSdkGitPath)
-          - repository: git://$(IOSAppHostingSdkGitPath)
+          # - repository: git://$(AndroidAppHostingSdkGitPath)
+          # - repository: git://$(IOSAppHostingSdkGitPath)
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
@@ -355,51 +355,28 @@ extends:
                   testRunTitle: 'E2E Tests - Perf'
                   mergeTestResults: true
                 condition: succeededOrFailed()
-          # - job: E2ETest2
-          #   displayName: 'E2E Test - Default'
+          # - job: E2ETestAndroid
+          #   displayName: 'E2E Test - Android'
           #   pool:
-          #     vmImage: 'ubuntu-20.04'
+          #     vmImage: 'macOS-11'
           #   steps:
           #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
           #       inputs:
           #         repository: self
           #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
           #       inputs:
-          #         repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          #         repository: git://$(AndroidAppHostingSdkGitPath)
+          #         path: androidHost
           #         persistCredentials: true
-          #     - task: CmdLine@2
-          #       displayName: 'Fix Chrome browser on V116'
-          #       inputs:
-          #         script: |
-          #           if command -v google-chrome &> /dev/null; then
-          #             # Uninstall the existing Chrome
-          #             sudo apt remove google-chrome-stable --purge -y
-          #           else
-          #             echo "Google Chrome is not installed on your system."
-          #           fi
-          #           CHROME_VERSION="116.0.5845.179"
-          #           # Download the specific Chrome version package
-          #           wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Install the downloaded package
-          #           sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Update package dependencies
-          #           sudo apt install -f -y
-          #           echo "Google Chrome version ${CHROME_VERSION} has been installed."
-          #           rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
           #     - task: NodeTool@0
           #       inputs:
           #         versionSpec: '14.x'
           #       displayName: 'Install Node.js'
           #     - task: Cache@2
           #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+          #         key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
           #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache app host node_modules pnpm
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache client sdk node_modules pnpm
+          #       displayName: Cache pnpm
           #     - task: CmdLine@2
           #       displayName: 'Setup pnpm'
           #       inputs:
@@ -407,36 +384,6 @@ extends:
           #           corepack enable
           #           corepack prepare pnpm@7.30.1 --activate
           #           pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: /home/vsts/.cache/Cypress
-          #         cacheHitVar: CYPRESS_CACHE_RESTORED
-          #       displayName: 'Cache Cypress binary'
-          #     - task: npmAuthenticate@0
-          #       inputs:
-          #         workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (skip Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-          #       inputs:
-          #         script: |
-          #           CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (include Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
-          #       inputs:
-          #         script: |
-          #           rm -rf $(pnpm store path)
-          #           pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build app hosting sdk'
-          #       inputs:
-          #         script: |
-          #           pnpm build
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
           #     - task: CmdLine@2
           #       displayName: 'Install client sdk dependencies'
           #       inputs:
@@ -449,76 +396,88 @@ extends:
           #         script: |
           #           pnpm build-force-blazor
           #         workingDirectory: '$(ClientSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Configure host machine'
-          #       inputs:
-          #         script: "sudo chmod -R 755 ./ \npnpm run setup\n"
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
           #     - task: Bash@3
-          #       displayName: 'Run E2E integration tests'
-          #       condition: succeeded()
+          #       displayName: 'Run sample test app in background'
           #       inputs:
           #         targetType: inline
-          #         script: 'node tools/cli/runAppsWithE2ETests.js'
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CMDLine@2
-          #       displayName: 'Run tests for electron webview'
+          #         script: 'nohup pnpm start-test-app &'
+          #         workingDirectory: '$(ClientSdkProjectDirectory)'
+          #     - task: Bash@3
+          #       displayName: 'Install Emulator'
           #       inputs:
-          #         script: |
-          #           pnpm exec xvfb-maybe playwright test
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #         targetType: inline
+          #         script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+          #         workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+          #     - task: JavaToolInstaller@0
+          #       inputs:
+          #         versionSpec: '11'
+          #         jdkArchitectureOption: 'x64'
+          #         jdkSourceOption: 'PreInstalled'
+          #       displayName: 'Set default Java to x64'
+          #     - task: Bash@3
+          #       displayName: 'Run Android E2E Tests'
+          #       inputs:
+          #         targetType: inline
+          #         script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+          #         workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
           #     - task: PublishTestResults@2
+          #       displayName: 'Publish Test Results'
           #       inputs:
-          #         testResultsFormat: 'JUnit'
-          #         testResultsFiles: '**/e2e-tests-report*.xml'
-          #         testRunTitle: 'E2E Tests - Default'
+          #         testResultsFiles: '**/TEST-*.xml'
+          #         failTaskOnFailedTests: false
+          #         testRunTitle: 'E2E Tests - Android'
+          #         searchFolder: '$(Agent.BuildDirectory)/androidHost'
           #         mergeTestResults: true
-          #       condition: succeededOrFailed()
-          # - job: E2ETest3
-          #   displayName: 'E2E Test - Local Tag'
+          #       condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
+          # - job: E2ETestIOS
+          #   displayName: 'E2E Test - IOS'
           #   pool:
-          #     vmImage: 'ubuntu-latest'
+          #     vmImage: 'macOS-latest'
           #   steps:
           #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
           #       inputs:
           #         repository: self
           #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
           #       inputs:
-          #         repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          #         repository: git://$(IOSAppHostingSdkGitPath)
+          #         path: iOSHost
           #         persistCredentials: true
-          #     - task: CmdLine@2
-          #       displayName: 'Fix Chrome browser on V116'
+          #     - task: InstallSSHKey@0
+          #       displayName: 'Install an SSH key for OneDSTelemetry'
           #       inputs:
+          #         knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
+          #         sshPublicKey: '$(OneDSTelemetryKey)'
+          #         sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
+          #     - task: Bash@3
+          #       displayName: Install Cocoapods
+          #       inputs:
+          #         targetType: inline
           #         script: |
-          #           if command -v google-chrome &> /dev/null; then
-          #             # Uninstall the existing Chrome
-          #             sudo apt remove google-chrome-stable --purge -y
-          #           else
-          #             echo "Google Chrome is not installed on your system."
-          #           fi
-          #           CHROME_VERSION="116.0.5845.179"
-          #           # Download the specific Chrome version package
-          #           wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Install the downloaded package
-          #           sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Update package dependencies
-          #           sudo apt install -f -y
-          #           echo "Google Chrome version ${CHROME_VERSION} has been installed."
-          #           rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #           sudo gem install cocoapods
+          #         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+          #     - task: Bash@3
+          #       displayName: Run Cocoapods - pod install
+          #       inputs:
+          #         targetType: inline
+          #         script: |
+          #           pod install > /dev/null
+          #         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+          #     - task: Bash@3
+          #       displayName: 'Install XCTestHtmlReport for publishing result'
+          #       inputs:
+          #         targetType: inline
+          #         script: |
+          #           brew install xctesthtmlreport
+          #         workingDirectory: '$(System.DefaultWorkingDirectory)'
           #     - task: NodeTool@0
           #       inputs:
           #         versionSpec: '14.x'
           #       displayName: 'Install Node.js'
           #     - task: Cache@2
           #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+          #         key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
           #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache app host node_modules pnpm
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache client sdk node_modules pnpm
+          #       displayName: Cache pnpm
           #     - task: CmdLine@2
           #       displayName: 'Setup pnpm'
           #       inputs:
@@ -526,36 +485,6 @@ extends:
           #           corepack enable
           #           corepack prepare pnpm@7.30.1 --activate
           #           pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: /home/vsts/.cache/Cypress
-          #         cacheHitVar: CYPRESS_CACHE_RESTORED
-          #       displayName: 'Cache Cypress binary'
-          #     - task: npmAuthenticate@0
-          #       inputs:
-          #         workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (skip Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-          #       inputs:
-          #         script: |
-          #           CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (include Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
-          #       inputs:
-          #         script: |
-          #           rm -rf $(pnpm store path)
-          #           pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build app hosting sdk'
-          #       inputs:
-          #         script: |
-          #           pnpm build
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
           #     - task: CmdLine@2
           #       displayName: 'Install client sdk dependencies'
           #       inputs:
@@ -568,326 +497,38 @@ extends:
           #         script: |
           #           pnpm build-force-blazor
           #         workingDirectory: '$(ClientSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Configure host machine'
-          #       inputs:
-          #         script: "sudo chmod -R 755 ./ \npnpm run setup\n"
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build Test App Local'
-          #       inputs:
-          #         script: |
-          #           pnpm build-test-app-local
-          #         workingDirectory: '$(ClientSdkProjectDirectory)'
           #     - task: Bash@3
-          #       displayName: 'Run E2E integration tests with local script tag'
-          #       condition: succeeded()
+          #       displayName: 'Run sample test app in background'
           #       inputs:
           #         targetType: inline
-          #         script: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: PublishTestResults@2
-          #       inputs:
-          #         testResultsFormat: 'JUnit'
-          #         testResultsFiles: '**/e2e-tests-report*.xml'
-          #         testRunTitle: 'E2E Tests - Local Tag'
-          #         mergeTestResults: true
-          #       condition: succeededOrFailed()
-          # - job: E2ETestCDN
-          #   displayName: 'E2E Test - CDN (only runs on release builds)'
-          #   condition: and( eq(variables['Build.Reason'], 'PullRequest'), startsWith(variables['System.PullRequest.SourceBranch'], 'release/'), eq(variables['System.PullRequest.TargetBranch'], 'main') )
-          #   pool:
-          #     vmImage: 'ubuntu-latest'
-          #   steps:
-          #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-          #       inputs:
-          #         repository: self
-          #     - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-          #       inputs:
-          #         repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-          #         persistCredentials: true
-          #     - task: CmdLine@2
-          #       displayName: 'Fix Chrome browser on V116'
-          #       inputs:
-          #         script: |
-          #           if command -v google-chrome &> /dev/null; then
-          #             # Uninstall the existing Chrome
-          #             sudo apt remove google-chrome-stable --purge -y
-          #           else
-          #             echo "Google Chrome is not installed on your system."
-          #           fi
-          #           CHROME_VERSION="116.0.5845.179"
-          #           # Download the specific Chrome version package
-          #           wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Install the downloaded package
-          #           sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #           # Update package dependencies
-          #           sudo apt install -f -y
-          #           echo "Google Chrome version ${CHROME_VERSION} has been installed."
-          #           rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-          #     - task: NodeTool@0
-          #       inputs:
-          #         versionSpec: '14.x'
-          #       displayName: 'Install Node.js'
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache app host node_modules pnpm
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: $(Pipeline.Workspace)/.pnpm-store
-          #       displayName: Cache client sdk node_modules pnpm
-          #     - task: CmdLine@2
-          #       displayName: 'Setup pnpm'
-          #       inputs:
-          #         script: |
-          #           corepack enable
-          #           corepack prepare pnpm@7.30.1 --activate
-          #           pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-          #     - task: Cache@2
-          #       inputs:
-          #         key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-          #         path: /home/vsts/.cache/Cypress
-          #         cacheHitVar: CYPRESS_CACHE_RESTORED
-          #       displayName: 'Cache Cypress binary'
-          #     - task: npmAuthenticate@0
-          #       inputs:
-          #         workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (skip Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-          #       inputs:
-          #         script: |
-          #           CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: Install app hosting dependencies (include Cypress install)
-          #       condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
-          #       inputs:
-          #         script: |
-          #           rm -rf $(pnpm store path)
-          #           pnpm install --frozen-lockfile
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build app hosting sdk'
-          #       inputs:
-          #         script: |
-          #           pnpm build
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Install client sdk dependencies'
-          #       inputs:
-          #         script: |
-          #           pnpm install
-          #         workingDirectory: '$(ClientSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build client sdk'
-          #       inputs:
-          #         script: |
-          #           pnpm build-force-blazor
-          #         workingDirectory: '$(ClientSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Configure host machine'
-          #       inputs:
-          #         script: "sudo chmod -R 755 ./ \npnpm run setup\n"
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: CmdLine@2
-          #       displayName: 'Build Test App CDN'
-          #       inputs:
-          #         script: |
-          #           pnpm build-test-app-CDN
+          #         script: 'nohup pnpm start-test-app &'
           #         workingDirectory: '$(ClientSdkProjectDirectory)'
           #     - task: Bash@3
-          #       displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
-          #       condition: succeeded()
-          #       enabled: true
+          #       displayName: 'Disable Slow Animation'
           #       inputs:
           #         targetType: inline
-          #         script: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
-          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
-          #     - task: PublishTestResults@2
+          #         script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+          #         workingDirectory: '$(System.DefaultWorkingDirectory)'
+          #     - task: Bash@3
+          #       displayName: 'iOS UI/E2E Tests'
           #       inputs:
-          #         testResultsFormat: 'JUnit'
-          #         testResultsFiles: '**/e2e-tests-report*.xml'
-          #         testRunTitle: 'E2E Tests - CDN'
-          #         mergeTestResults: true
+          #         targetType: inline
+          #         script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkScheme) -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -test-iterations 3 -retry-tests-on-failure -quiet -resultBundlePath TestResults test > report.out 2>&1\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+          #         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+          #     - task: Bash@3
+          #       displayName: 'Generate E2E test report'
           #       condition: succeededOrFailed()
-          - job: E2ETestAndroid
-            displayName: 'E2E Test - Android'
-            pool:
-              vmImage: 'macOS-11'
-            steps:
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: self
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: git://$(AndroidAppHostingSdkGitPath)
-                  path: androidHost
-                  persistCredentials: true
-              - task: NodeTool@0
-                inputs:
-                  versionSpec: '14.x'
-                displayName: 'Install Node.js'
-              - task: Cache@2
-                inputs:
-                  key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.pnpm-store
-                displayName: Cache pnpm
-              - task: CmdLine@2
-                displayName: 'Setup pnpm'
-                inputs:
-                  script: |
-                    corepack enable
-                    corepack prepare pnpm@7.30.1 --activate
-                    pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-              - task: CmdLine@2
-                displayName: 'Install client sdk dependencies'
-                inputs:
-                  script: |
-                    pnpm install
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Build client sdk'
-                inputs:
-                  script: |
-                    pnpm build-force-blazor
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: Bash@3
-                displayName: 'Run sample test app in background'
-                inputs:
-                  targetType: inline
-                  script: 'nohup pnpm start-test-app &'
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: Bash@3
-                displayName: 'Install Emulator'
-                inputs:
-                  targetType: inline
-                  script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
-              - task: JavaToolInstaller@0
-                inputs:
-                  versionSpec: '11'
-                  jdkArchitectureOption: 'x64'
-                  jdkSourceOption: 'PreInstalled'
-                displayName: 'Set default Java to x64'
-              - task: Bash@3
-                displayName: 'Run Android E2E Tests'
-                inputs:
-                  targetType: inline
-                  script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
-                  workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
-              - task: PublishTestResults@2
-                displayName: 'Publish Test Results'
-                inputs:
-                  testResultsFiles: '**/TEST-*.xml'
-                  failTaskOnFailedTests: false
-                  testRunTitle: 'E2E Tests - Android'
-                  searchFolder: '$(Agent.BuildDirectory)/androidHost'
-                  mergeTestResults: true
-                condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
-          - job: E2ETestIOS
-            displayName: 'E2E Test - IOS'
-            pool:
-              vmImage: 'macOS-latest'
-            steps:
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: self
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: git://$(IOSAppHostingSdkGitPath)
-                  path: iOSHost
-                  persistCredentials: true
-              - task: InstallSSHKey@0
-                displayName: 'Install an SSH key for OneDSTelemetry'
-                inputs:
-                  knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
-                  sshPublicKey: '$(OneDSTelemetryKey)'
-                  sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
-              - task: Bash@3
-                displayName: Install Cocoapods
-                inputs:
-                  targetType: inline
-                  script: |
-                    sudo gem install cocoapods
-                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-              - task: Bash@3
-                displayName: Run Cocoapods - pod install
-                inputs:
-                  targetType: inline
-                  script: |
-                    pod install > /dev/null
-                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-              - task: Bash@3
-                displayName: 'Install XCTestHtmlReport for publishing result'
-                inputs:
-                  targetType: inline
-                  script: |
-                    brew install xctesthtmlreport
-                  workingDirectory: '$(System.DefaultWorkingDirectory)'
-              - task: NodeTool@0
-                inputs:
-                  versionSpec: '14.x'
-                displayName: 'Install Node.js'
-              - task: Cache@2
-                inputs:
-                  key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.pnpm-store
-                displayName: Cache pnpm
-              - task: CmdLine@2
-                displayName: 'Setup pnpm'
-                inputs:
-                  script: |
-                    corepack enable
-                    corepack prepare pnpm@7.30.1 --activate
-                    pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-              - task: CmdLine@2
-                displayName: 'Install client sdk dependencies'
-                inputs:
-                  script: |
-                    pnpm install
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Build client sdk'
-                inputs:
-                  script: |
-                    pnpm build-force-blazor
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: Bash@3
-                displayName: 'Run sample test app in background'
-                inputs:
-                  targetType: inline
-                  script: 'nohup pnpm start-test-app &'
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: Bash@3
-                displayName: 'Disable Slow Animation'
-                inputs:
-                  targetType: inline
-                  script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
-                  workingDirectory: '$(System.DefaultWorkingDirectory)'
-              - task: Bash@3
-                displayName: 'iOS UI/E2E Tests'
-                inputs:
-                  targetType: inline
-                  script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkScheme) -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -test-iterations 3 -retry-tests-on-failure -quiet -resultBundlePath TestResults test > report.out 2>&1\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
-                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-              - task: Bash@3
-                displayName: 'Generate E2E test report'
-                condition: succeededOrFailed()
-                inputs:
-                  targetType: inline
-                  script: 'xchtmlreport -r TestResults -j > /dev/null
-                    if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;'
-                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-              - task: PublishTestResults@2
-                displayName: 'Publish Test Results'
-                inputs:
-                  testResultsFiles: '**/*.junit'
-                  failTaskOnFailedTests: false
-                  testRunTitle: 'E2E Tests - iOS'
-                  searchFolder: '$(Agent.BuildDirectory)/iOSHost'
-                  mergeTestResults: true
-                condition: always()
+          #       inputs:
+          #         targetType: inline
+          #         script: 'xchtmlreport -r TestResults -j > /dev/null
+          #           if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;'
+          #         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+          #     - task: PublishTestResults@2
+          #       displayName: 'Publish Test Results'
+          #       inputs:
+          #         testResultsFiles: '**/*.junit'
+          #         failTaskOnFailedTests: false
+          #         testRunTitle: 'E2E Tests - iOS'
+          #         searchFolder: '$(Agent.BuildDirectory)/iOSHost'
+          #         mergeTestResults: true
+          #       condition: always()
