@@ -29,6 +29,14 @@ extends:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: windows-2022
       os: windows
+    sdl:
+      sourceAnalysisPool:
+        name: Azure-Pipelines-1ESPT-ExDShared
+        image: windows-2022
+        os: windows
+      sourceRepositoriesToScan:
+        include:
+          - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
