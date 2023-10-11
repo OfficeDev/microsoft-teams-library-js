@@ -11,12 +11,12 @@ Wed, 11 Oct 2023 16:51:27 GMT
 ### Minor changes
 
 - Added `lifecycle` subcapability in `app.ts` to support caching
-- Add `HostName.places` to the list of application hosts
+- Added `HostName.places` to the list of application hosts
 
 ### Patches
 
 - Reset registered handlers for unit testing 
-- Rename Teams back-compat config for clarity
+- Renamed Teams back-compat config for clarity
 - Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
 - Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`
 
