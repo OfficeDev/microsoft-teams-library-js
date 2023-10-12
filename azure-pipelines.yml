@@ -77,7 +77,7 @@ jobs:
           mergeTestResults: true
         condition: succeededOrFailed()
 
-  - job: E2ETest3
+  - job: E2ETest31
     displayName: 'E2E Test - Local Tag'
     pool:
       vmImage: 'ubuntu-latest'
