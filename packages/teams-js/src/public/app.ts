@@ -442,7 +442,7 @@ export namespace app {
     id: string;
 
     /**
-     * The type of license for the current users tenant.
+     * The type of license for the current user's tenant. Possible values are enterprise, free, edu, and unknown.
      */
     teamsSku?: string;
   }
