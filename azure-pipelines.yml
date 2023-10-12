@@ -48,7 +48,7 @@ jobs:
           mergeTestResults: true
         condition: succeededOrFailed()
 
-  - job: E2ETest2
+  - job: E2ETest21
     displayName: 'E2E Test - Default'
     pool:
       vmImage: 'ubuntu-20.04'
