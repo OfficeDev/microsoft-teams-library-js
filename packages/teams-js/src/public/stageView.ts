@@ -46,13 +46,13 @@ export namespace stageView {
     /**
      * The open mode for stage content.
      */
-    openMode?: StageVieweOpenMode;
+    openMode?: StageViewOpenMode;
   }
 
   /**
    * The open mode for stage content.
    */
-  export enum StageVieweOpenMode {
+  export enum StageViewOpenMode {
     modal = 'modal',
     popoutWithChat = 'popoutWithChat',
     popoutWithoutChat = 'popoutWithoutChat',

@@ -40,6 +40,7 @@ describe('stageView', () => {
     title: 'title',
     websiteUrl: 'websiteUrl',
     entityId: 'entityId',
+    openMode: stageView.StageViewOpenMode.modal,
   };
 
   describe('isSupported', () => {
