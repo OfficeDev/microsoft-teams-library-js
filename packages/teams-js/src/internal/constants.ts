@@ -143,6 +143,8 @@ export const validOrigins = [
   'www.officeppe.com',
   '*.www.microsoft365.com',
   'www.microsoft365.com',
+  'bing.com',
+  'edgeservices.bing.com',
 ];
 
 /**

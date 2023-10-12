@@ -12,6 +12,10 @@ describe('MicrosoftTeams-Navigation', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
+  function makeRuntimeSupportNavigationCapability() {
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
+  }
+
   beforeEach(() => {
     utils.processMessage = null;
     utils.messages = [];
@@ -70,21 +74,27 @@ describe('MicrosoftTeams-Navigation', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       it(`navigation.navigateToTab should successfully call pages.tabs.nagivateToTab when initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context, 'desktop');
+        await utils.initializeWithContext(context);
+        makeRuntimeSupportNavigationCapability();
+
         const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
         navigateToTab(null);
         expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
-      it.skip(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context, 'desktop');
+      it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        makeRuntimeSupportNavigationCapability();
+
         navigateToTab(null);
         const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
         expect(navigateToTabMsg).not.toBeNull();
       });
 
-      it.skip(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
-        await utils.initializeWithContext(context, 'desktop');
+      it(`navigation.navigateToTab should not navigate to tab action when set to false and initialized with ${context} context`, async () => {
+        await utils.initializeWithContext(context);
+        makeRuntimeSupportNavigationCapability();
+
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
             if (!success) {

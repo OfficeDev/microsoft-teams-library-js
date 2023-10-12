@@ -132,6 +132,8 @@ describe('runtime', () => {
     });
   });
 
+  // Determines whether the given "subset" runtime object is a subset of the given "superset" runtime object.
+  // This is used to determine whether all capabilities supported in "subset" are also supported in "superset"
   function isSubset(subset: object, superset: object): boolean {
     for (const key in subset) {
       if (typeof subset[key] === 'object' && typeof superset[key] === 'object') {
@@ -145,6 +147,23 @@ describe('runtime', () => {
     return true;
   }
 
+  // Can recursively decompose an object into an array of objects, where each object in the array is a path to a leaf
+  // node in the original object.
+  // For example,
+  // {
+  //     pages: {
+  //         appButton: {},
+  //         tabs: {},
+  //     }
+  // }
+  // would be decomposed into
+  // [
+  //     { pages: { appButton: {} } },
+  //     { pages: { tabs: {} } }
+  // ]
+  // This can be a useful helper when identifying which capability defined in 'obj' is not defined in a runtime (because
+  // you can decompose a runtime object using this function, then compare each capability/subcapability one at a time to find
+  // any that are missing)
   function decomposeObject(obj: object): object[] {
     const result: object[] = [];
 
