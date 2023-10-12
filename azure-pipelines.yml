@@ -57,25 +57,25 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
 
-      # - bash: 'node tools/cli/runAppsWithE2ETests.js'
-      #   displayName: 'Run E2E integration tests'
-      #   condition: succeeded()
-      #   workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js'
+        displayName: 'Run E2E integration tests'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      # - task: CMDLine@2
-      #   displayName: 'Run tests for electron webview'
-      #   inputs:
-      #     script: |
-      #       pnpm exec xvfb-maybe playwright test
-      #     workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - task: CMDLine@2
+        displayName: 'Run tests for electron webview'
+        inputs:
+          script: |
+            pnpm exec xvfb-maybe playwright test
+          workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      # - task: PublishTestResults@2
-      #   inputs:
-      #     testResultsFormat: 'JUnit'
-      #     testResultsFiles: '**/e2e-tests-report*.xml'
-      #     testRunTitle: 'E2E Tests - Default'
-      #     mergeTestResults: true
-      #   condition: succeededOrFailed()
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Default'
+          mergeTestResults: true
+        condition: succeededOrFailed()
 
   - job: E2ETest3
     displayName: 'E2E Test - Local Tag'
@@ -93,18 +93,18 @@ jobs:
             pnpm build-test-app-local
           workingDirectory: '$(ClientSdkProjectDirectory)'
 
-      # - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
-      #   displayName: 'Run E2E integration tests with local script tag'
-      #   condition: succeeded()
-      #   workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
+        displayName: 'Run E2E integration tests with local script tag'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      # - task: PublishTestResults@2
-      #   inputs:
-      #     testResultsFormat: 'JUnit'
-      #     testResultsFiles: '**/e2e-tests-report*.xml'
-      #     testRunTitle: 'E2E Tests - Local Tag'
-      #     mergeTestResults: true
-      #   condition: succeededOrFailed()
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - Local Tag'
+          mergeTestResults: true
+        condition: succeededOrFailed()
 
   - job: E2ETestCDN
     displayName: 'E2E Test - CDN (only runs on release builds)'
