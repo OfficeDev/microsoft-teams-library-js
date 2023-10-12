@@ -12,8 +12,11 @@ import { Utils } from '../utils';
 
 describe('stageView', () => {
   const utils = new Utils();
-
   const allowedContexts = [FrameContexts.content];
+
+  function makeRuntimeSupportStageViewCapability() {
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
+  }
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -70,11 +73,15 @@ describe('stageView', () => {
     it('should not allow a null StageViewParams parameter', async () => {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
+
       expect(() => stageView.open(null)).rejects.toThrowError('[stageView.open] Stage view params cannot be null');
     });
 
     it('should pass along entire StageViewParams parameter in content context', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
+
       const promise = stageView.open(stageViewParams);
 
       const openStageViewMessage = utils.findMessageByFunc('stageView.open');
@@ -86,6 +93,7 @@ describe('stageView', () => {
 
     it('should return promise and resolve', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.open(stageViewParams);
 
@@ -99,6 +107,7 @@ describe('stageView', () => {
 
     it('should properly handle errors', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.open(stageViewParams);
 
