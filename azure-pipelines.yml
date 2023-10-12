@@ -26,7 +26,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-test-publish.yml
 
-  - job: E2ETest1
+  - job: E2ETest11
     displayName: 'E2E Test - Perf'
     pool:
       vmImage: 'ubuntu-latest'
