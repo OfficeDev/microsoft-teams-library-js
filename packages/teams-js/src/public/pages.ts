@@ -20,9 +20,9 @@ import { runtime } from './runtime';
  */
 export namespace pages {
   /** Callback function */
-  type handlerFunctionType = () => void;
+  export type handlerFunctionType = () => void;
   /** Full screen function */
-  type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
+  export type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
   /** Back button handler function */
   type backButtonHandlerFunctionType = () => boolean;
   /** Save event function */

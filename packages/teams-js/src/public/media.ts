@@ -35,13 +35,13 @@ import { runtime } from './runtime';
  */
 export namespace media {
   /** Capture image callback function type. */
-  type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
+  export type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
   /** Select media callback function type. */
-  type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
+  export type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
   /** Error callback function type. */
-  type errorCallbackFunctionType = (error?: SdkError) => void;
+  export type errorCallbackFunctionType = (error?: SdkError) => void;
   /** Scan BarCode callback function type. */
-  type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
+  export type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
   /** Get media callback function type. */
   type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
 
