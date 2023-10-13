@@ -43,7 +43,7 @@ export namespace media {
   /** Scan BarCode callback function type. */
   export type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
   /** Get media callback function type. */
-  type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
+  export type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
 
   /**
    * Enum for file formats supported

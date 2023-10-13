@@ -11,7 +11,7 @@ import { runtime } from './runtime';
  */
 export namespace teamsCore {
   /** Ready to unload function type */
-  type readyToUnloadFunctionType = () => void;
+  export type readyToUnloadFunctionType = () => void;
   /** Register on load handler function type */
   export type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
   /** Register before unload handler function type */

@@ -24,11 +24,11 @@ export namespace pages {
   /** Full screen function */
   export type fullScreenChangeFunctionType = (isFullScreen: boolean) => void;
   /** Back button handler function */
-  type backButtonHandlerFunctionType = () => boolean;
+  export type backButtonHandlerFunctionType = () => boolean;
   /** Save event function */
-  type saveEventType = (evt: pages.config.SaveEvent) => void;
+  export type saveEventType = (evt: pages.config.SaveEvent) => void;
   /** Remove event function */
-  type removeEventType = (evt: pages.config.RemoveEvent) => void;
+  export type removeEventType = (evt: pages.config.RemoveEvent) => void;
 
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
