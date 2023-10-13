@@ -18,7 +18,7 @@ import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
 
 /** Execute deep link on complete function type */
-type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
+export type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** Callback function type */
 type callbackFunctionType = () => void;
 /** Get context callback function type */

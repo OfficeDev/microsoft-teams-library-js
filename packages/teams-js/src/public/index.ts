@@ -28,6 +28,7 @@ export {
   LoadContext,
   LocaleInfo,
   M365ContentAction,
+  ResumeContext,
   SdkError,
   SecondaryId,
   SecondaryM365ContentIdName,
@@ -71,6 +72,7 @@ export { appInitialization } from './appInitialization';
 export {
   enablePrintCapability,
   executeDeepLink,
+  executeDeepLinkOnCompleteFunctionType,
   getContext,
   getMruTabInstances,
   getTabInstances,
