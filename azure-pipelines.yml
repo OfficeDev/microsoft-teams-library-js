@@ -196,7 +196,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
-          iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
+          iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath2)
 
       - bash: |
           sudo pip3 install selenium
