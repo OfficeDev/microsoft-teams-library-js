@@ -152,11 +152,91 @@ jobs:
         parameters:
           androidAppHostingSdkGitPath: git://$(AndroidAppHostingSdkGitPath)
 
-  - job: E2ETestIOS
-    displayName: 'E2E Test - IOS'
+  - job: E2ETestIOSDev
+    displayName: 'E2E Test - IOS DEV'
     pool:
       vmImage: 'internal-macos12'
     steps:
-      - template: tools/yaml-templates/ios-test.yml
+      - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
           iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
+
+      - bash: /usr/bin/xcodebuild
+          -configuration Release
+          -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace
+          -scheme $(IOSSdkScheme)
+          -sdk iphonesimulator
+          -parallel-testing-enabled YES
+          -parallel-testing-worker-count 2
+          -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2'
+          -screenshot-enabled="YES"
+          -test-iterations 3
+          -retry-tests-on-failure
+          -quiet
+          -resultBundlePath TestResults
+          test > report.out 2>&1
+
+          if [[ $? == 0 ]];
+          then
+          echo "E2E Test passes successfully";
+          exit 0;
+          else
+          echo "E2E Test failed";
+          exit 1;
+          fi;
+        displayName: 'iOS UI/E2E Tests'
+        workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+      - template: tools/yaml-templates/build-test-publish-ios.yml
+
+  - job: E2ETestIOSBackCompat
+    displayName: 'E2E Test - IOS Back Compat'
+    pool:
+      vmImage: 'internal-macos12'
+    steps:
+      - template: tools/yaml-templates/build-app-host-ios.yml
+        parameters:
+          iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
+
+      - bash: |
+          sudo pip3 install selenium
+        displayName: Run pip install selenium for scraping
+        workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+      - bash: |
+          pnpm install
+        displayName: 'Install BCAET tool'
+        workingDirectory: '$(Agent.BuildDirectory)/iOSHost/backcompattool'
+
+      - bash: |
+          pnpm test:e2e 2>&1
+        displayName: 'Generate test files on latest version Teams-JS Library'
+        workingDirectory: '$(Agent.BuildDirectory)/iOSHost/backcompattool'
+
+      - bash: /usr/bin/xcodebuild
+          -configuration Release
+          -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace
+          -scheme $(IOSSdkScheme)
+          -sdk iphonesimulator
+          -parallel-testing-enabled YES
+          -parallel-testing-worker-count 2
+          -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2'
+          -screenshot-enabled="YES"
+          -test-iterations 3
+          -retry-tests-on-failure
+          -quiet
+          -resultBundlePath TestResults
+          test > report.out 2>&1
+
+          if [[ $? == 0 ]];
+          then
+          echo "E2E Test passes successfully";
+          exit 0;
+          else
+          echo "E2E Test failed";
+          exit 1;
+          fi;
+        displayName: 'iOS UI/E2E Tests'
+        workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+      - template: tools/yaml-templates/build-test-publish-ios.yml

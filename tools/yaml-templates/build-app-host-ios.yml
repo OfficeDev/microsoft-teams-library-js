@@ -1,0 +1,74 @@
+parameters:
+  - name: 'iOSAppHostingSdkGitPath'
+    default: none
+    type: string
+
+steps:
+  - checkout: self
+  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+    path: iOSHost
+    persistCredentials: true
+
+  - task: InstallSSHKey@0
+    displayName: 'Install an SSH key for OneDSTelemetry'
+    inputs:
+      knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
+      sshPublicKey: '$(OneDSTelemetryKey)'
+      sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
+
+  - bash: |
+      sudo gem install cocoapods
+    displayName: Install Cocoapods
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash: |
+      pod install > /dev/null
+    displayName: Run Cocoapods - pod install
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash: |
+      brew install xctesthtmlreport
+    displayName: 'Install XCTestHtmlReport for publishing result'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x'
+    displayName: 'Install Node.js'
+
+  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
+  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
+  #   'command_name | operating_system | lockfile'
+  # in our case it is 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+  # and for the path is the directory which needs to be cached.
+  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
+  - task: Cache@2
+    inputs:
+      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache pnpm
+
+  - script: |
+      corepack enable
+      corepack prepare pnpm@7.30.1 --activate
+      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+    displayName: 'Setup pnpm'
+
+  - script: |
+      pnpm install
+    displayName: 'Install client sdk dependencies'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - script: |
+      pnpm build-force-blazor
+    displayName: 'Build client sdk'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - bash: 'nohup pnpm start-test-app &'
+    displayName: 'Run sample test app in background'
+    workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - bash: cd ~/Library/Preferences
+      defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+    displayName: 'Disable Slow Animation'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
