@@ -157,6 +157,10 @@ jobs:
     pool:
       vmImage: 'internal-macos12'
     steps:
+      - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+        path: iOSHost
+        persistCredentials: true
+
       - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
           iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
@@ -194,6 +198,10 @@ jobs:
     pool:
       vmImage: 'internal-macos12'
     steps:
+      - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+        path: iOSHost
+        persistCredentials: true
+
       - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
           iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath2)
