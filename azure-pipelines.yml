@@ -214,7 +214,8 @@ jobs:
         displayName: 'Generate test files on latest version Teams-JS Library'
         workingDirectory: '$(Agent.BuildDirectory)/iOSHost/backcompattool'
 
-      - bash: /usr/bin/xcodebuild
+      - bash:
+          /usr/bin/xcodebuild
           -configuration Release
           -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace
           -scheme $(IOSSdkScheme)
@@ -227,16 +228,17 @@ jobs:
           -retry-tests-on-failure
           -quiet
           -resultBundlePath TestResults
-          test > report.out 2>&1
+          test > report.out
+          # test > report.out 2>&1
 
-          if [[ $? == 0 ]];
-          then
-          echo "E2E Test passes successfully";
-          exit 0;
-          else
-          echo "E2E Test failed";
-          exit 1;
-          fi;
+          # if [[ $? == 0 ]];
+          # then
+          # echo "E2E Test passes successfully";
+          # exit 0;
+          # else
+          # echo "E2E Test failed";
+          # exit 1;
+          # fi;
         displayName: 'iOS UI/E2E Tests'
         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
