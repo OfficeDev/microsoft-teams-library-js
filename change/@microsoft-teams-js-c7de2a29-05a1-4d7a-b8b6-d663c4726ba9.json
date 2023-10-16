@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Enabled Dynamic Domain List with fallback functionality",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
