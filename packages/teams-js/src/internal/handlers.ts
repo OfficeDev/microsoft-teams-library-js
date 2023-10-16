@@ -40,8 +40,6 @@ class HandlersPrivate {
     HandlersPrivate.handlers['themeChange'] = handleThemeChange;
     HandlersPrivate.handlers['load'] = handleLoad;
     HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-    HandlersPrivate.handlers['beforeSuspendOrTerminate'] = handleBeforeSuspendOrTerminate;
-    HandlersPrivate.handlers['resume'] = handleResume;
     pages.backStack._initialize();
   }
 
@@ -188,11 +186,11 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
 /**
  * @internal
  * Limited to Microsoft-internal use
- *
- * @deprecated
  */
 function handleLoad(context: LoadContext): void {
-  if (HandlersPrivate.loadHandler) {
+  if (HandlersPrivate.resumeHandler) {
+    HandlersPrivate.resumeHandler(context);
+  } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(context);
   }
 
@@ -215,19 +213,24 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
 /**
  * @internal
  * Limited to Microsoft-internal use
- *
- * @deprecated
  */
 function handleBeforeUnload(): void {
-  const readyToUnload = (): void => {
+  const readyToSuspendOrTerminate = (): void => {
     sendMessageToParent('readyToUnload', []);
   };
 
-  if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
+  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
+    HandlersPrivate.beforeSuspendOrTerminateHandler();
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
-      readyToUnload();
+      readyToSuspendOrTerminate();
+    }
+  } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToSuspendOrTerminate)) {
+    if (Communication.childWindow) {
+      sendMessageEventToChild('beforeUnload');
+    } else {
+      readyToSuspendOrTerminate();
     }
   }
 }
@@ -238,27 +241,7 @@ function handleBeforeUnload(): void {
  */
 export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeSuspendOrTerminate']);
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function handleBeforeSuspendOrTerminate(): void {
-  const readyToSuspendOrTerminate = (): void => {
-    sendMessageToParent('readyToSuspendOrTerminate', []);
-  };
-
-  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
-    HandlersPrivate.beforeSuspendOrTerminateHandler();
-  }
-
-  if (Communication.childWindow) {
-    sendMessageEventToChild('beforeSuspendOrTerminate');
-  } else {
-    readyToSuspendOrTerminate();
-  }
+  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -266,20 +249,6 @@ function handleBeforeSuspendOrTerminate(): void {
  * Limited to Microsoft-internal use
  */
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
-  HandlersPrivate.loadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['resume']);
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function handleResume(context: LoadContext): void {
-  if (HandlersPrivate.loadHandler) {
-    HandlersPrivate.loadHandler(context);
-  }
-
-  if (Communication.childWindow) {
-    sendMessageEventToChild('resume', [context]);
-  }
+  HandlersPrivate.resumeHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['load']);
 }
