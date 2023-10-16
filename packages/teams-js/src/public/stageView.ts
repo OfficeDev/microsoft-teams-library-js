@@ -58,13 +58,13 @@ export namespace stageView {
      */
     modal = 'modal',
     /**
+     * To open the content in the popped out window.
+     */
+    popout = 'popout',
+    /**
      * To open the content in the popped out window with chat collaboration.
      */
     popoutWithChat = 'popoutWithChat',
-    /**
-     * To open the content in the popped out window without chat collaboration.
-     */
-    popoutWithoutChat = 'popoutWithoutChat',
   }
 
   /**
