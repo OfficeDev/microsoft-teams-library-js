@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `teamsCore` handlers will be overwritten by `app.lifecycle` handlers",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
