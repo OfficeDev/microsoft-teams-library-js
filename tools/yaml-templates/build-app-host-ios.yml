@@ -9,6 +9,10 @@ steps:
     path: iOSHost
     persistCredentials: true
 
+  - bash: git checkout kx/test_npmrc
+    displayName: switch to testing branch
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
   - task: InstallSSHKey@0
     displayName: 'Install an SSH key for OneDSTelemetry'
     inputs:
