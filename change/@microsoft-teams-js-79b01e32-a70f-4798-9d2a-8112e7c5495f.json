@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Updated `teamsCore` handlers will be overwritten by `app.lifecycle` handlers",
+  "comment": "Updated app.lifecycle handlers, registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, so that they will overwrite teamsCore's registered handlers, registerBeforeUnloadHandler and registerOnLoadHandler, respectively.",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
