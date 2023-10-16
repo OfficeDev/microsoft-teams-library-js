@@ -53,8 +53,17 @@ export namespace stageView {
    * The open mode for stage content.
    */
   export enum StageViewOpenMode {
+    /**
+     * To open the content in the main window in a modal.
+     */
     modal = 'modal',
+    /**
+     * To open the content in the popped out window with chat collaboration.
+     */
     popoutWithChat = 'popoutWithChat',
+    /**
+     * To open the content in the popped out window without chat collaboration.
+     */
     popoutWithoutChat = 'popoutWithoutChat',
   }
 
