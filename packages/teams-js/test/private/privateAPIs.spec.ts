@@ -206,7 +206,7 @@ describe('AppSDK-privateAPIs', () => {
     await initPromise;
 
     // Now the getContext call should have been dequeued
-    expect(utils.messages.length).toBe(2);
+    expect(utils.messages.length).toBe(3);
     expect(utils.findMessageByFunc('getContext')).not.toBeNull();
   });
 

@@ -1008,7 +1008,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     await utils.initializeWithContext(FrameContexts.content);
     initializeWithFrameContext(frameContext);
     expect(utils.processMessage).toBeDefined();
-    expect(utils.messages.length).toBe(2);
+    expect(utils.messages.length).toBe(3);
 
     const initMessage = utils.findMessageByFunc('initialize');
     expect(initMessage).not.toBeNull();

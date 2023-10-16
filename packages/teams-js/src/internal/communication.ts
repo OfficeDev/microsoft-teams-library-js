@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
@@ -23,6 +22,7 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window;
   public static childOrigin: string;
+  public static validatedDomains: Map<string, boolean> = new Map();
 }
 
 /**
@@ -279,7 +279,6 @@ function processMessage(evt: DOMMessageEvent): void {
     processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
     return;
   }
-
   // Process only if the message is coming from a different window and a valid origin
   // valid origins are either a pre-known origin or one specified by the app developer
   // in their call to app.initialize
@@ -325,8 +324,11 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
     messageOrigin === Communication.currentWindow.location.origin
   ) {
     return true;
+  } else if (Communication.parentOrigin && messageOrigin && messageOrigin === Communication.parentOrigin) {
+    return true;
   } else {
-    const isOriginValid = validateOrigin(new URL(messageOrigin));
+    const messageOriginUrl: URL = new URL(messageOrigin);
+    const isOriginValid = validateOrigin(messageOriginUrl);
     if (!isOriginValid) {
       shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }

@@ -6,6 +6,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
+import { Communication, sendAndUnwrap } from './communication';
 import { validOrigins } from './constants';
 import { getLogger } from './telemetry';
 
@@ -39,6 +40,13 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 
 const validateOriginLogger = getLogger('validateOrigin');
 
+function validateOriginHandler(messageOrigin: URL): Promise<boolean> {
+  return new Promise<boolean>((resolve) => {
+    const messageOriginUrl = JSON.parse(JSON.stringify(messageOrigin));
+    resolve(sendAndUnwrap('validateDomains', messageOriginUrl));
+  });
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -54,18 +62,28 @@ export function validateOrigin(messageOrigin: URL): boolean {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
-
-  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
-    return true;
+  let isValid = Communication.validatedDomains.get(messageOrigin.host);
+  if (isValid === undefined) {
+    validateOriginHandler(messageOrigin).then((value: boolean) => {
+      isValid = value;
+      Communication.validatedDomains.set(messageOrigin.host, value);
+    });
   }
-
-  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+  //If the DDL designates that the URL doesn't exist fallback to fallback list or check if it exists in the supplied validDomains list
+  if (!isValid) {
+    if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
       return true;
     }
-  }
 
+    for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
+      const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
+      if (validateHostAgainstPattern(pattern, messageOriginHost)) {
+        return true;
+      }
+    }
+  } else {
+    return true;
+  }
   validateOriginLogger(
     'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
     messageOrigin,

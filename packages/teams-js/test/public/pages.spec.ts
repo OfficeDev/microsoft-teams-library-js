@@ -191,7 +191,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             pages.initializeWithFrameContext(frameContext);
             expect(utils.processMessage).toBeDefined();
-            expect(utils.messages.length).toBe(2);
+            expect(utils.messages.length).toBe(3);
 
             const initMessage = utils.findMessageByFunc('initialize');
             validateExpectedArgumentsInRequest(

@@ -660,7 +660,7 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
+            expect(message.id).toBe(2);
             expect(message.args[0]).toBe(undefined);
             utils.respondToMessage(message, true, mockResult);
           });
@@ -682,7 +682,7 @@ describe('Testing authentication capability', () => {
             authentication.getUser(userRequest);
             const message = utils.findMessageByFunc('authentication.getUser');
             expect(message).not.toBeNull();
-            expect(message.id).toBe(1);
+            expect(message.id).toBe(2);
             expect(message.args[0]).toBe(undefined);
             utils.respondToMessage(message, false, mockResult);
           });
@@ -694,7 +694,7 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
+          expect(message.id).toBe(2);
           expect(message.args[0]).toBe(undefined);
           utils.respondToMessage(message, false, mockResult);
           await expect(promise).rejects.toThrowError(mockResult);
@@ -706,7 +706,7 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
+          expect(message.id).toBe(2);
           expect(message.args[0]).toBe(undefined);
           utils.respondToMessage(message, true, mockUser);
           await expect(promise).resolves.toEqual(mockUser);
@@ -718,7 +718,7 @@ describe('Testing authentication capability', () => {
           const promise = authentication.getUser();
           const message = utils.findMessageByFunc('authentication.getUser');
           expect(message).not.toBeNull();
-          expect(message.id).toBe(1);
+          expect(message.id).toBe(2);
           expect(message.args[0]).toBe(undefined);
           utils.respondToMessage(message, true, mockUserWithDataResidency);
           await expect(promise).resolves.toEqual(mockUserWithDataResidency);
