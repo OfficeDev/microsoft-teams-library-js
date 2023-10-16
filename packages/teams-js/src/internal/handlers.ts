@@ -215,7 +215,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  * Limited to Microsoft-internal use
  */
 function handleBeforeUnload(): void {
-  const readyToSuspendOrTerminate = (): void => {
+  const readyToUnload = (): void => {
     sendMessageToParent('readyToUnload', []);
   };
 
@@ -224,13 +224,13 @@ function handleBeforeUnload(): void {
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
-      readyToSuspendOrTerminate();
+      readyToUnload();
     }
-  } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToSuspendOrTerminate)) {
+  } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
-      readyToSuspendOrTerminate();
+      readyToUnload();
     }
   }
 }
