@@ -5,6 +5,9 @@ parameters:
 
 steps:
   - checkout: self
+  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+    path: iOSHost
+    persistCredentials: true
 
   - task: InstallSSHKey@0
     displayName: 'Install an SSH key for OneDSTelemetry'

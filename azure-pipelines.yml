@@ -157,10 +157,6 @@ jobs:
     pool:
       vmImage: 'internal-macos12'
     steps:
-      - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
-        path: iOSHost
-        persistCredentials: true
-
       - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
           iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath)
@@ -198,15 +194,12 @@ jobs:
     pool:
       vmImage: 'internal-macos12'
     steps:
-      - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
-        path: iOSHost
-        persistCredentials: true
-
       - template: tools/yaml-templates/build-app-host-ios.yml
         parameters:
           iOSAppHostingSdkGitPath: git://$(IOSAppHostingSdkGitPath2)
 
       - bash: |
+          pwd
           sudo pip3 install selenium
         displayName: Run pip install selenium for scraping
         workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
