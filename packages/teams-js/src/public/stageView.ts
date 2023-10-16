@@ -54,7 +54,7 @@ export namespace stageView {
    */
   export enum StageViewOpenMode {
     /**
-     * To open the content in the main window in a modal.
+     * To open the content in a modal.
      */
     modal = 'modal',
     /**
