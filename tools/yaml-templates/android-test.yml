@@ -49,6 +49,8 @@ steps:
   - bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
     displayName: 'Install Emulator'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+    # This task is flaky, but when it works it almost always completes in under 5 minutes.
+    # Setting the timeout to 10 minutes so we can fail faster when it fails.
     timeoutInMinutes: 10
 
   - task: JavaToolInstaller@0
