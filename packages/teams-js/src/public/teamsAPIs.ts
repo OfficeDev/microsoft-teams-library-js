@@ -11,11 +11,11 @@ import { runtime } from './runtime';
  */
 export namespace teamsCore {
   /** Ready to unload function type */
-  type readyToUnloadFunctionType = () => void;
+  export type readyToUnloadFunctionType = () => void;
   /** Register on load handler function type */
-  type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
+  export type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
   /** Register before unload handler function type */
-  type registerBeforeUnloadHandlerFunctionType = (readyToUnload: readyToUnloadFunctionType) => boolean;
+  export type registerBeforeUnloadHandlerFunctionType = (readyToUnload: readyToUnloadFunctionType) => boolean;
   /**
    * Enable print capability to support printing page using Ctrl+P and cmd+P
    */
