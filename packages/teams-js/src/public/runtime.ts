@@ -446,16 +446,18 @@ const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBack
  *
  * Merges the capabilities of two runtime objects. Fully supports arbitrarily nested capabilities/subcapabilities.
  *
- * Note that the two parameters are named "baselineRuntime" and "runtimeToMergeIntoBaseline" to make it easier
- * to understand what this function is doing -- but the order of the parameters does not matter, it's just merging
- * the two runtime objects together.
- *
- * Also note that this function isn't actually doing anything specific to capabilities/runtime. It's just doing a
+ * Note that this function isn't actually doing anything specific to capabilities/runtime. It's just doing a
  * generic merge of two objects.
+ *
+ * This function is NOT intended to handle objects that are NOT "shaped" like runtime objects. Specifically
+ * this means that it doesn't know how to merge values that aren't themselves objects. For example, it cannot
+ * properly handle situations where both objects contain a string or number with the same property name since the proper way to
+ * merge such values would be domain-dependent. For now it just happens to keep the value in the baseline and ignore the other.
+ * Since the runtime is only supposed to have objects, this limitation is fine.
  *
  * @param baselineRuntime the baseline runtime object
  * @param runtimeToMergeIntoBaseline the runtime object to merge into the baseline
- * @returns the merged runtime object
+ * @returns the merged runtime object which is the union of baselineRuntime and runtimeToMergeIntoBaseline
  */
 function mergeRuntimeCapabilities(baselineRuntime: object, runtimeToMergeIntoBaseline: object): object {
   const merged: object = { ...baselineRuntime };
