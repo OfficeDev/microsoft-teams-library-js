@@ -535,7 +535,7 @@ export namespace app {
   /**
    * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
    */
-  type themeHandler = (theme: string) => void;
+  export type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.
@@ -808,14 +808,14 @@ export namespace app {
      *
      * @param context - Data structure to be used to pass the context to the app.
      */
-    type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+    export type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
 
     /**
      * Register before suspendOrTerminate handler function type
      *
      * @returns void
      */
-    type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
 
     /**
      * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,

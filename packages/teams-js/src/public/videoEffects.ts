@@ -17,9 +17,9 @@ export namespace videoEffects {
     : new VideoPerformanceMonitor(sendMessageToParent);
 
   /** Notify video frame processed function type */
-  type notifyVideoFrameProcessedFunctionType = () => void;
+  export type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
-  type notifyErrorFunctionType = (errorMessage: string) => void;
+  export type notifyErrorFunctionType = (errorMessage: string) => void;
 
   /**
    * Represents a video frame

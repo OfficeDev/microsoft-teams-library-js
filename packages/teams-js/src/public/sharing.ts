@@ -11,7 +11,7 @@ import { runtime } from './runtime';
  */
 export namespace sharing {
   /** shareWebContent callback function type */
-  type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
+  export type shareWebContentCallbackFunctionType = (err?: SdkError) => void;
 
   /** Type of message that can be sent or received by the sharing APIs */
   export const SharingAPIMessages = {
