@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Clarified documentation for `sessionId` and `appSessionId` context properties",
-  "packageName": "@microsoft/teams-js",
-  "email": "sakov@microsoft.com",
-  "dependentChangeType": "none"
-}
