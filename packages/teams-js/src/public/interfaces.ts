@@ -938,7 +938,7 @@ export interface ResumeContext {
 
 /**
  * @deprecated
- * As of 2.14.1, please use ResumeContext instead.
+ * As of 2.14.1, please use {@link ResumeContext} instead.
  */
 export type LoadContext = ResumeContext;
 
