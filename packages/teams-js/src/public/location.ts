@@ -13,9 +13,9 @@ import { runtime } from './runtime';
  */
 export namespace location {
   /** Get location callback function type */
-  type getLocationCallbackFunctionType = (error: SdkError, location: Location) => void;
+  export type getLocationCallbackFunctionType = (error: SdkError, location: Location) => void;
   /** Show location callback function type */
-  type showLocationCallbackFunctionType = (error: SdkError, status: boolean) => void;
+  export type showLocationCallbackFunctionType = (error: SdkError, status: boolean) => void;
 
   /**
    * @deprecated

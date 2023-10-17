@@ -14,28 +14,28 @@ import { runtime } from './runtime';
  */
 export namespace meeting {
   /** Error callback function type */
-  type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
+  export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
   /** Get live stream state callback function type */
-  type getLiveStreamStateCallbackFunctionType = (
+  export type getLiveStreamStateCallbackFunctionType = (
     error: SdkError | null,
     liveStreamState: LiveStreamState | null,
   ) => void;
   /** Live stream error callback function type */
-  type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
+  export type liveStreamErrorCallbackFunctionType = (error: SdkError | null) => void;
   /** Register live stream changed handler function type */
-  type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
+  export type registerLiveStreamChangedHandlerFunctionType = (liveStreamState: LiveStreamState) => void;
   /** Get app content stage sharing capabilities callback function type */
-  type getAppContentCallbackFunctionType = (
+  export type getAppContentCallbackFunctionType = (
     error: SdkError | null,
     appContentStageSharingCapabilities: IAppContentStageSharingCapabilities | null,
   ) => void;
   /** Get app content stage sharing state callback function type */
-  type getAppContentStageCallbackFunctionType = (
+  export type getAppContentStageCallbackFunctionType = (
     error: SdkError | null,
     appContentStageSharingState: IAppContentStageSharingState | null,
   ) => void;
   /** Register speaking state change handler function type */
-  type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
+  export type registerSpeakingStateChangeHandlerFunctionType = (speakingState: ISpeakingState) => void;
   /**
    * @hidden
    * Data structure to represent meeting details
