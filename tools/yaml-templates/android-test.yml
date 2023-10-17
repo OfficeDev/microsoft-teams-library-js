@@ -49,8 +49,7 @@ steps:
   - bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
     displayName: 'Install Emulator'
     workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
-    timeoutInMinutes: 2
-    retryCountOnTaskFailure: 1
+    timeoutInMinutes: 10
 
   - task: JavaToolInstaller@0
     inputs:
