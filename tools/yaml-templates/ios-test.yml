@@ -82,11 +82,9 @@ steps:
       -parallel-testing-worker-count 2
       -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2'
       -screenshot-enabled="YES"
-      -test-iterations 3
-      -retry-tests-on-failure
       -quiet
       -resultBundlePath TestResults
-      test > report.out 2>&1
+      test
 
       if [[ $? == 0 ]];
       then
@@ -99,7 +97,7 @@ steps:
     displayName: 'iOS UI/E2E Tests'
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - bash: xchtmlreport -r TestResults -j > /dev/null
+  - bash: xchtmlreport -r TestResults -j
 
       if [[ $? == 0 ]];
       then
