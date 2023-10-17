@@ -53,9 +53,6 @@ export namespace teamsCore {
    *
    * @param handler - The handler to invoke when the page is loaded.
    *
-   * @deprecated
-   * As of 2.14.1, please use {@link app.lifecycle.registerOnResumeHandler} instead.
-   *
    * @beta
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
@@ -101,7 +98,6 @@ export namespace teamsCore {
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
-   * @deprecated
    * @beta
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
