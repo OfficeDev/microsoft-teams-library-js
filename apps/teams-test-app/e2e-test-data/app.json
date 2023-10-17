@@ -8,7 +8,7 @@
       "boxSelector": "#box_executeDeepLink2",
       "platformsExcluded": ["iOS"],
       "inputValue": "https://bing.com",
-      "expectedWindowOpenTarget": "https://bing.com"
+      "expectedWindowOpenTarget": "https://bing.comsss"
     },
     {
       "title": "openLink startCall API Call - Success",
