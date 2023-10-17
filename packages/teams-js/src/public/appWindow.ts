@@ -10,9 +10,9 @@ import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /** onComplete function type */
-type onCompleteFunctionType = (status: boolean, reason?: string) => void;
+export type onCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** addEventListner function type */
-type addEventListnerFunctionType = (message: any) => void;
+export type addEventListnerFunctionType = (message: any) => void;
 
 /** Represents a window or frame within the host app. */
 export interface IAppWindow {
