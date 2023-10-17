@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Adding openMode in StageViewParams",
+  "comment": "Added option to open `stageView` in new modes if supported by host",
   "packageName": "@microsoft/teams-js",
   "email": "email not defined",
   "dependentChangeType": "patch"
