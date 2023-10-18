@@ -84,7 +84,7 @@ steps:
       -screenshot-enabled="YES"
       -quiet
       -resultBundlePath TestResults
-      test > report.out
+      test > report.out 2>/dev/null
 
       if [[ $? == 0 ]];
       then
