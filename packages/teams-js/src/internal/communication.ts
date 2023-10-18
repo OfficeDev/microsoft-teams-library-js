@@ -4,11 +4,19 @@ import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
+import { validOrigins } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import { ssrSafeWindow, validateOrigin } from './utils';
+import {
+  fallbackValidateOrigin,
+  isValidHttpsURL,
+  sanitizeAndStrigifyURL,
+  ssrSafeWindow,
+  validateAdditionalOrigins,
+  validateOriginLogger,
+} from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -22,7 +30,7 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window;
   public static childOrigin: string;
-  public static validatedDomains: Map<string, boolean> = new Map();
+  public static alreadyVerifiedDomains: Map<string, boolean> = new Map();
 }
 
 /**
@@ -304,6 +312,70 @@ function processMessage(evt: DOMMessageEvent): void {
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
 
+function sendValidateDomainRequest(messageOrigin: URL): Promise<boolean> {
+  const messageOriginUrl = sanitizeAndStrigifyURL(messageOrigin);
+  return sendAndUnwrap('validateDomains', messageOriginUrl);
+}
+
+function validateOrigin(messageOrigin: URL): boolean {
+  // Check whether the url is in the pre-known allowlist or supplied by user
+  if (!isValidHttpsURL(messageOrigin)) {
+    validateOriginLogger(
+      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
+      messageOrigin,
+      messageOrigin.protocol,
+    );
+    return false;
+  }
+  const messageOriginHost = messageOrigin.host;
+  let isVerified = false;
+  if (Communication.alreadyVerifiedDomains.has(messageOriginHost)) {
+    isVerified = Communication.alreadyVerifiedDomains.get(messageOriginHost);
+  } else {
+    sendValidateDomainRequest(messageOrigin).then((hubResponse: boolean) => {
+      isVerified = hubResponse;
+      Communication.alreadyVerifiedDomains.set(messageOriginHost, hubResponse);
+    });
+  }
+  if (isVerified) {
+    return true;
+  }
+  if (fallbackValidateOrigin(messageOriginHost)) {
+    return true;
+  }
+  if (validateAdditionalOrigins(messageOriginHost)) {
+    return true;
+  }
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by the host, this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOrigin,
+    validOrigins,
+    GlobalVars.additionalValidOrigins,
+  );
+  return false;
+}
+
+function isMessageComingFromParentOrigin(messageOrigin: string): boolean {
+  return (
+    Communication.parentOrigin &&
+    messageOrigin &&
+    messageOrigin === Communication.parentOrigin &&
+    Communication.alreadyVerifiedDomains.size === 0
+  );
+}
+
+function isMessageComingFromSelf(messageOrigin: string): boolean {
+  return (
+    Communication.currentWindow &&
+    Communication.currentWindow.location &&
+    messageOrigin &&
+    messageOrigin === Communication.currentWindow.location.origin
+  );
+}
+
+function isMessageComingFromCurrentWindow(messageSource: Window): boolean {
+  return Communication.currentWindow && messageSource === Communication.currentWindow;
+}
 /**
  * @hidden
  * Validates the message source and origin, if it should be processed
@@ -314,17 +386,12 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
 function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
-  if (Communication.currentWindow && messageSource === Communication.currentWindow) {
+  if (isMessageComingFromCurrentWindow(messageSource)) {
     shouldProcessMessageLogger('Should not process message because it is coming from the current window');
     return false;
-  } else if (
-    Communication.currentWindow &&
-    Communication.currentWindow.location &&
-    messageOrigin &&
-    messageOrigin === Communication.currentWindow.location.origin
-  ) {
+  } else if (isMessageComingFromSelf(messageOrigin)) {
     return true;
-  } else if (Communication.parentOrigin && messageOrigin && messageOrigin === Communication.parentOrigin) {
+  } else if (isMessageComingFromParentOrigin(messageOrigin)) {
     return true;
   } else {
     const messageOriginUrl: URL = new URL(messageOrigin);
