@@ -55,9 +55,9 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath2)@kx/comment_error_object_object_case
+          appHostGitPath: git://$(AppHostingSdkGitPath2)@$(AppHostingSdkGitRef)
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js  --useDataFromLocal=true'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -84,8 +84,7 @@ jobs:
     steps:
       - template: tools/yaml-templates/build-app-host.yml
         parameters:
-          appHostGitPath: git://$(AppHostingSdkGitPath3)@kx/comment_error_object_object_case
-
+          appHostGitPath: git://$(AppHostingSdkGitPath3)@$(AppHostingSdkGitRef)
       - task: CmdLine@2
         displayName: 'Build Test App Local'
         inputs:
