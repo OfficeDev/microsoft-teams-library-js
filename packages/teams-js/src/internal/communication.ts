@@ -4,19 +4,11 @@ import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
-import { validOrigins } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
 import { getLogger } from './telemetry';
-import {
-  fallbackValidateOrigin,
-  isValidHttpsURL,
-  sanitizeAndStrigifyURL,
-  ssrSafeWindow,
-  validateAdditionalOrigins,
-  validateOriginLogger,
-} from './utils';
+import { isValidHttpsURL, ssrSafeWindow, validateFallbackAndAdditionalOrigins, validateOriginLogger } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -30,7 +22,7 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window;
   public static childOrigin: string;
-  public static alreadyVerifiedDomains: Map<string, boolean> = new Map();
+  public static previouslyCheckedDomains: Map<string, boolean> = new Map();
 }
 
 /**
@@ -312,12 +304,12 @@ function processMessage(evt: DOMMessageEvent): void {
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
 
-function sendValidateDomainRequest(messageOrigin: URL): Promise<boolean> {
-  const messageOriginUrl = sanitizeAndStrigifyURL(messageOrigin);
-  return sendAndUnwrap('validateDomains', messageOriginUrl);
+async function sendValidateDomainRequest(messageOrigin: URL): Promise<boolean> {
+  const messageOriginHost = messageOrigin.host;
+  return sendAndUnwrap('validateDomains', messageOriginHost);
 }
 
-export function validateOrigin(messageOrigin: URL): boolean {
+export async function validateOrigin(messageOrigin: URL): Promise<boolean> {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
@@ -325,43 +317,41 @@ export function validateOrigin(messageOrigin: URL): boolean {
       messageOrigin,
       messageOrigin.protocol,
     );
-    return false;
+    return Promise.resolve(false);
   }
   const messageOriginHost = messageOrigin.host;
   let isVerified = false;
-  if (Communication.alreadyVerifiedDomains.has(messageOriginHost)) {
-    isVerified = Communication.alreadyVerifiedDomains.get(messageOriginHost);
+  if (Communication.previouslyCheckedDomains.has(messageOriginHost)) {
+    isVerified = Communication.previouslyCheckedDomains.get(messageOriginHost);
+    if (isVerified) {
+      return Promise.resolve(true);
+    }
+    if (validateFallbackAndAdditionalOrigins(messageOriginHost)) {
+      return Promise.resolve(true);
+    }
+    return Promise.resolve(false);
   } else {
-    sendValidateDomainRequest(messageOrigin).then((hubResponse: boolean) => {
-      isVerified = hubResponse;
-      Communication.alreadyVerifiedDomains.set(messageOriginHost, hubResponse);
-    });
+    await sendValidateDomainRequest(messageOrigin)
+      .then((hostResponse: boolean) => {
+        isVerified = hostResponse;
+        Communication.previouslyCheckedDomains.set(messageOriginHost, hostResponse);
+        if (isVerified) {
+          return Promise.resolve(true);
+        }
+        if (validateFallbackAndAdditionalOrigins(messageOriginHost)) {
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      })
+      .catch(() => {
+        throw new Error(`Error validating domain ${messageOriginHost} from host service`);
+      });
+    return Promise.resolve(false);
   }
-  if (isVerified) {
-    return true;
-  }
-  if (fallbackValidateOrigin(messageOriginHost)) {
-    return true;
-  }
-  if (validateAdditionalOrigins(messageOriginHost)) {
-    return true;
-  }
-  validateOriginLogger(
-    'Origin %s is invalid because it is not an origin approved by the host, this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
-    messageOrigin,
-    validOrigins,
-    GlobalVars.additionalValidOrigins,
-  );
-  return false;
 }
 
 function isMessageComingFromParentOrigin(messageOrigin: string): boolean {
-  return (
-    Communication.parentOrigin &&
-    messageOrigin &&
-    messageOrigin === Communication.parentOrigin &&
-    Communication.alreadyVerifiedDomains.size === 0
-  );
+  return Communication.parentOrigin && messageOrigin && messageOrigin === Communication.parentOrigin;
 }
 
 function isMessageComingFromSelf(messageOrigin: string): boolean {
@@ -395,11 +385,17 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
     return true;
   } else {
     const messageOriginUrl: URL = new URL(messageOrigin);
-    const isOriginValid = validateOrigin(messageOriginUrl);
-    if (!isOriginValid) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
-    }
-    return isOriginValid;
+    validateOrigin(messageOriginUrl)
+      .then((isOriginValid: boolean) => {
+        if (!isOriginValid) {
+          shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+        }
+        return isOriginValid;
+      })
+      .catch((error) => {
+        throw error;
+      });
+    return false;
   }
 }
 

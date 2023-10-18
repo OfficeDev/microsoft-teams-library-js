@@ -39,12 +39,6 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 
 export const validateOriginLogger = getLogger('validateOrigin');
 
-export function sanitizeAndStrigifyURL(url: URL): string {
-  const stringifiedUrl = JSON.stringify(url);
-  const sanitizedUrl = JSON.parse(stringifiedUrl);
-  return sanitizedUrl;
-}
-
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -63,6 +57,23 @@ export function validateAdditionalOrigins(messageOriginHost: string): boolean {
       return true;
     }
   }
+  return false;
+}
+
+export function validateFallbackAndAdditionalOrigins(messageOriginHost: string): boolean {
+  if (fallbackValidateOrigin(messageOriginHost)) {
+    return true;
+  }
+  if (validateAdditionalOrigins(messageOriginHost)) {
+    return true;
+  }
+  validateOriginLogger(
+    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
+    messageOriginHost,
+    validOrigins,
+    GlobalVars.additionalValidOrigins,
+  );
+
   return false;
 }
 
