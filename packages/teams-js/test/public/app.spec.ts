@@ -23,6 +23,7 @@ import {
   _minRuntimeConfigToUninitialize,
   generateVersionBasedTeamsRuntimeConfig,
   latestRuntimeApiVersion,
+  mapTeamsVersionToSupportedCapabilities,
   runtime,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
@@ -172,7 +173,13 @@ describe('Testing app capability', () => {
         const highestSupportedVersion: string = '1.6.0';
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, highestSupportedVersion);
         await initPromise;
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use version and platform-specific Teams runtime config if an empty runtime config is given', async () => {
@@ -183,7 +190,13 @@ describe('Testing app capability', () => {
         utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', highestSupportedVersion);
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -200,7 +213,13 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -276,7 +295,13 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
@@ -1062,7 +1087,13 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
@@ -1078,7 +1109,13 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
@@ -1094,7 +1131,13 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -1171,7 +1214,13 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(generateVersionBasedTeamsRuntimeConfig(highestSupportedVersion));
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
