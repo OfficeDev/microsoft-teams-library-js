@@ -317,7 +317,7 @@ function sendValidateDomainRequest(messageOrigin: URL): Promise<boolean> {
   return sendAndUnwrap('validateDomains', messageOriginUrl);
 }
 
-function validateOrigin(messageOrigin: URL): boolean {
+export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
