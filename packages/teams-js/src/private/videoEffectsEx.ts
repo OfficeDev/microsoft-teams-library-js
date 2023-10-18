@@ -1,17 +1,17 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
+import { inServerSideRenderingEnvironment } from '../internal/utils';
 import {
   createEffectParameterChangeCallback,
   DefaultVideoEffectCallBack as VideoEffectCallBack,
   processMediaStream,
   processMediaStreamWithMetadata,
-} from '../internal/videoUtils';
+} from '../internal/videoEffectsUtils';
+import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { video } from '../public/video';
-import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnvironment';
+import { videoEffects } from '../public/videoEffects';
 
 /**
  * @hidden
@@ -21,7 +21,7 @@ import { inServerSideRenderingEnvironment } from './inServerSideRenderingEnviron
  * @internal
  * Limited to Microsoft-internal use
  */
-export namespace videoEx {
+export namespace videoEffectsEx {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);
@@ -45,7 +45,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoFrameConfig extends video.VideoFrameConfig {
+  export interface VideoFrameConfig extends videoEffects.VideoFrameConfig {
     /**
      * @hidden
      * Flag to indicate use camera stream to synthesize video frame or not.
@@ -75,7 +75,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface VideoBufferData extends video.VideoBufferData {
+  export interface VideoBufferData extends videoEffects.VideoBufferData {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -123,7 +123,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameData = video.VideoFrameData & {
+  export type VideoFrameData = videoEffects.VideoFrameData & {
     /**
      * @hidden
      * The model output if you passed in an {@linkcode VideoFrameConfig.audioInferenceModel}
@@ -146,7 +146,7 @@ export namespace videoEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type VideoFrameHandler = (receivedVideoFrame: VideoFrameData) => Promise<video.VideoFrame>;
+  export type VideoFrameHandler = (receivedVideoFrame: VideoFrameData) => Promise<videoEffects.VideoFrame>;
 
   /**
    * @hidden
@@ -201,17 +201,12 @@ export namespace videoEx {
           'video.startVideoExtensibilityVideoStream',
           async (mediaStreamInfo: { streamId: string; metadataInTexture?: boolean }) => {
             const { streamId, metadataInTexture } = mediaStreamInfo;
-            const generator = metadataInTexture
-              ? await processMediaStreamWithMetadata(
-                  streamId,
-                  parameters.videoFrameHandler,
-                  notifyError,
-                  videoPerformanceMonitor,
-                )
-              : await processMediaStream(streamId, parameters.videoFrameHandler, notifyError, videoPerformanceMonitor);
-            // register the video track with processed frames back to the stream
-            !inServerSideRenderingEnvironment() &&
-              window['chrome']?.webview?.registerTextureStream(streamId, generator);
+            const handler = videoPerformanceMonitor
+              ? createMonitoredVideoFrameHandler(parameters.videoFrameHandler, videoPerformanceMonitor)
+              : parameters.videoFrameHandler;
+            metadataInTexture
+              ? await processMediaStreamWithMetadata(streamId, handler, notifyError, videoPerformanceMonitor)
+              : await processMediaStream(streamId, handler, notifyError, videoPerformanceMonitor);
           },
           false,
         );
@@ -244,6 +239,20 @@ export namespace videoEx {
     }
   }
 
+  function createMonitoredVideoFrameHandler(
+    videoFrameHandler: VideoFrameHandler,
+    videoPerformanceMonitor: VideoPerformanceMonitor,
+  ): VideoFrameHandler {
+    return async (receivedVideoFrame: VideoFrameData): Promise<videoEffects.VideoFrame> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const originalFrame = receivedVideoFrame.videoFrame as any;
+      videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      videoPerformanceMonitor.reportFrameProcessed();
+      return processedFrame;
+    };
+  }
+
   function normalizedVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {
     videoBufferData['videoFrameBuffer'] = videoBufferData['videoFrameBuffer'] || videoBufferData['data'];
     delete videoBufferData['data'];
@@ -264,7 +273,7 @@ export namespace videoEx {
    * Limited to Microsoft-internal use
    */
   export function notifySelectedVideoEffectChanged(
-    effectChangeType: video.EffectChangeType,
+    effectChangeType: videoEffects.EffectChangeType,
     effectId: string | undefined,
     effectParam?: string,
   ): void {
@@ -335,7 +344,7 @@ export namespace videoEx {
    */
   export function updatePersonalizedEffects(effects: PersonalizedEffect[]): void {
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    if (!video.isSupported()) {
+    if (!videoEffects.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     sendMessageToParent('video.personalizedEffectsChanged', [effects]);
@@ -356,7 +365,7 @@ export namespace videoEx {
    */
   export function isSupported(): boolean {
     ensureInitialized(runtime);
-    return video.isSupported();
+    return videoEffects.isSupported();
   }
 
   /**
@@ -398,7 +407,7 @@ export namespace videoEx {
    */
   export function notifyFatalError(errorMessage: string): void {
     ensureInitialized(runtime);
-    if (!video.isSupported()) {
+    if (!videoEffects.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     notifyError(errorMessage, ErrorLevel.Fatal);

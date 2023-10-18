@@ -5,6 +5,7 @@ import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
+  errorNotSupportedOnPlatform,
   FrameContexts,
   HostClientType,
   HostName,
@@ -20,9 +21,11 @@ import {
 } from '../../src/public/interfaces';
 import {
   _minRuntimeConfigToUninitialize,
+  generateVersionBasedTeamsRuntimeConfig,
   latestRuntimeApiVersion,
+  mapTeamsVersionToSupportedCapabilities,
   runtime,
-  teamsRuntimeConfig,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
@@ -163,33 +166,60 @@ describe('Testing app capability', () => {
         expect(callbackInvoked).toBe(true);
       });
 
-      it('app.initialize should use teams runtime config if no runtime config is given', async () => {
+      it('app.initialize should use version and platform-specific Teams runtime config if no runtime config is given', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, highestSupportedVersion);
         await initPromise;
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
-      it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
+      it('app.initialize should use version and platform-specific Teams runtime config if an empty runtime config is given', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', highestSupportedVersion);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(
+          initMessage,
+          FrameContexts.content,
+          HostClientType.web,
+          'nonJSONStr',
+          highestSupportedVersion,
+        );
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -213,7 +243,7 @@ describe('Testing app capability', () => {
         );
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -255,10 +285,23 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr');
+        const highestSupportedVersion: string = '1.6.0';
+        utils.respondToMessage(
+          initMessage,
+          FrameContexts.content,
+          HostClientType.web,
+          highestSupportedVersion,
+          'nonJSONStr',
+        );
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error when "null" runtimeConfig is given, with arguments flipped', async () => {
@@ -836,6 +879,75 @@ describe('Testing app capability', () => {
         });
       }
     });
+    describe('Testing app.lifecycle subcapability', () => {
+      describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+
+            utils.sendMessage('beforeUnload');
+
+            let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
+            expect(readyToUnloadMessage).not.toBeNull();
+          });
+        });
+      });
+      describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() =>
+            app.lifecycle.registerOnResumeHandler(() => {
+              return false;
+            }),
+          ).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerOnResumeHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let handlerInvoked = false;
+            app.lifecycle.registerOnResumeHandler(() => {
+              handlerInvoked = true;
+            });
+
+            utils.sendMessage('load');
+            expect(handlerInvoked).toBe(true);
+          });
+        });
+      });
+    });
   });
 
   describe('Frameless - Testing app capbility', () => {
@@ -966,45 +1078,66 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
 
+        const highestSupportedVersion = '1.6.0';
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if an empty runtime config is given', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '', '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, '', highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should use teams runtime config if a JSON parsing error is thrown by a given runtime config', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', '1.6.0'],
+            args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', highestSupportedVersion],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       it('app.initialize should throw an error if the given runtime config causes a non parsing related error', async () => {
@@ -1032,7 +1165,7 @@ describe('Testing app capability', () => {
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).not.toEqual(teamsRuntimeConfig);
+        expect(runtime).not.toEqual(versionAndPlatformAgnosticTeamsRuntimeConfig);
         expect(runtime).toEqual({ apiVersion: latestRuntimeApiVersion, supports: { mail: {} } });
       });
 
@@ -1071,16 +1204,23 @@ describe('Testing app capability', () => {
       it('app.initialize should initialize with teams config when an invalid runtimeConfig is given, with arguments flipped', async () => {
         const initPromise = app.initialize();
 
+        const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
         utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
-            args: [FrameContexts.content, HostClientType.web, '1.6.0', 'nonJSONStr'],
+            args: [FrameContexts.content, HostClientType.web, highestSupportedVersion, 'nonJSONStr'],
           },
         } as DOMMessageEvent);
         await initPromise;
 
-        expect(runtime).toEqual(teamsRuntimeConfig);
+        expect(runtime).toEqual(
+          generateVersionBasedTeamsRuntimeConfig(
+            highestSupportedVersion,
+            versionAndPlatformAgnosticTeamsRuntimeConfig,
+            mapTeamsVersionToSupportedCapabilities,
+          ),
+        );
       });
 
       Object.values(HostClientType).forEach((hostClientType) => {
@@ -1563,6 +1703,80 @@ describe('Testing app capability', () => {
           });
         });
       }
+    });
+    describe('Testing app.lifecycle subcapability', () => {
+      describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            utils.respondToFramelessMessage({
+              data: {
+                func: 'beforeUnload',
+              },
+            } as DOMMessageEvent);
+
+            let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
+            expect(readyToUnloadMessage).not.toBeNull();
+          });
+        });
+      });
+      describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
+        it('should not allow calls before initialization', () => {
+          expect(() =>
+            app.lifecycle.registerOnResumeHandler(() => {
+              return false;
+            }),
+          ).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
+            expect.assertions(1);
+            try {
+              app.lifecycle.registerOnResumeHandler(() => {
+                return false;
+              });
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+
+          it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            let handlerInvoked = false;
+            app.lifecycle.registerOnResumeHandler(() => {
+              handlerInvoked = true;
+            });
+            utils.respondToFramelessMessage({
+              data: {
+                func: 'load',
+              },
+            } as DOMMessageEvent);
+            expect(handlerInvoked).toBe(true);
+          });
+        });
+      });
     });
   });
 });

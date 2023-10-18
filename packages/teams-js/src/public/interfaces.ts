@@ -616,7 +616,7 @@ export interface Context {
    * @deprecated
    * As of 2.0.0, please use {@link app.AppInfo.sessionId | app.Context.app.sessionId} instead
    *
-   * Unique ID for the current session for use in correlating telemetry data.
+   * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
    */
   appSessionId?: string;
 
@@ -922,9 +922,9 @@ export type TaskInfo = DialogInfo;
 
 /**
  * @beta
- * Data structure to be used with the {@link teamsCore.registerOnLoadHandler teamsCore.registerOnLoadHandler(handler: (context: LoadContext) => void): void} to pass the context to the app.
+ * Data structure to be used with the {@link app.lifecycle.registerOnResumeHandler app.lifecycle.registerOnResumeHandler(handler: (context: ResumeContext) => void): void} to pass the context to the app.
  */
-export interface LoadContext {
+export interface ResumeContext {
   /**
    * The entity that is requested to be loaded
    */
@@ -935,6 +935,12 @@ export interface LoadContext {
    */
   contentUrl: string;
 }
+
+/**
+ * @deprecated
+ * As of 2.14.1, please use {@link ResumeContext} instead.
+ */
+export type LoadContext = ResumeContext;
 
 /** Represents information about a frame within a tab or dialog module. */
 export interface FrameInfo {

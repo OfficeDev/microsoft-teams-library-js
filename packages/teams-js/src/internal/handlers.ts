@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { FrameContexts, LoadContext } from '../public';
+import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
@@ -18,8 +19,43 @@ class HandlersPrivate {
     [func: string]: Function;
   } = {};
   public static themeChangeHandler: (theme: string) => void;
+  /**
+   * @deprecated
+   */
   public static loadHandler: (context: LoadContext) => void;
+  /**
+   * @deprecated
+   */
   public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+  public static beforeSuspendOrTerminateHandler: () => void;
+  public static resumeHandler: (context: ResumeContext) => void;
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Initializes the handlers.
+   */
+  public static initializeHandlers(): void {
+    // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
+    HandlersPrivate.handlers['themeChange'] = handleThemeChange;
+    HandlersPrivate.handlers['load'] = handleLoad;
+    HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
+    pages.backStack._initialize();
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   * Uninitializes the handlers.
+   */
+  public static uninitializeHandlers(): void {
+    HandlersPrivate.handlers = {};
+    HandlersPrivate.themeChangeHandler = null;
+    HandlersPrivate.loadHandler = null;
+    HandlersPrivate.beforeUnloadHandler = null;
+    HandlersPrivate.beforeSuspendOrTerminateHandler = null;
+    HandlersPrivate.resumeHandler = null;
+  }
 }
 
 /**
@@ -27,13 +63,16 @@ class HandlersPrivate {
  * Limited to Microsoft-internal use
  */
 export function initializeHandlers(): void {
-  // ::::::::::::::::::::MicrosoftTeams SDK Internal :::::::::::::::::
-  HandlersPrivate.handlers['themeChange'] = handleThemeChange;
-  HandlersPrivate.handlers['load'] = handleLoad;
-  HandlersPrivate.handlers['beforeUnload'] = handleBeforeUnload;
-  pages.backStack._initialize();
+  HandlersPrivate.initializeHandlers();
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function uninitializeHandlers(): void {
+  HandlersPrivate.uninitializeHandlers();
+}
 const callHandlerLogger = handlersLogger.extend('callHandler');
 /**
  * @internal
@@ -136,6 +175,8 @@ export function handleThemeChange(theme: string): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
@@ -147,7 +188,9 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  * Limited to Microsoft-internal use
  */
 function handleLoad(context: LoadContext): void {
-  if (HandlersPrivate.loadHandler) {
+  if (HandlersPrivate.resumeHandler) {
+    HandlersPrivate.resumeHandler(context);
+  } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(context);
   }
 
@@ -159,6 +202,8 @@ function handleLoad(context: LoadContext): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
@@ -174,11 +219,36 @@ function handleBeforeUnload(): void {
     sendMessageToParent('readyToUnload', []);
   };
 
-  if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
+  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
+    HandlersPrivate.beforeSuspendOrTerminateHandler();
+    if (Communication.childWindow) {
+      sendMessageEventToChild('beforeUnload');
+    } else {
+      readyToUnload();
+    }
+  } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();
     }
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
+  HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
+  HandlersPrivate.resumeHandler = handler;
+  handler && sendMessageToParent('registerHandler', ['load']);
 }

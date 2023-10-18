@@ -1,7 +1,8 @@
 import { sendAndHandleSdkError } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
 import * as utils from '../internal/utils';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
 import { ClipboardParams, ClipboardSupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
 
@@ -54,7 +55,7 @@ export namespace clipboard {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (isHostClientMobile()) {
+    if (isHostClientMobile() || GlobalVars.hostClientType === HostClientType.macos) {
       const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
       return utils.base64ToBlob(response.mimeType, response.content);
     } else {

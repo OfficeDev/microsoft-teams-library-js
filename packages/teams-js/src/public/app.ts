@@ -15,17 +15,29 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
-import { compareSDKVersions, runWithTimeout } from '../internal/utils';
-import { inServerSideRenderingEnvironment } from '../private/inServerSideRenderingEnvironment';
-import { logs } from '../private/logs';
+import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
-import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  ChannelType,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { dialog } from './dialog';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
+import {
+  applyRuntimeConfig,
+  generateVersionBasedTeamsRuntimeConfig,
+  IBaseRuntime,
+  mapTeamsVersionToSupportedCapabilities,
+  runtime,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
+} from './runtime';
 import { version } from './version';
 
 /**
@@ -137,7 +149,7 @@ export namespace app {
     theme: string;
 
     /**
-     * Unique ID for the current session for use in correlating telemetry data.
+     * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
      */
     sessionId: string;
 
@@ -430,7 +442,7 @@ export namespace app {
     id: string;
 
     /**
-     * The type of license for the current users tenant.
+     * The type of license for the current user's tenant. Possible values are enterprise, free, edu, and unknown.
      */
     teamsSku?: string;
   }
@@ -530,7 +542,7 @@ export namespace app {
   /**
    * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
    */
-  type themeHandler = (theme: string) => void;
+  export type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.
@@ -635,7 +647,13 @@ export namespace app {
                   }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
+                    applyRuntimeConfig(
+                      generateVersionBasedTeamsRuntimeConfig(
+                        GlobalVars.clientSupportedSDKVersion,
+                        versionAndPlatformAgnosticTeamsRuntimeConfig,
+                        mapTeamsVersionToSupportedCapabilities,
+                      ),
+                    );
                   } else {
                     throw e;
                   }
@@ -688,26 +706,7 @@ export namespace app {
       return;
     }
 
-    if (GlobalVars.frameContext) {
-      /* eslint-disable strict-null-checks/all */ /* Fix tracked by 5730662 */
-      registerOnThemeChangeHandler(null);
-      pages.backStack.registerBackButtonHandler(null);
-      pages.registerFullScreenHandler(null);
-      teamsCore.registerBeforeUnloadHandler(null);
-      teamsCore.registerOnLoadHandler(null);
-      logs.registerGetLogHandler(null); /* Fix tracked by 5730662 */
-      /* eslint-enable strict-null-checks/all */
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.settings) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnSaveHandler(null);
-    }
-
-    if (GlobalVars.frameContext === FrameContexts.remove) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      pages.config.registerOnRemoveHandler(null);
-    }
+    Handlers.uninitializeHandlers();
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
@@ -805,6 +804,80 @@ export namespace app {
       );
       resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
     });
+  }
+
+  /**
+   * A namespace for enabling the suspension or delayed termination of an app when the user navigates away.
+   * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
+   * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .
+   * Please note that selecting suspension doesn't guarantee prevention of background termination.
+   * The outcome is influenced by factors such as available memory and the number of suspended apps.
+   *
+   * @beta
+   */
+  export namespace lifecycle {
+    /**
+     * Register on resume handler function type
+     *
+     * @param context - Data structure to be used to pass the context to the app.
+     */
+    export type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+
+    /**
+     * Register before suspendOrTerminate handler function type
+     *
+     * @returns void
+     */
+    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+
+    /**
+     * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,
+     * the handler will be invoked. App developers can use this handler to save unsaved data, pause sync calls etc.
+     *
+     * @param handler - The handler to invoke before the page is suspended or terminated. When invoked, app can perform tasks like cleanups, logging etc.
+     * Upon returning, the app will be suspended or terminated.
+     *
+     */
+    export function registerBeforeSuspendOrTerminateHandler(
+      handler: registerBeforeSuspendOrTerminateHandlerFunctionType,
+    ): void {
+      if (!handler) {
+        throw new Error('[app.lifecycle.registerBeforeSuspendOrTerminateHandler] Handler cannot be null');
+      }
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerBeforeSuspendOrTerminateHandler(handler);
+    }
+
+    /**
+     * Registers a handler to be called when the page has been requested to resume from being suspended.
+     *
+     * @param handler - The handler to invoke when the page is requested to be resumed. The app is supposed to navigate to
+     * the appropriate page using the ResumeContext. Once done, the app should then call {@link notifySuccess}.
+     *
+     * @beta
+     */
+    export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
+      if (!handler) {
+        throw new Error('[app.lifecycle.registerOnResumeHandler] Handler cannot be null');
+      }
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerOnResumeHandler(handler);
+    }
+
+    /**
+     * Checks if app.lifecycle is supported by the host.
+     * @returns boolean to represent whether the lifecycle capability is supported
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && !!runtime.supports.app?.lifecycle;
+    }
   }
 }
 
