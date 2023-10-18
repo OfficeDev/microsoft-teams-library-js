@@ -46,7 +46,7 @@ export namespace stageView {
     /**
      * The open mode for stage content.
      * Optional param: if not passed, hosts can choose their default openMode.
-     * If a host does not support any specific openMode, they can fallback to StageViewOpenMode.modal.
+     * If a host does not support any specific openMode, It will fallback to StageViewOpenMode.modal.
      */
     openMode?: StageViewOpenMode;
   }
@@ -56,15 +56,15 @@ export namespace stageView {
    */
   export enum StageViewOpenMode {
     /**
-     * To open the content in a modal.
+     * Open the content in a modal.
      */
     modal = 'modal',
     /**
-     * To open the content in the popped out window.
+     * Open the content in a popped-out window.
      */
     popout = 'popout',
     /**
-     * To open the content in the popped out window with chat collaboration.
+     * Open the content in a popped-out window with chat collaboration.
      */
     popoutWithChat = 'popoutWithChat',
   }
