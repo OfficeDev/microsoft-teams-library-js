@@ -57,7 +57,7 @@ jobs:
         parameters:
           appHostGitPath: git://$(AppHostingSdkGitPath2)@kx/comment_error_object_object_case
 
-      - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
+      - bash: 'node tools/cli/runAppsWithE2ETests.js  --useDataFromLocal=true'
         displayName: 'Run E2E integration tests'
         condition: succeeded()
         workingDirectory: '$(AppHostingSdkProjectDirectory)'
