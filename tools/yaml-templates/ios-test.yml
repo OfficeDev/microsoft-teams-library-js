@@ -84,7 +84,7 @@ steps:
       -screenshot-enabled="YES"
       -quiet
       -resultBundlePath TestResults
-      test
+      test > report.out
 
       if [[ $? == 0 ]];
       then
