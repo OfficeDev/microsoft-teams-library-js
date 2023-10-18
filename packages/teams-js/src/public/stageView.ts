@@ -45,6 +45,8 @@ export namespace stageView {
 
     /**
      * The open mode for stage content.
+     * Optional param: if not passed, hosts can choose their default openMode.
+     * If a host does not support any specific openMode, they can fallback to StageViewOpenMode.modal.
      */
     openMode?: StageViewOpenMode;
   }

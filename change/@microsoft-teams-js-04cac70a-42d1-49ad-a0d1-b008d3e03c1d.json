@@ -1,7 +1,7 @@
 {
   "type": "minor",
-  "comment": "Adding openMode in StageViewParams",
+  "comment": "Addding optinal field openMode to StageViewParams to support app content popout capability",
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "astripa@microsoft.com",
   "dependentChangeType": "patch"
 }
