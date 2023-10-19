@@ -1,8 +1,27 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 02 Aug 2023 14:49:19 GMT and should not be manually modified.
+This log was last generated on Wed, 06 Sep 2023 20:30:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.15.0
+
+Wed, 06 Sep 2023 20:30:49 GMT
+
+### Minor changes
+
+- Removed `appNotification` capability and collateral
+- Added `clipboard` capability, allowing access to the system clipboard programmatically
+- Added MacOS support
+
+### Patches
+
+- Added macOS to mobile list as macOS is also frameless.
+- Replaced `window` references with `ssrSafeWindow`
+- Added logging to help investigate dropped messages from hosts or embedded apps.
+- Added telemetry for video frame processing
+- Fixed issue that resulted in dropping first few frames when using the video capability
+- Added `surfaceHub` to the list of host client types that send authenticate requests to the host instead of opening an auth window
 
 ## 2.14.0
 

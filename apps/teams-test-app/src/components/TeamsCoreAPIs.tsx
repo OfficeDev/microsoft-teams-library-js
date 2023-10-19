@@ -1,4 +1,5 @@
 import {
+  app,
   enablePrintCapability,
   LoadContext,
   print,
@@ -51,6 +52,7 @@ const RegisterOnLoadHandler = (): React.ReactElement =>
       withPromise: async (setResult) => {
         teamsCore.registerOnLoadHandler((context: LoadContext): void => {
           setResult('successfully called with context:' + JSON.stringify(context));
+          app.notifySuccess();
         });
 
         return 'registered';

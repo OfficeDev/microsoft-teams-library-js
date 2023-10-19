@@ -17,12 +17,20 @@ import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigin
 import { getLogger } from '../internal/telemetry';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
-import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
+import {
+  ChannelType,
+  errorNotSupportedOnPlatform,
+  FrameContexts,
+  HostClientType,
+  HostName,
+  TeamType,
+  UserTeamRole,
+} from './constants';
 import { dialog } from './dialog';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from './interfaces';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
+import { applyRuntimeConfig, generateVersionBasedTeamsRuntimeConfig, IBaseRuntime, runtime } from './runtime';
 import { version } from './version';
 
 /**
@@ -632,7 +640,7 @@ export namespace app {
                   }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
+                    applyRuntimeConfig(generateVersionBasedTeamsRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
                   } else {
                     throw e;
                   }
@@ -783,6 +791,80 @@ export namespace app {
       );
       resolve(sendAndHandleStatusAndReason('executeDeepLink', deepLink));
     });
+  }
+
+  /**
+   * A namespace for enabling the suspension or delayed termination of an app when the user navigates away.
+   * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
+   * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .
+   * Please note that selecting suspension doesn't guarantee prevention of background termination.
+   * The outcome is influenced by factors such as available memory and the number of suspended apps.
+   *
+   * @beta
+   */
+  export namespace lifecycle {
+    /**
+     * Register on resume handler function type
+     *
+     * @param context - Data structure to be used to pass the context to the app.
+     */
+    type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+
+    /**
+     * Register before suspendOrTerminate handler function type
+     *
+     * @returns void
+     */
+    type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+
+    /**
+     * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,
+     * the handler will be invoked. App developers can use this handler to save unsaved data, pause sync calls etc.
+     *
+     * @param handler - The handler to invoke before the page is suspended or terminated. When invoked, app can perform tasks like cleanups, logging etc.
+     * Upon returning, the app will be suspended or terminated.
+     *
+     */
+    export function registerBeforeSuspendOrTerminateHandler(
+      handler: registerBeforeSuspendOrTerminateHandlerFunctionType,
+    ): void {
+      if (!handler) {
+        throw new Error('[app.lifecycle.registerBeforeSuspendOrTerminateHandler] Handler cannot be null');
+      }
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerBeforeSuspendOrTerminateHandler(handler);
+    }
+
+    /**
+     * Registers a handler to be called when the page has been requested to resume from being suspended.
+     *
+     * @param handler - The handler to invoke when the page is requested to be resumed. The app is supposed to navigate to
+     * the appropriate page using the ResumeContext. Once done, the app should then call {@link notifySuccess}.
+     *
+     * @beta
+     */
+    export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
+      if (!handler) {
+        throw new Error('[app.lifecycle.registerOnResumeHandler] Handler cannot be null');
+      }
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      Handlers.registerOnResumeHandler(handler);
+    }
+
+    /**
+     * Checks if app.lifecycle is supported by the host.
+     * @returns boolean to represent whether the lifecycle capability is supported
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && !!runtime.supports.app?.lifecycle;
+    }
   }
 }
 

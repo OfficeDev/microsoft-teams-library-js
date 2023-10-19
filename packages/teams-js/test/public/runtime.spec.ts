@@ -6,15 +6,15 @@ import { app, HostClientType } from '../../src/public';
 import {
   applyRuntimeConfig,
   fastForwardRuntime,
-  generateBackCompatRuntimeConfig,
+  generateVersionBasedTeamsRuntimeConfig,
   IBaseRuntime,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
+  mapTeamsVersionToSupportedCapabilities,
   Runtime,
   runtime,
   setUnitializedRuntime,
   upgradeChain,
-  versionConstants,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -132,66 +132,140 @@ describe('runtime', () => {
     });
   });
 
-  describe('generateBackCompatRuntimeConfig', () => {
-    Object.entries(versionConstants).forEach(([version, capabilities]) => {
-      capabilities.forEach((supportedCapability) => {
-        const capability = JSON.stringify(supportedCapability.capability).replace(/[{}]/g, '');
-        supportedCapability.hostClientTypes.forEach((clientType) => {
-          it(`Back compat host client type ${clientType} supporting up to ${version} should support ${capability.replace(
-            /:/g,
-            ' ',
-          )} capability`, async () => {
+  // Determines whether the given "subset" runtime object is a subset of the given "superset" runtime object.
+  // This is used to determine whether all capabilities supported in "subset" are also supported in "superset"
+  function isSubset(subset: object, superset: object): boolean {
+    for (const key in subset) {
+      if (typeof subset[key] === 'object' && typeof superset[key] === 'object') {
+        if (!isSubset(subset[key], superset[key])) {
+          return false;
+        }
+      } else if (superset[key] === undefined) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Can recursively decompose an object into an array of objects, where each object in the array is a path to a leaf
+  // node in the original object.
+  // For example,
+  // {
+  //     pages: {
+  //         appButton: {},
+  //         tabs: {},
+  //     }
+  // }
+  // would be decomposed into
+  // [
+  //     { pages: { appButton: {} } },
+  //     { pages: { tabs: {} } }
+  // ]
+  // This can be a useful helper when identifying which capability defined in 'obj' is not defined in a runtime (because
+  // you can decompose a runtime object using this function, then compare each capability/subcapability one at a time to find
+  // any that are missing)
+  function decomposeObject(obj: object): object[] {
+    const result: object[] = [];
+
+    function recurse(current: object, path: string[] = []): void {
+      for (const key in current) {
+        const newPath = [...path, key];
+        if (typeof current[key] === 'object' && Object.keys(current[key]).length > 0) {
+          recurse(current[key], newPath);
+        } else {
+          const entry: object = {};
+          let temp = entry;
+          for (const [i, prop] of newPath.entries()) {
+            temp[prop] = i === newPath.length - 1 ? current[key] : {};
+            temp = temp[prop];
+          }
+          result.push(entry);
+        }
+      }
+    }
+
+    recurse(obj);
+    return result;
+  }
+
+  describe('generateVersionBasedTeamsRuntimeConfig', () => {
+    Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilityAdditionsForEachVersion]) => {
+      capabilityAdditionsForEachVersion.forEach((capabilityAdditionsForClientTypesInASpecificVersion) => {
+        const capabilityAdditionsForThisVersion = capabilityAdditionsForClientTypesInASpecificVersion.capability;
+        capabilityAdditionsForClientTypesInASpecificVersion.hostClientTypes.forEach((clientType) => {
+          it(`Back compat host client type ${clientType} supporting up to ${version} should support ${JSON.stringify(
+            capabilityAdditionsForThisVersion,
+          )}`, async () => {
             await utils.initializeWithContext('content', clientType);
-            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig(version).supports,
-            ).replace(/[{}]/g, '');
-            expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
+            const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(version).supports;
+            expect(isSubset(capabilityAdditionsForThisVersion, generatedCapabilityObjectForThisVersion)).toBe(true);
           });
 
-          it(`Back compat host client type ${clientType} supporting lower than up to ${version} should NOT support ${capability.replace(
-            /:/g,
-            ' ',
+          it(`Back compat host client type ${clientType} supporting lower than up to ${version} should NOT support ${JSON.stringify(
+            capabilityAdditionsForThisVersion,
           )} capability`, async () => {
+            const individualCapabilityAdditionsForThisVersion: object[] = decomposeObject(
+              capabilityAdditionsForThisVersion,
+            );
+
             await utils.initializeWithContext('content', clientType);
-            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig('1.4.0').supports,
-            ).replace(/[{}]/g, '');
-            expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
+
+            const generatedRuntimeConfigSupportedCapabilities =
+              generateVersionBasedTeamsRuntimeConfig('1.4.0').supports;
+
+            individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
+              expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
+                false,
+              );
+            });
           });
 
-          const lowerVersions = Object.keys(versionConstants).filter(
+          const lowerVersions = Object.keys(mapTeamsVersionToSupportedCapabilities).filter(
             (otherVer) => compareSDKVersions(version, otherVer) >= 0,
           );
 
           lowerVersions.forEach((lowerVersion) => {
-            versionConstants[lowerVersion].forEach((lowerCap) => {
-              it(`Back compat host client type ${clientType} supporting up to ${version} should ALSO support ${JSON.stringify(
-                lowerCap.capability,
-              ).replace(/[{:}]/g, ' ')} capability`, async () => {
-                await utils.initializeWithContext('content', clientType);
-                const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-                  generateBackCompatRuntimeConfig(version).supports,
-                ).replace(/[{}]/g, '');
-                expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(true);
-              });
+            mapTeamsVersionToSupportedCapabilities[lowerVersion].forEach((lowerCap) => {
+              if (lowerCap.hostClientTypes.includes(clientType)) {
+                const capabilityAdditionsForThisVersion = lowerCap.capability;
+                it(`Back compat host client type ${clientType} supporting up to ${version} should ALSO support ${JSON.stringify(
+                  capabilityAdditionsForThisVersion,
+                )} capability`, async () => {
+                  await utils.initializeWithContext('content', clientType);
+                  expect(
+                    isSubset(
+                      capabilityAdditionsForThisVersion,
+                      generateVersionBasedTeamsRuntimeConfig(version).supports,
+                    ),
+                  ).toBe(true);
+                });
+              }
             });
           });
         });
 
         const notSupportedHostClientTypes = Object.values(HostClientType).filter(
-          (type) => !supportedCapability.hostClientTypes.includes(type),
+          (type) => !capabilityAdditionsForClientTypesInASpecificVersion.hostClientTypes.includes(type),
+        );
+
+        const individualCapabilityAdditionsForThisVersion: object[] = decomposeObject(
+          capabilityAdditionsForThisVersion,
         );
 
         notSupportedHostClientTypes.forEach((clientType) => {
-          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${capability.replace(
-            /[{:}]/g,
-            ' ',
+          it(`Back compat host client type ${clientType} supporting up to ${version} should NOT support ${JSON.stringify(
+            capabilityAdditionsForThisVersion,
           )} capability`, async () => {
             await utils.initializeWithContext('content', clientType);
-            const generatedRuntimeConfigSupportedCapabilities = JSON.stringify(
-              generateBackCompatRuntimeConfig(version).supports,
-            ).replace(/[{}]/g, '');
-            expect(generatedRuntimeConfigSupportedCapabilities.includes(capability)).toBe(false);
+
+            individualCapabilityAdditionsForThisVersion.forEach((singleCapabilityAdditionForThisVersion) => {
+              expect(
+                isSubset(
+                  singleCapabilityAdditionForThisVersion,
+                  generateVersionBasedTeamsRuntimeConfig(version).supports,
+                ),
+              ).toBe(false);
+            });
           });
         });
       });

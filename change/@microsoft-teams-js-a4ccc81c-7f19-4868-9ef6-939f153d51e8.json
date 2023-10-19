@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added telemetry for video frame processing",
+  "comment": "Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`",
   "packageName": "@microsoft/teams-js",
   "email": "wenghe@microsoft.com",
   "dependentChangeType": "patch"

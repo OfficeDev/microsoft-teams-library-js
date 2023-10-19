@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Add MacOS support",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}
