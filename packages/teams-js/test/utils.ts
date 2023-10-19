@@ -50,10 +50,6 @@ export class Utils {
       screenTop: 0,
       addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
         if (type === 'message') {
-          const isValidateDomain = this.findMessageByFunc('validateDomains');
-          if (isValidateDomain) {
-            this.respondToMessage(isValidateDomain, false);
-          }
           this.processMessage = listener;
         }
       },
