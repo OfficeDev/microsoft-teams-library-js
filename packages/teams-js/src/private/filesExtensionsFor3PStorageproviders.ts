@@ -16,7 +16,7 @@ export namespace filesExtensionsFor3PStorageproviders {
    * @beta
    *
    */
-  export interface File extends Blob {
+  export interface FilesFor3PApps extends Blob {
     /**
      * A number that represents the number of milliseconds since the Unix epoch
      */
@@ -89,7 +89,7 @@ export namespace filesExtensionsFor3PStorageproviders {
    */
   export function getDragAndDropFilesHandler(
     dragAndDropInput: string,
-    callback: (attachments: File[], error?: SdkError) => void,
+    callback: (attachments: FilesFor3PApps[], error?: SdkError) => void,
   ): void {
     if (!callback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
@@ -108,9 +108,9 @@ export namespace filesExtensionsFor3PStorageproviders {
 
   function getFilesDragAndDropViaCallback(
     dragAndDropInput: string,
-    callback: (attachments: File[], error?: SdkError) => void,
+    callback: (attachments: FilesFor3PApps[], error?: SdkError) => void,
   ): void {
-    const files: File[] = [];
+    const files: FilesFor3PApps[] = [];
     let helper: filesExtensionsFor3PStorageproviders.AttachmentListHelper = {
       fileType: '',
       assembleAttachment: [],
