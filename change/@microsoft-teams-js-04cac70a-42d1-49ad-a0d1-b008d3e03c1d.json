@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added optional field `openMode` to open `stageView` in new modes if supported by host",
+  "packageName": "@microsoft/teams-js",
+  "email": "astripa@microsoft.com",
+  "dependentChangeType": "patch"
+}
