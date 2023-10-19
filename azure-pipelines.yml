@@ -45,10 +45,10 @@ extends:
         environmentsEs2017: false
         environmentsEs2020: true
         environmentsJest: false
-      sourceAnalysisPool:
-        name: Azure-Pipelines-1ESPT-ExDShared
-        image: windows-2022
-        os: windows
+      # sourceAnalysisPool:
+      #   name: Azure-Pipelines-1ESPT-ExDShared
+      #   image: windows-2022
+      #   os: windows
       # sourceRepositoriesToScan:
       #   include:
       #     - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
@@ -241,8 +241,8 @@ extends:
                   displayName: 'Publish Test app artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
                   artifactName: 'teams-test-app'
-                  sbomBuildDropPath: '$(Build.ArtifactStagingDirectory)\orange-web'
-                  sbomPackageName: 'orangewebArtifact'
+                  sbomBuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+                  sbomPackageName: 'teamstestappArtifact'
                 - output: pipelineArtifact
                   displayName: 'Publish CDN feed to build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
