@@ -241,6 +241,8 @@ extends:
                   displayName: 'Publish Test app artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
                   artifactName: 'teams-test-app'
+                  sbomBuildDropPath: '$(Build.ArtifactStagingDirectory)\orange-web'
+                  sbomPackageName: 'orangewebArtifact'
                 - output: pipelineArtifact
                   displayName: 'Publish CDN feed to build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
@@ -253,10 +255,10 @@ extends:
                   displayName: 'Publish Powershell Scripts to Build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
-                - output: pipelineArtifact
-                  displayName: 'Publish SBOM to Build Artifacts'
-                  targetPath: '$(Build.ArtifactStagingDirectory)\_manifest'
-                  artifactName: 'SBOM'
+                # - output: pipelineArtifact
+                #  displayName: 'Publish SBOM to Build Artifacts'
+                #  targetPath: '$(Build.ArtifactStagingDirectory)\_manifest'
+                #  artifactName: 'SBOM'
           # - job: E2ETest1
           #   displayName: 'E2E Test - Perf'
           #   pool:
