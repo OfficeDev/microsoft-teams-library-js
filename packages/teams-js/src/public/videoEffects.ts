@@ -2,8 +2,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
+import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoEffectsUtils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
-import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoUtils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -11,15 +11,15 @@ import { runtime } from './runtime';
  * Namespace to video extensibility of the SDK
  * @beta
  */
-export namespace video {
+export namespace videoEffects {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);
 
   /** Notify video frame processed function type */
-  type notifyVideoFrameProcessedFunctionType = () => void;
+  export type notifyVideoFrameProcessedFunctionType = () => void;
   /** Notify error function type */
-  type notifyErrorFunctionType = (errorMessage: string) => void;
+  export type notifyErrorFunctionType = (errorMessage: string) => void;
 
   /**
    * Represents a video frame
@@ -186,7 +186,7 @@ export namespace video {
    *
    * @example
    * ```typescript
-   * video.registerForVideoFrame({
+   * videoEffects.registerForVideoFrame({
    *   videoFrameHandler: async (videoFrameData) => {
    *     const originalFrame = videoFrameData.videoFrame as VideoFrame;
    *     try {
@@ -209,7 +209,7 @@ export namespace video {
    *       }
    *     },
    *   config: {
-   *     format: video.VideoPixelFormat.NV12,
+   *     format: videoEffects.VideoPixelFormat.NV12,
    *   }
    * });
    * ```
