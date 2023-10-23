@@ -267,38 +267,38 @@ extends:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: self
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-                  persistCredentials: true
-              - task: CmdLine@2
-                displayName: 'Fix Chrome browser on V116'
-                inputs:
-                  script: |
-                    if command -v google-chrome &> /dev/null; then
-                      # Uninstall the existing Chrome
-                      sudo apt remove google-chrome-stable --purge -y
-                    else
-                      echo "Google Chrome is not installed on your system."
-                    fi
-                    CHROME_VERSION="116.0.5845.179"
-                    # Download the specific Chrome version package
-                    wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-                    # Install the downloaded package
-                    sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-                    # Update package dependencies
-                    sudo apt install -f -y
-                    echo "Google Chrome version ${CHROME_VERSION} has been installed."
-                    rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-              - task: NodeTool@0
-                inputs:
-                  versionSpec: '14.x'
-                displayName: 'Install Node.js'
-              - task: Cache@2
-                inputs:
-                  key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.pnpm-store
-                displayName: Cache app host node_modules pnpm
+          #    - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+          #      inputs:
+          #        repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          #        persistCredentials: true
+          #    - task: CmdLine@2
+          #      displayName: 'Fix Chrome browser on V116'
+          #      inputs:
+          #        script: |
+          #          if command -v google-chrome &> /dev/null; then
+          #            # Uninstall the existing Chrome
+          #            sudo apt remove google-chrome-stable --purge -y
+          #          else
+          #            echo "Google Chrome is not installed on your system."
+          #          fi
+          #          CHROME_VERSION="116.0.5845.179"
+          #          # Download the specific Chrome version package
+          #          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #          # Install the downloaded package
+          #          sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #          # Update package dependencies
+          #          sudo apt install -f -y
+          #          echo "Google Chrome version ${CHROME_VERSION} has been installed."
+          #          rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #    - task: NodeTool@0
+          #      inputs:
+          #        versionSpec: '14.x'
+          #      displayName: 'Install Node.js'
+          #    - task: Cache@2
+          #      inputs:
+          #        key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+          #        path: $(Pipeline.Workspace)/.pnpm-store
+          #      displayName: Cache app host node_modules pnpm
           #    - task: Cache@2
           #      inputs:
           #        key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
