@@ -42,6 +42,7 @@
     {
       "title": "getCurrentLocation API Call - Failure",
       "type": "callResponse",
+      "version": ">2.16.0",
       "boxSelector": "#box_getCurrentLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
