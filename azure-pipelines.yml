@@ -269,10 +269,10 @@ extends:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: self
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-                  persistCredentials: true
+          #    - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+          #      inputs:
+          #        repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          #        persistCredentials: true
           #    - task: CmdLine@2
           #      displayName: 'Fix Chrome browser on V116'
           #      inputs:
