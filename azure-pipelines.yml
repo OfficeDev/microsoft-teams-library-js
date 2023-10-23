@@ -446,7 +446,7 @@ extends:
                   searchFolder: '$(Agent.BuildDirectory)/androidHost'
                   mergeTestResults: true
                 condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
-          - job: E2ETestIOS
+          #- job: E2ETestIOS
           #   displayName: 'E2E Test - IOS'
           #   pool:
           #     vmImage: 'macOS-latest'
