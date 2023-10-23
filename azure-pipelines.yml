@@ -273,107 +273,107 @@ extends:
                 inputs:
                   repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
                   persistCredentials: true
-              - task: CmdLine@2
-                displayName: 'Fix Chrome browser on V116'
-                inputs:
-                  script: |
-                    if command -v google-chrome &> /dev/null; then
-                      # Uninstall the existing Chrome
-                      sudo apt remove google-chrome-stable --purge -y
-                    else
-                      echo "Google Chrome is not installed on your system."
-                    fi
-                    CHROME_VERSION="116.0.5845.179"
-                    # Download the specific Chrome version package
-                    wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-                    # Install the downloaded package
-                    sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-                    # Update package dependencies
-                    sudo apt install -f -y
-                    echo "Google Chrome version ${CHROME_VERSION} has been installed."
-                    rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-              - task: NodeTool@0
-                inputs:
-                  versionSpec: '14.x'
-                displayName: 'Install Node.js'
-              - task: Cache@2
-                inputs:
-                  key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.pnpm-store
-                displayName: Cache app host node_modules pnpm
-              - task: Cache@2
-                inputs:
-                  key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.pnpm-store
-                displayName: Cache client sdk node_modules pnpm
-              - task: CmdLine@2
-                displayName: 'Setup pnpm'
-                inputs:
-                  script: |
-                    corepack enable
-                    corepack prepare pnpm@7.30.1 --activate
-                    pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-              - task: Cache@2
-                inputs:
-                  key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: /home/vsts/.cache/Cypress
-                  cacheHitVar: CYPRESS_CACHE_RESTORED
-                displayName: 'Cache Cypress binary'
-              - task: npmAuthenticate@0
-                inputs:
-                  workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
-              - task: CmdLine@2
-                displayName: Install app hosting dependencies (skip Cypress install)
-                condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-                inputs:
-                  script: |
-                    CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: Install app hosting dependencies (include Cypress install)
-                condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
-                inputs:
-                  script: |
-                    rm -rf $(pnpm store path)
-                    pnpm install --frozen-lockfile
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Build app hosting sdk'
-                inputs:
-                  script: |
-                    pnpm build
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Install client sdk dependencies'
-                inputs:
-                  script: |
-                    pnpm install
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Build client sdk'
-                inputs:
-                  script: |
-                    pnpm build-force-blazor
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Configure host machine'
-                inputs:
-                  script: "sudo chmod -R 755 ./ \npnpm run setup\n"
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Perf'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          #    - task: CmdLine@2
+          #      displayName: 'Fix Chrome browser on V116'
+          #      inputs:
+          #        script: |
+          #          if command -v google-chrome &> /dev/null; then
+          #            # Uninstall the existing Chrome
+          #            sudo apt remove google-chrome-stable --purge -y
+          #          else
+          #            echo "Google Chrome is not installed on your system."
+          #          fi
+          #          CHROME_VERSION="116.0.5845.179"
+          #          # Download the specific Chrome version package
+          #          wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #          # Install the downloaded package
+          #          sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #          # Update package dependencies
+          #          sudo apt install -f -y
+          #          echo "Google Chrome version ${CHROME_VERSION} has been installed."
+          #          rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+          #    - task: NodeTool@0
+          #      inputs:
+          #        versionSpec: '14.x'
+          #      displayName: 'Install Node.js'
+          #    - task: Cache@2
+          #      inputs:
+          #        key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+          #        path: $(Pipeline.Workspace)/.pnpm-store
+          #      displayName: Cache app host node_modules pnpm
+          #    - task: Cache@2
+          #      inputs:
+          #        key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+          #        path: $(Pipeline.Workspace)/.pnpm-store
+          #      displayName: Cache client sdk node_modules pnpm
+          #    - task: CmdLine@2
+          #      displayName: 'Setup pnpm'
+          #      inputs:
+          #        script: |
+          #          corepack enable
+          #          corepack prepare pnpm@7.30.1 --activate
+          #          pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+          #    - task: Cache@2
+          #      inputs:
+          #        key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+          #        path: /home/vsts/.cache/Cypress
+          #        cacheHitVar: CYPRESS_CACHE_RESTORED
+          #      displayName: 'Cache Cypress binary'
+          #    - task: npmAuthenticate@0
+          #      inputs:
+          #        workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
+          #    - task: CmdLine@2
+          #      displayName: Install app hosting dependencies (skip Cypress install)
+          #      condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
+          #      inputs:
+          #        script: |
+          #          CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+          #        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #    - task: CmdLine@2
+          #      displayName: Install app hosting dependencies (include Cypress install)
+          #      condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
+          #      inputs:
+          #        script: |
+          #          rm -rf $(pnpm store path)
+          #          pnpm install --frozen-lockfile
+          #        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #    - task: CmdLine@2
+          #      displayName: 'Build app hosting sdk'
+          #      inputs:
+          #        script: |
+          #          pnpm build
+          #        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #    - task: CmdLine@2
+          #      displayName: 'Install client sdk dependencies'
+          #      inputs:
+          #        script: |
+          #          pnpm install
+          #        workingDirectory: '$(ClientSdkProjectDirectory)'
+          #    - task: CmdLine@2
+          #      displayName: 'Build client sdk'
+          #      inputs:
+          #        script: |
+          #          pnpm build-force-blazor
+          #        workingDirectory: '$(ClientSdkProjectDirectory)'
+          #    - task: CmdLine@2
+          #      displayName: 'Configure host machine'
+          #      inputs:
+          #        script: "sudo chmod -R 755 ./ \npnpm run setup\n"
+          #        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #    - task: Bash@3
+          #      displayName: 'Run E2E Perf tests'
+          #      condition: succeeded()
+          #      inputs:
+          #        targetType: inline
+          #        script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+          #        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #    - task: PublishTestResults@2
+          #      inputs:
+          #        testResultsFormat: 'JUnit'
+          #        testResultsFiles: '**/e2e-tests-report*.xml'
+          #        testRunTitle: 'E2E Tests - Perf'
+          #        mergeTestResults: true
+          #      condition: succeededOrFailed()
           #- job: E2ETestAndroid
           #  displayName: 'E2E Test - Android'
           #  pool:
