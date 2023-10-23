@@ -22,6 +22,10 @@ resources:
       type: git
       name: OE/OfficePipelineTemplates
       ref: refs/heads/main
+    - repository: AppHostingSdk
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: refs/heads/main
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -49,9 +53,9 @@ extends:
       #   name: Azure-Pipelines-1ESPT-ExDShared
       #   image: windows-2022
       #   os: windows
-      #sourceRepositoriesToScan:
-      #  include:
-      #    - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+      sourceRepositoriesToScan:
+        include:
+          - repository: AppHostingSdk
       #    - repository: git://$(AndroidAppHostingSdkGitPath)
       #    - repository: git://$(IOSAppHostingSdkGitPath)
     customBuildTags:
@@ -271,7 +275,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+                  repository: AppHostingSdk
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
