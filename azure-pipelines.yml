@@ -24,7 +24,7 @@ resources:
       ref: refs/heads/main
     - repository: AppHostingSdk
       type: git
-      name: ISS/metaos-hub-sdk
+      name: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
       ref: refs/heads/main
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
@@ -55,7 +55,7 @@ extends:
       #   os: windows
       sourceRepositoriesToScan:
         include:
-          - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          - repository: AppHostingSdk
       #    - repository: git://$(AndroidAppHostingSdkGitPath)
       #    - repository: git://$(IOSAppHostingSdkGitPath)
     customBuildTags:
