@@ -55,7 +55,7 @@ extends:
       #   os: windows
       sourceRepositoriesToScan:
         include:
-          - repository: AppHostingSdk
+          - repository: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
       #    - repository: git://$(AndroidAppHostingSdkGitPath)
       #    - repository: git://$(IOSAppHostingSdkGitPath)
     customBuildTags:
