@@ -263,7 +263,7 @@ extends:
             displayName: 'E2E Test - Perf'
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
-              vmImage: 'ubuntu-latest'
+              image: 'ubuntu-latest'
               os: linux
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
