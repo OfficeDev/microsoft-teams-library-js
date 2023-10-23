@@ -24,8 +24,8 @@ resources:
       ref: refs/heads/main
     - repository: AppHostingSdk
       type: git
-      name: git://$(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
-      ref: refs/heads/main
+      name: $(AppHostingSdkGitPath)
+      ref: $(AppHostingSdkGitRef)
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
