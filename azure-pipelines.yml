@@ -35,16 +35,16 @@ resources:
       type: git
       name: OE/OfficePipelineTemplates
       ref: refs/heads/main
-    #- repository: AppHostingSdk
-    #  type: git
-    #  name: ${{ parameters.AppHostingSdkGitPath }}
-    #  ref: ${{ parameters.AppHostingSdkGitRef }}
-    #- repository: AndroidAppHostingSdk
-    #  type: git
-    #  name: ${{ parameters.AndroidAppHostingSdkGitPath }}
-    #- repository: IOSAppHostingSdk
-    #  type: git
-    #  name: ${{ parameters.IOSAppHostingSdkGitPath }}
+    - repository: AppHostingSdk
+      type: git
+      name: ISS/metaos-app-sdk
+      ref: refs/heads/main
+    - repository: AndroidAppHostingSdk
+      type: git
+      name: ISS/metaos-app-sdk-android
+    - repository: IOSAppHostingSdk
+      type: git
+      name: ISS/metaos-app-sdk-ios
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -294,7 +294,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+                  repository: AppHostingSdk
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
@@ -407,7 +407,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: $(AndroidAppHostingSdkGitPath)
+                  repository: AndroidAppHostingSdk
                   path: androidHost
                   persistCredentials: true
               - task: NodeTool@0
@@ -483,7 +483,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: $(IOSAppHostingSdkGitPath)
+                  repository: IOSAppHostingSdk
                   path: iOSHost
                   persistCredentials: true
               - task: InstallSSHKey@0
