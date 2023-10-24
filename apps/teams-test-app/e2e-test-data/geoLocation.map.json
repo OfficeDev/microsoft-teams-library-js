@@ -20,6 +20,7 @@
     {
       "title": "chooseLocationOnMap API Call - Failure",
       "type": "callResponse",
+      "version": ">2.16.0",
       "boxSelector": "#box_chooseLocationOnMap",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
