@@ -11,19 +11,19 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
-parameters:
-  - name: AppHostingSdkGitPath
-    type: string
-    default: $(AppHostingSdkGitPath)
-  - name: AppHostingSdkGitRef
-    type: string
-    default: $(AppHostingSdkGitRef)
-  - name: AndroidAppHostingSdkGitPath
-    type: string
-    default: $(AndroidAppHostingSdkGitPath)
-  - name: IOSAppHostingSdkGitPath
-    type: string
-    default: $(IOSAppHostingSdkGitPath)
+#parameters:
+#  - name: AppHostingSdkGitPath
+#    type: string
+#    default: $(AppHostingSdkGitPath)
+#  - name: AppHostingSdkGitRef
+#    type: string
+#    default: $(AppHostingSdkGitRef)
+#  - name: AndroidAppHostingSdkGitPath
+#    type: string
+#    default: $(AndroidAppHostingSdkGitPath)
+#  - name: IOSAppHostingSdkGitPath
+#    type: string
+#    default: $(IOSAppHostingSdkGitPath)
 trigger:
   branches:
     include:
@@ -35,16 +35,16 @@ resources:
       type: git
       name: OE/OfficePipelineTemplates
       ref: refs/heads/main
-    - repository: AppHostingSdk
-      type: git
-      name: ${{ parameters.AppHostingSdkGitPath }}
-      ref: ${{ parameters.AppHostingSdkGitRef }}
-    - repository: AndroidAppHostingSdk
-      type: git
-      name: ${{ parameters.AndroidAppHostingSdkGitPath }}
-    - repository: IOSAppHostingSdk
-      type: git
-      name: ${{ parameters.IOSAppHostingSdkGitPath }}
+    #- repository: AppHostingSdk
+    #  type: git
+    #  name: ${{ parameters.AppHostingSdkGitPath }}
+    #  ref: ${{ parameters.AppHostingSdkGitRef }}
+    #- repository: AndroidAppHostingSdk
+    #  type: git
+    #  name: ${{ parameters.AndroidAppHostingSdkGitPath }}
+    #- repository: IOSAppHostingSdk
+    #  type: git
+    #  name: ${{ parameters.IOSAppHostingSdkGitPath }}
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -74,9 +74,9 @@ extends:
       #   os: windows
       sourceRepositoriesToScan:
         include:
-          - repository: AppHostingSdk
-          - repository: AndroidAppHostingSdk
-          - repository: IOSAppHostingSdk
+          - repository: $(AppHostingSdkGitPath)
+          - repository: $(AndroidAppHostingSdkGitPath)
+          - repository: $(IOSAppHostingSdkGitPath)
     customBuildTags:
       - ES365AIMigrationTooling
     stages:
