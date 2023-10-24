@@ -38,7 +38,7 @@ resources:
     - repository: AppHostingSdk
       type: git
       name: ${{ parameters.AppHostingSdkGitPath }}
-      ref: ${{ parameters.AppHostingSdkGitPath }}
+      ref: ${{ parameters.AppHostingSdkGitRef }}
     - repository: AndroidAppHostingSdk
       type: git
       name: ${{ parameters.AndroidAppHostingSdkGitPath }}
