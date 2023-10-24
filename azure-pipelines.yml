@@ -11,6 +11,19 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
+parameters:
+  - name: AppHostingSdkGitPath
+    type: string
+    default: $(AppHostingSdkGitPath)
+  - name: AppHostingSdkGitRef
+    type: string
+    default: $(AppHostingSdkGitRef)
+  - name: AndroidAppHostingSdkGitPath
+    type: string
+    default: $(AndroidAppHostingSdkGitPath)
+  - name: IOSAppHostingSdkGitPath
+    type: string
+    default: $(IOSAppHostingSdkGitPath)
 trigger:
   branches:
     include:
@@ -24,14 +37,14 @@ resources:
       ref: refs/heads/main
     - repository: AppHostingSdk
       type: git
-      name: $(AppHostingSdkGitPath)
-      ref: $(AppHostingSdkGitRef)
+      name: ${{ parameters.AppHostingSdkGitPath }}
+      ref: ${{ parameters.AppHostingSdkGitPath }}
     - repository: AndroidAppHostingSdk
       type: git
-      name: $(AndroidAppHostingSdkGitPath)
+      name: ${{ parameters.AndroidAppHostingSdkGitPath }}
     - repository: IOSAppHostingSdk
       type: git
-      name: $(IOSAppHostingSdkGitPath)
+      name: ${{ parameters.IOSAppHostingSdkGitPath }}
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
