@@ -400,7 +400,9 @@ extends:
           - job: E2ETestAndroid
             displayName: 'E2E Test - Android'
             pool:
-              vmImage: 'macOS-11'
+              name: Azure Pipelines
+              image: internal-macos-11
+              os: macOS
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
@@ -475,7 +477,7 @@ extends:
             displayName: 'E2E Test - IOS'
             pool:
               name: Azure Pipelines
-              image: <insert vmImage here>
+              image: internal-macos-12
               os: macOS
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
