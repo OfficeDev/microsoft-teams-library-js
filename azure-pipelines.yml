@@ -37,14 +37,14 @@ resources:
       ref: refs/heads/main
     - repository: AppHostingSdk
       type: git
-      name: ISS/metaos-app-sdk
+      name: ISS/metaos-hub-sdk
       ref: refs/heads/main
     - repository: AndroidAppHostingSdk
       type: git
-      name: ISS/metaos-app-sdk-android
+      name: ISS/metaos-hub-sdk-android
     - repository: IOSAppHostingSdk
       type: git
-      name: ISS/metaos-app-sdk-ios
+      name: ISS/metaos-hub-sdk-ios
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
   parameters:
@@ -74,7 +74,7 @@ extends:
       #   os: windows
       sourceRepositoriesToScan:
         include:
-          - repository: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
+          - repository: AppHostingSdk
           - repository: $(AndroidAppHostingSdkGitPath)
           - repository: $(IOSAppHostingSdkGitPath)
     customBuildTags:
