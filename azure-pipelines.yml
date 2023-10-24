@@ -74,7 +74,7 @@ extends:
       #   os: windows
       sourceRepositoriesToScan:
         include:
-          - repository: $(AppHostingSdkGitPath)
+          - repository: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
           - repository: $(AndroidAppHostingSdkGitPath)
           - repository: $(IOSAppHostingSdkGitPath)
     customBuildTags:
@@ -294,7 +294,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: AppHostingSdk
+                  repository: $(AppHostingSdkGitPath)@$(AppHostingSdkGitRef)
                   persistCredentials: true
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
@@ -407,7 +407,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: AndroidAppHostingSdk
+                  repository: $(AndroidAppHostingSdkGitPath)
                   path: androidHost
                   persistCredentials: true
               - task: NodeTool@0
@@ -483,7 +483,7 @@ extends:
                   repository: self
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
-                  repository: IOSAppHostingSdk
+                  repository: $(IOSAppHostingSdkGitPath)
                   path: iOSHost
                   persistCredentials: true
               - task: InstallSSHKey@0
