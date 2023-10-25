@@ -340,12 +340,34 @@ export namespace meeting {
     audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection) => Promise<void>;
   }
 
+  /**
+   * Interface for AudioDeviceSelection from Teams selection
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
   export interface AudioDeviceSelection {
     speaker?: AudioDeviceInfo;
     microphone?: AudioDeviceInfo;
     error?: SdkError;
   }
 
+  /**
+   * Interface for AudioDeviceInfo, includes a device label
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
   export interface AudioDeviceInfo {
     deviceLabel: string;
   }
