@@ -8,6 +8,7 @@ import {
   fastForwardRuntime,
   generateVersionBasedTeamsRuntimeConfig,
   IBaseRuntime,
+  ICapabilityReqs,
   isRuntimeInitialized,
   latestRuntimeApiVersion,
   mapTeamsVersionToSupportedCapabilities,
@@ -15,6 +16,7 @@ import {
   runtime,
   setUnitializedRuntime,
   upgradeChain,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -188,7 +190,7 @@ describe('runtime', () => {
     return result;
   }
 
-  describe('generateVersionBasedTeamsRuntimeConfig', () => {
+  describe('generateVersionBasedTeamsRuntimeConfig tests based on Teams default configuration', () => {
     Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilityAdditionsForEachVersion]) => {
       capabilityAdditionsForEachVersion.forEach((capabilityAdditionsForClientTypesInASpecificVersion) => {
         const capabilityAdditionsForThisVersion = capabilityAdditionsForClientTypesInASpecificVersion.capability;
@@ -197,7 +199,11 @@ describe('runtime', () => {
             capabilityAdditionsForThisVersion,
           )}`, async () => {
             await utils.initializeWithContext('content', clientType);
-            const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(version).supports;
+            const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(
+              version,
+              versionAndPlatformAgnosticTeamsRuntimeConfig,
+              mapTeamsVersionToSupportedCapabilities,
+            ).supports;
             expect(isSubset(capabilityAdditionsForThisVersion, generatedCapabilityObjectForThisVersion)).toBe(true);
           });
 
@@ -210,8 +216,11 @@ describe('runtime', () => {
 
             await utils.initializeWithContext('content', clientType);
 
-            const generatedRuntimeConfigSupportedCapabilities =
-              generateVersionBasedTeamsRuntimeConfig('1.4.0').supports;
+            const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
+              '1.4.0',
+              versionAndPlatformAgnosticTeamsRuntimeConfig,
+              mapTeamsVersionToSupportedCapabilities,
+            ).supports;
 
             individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
               expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
@@ -235,7 +244,11 @@ describe('runtime', () => {
                   expect(
                     isSubset(
                       capabilityAdditionsForThisVersion,
-                      generateVersionBasedTeamsRuntimeConfig(version).supports,
+                      generateVersionBasedTeamsRuntimeConfig(
+                        version,
+                        versionAndPlatformAgnosticTeamsRuntimeConfig,
+                        mapTeamsVersionToSupportedCapabilities,
+                      ).supports,
                     ),
                   ).toBe(true);
                 });
@@ -262,13 +275,152 @@ describe('runtime', () => {
               expect(
                 isSubset(
                   singleCapabilityAdditionForThisVersion,
-                  generateVersionBasedTeamsRuntimeConfig(version).supports,
+                  generateVersionBasedTeamsRuntimeConfig(
+                    version,
+                    versionAndPlatformAgnosticTeamsRuntimeConfig,
+                    mapTeamsVersionToSupportedCapabilities,
+                  ).supports,
                 ),
               ).toBe(false);
             });
           });
         });
       });
+    });
+  });
+
+  const runtimeWithNestedPagesCapability: Runtime = {
+    apiVersion: latestRuntimeApiVersion,
+    supports: {
+      chat: {},
+      pages: {
+        tabs: {},
+      },
+    },
+  };
+
+  const runtimeWithUnnestedPagesCapability: Runtime = {
+    apiVersion: latestRuntimeApiVersion,
+    supports: {
+      chat: {},
+      pages: {},
+    },
+  };
+
+  const runtimeWithoutPagesCapability: Runtime = {
+    apiVersion: latestRuntimeApiVersion,
+    supports: {
+      chat: {},
+    },
+  };
+
+  const clientTypeForRuntimeTesting = HostClientType.desktop;
+  const versionForNoPagesCapability = '2.0.0';
+  const versionForUnnestedPagesCapability = '3.0.0';
+  const versionForNestedPagesCapability = '4.0.0';
+
+  const mapVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
+    [versionForNoPagesCapability]: [
+      {
+        capability: { newCapability: {} },
+        hostClientTypes: [clientTypeForRuntimeTesting],
+      },
+    ],
+    [versionForUnnestedPagesCapability]: [
+      {
+        capability: { pages: {}, newCapability: {} },
+        hostClientTypes: [clientTypeForRuntimeTesting],
+      },
+    ],
+    [versionForNestedPagesCapability]: [
+      {
+        capability: { pages: { appButton: {} }, newCapability: {} },
+        hostClientTypes: [clientTypeForRuntimeTesting],
+      },
+    ],
+  };
+
+  describe('generateVersionBasedTeamsRuntimeConfig tests based on specific types of merge data', () => {
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing NESTED pages capability with version-specific runtime with NO pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForNoPagesCapability,
+        runtimeWithNestedPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: { tabs: {} }, newCapability: {} });
+    });
+
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing NESTED pages capability with version-specific runtime with NESTED pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForNestedPagesCapability,
+        runtimeWithNestedPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({
+        chat: {},
+        pages: { tabs: {}, appButton: {} },
+        newCapability: {},
+      });
+    });
+
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing NESTED pages capability with version-specific runtime with UNNESTED pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForUnnestedPagesCapability,
+        runtimeWithNestedPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: { tabs: {} }, newCapability: {} });
+    });
+
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing UNNESTED pages capability with version-specific runtime with NESTED pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForNestedPagesCapability,
+        runtimeWithUnnestedPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: { appButton: {} }, newCapability: {} });
+    });
+
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing UNNESTED pages capability with version-specific runtime with UNNESTED pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForUnnestedPagesCapability,
+        runtimeWithUnnestedPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: {}, newCapability: {} });
+    });
+
+    it('generateVersionBasedTeamsRuntimeConfig can properly merge a version-agnostic config containing NO pages capability with version-specific runtime with NESTED pages capability', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext('content', clientTypeForRuntimeTesting);
+      const generatedCapabilityObject = generateVersionBasedTeamsRuntimeConfig(
+        versionForNestedPagesCapability,
+        runtimeWithoutPagesCapability,
+        mapVersionToSupportedCapabilities,
+      ).supports;
+
+      expect(generatedCapabilityObject).toStrictEqual({ chat: {}, pages: { appButton: {} }, newCapability: {} });
     });
   });
 });

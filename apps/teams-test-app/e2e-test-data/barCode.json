@@ -42,13 +42,14 @@
     {
       "title": "scanBarCode API Call - Failure",
       "type": "callResponse",
+      "version": ">2.16.0",
       "boxSelector": "#box_scanBarCode",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestBarCodePermission",
         "consentPermission": "false"
       },
       "inputValue": {},
-      "expectedTestAppValue": "Error: [object Object]"
+      "expectedTestAppValue": "Error: {\"errorCode\":1000,\"message\":\"user has explicitly not consented for device permission\"}"
     }
   ]
 }

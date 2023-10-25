@@ -1,8 +1,24 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 06 Sep 2023 20:30:49 GMT and should not be manually modified.
+This log was last generated on Wed, 11 Oct 2023 16:51:27 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.16.0
+
+Wed, 11 Oct 2023 16:51:27 GMT
+
+### Minor changes
+
+- Added `lifecycle` subcapability in `app.ts` to support caching
+- Added `HostName.places` to the list of application hosts
+
+### Patches
+
+- Reset registered handlers for unit testing 
+- Renamed Teams back-compat config for clarity
+- Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
+- Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`
 
 ## 2.15.0
 
