@@ -30,7 +30,14 @@ import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
-import { applyRuntimeConfig, generateBackCompatRuntimeConfig, IBaseRuntime, runtime } from './runtime';
+import {
+  applyRuntimeConfig,
+  generateVersionBasedTeamsRuntimeConfig,
+  IBaseRuntime,
+  mapTeamsVersionToSupportedCapabilities,
+  runtime,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
+} from './runtime';
 import { version } from './version';
 
 /**
@@ -142,7 +149,7 @@ export namespace app {
     theme: string;
 
     /**
-     * Unique ID for the current session for use in correlating telemetry data.
+     * Unique ID for the current session for use in correlating telemetry data. A session corresponds to the lifecycle of an app. A new session begins upon the creation of a webview (on Teams mobile) or iframe (in Teams desktop) hosting the app, and ends when it is destroyed.
      */
     sessionId: string;
 
@@ -435,7 +442,7 @@ export namespace app {
     id: string;
 
     /**
-     * The type of license for the current users tenant.
+     * The type of license for the current user's tenant. Possible values are enterprise, free, edu, and unknown.
      */
     teamsSku?: string;
   }
@@ -535,7 +542,7 @@ export namespace app {
   /**
    * This function is passed to registerOnThemeHandler. It is called every time the user changes their theme.
    */
-  type themeHandler = (theme: string) => void;
+  export type themeHandler = (theme: string) => void;
 
   /**
    * Checks whether the Teams client SDK has been initialized.
@@ -640,7 +647,13 @@ export namespace app {
                   }
                 } catch (e) {
                   if (e instanceof SyntaxError) {
-                    applyRuntimeConfig(generateBackCompatRuntimeConfig(GlobalVars.clientSupportedSDKVersion));
+                    applyRuntimeConfig(
+                      generateVersionBasedTeamsRuntimeConfig(
+                        GlobalVars.clientSupportedSDKVersion,
+                        versionAndPlatformAgnosticTeamsRuntimeConfig,
+                        mapTeamsVersionToSupportedCapabilities,
+                      ),
+                    );
                   } else {
                     throw e;
                   }
@@ -808,14 +821,14 @@ export namespace app {
      *
      * @param context - Data structure to be used to pass the context to the app.
      */
-    type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
+    export type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
 
     /**
      * Register before suspendOrTerminate handler function type
      *
      * @returns void
      */
-    type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
 
     /**
      * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,

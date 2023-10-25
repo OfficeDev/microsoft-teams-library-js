@@ -42,6 +42,31 @@ export namespace stageView {
      * The entity ID of the Teams application content being opened.
      */
     entityId?: string;
+
+    /**
+     * The open mode for stage content.
+     * Optional param: if not passed, hosts can choose their default openMode.
+     * If a host does not support any specific openMode, It will fallback to StageViewOpenMode.modal.
+     */
+    openMode?: StageViewOpenMode;
+  }
+
+  /**
+   * The open mode for stage content.
+   */
+  export enum StageViewOpenMode {
+    /**
+     * Open the content in a modal.
+     */
+    modal = 'modal',
+    /**
+     * Open the content in a popped-out window.
+     */
+    popout = 'popout',
+    /**
+     * Open the content in a popped-out window with chat collaboration.
+     */
+    popoutWithChat = 'popoutWithChat',
   }
 
   /**

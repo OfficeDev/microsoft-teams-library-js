@@ -247,7 +247,7 @@ export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime 
 
 export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
-export const teamsRuntimeConfig: Runtime = {
+export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   apiVersion: 3,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
@@ -296,7 +296,7 @@ export const teamsRuntimeConfig: Runtime = {
   },
 };
 
-interface ICapabilityReqs {
+export interface ICapabilityReqs {
   readonly capability: object;
   readonly hostClientTypes: Array<string>;
 }
@@ -395,7 +395,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
   },
 ];
 
-export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
+export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
   '1.9.0': [
     {
       capability: { location: {} },
@@ -439,41 +439,80 @@ export const versionConstants: Record<string, Array<ICapabilityReqs>> = {
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Merges the capabilities of two runtime objects. Fully supports arbitrarily nested capabilities/subcapabilities.
+ *
+ * Note that this function isn't actually doing anything specific to capabilities/runtime. It's just doing a
+ * generic merge of two objects.
+ *
+ * This function is NOT intended to handle objects that are NOT "shaped" like runtime objects. Specifically
+ * this means that it doesn't know how to merge values that aren't themselves objects. For example, it cannot
+ * properly handle situations where both objects contain a string or number with the same property name since the proper way to
+ * merge such values would be domain-dependent. For now it just happens to keep the value in the baseline and ignore the other.
+ * Since the runtime is only supposed to have objects, this limitation is fine.
+ *
+ * @param baselineRuntime the baseline runtime object
+ * @param runtimeToMergeIntoBaseline the runtime object to merge into the baseline
+ * @returns the merged runtime object which is the union of baselineRuntime and runtimeToMergeIntoBaseline
+ */
+function mergeRuntimeCapabilities(baselineRuntime: object, runtimeToMergeIntoBaseline: object): object {
+  const merged: object = { ...baselineRuntime };
+
+  for (const key in runtimeToMergeIntoBaseline) {
+    if (Object.prototype.hasOwnProperty.call(runtimeToMergeIntoBaseline, key)) {
+      if (typeof runtimeToMergeIntoBaseline[key] === 'object' && !Array.isArray(runtimeToMergeIntoBaseline[key])) {
+        merged[key] = mergeRuntimeCapabilities(baselineRuntime[key] || {}, runtimeToMergeIntoBaseline[key]);
+      } else {
+        if (!(key in baselineRuntime)) {
+          merged[key] = runtimeToMergeIntoBaseline[key];
+        }
+      }
+    }
+  }
+
+  return merged;
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
  *
  * Generates and returns a runtime configuration for host clients which are not on the latest host SDK version
- * and do not provide their own runtime config. Their supported capabilities are based on the highest
- * client SDK version that they can support.
+ * and do not provide their own runtime config (this is just older versions of Teams on some platforms).
+ * Their supported capabilities are based on the highest client SDK version that they can support.
  *
  * @param highestSupportedVersion - The highest client SDK version that the host client can support.
  * @returns runtime which describes the APIs supported by the legacy host client.
  */
-export function generateBackCompatRuntimeConfig(highestSupportedVersion: string): Runtime {
+export function generateVersionBasedTeamsRuntimeConfig(
+  highestSupportedVersion: string,
+  versionAgnosticRuntimeConfig: Runtime,
+  mapVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>>,
+): Runtime {
   generateBackCompatRuntimeConfigLogger('generating back compat runtime config for %s', highestSupportedVersion);
 
-  let newSupports = { ...teamsRuntimeConfig.supports };
+  let newSupports = { ...versionAgnosticRuntimeConfig.supports };
 
   generateBackCompatRuntimeConfigLogger(
     'Supported capabilities in config before updating based on highestSupportedVersion: %o',
     newSupports,
   );
 
-  Object.keys(versionConstants).forEach((versionNumber) => {
+  Object.keys(mapVersionToSupportedCapabilities).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
-      versionConstants[versionNumber].forEach((capabilityReqs) => {
+      mapVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
         if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
-          newSupports = {
-            ...newSupports,
-            ...capabilityReqs.capability,
-          };
+          newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
     }
   });
 
-  const backCompatRuntimeConfig: Runtime = {
+  const teamsBackCompatRuntimeConfig: Runtime = {
     apiVersion: latestRuntimeApiVersion,
     hostVersionsInfo: teamsMinAdaptiveCardVersion,
     isLegacyTeams: true,
@@ -482,10 +521,10 @@ export function generateBackCompatRuntimeConfig(highestSupportedVersion: string)
 
   generateBackCompatRuntimeConfigLogger(
     'Runtime config after updating based on highestSupportedVersion: %o',
-    backCompatRuntimeConfig,
+    teamsBackCompatRuntimeConfig,
   );
 
-  return backCompatRuntimeConfig;
+  return teamsBackCompatRuntimeConfig;
 }
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
