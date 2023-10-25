@@ -5,28 +5,31 @@ import { DevicePermission } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Interact with image and video. It lets the app developer ask the user to get images or video from their camera / camera roll / file system.
  * @hidden
+ * Hide from docs
+ * --------
+ * Interact with image and video. It lets the app developer ask the user to get images or video from their camera / camera roll / file system.
+ *
  * @beta
  */
 export namespace visualMedia {
   const maxVisualMediaSelectionLimit = 10;
   /**
    * @hidden
-   * Hide from docs
-   * --------
    * All properties common to Image and Video Props
    *
    * @beta
    */
   interface VisualMediaProps {
     /**
+     * @hidden
      * max limit of media allowed to be selected in one go, only values <= maxVisualMediaSelectionLimit are supported.
      */
     maxVisualMediaCount: number;
   }
 
   /**
+   * @hidden
    * The required value of the visualMedia files from gallery
    *
    * @beta
@@ -38,16 +41,19 @@ export namespace visualMedia {
     source: Source.Gallery;
   }
   /**
+   * @hidden
    * The required value of the visualMedia files from camera
    *
    * @beta
    */
   export interface CameraProps {
     /**
+     * @hidden
      * The visualMedia source
      */
     source: Source.Camera;
     /**
+     * @hidden
      * Optional; indicate if user is allowed to move between front and back camera
      * Default value is FrontOrRear
      */
@@ -55,6 +61,7 @@ export namespace visualMedia {
   }
 
   /**
+   * @hidden
    * Indicate if user is allowed to move between front and back camera or stay in front/back camera only
    * If the camera option requested by the app isn't available, the SDK will silently default to the platform's standard camera.
    *
@@ -69,7 +76,9 @@ export namespace visualMedia {
     RearOnly = 3,
   }
   /**
+   * @hidden
    * Specifies the image source
+   *
    * @beta
    */
   export enum Source {
@@ -80,27 +89,32 @@ export namespace visualMedia {
   }
 
   /**
+   * @hidden
    * VisualMediaFile object that can be used to represent image or video from host apps.
    *
    * @beta
    */
   export interface VisualMediaFile {
     /**
+     * @hidden
      * This is the base64 content of file.
      * If app needs to use this directly in HTML tags, it should convert this to a data url.
      */
     content: string;
     /**
+     * @hidden
      * The size of file represented in VisualMediaFile in KB
      */
     sizeInKB: number;
 
     /**
+     * @hidden
      * Name of the file (does not include the extension)
      */
     name: string;
 
     /**
+     * @hidden
      * File's MIME type.
      * Please check https://docs.lens.xyz/docs/metadata-standards#supported-mime-types-for-imagesaudiovideos about more information of mimeType.
      */
@@ -108,6 +122,7 @@ export namespace visualMedia {
   }
 
   /**
+   * @hidden
    * Checks whether or not visualMedia has user permission
    * @returns Promise that will resolve with true if the user had granted the app permission to media information(including Camera and Gallery permission), or with false otherwise,
    * In case of an error, promise will reject with the error.
@@ -125,6 +140,7 @@ export namespace visualMedia {
   }
 
   /**
+   * @hidden
    * Requests user permission for visualMedia
    * @returns Promise that will resolve with true if the user consented permission for media(including Camera and Gallery permission), or with false otherwise,
    * In case of an error, promise will reject with the error.
@@ -142,46 +158,54 @@ export namespace visualMedia {
   }
 
   /**
+   * @hidden
    * To enable this image capability will let the app developer ask the user to get images from camera/local storage
    *
    * @beta
    */
   export namespace image {
     /**
+     * @hidden
      * CameraImageProperties is for the image taken from the camera
      *
      * @beta
      */
     export interface CameraImageProperties extends VisualMediaProps {
       /**
+       * @hidden
        * The source in CameraImageProperties should always be CameraProps
        */
       sourceProps: CameraProps;
 
       /**
+       * @hidden
        * Optional; The common additional properties for image
        */
       commonImageProps?: ImageProperties;
     }
 
     /**
+     * @hidden
      * CameraImageProperties is for the image taken from the camera
      *
      * @beta
      */
     export interface GalleryImageProperties extends VisualMediaProps {
       /**
+       * @hidden
        * The source in GalleryImageProperties should always be GalleryProps
        */
       sourceProps: GalleryProps;
 
       /**
+       * @hidden
        * Optional; The common additional properties for image
        */
       commonImageProps?: ImageProperties;
     }
 
     /**
+     * @hidden
      * Additional properties for image
      * All properties in ImageProperties are optional and have default values
      *
@@ -189,44 +213,33 @@ export namespace visualMedia {
      */
     export interface ImageProperties {
       /**
+       * @hidden
        * Optional; indicate if inking on the selected Image is allowed or not
+       * If set to true but the platform (web/desktop) does not support inking, this feature will be silently ignored.
        * Default value is false
        */
       shouldAllowInkingOnImages?: boolean;
 
       /**
+       * @hidden
        * Optional; indicate if putting text stickers on the selected Image is allowed or not
+       * If set to true but the platform (web/desktop) does not support text stickers, this feature will be silently ignored.
        * Default value is false
        */
       shouldAllowTextStickersOnImages?: boolean;
 
       /**
+       * @hidden
        * Optional; indicate if the filter mode is enabled on the selected image.
        * Enabling this value allows the host app to apply filters to images when selecting them from the gallery or taking photos with the camera.
+       * If set to true but the platform (web/desktop) does not support filter mode, this feature will be silently ignored.
        * Default value is false
        */
       enableFilterOnImages?: boolean;
-
-      /**
-       * Optional; Specifies which formats the user is allowed to choose, more than one can be specified.
-       * Default value is [ImageOutputFormats.Image].
-       */
-      imageFormatsAllowedToBeSelected?: ImageOutputFormats[];
     }
 
     /**
-     * Specifies the image output formats.
-     *
-     * @beta
-     */
-    export enum ImageOutputFormats {
-      /** Outputs image.  */
-      Image = 1,
-      /** Outputs pdf. */
-      PDF = 2,
-    }
-
-    /**
+     * @hidden
      * Capture one or multiple image(s) using camera.
      * @param cameraImageInputs - The input params to customize the image(s) to be captured
      * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
@@ -248,6 +261,7 @@ export namespace visualMedia {
     }
 
     /**
+     * @hidden
      * Upload the existing image(s) from the gallery.
      * @param galleryImageInputs - The input params to customize the image(s) to be captured
      * @returns Promise that will resolve with {@link VisualMediaFile[]} object or reject with an error.
@@ -269,6 +283,7 @@ export namespace visualMedia {
     }
 
     /**
+     * @hidden
      * Checks if visualMedia.image capability is supported by the host
      * @returns boolean to represent whether visualMedia.image is supported
      * @throws Error if {@linkcode app.initialize} has not successfully completed
@@ -285,6 +300,7 @@ export namespace visualMedia {
     }
 
     /**
+     * @hidden
      * Ensure visualMedia.image capability is supported by the host
      * @throws errorNotSupportedOnPlatform error if isSupported() fails.
      *
@@ -296,7 +312,7 @@ export namespace visualMedia {
       }
     }
     /**
-     *
+     * @hidden
      * @param imageInput the input can be either CameraImageProperties or GalleryImageProperties
      * @param source the expected Source
      * @throws error if the input check fails.
@@ -313,6 +329,7 @@ export namespace visualMedia {
     }
 
     /**
+     * @hidden
      * Ensure the number of images in the response is within the maximum limit.
      * @throws error if length check fails.
      * @param maxCount the maxVisualMediaCount set in the imageInpus

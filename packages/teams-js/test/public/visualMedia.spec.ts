@@ -28,7 +28,6 @@ describe('visualMedia', () => {
     shouldAllowInkingOnImages: false,
     shouldAllowTextStickersOnImages: false,
     enableFilterOnImages: false,
-    imageFormatsAllowedToBeSelected: [visualMedia.image.ImageOutputFormats.Image],
   };
   const mockDefaultCaptureImageInputs: visualMedia.image.CameraImageProperties = {
     maxVisualMediaCount: 1,
