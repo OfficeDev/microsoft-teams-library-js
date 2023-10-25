@@ -530,10 +530,6 @@ export function generateVersionBasedTeamsRuntimeConfig(
     teamsBackCompatRuntimeConfig,
   );
 
-  console.log(
-    `Runtime config after updating based on highestSupportedVersion: ${JSON.stringify(teamsBackCompatRuntimeConfig)}`,
-  );
-
   return teamsBackCompatRuntimeConfig;
 }
 

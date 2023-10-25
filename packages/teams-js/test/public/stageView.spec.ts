@@ -121,7 +121,7 @@ describe('stageView', () => {
     });
 
     it('should throw error when stageView is not supported.', async () => {
-      await utils.initializeWithContext(FrameContexts.content, 'ios');
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
       expect.assertions(1);
