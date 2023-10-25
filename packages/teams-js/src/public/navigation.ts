@@ -9,7 +9,7 @@ import { runtime } from './runtime';
  */
 
 /** Navigation on complete handler function type */
-type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;
+export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;
 /**
  * @deprecated
  * As of 2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.

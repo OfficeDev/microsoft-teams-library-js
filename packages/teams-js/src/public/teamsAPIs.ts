@@ -11,11 +11,11 @@ import { runtime } from './runtime';
  */
 export namespace teamsCore {
   /** Ready to unload function type */
-  type readyToUnloadFunctionType = () => void;
+  export type readyToUnloadFunctionType = () => void;
   /** Register on load handler function type */
-  type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
+  export type registerOnLoadHandlerFunctionType = (context: LoadContext) => void;
   /** Register before unload handler function type */
-  type registerBeforeUnloadHandlerFunctionType = (readyToUnload: readyToUnloadFunctionType) => boolean;
+  export type registerBeforeUnloadHandlerFunctionType = (readyToUnload: readyToUnloadFunctionType) => boolean;
   /**
    * Enable print capability to support printing page using Ctrl+P and cmd+P
    */
@@ -52,9 +52,6 @@ export namespace teamsCore {
    * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke when the page is loaded.
-   *
-   * @deprecated
-   * As of 2.14.1, please use {@link app.lifecycle.registerOnResumeHandler} instead.
    *
    * @beta
    */
@@ -101,7 +98,6 @@ export namespace teamsCore {
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should
    * invoke the readyToUnload function provided to it once it's ready to be unloaded.
    *
-   * @deprecated
    * @beta
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
