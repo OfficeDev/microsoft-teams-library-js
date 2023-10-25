@@ -784,9 +784,6 @@ export namespace meeting {
       const audioDeviceSelectionChangedCallback = async (
         selectedDevicesInHost: AudioDeviceSelection,
       ): Promise<void> => {
-        const appDevices = await navigator.mediaDevices.enumerateDevices();
-        console.log('appDevices', appDevices);
-        console.log('audioDeviceSelectionFromHost', selectedDevicesInHost);
         await requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
       };
       registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
