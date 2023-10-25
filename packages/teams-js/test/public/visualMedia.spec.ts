@@ -24,20 +24,13 @@ describe('visualMedia', () => {
   const mockGalleryProps: visualMedia.GalleryProps = {
     source: visualMedia.Source.Gallery,
   };
-  const mockCommonImageprops: visualMedia.image.ImageProperties = {
-    shouldAllowInkingOnImages: false,
-    shouldAllowTextStickersOnImages: false,
-    enableFilterOnImages: false,
-  };
   const mockDefaultCaptureImageInputs: visualMedia.image.CameraImageProperties = {
     maxVisualMediaCount: 1,
     sourceProps: mockCameraProps,
-    commonImageProps: mockCommonImageprops,
   };
   const mockDefaultUploadImageInputs: visualMedia.image.GalleryImageProperties = {
     maxVisualMediaCount: 1,
     sourceProps: mockGalleryProps,
-    commonImageProps: mockCommonImageprops,
   };
   const mockDefaultImageFiles: visualMedia.VisualMediaFile = {
     content: 'fake_content',
@@ -317,7 +310,6 @@ describe('visualMedia', () => {
               const imageInputs: visualMedia.image.CameraImageProperties = {
                 maxVisualMediaCount: 11,
                 sourceProps: mockCameraProps,
-                commonImageProps: mockCommonImageprops,
               };
               await visualMedia.image.captureImages(imageInputs);
             } catch (e) {
@@ -335,7 +327,6 @@ describe('visualMedia', () => {
               const imageInputs: visualMedia.image.CameraImageProperties = {
                 maxVisualMediaCount: 0,
                 sourceProps: mockCameraProps,
-                commonImageProps: mockCommonImageprops,
               };
               await visualMedia.image.captureImages(imageInputs);
             } catch (e) {
@@ -439,7 +430,6 @@ describe('visualMedia', () => {
             const imageInputs: visualMedia.image.GalleryImageProperties = {
               maxVisualMediaCount: 11,
               sourceProps: mockGalleryProps,
-              commonImageProps: mockCommonImageprops,
             };
             try {
               await visualMedia.image.retrieveImages(imageInputs);
@@ -457,7 +447,6 @@ describe('visualMedia', () => {
             const imageInputs: visualMedia.image.GalleryImageProperties = {
               maxVisualMediaCount: 0,
               sourceProps: mockGalleryProps,
-              commonImageProps: mockCommonImageprops,
             };
             try {
               await visualMedia.image.retrieveImages(imageInputs);

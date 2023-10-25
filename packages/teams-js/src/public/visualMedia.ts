@@ -176,12 +176,6 @@ export namespace visualMedia {
        * The source in CameraImageProperties should always be CameraProps
        */
       sourceProps: CameraProps;
-
-      /**
-       * @hidden
-       * Optional; The common additional properties for image
-       */
-      commonImageProps?: ImageProperties;
     }
 
     /**
@@ -196,46 +190,6 @@ export namespace visualMedia {
        * The source in GalleryImageProperties should always be GalleryProps
        */
       sourceProps: GalleryProps;
-
-      /**
-       * @hidden
-       * Optional; The common additional properties for image
-       */
-      commonImageProps?: ImageProperties;
-    }
-
-    /**
-     * @hidden
-     * Additional properties for image
-     * All properties in ImageProperties are optional and have default values
-     *
-     * @beta
-     */
-    export interface ImageProperties {
-      /**
-       * @hidden
-       * Optional; indicate if inking on the selected Image is allowed or not
-       * If set to true but the platform (web/desktop) does not support inking, this feature will be silently ignored.
-       * Default value is false
-       */
-      shouldAllowInkingOnImages?: boolean;
-
-      /**
-       * @hidden
-       * Optional; indicate if putting text stickers on the selected Image is allowed or not
-       * If set to true but the platform (web/desktop) does not support text stickers, this feature will be silently ignored.
-       * Default value is false
-       */
-      shouldAllowTextStickersOnImages?: boolean;
-
-      /**
-       * @hidden
-       * Optional; indicate if the filter mode is enabled on the selected image.
-       * Enabling this value allows the host app to apply filters to images when selecting them from the gallery or taking photos with the camera.
-       * If set to true but the platform (web/desktop) does not support filter mode, this feature will be silently ignored.
-       * Default value is false
-       */
-      enableFilterOnImages?: boolean;
     }
 
     /**
