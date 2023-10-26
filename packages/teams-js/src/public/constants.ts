@@ -189,7 +189,7 @@ export const teamsMinAdaptiveCardVersion: HostVersionsInfo = {
  *
  * @beta
  */
-export const errorInvalidCount = new Error('Invalid input count: Must supply the valid image counts (limit to 10).');
+export const errorInvalidCount = new Error('Invalid input count: Must supply a valid image count (limit of 10).');
 /**
  * @hidden
  * An error object indicates that the response from the visualMedia.image API is invalid.

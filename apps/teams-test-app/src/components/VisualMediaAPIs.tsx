@@ -7,16 +7,9 @@ import { ModuleWrapper } from './utils/ModuleWrapper';
 const imagesMessageBuilder = (medias: visualMedia.VisualMediaFile[]): string => {
   let message = '';
   for (const media of medias) {
-    message +=
-      '[content: ' +
-      JSON.stringify(media.content) +
-      ', size: ' +
-      media.sizeInKB +
-      ', name: ' +
-      media.name +
-      ', mimeType: ' +
-      media.mimeType +
-      '],';
+    message += `[content: ${JSON.stringify(media.content)}, size: ${media.sizeInKB}, name: ${media.name}, mimeType: ${
+      media.mimeType
+    }],`;
   }
   return message;
 };

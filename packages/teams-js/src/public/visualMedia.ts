@@ -6,8 +6,6 @@ import { runtime } from './runtime';
 
 /**
  * @hidden
- * Hide from docs
- * --------
  * Interact with images. Allows the app developer ask the user to get images from their camera / camera roll / file system.
  *
  * @beta
@@ -23,7 +21,7 @@ export namespace visualMedia {
   interface VisualMediaProps {
     /**
      * @hidden
-     * max limit of media allowed to be selected in one go, only values <= maxVisualMediaSelectionLimit are supported.
+     * The maximum number of media items that can be selected at once is limited to values that are less than or equal to the maximum visual media selection limit.
      */
     maxVisualMediaCount: number;
   }
@@ -54,7 +52,7 @@ export namespace visualMedia {
     source: Source.Camera;
     /**
      * @hidden
-     * Optional; indicate if user is allowed to move between front and back camera
+     * Optional; Specify whether users have the option to switch between the front and rear cameras. The default setting is FrontOrRear.
      * Default value is FrontOrRear
      */
     cameraRestriction?: CameraRestriction;
@@ -82,9 +80,9 @@ export namespace visualMedia {
    * @beta
    */
   export enum Source {
-    /** visual media source is camera. */
+    /** The camera is the source of visual media. */
     Camera = 1,
-    /** visual media source is gallery. */
+    /** The source of visual media is the gallery. */
     Gallery = 2,
   }
 
@@ -115,8 +113,7 @@ export namespace visualMedia {
 
     /**
      * @hidden
-     * File's MIME type.
-     * Please check https://docs.lens.xyz/docs/metadata-standards#supported-mime-types-for-imagesaudiovideos about more information of mimeType.
+     * File's MIME type. More information on supported `mimeTypes`(https://docs.lens.xyz/docs/metadata-standards#supported-mime-types-for-imagesaudiovideos).
      */
     mimeType: string;
   }
@@ -204,13 +201,12 @@ export namespace visualMedia {
     export async function captureImages(cameraImageInputs: CameraImageProperties): Promise<VisualMediaFile[]> {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       ensureSupported();
-      ensureImageInputValided(cameraImageInputs);
-      // waiting the response from host apps
+      ensureImageInputValid(cameraImageInputs);
       const files = await sendAndHandleSdkError<VisualMediaFile[]>(
         'visualMedia.image.captureImages',
         cameraImageInputs,
       );
-      ensureResponseValided(cameraImageInputs.maxVisualMediaCount, files);
+      ensureResponseValid(cameraImageInputs.maxVisualMediaCount, files);
       return files;
     }
 
@@ -226,13 +222,12 @@ export namespace visualMedia {
     export async function retrieveImages(galleryImageInputs: GalleryImageProperties): Promise<VisualMediaFile[]> {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       ensureSupported();
-      ensureImageInputValided(galleryImageInputs);
-      // waiting the response from host apps
+      ensureImageInputValid(galleryImageInputs);
       const files = await sendAndHandleSdkError<VisualMediaFile[]>(
         'visualMedia.image.retrieveImages',
         galleryImageInputs,
       );
-      ensureResponseValided(galleryImageInputs.maxVisualMediaCount, files);
+      ensureResponseValid(galleryImageInputs.maxVisualMediaCount, files);
       return files;
     }
 
