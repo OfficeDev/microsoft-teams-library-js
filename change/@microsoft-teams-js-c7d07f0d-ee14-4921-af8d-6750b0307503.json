@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "\"Added www.bing.com and www.staging-bing-int.com to the `validOrigins` list\"",
+  "comment": "Added www.bing.com and www.staging-bing-int.com to the `validOrigins` list",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
