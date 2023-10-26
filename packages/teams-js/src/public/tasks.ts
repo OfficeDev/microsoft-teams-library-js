@@ -18,10 +18,7 @@ import { runtime } from './runtime';
  */
 export namespace tasks {
   /** Start task submit handler function type.  */
-  export type startTaskSubmitHandlerFunctionType = (
-    err: string | undefined,
-    result: string | object | undefined,
-  ) => void;
+  export type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
 
   /**
    * @deprecated
@@ -40,7 +37,7 @@ export namespace tasks {
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
     const dialogSubmitHandler = submitHandler
-      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err ?? '', sdkResponse.result ?? '')
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
