@@ -272,7 +272,7 @@ export namespace visualMedia {
      * @throws error if the input check fails.
      * @beta
      */
-    function ensureImageInputValided(imageInput: CameraImageProperties | GalleryImageProperties): void {
+    function ensureImageInputValid(imageInput: CameraImageProperties | GalleryImageProperties): void {
       if (
         !imageInput ||
         imageInput.maxVisualMediaCount > maxVisualMediaSelectionLimit ||
