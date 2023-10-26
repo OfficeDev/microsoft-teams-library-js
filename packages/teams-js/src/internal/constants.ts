@@ -147,6 +147,9 @@ export const validOrigins = [
   'edgeservices.bing.com',
   'www.bing.com',
   'www.staging-bing-int.com',
+  'teams.cloud.microsoft',
+  'outlook.cloud.microsoft',
+  'm365.cloud.microsoft',
 ];
 
 /**
