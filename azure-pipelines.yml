@@ -75,7 +75,7 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
-          - repository: AndroidAppHostingSdk
+          - repository: ${{ parameters.AndroidAppHostingSdkGitPath}}
           - repository: IOSAppHostingSdk
     customBuildTags:
       - ES365AIMigrationTooling
