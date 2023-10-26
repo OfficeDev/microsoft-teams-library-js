@@ -8,7 +8,7 @@ import { runtime } from './runtime';
  * @hidden
  * Hide from docs
  * --------
- * Interact with image and video. It lets the app developer ask the user to get images or video from their camera / camera roll / file system.
+ * Interact with images. Allows the app developer ask the user to get images from their camera / camera roll / file system.
  *
  * @beta
  */
