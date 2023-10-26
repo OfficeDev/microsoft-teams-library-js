@@ -137,6 +137,20 @@ export class Utils {
     }
     return null;
   };
+  
+  public findKthMessagesByFunc = (func: string, _k: number): MessageRequest | null => {
+    let k = _k;
+    for (let i = 0; i < this.messages.length; i++) {
+      if (this.messages[i].func === func) {
+        if (k === 0) {
+          return this.messages[i];
+        } else {
+          k--;
+        }
+      }
+    }
+    return null;
+  };
 
   public findInitializeMessageOrThrow = (): MessageRequest => {
     const initMessage = this.findMessageByFunc('initialize');
