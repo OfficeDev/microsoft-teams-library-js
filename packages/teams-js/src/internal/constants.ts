@@ -145,6 +145,7 @@ export const validOrigins = [
   'www.microsoft365.com',
   'bing.com',
   'edgeservices.bing.com',
+  'www.bing.com',
 ];
 
 /**
