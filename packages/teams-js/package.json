@@ -17,7 +17,8 @@
     "docs:validate": "pnpm typedoc --emit none",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
-    "test": "jest --verbose false --silent false"
+    "test": "jest",
+    "test:verbose": "pnpm test -- --verbose false --silent false"
   },
   "dependencies": {
     "debug": "^4.3.3"
