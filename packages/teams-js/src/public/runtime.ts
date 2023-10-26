@@ -309,7 +309,12 @@ const v1NonMobileHostClientTypes = [
   HostClientType.teamsDisplays,
 ];
 
-export const v1HostClientTypes = [...v1NonMobileHostClientTypes, HostClientType.android, HostClientType.ios];
+export const v1HostClientTypes = [
+  ...v1NonMobileHostClientTypes,
+  HostClientType.android,
+  HostClientType.ios,
+  HostClientType.ipados,
+];
 
 /**
  * @hidden
