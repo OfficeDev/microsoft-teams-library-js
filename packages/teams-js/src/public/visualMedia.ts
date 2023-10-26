@@ -291,7 +291,7 @@ export namespace visualMedia {
      *
      * @beta
      */
-    function ensureResponseValided(maxCount: number, response: VisualMediaFile[]): void {
+    function ensureResponseValid(maxCount: number, response: VisualMediaFile[]): void {
       // to ensure the number of images in the response is within the maximum limit.
       if (response.length > maxCount) {
         throw errorInvalidResponse;
