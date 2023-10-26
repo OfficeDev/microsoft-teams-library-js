@@ -18,7 +18,10 @@ import { runtime } from './runtime';
  */
 export namespace tasks {
   /** Start task submit handler function type.  */
-  export type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
+  export type startTaskSubmitHandlerFunctionType = (
+    err: string | undefined,
+    result: string | object | undefined,
+  ) => void;
 
   /**
    * @deprecated
@@ -37,8 +40,7 @@ export namespace tasks {
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
     const dialogSubmitHandler = submitHandler
-      ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
-        (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -92,7 +94,10 @@ export namespace tasks {
    * @returns - Converted UrlDialogInfo object
    */
   function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined) {
+      throw new Error("url property of taskInfo object can't be undefined");
+    }
+
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
@@ -111,7 +116,12 @@ export namespace tasks {
    * @returns - converted BotUrlDialogInfo object
    */
   function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined || taskInfo.completionBotId === undefined) {
+      throw new Error(
+        `Both url ${taskInfo.url} and completionBotId ${taskInfo.completionBotId} are required for bot url dialog. At least one is undefined.`,
+      );
+    }
+
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {

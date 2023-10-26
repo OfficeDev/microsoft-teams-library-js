@@ -232,7 +232,7 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
     registerHandlerHelper('fullScreenChange', handler, [], () => {
-      if (handler && !isSupported()) {
+      if (handler !== undefined && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -405,7 +405,7 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: saveEventType): void {
       registerOnSaveHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
+        if (handler !== undefined && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -426,12 +426,12 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime, FrameContexts.settings);
+      handler !== undefined && ensureInitialized(runtime, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['save']);
+      handler !== undefined && sendMessageToParent('registerHandler', ['save']);
     }
 
     /**
@@ -443,7 +443,7 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: removeEventType): void {
       registerOnRemoveHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
+        if (handler !== undefined && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -464,12 +464,12 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
+      handler !== undefined && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['remove']);
+      handler !== undefined && sendMessageToParent('registerHandler', ['remove']);
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -663,7 +663,7 @@ export namespace pages {
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
       registerBackButtonHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
+        if (handler !== undefined && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -681,12 +681,12 @@ export namespace pages {
      */
     export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime);
+      handler !== undefined && ensureInitialized(runtime);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['backButton']);
+      handler !== undefined && sendMessageToParent('registerHandler', ['backButton']);
     }
 
     function handleBackButtonPress(): void {

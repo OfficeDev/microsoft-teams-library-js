@@ -57,7 +57,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
     registerOnLoadHandlerHelper(handler, () => {
-      if (handler && !isSupported()) {
+      if (handler !== undefined && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -80,9 +80,9 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized(runtime);
+    handler !== undefined && ensureInitialized(runtime);
 
-    if (handler && versionSpecificHelper) {
+    if (handler !== undefined && versionSpecificHelper) {
       versionSpecificHelper();
     }
 
@@ -102,7 +102,7 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
-      if (handler && !isSupported()) {
+      if (handler !== undefined && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -126,8 +126,8 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized(runtime);
-    if (handler && versionSpecificHelper) {
+    handler !== undefined && ensureInitialized(runtime);
+    if (handler !== undefined && versionSpecificHelper) {
       versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);

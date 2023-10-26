@@ -48,10 +48,8 @@ export namespace people {
   ): Promise<PeoplePickerResult[]> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let callback: selectPeopleCallbackFunctionType;
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let peoplePickerInputs: PeoplePickerInputs;
+    let callback: selectPeopleCallbackFunctionType | undefined = undefined;
+    let peoplePickerInputs: PeoplePickerInputs | undefined;
 
     if (typeof param1 === 'function') {
       [callback, peoplePickerInputs] = [param1, param2];
@@ -61,7 +59,7 @@ export namespace people {
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<PeoplePickerResult[]>(
       selectPeopleHelper,
-      callback,
+      callback /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */,
       peoplePickerInputs,
     );
   }
@@ -72,7 +70,6 @@ export namespace people {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
       }
 
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       if (!validatePeoplePickerInput(peoplePickerInputs)) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
