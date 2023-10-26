@@ -11,16 +11,16 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
-#parameters:
-#  - name: AppHostingSdkGitPath
-#    type: string
-#    default: $(AppHostingSdkGitPath)
-#  - name: AppHostingSdkGitRef
-#    type: string
-#    default: $(AppHostingSdkGitRef)
-#  - name: AndroidAppHostingSdkGitPath
-#    type: string
-#    default: $(AndroidAppHostingSdkGitPath)
+parameters:
+  #  - name: AppHostingSdkGitPath
+  #    type: string
+  #    default: $(AppHostingSdkGitPath)
+  #  - name: AppHostingSdkGitRef
+  #    type: string
+  #    default: $(AppHostingSdkGitRef)
+  - name: AndroidAppHostingSdkGitPath
+    type: string
+    default: $(AndroidAppHostingSdkGitPath)
 #  - name: IOSAppHostingSdkGitPath
 #    type: string
 #    default: $(IOSAppHostingSdkGitPath)
@@ -39,9 +39,9 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: refs/heads/main
-    - repository: AndroidAppHostingSdk
-      type: git
-      name: ISS/metaos-hub-sdk-android
+    #- repository: AndroidAppHostingSdk
+    #  type: git
+    #  name: ISS/metaos-hub-sdk-android
     - repository: IOSAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-ios
@@ -407,6 +407,9 @@ extends:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: self
+              - checkout: ${{ parameters.AndroidAppHostingSdkGitPath }}
+                path: androidHost
+                persistCredentials: true
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: AndroidAppHostingSdk
