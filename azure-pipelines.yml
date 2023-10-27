@@ -336,10 +336,15 @@ extends:
                     corepack enable
                     corepack prepare pnpm@7.30.1 --activate
                     pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+              - task: CmdLine@2
+                displayName: 'Set Cypress Cache Location'
+                inputs:
+                  script: |
+                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
               - task: Cache@2
                 inputs:
                   key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: ~/.cache/Cypress
+                  path: $(Pipeline.Workspace)/.cache/Cypress
                   cacheHitVar: CYPRESS_CACHE_RESTORED
                 displayName: 'Cache Cypress binary'
               - task: npmAuthenticate@0
