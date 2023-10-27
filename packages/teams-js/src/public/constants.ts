@@ -182,3 +182,20 @@ export const minAdaptiveCardVersion: AdaptiveCardVersion = { majorVersion: 1, mi
 export const teamsMinAdaptiveCardVersion: HostVersionsInfo = {
   adaptiveCardSchemaVersion: { majorVersion: 1, minorVersion: 5 },
 };
+
+/**
+ * @hidden
+ * An error object indicates that the image count from visualMedia.image API is invalid.
+ *
+ * @beta
+ */
+export const errorInvalidCount = new Error('Invalid input count: Must supply a valid image count (limit of 10).');
+/**
+ * @hidden
+ * An error object indicates that the response from the visualMedia.image API is invalid.
+ *
+ * @beta
+ */
+export const errorInvalidResponse = new Error(
+  'Invalid response: Received more images than the specified max limit in the response.',
+);
