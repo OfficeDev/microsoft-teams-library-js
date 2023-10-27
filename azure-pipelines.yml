@@ -297,6 +297,11 @@ extends:
                   repository: AppHostingSdk
                   persistCredentials: true
               - task: CmdLine@2
+                displayName: 'Set Cypress Cache Location'
+                inputs:
+                  script: |
+                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
+              - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
                   script: |
@@ -336,11 +341,6 @@ extends:
                     corepack enable
                     corepack prepare pnpm@7.30.1 --activate
                     pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-              - task: CmdLine@2
-                displayName: 'Set Cypress Cache Location'
-                inputs:
-                  script: |
-                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
               - task: Cache@2
                 inputs:
                   key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
