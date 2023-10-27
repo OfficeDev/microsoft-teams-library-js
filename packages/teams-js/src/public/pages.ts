@@ -9,6 +9,7 @@ import {
 } from '../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -232,7 +233,7 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
     registerHandlerHelper('fullScreenChange', handler, [], () => {
-      if (handler !== undefined && !isSupported()) {
+      if (!isNullOrUndefined(handler) && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -405,7 +406,7 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: saveEventType): void {
       registerOnSaveHandlerHelper(handler, () => {
-        if (handler !== undefined && !isSupported()) {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -426,12 +427,12 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler !== undefined && ensureInitialized(runtime, FrameContexts.settings);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      handler !== undefined && sendMessageToParent('registerHandler', ['save']);
+      !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['save']);
     }
 
     /**
@@ -443,7 +444,7 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: removeEventType): void {
       registerOnRemoveHandlerHelper(handler, () => {
-        if (handler !== undefined && !isSupported()) {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -464,12 +465,12 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler !== undefined && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      handler !== undefined && sendMessageToParent('registerHandler', ['remove']);
+      !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['remove']);
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -663,7 +664,7 @@ export namespace pages {
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
       registerBackButtonHandlerHelper(handler, () => {
-        if (handler !== undefined && !isSupported()) {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -681,12 +682,12 @@ export namespace pages {
      */
     export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
       // allow for registration cleanup even when not finished initializing
-      handler !== undefined && ensureInitialized(runtime);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      handler !== undefined && sendMessageToParent('registerHandler', ['backButton']);
+      !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['backButton']);
     }
 
     function handleBackButtonPress(): void {

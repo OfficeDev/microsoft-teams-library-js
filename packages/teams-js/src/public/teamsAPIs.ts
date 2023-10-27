@@ -1,6 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { ssrSafeWindow } from '../internal/utils';
 import { errorNotSupportedOnPlatform } from './constants';
 import { LoadContext } from './interfaces';
@@ -57,7 +58,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
     registerOnLoadHandlerHelper(handler, () => {
-      if (handler !== undefined && !isSupported()) {
+      if (!isNullOrUndefined(handler) && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -80,9 +81,9 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler !== undefined && ensureInitialized(runtime);
+    !isNullOrUndefined(handler) && ensureInitialized(runtime);
 
-    if (handler !== undefined && versionSpecificHelper) {
+    if (!isNullOrUndefined(handler) && versionSpecificHelper) {
       versionSpecificHelper();
     }
 
@@ -102,7 +103,7 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
-      if (handler !== undefined && !isSupported()) {
+      if (!isNullOrUndefined(handler) && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -126,8 +127,8 @@ export namespace teamsCore {
     versionSpecificHelper?: () => void,
   ): void {
     // allow for registration cleanup even when not finished initializing
-    handler !== undefined && ensureInitialized(runtime);
-    if (handler !== undefined && versionSpecificHelper) {
+    !isNullOrUndefined(handler) && ensureInitialized(runtime);
+    if (!isNullOrUndefined(handler) && versionSpecificHelper) {
       versionSpecificHelper();
     }
     Handlers.registerBeforeUnloadHandler(handler);
