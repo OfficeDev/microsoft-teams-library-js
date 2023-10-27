@@ -410,11 +410,11 @@ extends:
               - checkout: ${{ parameters.AndroidAppHostingSdkGitPath }}
                 path: androidHost
                 persistCredentials: true
-              - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
-                inputs:
-                  repository: AndroidAppHostingSdk
-                  path: androidHost
-                  persistCredentials: true
+              #- task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+              #  inputs:
+              #    repository: AndroidAppHostingSdk
+              #    path: androidHost
+              #    persistCredentials: true
               - task: NodeTool@0
                 inputs:
                   versionSpec: '14.x'
