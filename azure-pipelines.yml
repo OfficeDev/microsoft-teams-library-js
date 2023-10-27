@@ -339,7 +339,7 @@ extends:
               - task: Cache@2
                 inputs:
                   key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: /home/vsts/.cache/Cypress
+                  path: $(Pipeline.Workspace)/.cache/Cypress
                   cacheHitVar: CYPRESS_CACHE_RESTORED
                 displayName: 'Cache Cypress binary'
               - task: npmAuthenticate@0
