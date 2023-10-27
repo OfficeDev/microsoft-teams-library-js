@@ -49,7 +49,7 @@ export namespace people {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);
 
     let callback: selectPeopleCallbackFunctionType | undefined = undefined;
-    let peoplePickerInputs: PeoplePickerInputs | undefined;
+    let peoplePickerInputs: PeoplePickerInputs | undefined = undefined;
 
     if (typeof param1 === 'function') {
       [callback, peoplePickerInputs] = [param1, param2];
