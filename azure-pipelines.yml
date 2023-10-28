@@ -24,11 +24,7 @@ parameters:
 #  - name: IOSAppHostingSdkGitPath
 #    type: string
 #    default: $(IOSAppHostingSdkGitPath)
-trigger:
-  branches:
-    include:
-      - 'main'
-      - 'release/*'
+trigger: none
 resources:
   repositories:
     - repository: CustomPipelineTemplates
