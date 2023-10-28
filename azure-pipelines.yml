@@ -388,12 +388,6 @@ extends:
                 inputs:
                   script: "sudo chmod -R 755 ./ \npnpm run setup\n"
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'rerun cypress setup'
-                inputs:
-                  script: |
-                    pnpm run setup
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: Bash@3
                 displayName: 'Run E2E Perf tests'
                 condition: succeeded()
