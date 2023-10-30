@@ -33,14 +33,14 @@ export function returnFocus(navigateForward?: boolean): void {
  */
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
-  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages.tabs
     .navigateToTab(tabInstance)
     .then(() => {
-      onComplete(true);
+      completionHandler(true);
     })
     .catch((error: Error) => {
-      onComplete(false, error.message);
+      completionHandler(false, error.message);
     });
 }
 
@@ -68,14 +68,14 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
-  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages
     .navigateCrossDomain(url)
     .then(() => {
-      onComplete(true);
+      completionHandler(true);
     })
     .catch((error: Error) => {
-      onComplete(false, error.message);
+      completionHandler(false, error.message);
     });
 }
 
@@ -90,13 +90,13 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
  */
 export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
-  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
   pages.backStack
     .navigateBack()
     .then(() => {
-      onComplete(true);
+      completionHandler(true);
     })
     .catch((error: Error) => {
-      onComplete(false, error.message);
+      completionHandler(false, error.message);
     });
 }
