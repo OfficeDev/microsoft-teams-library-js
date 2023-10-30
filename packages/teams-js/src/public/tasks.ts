@@ -17,7 +17,13 @@ import { runtime } from './runtime';
  * The tasks namespace will be deprecated. Please use dialog for future developments.
  */
 export namespace tasks {
-  /** Start task submit handler function type.  */
+  /**
+   * Function type that is used to receive the result when a task module is submitted by
+   * calling {@link tasks.submitTask tasks.submitTask(result?: string | object, appIds?: string | string[]): void}
+   *
+   * @param err - If the task module failed, this string contains the reason for failure. If the task module succeeded, this value is the empty string.
+   * @param result - On success, this is the value passed to the `result` parameter of {@link tasks.submitTask tasks.submitTask(result?: string | object, appIds?: string | string[]): void}. On failure, this is the empty string.
+   */
   export type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
 
   /**
@@ -37,8 +43,7 @@ export namespace tasks {
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
     const dialogSubmitHandler = submitHandler
-      ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
-        (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err ?? '', sdkResponse.result ?? '')
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
@@ -92,7 +97,10 @@ export namespace tasks {
    * @returns - Converted UrlDialogInfo object
    */
   function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined) {
+      throw new Error("url property of taskInfo object can't be undefined");
+    }
+
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
@@ -111,7 +119,12 @@ export namespace tasks {
    * @returns - converted BotUrlDialogInfo object
    */
   function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined || taskInfo.completionBotId === undefined) {
+      throw new Error(
+        `Both url ${taskInfo.url} and completionBotId ${taskInfo.completionBotId} are required for bot url dialog. At least one is undefined.`,
+      );
+    }
+
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {

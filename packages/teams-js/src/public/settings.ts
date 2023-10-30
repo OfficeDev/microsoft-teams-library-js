@@ -99,14 +99,14 @@ export namespace settings {
    */
   export function setSettings(instanceSettings: Settings, onComplete?: setSettingsOnCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
-    onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+    const completionHandler: setSettingsOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
     pages.config
       .setConfig(instanceSettings)
       .then(() => {
-        onComplete(true);
+        completionHandler(true);
       })
       .catch((error: Error) => {
-        onComplete(false, error.message);
+        completionHandler(false, error.message);
       });
   }
 
