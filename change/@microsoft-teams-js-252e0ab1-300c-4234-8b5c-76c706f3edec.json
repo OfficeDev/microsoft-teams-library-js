@@ -1,5 +1,5 @@
 {
-  "type": "minor",
+  "type": "patch",
   "comment": "Updated default runtime for Teams Mobile to indicate that `pages.appButton`, `pages.tabs`, and `stageView` are not supported.",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
