@@ -572,7 +572,7 @@ export namespace app {
     const scripts = document.getElementsByTagName('script');
     // This will always be the current script because browsers load and execute scripts in order.
     // Whenever a script is executing for the first time it will be the last script in this array.
-    const currentScriptSrc = scripts[scripts.length - 1].src;
+    const currentScriptSrc = scripts && scripts[scripts.length - 1] && scripts[scripts.length - 1].src;
     const scriptUsageWarning =
       'Today, teamsjs can only be used from a single script or you may see undefined behavior. If you would like to use teamjs from more than one script at the same time, please open an issue at https://github.com/OfficeDev/microsoft-teams-library-js/issues';
     if (!currentScriptSrc || currentScriptSrc.length === 0) {
