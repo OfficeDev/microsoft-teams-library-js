@@ -210,6 +210,9 @@ interface IRuntimeV3 extends IBaseRuntime {
       readonly mediaStream?: {};
       readonly sharedFrame?: {};
     };
+    readonly visualMedia?: {
+      readonly image?: {};
+    };
     readonly webStorage?: {};
   };
 }

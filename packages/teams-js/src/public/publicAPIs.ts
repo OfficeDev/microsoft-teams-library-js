@@ -293,14 +293,14 @@ export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOn
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
-  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
+  const completionHandler: executeDeepLinkOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
   app
     .openLink(deepLink)
     .then(() => {
-      onComplete(true);
+      completionHandler(true);
     })
     .catch((err: Error) => {
-      onComplete(false, err.message);
+      completionHandler(false, err.message);
     });
 }
 

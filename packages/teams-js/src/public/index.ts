@@ -72,6 +72,7 @@ export { search } from './search';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
 export { version } from './version';
+export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
