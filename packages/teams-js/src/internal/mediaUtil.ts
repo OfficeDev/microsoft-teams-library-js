@@ -207,7 +207,7 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
  *
  * @internal
  */
-export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
+export function validatePeoplePickerInput(peoplePickerInputs?: people.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {
     if (peoplePickerInputs.title) {
       if (typeof peoplePickerInputs.title !== 'string') {

@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Added teams.cloud.microsoft, outlook.cloud.microsoft, m365.cloud.microsoft, www.bing.com and www.staging-bing-int.com to the `validOrigins` list",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "none"
+}
