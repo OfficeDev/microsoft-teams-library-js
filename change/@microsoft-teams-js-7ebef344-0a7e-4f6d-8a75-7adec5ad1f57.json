@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "add a sentence to TeamsJS reference source for secondaryBrowser",
+  "comment": "Updated documentation for `secondaryBrowser` capability",
   "packageName": "@microsoft/teams-js",
   "email": "mobajemu@microsoft.com",
   "dependentChangeType": "none"
