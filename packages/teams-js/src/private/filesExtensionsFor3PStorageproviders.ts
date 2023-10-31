@@ -46,7 +46,7 @@ export namespace filesExtensionsFor3PStorageproviders {
   }
   export interface FileResult {
     /**
-     * error encountered in getDragAndDropFiles API
+     * Error encountered in getDragAndDropFiles API
      */
     error?: SdkError;
     /**
@@ -62,11 +62,11 @@ export namespace filesExtensionsFor3PStorageproviders {
      */
     fileType: string;
     /**
-     * Will tell if this is the last file
+     * Indicates whether this file is the last one in a sequence.
      */
     isLastFile: boolean;
     /**
-     * Will tell the name of the file
+     * The name of the file.
      */
     fileName: string;
   }
@@ -111,31 +111,27 @@ export namespace filesExtensionsFor3PStorageproviders {
     callback: (attachments: FilesFor3PApps[], error?: SdkError) => void,
   ): void {
     const files: FilesFor3PApps[] = [];
-    let helper: filesExtensionsFor3PStorageproviders.AttachmentListHelper = {
+    let helper: AttachmentListHelper = {
       fileType: '',
       assembleAttachment: [],
     };
 
-    function handleGetDragAndDropFilesCallbackRequest(
-      fileResult: filesExtensionsFor3PStorageproviders.FileResult,
-    ): void {
+    function handleGetDragAndDropFilesCallbackRequest(fileResult: FileResult): void {
       if (callback) {
         if (fileResult && fileResult.error) {
           callback([], fileResult.error);
         } else {
           if (fileResult && fileResult.fileChunk) {
             try {
-              const assemble: filesExtensionsFor3PStorageproviders.AssembleAttachment = decodeAttachment(
-                fileResult.fileChunk,
-                fileResult.fileType,
-              );
+              const assemble: AssembleAttachment = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
               helper.assembleAttachment.push(assemble);
 
+              // we will send the maximum integer as chunkSequence to identify the last chunk
               if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
                 const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
 
                 if (fileResult.isLastFile) {
-                  // conver blob to File
+                  // Convert blob to File
                   const receivedFile = new File([fileBlob], fileResult.fileName, {
                     type: fileBlob.type,
                   });
