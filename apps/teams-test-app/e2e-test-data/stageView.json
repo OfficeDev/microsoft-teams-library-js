@@ -17,7 +17,8 @@
         "threadId": "threadId",
         "title": "title",
         "websiteUrl": "websiteUrl",
-        "entityId": "entityId"
+        "entityId": "entityId",
+        "openMode": "modal"
       },
       "expectedAlertValue": "stageView.open called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "opened",
