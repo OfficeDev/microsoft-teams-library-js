@@ -426,6 +426,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe('getTabInstances', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
 
       getTabInstances((tabInfo) => tabInfo);
       getTabInstances((tabInfo) => tabInfo, {} as TabInstanceParameters);
@@ -435,6 +436,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   describe('getMruTabInstances', () => {
     it('should allow a missing and valid optional parameter', async () => {
       await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
 
       getMruTabInstances((tabInfo) => tabInfo);
       getMruTabInstances((tabInfo) => tabInfo, {} as TabInstanceParameters);
