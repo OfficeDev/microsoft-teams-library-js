@@ -8,8 +8,6 @@ import { runtime } from './runtime';
 /**
  * Namespace to power up the in-app browser experiences in the host app.
  * For e.g., opening a URL in the host app inside a browser
- * Namespace to power up the in-app browser experiences in the host app.
- * For e.g., opening a URL in the host app inside a browser
  *
  * @beta
  */
@@ -19,7 +17,7 @@ export namespace secondaryBrowser {
    *  
    * On mobile, this is the in-app browser.
    * 
-   * On web and desktop, please use the Window.open() method or other native external browser methods.
+   * On web and desktop, please use the `window.open()` method or other native external browser methods.
    *
    * @param url Url to open in the browser
    * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser
