@@ -191,9 +191,9 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
 export function validateScanBarCodeInput(barCodeConfig?: media.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
-      !barCodeConfig.timeOutIntervalInSec ||
-      barCodeConfig.timeOutIntervalInSec <= 0 ||
-      barCodeConfig.timeOutIntervalInSec > 60
+      barCodeConfig.timeOutIntervalInSec === null ||
+      (barCodeConfig.timeOutIntervalInSec != undefined && barCodeConfig.timeOutIntervalInSec <= 0) ||
+      (barCodeConfig.timeOutIntervalInSec != undefined && barCodeConfig.timeOutIntervalInSec > 60)
     ) {
       return false;
     }
