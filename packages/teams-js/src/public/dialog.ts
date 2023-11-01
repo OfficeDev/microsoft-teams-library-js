@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
+import { updateResizeHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -99,20 +100,6 @@ export namespace dialog {
       // Not in task FrameContext, remove 'messageForChild' handler
       removeHandler('messageForChild');
     }
-  }
-
-  function updateResizeHelper(apiVersion = 'v1', dimensions: DialogSize): void {
-    ensureInitialized(
-      runtime,
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.task,
-      FrameContexts.meetingStage,
-    );
-    if (!update.isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParentWithVersion(apiVersion, 'tasks.updateTask', [dimensions]);
   }
 
   export namespace url {
@@ -404,7 +391,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper('v2', dimensions);
+      updateResizeHelper(dimensions, 'v2');
     }
 
     /**

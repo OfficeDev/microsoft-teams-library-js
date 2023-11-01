@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { sendMessageToParentWithVersion } from '../internal/communication';
+import { updateResizeHelper } from '../internal/dialogUtil';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
@@ -75,7 +76,7 @@ export namespace tasks {
     if (Object.keys(extra).length) {
       throw new Error('resize requires a TaskInfo argument containing only width and height');
     }
-    dialog.update.resize(taskInfo as DialogSize);
+    updateResizeHelper(taskInfo as DialogSize);
   }
 
   /**
