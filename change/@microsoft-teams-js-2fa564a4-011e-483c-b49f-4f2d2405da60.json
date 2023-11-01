@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Deleted unnecessary subcapability named `caching` from `app.lifecycle` in runtime",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
