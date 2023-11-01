@@ -16,7 +16,7 @@ Wed, 01 Nov 2023 18:15:02 GMT
 
 ### Patches
 
-- Start logging name of script currently executing when teamsjs is first loaded
+- Started logging name of script currently executing when teamsjs is first loaded
 - Exported all publicly referenced but unexported types
 - Fixed some locations violating `strictNullChecks`
 - Updated default runtime for Teams Mobile to indicate that `pages.appButton`, `pages.tabs`, and `stageView` are not supported.
