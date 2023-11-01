@@ -11,19 +11,6 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
-#parameters:
-#  - name: AppHostingSdkGitPath
-#    type: string
-#    default: $(AppHostingSdkGitPath)
-#  - name: AppHostingSdkGitRef
-#    type: string
-#    default: $(AppHostingSdkGitRef)
-#  - name: AndroidAppHostingSdkGitPath
-#    type: string
-#    default: $(AndroidAppHostingSdkGitPath)
-#  - name: IOSAppHostingSdkGitPath
-#    type: string
-#    default: $(IOSAppHostingSdkGitPath)
 trigger:
   branches:
     include:
@@ -393,13 +380,13 @@ extends:
                 inputs:
                   script: 'ls'
                   workingDirectory: '$(AppHostingSdkProjectDirectory)/node_modules'
-              #- task: Bash@3
-              #  displayName: 'Run E2E Perf tests'
-              #  condition: succeeded()
-              #  inputs:
-              #    targetType: inline
-              #    script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-              #    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+              - task: Bash@3
+                displayName: 'Run E2E Perf tests'
+                condition: succeeded()
+                inputs:
+                  targetType: inline
+                  script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: PublishTestResults@2
                 inputs:
                   testResultsFormat: 'JUnit'
@@ -417,9 +404,6 @@ extends:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: self
-              #- checkout: ${{ parameters.AndroidAppHostingSdkGitPath }}
-              #  path: androidHost
-              #  persistCredentials: true
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
                 inputs:
                   repository: AndroidAppHostingSdk
@@ -490,7 +474,7 @@ extends:
             displayName: 'E2E Test - IOS'
             pool:
               name: Azure Pipelines
-              image: internal-macos-11
+              image: internal-macos12
               os: macOS
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
