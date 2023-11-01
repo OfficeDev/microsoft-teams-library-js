@@ -146,6 +146,9 @@ export namespace pages {
   }
 
   /**
+   * @deprecated
+   * As of 2.0.0, this API is no longer needed. Please remove any calls to it.
+   *
    * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
    * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
    * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
