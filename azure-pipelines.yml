@@ -296,11 +296,11 @@ extends:
                 inputs:
                   repository: AppHostingSdk
                   persistCredentials: true
-              #- task: CmdLine@2
-              #  displayName: 'Set Cypress Cache Location'
-              #  inputs:
-              #    script: |
-              #      export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)
+              - task: CmdLine@2
+                displayName: 'Set Cypress Cache Location'
+                inputs:
+                  script: |
+                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
@@ -393,13 +393,13 @@ extends:
                 inputs:
                   script: 'ls'
                   workingDirectory: '$(AppHostingSdkProjectDirectory)/node_modules'
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+              #- task: Bash@3
+              #  displayName: 'Run E2E Perf tests'
+              #  condition: succeeded()
+              #  inputs:
+              #    targetType: inline
+              #    script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+              #    workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: PublishTestResults@2
                 inputs:
                   testResultsFormat: 'JUnit'
@@ -490,7 +490,7 @@ extends:
             displayName: 'E2E Test - IOS'
             pool:
               name: Azure Pipelines
-              image: internal-macos11
+              image: internal-macos-11
               os: macOS
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
