@@ -25,11 +25,14 @@ import {
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../internal/mediaUtil';
+import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { generateGUID } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
 import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+const mediaLogger = getLogger('media');
 
 /**
  * Interact with media, including capturing and viewing images.
@@ -270,6 +273,10 @@ export namespace media {
                 );
                 if (assemble) {
                   helper.assembleAttachment.push(assemble);
+                } else {
+                  mediaLogger(
+                    `Received a null assemble attachment for when decoding chunk sequence ${mediaResult.mediaChunk.chunkSequence}; not including the chunk in the assembled file.`,
+                  );
                 }
               }
             } else {
