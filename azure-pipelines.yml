@@ -296,11 +296,11 @@ extends:
                 inputs:
                   repository: AppHostingSdk
                   persistCredentials: true
-              - task: CmdLine@2
-                displayName: 'Set Cypress Cache Location'
-                inputs:
-                  script: |
-                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)
+              #- task: CmdLine@2
+              #  displayName: 'Set Cypress Cache Location'
+              #  inputs:
+              #    script: |
+              #      export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
@@ -344,7 +344,7 @@ extends:
               - task: Cache@2
                 inputs:
                   key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-                  path: $(Pipeline.Workspace)/.cache/Cypress
+                  path: /home/vsts/.cache/Cypress
                   cacheHitVar: CYPRESS_CACHE_RESTORED
                 displayName: 'Cache Cypress binary'
               - task: npmAuthenticate@0
