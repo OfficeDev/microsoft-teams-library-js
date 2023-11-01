@@ -43,9 +43,6 @@ describe('MicrosoftTeams-Navigation', () => {
         const pagesUtilReturnFocusHelper = jest.spyOn(pagesUtil, 'returnFocusHelper');
         returnFocus(true);
         expect(pagesUtilReturnFocusHelper).toHaveBeenCalled();
-        // const pagesReturnFocus = jest.spyOn(pages, 'returnFocus');
-        // returnFocus(true);
-        // expect(pagesReturnFocus).toHaveBeenCalled();
       });
 
       it(`navigation.returnFocus should successfully returnFocus when set to true and initialized with ${context} context`, async () => {
@@ -85,9 +82,6 @@ describe('MicrosoftTeams-Navigation', () => {
         const pagesNavigateToTabsHelper = jest.spyOn(pagesUtil, 'tabsNavigateToTabHelper');
         navigateToTab(null);
         expect(pagesNavigateToTabsHelper).toHaveBeenCalled();
-        // const pagesNavigateToTabs = jest.spyOn(pages.tabs, 'navigateToTab');
-        // navigateToTab(null);
-        // expect(pagesNavigateToTabs).toHaveBeenCalled();
       });
 
       it(`navigation.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
@@ -145,10 +139,6 @@ describe('MicrosoftTeams-Navigation', () => {
           const pagesNavigateCrossDomainHelper = jest.spyOn(pagesUtil, 'navigateCrossDomainHelper');
           navigateCrossDomain('https://valid.origin.com');
           expect(pagesNavigateCrossDomainHelper).toHaveBeenCalled();
-
-          // const pagesNavigateCrossDomain = jest.spyOn(pages, 'navigateCrossDomain');
-          // navigateCrossDomain('https://valid.origin.com');
-          // expect(pagesNavigateCrossDomain).toHaveBeenCalled();
         });
 
         it(`navigation.navigateCrossDomain should allow calls when initialized with ${context} context`, async () => {
@@ -232,10 +222,6 @@ describe('MicrosoftTeams-Navigation', () => {
         const pagesBackStackNavigateBackHelper = jest.spyOn(pagesUtil, 'backStackNavigateBackHelper');
         navigateBack();
         expect(pagesBackStackNavigateBackHelper).toHaveBeenCalled();
-
-        // const pagesBackStackNavigateBack = jest.spyOn(pages.backStack, 'navigateBack');
-        // navigateBack();
-        // expect(pagesBackStackNavigateBack).toHaveBeenCalled();
       });
       it(`navigate.navigateBack should register the navigateBack action when initialized with ${context} context`, async () => {
         await utils.initializeWithContext(context);
