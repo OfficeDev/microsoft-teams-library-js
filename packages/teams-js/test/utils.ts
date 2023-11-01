@@ -137,7 +137,7 @@ export class Utils {
     }
     return null;
   };
-  
+
   public findKthMessagesByFunc = (func: string, _k: number): MessageRequest | null => {
     let k = _k;
     for (let i = 0; i < this.messages.length; i++) {
