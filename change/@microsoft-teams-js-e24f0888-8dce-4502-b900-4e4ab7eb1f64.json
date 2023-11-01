@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "extend RequestAppAudioHandlingParams by adding audioDeviceSelectionChangedCallback",
+  "comment": "Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates",
   "packageName": "@microsoft/teams-js",
   "email": "binzhou@microsoft.com",
   "dependentChangeType": "patch"
