@@ -831,6 +831,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             pages.tabs.navigateToTab(tabInstance);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             validateExpectedArgumentsInRequest(navigateToTabMsg, 'navigateToTab', MatcherType.ToBe, tabInstance);
@@ -838,6 +839,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.navigateToTab should throw error when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.navigateToTab(null);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             validateRequestWithoutArguments(navigateToTabMsg, 'navigateToTab');
@@ -850,6 +852,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context - success case`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             pages.tabs.navigateToTab(null);
             const onComplete = getGenericOnCompleteHandler();
             onComplete(true);
@@ -881,6 +884,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
@@ -891,6 +895,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
@@ -901,6 +906,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
@@ -936,6 +942,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
@@ -946,6 +953,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
@@ -956,6 +964,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
@@ -1831,6 +1840,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onClick(() => {
                 handlerCalled = true;
@@ -1841,6 +1851,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onClick does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
@@ -1882,6 +1893,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onHoverEnter(() => {
                 handlerCalled = true;
@@ -1892,6 +1904,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverEnter does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
@@ -1933,6 +1946,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onHoverLeave(() => {
                 handlerCalled = true;
@@ -1943,6 +1957,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverLeave does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
@@ -1976,6 +1991,7 @@ describe('Testing pages module', () => {
 
         it('pages.appButton.isSupported should throw if called before initialization', () => {
           utils.uninitializeRuntimeConfig();
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
           expect(() => pages.appButton.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
@@ -2836,6 +2852,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             pages.tabs.navigateToTab(tabInstance);
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             expect(navigateToTabMsg).not.toBeNull();
@@ -2843,6 +2860,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.navigateToTab should register the navigateToTab action when initialized with ${context} context - success case`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             pages.tabs.navigateToTab(null);
             const onComplete = getGenericOnCompleteHandler();
             onComplete(true);
@@ -2875,6 +2893,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.getTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
 
@@ -2887,6 +2906,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getTabInstances');
 
@@ -2899,6 +2919,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
 
@@ -2936,6 +2957,7 @@ describe('Testing pages module', () => {
           });
           it(`pages.tabs.getMruTabInstances should successfully getTabInstance when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
             utils.respondToFramelessMessage({
@@ -2947,6 +2969,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined getTabInstance when parameters are passed and  initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getMruTabInstances');
 
@@ -2959,6 +2982,7 @@ describe('Testing pages module', () => {
 
           it(`pages.tabs.getMruTabInstances should be undefined when no parameters are passed and initialized with ${context} context`, async () => {
             await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
 
@@ -3691,6 +3715,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onClick should successfully register a app button click handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onClick(() => {
                 handlerCalled = true;
@@ -3703,6 +3728,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onClick does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onClick(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
@@ -3744,6 +3770,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onHoverEnter should successfully register a app button hover handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onHoverEnter(() => {
                 handlerCalled = true;
@@ -3758,6 +3785,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverEnter does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onHoverEnter(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
@@ -3799,6 +3827,7 @@ describe('Testing pages module', () => {
 
             it(`pages.appButton.onHoverLeave should successfully register a app button hover leave handler when initialized with ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               let handlerCalled = false;
               pages.appButton.onHoverLeave(() => {
                 handlerCalled = true;
@@ -3812,6 +3841,7 @@ describe('Testing pages module', () => {
           } else {
             it(`pages.appButton.onHoverLeave does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
               expect(() => pages.appButton.onHoverLeave(emptyCallback)).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,

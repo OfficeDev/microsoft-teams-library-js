@@ -6,14 +6,18 @@ import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to power up the in-app browser experiences in the Host App.
- * For e.g., opening a URL in the Host App inside a browser
+ * Namespace to power up the in-app browser experiences in the host app.
+ * For e.g., opening a URL in the host app inside a browser
  *
  * @beta
  */
 export namespace secondaryBrowser {
   /**
-   * Open a URL in the secondary browser aka in-app browser
+   * Open a URL in the secondary browser.
+   *
+   * On mobile, this is the in-app browser.
+   *
+   * On web and desktop, please use the `window.open()` method or other native external browser methods.
    *
    * @param url Url to open in the browser
    * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser

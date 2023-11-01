@@ -151,9 +151,7 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
-      readonly lifecycle?: {
-        readonly caching?: {};
-      };
+      readonly lifecycle?: {};
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
@@ -256,9 +254,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   isLegacyTeams: true,
   supports: {
     app: {
-      lifecycle: {
-        caching: {},
-      },
+      lifecycle: {},
     },
     appInstallDialog: {},
     appEntity: {},
@@ -281,14 +277,11 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     monetization: {},
     notifications: {},
     pages: {
-      appButton: {},
-      tabs: {},
       config: {},
       backStack: {},
       fullTrust: {},
     },
     remoteCamera: {},
-    stageView: {},
     teams: {
       fullTrust: {},
     },
@@ -304,11 +297,9 @@ export interface ICapabilityReqs {
   readonly hostClientTypes: Array<string>;
 }
 
-export const v1HostClientTypes = [
+const v1NonMobileHostClientTypes = [
   HostClientType.desktop,
   HostClientType.web,
-  HostClientType.android,
-  HostClientType.ios,
   HostClientType.rigel,
   HostClientType.surfaceHub,
   HostClientType.teamsRoomsWindows,
@@ -316,6 +307,10 @@ export const v1HostClientTypes = [
   HostClientType.teamsPhones,
   HostClientType.teamsDisplays,
 ];
+
+export const v1MobileHostClientTypes = [HostClientType.android, HostClientType.ios, HostClientType.ipados];
+
+export const v1HostClientTypes = [...v1NonMobileHostClientTypes, ...v1MobileHostClientTypes];
 
 /**
  * @hidden
@@ -399,6 +394,15 @@ export const upgradeChain: IRuntimeUpgrade[] = [
 ];
 
 export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
+  // 1.0.0 just signifies "these capabilities have practically always been supported." For some of these
+  // we don't know what the real first version that supported them was -- but it was long enough ago that
+  // we can just effectively consider them always supported (on the specified platforms)
+  '1.0.0': [
+    {
+      capability: { pages: { appButton: {}, tabs: {} }, stageView: {} },
+      hostClientTypes: v1NonMobileHostClientTypes,
+    },
+  ],
   '1.9.0': [
     {
       capability: { location: {} },
