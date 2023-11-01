@@ -127,6 +127,12 @@ export function uninitializeCommunication(): void {
 }
 
 /**
+ * @hidden
+ * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendAndUnwrap function
+ * and this function will be removed when the project is completed.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -142,6 +148,13 @@ export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T>
   return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
 }
 
+/**
+ * @hidden
+ * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReason function
+ * and this function will be removed when the project is completed.
+ */
 export function sendAndHandleStatusAndReasonWithVersion(
   apiVersion: string,
   actionName: string,
@@ -165,6 +178,12 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
 }
 
 /**
+ * @hidden
+ * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReasonWithDefaultError function
+ * and this function will be removed when the project is completed.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -200,6 +219,12 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
 }
 
 /**
+ * @hidden
+ * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendAndHandleSdkError function
+ * and this function will be removed when the project is completed.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -230,6 +255,12 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 }
 
 /**
+ * @hidden
+ * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendMessageToParentAsync function
+ * and this function will be removed when the project is completed.
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -290,6 +321,13 @@ export function sendMessageToParentWithVersion(
  */
 export function sendMessageToParentWithVersion(apiVersion: string, actionName: string, callback?: Function): void;
 
+/**
+ * @hidden
+ * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
+ * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * for telemetry work. The code inside of this function will be used to replace sendMessageToParent function
+ * and this function will be removed when the project is completed.
+ */
 export function sendMessageToParentWithVersion(
   apiVersion: string,
   actionName: string,
