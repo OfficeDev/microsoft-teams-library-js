@@ -2,6 +2,6 @@
   "type": "minor",
   "comment": "extend RequestAppAudioHandlingParams by adding audioDeviceSelectionChangedCallback",
   "packageName": "@microsoft/teams-js",
-  "email": "xuwu@microsoft.com",
+  "email": "binzhou@microsoft.com",
   "dependentChangeType": "patch"
 }

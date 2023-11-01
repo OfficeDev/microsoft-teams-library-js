@@ -358,7 +358,12 @@ export namespace meeting {
   }
 
   /**
-   * Interface for AudioDeviceInfo, includes a device label
+   * Interface for AudioDeviceInfo, includes a device label with the same format as MediaDeviceInfo.label
+   * 
+   * Hosted app can use this label to compare it with the device info fetched from `navigator.mediaDevices.enumerateDevices()`
+   * MediaDeviceInfo has deviceId as an unique identifier, but that id is also unique to the origin of the calling application,
+   * so deviceId cannot be used here as an identifier. Notice there are some cases that devices may have the same deviceLabel,
+   * but we don't have a better way to solve this, keep this as a known limitation for now.
    *
    * @hidden
    * Hide from docs.
@@ -950,10 +955,8 @@ export namespace meeting {
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
-      const audioDeviceSelectionChangedCallback = async (
-        selectedDevicesInHost: AudioDeviceSelection,
-      ): Promise<void> => {
-        await requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
+      const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection) => {
+        requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
       };
       registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
 
