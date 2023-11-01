@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "deprecated pages.NavigateCrossDomain and comments",
+  "comment": "Deprecated `pages.navigateCrossDomain()`",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
   "dependentChangeType": "none"
