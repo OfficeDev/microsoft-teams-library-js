@@ -8,8 +8,13 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
+<<<<<<< HEAD
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
+=======
+import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
+import { isFollowApiVersionLabelFormat } from './internalAPIs';
+>>>>>>> aa8ac908 (add version check to throw error)
 import { getLogger } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
@@ -269,6 +274,12 @@ export function sendMessageToParentAsyncWithVersion<T>(
   actionName: string,
   args: any[] = undefined,
 ): Promise<T> {
+  if (!isFollowApiVersionLabelFormat(apiVersion)) {
+    throw Error(
+      `apiVersion:${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+    );
+  }
+
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(apiVersion, actionName, args);
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -339,6 +350,12 @@ export function sendMessageToParentWithVersion(
     callback = argsOrCallback;
   } else if (argsOrCallback instanceof Array) {
     args = argsOrCallback;
+  }
+
+  if (!isFollowApiVersionLabelFormat(apiVersion)) {
+    throw Error(
+      `apiVersion:${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+    );
   }
 
   // APIs with v0 represents beta changes haven't been implemented on them

@@ -149,3 +149,16 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
   });
   GlobalVars.additionalValidOrigins = combinedOriginUrls;
 }
+
+/**
+ * @hidden
+ * Check if apiVersion developer sends follows the pattern starting with a lowercase 'v' and it is then
+ * followed by one or more digits only. If yes, return true. Otherwise, return false.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function isFollowApiVersionLabelFormat(apiVersion: string): boolean {
+  const pattern = /^v\d+$/;
+  return pattern.test(apiVersion);
+}
