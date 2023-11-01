@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
-import { updateResizeHelper } from '../internal/dialogUtil';
+import { updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -103,31 +103,31 @@ export namespace dialog {
   }
 
   export namespace url {
-    function urlOpenHelper(
-      apiVersion = 'v1',
-      urlDialogInfo: UrlDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-      messageFromChildHandler?: PostMessageChannel,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+    // function urlOpenHelper(
+    //   apiVersion = 'v1',
+    //   urlDialogInfo: UrlDialogInfo,
+    //   submitHandler?: DialogSubmitHandler,
+    //   messageFromChildHandler?: PostMessageChannel,
+    // ): void {
+    //   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+    //   if (!isSupported()) {
+    //     throw errorNotSupportedOnPlatform;
+    //   }
 
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-      sendMessageToParentWithVersion(
-        apiVersion,
-        'tasks.startTask',
-        [dialogInfo],
-        (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-          removeHandler('messageForParent');
-        },
-      );
-    }
+    //   if (messageFromChildHandler) {
+    //     registerHandler('messageForParent', messageFromChildHandler);
+    //   }
+    //   const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+    //   sendMessageToParentWithVersion(
+    //     apiVersion,
+    //     'tasks.startTask',
+    //     [dialogInfo],
+    //     (err: string, result: string | object) => {
+    //       submitHandler?.({ err, result });
+    //       removeHandler('messageForParent');
+    //     },
+    //   );
+    // }
 
     function botUrlOpenHelper(
       apiVersion = 'v1',
@@ -188,7 +188,7 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      urlOpenHelper('v2', urlDialogInfo, submitHandler, messageFromChildHandler);
+      urlOpenHelper(urlDialogInfo, submitHandler, messageFromChildHandler, 'v2');
     }
 
     /**
