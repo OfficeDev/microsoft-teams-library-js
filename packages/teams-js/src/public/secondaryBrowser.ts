@@ -14,9 +14,9 @@ import { runtime } from './runtime';
 export namespace secondaryBrowser {
   /**
    * Open a URL in the secondary browser.
-   *  
+   *
    * On mobile, this is the in-app browser.
-   * 
+   *
    * On web and desktop, please use the `window.open()` method or other native external browser methods.
    *
    * @param url Url to open in the browser
