@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
-import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -103,22 +103,6 @@ export namespace dialog {
   }
 
   export namespace url {
-    function urlSubmitHelper(apiVersion = 'v1', result?: string | object, appIds?: string | string[]): void {
-      // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
-      // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
-      // FrameContexts.content will be removed once the bug is fixed.
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-      sendMessageToParentWithVersion(apiVersion, 'tasks.completeTask', [
-        result,
-        appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
-      ]);
-    }
-
     /**
      * Allows app to open a url based dialog.
      *
@@ -153,7 +137,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper('v2', result, appIds);
+      urlSubmitHelper(result, appIds, 'v2');
     }
 
     /**
