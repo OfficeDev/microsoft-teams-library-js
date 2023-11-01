@@ -2,7 +2,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { dialog } from '../public/dialog';
-import { DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
+import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { sendMessageToParentWithVersion } from './communication';
 import { registerHandler, removeHandler } from './handlers';
@@ -36,6 +36,32 @@ export function urlOpenHelper(
     registerHandler('messageForParent', messageFromChildHandler);
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+  sendMessageToParentWithVersion(
+    apiVersion,
+    'tasks.startTask',
+    [dialogInfo],
+    (err: string, result: string | object) => {
+      submitHandler?.({ err, result });
+      removeHandler('messageForParent');
+    },
+  );
+}
+
+export function botUrlOpenHelper(
+  urlDialogInfo: BotUrlDialogInfo,
+  submitHandler?: dialog.DialogSubmitHandler,
+  messageFromChildHandler?: dialog.PostMessageChannel,
+  apiVersion = 'v1',
+): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!dialog.url.bot.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
+  if (messageFromChildHandler) {
+    registerHandler('messageForParent', messageFromChildHandler);
+  }
+  const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
   sendMessageToParentWithVersion(
     apiVersion,
     'tasks.startTask',

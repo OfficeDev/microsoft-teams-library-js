@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { sendMessageToParentWithVersion } from '../internal/communication';
-import { updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
@@ -53,7 +53,7 @@ export namespace tasks {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParentWithVersion('v1', 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      botUrlOpenHelper(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
       urlOpenHelper(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }

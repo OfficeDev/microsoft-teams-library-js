@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
-import { updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -103,58 +103,6 @@ export namespace dialog {
   }
 
   export namespace url {
-    // function urlOpenHelper(
-    //   apiVersion = 'v1',
-    //   urlDialogInfo: UrlDialogInfo,
-    //   submitHandler?: DialogSubmitHandler,
-    //   messageFromChildHandler?: PostMessageChannel,
-    // ): void {
-    //   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    //   if (!isSupported()) {
-    //     throw errorNotSupportedOnPlatform;
-    //   }
-
-    //   if (messageFromChildHandler) {
-    //     registerHandler('messageForParent', messageFromChildHandler);
-    //   }
-    //   const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-    //   sendMessageToParentWithVersion(
-    //     apiVersion,
-    //     'tasks.startTask',
-    //     [dialogInfo],
-    //     (err: string, result: string | object) => {
-    //       submitHandler?.({ err, result });
-    //       removeHandler('messageForParent');
-    //     },
-    //   );
-    // }
-
-    function botUrlOpenHelper(
-      apiVersion = 'v1',
-      urlDialogInfo: BotUrlDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-      messageFromChildHandler?: PostMessageChannel,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
-      sendMessageToParentWithVersion(
-        apiVersion,
-        'tasks.startTask',
-        [dialogInfo],
-        (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-          removeHandler('messageForParent');
-        },
-      );
-    }
-
     function urlSubmitHelper(apiVersion = 'v1', result?: string | object, appIds?: string | string[]): void {
       // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
       // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
@@ -312,7 +260,7 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        botUrlOpenHelper('v2', botUrlDialogInfo, submitHandler, messageFromChildHandler);
+        botUrlOpenHelper(botUrlDialogInfo, submitHandler, messageFromChildHandler, 'v2');
       }
 
       /**
