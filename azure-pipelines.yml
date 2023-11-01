@@ -300,7 +300,7 @@ extends:
                 displayName: 'Set Cypress Cache Location'
                 inputs:
                   script: |
-                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
+                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
