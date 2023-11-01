@@ -348,47 +348,6 @@ export namespace dialog {
    * @beta
    */
   export namespace adaptiveCard {
-    function adaptiveCardOpenHelper(
-      apiVersion = 'v1',
-      adaptiveCardDialogInfo: AdaptiveCardDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParentWithVersion(
-        apiVersion,
-        'tasks.startTask',
-        [dialogInfo],
-        (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-        },
-      );
-    }
-
-    function botAdaptiveCardOpenHelper(
-      apiVersion = 'v1',
-      botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
-      submitHandler?: DialogSubmitHandler,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
-
-      sendMessageToParentWithVersion(
-        apiVersion,
-        'tasks.startTask',
-        [dialogInfo],
-        (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-        },
-      );
-    }
     /**
      * Allows app to open an adaptive card based dialog.
      *
@@ -401,7 +360,14 @@ export namespace dialog {
      * @beta
      */
     export function open(adaptiveCardDialogInfo: AdaptiveCardDialogInfo, submitHandler?: DialogSubmitHandler): void {
-      adaptiveCardOpenHelper('v2', adaptiveCardDialogInfo, submitHandler);
+      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
+      sendMessageToParentWithVersion('v2', 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+        submitHandler?.({ err, result });
+      });
     }
 
     /**
@@ -442,7 +408,21 @@ export namespace dialog {
         botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
         submitHandler?: DialogSubmitHandler,
       ): void {
-        botAdaptiveCardOpenHelper('v2', botAdaptiveCardDialogInfo, submitHandler);
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+
+        const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+
+        sendMessageToParentWithVersion(
+          'v2',
+          'tasks.startTask',
+          [dialogInfo],
+          (err: string, result: string | object) => {
+            submitHandler?.({ err, result });
+          },
+        );
       }
 
       /**
