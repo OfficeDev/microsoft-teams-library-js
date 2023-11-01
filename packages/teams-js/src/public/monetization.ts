@@ -73,8 +73,7 @@ export namespace monetization {
     param2?: PlanInfo,
   ): Promise<void> {
     let callback: ((error: SdkError | null) => void) | undefined;
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    let planInfo: PlanInfo;
+    let planInfo: PlanInfo | undefined;
     if (typeof param1 === 'function') {
       callback = param1;
       planInfo = param2;
@@ -86,6 +85,7 @@ export namespace monetization {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
+        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
         resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', planInfo));
       });
     };
