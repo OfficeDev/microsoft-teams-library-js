@@ -151,9 +151,7 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
-      readonly lifecycle?: {
-        readonly caching?: {};
-      };
+      readonly lifecycle?: {};
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
@@ -256,9 +254,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   isLegacyTeams: true,
   supports: {
     app: {
-      lifecycle: {
-        caching: {},
-      },
+      lifecycle: {},
     },
     appInstallDialog: {},
     appEntity: {},
