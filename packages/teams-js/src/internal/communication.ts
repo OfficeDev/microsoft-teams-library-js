@@ -276,7 +276,7 @@ export function sendMessageToParentAsyncWithVersion<T>(
 ): Promise<T> {
   if (!isFollowApiVersionLabelFormat(apiVersion)) {
     throw Error(
-      `apiVersion:${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+      `apiVersion: ${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
     );
   }
 
@@ -354,7 +354,7 @@ export function sendMessageToParentWithVersion(
 
   if (!isFollowApiVersionLabelFormat(apiVersion)) {
     throw Error(
-      `apiVersion:${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+      `apiVersion: ${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
     );
   }
 

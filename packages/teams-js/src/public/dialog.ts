@@ -178,7 +178,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParentWithVersion('V1', 'messageForChild', [message]);
+      sendMessageToParentWithVersion('v1', 'messageForChild', [message]);
     }
 
     /**
