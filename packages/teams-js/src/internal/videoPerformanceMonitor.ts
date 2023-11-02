@@ -11,13 +11,13 @@ export class VideoPerformanceMonitor {
   private isFirstFrameProcessed = false;
 
   // The effect that the user last selected:
-  private applyingEffect: {
+  private applyingEffect?: {
     effectId: string;
     effectParam?: string;
   };
 
   // The effect that is currently applied to the video:
-  private appliedEffect: {
+  private appliedEffect?: {
     effectId: string;
     effectParam?: string;
   };
