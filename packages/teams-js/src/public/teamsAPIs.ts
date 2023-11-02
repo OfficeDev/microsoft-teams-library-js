@@ -58,7 +58,7 @@ export namespace teamsCore {
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
     registerOnLoadHandlerHelper(handler, () => {
-      if (!isNullOrUndefined(handler) && !isSupported()) {
+      if (!isNullOrUndefined(handler)) {
         throw errorNotSupportedOnPlatform;
       }
     });
@@ -103,7 +103,7 @@ export namespace teamsCore {
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
     registerBeforeUnloadHandlerHelper(handler, () => {
-      if (!isNullOrUndefined(handler) && !isSupported()) {
+      if (!isNullOrUndefined(handler)) {
         throw errorNotSupportedOnPlatform;
       }
     });
