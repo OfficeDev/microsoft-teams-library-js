@@ -9,7 +9,7 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { DOMMessageEvent, ExtendedWindow } from './interfaces';
+import { DOMMessageEvent, ExtendedWindow, NestedAuthExtendedWindow, NestedAuthRequest } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
@@ -26,6 +26,8 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window | null;
   public static childOrigin: string | null;
+  public static topWindow: Window | any;
+  public static topOrigin: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
+  public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: {
     [id: number]: Function; // (arg1, arg2, ...etc) => void
@@ -74,6 +77,7 @@ export function initializeCommunication(
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
       : Communication.currentWindow.opener;
+  Communication.topWindow = Communication.currentWindow.top;
 
   // Listen to messages from the parent or child frame.
   // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
@@ -91,6 +95,30 @@ export function initializeCommunication(
       return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
     }
   }
+
+  // Extend the window, define the NAA listener and add the NAA bridge
+  const extendedWindow = Communication.currentWindow as unknown as NestedAuthExtendedWindow;
+  const nestedAppAuthBridgeHandler = (callback: (response: string) => void) => (evt: DOMMessageEvent) =>
+    processAuthBridgeMessage(evt, callback);
+
+  extendedWindow.nestedAppAuthBridge = {
+    addEventListener: (eventName, callback): void => {
+      if (eventName === 'message') {
+        Communication.currentWindow.addEventListener(eventName, nestedAppAuthBridgeHandler(callback));
+      } else {
+        communicationLogger.log(`Event ${eventName} is not supported`);
+      }
+    },
+    postMessage: (message: string): void => {
+      // Marty, do we need async? Need to digest this a bit more.
+      // Async and then looking for the request callback is necessary for SDk messages.
+      // But for NAA, it's fire and forget with the response coming back via the event listener.
+      sendNestedAuthMessageAsync(message);
+    },
+    removeEventListener: (eventName: string, callback): void => {
+      Communication.currentWindow.removeEventListener(eventName, nestedAppAuthBridgeHandler(callback));
+    },
+  };
 
   try {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -260,6 +288,21 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 
 /**
  * @hidden
+ * Send nested authentication message to the top window which is the broker for authentication.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendNestedAuthMessageAsync<T>(message: string): Promise<T> {
+  return new Promise((resolve) => {
+    const request = sendNestedAuthRequestToTopWindow(message);
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(waitForResponse<T>(request.id));
+  });
+}
+
+/**
+ * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendMessageToParentAsync function
@@ -408,22 +451,17 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 }
 
-const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
+const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(
-  apiVersionTag: string,
-  actionName: string,
-  args: any[] | undefined,
-): MessageRequestWithRequiredProperties {
-  const logger = sendMessageToParentHelperLogger;
-  const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersionTag, actionName, args);
-
-  logger('Message %i information: %o', request.id, { actionName, args });
+function sendRequestToTargetWindowHelper(
+  targetWindow: Window,
+  request: MessageRequestWithRequiredProperties | NestedAuthRequest,
+): MessageRequestWithRequiredProperties | NestedAuthRequest {
+  const logger = sendRequestToTargetWindowHelperLogger;
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
@@ -444,6 +482,42 @@ function sendMessageToParentHelper(
     }
   }
   return request;
+}
+
+const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequest {
+  const logger = sendMessageToParentHelperLogger;
+
+  const targetWindow = Communication.parentWindow;
+  const request = createMessageRequest(actionName, args);
+
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+  logger('Message %i information: %o', request.id, { actionName, args });
+
+  return sendRequestToTargetWindowHelper(targetWindow, request);
+}
+
+const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendNestedAuthRequestToTopWindow');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function sendNestedAuthRequestToTopWindow(message: string): MessageRequest {
+  const logger = sendNestedAuthRequestToTopWindowLogger;
+
+  const targetWindow = Communication.topWindow;
+  const request = createNestedAppAuthRequest(message);
+
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+  logger('Message %i information: %o', request.id, { actionName: request.func });
+
+  return sendRequestToTargetWindowHelper(targetWindow, request);
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -480,6 +554,66 @@ function processMessage(evt: DOMMessageEvent): void {
   } else if (messageSource === Communication.childWindow) {
     handleChildMessage(evt);
   }
+}
+
+const processAuthBridgeMessageLogger = communicationLogger.extend('processAuthBridgeMessage');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function processAuthBridgeMessage(evt: DOMMessageEvent, onMessageReceived: (response: string) => void): void {
+  const logger = processAuthBridgeMessageLogger;
+
+  // Process only if we received a valid message
+  if (!evt || !evt.data || typeof evt.data !== 'string') {
+    logger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  const parsedData = (() => {
+    try {
+      return JSON.parse(evt.data);
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  // Validate that it is a valid auth bridge response message
+  if (!parsedData || typeof parsedData !== 'object' || parsedData.messageType !== 'NestedAppAuthResponse') {
+    logger('Unrecognized data format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  // Process only if the message is coming from a different window and a valid origin
+  // valid origins are either a pre-known origin or one specified by the app developer
+  // in their call to app.initialize
+  const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
+  const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
+  if (!shouldProcessMessage(messageSource, messageOrigin)) {
+    logger(
+      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+    );
+    return;
+  }
+
+  // Check if messageSource matches the top level window.
+  // In most cases, top level window and the parent window will be same.
+  if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
+    Communication.topWindow = messageSource;
+    Communication.topOrigin = messageOrigin;
+  }
+
+  // Clean up pointers to closed parent and child windows
+  if (Communication.topWindow && Communication.topWindow.closed) {
+    Communication.topWindow = null;
+    Communication.topOrigin = null;
+  }
+
+  flushMessageQueue(Communication.topWindow);
+
+  // Return the response to the registered callback
+  onMessageReceived(evt.data);
 }
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
@@ -635,11 +769,15 @@ function handleChildMessage(evt: DOMMessageEvent): void {
  * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  return targetWindow === Communication.parentWindow
-    ? CommunicationPrivate.parentMessageQueue
-    : targetWindow === Communication.childWindow
-    ? CommunicationPrivate.childMessageQueue
-    : [];
+  if (targetWindow === Communication.parentWindow) {
+    return CommunicationPrivate.parentMessageQueue;
+  } else if (targetWindow === Communication.childWindow) {
+    return CommunicationPrivate.childMessageQueue;
+  } else if (targetWindow === Communication.topWindow) {
+    return CommunicationPrivate.topMessageQueue;
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -647,11 +785,27 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  return targetWindow === Communication.parentWindow
-    ? Communication.parentOrigin
-    : targetWindow === Communication.childWindow
-    ? Communication.childOrigin
-    : null;
+  if (targetWindow === Communication.parentWindow) {
+    return Communication.parentOrigin;
+  } else if (targetWindow === Communication.childWindow) {
+    return Communication.childOrigin;
+  } else if (targetWindow === Communication.topWindow) {
+    return Communication.topOrigin;
+  } else {
+    return null;
+  }
+}
+
+function getTargetName(targetWindow: Window | null): string | null {
+  if (targetWindow === Communication.parentWindow) {
+    return 'parent';
+  } else if (targetWindow === Communication.childWindow) {
+    return 'child';
+  } else if (targetWindow === Communication.topWindow) {
+    return 'top';
+  } else {
+    return null;
+  }
 }
 
 const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
@@ -662,7 +816,8 @@ const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
 function flushMessageQueue(targetWindow: Window | any): void {
   const targetOrigin = getTargetOrigin(targetWindow);
   const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
+  const target = getTargetName(targetWindow);
+
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -738,6 +893,16 @@ function createMessageRequest(
     timestamp: Date.now(),
     args: args || [],
     apiversiontag: apiVersionTag,
+  };
+}
+
+function createNestedAppAuthRequest(message: string): NestedAuthRequest {
+  return {
+    id: CommunicationPrivate.nextMessageId++,
+    func: 'nestedAppAuthRequest',
+    timestamp: Date.now(),
+    args: [],
+    data: message,
   };
 }
 
