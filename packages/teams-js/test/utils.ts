@@ -130,23 +130,22 @@ export class Utils {
   };
 
   public findMessageByFunc = (func: string): MessageRequest | null => {
-    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].func === func) {
-        return this.messages[i];
+    for (const message of this.messages) {
+      if (message.func === func) {
+        return message;
       }
     }
     return null;
   };
 
-  public findKthMessagesByFunc = (func: string, _k: number): MessageRequest | null => {
-    let k = _k;
-    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].func === func) {
-        if (k === 0) {
-          return this.messages[i];
-        } else {
-          k--;
+  public findKthMessagesByFunc = (func: string, k: number): MessageRequest | null => {
+    let countOfMatchedMessages = 0;
+    for (const message of this.messages) {
+      if (message.func === func) {
+        if (countOfMatchedMessages === k) {
+          return message;
         }
+        countOfMatchedMessages++;
       }
     }
     return null;
