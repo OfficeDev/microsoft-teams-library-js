@@ -341,7 +341,7 @@ export namespace meeting {
   }
 
   /**
-   * Interface for AudioDeviceSelection from Teams selection
+   * Interface for AudioDeviceSelection from host selection
    *
    * @hidden
    * Hide from docs.
