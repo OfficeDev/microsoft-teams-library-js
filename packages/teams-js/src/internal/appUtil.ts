@@ -1,5 +1,7 @@
 import * as Handlers from '../internal/handlers'; // Conflict with some names
+import { app } from '../public/app';
 import { authentication } from '../public/authentication';
+import { FrameContexts } from '../public/constants';
 import { dialog } from '../public/dialog';
 import { menus } from '../public/menus';
 import { pages } from '../public/pages';
@@ -8,13 +10,15 @@ import {
   generateVersionBasedTeamsRuntimeConfig,
   IBaseRuntime,
   mapTeamsVersionToSupportedCapabilities,
+  runtime,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../public/runtime';
-import { initializeCommunication } from './communication';
+import { initializeCommunication, sendAndHandleStatusAndReasonWithVersion } from './communication';
 import { defaultSDKVersionForCompatCheck } from './constants';
 import { GlobalVars } from './globalVars';
-import { processAdditionalValidOrigins } from './internalAPIs';
+import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from './internalAPIs';
 import { getLogger } from './telemetry';
+import { isNullOrUndefined } from './typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from './utils';
 
 /**
@@ -133,5 +137,26 @@ function initializeHelper(apiVersion: string, validMessageOrigins?: string[]): P
     } else {
       initializeHelperLogger('GlobalVars.initializePromise is unexpectedly undefined');
     }
+  });
+}
+
+export function registerOnThemeChangeHandlerHelper(apiVersion: string, handler: app.themeHandler): void {
+  // allow for registration cleanup even when not called initialize
+  !isNullOrUndefined(handler) && ensureInitializeCalled();
+  Handlers.registerOnThemeChangeHandler(apiVersion, handler);
+}
+
+export function openLinkHelper(apiVersion: string, deepLink: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersion, 'executeDeepLink', deepLink));
   });
 }

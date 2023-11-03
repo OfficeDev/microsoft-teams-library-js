@@ -4,15 +4,18 @@ import {
   sendAndHandleStatusAndReasonWithVersion,
   sendAndUnwrapWithVersion,
   sendMessageEventToChild,
-  sendMessageToParent,
   sendMessageToParentWithVersion,
 } from '../internal/communication';
-import { registerHandler, registerHandlerHelper } from '../internal/handlers';
+import { registerHandler, registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   backStackNavigateBackHelper,
+  getMruTabInstancesHelper,
+  getTabInstancesHelper,
   navigateCrossDomainHelper,
   returnFocusHelper,
+  setCurrentFrameHelper,
+  shareDeepLinkHelper,
   tabsNavigateToTabHelper,
 } from '../internal/pagesUtil';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
@@ -61,7 +64,7 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    registerHandlerHelper('focusEnter', handler, [], () => {
+    registerHandlerHelperWithVersion('v2', 'focusEnter', handler, [], () => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -75,11 +78,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    ensureInitialized(runtime, FrameContexts.content);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParentWithVersion('v2', 'setFrameContext', [frameInfo]);
+    setCurrentFrameHelper('v2', frameInfo);
   }
 
   /**
@@ -198,15 +197,7 @@ export namespace pages {
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParent('shareDeepLink', [
-      deepLinkParameters.subPageId,
-      deepLinkParameters.subPageLabel,
-      deepLinkParameters.subPageWebUrl,
-    ]);
+    return shareDeepLinkHelper('v2', deepLinkParameters);
   }
 
   /**
@@ -217,7 +208,7 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
-    registerHandlerHelper('fullScreenChange', handler, [], () => {
+    registerHandlerHelperWithVersion('v2', 'fullScreenChange', handler, [], () => {
       if (!isNullOrUndefined(handler) && !isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
@@ -285,14 +276,7 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrapWithVersion('v2', 'getTabInstances', tabInstanceParameters));
-      });
+      return getTabInstancesHelper('v2', tabInstanceParameters);
     }
 
     /**
@@ -301,14 +285,7 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrapWithVersion('v2', 'getMruTabInstances', tabInstanceParameters));
-      });
+      return getMruTabInstancesHelper('v2', tabInstanceParameters);
     }
 
     /**
@@ -468,7 +445,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
-      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
+      registerHandlerHelperWithVersion('v2', 'changeSettings', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -748,7 +725,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
+      registerHandlerHelperWithVersion('v2', 'appButtonClick', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -761,7 +738,7 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
+      registerHandlerHelperWithVersion('v2', 'appButtonHoverEnter', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -774,7 +751,7 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
+      registerHandlerHelperWithVersion('v2', 'appButtonHoverLeave', handler, [FrameContexts.content], () => {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }

@@ -2,10 +2,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { appInitializeHelper } from '../internal/appUtil';
+import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appUtil';
 import {
   Communication,
-  sendAndHandleStatusAndReasonWithVersion,
   sendAndUnwrapWithVersion,
   sendMessageToParentWithVersion,
   uninitializeCommunication,
@@ -675,9 +674,7 @@ export namespace app {
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
-    // allow for registration cleanup even when not called initialize
-    !isNullOrUndefined(handler) && ensureInitializeCalled();
-    Handlers.registerOnThemeChangeHandler(handler);
+    registerOnThemeChangeHandlerHelper('v2', handler);
   }
 
   /**
@@ -687,18 +684,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.settings,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.meetingStage,
-      );
-      resolve(sendAndHandleStatusAndReasonWithVersion('v2', 'executeDeepLink', deepLink));
-    });
+    return openLinkHelper('v2', deepLink);
   }
 
   /**
