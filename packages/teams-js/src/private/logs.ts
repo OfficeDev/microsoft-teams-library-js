@@ -1,6 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -25,8 +26,8 @@ export namespace logs {
    */
   export function registerGetLogHandler(handler: () => string): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized(runtime);
-    if (handler && !isSupported()) {
+    !isNullOrUndefined(handler) && ensureInitialized(runtime);
+    if (!isNullOrUndefined(handler) && !isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 

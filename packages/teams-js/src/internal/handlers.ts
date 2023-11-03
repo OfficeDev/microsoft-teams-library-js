@@ -7,6 +7,7 @@ import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
+import { isNullOrUndefined } from './typeCheckUtilities';
 
 const handlersLogger = getLogger('handlers');
 
@@ -155,7 +156,7 @@ export function registerHandlerHelper(
  */
 export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['themeChange']);
 }
 
 /**
@@ -180,7 +181,7 @@ export function handleThemeChange(theme: string): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
 }
 
 /**
@@ -207,7 +208,7 @@ function handleLoad(context: LoadContext): void {
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -241,7 +242,7 @@ function handleBeforeUnload(): void {
  */
 export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -250,5 +251,5 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
  */
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
 }
