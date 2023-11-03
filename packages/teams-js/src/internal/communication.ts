@@ -19,10 +19,10 @@ const communicationLogger = getLogger('communication');
  */
 export class Communication {
   public static currentWindow: Window | any;
-  public static parentOrigin: string;
+  public static parentOrigin: string | null;
   public static parentWindow: Window | any;
-  public static childWindow: Window;
-  public static childOrigin: string;
+  public static childWindow: Window | null;
+  public static childOrigin: string | null;
 }
 
 /**
@@ -176,7 +176,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
+export function sendMessageToParentAsync<T>(actionName: string, args: any[] | undefined = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -234,7 +234,7 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
+function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequest {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
@@ -451,7 +451,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
+function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
   return targetWindow === Communication.parentWindow
     ? CommunicationPrivate.parentMessageQueue
     : targetWindow === Communication.childWindow
@@ -463,7 +463,7 @@ function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
  * @internal
  * Limited to Microsoft-internal use
  */
-function getTargetOrigin(targetWindow: Window): string {
+function getTargetOrigin(targetWindow: Window | null): string | null {
   return targetWindow === Communication.parentWindow
     ? Communication.parentOrigin
     : targetWindow === Communication.childWindow
@@ -483,7 +483,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
+    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
     targetWindow.postMessage(request, targetOrigin);
   }
 }
@@ -545,7 +545,7 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageRequest(func: string, args: any[]): MessageRequest {
+function createMessageRequest(func: string, args: any[] | undefined): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
@@ -558,7 +558,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
+function createMessageResponse(id: number, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],
@@ -573,7 +573,7 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageEvent(func: string, args: any[]): MessageRequest {
+function createMessageEvent(func: string, args?: any[]): MessageRequest {
   return {
     func: func,
     args: args || [],
