@@ -283,11 +283,11 @@ extends:
                 inputs:
                   repository: AppHostingSdk
                   persistCredentials: true
-              - task: CmdLine@2
-                displayName: 'Set Cypress Cache Location'
-                inputs:
-                  script: |
-                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
+              # - task: CmdLine@2
+              #   displayName: 'Set Cypress Cache Location'
+              #   inputs:
+              #     script: |
+              #       export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
               - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
