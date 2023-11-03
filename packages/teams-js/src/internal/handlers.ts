@@ -19,17 +19,17 @@ class HandlersPrivate {
   public static handlers: {
     [func: string]: Function;
   } = {};
-  public static themeChangeHandler: (theme: string) => void;
+  public static themeChangeHandler: null | ((theme: string) => void);
   /**
    * @deprecated
    */
-  public static loadHandler: (context: LoadContext) => void;
+  public static loadHandler: null | ((context: LoadContext) => void);
   /**
    * @deprecated
    */
-  public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
-  public static beforeSuspendOrTerminateHandler: () => void;
-  public static resumeHandler: (context: ResumeContext) => void;
+  public static beforeUnloadHandler: null | ((readyToUnload: () => void) => boolean);
+  public static beforeSuspendOrTerminateHandler: null | (() => void);
+  public static resumeHandler: null | ((context: ResumeContext) => void);
 
   /**
    * @internal

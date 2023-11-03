@@ -207,7 +207,7 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
+export function sendMessageToParent(actionName: string, args: any[] | undefined, callback?: Function): void;
 
 /**
  * @internal
