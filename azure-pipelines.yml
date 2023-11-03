@@ -339,7 +339,7 @@ extends:
                   workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
               - task: CmdLine@2
                 displayName: Install app hosting dependencies (skip Cypress install)
-                condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
+                condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
                 inputs:
                   script: |
                     CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
@@ -373,7 +373,9 @@ extends:
               - task: CmdLine@2
                 displayName: 'Configure host machine'
                 inputs:
-                  script: "sudo chmod -R 755 ./ \npnpm run setup\n"
+                  script: |
+                    sudo chmod -R 755 ./ 
+                    npnpm run setup
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: CmdLine@2
                 displayName: List npm packages
