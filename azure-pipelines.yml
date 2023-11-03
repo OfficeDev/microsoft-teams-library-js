@@ -311,16 +311,16 @@ extends:
                 inputs:
                   versionSpec: '14.x'
                 displayName: 'Install Node.js'
-              # - task: Cache@2
-              #   inputs:
-              #     key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-              #     path: $(Pipeline.Workspace)/.pnpm-store
-              #   displayName: Cache app host node_modules pnpm
-              # - task: Cache@2
-              #   inputs:
-              #     key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-              #     path: $(Pipeline.Workspace)/.pnpm-store
-              #   displayName: Cache client sdk node_modules pnpm
+              - task: Cache@2
+                inputs:
+                  key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
+                  path: $(Pipeline.Workspace)/.pnpm-store
+                displayName: Cache app host node_modules pnpm
+              - task: Cache@2
+                inputs:
+                  key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+                  path: $(Pipeline.Workspace)/.pnpm-store
+                displayName: Cache client sdk node_modules pnpm
               - task: CmdLine@2
                 displayName: 'Setup pnpm'
                 inputs:
