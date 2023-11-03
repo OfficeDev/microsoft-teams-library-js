@@ -4,6 +4,8 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
+const testApiVersion = 'v0';
+
 describe('Testing communication', () => {
   describe('initializeCommunication', () => {
     describe('frameless', () => {
@@ -25,12 +27,12 @@ describe('Testing communication', () => {
 
       it('should throw if there is no parent window and no native interface on the current window', async () => {
         app._initialize(undefined);
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
       });
 
       it('should receive valid initialize response from parent when there is no parent window but the window has a native interface', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -49,7 +51,7 @@ describe('Testing communication', () => {
       it('Communication.currentWindow should be unchanged by initializeCommunication', async () => {
         expect(communication.Communication.currentWindow).toStrictEqual(utils.mockWindow);
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -62,7 +64,7 @@ describe('Testing communication', () => {
       it('should set Communication.parentWindow to undefined when the current window has a parent that is undefined', async () => {
         expect(utils.mockWindow.parent).toBeUndefined();
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -75,7 +77,7 @@ describe('Testing communication', () => {
       it('should set window.onNativeMessage for handling responses when the current window has a parent that is undefined', async () => {
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -90,7 +92,7 @@ describe('Testing communication', () => {
         utils.mockWindow.parent = utils.parentWindow;
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         try {
           const initMessage = utils.findInitializeMessageOrThrow();
           utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -113,7 +115,7 @@ describe('Testing communication', () => {
         utils.mockWindow.parent = utils.mockWindow;
         utils.mockWindow.opener = utils.parentWindow;
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         try {
           const initMessage = utils.findInitializeMessageOrThrow();
           utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -132,7 +134,7 @@ describe('Testing communication', () => {
         expect(utils.mockWindow.onNativeMessage).toBeUndefined();
         utils.mockWindow.parent = utils.mockWindow;
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
 
@@ -144,7 +146,7 @@ describe('Testing communication', () => {
       });
 
       it('should put sdk in frameless window mode when the current window has a parent that is undefined', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToNativeMessage(initMessage, false, FrameContexts.content);
@@ -160,7 +162,7 @@ describe('Testing communication', () => {
          * For whatever reason, parentOrigin is not updated as part of handling the initialization response because
          * communication.processMessage is never called, which in turn never calls communication.updateRelationships
          */
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findMessageByFunc('initialize');
 
         if (!initMessage) {
@@ -200,12 +202,12 @@ describe('Testing communication', () => {
         // In this case, because Communication.currentWindow is being initialized to undefined we fall back to the actual
         // window object created by jest, which does not have nativeInterface defined on it
         app._initialize(undefined);
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
       });
 
       it('should receive valid initialize response from parent when currentWindow has a parent with postMessage defined', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToMessage(initMessage, FrameContexts.content);
@@ -221,7 +223,7 @@ describe('Testing communication', () => {
       });
 
       it('should set Communication.currentWindow to the value that was passed to app._initialize', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToMessage(initMessage, FrameContexts.content);
@@ -231,7 +233,7 @@ describe('Testing communication', () => {
       });
 
       it('should set Communication.parentOrigin to null and then update to the message origin once a response is received', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
         const initMessage = utils.findInitializeMessageOrThrow();
@@ -253,7 +255,7 @@ describe('Testing communication', () => {
           Communication.parentOrigin which prevents handleParentMessage from being called
           (which is the function that resolves the promise)
         */
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
 
         /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
@@ -270,7 +272,7 @@ describe('Testing communication', () => {
       });
 
       it('should be in framed mode when there is a parent window that is not self', async () => {
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
         utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
@@ -283,7 +285,7 @@ describe('Testing communication', () => {
         utils.mockWindow.opener = utils.mockWindow.parent;
         utils.mockWindow.parent = communication.Communication.currentWindow.self;
 
-        const initPromise = communication.initializeCommunication(undefined);
+        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
         const initMessage = utils.findInitializeMessageOrThrow();
         utils.respondToMessageAsOpener(initMessage, FrameContexts.content);
         await initPromise;
@@ -299,7 +301,7 @@ describe('Testing communication', () => {
         utils.mockWindow.opener = undefined;
         utils.mockWindow.parent = communication.Communication.currentWindow.self;
 
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
 
         expect(GlobalVars.isFramelessWindow).toBeTruthy();
         expect(utils.mockWindow.onNativeMessage).not.toBeUndefined();
@@ -424,7 +426,7 @@ describe('Testing communication', () => {
 
     it('unresolved message callbacks should not be triggered after communication has been uninitialized', () => {
       app._initialize(utils.mockWindow);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       let callbackWasCalled = false;
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
@@ -443,7 +445,7 @@ describe('Testing communication', () => {
 
     it('unresolved message promises should not be triggered after communication has been uninitialized', async () => {
       app._initialize(utils.mockWindow);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
 
       const messageParent = communication.sendMessageToParentAsync('testAction');
 
@@ -496,7 +498,7 @@ describe('Testing communication', () => {
     });
     it('should receive response to framelessPostMessage when running in a frameless window and Communication.currentWindow is set and has a nativeInterface', async () => {
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
 
       const messagePromise = communication.sendMessageToParentAsync(actionName);
 
@@ -520,7 +522,7 @@ describe('Testing communication', () => {
       // This should probably be fixed, but if the host passes back a response with the right message id we will still notify the caller
       // even if they never actually sent their message to the host
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow = undefined;
 
       const messagePromise = communication.sendMessageToParentAsync(actionName);
@@ -545,7 +547,7 @@ describe('Testing communication', () => {
       // even if they never actually sent their message to the host
       expect.assertions(1);
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow.nativeInterface = undefined;
 
       const messagePromise = communication.sendMessageToParentAsync(actionName);
@@ -581,7 +583,7 @@ describe('Testing communication', () => {
       expect(utils.messages[0].func).toBe(actionName);
     });
     it('should receive response to postMessage when running in a framed window and Communication.currentWindow has a parent with an origin', async () => {
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -596,7 +598,7 @@ describe('Testing communication', () => {
       return expect(messagePromise).resolves;
     });
     it('args passed in should be sent with the postMessage', () => {
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -615,7 +617,7 @@ describe('Testing communication', () => {
       expect(sentMessage.args[0]).toBe(arg1);
     });
     it('should not send postMessage until after initialization response received', () => {
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
 
       communication.sendMessageToParentAsync(actionName);
@@ -663,7 +665,7 @@ describe('Testing communication', () => {
       expect.assertions(1);
 
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
 
       communication.sendMessageToParent(actionName, () => {
         expect(true).toBeTruthy();
@@ -688,7 +690,7 @@ describe('Testing communication', () => {
       // even if they never actually sent their message to the host
       expect.assertions(2);
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow = undefined;
 
       communication.sendMessageToParent(actionName, () => {
@@ -714,7 +716,7 @@ describe('Testing communication', () => {
       // even if they never actually sent their message to the host
       expect.assertions(1);
       utils.mockWindow.parent = undefined;
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow.nativeInterface = undefined;
 
       communication.sendMessageToParent(actionName, () => expect(true).toBeTruthy());
@@ -734,7 +736,7 @@ describe('Testing communication', () => {
     });
     it('should receive response to postMessage when running in a framed window and Communication.currentWindow has a parent with an origin', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -747,7 +749,7 @@ describe('Testing communication', () => {
       utils.respondToMessage(sentMessage, false, []);
     });
     it('args passed in should be sent with the postMessage', () => {
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -766,7 +768,7 @@ describe('Testing communication', () => {
       expect(sentMessage.args[0]).toBe(arg1);
     });
     it('should not send postMessage until after initialization response received', () => {
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
 
       communication.sendMessageToParent(actionName);
@@ -799,7 +801,7 @@ describe('Testing communication', () => {
     });
     it('should unwrap response returned in an array and return it not in an array', async () => {
       expect.assertions(2);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -840,7 +842,7 @@ describe('Testing communication', () => {
     });
     it('should throw correct error if first returned value from host is false', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -858,7 +860,7 @@ describe('Testing communication', () => {
 
     it('should not throw an error if first returned value from host is true', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -876,7 +878,7 @@ describe('Testing communication', () => {
 
     it('should pass all args to host', async () => {
       expect.assertions(3);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -903,7 +905,7 @@ describe('Testing communication', () => {
     });
     it('should throw error from host if first returned value from host is false and host provides a custom error', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -925,7 +927,7 @@ describe('Testing communication', () => {
 
     it('should throw the default error passed in to the function if first returned value from host is false and host does not provide a custom error', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -945,7 +947,7 @@ describe('Testing communication', () => {
     });
     it('should not throw an error if first returned value from host is true', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -963,7 +965,7 @@ describe('Testing communication', () => {
 
     it('should pass all args to host', async () => {
       expect.assertions(3);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -991,7 +993,7 @@ describe('Testing communication', () => {
     });
     it('should throw SdkError if one is returned from host', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -1010,7 +1012,7 @@ describe('Testing communication', () => {
     it('should throw true if first value returned from host is true', async () => {
       // this is a bug that should be fixed
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -1028,7 +1030,7 @@ describe('Testing communication', () => {
 
     it('should return the second parameter returned from the host if undefined is returned from the host as the first parameter', async () => {
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -1048,7 +1050,7 @@ describe('Testing communication', () => {
     it('should return the second parameter returned from the host if false is returned from the host as the first parameter', async () => {
       // this is a bug that should be fixed
       expect.assertions(1);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 
@@ -1066,7 +1068,7 @@ describe('Testing communication', () => {
 
     it('should pass all args to host', async () => {
       expect.assertions(3);
-      communication.initializeCommunication(undefined);
+      communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
       utils.respondToMessage(initializeMessage);
 

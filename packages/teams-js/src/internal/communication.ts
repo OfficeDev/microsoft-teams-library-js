@@ -64,7 +64,10 @@ interface InitializeResponse {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function initializeCommunication(validMessageOrigins: string[] | undefined): Promise<InitializeResponse> {
+export function initializeCommunication(
+  validMessageOrigins: string[] | undefined,
+  apiVersion: string,
+): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
@@ -97,7 +100,7 @@ export function initializeCommunication(validMessageOrigins: string[] | undefine
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>('v2', 'initialize', [
+    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>(apiVersion, 'initialize', [
       version,
       latestRuntimeApiVersion,
     ]).then(
