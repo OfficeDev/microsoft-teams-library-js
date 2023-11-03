@@ -15,6 +15,7 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
 import {
@@ -556,7 +557,7 @@ export namespace app {
    * Gets the Frame Context that the App is running in. See {@link FrameContexts} for the list of possible values.
    * @returns the Frame Context.
    */
-  export function getFrameContext(): FrameContexts {
+  export function getFrameContext(): FrameContexts | undefined {
     return GlobalVars.frameContext;
   }
 
@@ -699,7 +700,11 @@ export namespace app {
         processAdditionalValidOrigins(validMessageOrigins);
       }
 
-      resolve(GlobalVars.initializePromise);
+      if (GlobalVars.initializePromise !== undefined) {
+        resolve(GlobalVars.initializePromise);
+      } else {
+        initializeHelperLogger('GlobalVars.initializePromise is unexpectedly undefined');
+      }
     });
   }
 
@@ -730,10 +735,10 @@ export namespace app {
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
-    GlobalVars.initializePromise = null;
+    GlobalVars.initializePromise = undefined;
     GlobalVars.additionalValidOrigins = [];
-    GlobalVars.frameContext = null;
-    GlobalVars.hostClientType = null;
+    GlobalVars.frameContext = undefined;
+    GlobalVars.hostClientType = undefined;
     GlobalVars.isFramelessWindow = false;
 
     uninitializeCommunication();
@@ -801,7 +806,7 @@ export namespace app {
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
     // allow for registration cleanup even when not called initialize
-    handler && ensureInitializeCalled();
+    !isNullOrUndefined(handler) && ensureInitializeCalled();
     Handlers.registerOnThemeChangeHandler(handler);
   }
 
@@ -937,7 +942,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       sourceOrigin: legacyContext.sourceOrigin,
     },
     user: {
-      id: legacyContext.userObjectId,
+      id: legacyContext.userObjectId ?? '',
       displayName: legacyContext.userDisplayName,
       isCallingAllowed: legacyContext.isCallingAllowed,
       isPSTNCallingAllowed: legacyContext.isPSTNCallingAllowed,

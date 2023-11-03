@@ -512,7 +512,10 @@ export function generateVersionBasedTeamsRuntimeConfig(
   Object.keys(mapVersionToSupportedCapabilities).forEach((versionNumber) => {
     if (compareSDKVersions(highestSupportedVersion, versionNumber) >= 0) {
       mapVersionToSupportedCapabilities[versionNumber].forEach((capabilityReqs) => {
-        if (capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)) {
+        if (
+          GlobalVars.hostClientType !== undefined &&
+          capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)
+        ) {
           newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
