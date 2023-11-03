@@ -80,7 +80,7 @@ const CheckVisualMediaImageCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkVisualMediaImageCapability',
     title: 'Check Visual Media Image Capability',
-    onClick: async () => `visual media image module ${visualMedia.image.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `VisualMedia.image module ${visualMedia.image.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const VisualMediaAPIs = (): ReactElement => (
