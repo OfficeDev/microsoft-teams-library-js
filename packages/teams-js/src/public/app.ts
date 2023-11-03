@@ -700,10 +700,10 @@ export namespace app {
         processAdditionalValidOrigins(validMessageOrigins);
       }
 
-      if (GlobalVars.initializePromise !== null) {
+      if (GlobalVars.initializePromise !== undefined) {
         resolve(GlobalVars.initializePromise);
       } else {
-        initializeHelperLogger('GlobalVars.initializePromise is unexpectedly null');
+        initializeHelperLogger('GlobalVars.initializePromise is unexpectedly undefined');
       }
     });
   }
@@ -735,7 +735,7 @@ export namespace app {
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
-    GlobalVars.initializePromise = null;
+    GlobalVars.initializePromise = undefined;
     GlobalVars.additionalValidOrigins = [];
     GlobalVars.frameContext = undefined;
     GlobalVars.hostClientType = undefined;
