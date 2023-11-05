@@ -53,9 +53,9 @@ export namespace tasks {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
       sendMessageToParentWithVersion('v1', 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      botUrlOpenHelper(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      botUrlOpenHelper('v1', getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      urlOpenHelper(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      urlOpenHelper('v1', getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -76,7 +76,7 @@ export namespace tasks {
     if (Object.keys(extra).length) {
       throw new Error('resize requires a TaskInfo argument containing only width and height');
     }
-    updateResizeHelper(taskInfo as DialogSize);
+    updateResizeHelper('v1', taskInfo as DialogSize);
   }
 
   /**
@@ -89,7 +89,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    urlSubmitHelper(result, appIds);
+    urlSubmitHelper('v1', result, appIds);
   }
 
   /**

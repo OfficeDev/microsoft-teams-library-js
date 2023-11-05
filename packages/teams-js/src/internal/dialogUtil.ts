@@ -7,7 +7,7 @@ import { runtime } from '../public/runtime';
 import { sendMessageToParentWithVersion } from './communication';
 import { registerHandler, removeHandler } from './handlers';
 
-export function updateResizeHelper(dimensions: DialogSize, apiVersion = 'v1'): void {
+export function updateResizeHelper(apiVersion: string, dimensions: DialogSize): void {
   ensureInitialized(
     runtime,
     FrameContexts.content,
@@ -22,10 +22,10 @@ export function updateResizeHelper(dimensions: DialogSize, apiVersion = 'v1'): v
 }
 
 export function urlOpenHelper(
+  apiVersion: string,
   urlDialogInfo: UrlDialogInfo,
   submitHandler?: dialog.DialogSubmitHandler,
   messageFromChildHandler?: dialog.PostMessageChannel,
-  apiVersion = 'v1',
 ): void {
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
   if (!dialog.url.isSupported()) {
@@ -48,10 +48,10 @@ export function urlOpenHelper(
 }
 
 export function botUrlOpenHelper(
+  apiVersion: string,
   urlDialogInfo: BotUrlDialogInfo,
   submitHandler?: dialog.DialogSubmitHandler,
   messageFromChildHandler?: dialog.PostMessageChannel,
-  apiVersion = 'v1',
 ): void {
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
   if (!dialog.url.bot.isSupported()) {
@@ -73,7 +73,7 @@ export function botUrlOpenHelper(
   );
 }
 
-export function urlSubmitHelper(result?: string | object, appIds?: string | string[], apiVersion = 'v1'): void {
+export function urlSubmitHelper(apiVersion: string, result?: string | object, appIds?: string | string[]): void {
   // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
   // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
   // FrameContexts.content will be removed once the bug is fixed.

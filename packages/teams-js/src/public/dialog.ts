@@ -120,7 +120,7 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      urlOpenHelper(urlDialogInfo, submitHandler, messageFromChildHandler, 'v2');
+      urlOpenHelper('v2', urlDialogInfo, submitHandler, messageFromChildHandler);
     }
 
     /**
@@ -137,7 +137,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper(result, appIds, 'v2');
+      urlSubmitHelper('v2', result, appIds);
     }
 
     /**
@@ -244,7 +244,7 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        botUrlOpenHelper(botUrlDialogInfo, submitHandler, messageFromChildHandler, 'v2');
+        botUrlOpenHelper('v2', botUrlDialogInfo, submitHandler, messageFromChildHandler);
       }
 
       /**
@@ -323,7 +323,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper(dimensions, 'v2');
+      updateResizeHelper('v2', dimensions);
     }
 
     /**
