@@ -183,7 +183,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReasonWithVersion('v2', 'executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReasonWithVersion('v1', 'executeDeepLink', createTeamsAppLink(params)));
       } else {
         resolve(sendAndHandleStatusAndReasonWithVersion('v1', 'pages.navigateToApp', params));
       }
@@ -611,7 +611,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
-      registerBackButtonHandlerHelper(handler, () => {
+      registerBackButtonHandlerHelper('v2', handler, () => {
         if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
@@ -624,18 +624,22 @@ export namespace pages {
      *
      * @internal
      * Limited to Microsoft-internal use
-     *
+     * @parameter apiVersion - The version number of API
      * @param handler - The handler to invoke when the user presses the host client's back button.
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
-    export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
+    export function registerBackButtonHandlerHelper(
+      apiVersion: string,
+      handler: () => boolean,
+      versionSpecificHelper?: () => void,
+    ): void {
       // allow for registration cleanup even when not finished initializing
       !isNullOrUndefined(handler) && ensureInitialized(runtime);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['backButton']);
+      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersion, 'registerHandler', ['backButton']);
     }
 
     function handleBackButtonPress(): void {

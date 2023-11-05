@@ -13,7 +13,6 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
-import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { inServerSideRenderingEnvironment } from '../internal/utils';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
