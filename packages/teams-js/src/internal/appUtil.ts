@@ -28,7 +28,7 @@ const initializationTimeoutInMs = 5000;
 
 const appLogger = getLogger('app');
 
-export function appInitializeHelper(validMessageOrigins?: string[], apiVersion = 'v1'): Promise<void> {
+export function appInitializeHelper(apiVersion: string, validMessageOrigins?: string[]): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
       () => initializeHelper(apiVersion, validMessageOrigins),

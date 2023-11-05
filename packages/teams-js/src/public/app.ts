@@ -570,7 +570,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return appInitializeHelper(validMessageOrigins, 'v2');
+    return appInitializeHelper('v2', validMessageOrigins);
   }
 
   /**

@@ -48,7 +48,7 @@ export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
  * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
 export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
-  appInitializeHelper(validMessageOrigins).then(() => {
+  appInitializeHelper('v1', validMessageOrigins).then(() => {
     if (callback) {
       callback();
     }
@@ -337,6 +337,6 @@ export function initializeWithFrameContext(
   callback?: callbackFunctionType,
   validMessageOrigins?: string[],
 ): void {
-  appInitializeHelper(validMessageOrigins).then(() => callback && callback());
+  appInitializeHelper('v1', validMessageOrigins).then(() => callback && callback());
   setCurrentFrameHelper('v1', frameContext);
 }
