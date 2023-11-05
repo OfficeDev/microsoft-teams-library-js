@@ -1,3 +1,4 @@
+import { ApiVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   backStackNavigateBackHelper,
@@ -24,7 +25,7 @@ export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) =
  * @param navigateForward - Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  returnFocusHelper('v1', navigateForward);
+  returnFocusHelper(ApiVersion.V_1, navigateForward);
 }
 
 /**
@@ -39,7 +40,7 @@ export function returnFocus(navigateForward?: boolean): void {
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  tabsNavigateToTabHelper('v1', tabInstance)
+  tabsNavigateToTabHelper(ApiVersion.V_1, tabInstance)
     .then(() => {
       completionHandler(true);
     })
@@ -73,7 +74,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
     FrameContexts.meetingStage,
   );
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  navigateCrossDomainHelper('v1', url)
+  navigateCrossDomainHelper(ApiVersion.V_1, url)
     .then(() => {
       completionHandler(true);
     })
@@ -94,7 +95,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
 export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  backStackNavigateBackHelper('v1')
+  backStackNavigateBackHelper(ApiVersion.V_1)
     .then(() => {
       completionHandler(true);
     })

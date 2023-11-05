@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
 import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -120,7 +120,7 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      urlOpenHelper('v2', urlDialogInfo, submitHandler, messageFromChildHandler);
+      urlOpenHelper(ApiVersion.V_2, urlDialogInfo, submitHandler, messageFromChildHandler);
     }
 
     /**
@@ -137,7 +137,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper('v2', result, appIds);
+      urlSubmitHelper(ApiVersion.V_2, result, appIds);
     }
 
     /**
@@ -159,7 +159,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParentWithVersion('v1', 'messageForParent', [message]);
+      sendMessageToParentWithVersion(ApiVersion.V_1, 'messageForParent', [message]);
     }
 
     /**
@@ -178,7 +178,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParentWithVersion('v1', 'messageForChild', [message]);
+      sendMessageToParentWithVersion(ApiVersion.V_1, 'messageForChild', [message]);
     }
 
     /**
@@ -244,7 +244,7 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        botUrlOpenHelper('v2', botUrlDialogInfo, submitHandler, messageFromChildHandler);
+        botUrlOpenHelper(ApiVersion.V_2, botUrlDialogInfo, submitHandler, messageFromChildHandler);
       }
 
       /**
@@ -323,7 +323,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper('v2', dimensions);
+      updateResizeHelper(ApiVersion.V_2, dimensions);
     }
 
     /**
@@ -365,9 +365,14 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParentWithVersion('v2', 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-      });
+      sendMessageToParentWithVersion(
+        ApiVersion.V_2,
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+        },
+      );
     }
 
     /**
@@ -416,7 +421,7 @@ export namespace dialog {
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
         sendMessageToParentWithVersion(
-          'v2',
+          ApiVersion.V_2,
           'tasks.startTask',
           [dialogInfo],
           (err: string, result: string | object) => {

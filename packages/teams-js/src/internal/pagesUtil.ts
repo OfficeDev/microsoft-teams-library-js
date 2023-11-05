@@ -71,20 +71,6 @@ export function returnFocusHelper(apiVersion: string, navigateForward?: boolean)
   sendMessageToParentWithVersion(apiVersion, 'returnFocus', [navigateForward]);
 }
 
-// export function registerBackButtonHandlerHelperWithVersion(
-//   apiVersion: string,
-//   handler: () => boolean,
-//   versionSpecificHelper?: () => void,
-// ): void {
-//   // allow for registration cleanup even when not finished initializing
-//   !isNullOrUndefined(handler) && ensureInitialized(runtime);
-//   if (versionSpecificHelper) {
-//     versionSpecificHelper();
-//   }
-//   pages.backStack.backButtonPressHandler = handler;
-//   !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersion, 'registerHandler', ['backButton']);
-// }
-
 export function getTabInstancesHelper(
   apiVersion: string,
   tabInstanceParameters?: TabInstanceParameters,

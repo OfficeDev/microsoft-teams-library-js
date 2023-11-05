@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -86,7 +86,7 @@ export namespace location {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion('v1', 'location.getLocation', [props], callback);
+    sendMessageToParentWithVersion(ApiVersion.V_1, 'location.getLocation', [props], callback);
   }
 
   /**
@@ -113,7 +113,7 @@ export namespace location {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParentWithVersion('v1', 'location.showLocation', [location], callback);
+    sendMessageToParentWithVersion(ApiVersion.V_1, 'location.showLocation', [location], callback);
   }
 
   /**

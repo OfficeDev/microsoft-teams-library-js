@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { ApiVersion, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
@@ -46,7 +46,7 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkErrorWithVersion('v2', 'location.getLocation', {
+    return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.getLocation', {
       allowChooseLocation: false,
       showMap: false,
     });
@@ -68,7 +68,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.has', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion(ApiVersion.V_1, 'permissions.has', permissions));
     });
   }
 
@@ -89,7 +89,7 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkErrorWithVersion('v1', 'permissions.request', permissions));
+      resolve(sendAndHandleSdkErrorWithVersion(ApiVersion.V_1, 'permissions.request', permissions));
     });
   }
 
@@ -123,7 +123,7 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkErrorWithVersion('v2', 'location.getLocation', {
+      return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.getLocation', {
         allowChooseLocation: true,
         showMap: true,
       });
@@ -145,7 +145,7 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkErrorWithVersion('v2', 'location.showLocation', location);
+      return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.showLocation', location);
     }
 
     /**

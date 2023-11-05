@@ -1,5 +1,5 @@
 import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appUtil';
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
@@ -48,7 +48,7 @@ export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
  * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
 export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
-  appInitializeHelper('v1', validMessageOrigins).then(() => {
+  appInitializeHelper(ApiVersion.V_1, validMessageOrigins).then(() => {
     if (callback) {
       callback();
     }
@@ -85,7 +85,7 @@ export function print(): void {
  */
 export function getContext(callback: getContextCallbackFunctionType): void {
   ensureInitializeCalled();
-  sendMessageToParentWithVersion('v1', 'getContext', (context: Context) => {
+  sendMessageToParentWithVersion(ApiVersion.V_1, 'getContext', (context: Context) => {
     if (!context.frameContext) {
       // Fallback logic for frameContext properties
       context.frameContext = GlobalVars.frameContext;
@@ -104,7 +104,7 @@ export function getContext(callback: getContextCallbackFunctionType): void {
  * @param handler - The handler to invoke when the user changes their theme.
  */
 export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void {
-  registerOnThemeChangeHandlerHelper('v1', handler);
+  registerOnThemeChangeHandlerHelper(ApiVersion.V_1, handler);
 }
 
 /**
@@ -117,7 +117,7 @@ export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandl
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void {
-  registerHandlerHelperWithVersion('v1', 'fullScreenChange', handler, []);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'fullScreenChange', handler, []);
 }
 
 /**
@@ -130,7 +130,7 @@ export function registerFullScreenHandler(handler: registerFullScreenHandlerFunc
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion('v1', 'appButtonClick', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'appButtonClick', handler, [FrameContexts.content]);
 }
 
 /**
@@ -143,7 +143,7 @@ export function registerAppButtonClickHandler(handler: callbackFunctionType): vo
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion('v1', 'appButtonHoverEnter', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'appButtonHoverEnter', handler, [FrameContexts.content]);
 }
 
 /**
@@ -156,7 +156,7 @@ export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion('v1', 'appButtonHoverLeave', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'appButtonHoverLeave', handler, [FrameContexts.content]);
 }
 
 /**
@@ -171,7 +171,7 @@ export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType
  * @param handler - The handler to invoke when the user presses their Team client's back button.
  */
 export function registerBackButtonHandler(handler: registerBackButtonHandlerFunctionType): void {
-  pages.backStack.registerBackButtonHandlerHelper('v1', handler);
+  pages.backStack.registerBackButtonHandlerHelper(ApiVersion.V_1, handler);
 }
 
 /**
@@ -211,7 +211,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  registerHandlerHelperWithVersion('v1', 'focusEnter', handler, []);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'focusEnter', handler, []);
 }
 
 /**
@@ -223,7 +223,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion('v1', 'changeSettings', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(ApiVersion.V_1, 'changeSettings', handler, [FrameContexts.content]);
 }
 
 /**
@@ -241,7 +241,7 @@ export function getTabInstances(
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
   ensureInitialized(runtime);
-  getTabInstancesHelper('v1', tabInstanceParameters).then((tabInfo: TabInformation) => {
+  getTabInstancesHelper(ApiVersion.V_1, tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
 }
@@ -260,7 +260,7 @@ export function getMruTabInstances(
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
   ensureInitialized(runtime);
-  getMruTabInstancesHelper('v1', tabInstanceParameters).then((tabInfo: TabInformation) => {
+  getMruTabInstancesHelper(ApiVersion.V_1, tabInstanceParameters).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
 }
@@ -274,7 +274,7 @@ export function getMruTabInstances(
  * @param deepLinkParameters - ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  shareDeepLinkHelper('v1', {
+  shareDeepLinkHelper(ApiVersion.V_1, {
     subPageId: deepLinkParameters.subEntityId,
     subPageLabel: deepLinkParameters.subEntityLabel,
     subPageWebUrl: deepLinkParameters.subEntityWebUrl,
@@ -300,7 +300,7 @@ export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOn
     FrameContexts.meetingStage,
   );
   const completionHandler: executeDeepLinkOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  openLinkHelper('v1', deepLink)
+  openLinkHelper(ApiVersion.V_1, deepLink)
     .then(() => {
       completionHandler(true);
     })
@@ -318,7 +318,7 @@ export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOn
  * @param frameContext - FrameContext information to be set
  */
 export function setFrameContext(frameContext: FrameContext): void {
-  setCurrentFrameHelper('v1', frameContext);
+  setCurrentFrameHelper(ApiVersion.V_1, frameContext);
 }
 
 /**
@@ -337,6 +337,6 @@ export function initializeWithFrameContext(
   callback?: callbackFunctionType,
   validMessageOrigins?: string[],
 ): void {
-  appInitializeHelper('v1', validMessageOrigins).then(() => callback && callback());
-  setCurrentFrameHelper('v1', frameContext);
+  appInitializeHelper(ApiVersion.V_1, validMessageOrigins).then(() => callback && callback());
+  setCurrentFrameHelper(ApiVersion.V_1, frameContext);
 }

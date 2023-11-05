@@ -5,6 +5,7 @@ import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import {
+  ApiVersion,
   Communication,
   sendMessageEventToChild,
   sendMessageToParent,
@@ -125,7 +126,7 @@ export function registerHandlerWithVersion(
 export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParentWithVersion('v0', 'registerHandler', [name, ...args]);
+    sendMessage && sendMessageToParentWithVersion(ApiVersion.V_0, 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -233,7 +234,7 @@ export function handleThemeChange(theme: string): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion(ApiVersion.V_2, 'registerHandler', ['load']);
 }
 
 /**
@@ -260,7 +261,7 @@ function handleLoad(context: LoadContext): void {
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParentWithVersion('v2', 'registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion(ApiVersion.V_2, 'registerHandler', ['beforeUnload']);
 }
 
 /**

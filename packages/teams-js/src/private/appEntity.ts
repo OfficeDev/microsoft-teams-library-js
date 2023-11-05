@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
@@ -102,7 +102,12 @@ export namespace appEntity {
       throw new Error('[appEntity.selectAppEntity] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion('v1', 'appEntity.selectAppEntity', [threadId, categories, subEntityId], callback);
+    sendMessageToParentWithVersion(
+      ApiVersion.V_1,
+      'appEntity.selectAppEntity',
+      [threadId, categories, subEntityId],
+      callback,
+    );
   }
 
   /**

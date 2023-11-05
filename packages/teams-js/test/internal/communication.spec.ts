@@ -4,7 +4,7 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
-const testApiVersion = 'v0';
+const testApiVersion = communication.apiVersion.V_0;
 
 describe('Testing communication', () => {
   describe('initializeCommunication', () => {

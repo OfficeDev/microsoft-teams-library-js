@@ -4,6 +4,7 @@
 
 import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appUtil';
 import {
+  ApiVersion,
   Communication,
   sendAndUnwrapWithVersion,
   sendMessageToParentWithVersion,
@@ -570,7 +571,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return appInitializeHelper('v2', validMessageOrigins);
+    return appInitializeHelper(ApiVersion.V_2, validMessageOrigins);
   }
 
   /**
@@ -617,7 +618,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(sendAndUnwrapWithVersion('v2', 'getContext'));
+      resolve(sendAndUnwrapWithVersion(ApiVersion.V_2, 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -626,7 +627,7 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion('v2', Messages.AppLoaded, [version]);
+    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.AppLoaded, [version]);
   }
 
   /**
@@ -634,7 +635,7 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion('v2', Messages.Success, [version]);
+    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.Success, [version]);
   }
 
   /**
@@ -645,7 +646,7 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion('v2', Messages.Failure, [
+    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.Failure, [
       appInitializationFailedRequest.reason,
       appInitializationFailedRequest.message,
     ]);
@@ -658,7 +659,7 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion('v2', Messages.ExpectedFailure, [
+    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.ExpectedFailure, [
       expectedFailureRequest.reason,
       expectedFailureRequest.message,
     ]);
@@ -673,7 +674,7 @@ export namespace app {
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
-    registerOnThemeChangeHandlerHelper('v2', handler);
+    registerOnThemeChangeHandlerHelper(ApiVersion.V_2, handler);
   }
 
   /**
@@ -683,7 +684,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return openLinkHelper('v2', deepLink);
+    return openLinkHelper(ApiVersion.V_2, deepLink);
   }
 
   /**

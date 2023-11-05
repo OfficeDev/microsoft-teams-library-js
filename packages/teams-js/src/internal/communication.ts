@@ -8,17 +8,25 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-<<<<<<< HEAD
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
-=======
-import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
-import { isFollowApiVersionLabelFormat } from './internalAPIs';
->>>>>>> aa8ac908 (add version check to throw error)
 import { getLogger } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
+
+/**
+ * Use enum to set or update API version number
+ * Note: V_0 = 'v0' is used for APIs who needs to be passed with correct version number
+ * but haven't been implemented yet.
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum ApiVersion {
+  V_0 = 'v0',
+  V_1 = 'v1',
+  V_2 = 'v2',
+}
 
 /**
  * @internal
@@ -397,18 +405,11 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
-<<<<<<< HEAD
   const request = sendMessageToParentHelper(
     getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),
     actionName,
     args,
   );
-=======
-  // APIs with v0 represents beta changes haven't been implemented on them
-  // Otherwise, minimum version number will be v1
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const request = sendMessageToParentHelper('v0', actionName, args);
->>>>>>> 22fbc886 (update)
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
