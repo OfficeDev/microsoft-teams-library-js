@@ -337,7 +337,7 @@ export namespace meeting {
     /**
      * Callback for the host to tell the app to change its speaker selection
      */
-    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection) => Promise<void>;
+    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection) => void;
   }
 
   /**
