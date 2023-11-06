@@ -382,6 +382,11 @@ extends:
                 inputs:
                   script: 'cat /etc/hosts'
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
+              - task: CmdLine@2
+                displayName: 'Set Cypress Timeout'
+                inputs:
+                  script: |
+                    export CYPRESS_VERIFY_TIMEOUT=60000
               - task: Bash@3
                 displayName: 'Run E2E Perf tests'
                 condition: succeeded()
