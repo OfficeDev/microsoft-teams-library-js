@@ -555,8 +555,8 @@ extends:
                 condition: succeededOrFailed()
                 inputs:
                   targetType: inline
-                  script: 'xchtmlreport -r TestResults -j > /dev/null
-                    if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;'
+                  script: |
+                    xchtmlreport -r TestResults -j > /dev/null if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
                   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
               - task: PublishTestResults@2
                 displayName: 'Publish Test Results'
