@@ -204,6 +204,17 @@
       "expectedTestAppValue": "requestAppAudioHandling() succeeded: isHostAudioless=true"
     },
     {
+      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
+      "eventName": "audioDeviceSelectionChanged",
+      "eventData": {
+        "speaker": { "deviceLabel": "speaker_0" },
+        "microphone": { "deviceLabel": "microphone_0" }
+      },
+      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: {\"speaker\":{\"deviceLabel\":\"speaker_0\"},\"microphone\":{\"deviceLabel\":\"microphone_0\"}}"
+    },
+    {
       "title": "updateMicState API Call - Success",
       "type": "callResponse",
       "version": ">2.7.1",

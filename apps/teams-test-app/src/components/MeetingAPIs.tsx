@@ -343,6 +343,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         };
         const micMuteStateChangedCallback = (micState: meeting.MicState): Promise<meeting.MicState> =>
           new Promise((resolve, reject) => {
+            console.log('micState: ' + JSON.stringify(micState));
             if (!micState) {
               reject('micStatus should not be null');
               throw new Error();
@@ -358,6 +359,30 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         meeting.requestAppAudioHandling(requestAppAudioHandlingParams, callback);
         return '';
       },
+    },
+  });
+
+const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerAudioDeviceSelectionChangedHandler',
+    title: 'Register AudioDeviceSelectionChanged Handler',
+    onClick: async (setResult) => {
+      const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: meeting.AudioDeviceSelection): void => {
+        console.log('blahblah' + 'audioDeviceSelectionChangedCallback: ' + JSON.stringify(selectedDevicesInHost));
+        setResult('Received audioDeviceSelectionChanged event: ' + JSON.stringify(selectedDevicesInHost));
+      };
+      meeting.requestAppAudioHandling(
+        {
+          isAppHandlingAudio: true,
+          micMuteStateChangedCallback: (micState) => Promise.resolve(micState),
+          audioDeviceSelectionChangedCallback: audioDeviceSelectionChangedCallback,
+        },
+        () => {
+          return;
+        },
+      );
+      console.log('blahblah', 'requestAppAudioHandling');
+      return generateRegistrationMsg('audioDeviceSelectionChaged event is received');
     },
   });
 
@@ -398,6 +423,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingState />
     <SetOptions />
     <RequestAppAudioHandling />
+    <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
   </ModuleWrapper>
 );
