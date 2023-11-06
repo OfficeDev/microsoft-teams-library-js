@@ -378,10 +378,10 @@ extends:
                     pnpm run setup
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: CmdLine@2
-                displayName: List npm packages
+                displayName: show hosts file contents
                 inputs:
-                  script: 'ls'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)/node_modules'
+                  script: 'cat /etc/hosts'
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: Bash@3
                 displayName: 'Run E2E Perf tests'
                 condition: succeeded()
