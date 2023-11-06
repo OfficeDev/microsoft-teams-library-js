@@ -26,6 +26,7 @@ export enum ApiVersion {
   V_0 = 'v0',
   V_1 = 'v1',
   V_2 = 'v2',
+  V_3 = 'v3',
 }
 
 /**

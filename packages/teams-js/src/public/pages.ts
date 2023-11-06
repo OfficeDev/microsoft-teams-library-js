@@ -184,7 +184,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_1, 'executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_3, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
         resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_1, 'pages.navigateToApp', params));
       }
