@@ -284,11 +284,6 @@ extends:
                   repository: AppHostingSdk
                   persistCredentials: true
               - task: CmdLine@2
-                displayName: 'Set Cypress Cache Location'
-                inputs:
-                  script: |
-                    export CYPRESS_CACHE_FOLDER=$(Pipeline.Workspace)/.cache/Cypress
-              - task: CmdLine@2
                 displayName: 'Fix Chrome browser on V116'
                 inputs:
                   script: |
@@ -376,22 +371,6 @@ extends:
                   script: |
                     sudo chmod -R 755 ./ 
                     pnpm run setup
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: show hosts file contents
-                inputs:
-                  script: 'cat /etc/hosts'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - task: CmdLine@2
-                displayName: 'Set Cypress Timeout'
-                inputs:
-                  script: |
-                    export CYPRESS_VERIFY_TIMEOUT=60000
-              - task: CmdLine@2
-                displayName: Run Cypress Verify
-                inputs:
-                  script: |
-                    pnpm ./node_modules/cypress/bin/cypress verify
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: Bash@3
                 displayName: 'Run E2E Perf tests'
