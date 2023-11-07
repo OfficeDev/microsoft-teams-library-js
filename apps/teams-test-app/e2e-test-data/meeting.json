@@ -204,7 +204,7 @@
       "expectedTestAppValue": "requestAppAudioHandling() succeeded: isHostAudioless=true"
     },
     {
-      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler",
+      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Success",
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
       "eventName": "audioDeviceSelectionChanged",
