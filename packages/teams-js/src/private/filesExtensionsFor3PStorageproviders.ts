@@ -143,7 +143,7 @@ export namespace filesExtensionsFor3PStorageproviders {
               if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
                 const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
 
-                if (fileResult.isLastFile) {
+                if (fileResult.isLastFile && fileBlob) {
                   // Convert blob to File
                   const receivedFile = new File([fileBlob], fileResult.fileName, {
                     type: fileBlob.type,
