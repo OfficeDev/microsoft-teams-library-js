@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
-/* eslint-disable strict-null-checks/all */
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
