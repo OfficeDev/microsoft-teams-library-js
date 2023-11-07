@@ -122,7 +122,7 @@ export namespace filesExtensionsFor3PStorageproviders {
         if (fileResult && fileResult.error) {
           callback([], fileResult.error);
         } else {
-          if (fileResult && fileResult.fileChunk) {
+          if (fileResult && fileResult.fileChunk && media) {
             try {
               const assemble: media.AssembleAttachment = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
               helper.assembleAttachment.push(assemble);
@@ -156,6 +156,10 @@ export namespace filesExtensionsFor3PStorageproviders {
         }
       }
     }
-    sendMessageToParent('getDragAndDropFiles', [dragAndDropInput], handleGetDragAndDropFilesCallbackRequest);
+    sendMessageToParent(
+      'filesExtensionsFor3PStorageproviders.getDragAndDropFiles',
+      [dragAndDropInput],
+      handleGetDragAndDropFilesCallbackRequest,
+    );
   }
 }
