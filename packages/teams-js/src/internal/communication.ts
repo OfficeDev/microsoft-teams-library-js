@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable strict-null-checks/all */
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
@@ -179,7 +180,8 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] | undefined = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -224,6 +226,8 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(actionName, args);
   if (callback) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     CommunicationPrivate.callbacks[request.id] = callback;
   }
 }
@@ -388,6 +392,8 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     logger('Received a response from parent for message %i', message.id);
     if (callback) {
       logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
@@ -432,14 +438,16 @@ function handleChildMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageRequest;
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
-          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       });
