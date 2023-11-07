@@ -1,10 +1,13 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createFile, decodeAttachment } from '../internal/mediaUtil';
+import { getLogger } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
 import { FrameContexts } from '../public/constants';
 import { media } from '../public/media';
 import { runtime } from '../public/runtime';
+
+const Files3PLogger = getLogger('filesExtensionsFor3PStorageproviders');
 
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
@@ -122,10 +125,19 @@ export namespace filesExtensionsFor3PStorageproviders {
         if (fileResult && fileResult.error) {
           callback([], fileResult.error);
         } else {
-          if (fileResult && fileResult.fileChunk && media) {
+          if (fileResult && fileResult.fileChunk) {
             try {
-              const assemble: media.AssembleAttachment = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
-              helper.assembleAttachment.push(assemble);
+              const assemble: media.AssembleAttachment | null = decodeAttachment(
+                fileResult.fileChunk,
+                fileResult.fileType,
+              );
+              if (assemble) {
+                helper.assembleAttachment.push(assemble);
+              } else {
+                Files3PLogger(
+                  `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
+                );
+              }
 
               // we will send the maximum integer as chunkSequence to identify the last chunk
               if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
