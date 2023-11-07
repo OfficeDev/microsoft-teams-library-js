@@ -368,7 +368,6 @@ const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
     title: 'Register AudioDeviceSelectionChanged Handler',
     onClick: async (setResult) => {
       const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: meeting.AudioDeviceSelection): void => {
-        console.log('blahblah' + 'audioDeviceSelectionChangedCallback: ' + JSON.stringify(selectedDevicesInHost));
         setResult('Received audioDeviceSelectionChanged event: ' + JSON.stringify(selectedDevicesInHost));
       };
       meeting.requestAppAudioHandling(
@@ -381,7 +380,6 @@ const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
           return;
         },
       );
-      console.log('blahblah', 'requestAppAudioHandling');
       return generateRegistrationMsg('audioDeviceSelectionChaged event is received');
     },
   });
