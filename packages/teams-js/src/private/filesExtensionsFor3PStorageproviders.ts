@@ -6,9 +6,6 @@ import { FrameContexts } from '../public/constants';
 import { media } from '../public/media';
 import { runtime } from '../public/runtime';
 
-// D:\Repo\TeamsLib\microsoft-teams-library-js\packages\teams-js\src\internal\mediaUtil.ts
-// D:\Repo\TeamsLib\microsoft-teams-library-js\packages\teams-js\src\public\media.ts
-
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
@@ -74,16 +71,16 @@ export namespace filesExtensionsFor3PStorageproviders {
      */
     fileName: string;
   }
+
+  /**
+   * Helper class for assembling files
+   */
   export interface AttachmentListHelper {
+    /** A string representing the MIME type of the file */
     fileType: string;
+    /** An array of {@link media.AssembleAttachment | AssembleAttachment} objects representing the media files to be sent as attachment */
     assembleAttachment: media.AssembleAttachment[];
   }
-  // export interface AssembleAttachment {
-  //   /** A number representing the sequence of the attachment in the file chunks. */
-  //   sequence: number;
-  //   /** A Blob object representing the data of the file chunks. */
-  //   file: Blob;
-  // }
 
   /**
    * Get drag-and-drop files using a callback.
