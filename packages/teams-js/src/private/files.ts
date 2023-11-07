@@ -799,7 +799,10 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function openDownloadFolder(fileObjectId: string = undefined, callback: (error?: SdkError) => void): void {
+  export function openDownloadFolder(
+    fileObjectId: string | undefined = undefined,
+    callback: (error?: SdkError) => void,
+  ): void {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!callback) {

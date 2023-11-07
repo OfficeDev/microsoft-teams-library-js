@@ -15,6 +15,7 @@ import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
 import { getLogger } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
 import {
@@ -556,7 +557,7 @@ export namespace app {
    * Gets the Frame Context that the App is running in. See {@link FrameContexts} for the list of possible values.
    * @returns the Frame Context.
    */
-  export function getFrameContext(): FrameContexts {
+  export function getFrameContext(): FrameContexts | undefined {
     return GlobalVars.frameContext;
   }
 
@@ -564,6 +565,26 @@ export namespace app {
    * Number of milliseconds we'll give the initialization call to return before timing it out
    */
   const initializationTimeoutInMs = 5000;
+
+  function logWhereTeamsJsIsBeingUsed(): void {
+    if (inServerSideRenderingEnvironment()) {
+      return;
+    }
+    const scripts = document.getElementsByTagName('script');
+    // This will always be the current script because browsers load and execute scripts in order.
+    // Whenever a script is executing for the first time it will be the last script in this array.
+    const currentScriptSrc = scripts && scripts[scripts.length - 1] && scripts[scripts.length - 1].src;
+    const scriptUsageWarning =
+      'Today, teamsjs can only be used from a single script or you may see undefined behavior. This log line is used to help detect cases where teamsjs is loaded multiple times -- it is always written. The presence of the log itself does not indicate a multi-load situation, but multiples of these log lines will. If you would like to use teamjs from more than one script at the same time, please open an issue at https://github.com/OfficeDev/microsoft-teams-library-js/issues';
+    if (!currentScriptSrc || currentScriptSrc.length === 0) {
+      appLogger('teamsjs is being used from a script tag embedded directly in your html. %s', scriptUsageWarning);
+    } else {
+      appLogger('teamsjs is being used from %s. %s', currentScriptSrc, scriptUsageWarning);
+    }
+  }
+
+  // This is called right away to make sure that we capture which script is being executed correctly
+  logWhereTeamsJsIsBeingUsed();
 
   /**
    * Initializes the library.
@@ -679,7 +700,11 @@ export namespace app {
         processAdditionalValidOrigins(validMessageOrigins);
       }
 
-      resolve(GlobalVars.initializePromise);
+      if (GlobalVars.initializePromise !== undefined) {
+        resolve(GlobalVars.initializePromise);
+      } else {
+        initializeHelperLogger('GlobalVars.initializePromise is unexpectedly undefined');
+      }
     });
   }
 
@@ -710,10 +735,10 @@ export namespace app {
 
     GlobalVars.initializeCalled = false;
     GlobalVars.initializeCompleted = false;
-    GlobalVars.initializePromise = null;
+    GlobalVars.initializePromise = undefined;
     GlobalVars.additionalValidOrigins = [];
-    GlobalVars.frameContext = null;
-    GlobalVars.hostClientType = null;
+    GlobalVars.frameContext = undefined;
+    GlobalVars.hostClientType = undefined;
     GlobalVars.isFramelessWindow = false;
 
     uninitializeCommunication();
@@ -781,7 +806,7 @@ export namespace app {
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
     // allow for registration cleanup even when not called initialize
-    handler && ensureInitializeCalled();
+    !isNullOrUndefined(handler) && ensureInitializeCalled();
     Handlers.registerOnThemeChangeHandler(handler);
   }
 
@@ -917,7 +942,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       sourceOrigin: legacyContext.sourceOrigin,
     },
     user: {
-      id: legacyContext.userObjectId,
+      id: legacyContext.userObjectId ?? '',
       displayName: legacyContext.userDisplayName,
       isCallingAllowed: legacyContext.isCallingAllowed,
       isPSTNCallingAllowed: legacyContext.isPSTNCallingAllowed,

@@ -171,6 +171,7 @@ describe('Testing communication', () => {
 
         await initPromise;
 
+        /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
       });
     });
@@ -231,11 +232,13 @@ describe('Testing communication', () => {
 
       it('should set Communication.parentOrigin to null and then update to the message origin once a response is received', async () => {
         const initPromise = communication.initializeCommunication(undefined);
+        /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
         const initMessage = utils.findInitializeMessageOrThrow();
 
         utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
+        /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBe(utils.validOrigin);
       });
 
@@ -252,6 +255,7 @@ describe('Testing communication', () => {
         */
         communication.initializeCommunication(undefined);
 
+        /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
         expect(communication.Communication.parentWindow).not.toBeNull();
 
@@ -261,6 +265,7 @@ describe('Testing communication', () => {
         utils.respondToMessage(initMessage, FrameContexts.content);
 
         expect(communication.Communication.parentWindow).toBeNull();
+        /* eslint-disable-next-line strict-null-checks/all */
         expect(communication.Communication.parentOrigin).toBeNull();
       });
 
@@ -323,24 +328,30 @@ describe('Testing communication', () => {
     it('should set Communication.parentOrigin to null', () => {
       app._initialize(utils.mockWindow);
       communication.Communication.parentOrigin = utils.mockWindow.parentOrigin;
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.parentOrigin).not.toBeNull();
       communication.uninitializeCommunication();
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.parentOrigin).toBeNull();
     });
 
     it('should set Communication.childWindow to null', () => {
       app._initialize(utils.mockWindow);
       communication.Communication.childWindow = utils.mockWindow;
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.childWindow).not.toBeNull();
       communication.uninitializeCommunication();
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.childWindow).toBeNull();
     });
 
     it('should set Communication.childOrigin to null', () => {
       app._initialize(utils.mockWindow);
       communication.Communication.childOrigin = utils.mockWindow.origin;
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.childOrigin).not.toBeNull();
       communication.uninitializeCommunication();
+      /* eslint-disable-next-line strict-null-checks/all */
       expect(communication.Communication.childOrigin).toBeNull();
     });
 
@@ -378,6 +389,7 @@ describe('Testing communication', () => {
       communication.Communication.currentWindow.setInterval = (fn) => {
         fn();
       };
+      /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         // this callback only ever fires if the message queue associated with the passed in window is empty
         expect(true).toBeTruthy();
@@ -1163,10 +1175,12 @@ describe('Testing communication', () => {
       communication.Communication.currentWindow.setInterval = (fn) => {
         fn();
       };
+      /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         expect(false).toBeFalsy();
       });
       communication.sendMessageEventToChild('testAction', ['arg zero']);
+      /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         expect(true).toBeFalsy();
       });
@@ -1179,10 +1193,12 @@ describe('Testing communication', () => {
       communication.Communication.currentWindow.setInterval = (fn) => {
         fn();
       };
+      /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         expect(false).toBeFalsy();
       });
       communication.sendMessageEventToChild('testAction', ['arg zero']);
+      /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         expect(true).toBeFalsy();
       });
