@@ -212,7 +212,8 @@
         "speaker": { "deviceLabel": "speaker_0" },
         "microphone": { "deviceLabel": "microphone_0" }
       },
-      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: {\"speaker\":{\"deviceLabel\":\"speaker_0\"},\"microphone\":{\"deviceLabel\":\"microphone_0\"}}"
+      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
+      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
     },
     {
       "title": "updateMicState API Call - Success",
