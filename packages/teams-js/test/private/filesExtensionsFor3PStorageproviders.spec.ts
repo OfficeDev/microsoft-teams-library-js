@@ -1,6 +1,5 @@
 import * as communicationModule from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { decodeAttachment } from '../../src/internal/mediaUtil';
 import * as decodeAttachmentModule from '../../src/internal/mediaUtil';
 import { filesExtensionsFor3PStorageproviders } from '../../src/private/filesExtensionsFor3PStorageproviders';
 import { ErrorCode, SdkError } from '../../src/public';
@@ -66,46 +65,6 @@ describe('filesExtensionsFor3PStorageproviders', () => {
 
       mockFileResults.push(mockFileResult);
     }
-  });
-
-  /**
-   * Create File test cases
-   */
-  it('test createFile failure with null params', () => {
-    const result = filesExtensionsFor3PStorageproviders.createFile([], '');
-    expect(result).toBeNull();
-  });
-
-  it('test createFile failure with null assembleAttachment', () => {
-    const result = filesExtensionsFor3PStorageproviders.createFile([], 'image/jpeg');
-    expect(result).toBeNull();
-  });
-
-  it('test createFile failure with invalid params', () => {
-    const result = filesExtensionsFor3PStorageproviders.createFile([], 'image/jpeg');
-    expect(result).toBeNull();
-  });
-
-  it('test createFile success', () => {
-    const assemble1: filesExtensionsFor3PStorageproviders.AssembleAttachment = decodeAttachment(
-      {
-        chunk: btoa('abc'),
-        chunkSequence: 1,
-      },
-      'image/jpeg',
-    );
-    const assemble2: filesExtensionsFor3PStorageproviders.AssembleAttachment = decodeAttachment(
-      {
-        chunk: btoa('xyz'),
-        chunkSequence: 2,
-      },
-      'image/jpeg',
-    );
-    const assembleAttachment: filesExtensionsFor3PStorageproviders.AssembleAttachment[] = [];
-    assembleAttachment.push(assemble1);
-    assembleAttachment.push(assemble2);
-    const result = filesExtensionsFor3PStorageproviders.createFile(assembleAttachment, 'image/jpeg');
-    expect(result).not.toBeNull();
   });
 
   it('should call the callback with error when callback is null', async () => {

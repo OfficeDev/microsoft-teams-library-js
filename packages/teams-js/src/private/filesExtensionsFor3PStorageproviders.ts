@@ -1,9 +1,13 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { decodeAttachment } from '../internal/mediaUtil';
+import { createFile, decodeAttachment } from '../internal/mediaUtil';
 import { ErrorCode, SdkError } from '../public';
 import { FrameContexts } from '../public/constants';
+import { media } from '../public/media';
 import { runtime } from '../public/runtime';
+
+// D:\Repo\TeamsLib\microsoft-teams-library-js\packages\teams-js\src\internal\mediaUtil.ts
+// D:\Repo\TeamsLib\microsoft-teams-library-js\packages\teams-js\src\public\media.ts
 
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
@@ -72,14 +76,14 @@ export namespace filesExtensionsFor3PStorageproviders {
   }
   export interface AttachmentListHelper {
     fileType: string;
-    assembleAttachment: AssembleAttachment[];
+    assembleAttachment: media.AssembleAttachment[];
   }
-  export interface AssembleAttachment {
-    /** A number representing the sequence of the attachment in the file chunks. */
-    sequence: number;
-    /** A Blob object representing the data of the file chunks. */
-    file: Blob;
-  }
+  // export interface AssembleAttachment {
+  //   /** A number representing the sequence of the attachment in the file chunks. */
+  //   sequence: number;
+  //   /** A Blob object representing the data of the file chunks. */
+  //   file: Blob;
+  // }
 
   /**
    * Get drag-and-drop files using a callback.
@@ -123,7 +127,7 @@ export namespace filesExtensionsFor3PStorageproviders {
         } else {
           if (fileResult && fileResult.fileChunk) {
             try {
-              const assemble: AssembleAttachment = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
+              const assemble: media.AssembleAttachment = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
               helper.assembleAttachment.push(assemble);
 
               // we will send the maximum integer as chunkSequence to identify the last chunk
@@ -156,35 +160,5 @@ export namespace filesExtensionsFor3PStorageproviders {
       }
     }
     sendMessageToParent('getDragAndDropFiles', [dragAndDropInput], handleGetDragAndDropFilesCallbackRequest);
-  }
-
-  /**
-   * @hidden
-   * Helper function to create a blob from file chunks based on their sequence
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function createFile(
-    assembleAttachment: filesExtensionsFor3PStorageproviders.AssembleAttachment[],
-    mimeType: string,
-  ): Blob {
-    if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
-      return null;
-    }
-    let file: Blob | undefined;
-    let sequence = 0;
-    assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
-    assembleAttachment.forEach((item) => {
-      if (item.sequence == sequence) {
-        if (file) {
-          file = new Blob([file, item.file], { type: mimeType });
-        } else {
-          file = new Blob([item.file], { type: mimeType });
-        }
-        sequence++;
-      }
-    });
-    return file;
   }
 }
