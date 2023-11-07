@@ -343,7 +343,6 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         };
         const micMuteStateChangedCallback = (micState: meeting.MicState): Promise<meeting.MicState> =>
           new Promise((resolve, reject) => {
-            console.log('micState: ' + JSON.stringify(micState));
             if (!micState) {
               reject('micStatus should not be null');
               throw new Error();
