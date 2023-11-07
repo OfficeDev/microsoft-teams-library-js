@@ -69,8 +69,16 @@ const RegisterAppButtonHoverLeaveHandler = (): React.ReactElement =>
     },
   });
 
+const CheckPagesAppButtonCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkPagesAppButtonCapability',
+    title: 'Check Pages AppButton Capability',
+    onClick: async () => `Pages.appButton module ${pages.appButton.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const PagesAppButtonAPIs = (): ReactElement => (
   <ModuleWrapper title="Pages.appButton">
+    <CheckPagesAppButtonCapability />
     <RegisterAppButtonClickHandler />
     <RegisterAppButtonHoverEnterHandler />
     <RegisterAppButtonHoverLeaveHandler />
