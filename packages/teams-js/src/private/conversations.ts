@@ -155,7 +155,7 @@ export namespace conversations {
         registerHandler(
           'startConversation',
           (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
-            openConversationRequest.onStartConversation({
+            openConversationRequest.onStartConversation?.({
               subEntityId,
               conversationId,
               channelId,
@@ -167,7 +167,7 @@ export namespace conversations {
         registerHandler(
           'closeConversation',
           (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
-            openConversationRequest.onCloseConversation({
+            openConversationRequest.onCloseConversation?.({
               subEntityId,
               conversationId,
               channelId,
