@@ -284,7 +284,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 export function sendMessageToParentAsyncWithVersion<T>(
   apiVersion: string,
   actionName: string,
-  args: any[] = undefined,
+  args: any[] | undefined = undefined,
 ): Promise<T> {
   if (!isFollowApiVersionLabelFormat(apiVersion)) {
     throw Error(
@@ -294,7 +294,8 @@ export function sendMessageToParentAsyncWithVersion<T>(
 
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(apiVersion, actionName, args);
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -334,7 +335,7 @@ function waitForResponse<T>(requestId: number): Promise<T> {
 export function sendMessageToParentWithVersion(
   apiVersion: string,
   actionName: string,
-  args: any[],
+  args: any[] | undefined,
   callback?: Function,
 ): void;
 
@@ -375,6 +376,8 @@ export function sendMessageToParentWithVersion(
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(apiVersion, actionName, args);
   if (callback) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     CommunicationPrivate.callbacks[request.id] = callback;
   }
 }
