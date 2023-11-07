@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Exported all publicly referenced but unexported types",
+  "comment": "Fixed strictNullChecks violations in `media.ts` and `mediaUtil.ts` files",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"

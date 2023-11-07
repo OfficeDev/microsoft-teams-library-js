@@ -1,8 +1,27 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 11 Oct 2023 16:51:27 GMT and should not be manually modified.
+This log was last generated on Wed, 01 Nov 2023 18:15:02 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.17.0
+
+Wed, 01 Nov 2023 18:15:02 GMT
+
+### Minor changes
+
+- Added optional field `openMode` to open `stageView` in new modes if supported by host
+- Updated app.lifecycle handlers, registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, so that they will overwrite teamsCore's registered handlers, registerBeforeUnloadHandler and registerOnLoadHandler, respectively.
+- Added a new capability `visualMedia` and subcapability `visualMedia.image` for capturing images from device camera and gallery
+
+### Patches
+
+- Started logging name of script currently executing when teamsjs is first loaded
+- Exported all publicly referenced but unexported types
+- Fixed some locations violating `strictNullChecks`
+- Updated default runtime for Teams Mobile to indicate that `pages.appButton`, `pages.tabs`, and `stageView` are not supported.
+- Deleted unnecessary subcapability named `caching` from `app.lifecycle` in runtime
+- Updated capability merging code to support properly merging subcapabilities
 
 ## 2.16.0
 

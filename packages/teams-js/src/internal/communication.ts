@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable strict-null-checks/all */
 
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
@@ -19,10 +20,10 @@ const communicationLogger = getLogger('communication');
  */
 export class Communication {
   public static currentWindow: Window | any;
-  public static parentOrigin: string;
+  public static parentOrigin: string | null;
   public static parentWindow: Window | any;
-  public static childWindow: Window;
-  public static childOrigin: string;
+  public static childWindow: Window | null;
+  public static childOrigin: string | null;
 }
 
 /**
@@ -176,10 +177,11 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentAsync<T>(actionName: string, args: any[] = undefined): Promise<T> {
+export function sendMessageToParentAsync<T>(actionName: string, args: any[] | undefined = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -207,7 +209,7 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
+export function sendMessageToParent(actionName: string, args: any[] | undefined, callback?: Function): void;
 
 /**
  * @internal
@@ -224,6 +226,8 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(actionName, args);
   if (callback) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     CommunicationPrivate.callbacks[request.id] = callback;
   }
 }
@@ -234,7 +238,7 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[]): MessageRequest {
+function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequest {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
@@ -388,6 +392,8 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     logger('Received a response from parent for message %i', message.id);
     if (callback) {
       logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
@@ -432,14 +438,16 @@ function handleChildMessage(evt: DOMMessageEvent): void {
     const message = evt.data as MessageRequest;
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
       sendMessageToParent(message.func, message.args, (...args: any[]): void => {
         if (Communication.childWindow) {
           const isPartialResponse = args.pop();
-          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           sendMessageResponseToChild(message.id, args, isPartialResponse);
         }
       });
@@ -451,7 +459,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
+function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
   return targetWindow === Communication.parentWindow
     ? CommunicationPrivate.parentMessageQueue
     : targetWindow === Communication.childWindow
@@ -463,7 +471,7 @@ function getTargetMessageQueue(targetWindow: Window): MessageRequest[] {
  * @internal
  * Limited to Microsoft-internal use
  */
-function getTargetOrigin(targetWindow: Window): string {
+function getTargetOrigin(targetWindow: Window | null): string | null {
   return targetWindow === Communication.parentWindow
     ? Communication.parentOrigin
     : targetWindow === Communication.childWindow
@@ -483,7 +491,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request.id);
+    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
     targetWindow.postMessage(request, targetOrigin);
   }
 }
@@ -545,7 +553,7 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageRequest(func: string, args: any[]): MessageRequest {
+function createMessageRequest(func: string, args: any[] | undefined): MessageRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
@@ -558,7 +566,7 @@ function createMessageRequest(func: string, args: any[]): MessageRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: number, args: any[], isPartialResponse: boolean): MessageResponse {
+function createMessageResponse(id: number, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],
@@ -573,7 +581,7 @@ function createMessageResponse(id: number, args: any[], isPartialResponse: boole
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageEvent(func: string, args: any[]): MessageRequest {
+function createMessageEvent(func: string, args?: any[]): MessageRequest {
   return {
     func: func,
     args: args || [],
