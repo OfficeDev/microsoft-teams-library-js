@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added a new capability `visualMedia` and subcapability `visualMedia.image` for capturing images from device camera and gallery",
-  "packageName": "@microsoft/teams-js",
-  "email": "maggiegong@microsoft.com",
-  "dependentChangeType": "patch"
-}
