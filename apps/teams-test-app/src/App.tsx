@@ -12,6 +12,7 @@ import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import ClipboardAPIs from './components/Clipboard';
+import CustomAPIs from './components/Custom';
 import DialogAPIs from './components/DialogAPIs';
 import DialogCardAPIs from './components/DialogCardAPIs';
 import DialogCardBotAPIs from './components/DialogCardBotAPIs';
@@ -132,6 +133,7 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <ClipboardAPIs />
+        <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
         <DialogCardBotAPIs />
