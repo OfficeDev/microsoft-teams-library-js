@@ -9,7 +9,13 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { DOMMessageEvent, ExtendedWindow, NestedAuthExtendedWindow, NestedAuthRequest } from './interfaces';
+import {
+  DOMMessageEvent,
+  ExtendedWindow,
+  NestedAppAuthBridge,
+  NestedAuthExtendedWindow,
+  NestedAuthRequest,
+} from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
@@ -27,7 +33,7 @@ export class Communication {
   public static childWindow: Window | null;
   public static childOrigin: string | null;
   public static topWindow: Window | any;
-  public static topOrigin: string;
+  public static topOrigin: string | null;
 }
 
 /**
@@ -98,27 +104,10 @@ export function initializeCommunication(
 
   // Extend the window, define the NAA listener and add the NAA bridge
   const extendedWindow = Communication.currentWindow as unknown as NestedAuthExtendedWindow;
-  const nestedAppAuthBridgeHandler = (callback: (response: string) => void) => (evt: DOMMessageEvent) =>
-    processAuthBridgeMessage(evt, callback);
-
-  extendedWindow.nestedAppAuthBridge = {
-    addEventListener: (eventName, callback): void => {
-      if (eventName === 'message') {
-        Communication.currentWindow.addEventListener(eventName, nestedAppAuthBridgeHandler(callback));
-      } else {
-        communicationLogger.log(`Event ${eventName} is not supported`);
-      }
-    },
-    postMessage: (message: string): void => {
-      // Marty, do we need async? Need to digest this a bit more.
-      // Async and then looking for the request callback is necessary for SDk messages.
-      // But for NAA, it's fire and forget with the response coming back via the event listener.
-      sendNestedAuthMessageAsync(message);
-    },
-    removeEventListener: (eventName: string, callback): void => {
-      Communication.currentWindow.removeEventListener(eventName, nestedAppAuthBridgeHandler(callback));
-    },
-  };
+  const nestedAppAuthBridge = createNestedAppAuthBridge(Communication.currentWindow);
+  if (nestedAppAuthBridge) {
+    extendedWindow.nestedAppAuthBridge = nestedAppAuthBridge;
+  }
 
   try {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -508,7 +497,7 @@ const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendN
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendNestedAuthRequestToTopWindow(message: string): MessageRequest {
+function sendNestedAuthRequestToTopWindow(message: string): NestedAuthRequest {
   const logger = sendNestedAuthRequestToTopWindowLogger;
 
   const targetWindow = Communication.topWindow;
@@ -517,7 +506,7 @@ function sendNestedAuthRequestToTopWindow(message: string): MessageRequest {
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName: request.func });
 
-  return sendRequestToTargetWindowHelper(targetWindow, request);
+  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAuthRequest;
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -562,7 +551,7 @@ const processAuthBridgeMessageLogger = communicationLogger.extend('processAuthBr
  * @internal
  * Limited to Microsoft-internal use
  */
-function processAuthBridgeMessage(evt: DOMMessageEvent, onMessageReceived: (response: string) => void): void {
+function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (response: string) => void): void {
   const logger = processAuthBridgeMessageLogger;
 
   // Process only if we received a valid message
@@ -588,9 +577,14 @@ function processAuthBridgeMessage(evt: DOMMessageEvent, onMessageReceived: (resp
   // Process only if the message is coming from a different window and a valid origin
   // valid origins are either a pre-known origin or one specified by the app developer
   // in their call to app.initialize
-  const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
-  const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
-  if (!shouldProcessMessage(messageSource, messageOrigin)) {
+  const messageSource = evt.source || (evt as unknown as DOMMessageEvent)?.originalEvent?.source;
+  const messageOrigin = evt.origin || (evt as unknown as DOMMessageEvent)?.originalEvent?.origin;
+  if (!messageSource) {
+    logger('Message being ignored by app because it is coming for a target that is null');
+    return;
+  }
+
+  if (!shouldProcessMessage(messageSource as Window, messageOrigin)) {
     logger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
@@ -876,6 +870,43 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
   } else {
     getTargetMessageQueue(targetWindow).push(customEvent);
   }
+}
+
+const createNestedAppAuthBridgeLogger = communicationLogger.extend('createNestedAppAuthBridge');
+
+/**
+ * @hidden
+ * @internal
+ */
+function createNestedAppAuthBridge(window: Window | null): NestedAppAuthBridge | null {
+  const logger = createNestedAppAuthBridgeLogger;
+
+  if (!window) {
+    logger('nestedAppAuthBridge cannot be created as current window does not exist');
+    return null;
+  }
+
+  const nestedAppAuthBridgeHandler = (callback: (response: string) => void) => (evt: MessageEvent) =>
+    processAuthBridgeMessage(evt, callback);
+
+  return {
+    addEventListener: (eventName, callback): void => {
+      if (eventName === 'message') {
+        window.addEventListener(eventName, nestedAppAuthBridgeHandler(callback));
+      } else {
+        logger(`Event ${eventName} is not supported by nestedAppAuthBridge`);
+      }
+    },
+    postMessage: (message: string): void => {
+      // Marty, do we need async? Need to digest this a bit more.
+      // Async and then looking for the request callback is necessary for SDk messages.
+      // But for NAA, it's fire and forget with the response coming back via the event listener.
+      sendNestedAuthRequestToTopWindow(message);
+    },
+    removeEventListener: (eventName: string, callback): void => {
+      window.removeEventListener(eventName, nestedAppAuthBridgeHandler(callback));
+    },
+  };
 }
 
 /**
