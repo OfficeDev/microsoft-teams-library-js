@@ -7,14 +7,14 @@ import { FrameContexts } from '../public/constants';
 import { media } from '../public/media';
 import { runtime } from '../public/runtime';
 
-const Files3PLogger = getLogger('filesExtensionsFor3PStorageproviders');
+const Files3PLogger = getLogger('thirdPartyStorageProviders');
 
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
  * @beta
  */
-export namespace filesExtensionsFor3PStorageproviders {
+export namespace thirdPartyStorageProviders {
   /**
    * Object used to represent a file
    * @beta
@@ -169,7 +169,7 @@ export namespace filesExtensionsFor3PStorageproviders {
       }
     }
     sendMessageToParent(
-      'filesExtensionsFor3PStorageproviders.getDragAndDropFiles',
+      'thirdPartyStorageProviders.getDragAndDropFiles',
       [dragAndDropInput],
       handleGetDragAndDropFilesCallbackRequest,
     );

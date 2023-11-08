@@ -1,12 +1,12 @@
 import * as communicationModule from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as decodeAttachmentModule from '../../src/internal/mediaUtil';
-import { filesExtensionsFor3PStorageproviders } from '../../src/private/filesExtensionsFor3PStorageproviders';
+import { thirdPartyStorageProviders } from '../../src/private/thirdPartyStorageProviders';
 import { ErrorCode, SdkError } from '../../src/public';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
 import { Utils } from '../utils';
 
-describe('filesExtensionsFor3PStorageproviders', () => {
+describe('thirdPartyStorageProviders', () => {
   const utils: Utils = new Utils();
   const mockDecodeAttachment = jest.fn();
   const mockGetFilesDragAndDropViaCallback = jest.fn();
@@ -16,13 +16,13 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     content: 'content',
     task: 'task',
   };
-  const mockFileResults: filesExtensionsFor3PStorageproviders.FileResult[] = [];
+  const mockFileResults: thirdPartyStorageProviders.FileResult[] = [];
 
-  const mockFileChunk2: filesExtensionsFor3PStorageproviders.FileChunk = {
+  const mockFileChunk2: thirdPartyStorageProviders.FileChunk = {
     chunk: 'file1chunk2',
     chunkSequence: Number.MAX_SAFE_INTEGER, // last chunk
   };
-  const mockFileResult2: filesExtensionsFor3PStorageproviders.FileResult = {
+  const mockFileResult2: thirdPartyStorageProviders.FileResult = {
     fileChunk: mockFileChunk2,
     fileType: 'mockFileType',
     fileIndex: 1, // for now it means last file we can remove
@@ -41,7 +41,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     jest.mock('../../src/public/runtime', () => ({
       runtime: mockRuntime,
     }));
-    jest.mock('../../src/private/filesExtensionsFor3PStorageproviders', () => ({
+    jest.mock('../../src/private/thirdPartyStorageProviders', () => ({
       getFilesDragAndDropViaCallback: () => mockGetFilesDragAndDropViaCallback,
     }));
 
@@ -50,12 +50,12 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     }));
 
     for (let i = 0; i < 100; i++) {
-      const mockFileChunk: filesExtensionsFor3PStorageproviders.FileChunk = {
+      const mockFileChunk: thirdPartyStorageProviders.FileChunk = {
         chunk: 'filechunk2',
         chunkSequence: i,
       };
 
-      const mockFileResult: filesExtensionsFor3PStorageproviders.FileResult = {
+      const mockFileResult: thirdPartyStorageProviders.FileResult = {
         fileChunk: mockFileChunk,
         fileType: 'mockFileType',
         fileIndex: i + 1,
@@ -70,14 +70,14 @@ describe('filesExtensionsFor3PStorageproviders', () => {
   it('should call the callback with error when callback is null', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     // eslint-disable-next-line strict-null-checks/all
-    expect(() => filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('', null)).toThrowError(
+    expect(() => thirdPartyStorageProviders.getDragAndDropFilesHandler('', null)).toThrowError(
       '[getDragAndDropFiles] Callback cannot be null',
     );
   });
 
   it('should throw error with error code INVALID_ARGUMENTS when dragAndDropInput not is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('', (attachments: Blob[], error?: SdkError) => {
+    thirdPartyStorageProviders.getDragAndDropFilesHandler('', (attachments: Blob[], error?: SdkError) => {
       if (error) {
         expect(error).not.toBeNull();
         expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
@@ -88,18 +88,18 @@ describe('filesExtensionsFor3PStorageproviders', () => {
   it('should ensure initialization and call getFilesDragAndDropViaCallback when valid input is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     expect(() => {
-      filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
+      thirdPartyStorageProviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
     }).not.toThrowError();
   });
 
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    const mockFileChunk: filesExtensionsFor3PStorageproviders.FileChunk = {
+    const mockFileChunk: thirdPartyStorageProviders.FileChunk = {
       chunk: '',
       chunkSequence: 0,
     };
-    const mockFileResult: filesExtensionsFor3PStorageproviders.FileResult = {
+    const mockFileResult: thirdPartyStorageProviders.FileResult = {
       fileChunk: mockFileChunk,
       fileType: 'mockFileType',
       error: {
@@ -111,7 +111,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     };
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
+    thirdPartyStorageProviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -125,7 +125,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
+    thirdPartyStorageProviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -145,7 +145,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
+    thirdPartyStorageProviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -173,7 +173,7 @@ describe('filesExtensionsFor3PStorageproviders', () => {
     });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    filesExtensionsFor3PStorageproviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
+    thirdPartyStorageProviders.getDragAndDropFilesHandler('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {

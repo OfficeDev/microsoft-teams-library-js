@@ -20,7 +20,7 @@ export {
 } from './privateAPIs';
 export { conversations } from './conversations';
 export { files } from './files';
-export { filesExtensionsFor3PStorageproviders } from './filesExtensionsFor3PStorageproviders';
+export { thirdPartyStorageProviders } from './thirdPartyStorageProviders';
 export { meetingRoom } from './meetingRoom';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';
