@@ -96,7 +96,7 @@ describe('meeting', () => {
             utils.respondToMessage(requestAppAudioHandlingMessage, null, requestIsHostAudioless);
 
             // check that the registerHandler for audio device selection was called
-            const registerHandlerMessage = utils.findKthMessagesByFunc('registerHandler', 1);
+            const registerHandlerMessage = utils.findMessageByFunc('registerHandler', 1);
             expect(registerHandlerMessage).not.toBeNull();
             expect(registerHandlerMessage.args.length).toBe(1);
             expect(registerHandlerMessage.args[0]).toBe('meeting.audioDeviceSelectionChanged');
@@ -1561,7 +1561,7 @@ describe('meeting', () => {
             } as DOMMessageEvent);
 
             // check that the registerHandler for audio device selection was called
-            const registerHandlerMessage = utils.findKthMessagesByFunc('registerHandler', 1);
+            const registerHandlerMessage = utils.findMessageByFunc('registerHandler', 1);
             expect(registerHandlerMessage).not.toBeNull();
             expect(registerHandlerMessage.args.length).toBe(1);
             expect(registerHandlerMessage.args[0]).toBe('meeting.audioDeviceSelectionChanged');

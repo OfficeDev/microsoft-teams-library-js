@@ -129,16 +129,14 @@ export class Utils {
     return app.initialize(validMessageOrigins);
   };
 
-  public findMessageByFunc = (func: string): MessageRequest | null => {
-    for (const message of this.messages) {
-      if (message.func === func) {
-        return message;
-      }
-    }
-    return null;
-  };
-
-  public findKthMessagesByFunc = (func: string, k: number): MessageRequest | null => {
+  /**
+   * This function is used to find a message by function name.
+   * @param {string} func - The name of the function.
+   * @param {number | undefined} k - There could be multiple functions with that name,
+   * use this as a zero-based index to return the kth one. Default is 0, will return the first match.
+   * @returns {MessageRequest | null} The found message.
+   */
+  public findMessageByFunc = (func: string, k = 0): MessageRequest | null => {
     let countOfMatchedMessages = 0;
     for (const message of this.messages) {
       if (message.func === func) {
