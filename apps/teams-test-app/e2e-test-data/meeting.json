@@ -216,6 +216,17 @@
       "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
     },
     {
+      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Error",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
+      "eventName": "audioDeviceSelectionChanged",
+      "eventData": {
+        "error": { "errorCode": 100, "message": "Not supported on platform." }
+      },
+      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
+      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
+    },
+    {
       "title": "updateMicState API Call - Success",
       "type": "callResponse",
       "version": ">2.7.1",
