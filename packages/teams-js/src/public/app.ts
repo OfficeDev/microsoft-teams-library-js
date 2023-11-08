@@ -935,6 +935,8 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
     },
     page: {
       id: legacyContext.entityId,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       frameContext: legacyContext.frameContext ? legacyContext.frameContext : GlobalVars.frameContext,
       subPageId: legacyContext.subEntityId,
       isFullScreen: legacyContext.isFullScreen,
