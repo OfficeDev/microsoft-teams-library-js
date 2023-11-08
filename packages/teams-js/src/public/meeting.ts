@@ -337,7 +337,7 @@ export namespace meeting {
     /**
      * Callback for the host to tell the app to change its speaker selection
      */
-    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection) => void;
+    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection | SdkError) => void;
   }
 
   /**
@@ -354,7 +354,6 @@ export namespace meeting {
   export interface AudioDeviceSelection {
     speaker?: AudioDeviceInfo;
     microphone?: AudioDeviceInfo;
-    error?: SdkError;
   }
 
   /**

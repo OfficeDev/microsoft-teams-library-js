@@ -366,7 +366,9 @@ const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
     name: 'registerAudioDeviceSelectionChangedHandler',
     title: 'Register AudioDeviceSelectionChanged Handler',
     onClick: async (setResult) => {
-      const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: meeting.AudioDeviceSelection): void => {
+      const audioDeviceSelectionChangedCallback = (
+        selectedDevicesInHost: meeting.AudioDeviceSelection | SdkError,
+      ): void => {
         setResult('Received audioDeviceSelectionChanged event: ' + JSON.stringify(selectedDevicesInHost));
       };
       meeting.requestAppAudioHandling(
