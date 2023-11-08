@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { DOMMessageEvent, MessageResponse } from '../../src/internal/interfaces';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
