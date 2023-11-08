@@ -358,12 +358,12 @@ export namespace meeting {
   }
 
   /**
-   * Interface for AudioDeviceInfo, includes a device label with the same format as `MediaDeviceInfo.label`
+   * Interface for AudioDeviceInfo, includes a device label with the same format as {@link MediaDeviceInfo.label}
    *
    * Hosted app can use this label to compare it with the device info fetched from {@link navigator.mediaDevices.enumerateDevices()}.
-   * {@link MediaDeviceInfo} has `MediaDeviceInfo.deviceId` as an unique identifier, but that id is also unique to the origin
-   * of the calling application, so `MediaDeviceInfo.deviceId` cannot be used here as an identifier. Notice there are some cases
-   * that devices may have the same deviceLabel, but we don't have a better way to solve this, keep this as a known limitation for now.
+   * {@link MediaDeviceInfo} has  {@link MediaDeviceInfo.deviceId} as an unique identifier, but that id is also unique to the origin
+   * of the calling application, so {@link MediaDeviceInfo.deviceId} cannot be used here as an identifier. Notice there are some cases
+   * that devices may have the same device label, but we don't have a better way to solve this, keep this as a known limitation for now.
    *
    * @hidden
    * Hide from docs.
