@@ -341,7 +341,14 @@ export namespace meeting {
   }
 
   /**
-   * Interface for AudioDeviceSelection from host selection
+   * Interface for AudioDeviceSelection from host selection.
+   * If the speaker or the microphone is undefined or don't have a device label, you can try to find the default devices
+   * by using
+   * ```ts
+   * const devices = await navigator.mediaDevices.enumerateDevices();
+   * const defaultSpeaker = devices.find((d) => d.deviceId === 'default' && d.kind === 'audiooutput');
+   * const defaultMic = devices.find((d) => d.deviceId === 'default' && d.kind === 'audioinput');
+   * ```
    *
    * @hidden
    * Hide from docs.
