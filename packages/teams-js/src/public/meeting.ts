@@ -438,6 +438,23 @@ export namespace meeting {
   }
 
   /**
+   * Represents the options for sharing app content to the meeting stage.
+   * 
+   * @hidden
+   * Hide from docs.
+   */
+  export enum SharingProtocol {
+    /**
+     * The default protocol for sharing app content to stage. To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
+     */
+    Collaborative = 'collaborative',
+    /**
+     * A read-only protocol for sharing app content to stage, which leverages screen sharing in meetings.
+     */
+    ScreenShare = 'screenShare'
+  }
+
+  /**
    * Allows an app to get the incoming audio speaker setting for the meeting user.
    * To learn more, visit https://aka.ms/teamsjs/getIncomingClientAudioState
    *
@@ -635,7 +652,7 @@ export namespace meeting {
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
    */
-  export function shareAppContentToStage(callback: errorCallbackFunctionType, appContentUrl: string): void {
+  export function shareAppContentToStage(callback: errorCallbackFunctionType, appContentUrl: string, sharingProtocol?: SharingProtocol): void {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
