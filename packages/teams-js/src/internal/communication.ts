@@ -8,7 +8,8 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { DOMMessageEvent, ExtendedWindow, MessageRequest, MessageResponse } from './interfaces';
+import { DOMMessageEvent, ExtendedWindow } from './interfaces';
+import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
@@ -180,8 +181,6 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 export function sendMessageToParentAsync<T>(actionName: string, args: any[] | undefined = undefined): Promise<T> {
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(actionName, args);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     resolve(waitForResponse<T>(request.id));
   });
 }
@@ -223,7 +222,6 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
     args = argsOrCallback;
   }
 
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(actionName, args);
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -238,18 +236,16 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequest {
+function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(actionName, args);
 
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via framelessPostMessage interface', request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
@@ -259,11 +255,9 @@ function sendMessageToParentHelper(actionName: string, args: any[] | undefined):
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Sending message %i to parent via postMessage', request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       logger('Adding message %i to parent message queue', request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
@@ -553,7 +547,7 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageRequest(func: string, args: any[] | undefined): MessageRequest {
+function createMessageRequest(func: string, args: any[] | undefined): MessageRequestWithRequiredProperties {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: func,
