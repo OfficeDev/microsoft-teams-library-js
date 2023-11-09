@@ -1,10 +1,3 @@
-# This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish bundle analysis' in the templateContext section.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish Test app artifacts' in the templateContext section.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish CDN feed to build Artifacts' in the templateContext section.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish NPM feed to Build Artifacts' in the templateContext section.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish Powershell Scripts to Build Artifacts' in the templateContext section.
-# The Task 'PublishBuildArtifacts@1' have been converted to an output named 'Publish SBOM to Build Artifacts' in the templateContext section.
 variables:
   - group: InfoSec-SecurityResults
   - name: products
