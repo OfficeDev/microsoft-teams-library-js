@@ -55,10 +55,6 @@ extends:
         environmentsEs2017: false
         environmentsEs2020: true
         environmentsJest: false
-      # sourceAnalysisPool:
-      #   name: Azure-Pipelines-1ESPT-ExDShared
-      #   image: windows-2022
-      #   os: windows
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
@@ -265,10 +261,6 @@ extends:
                   displayName: 'Publish Powershell Scripts to Build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
-                # - output: pipelineArtifact
-                #  displayName: 'Publish SBOM to Build Artifacts'
-                #  targetPath: '$(Build.ArtifactStagingDirectory)\_manifest'
-                #  artifactName: 'SBOM'
           - job: E2ETest1
             displayName: 'E2E Test - Perf'
             pool:
@@ -390,7 +382,7 @@ extends:
             displayName: 'E2E Test - Android'
             pool:
               name: Azure Pipelines
-              image: internal-macos-11
+              image: internal-macos12
               os: macOS
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
