@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added a new parameter, sharingProtocol, of new enum type `SharingProtocol` to shareAppContentToStage meeting API",
+  "packageName": "@microsoft/teams-js",
+  "email": "ashleyrocha16@gmail.com",
+  "dependentChangeType": "patch"
+}
