@@ -438,8 +438,8 @@ export namespace meeting {
   }
 
   /**
-   * Represents the options for sharing app content to the meeting stage.
-   * 
+   * Represents the protocol option for sharing app content to the meeting stage.
+
    * @hidden
    * Hide from docs.
    */
@@ -447,11 +447,11 @@ export namespace meeting {
     /**
      * The default protocol for sharing app content to stage. To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
      */
-    Collaborative = 'collaborative',
+    Collaborative = 'Collaborative',
     /**
-     * A read-only protocol for sharing app content to stage, which leverages screen sharing in meetings.
+     * A read-only protocol for sharing app content to stage, which uses screen sharing in meetings.
      */
-    ScreenShare = 'screenShare'
+    ScreenShare = 'ScreenShare',
   }
 
   /**
@@ -652,12 +652,16 @@ export namespace meeting {
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
    */
-  export function shareAppContentToStage(callback: errorCallbackFunctionType, appContentUrl: string, sharingProtocol?: SharingProtocol): void {
+  export function shareAppContentToStage(
+    callback: errorCallbackFunctionType,
+    appContentUrl: string,
+    sharingProtocol?: SharingProtocol,
+  ): void {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl, sharingProtocol], callback);
   }
 
   /**
