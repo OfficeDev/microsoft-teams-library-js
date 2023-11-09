@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { MessageRequest } from '../../src/internal/messageObjects';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
@@ -1654,4 +1655,3 @@ describe('meeting', () => {
     });
   });
 });
-
