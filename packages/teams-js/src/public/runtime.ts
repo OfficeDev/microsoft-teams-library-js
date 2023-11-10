@@ -203,6 +203,7 @@ interface IRuntimeV3 extends IBaseRuntime {
         readonly joinedTeams?: {};
       };
     };
+    readonly thirdPartyStorageProviders?: {};
     readonly teamsCore?: {};
     readonly video?: {
       readonly mediaStream?: {};
