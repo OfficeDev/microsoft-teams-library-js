@@ -1,4 +1,4 @@
-import { MessageResponse } from '../../src/internal/interfaces';
+import { MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
   openFilePreview,
