@@ -77,6 +77,7 @@ describe('thirdPartyStorageProviders', () => {
 
   it('should throw error with error code INVALID_ARGUMENTS when dragAndDropInput not is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
     thirdPartyStorageProviders.getDragAndDropFiles('', (attachments: Blob[], error?: SdkError) => {
       if (error) {
         expect(error).not.toBeNull();
@@ -87,6 +88,7 @@ describe('thirdPartyStorageProviders', () => {
 
   it('should ensure initialization and call getFilesDragAndDropViaCallback when valid input is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
     expect(() => {
       thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     }).not.toThrowError();
@@ -95,6 +97,7 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
     const mockFileChunk: thirdPartyStorageProviders.FileChunk = {
       chunk: '',
       chunkSequence: 0,
@@ -123,6 +126,7 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
@@ -143,6 +147,7 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
@@ -167,6 +172,7 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
 
     jest.spyOn(decodeAttachmentModule, 'decodeAttachment').mockImplementation(() => {
       throw new Error('Mocked error from decodeAttachment');
