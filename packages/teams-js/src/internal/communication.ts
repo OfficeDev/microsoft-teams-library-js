@@ -9,14 +9,9 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import {
-  DOMMessageEvent,
-  ExtendedWindow,
-  NestedAppAuthBridge,
-  NestedAuthExtendedWindow,
-  NestedAuthRequest,
-} from './interfaces';
+import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
+import { NestedAppAuthBridge, NestedAppAuthRequest, NestedAuthExtendedWindow } from './nestedAppAuthInterfaces';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
@@ -444,8 +439,8 @@ const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRe
  */
 function sendRequestToTargetWindowHelper(
   targetWindow: Window,
-  request: MessageRequestWithRequiredProperties | NestedAuthRequest,
-): MessageRequestWithRequiredProperties | NestedAuthRequest {
+  request: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
+): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
   const logger = sendRequestToTargetWindowHelperLogger;
 
   if (GlobalVars.isFramelessWindow) {
@@ -475,7 +470,7 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequest {
+function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
@@ -493,7 +488,7 @@ const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendN
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendNestedAuthRequestToTopWindow(message: string): NestedAuthRequest {
+function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
   const logger = sendNestedAuthRequestToTopWindowLogger;
 
   const targetWindow = Communication.topWindow;
@@ -502,7 +497,7 @@ function sendNestedAuthRequestToTopWindow(message: string): NestedAuthRequest {
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName: request.func });
 
-  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAuthRequest;
+  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -974,7 +969,7 @@ function createMessageRequest(
   };
 }
 
-function createNestedAppAuthRequest(message: string): NestedAuthRequest {
+function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: 'nestedAppAuthRequest',
