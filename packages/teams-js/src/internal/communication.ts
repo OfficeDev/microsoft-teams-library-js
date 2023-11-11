@@ -103,11 +103,7 @@ export function initializeCommunication(
   }
 
   // Extend the window, define the NAA listener and add the NAA bridge
-  const extendedWindow = Communication.currentWindow as unknown as NestedAuthExtendedWindow;
-  const nestedAppAuthBridge = createNestedAppAuthBridge(Communication.currentWindow);
-  if (nestedAppAuthBridge) {
-    extendedWindow.nestedAppAuthBridge = nestedAppAuthBridge;
-  }
+  tryPolyfillWithNestedAppAuthBridge(Communication.currentWindow);
 
   try {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
@@ -763,11 +759,12 @@ function handleChildMessage(evt: DOMMessageEvent): void {
  * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  if (targetWindow === Communication.parentWindow) {
+  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
+  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
     return CommunicationPrivate.parentMessageQueue;
   } else if (targetWindow === Communication.childWindow) {
     return CommunicationPrivate.childMessageQueue;
-  } else if (targetWindow === Communication.topWindow) {
+  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
     return CommunicationPrivate.topMessageQueue;
   } else {
     return [];
@@ -779,23 +776,29 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  if (targetWindow === Communication.parentWindow) {
+  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
+  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
     return Communication.parentOrigin;
   } else if (targetWindow === Communication.childWindow) {
     return Communication.childOrigin;
-  } else if (targetWindow === Communication.topWindow) {
+  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
     return Communication.topOrigin;
   } else {
     return null;
   }
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 function getTargetName(targetWindow: Window | null): string | null {
-  if (targetWindow === Communication.parentWindow) {
+  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
+  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
     return 'parent';
   } else if (targetWindow === Communication.childWindow) {
     return 'child';
-  } else if (targetWindow === Communication.topWindow) {
+  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
     return 'top';
   } else {
     return null;
@@ -872,11 +875,45 @@ export function sendMessageEventToChild(actionName: string, args?: any[]): void 
   }
 }
 
+const tryPolyfillWithNestedAppAuthBridgeLogger = communicationLogger.extend('tryPolyfillWithNestedAppAuthBridge');
+
+/**
+ * @hidden
+ * Attempt to polyfill the nestedAppAuthBridge object on the given window
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function tryPolyfillWithNestedAppAuthBridge(window: Window | null): void {
+  const logger = tryPolyfillWithNestedAppAuthBridgeLogger;
+
+  if (!window) {
+    logger('Cannot polyfill nestedAppAuthBridge as current window does not exist');
+    return;
+  }
+
+  const extendedWindow = Communication.currentWindow as unknown as NestedAuthExtendedWindow;
+  const nestedAppAuthBridge = createNestedAppAuthBridge(Communication.currentWindow);
+  if (nestedAppAuthBridge) {
+    extendedWindow.nestedAppAuthBridge = nestedAppAuthBridge;
+  }
+}
+
 const createNestedAppAuthBridgeLogger = communicationLogger.extend('createNestedAppAuthBridge');
 
 /**
  * @hidden
+ * Creates a bridge for nested app authentication.
+ *
  * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @param {Window | null} window - The window object where the nested app authentication bridge will be created. If null, the function will log an error message and return null.
+ * @returns {NestedAppAuthBridge | null} Returns an object with methods for adding and removing event listeners, and posting messages. If the provided window is null, returns null.
+ *
+ * @property {Function} addEventListener - Adds an event listener to the window. Only supports the 'message' event. If an unsupported event is passed, logs an error message.
+ * @property {Function} postMessage - Posts a message to the window. The message should be a stringified JSON object with a messageType of 'NestedAppAuthRequest'. If the message does not meet these criteria, logs an error message.
+ * @property {Function} removeEventListener - Removes an event listener from the window.
  */
 function createNestedAppAuthBridge(window: Window | null): NestedAppAuthBridge | null {
   const logger = createNestedAppAuthBridgeLogger;
@@ -898,9 +935,19 @@ function createNestedAppAuthBridge(window: Window | null): NestedAppAuthBridge |
       }
     },
     postMessage: (message: string): void => {
-      // Marty, do we need async? Need to digest this a bit more.
-      // Async and then looking for the request callback is necessary for SDk messages.
-      // But for NAA, it's fire and forget with the response coming back via the event listener.
+      const parsedMessage = (() => {
+        try {
+          return JSON.parse(message);
+        } catch (e) {
+          return null;
+        }
+      })();
+
+      if (!parsedMessage || typeof parsedMessage !== 'object' || parsedMessage.messageType !== 'NestedAppAuthRequest') {
+        logger('Unrecognized data format received by app, message being ignored. Message: %o', message);
+        return;
+      }
+
       sendNestedAuthRequestToTopWindow(message);
     },
     removeEventListener: (eventName: string, callback): void => {
