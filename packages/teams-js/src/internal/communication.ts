@@ -11,7 +11,12 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
-import { NestedAppAuthBridge, NestedAppAuthRequest, NestedAuthExtendedWindow } from './nestedAppAuthInterfaces';
+import {
+  NestedAppAuthBridge,
+  NestedAppAuthMessageEventNames,
+  NestedAppAuthRequest,
+  NestedAuthExtendedWindow,
+} from './nestedAppAuthInterfaces';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
@@ -560,7 +565,11 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
   })();
 
   // Validate that it is a valid auth bridge response message
-  if (!parsedData || typeof parsedData !== 'object' || parsedData.messageType !== 'NestedAppAuthResponse') {
+  if (
+    !parsedData ||
+    typeof parsedData !== 'object' ||
+    parsedData.messageType !== NestedAppAuthMessageEventNames.Response
+  ) {
     logger('Unrecognized data format received by app, message being ignored. Message: %o', evt);
     return;
   }
@@ -930,6 +939,7 @@ function createNestedAppAuthBridge(window: Window | null): NestedAppAuthBridge |
       }
     },
     postMessage: (message: string): void => {
+      // Validate that it is a valid auth bridge request message
       const parsedMessage = (() => {
         try {
           return JSON.parse(message);
@@ -938,11 +948,16 @@ function createNestedAppAuthBridge(window: Window | null): NestedAppAuthBridge |
         }
       })();
 
-      if (!parsedMessage || typeof parsedMessage !== 'object' || parsedMessage.messageType !== 'NestedAppAuthRequest') {
+      if (
+        !parsedMessage ||
+        typeof parsedMessage !== 'object' ||
+        parsedMessage.messageType !== NestedAppAuthMessageEventNames.Request
+      ) {
         logger('Unrecognized data format received by app, message being ignored. Message: %o', message);
         return;
       }
 
+      // Post the message to the top window
       sendNestedAuthRequestToTopWindow(message);
     },
     removeEventListener: (eventName: string, callback): void => {

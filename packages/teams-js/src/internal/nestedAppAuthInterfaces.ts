@@ -1,5 +1,10 @@
 import { MessageRequestWithRequiredProperties } from './messageObjects';
 
+export enum NestedAppAuthMessageEventNames {
+  Request = 'NestedAppAuthRequest',
+  Response = 'NestedAppAuthResponse',
+}
+
 /**
  * @hidden
  * Interface for a nested app authentication request.
