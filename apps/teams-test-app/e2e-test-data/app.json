@@ -58,7 +58,7 @@
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
       "platformsExcluded": ["Web"],
-      "inputValue": "https://teams.microsoft.com/l/file/testEntityId&fileType=pptx&objectUrl=https%3A%2F%2FtestDomain%2Fteams%2FtestPath%2FtestTitle.pptx&baseUrl=https%3A%2F%2FtestDomain%2Fteams%2FtestPath&serviceName=teams&threadId=testThreadId&groupId=testGroupId",
+      "inputValue": "https://teams.microsoft.com/l/file/testEntityId?tenantId=testTenantId&fileType=pptx&objectUrl=https%3A%2F%2FtestDomain%2Fteams%2FtestPath%2FtestTitle.pptx&baseUrl=https%3A%2F%2FtestDomain%2Fteams%2FtestPath&serviceName=teams&threadId=testThreadId&groupId=testGroupId",
       "expectedAlertValue": "openFilePreview called with {\"baseUrl\":\"https://testDomain/teams/testPath\",\"entityId\":\"testEntityId\",\"objectUrl\":\"https://testDomain/teams/testPath/testTitle.pptx\",\"title\":\"testTitle.pptx\",\"type\":\"pptx\"}",
       "expectedTestAppValue": "Completed"
     },
