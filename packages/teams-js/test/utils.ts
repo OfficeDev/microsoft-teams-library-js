@@ -67,6 +67,7 @@ export class Utils {
         },
       },
       parent: this.parentWindow,
+      top: this.parentWindow,
       opener: undefined,
       nativeInterface: {
         framelessPostMessage: (message: string): void => {
