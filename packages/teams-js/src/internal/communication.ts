@@ -763,13 +763,14 @@ function handleChildMessage(evt: DOMMessageEvent): void {
  * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
-  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
+  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
+
+  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+    return CommunicationPrivate.topMessageQueue;
+  } else if (targetWindow === Communication.parentWindow) {
     return CommunicationPrivate.parentMessageQueue;
   } else if (targetWindow === Communication.childWindow) {
     return CommunicationPrivate.childMessageQueue;
-  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
-    return CommunicationPrivate.topMessageQueue;
   } else {
     return [];
   }
@@ -780,13 +781,14 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
-  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
+  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
+
+  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+    return Communication.topOrigin;
+  } else if (targetWindow === Communication.parentWindow) {
     return Communication.parentOrigin;
   } else if (targetWindow === Communication.childWindow) {
     return Communication.childOrigin;
-  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
-    return Communication.topOrigin;
   } else {
     return null;
   }
@@ -797,13 +799,14 @@ function getTargetOrigin(targetWindow: Window | null): string | null {
  * Limited to Microsoft-internal use
  */
 function getTargetName(targetWindow: Window | null): string | null {
-  const isTopAndParentSameWindow = Communication.topWindow === Communication.parentWindow;
-  if (targetWindow === Communication.parentWindow && isTopAndParentSameWindow) {
+  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
+
+  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+    return 'top';
+  } else if (targetWindow === Communication.parentWindow) {
     return 'parent';
   } else if (targetWindow === Communication.childWindow) {
     return 'child';
-  } else if (targetWindow === Communication.topWindow && !isTopAndParentSameWindow) {
-    return 'top';
   } else {
     return null;
   }
