@@ -1,7 +1,6 @@
 import { SdkError, thirdPartyStorageProviders } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-// import { noHostSdkMsg } from '../App';
 import { ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
@@ -19,18 +18,20 @@ const ThirdPartyStorageProviders = (): React.ReactElement =>
       },
       submit: async (input, setResult) => {
         // input will be the thread id
-        const callback = (
+        const filesCallback = (
           attachments: thirdPartyStorageProviders.FilesFor3PApps[],
           error?: SdkError | undefined,
         ): void => {
           if (error) {
-            setResult(JSON.stringify(error));
+            setResult('error received in callback' + JSON.stringify(error));
+          } else {
+            console.log(attachments);
+            setResult('Received files in callback' + attachments);
           }
         };
-        const result = thirdPartyStorageProviders.getDragAndDropFiles(input, callback);
+        const result = thirdPartyStorageProviders.getDragAndDropFiles(input, filesCallback);
         setResult(JSON.stringify(result));
-        return 'abc';
-        // return 'thirdPartyStorageProviders.getDragAndDropFiles()' + noHostSdkMsg;
+        return 'thirdPartyStorageProviders.getDragAndDropFiles() was called';
       },
     },
   });
