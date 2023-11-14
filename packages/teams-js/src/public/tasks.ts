@@ -1,3 +1,4 @@
+/* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
