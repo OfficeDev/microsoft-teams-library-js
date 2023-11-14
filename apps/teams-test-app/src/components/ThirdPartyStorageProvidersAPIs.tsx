@@ -26,7 +26,7 @@ const ThirdPartyStorageProviders = (): React.ReactElement =>
             setResult('error received in callback' + JSON.stringify(error));
           } else {
             console.log(attachments);
-            setResult('Received files in callback' + attachments);
+            setResult('Received files in callback');
           }
         };
         const result = thirdPartyStorageProviders.getDragAndDropFiles(input, filesCallback);

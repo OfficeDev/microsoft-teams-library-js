@@ -6,20 +6,9 @@
       "title": "thirdPartyStorageProviders API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_thirdPartyStorageProviders",
-      "inputValue": {
-        "mediaType": 1,
-        "maxMediaCount": 1,
-        "imageProps": {
-          "sources": [1, 2],
-          "startMode": 1,
-          "ink": true,
-          "cameraSwitcher": true,
-          "textSticker": true,
-          "enableFilter": false
-        }
-      },
+      "inputValue": "testThreadId",
       "expectedAlertValue": "thirdPartyStorageProviders called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "[format: id, size: 2, mimeType: text/plain, content: ABCDEFGHIJKL, preview: ABC],[format: base64, size: 2, mimeType: .bin, content: ABCDEFGHIJKL2, preview: ABC],"
+      "expectedTestAppValue": "Received files in callback"
     }
   ]
 }
