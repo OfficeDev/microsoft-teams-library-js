@@ -1,10 +1,10 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { NestedAppAuthRequest } from '../../src/internal/nestedAppAuthInterfaces';
+import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthInterfaces';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
-import { Utils } from '../utils';
+import { MessageRequest, Utils } from '../utils';
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_0, 'mockedApiName' as ApiName);
 
@@ -1258,6 +1258,105 @@ describe('Testing communication', () => {
       /* eslint-disable-next-line strict-null-checks/all */
       communication.waitForMessageQueue(communication.Communication.childWindow, () => {
         expect(true).toBeFalsy();
+      });
+    });
+  });
+
+  describe('nestedAppAuthBridge', () => {
+    let utils: Utils = new Utils();
+    const requestName = 'nestedAppAuthRequest';
+    const messageData = { messageType: NestedAppAuthMessageEventNames.Request, id: 0, clientId: 'test' };
+    const validMessage = JSON.stringify(messageData);
+    const validResponseMessage = JSON.stringify({
+      ...messageData,
+      messageType: NestedAppAuthMessageEventNames.Response,
+    });
+
+    beforeEach(() => {
+      // Set a mock window for testing
+      utils = new Utils();
+      app._initialize(utils.mockWindow);
+      communication.Communication.parentWindow = undefined;
+      GlobalVars.isFramelessWindow = false;
+    });
+
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+
+    describe('postMessage', () => {
+      it('should post a message when called with a valid NestedAppAuthRequest', () => {
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(validMessage);
+
+        expect(utils.topMessages.length).toBe(1);
+        expect(utils.topMessages[0].func).toBe(requestName);
+        expect((utils.topMessages[0] as NestedAppAuthRequest).data).toEqual(validMessage);
+      });
+
+      it('should not post a message when called with an invalid message', () => {
+        const invalidMessage = 'Invalid message';
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(invalidMessage);
+
+        expect(utils.topMessages.length).toBe(0);
+      });
+
+      it('should not post a message when called with a valid JSON that is not a NestedAppAuthRequest', () => {
+        const nonRequestMessage = JSON.stringify({ messageType: 'NonRequestMessage' });
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(nonRequestMessage);
+
+        expect(utils.topMessages.length).toBe(0);
+      });
+    });
+
+    describe('responding to nestedAppAuthRequest', () => {
+      test('should respond to a valid nestedAppAuthRequest with a nestedAppAuthResponse', () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        utils.respondToMessage({
+          data: validResponseMessage,
+        } as NestedAppAuthRequest);
+
+        expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
+      });
+
+      test('should ignore invalid nestedAppAuthResponse', () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        utils.respondToMessage({
+          data: JSON.stringify({ messageType: 'InvalidMessage' }),
+        } as NestedAppAuthRequest);
+
+        expect(onMessageReceivedCb).not.toBeCalled();
+      });
+
+      test('should ignore other SDK messages', () => {
+        const onMessageReceivedCb = jest.fn();
+
+        utils.mockWindow.top = utils.topWindow;
+        communication.initializeCommunication(undefined);
+        communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
+
+        utils.respondToMessage({
+          func: 'initialize',
+          id: 0,
+        } as MessageRequest);
+
+        expect(onMessageReceivedCb).not.toBeCalled();
       });
     });
   });
