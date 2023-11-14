@@ -699,7 +699,6 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  */
 function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
