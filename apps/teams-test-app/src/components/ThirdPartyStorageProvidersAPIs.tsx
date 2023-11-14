@@ -12,7 +12,7 @@ const ThirdPartyStorageProviders = (): React.ReactElement =>
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       validateInput: (input) => {
         if (!input) {
-          return; //API allows for no input to be provided
+          return; // API allows for no input to be provided
         }
         return;
       },
