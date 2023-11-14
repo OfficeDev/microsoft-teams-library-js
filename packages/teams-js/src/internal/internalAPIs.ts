@@ -160,6 +160,6 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
  * Limited to Microsoft-internal use
  */
 export function isFollowApiVersionTagFormat(apiVersionTag: string): boolean {
-  const pattern = /^v\d+_\w+$/;
+  const pattern = /^v\d+_[\w.]+$/;
   return pattern.test(apiVersionTag);
 }
