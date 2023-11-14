@@ -49,7 +49,7 @@ export interface MessageRequest {
   func: string;
   timestamp?: number;
   args?: any[];
-  apiVersionTag?: string;
+  apiversiontag?: string;
 }
 
 /**
