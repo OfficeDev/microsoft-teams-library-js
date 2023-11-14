@@ -436,6 +436,23 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 }
 
+const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendNestedAuthRequestToTopWindow');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
+  const logger = sendNestedAuthRequestToTopWindowLogger;
+
+  const targetWindow = Communication.topWindow;
+  const request = createNestedAppAuthRequest(message);
+
+  logger('Message %i information: %o', request.id, { actionName: request.func });
+
+  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
+}
+
 const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
 
 /**
@@ -485,24 +502,6 @@ function sendMessageToParentHelper(actionName: string, args: any[] | undefined):
   logger('Message %i information: %o', request.id, { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
-}
-
-const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendNestedAuthRequestToTopWindow');
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
-  const logger = sendNestedAuthRequestToTopWindowLogger;
-
-  const targetWindow = Communication.topWindow;
-  const request = createNestedAppAuthRequest(message);
-
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  logger('Message %i information: %o', request.id, { actionName: request.func });
-
-  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -584,15 +583,20 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  if (!shouldProcessMessage(messageSource as Window, messageOrigin)) {
+  if (!shouldProcessMessage(messageSource, messageOrigin)) {
     logger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
     return;
   }
 
-  // Check if messageSource matches the top level window.
-  // In most cases, top level window and the parent window will be same.
+  /**
+   * In most cases, top level window and the parent window will be same.
+   * If they're not, perform the necessary updates for the top level window.
+   *
+   * Top window logic to flush messages is kept independent so that we don't affect
+   * any of the code for the existing communication channel.
+   */
   if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
     Communication.topWindow = messageSource;
     Communication.topOrigin = messageOrigin;

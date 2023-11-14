@@ -1,5 +1,6 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { NestedAppAuthRequest } from '../../src/internal/nestedAppAuthInterfaces';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -307,6 +308,16 @@ describe('Testing communication', () => {
         expect(GlobalVars.isFramelessWindow).toBeTruthy();
         expect(utils.mockWindow.onNativeMessage).not.toBeUndefined();
         expect(communication.Communication.parentWindow).toBeUndefined();
+      });
+
+      describe('nested app auth bridge', () => {
+        it('should be pollyfilled onto the current window if the current window exists', async () => {
+          expect.assertions(1);
+
+          communication.initializeCommunication(undefined);
+
+          expect(utils.mockWindow.nestedAppAuthBridge).toBeDefined();
+        });
       });
     });
   });
@@ -785,6 +796,49 @@ describe('Testing communication', () => {
       if (sentMessage === null) {
         throw new Error('Did not find any message even after initialization response was received');
       }
+    });
+  });
+  describe('sendNestedAuthRequestToTopWindow', () => {
+    let utils: Utils = new Utils();
+    const requestName = 'nestedAppAuthRequest';
+    const messageData = { messageType: 'nestedAppAuthRequest', id: 0, clientId: 'test' };
+    const message = JSON.stringify(messageData);
+
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+
+    it('should send a postMessage to top window when the top window and top origin are set and are same as the parent window', () => {
+      GlobalVars.isFramelessWindow = false;
+      communication.Communication.topWindow = utils.mockWindow.parent;
+      communication.Communication.topOrigin = utils.validOrigin;
+
+      communication.sendNestedAuthRequestToTopWindow(message);
+
+      expect(utils.messages.length).toBe(1);
+      expect(utils.messages[0].id).toBe(0);
+      expect(utils.messages[0].func).toBe(requestName);
+      expect((utils.messages[0] as NestedAppAuthRequest).data).toEqual(message);
+    });
+
+    it('should send a postMessage to top window when the top window and top origin are set', () => {
+      GlobalVars.isFramelessWindow = false;
+      communication.Communication.topWindow = utils.topWindow;
+      communication.Communication.topOrigin = utils.validOrigin;
+
+      communication.sendNestedAuthRequestToTopWindow(message);
+
+      expect(utils.topMessages.length).toBe(1);
+      expect(utils.topMessages[0].id).toBe(0);
+      expect(utils.topMessages[0].func).toBe(requestName);
+      expect((utils.topMessages[0] as NestedAppAuthRequest).data).toEqual(message);
     });
   });
   describe('sendAndUnwrap', () => {

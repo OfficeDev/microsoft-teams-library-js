@@ -23,11 +23,15 @@ export class Utils {
   // A list of this.messages the library sends to the app.
   public messages: MessageRequest[] = [];
 
+  // A list of this.messages the library sends to the top window.
+  public topMessages: MessageRequest[] = [];
+
   // A list of this.messages the library sends to the auth popup.
   public childMessages: MessageRequest[] = [];
 
   public childWindow;
   public parentWindow: Window;
+  public topWindow: Window;
 
   public constructor() {
     this.messages = [];
@@ -41,6 +45,18 @@ export class Utils {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
         this.messages.push(message);
+      },
+    } as Window;
+
+    this.topWindow = {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
+        if (message.func === 'initialize' && targetOrigin !== '*') {
+          throw new Error('initialize messages to parent window must have a targetOrigin of *');
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
+        }
+        console.log('Pushing message ....');
+        this.topMessages.push(message);
       },
     } as Window;
 
