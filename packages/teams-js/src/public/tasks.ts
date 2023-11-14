@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogUtil';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ChildAppWindow, IAppWindow } from './appWindow';
@@ -43,19 +44,20 @@ export namespace tasks {
    * @param submitHandler - Handler to call when the task module is completed
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
+    const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_StartTask);
     const dialogSubmitHandler = submitHandler
       ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err ?? '', sdkResponse.result ?? '')
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParentWithVersion(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.card) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParentWithVersion(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      botUrlOpenHelper(ApiVersion.V_1, getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      botUrlOpenHelper(apiVersionTag, getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      urlOpenHelper(ApiVersion.V_1, getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      urlOpenHelper(apiVersionTag, getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
@@ -76,7 +78,7 @@ export namespace tasks {
     if (Object.keys(extra).length) {
       throw new Error('resize requires a TaskInfo argument containing only width and height');
     }
-    updateResizeHelper(ApiVersion.V_1, taskInfo as DialogSize);
+    updateResizeHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_UpdateTask), taskInfo as DialogSize);
   }
 
   /**
@@ -89,7 +91,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    urlSubmitHelper(ApiVersion.V_1, result, appIds);
+    urlSubmitHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_SubmitTask), result, appIds);
   }
 
   /**

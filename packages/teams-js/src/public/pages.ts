@@ -1,12 +1,13 @@
 import {
-  ApiVersion,
   Communication,
-  sendAndHandleSdkError,
+  getApiVersionTag,
+  sendAndHandleSdkErrorWithVersion,
   sendAndHandleStatusAndReasonWithVersion,
   sendAndUnwrapWithVersion,
   sendMessageEventToChild,
   sendMessageToParentWithVersion,
 } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { registerHandler, registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
@@ -49,7 +50,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    returnFocusHelper(ApiVersion.V_2, navigateForward);
+    returnFocusHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_ReturnFocus), navigateForward);
   }
 
   /**
@@ -65,11 +66,17 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    registerHandlerHelperWithVersion(ApiVersion.V_2, 'focusEnter', handler, [], () => {
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerHandlerHelperWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_RegisterFocusEnterHandler),
+      'focusEnter',
+      handler,
+      [],
+      () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -79,7 +86,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    setCurrentFrameHelper(ApiVersion.V_2, frameInfo);
+    setCurrentFrameHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_SetCurrentFrame), frameInfo);
   }
 
   /**
@@ -143,7 +150,12 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndUnwrapWithVersion(ApiVersion.V_2, 'settings.getSettings'));
+      resolve(
+        sendAndUnwrapWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_GetConfig),
+          'settings.getSettings',
+        ),
+      );
     });
   }
 
@@ -157,7 +169,7 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return navigateCrossDomainHelper(ApiVersion.V_2, url);
+    return navigateCrossDomainHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_NavigateCrossDomain), url);
   }
 
   /**
@@ -183,10 +195,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
+      const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_NavigateCrossDomain);
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_3, 'executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
-        resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_1, 'pages.navigateToApp', params));
+        resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'pages.navigateToApp', params));
       }
     });
   }
@@ -198,7 +211,7 @@ export namespace pages {
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    return shareDeepLinkHelper(ApiVersion.V_2, deepLinkParameters);
+    return shareDeepLinkHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_ShareDeepLink), deepLinkParameters);
   }
 
   /**
@@ -209,11 +222,17 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
-    registerHandlerHelperWithVersion(ApiVersion.V_2, 'fullScreenChange', handler, [], () => {
-      if (!isNullOrUndefined(handler) && !isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerHandlerHelperWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_RegisterFullScreenHandler),
+      'fullScreenChange',
+      handler,
+      [],
+      () => {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -268,7 +287,10 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
-      return tabsNavigateToTabHelper(ApiVersion.V_2, tabInstance);
+      return tabsNavigateToTabHelper(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_NavigateToTab),
+        tabInstance,
+      );
     }
     /**
      * Retrieves application tabs for the current user.
@@ -277,7 +299,10 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return getTabInstancesHelper(ApiVersion.V_2, tabInstanceParameters);
+      return getTabInstancesHelper(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_GetTabInstances),
+        tabInstanceParameters,
+      );
     }
 
     /**
@@ -286,7 +311,10 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return getMruTabInstancesHelper(ApiVersion.V_2, tabInstanceParameters);
+      return getMruTabInstancesHelper(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_GetMruTabInstances),
+        tabInstanceParameters,
+      );
     }
 
     /**
@@ -334,7 +362,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParentWithVersion(ApiVersion.V_2, 'settings.setValidityState', [validityState]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_SetValidityState),
+        'settings.setValidityState',
+        [validityState],
+      );
     }
 
     /**
@@ -349,7 +381,13 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleStatusAndReasonWithVersion(ApiVersion.V_2, 'settings.setSettings', instanceConfig));
+        resolve(
+          sendAndHandleStatusAndReasonWithVersion(
+            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_SetConfig),
+            'settings.setSettings',
+            instanceConfig,
+          ),
+        );
       });
     }
 
@@ -388,7 +426,12 @@ export namespace pages {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(ApiVersion.V_2, 'registerHandler', ['save']);
+      !isNullOrUndefined(handler) &&
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterOnSaveHandlerHelper),
+          'registerHandler',
+          ['save'],
+        );
     }
 
     /**
@@ -426,7 +469,12 @@ export namespace pages {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(ApiVersion.V_2, 'registerHandler', ['remove']);
+      !isNullOrUndefined(handler) &&
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterOnRemoveHandlerHelper),
+          'registerHandler',
+          ['remove'],
+        );
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -446,11 +494,17 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(ApiVersion.V_2, 'changeSettings', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterChangeConfigHandler),
+        'changeSettings',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -511,12 +565,19 @@ export namespace pages {
       }
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParentWithVersion(ApiVersion.V_1, 'settings.save.success');
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Save_Success),
+          'settings.save.success',
+        );
         this.notified = true;
       }
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParentWithVersion(ApiVersion.V_1, 'settings.save.failure', [reason]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Save_Failure),
+          'settings.save.failure',
+          [reason],
+        );
         this.notified = true;
       }
       private ensureNotNotified(): void {
@@ -547,13 +608,20 @@ export namespace pages {
 
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParentWithVersion(ApiVersion.V_1, 'settings.remove.success');
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Remove_Success),
+          'settings.remove.success',
+        );
         this.notified = true;
       }
 
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParentWithVersion(ApiVersion.V_1, 'settings.remove.failure', [reason]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Remove_Failure),
+          'settings.remove.failure',
+          [reason],
+        );
         this.notified = true;
       }
 
@@ -601,7 +669,7 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return backStackNavigateBackHelper(ApiVersion.V_2);
+      return backStackNavigateBackHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_BackStack_NavigateBack));
     }
 
     /**
@@ -612,11 +680,15 @@ export namespace pages {
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
-      registerBackButtonHandlerHelper(ApiVersion.V_2, handler, () => {
-        if (!isNullOrUndefined(handler) && !isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerBackButtonHandlerHelper(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_BackStack_RegisterBackButtonHandler),
+        handler,
+        () => {
+          if (!isNullOrUndefined(handler) && !isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -625,12 +697,12 @@ export namespace pages {
      *
      * @internal
      * Limited to Microsoft-internal use
-     * @parameter apiVersion - The version number of API
+     * @param apiVersionTag - The tag indicating API version number with name
      * @param handler - The handler to invoke when the user presses the host client's back button.
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
     export function registerBackButtonHandlerHelper(
-      apiVersion: string,
+      apiVersionTag: string,
       handler: () => boolean,
       versionSpecificHelper?: () => void,
     ): void {
@@ -640,7 +712,7 @@ export namespace pages {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersion, 'registerHandler', ['backButton']);
+      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['backButton']);
     }
 
     function handleBackButtonPress(): void {
@@ -687,7 +759,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'enterFullscreen', []);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_FullTrust_EnterFullscreen),
+        'enterFullscreen',
+        [],
+      );
     }
 
     /**
@@ -701,7 +777,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'exitFullscreen', []);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_FullTrust_ExitFullscreen),
+        'exitFullscreen',
+        [],
+      );
     }
     /**
      * @hidden
@@ -730,11 +810,17 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(ApiVersion.V_2, 'appButtonClick', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnClick),
+        'appButtonClick',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -743,11 +829,17 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(ApiVersion.V_2, 'appButtonHoverEnter', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnHoverEnter),
+        'appButtonHoverEnter',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -756,11 +848,17 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(ApiVersion.V_2, 'appButtonHoverLeave', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnHoverLeave),
+        'appButtonHoverLeave',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -825,7 +923,13 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+        resolve(
+          sendAndHandleSdkErrorWithVersion(
+            getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_CurrentApp_NavigateTo),
+            'pages.currentApp.navigateTo',
+            params,
+          ),
+        );
       });
     }
 
@@ -848,7 +952,12 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+        resolve(
+          sendAndHandleSdkErrorWithVersion(
+            getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
+            'pages.currentApp.navigateToDefaultPage',
+          ),
+        );
       });
     }
 

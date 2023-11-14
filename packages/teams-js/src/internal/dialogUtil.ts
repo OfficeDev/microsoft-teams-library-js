@@ -7,7 +7,7 @@ import { runtime } from '../public/runtime';
 import { sendMessageToParentWithVersion } from './communication';
 import { registerHandler, removeHandler } from './handlers';
 
-export function updateResizeHelper(apiVersion: string, dimensions: DialogSize): void {
+export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
   ensureInitialized(
     runtime,
     FrameContexts.content,
@@ -18,11 +18,11 @@ export function updateResizeHelper(apiVersion: string, dimensions: DialogSize): 
   if (!dialog.update.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersion, 'tasks.updateTask', [dimensions]);
+  sendMessageToParentWithVersion(apiVersionTag, 'tasks.updateTask', [dimensions]);
 }
 
 export function urlOpenHelper(
-  apiVersion: string,
+  apiVersionTag: string,
   urlDialogInfo: UrlDialogInfo,
   submitHandler?: dialog.DialogSubmitHandler,
   messageFromChildHandler?: dialog.PostMessageChannel,
@@ -37,7 +37,7 @@ export function urlOpenHelper(
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
   sendMessageToParentWithVersion(
-    apiVersion,
+    apiVersionTag,
     'tasks.startTask',
     [dialogInfo],
     (err: string, result: string | object) => {
@@ -48,7 +48,7 @@ export function urlOpenHelper(
 }
 
 export function botUrlOpenHelper(
-  apiVersion: string,
+  apiVersionTag: string,
   urlDialogInfo: BotUrlDialogInfo,
   submitHandler?: dialog.DialogSubmitHandler,
   messageFromChildHandler?: dialog.PostMessageChannel,
@@ -63,7 +63,7 @@ export function botUrlOpenHelper(
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
   sendMessageToParentWithVersion(
-    apiVersion,
+    apiVersionTag,
     'tasks.startTask',
     [dialogInfo],
     (err: string, result: string | object) => {
@@ -73,7 +73,7 @@ export function botUrlOpenHelper(
   );
 }
 
-export function urlSubmitHelper(apiVersion: string, result?: string | object, appIds?: string | string[]): void {
+export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
   // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
   // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
   // FrameContexts.content will be removed once the bug is fixed.
@@ -83,7 +83,7 @@ export function urlSubmitHelper(apiVersion: string, result?: string | object, ap
   }
 
   // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-  sendMessageToParentWithVersion(apiVersion, 'tasks.completeTask', [
+  sendMessageToParentWithVersion(apiVersionTag, 'tasks.completeTask', [
     result,
     appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
   ]);

@@ -1,4 +1,5 @@
-import { ApiVersion, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { getApiVersionTag, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
@@ -46,10 +47,14 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.getLocation', {
-      allowChooseLocation: false,
-      showMap: false,
-    });
+    return sendAndHandleSdkErrorWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_GetCurrentLocation),
+      'location.getLocation',
+      {
+        allowChooseLocation: false,
+        showMap: false,
+      },
+    );
   }
 
   /**
@@ -68,7 +73,13 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkErrorWithVersion(ApiVersion.V_1, 'permissions.has', permissions));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.GeoLocation_HasPermission),
+          'permissions.has',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -89,7 +100,13 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkErrorWithVersion(ApiVersion.V_1, 'permissions.request', permissions));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_1, ApiName.GeoLocation_RequestPermission),
+          'permissions.request',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -123,10 +140,14 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.getLocation', {
-        allowChooseLocation: true,
-        showMap: true,
-      });
+      return sendAndHandleSdkErrorWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_Map_ChooseLocation),
+        'location.getLocation',
+        {
+          allowChooseLocation: true,
+          showMap: true,
+        },
+      );
     }
 
     /**
@@ -145,7 +166,11 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkErrorWithVersion(ApiVersion.V_2, 'location.showLocation', location);
+      return sendAndHandleSdkErrorWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_ShowLocation),
+        'location.showLocation',
+        location,
+      );
     }
 
     /**

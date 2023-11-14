@@ -16,7 +16,7 @@ import {
 import { ensureInitialized } from './internalAPIs';
 // import { isNullOrUndefined } from './typeCheckUtilities';
 
-export function navigateCrossDomainHelper(apiVersion: string, url: string): Promise<void> {
+export function navigateCrossDomainHelper(apiVersionTag: string, url: string): Promise<void> {
   return new Promise<void>((resolve) => {
     ensureInitialized(
       runtime,
@@ -34,23 +34,23 @@ export function navigateCrossDomainHelper(apiVersion: string, url: string): Prom
     const errorMessage =
       'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
     resolve(
-      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersion, 'navigateCrossDomain', errorMessage, url),
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateCrossDomain', errorMessage, url),
     );
   });
 }
 
-export function backStackNavigateBackHelper(apiVersion: string): Promise<void> {
+export function backStackNavigateBackHelper(apiVersionTag: string): Promise<void> {
   return new Promise<void>((resolve) => {
     ensureInitialized(runtime);
     if (!pages.backStack.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     const errorMessage = 'Back navigation is not supported in the current client or context.';
-    resolve(sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersion, 'navigateBack', errorMessage));
+    resolve(sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateBack', errorMessage));
   });
 }
 
-export function tabsNavigateToTabHelper(apiVersion: string, tabInstance: TabInstance): Promise<void> {
+export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabInstance): Promise<void> {
   return new Promise<void>((resolve) => {
     ensureInitialized(runtime);
     if (!pages.tabs.isSupported()) {
@@ -58,21 +58,26 @@ export function tabsNavigateToTabHelper(apiVersion: string, tabInstance: TabInst
     }
     const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
     resolve(
-      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersion, 'navigateToTab', errorMessage, tabInstance),
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+        apiVersionTag,
+        'navigateToTab',
+        errorMessage,
+        tabInstance,
+      ),
     );
   });
 }
 
-export function returnFocusHelper(apiVersion: string, navigateForward?: boolean): void {
+export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
   ensureInitialized(runtime);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersion, 'returnFocus', [navigateForward]);
+  sendMessageToParentWithVersion(apiVersionTag, 'returnFocus', [navigateForward]);
 }
 
 export function getTabInstancesHelper(
-  apiVersion: string,
+  apiVersionTag: string,
   tabInstanceParameters?: TabInstanceParameters,
 ): Promise<TabInformation> {
   return new Promise<TabInformation>((resolve) => {
@@ -81,12 +86,12 @@ export function getTabInstancesHelper(
       throw errorNotSupportedOnPlatform;
     }
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    resolve(sendAndUnwrapWithVersion(apiVersion, 'getTabInstances', tabInstanceParameters));
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getTabInstances', tabInstanceParameters));
   });
 }
 
 export function getMruTabInstancesHelper(
-  apiVersion: string,
+  apiVersionTag: string,
   tabInstanceParameters?: TabInstanceParameters,
 ): Promise<TabInformation> {
   return new Promise<TabInformation>((resolve) => {
@@ -95,26 +100,26 @@ export function getMruTabInstancesHelper(
       throw errorNotSupportedOnPlatform;
     }
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    resolve(sendAndUnwrapWithVersion(apiVersion, 'getMruTabInstances', tabInstanceParameters));
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getMruTabInstances', tabInstanceParameters));
   });
 }
 
-export function shareDeepLinkHelper(apiVersion: string, deepLinkParameters: ShareDeepLinkParameters): void {
+export function shareDeepLinkHelper(apiVersionTag: string, deepLinkParameters: ShareDeepLinkParameters): void {
   ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersion, 'shareDeepLink', [
+  sendMessageToParentWithVersion(apiVersionTag, 'shareDeepLink', [
     deepLinkParameters.subPageId,
     deepLinkParameters.subPageLabel,
     deepLinkParameters.subPageWebUrl,
   ]);
 }
 
-export function setCurrentFrameHelper(apiVersion: string, frameInfo: FrameInfo): void {
+export function setCurrentFrameHelper(apiVersionTag: string, frameInfo: FrameInfo): void {
   ensureInitialized(runtime, FrameContexts.content);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersion, 'setFrameContext', [frameInfo]);
+  sendMessageToParentWithVersion(apiVersionTag, 'setFrameContext', [frameInfo]);
 }

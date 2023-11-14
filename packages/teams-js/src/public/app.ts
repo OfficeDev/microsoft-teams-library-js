@@ -4,12 +4,13 @@
 
 import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appUtil';
 import {
-  ApiVersion,
   Communication,
+  getApiVersionTag,
   sendAndUnwrapWithVersion,
   sendMessageToParentWithVersion,
   uninitializeCommunication,
 } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
@@ -571,7 +572,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return appInitializeHelper(ApiVersion.V_2, validMessageOrigins);
+    return appInitializeHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_Initialize), validMessageOrigins);
   }
 
   /**
@@ -618,7 +619,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(sendAndUnwrapWithVersion(ApiVersion.V_2, 'getContext'));
+      resolve(sendAndUnwrapWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_GetContext), 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -627,7 +628,11 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.AppLoaded, [version]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyAppLoaded),
+      Messages.AppLoaded,
+      [version],
+    );
   }
 
   /**
@@ -635,7 +640,11 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.Success, [version]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifySuccess),
+      Messages.Success,
+      [version],
+    );
   }
 
   /**
@@ -646,10 +655,11 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.Failure, [
-      appInitializationFailedRequest.reason,
-      appInitializationFailedRequest.message,
-    ]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyFailure),
+      Messages.Failure,
+      [appInitializationFailedRequest.reason, appInitializationFailedRequest.message],
+    );
   }
 
   /**
@@ -659,10 +669,11 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(ApiVersion.V_2, Messages.ExpectedFailure, [
-      expectedFailureRequest.reason,
-      expectedFailureRequest.message,
-    ]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyExpectedFailure),
+      Messages.ExpectedFailure,
+      [expectedFailureRequest.reason, expectedFailureRequest.message],
+    );
   }
 
   /**
@@ -674,7 +685,10 @@ export namespace app {
    * @param handler - The handler to invoke when the user changes their theme.
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
-    registerOnThemeChangeHandlerHelper(ApiVersion.V_2, handler);
+    registerOnThemeChangeHandlerHelper(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_RegisterOnThemeChangeHandler),
+      handler,
+    );
   }
 
   /**
@@ -684,7 +698,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return openLinkHelper(ApiVersion.V_2, deepLink);
+    return openLinkHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_OpenLink), deepLink);
   }
 
   /**

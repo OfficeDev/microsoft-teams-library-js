@@ -28,10 +28,10 @@ const initializationTimeoutInMs = 5000;
 
 const appLogger = getLogger('app');
 
-export function appInitializeHelper(apiVersion: string, validMessageOrigins?: string[]): Promise<void> {
+export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
-      () => initializeHelper(apiVersion, validMessageOrigins),
+      () => initializeHelper(apiVersionTag, validMessageOrigins),
       initializationTimeoutInMs,
       new Error('SDK initialization timed out.'),
     );
@@ -45,7 +45,7 @@ export function appInitializeHelper(apiVersion: string, validMessageOrigins?: st
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
-function initializeHelper(apiVersion: string, validMessageOrigins?: string[]): Promise<void> {
+function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   return new Promise<void>((resolve) => {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
@@ -53,7 +53,7 @@ function initializeHelper(apiVersion: string, validMessageOrigins?: string[]): P
       GlobalVars.initializeCalled = true;
 
       Handlers.initializeHandlers();
-      GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersion).then(
+      GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
           GlobalVars.frameContext = context;
           GlobalVars.hostClientType = clientType;
@@ -140,13 +140,13 @@ function initializeHelper(apiVersion: string, validMessageOrigins?: string[]): P
   });
 }
 
-export function registerOnThemeChangeHandlerHelper(apiVersion: string, handler: app.themeHandler): void {
+export function registerOnThemeChangeHandlerHelper(apiVersionTag: string, handler: app.themeHandler): void {
   // allow for registration cleanup even when not called initialize
   !isNullOrUndefined(handler) && ensureInitializeCalled();
-  Handlers.registerOnThemeChangeHandler(apiVersion, handler);
+  Handlers.registerOnThemeChangeHandler(apiVersionTag, handler);
 }
 
-export function openLinkHelper(apiVersion: string, deepLink: string): Promise<void> {
+export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise<void> {
   return new Promise<void>((resolve) => {
     ensureInitialized(
       runtime,
@@ -157,6 +157,6 @@ export function openLinkHelper(apiVersion: string, deepLink: string): Promise<vo
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersion, 'executeDeepLink', deepLink));
+    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', deepLink));
   });
 }

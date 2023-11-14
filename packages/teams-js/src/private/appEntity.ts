@@ -1,4 +1,5 @@
-import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
@@ -103,7 +104,7 @@ export namespace appEntity {
     }
 
     sendMessageToParentWithVersion(
-      ApiVersion.V_1,
+      getApiVersionTag(ApiVersionNumber.V_1, ApiName.AppEntity_SelectAppEntity),
       'appEntity.selectAppEntity',
       [threadId, categories, subEntityId],
       callback,

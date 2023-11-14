@@ -39,6 +39,31 @@ export interface ExtendedWindow extends Window {
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface MessageRequest {
+  id?: number;
+  func: string;
+  timestamp?: number;
+  args?: any[];
+  apiVersionTag?: string;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface MessageResponse {
+  id: number;
+  args?: any[];
+  isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
+}
+
+/**
+>>>>>>> ed7d0c15 (update apiVersion to apiVersionTag to be sent to host SDKs)
  * @hidden
  * Meant for Message objects that are sent to children without id
  *

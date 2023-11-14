@@ -1,4 +1,5 @@
-import { ApiVersion } from '../internal/communication';
+import { getApiVersionTag } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   backStackNavigateBackHelper,
@@ -25,7 +26,7 @@ export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) =
  * @param navigateForward - Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  returnFocusHelper(ApiVersion.V_1, navigateForward);
+  returnFocusHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Navigation_ReturnFocus), navigateForward);
 }
 
 /**
@@ -40,7 +41,7 @@ export function returnFocus(navigateForward?: boolean): void {
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  tabsNavigateToTabHelper(ApiVersion.V_1, tabInstance)
+  tabsNavigateToTabHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Navigation_NavigateToTab), tabInstance)
     .then(() => {
       completionHandler(true);
     })
@@ -74,7 +75,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
     FrameContexts.meetingStage,
   );
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  navigateCrossDomainHelper(ApiVersion.V_1, url)
+  navigateCrossDomainHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Navigation_NavigateCrossDomain), url)
     .then(() => {
       completionHandler(true);
     })
@@ -95,7 +96,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
 export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  backStackNavigateBackHelper(ApiVersion.V_1)
+  backStackNavigateBackHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Navigation_NavigateBack))
     .then(() => {
       completionHandler(true);
     })

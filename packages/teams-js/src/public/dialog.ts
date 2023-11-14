@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { ApiVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
+import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogUtil';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -120,7 +121,12 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      urlOpenHelper(ApiVersion.V_2, urlDialogInfo, submitHandler, messageFromChildHandler);
+      urlOpenHelper(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Open),
+        urlDialogInfo,
+        submitHandler,
+        messageFromChildHandler,
+      );
     }
 
     /**
@@ -137,7 +143,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper(ApiVersion.V_2, result, appIds);
+      urlSubmitHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Submit), result, appIds);
     }
 
     /**
@@ -159,7 +165,11 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'messageForParent', [message]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+        'messageForParent',
+        [message],
+      );
     }
 
     /**
@@ -178,7 +188,11 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParentWithVersion(ApiVersion.V_1, 'messageForChild', [message]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Dialog_Url_SendMessageToDialog),
+        'messageForChild',
+        [message],
+      );
     }
 
     /**
@@ -244,7 +258,12 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        botUrlOpenHelper(ApiVersion.V_2, botUrlDialogInfo, submitHandler, messageFromChildHandler);
+        botUrlOpenHelper(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Bot_Open),
+          botUrlDialogInfo,
+          submitHandler,
+          messageFromChildHandler,
+        );
       }
 
       /**
@@ -323,7 +342,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper(ApiVersion.V_2, dimensions);
+      updateResizeHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Update_Resize), dimensions);
     }
 
     /**
@@ -366,7 +385,7 @@ export namespace dialog {
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
       sendMessageToParentWithVersion(
-        ApiVersion.V_2,
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_AdaptiveCard_Open),
         'tasks.startTask',
         [dialogInfo],
         (err: string, result: string | object) => {
@@ -421,7 +440,7 @@ export namespace dialog {
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
         sendMessageToParentWithVersion(
-          ApiVersion.V_2,
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_AdaptiveCard_Bot_Open),
           'tasks.startTask',
           [dialogInfo],
           (err: string, result: string | object) => {

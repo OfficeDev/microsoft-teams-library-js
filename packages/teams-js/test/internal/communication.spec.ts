@@ -1,10 +1,11 @@
 import * as communication from '../../src/internal/communication';
+import { ApiName, ApiVersionNumber } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
 
-const testApiVersion = communication.ApiVersion.V_0;
+const testApiVersion = communication.getApiVersionTag(ApiVersionNumber.V_0, 'mockedApiName' as ApiName);
 
 describe('Testing communication', () => {
   describe('initializeCommunication', () => {

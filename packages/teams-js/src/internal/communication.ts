@@ -6,28 +6,16 @@ import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
+import { ApiName, ApiVersionNumber } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
+import { isFollowApiVersionTagFormat } from './internalAPIs';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
-
-/**
- * Use enum to set or update API version number
- * Note: V_0 = 'v0' is used for APIs who needs to be passed with correct version number
- * but haven't been implemented yet.
- * @internal
- * Limited to Microsoft-internal use
- */
-export enum ApiVersion {
-  V_0 = 'v0',
-  V_1 = 'v1',
-  V_2 = 'v2',
-  V_3 = 'v3',
-}
 
 /**
  * @internal
@@ -75,7 +63,7 @@ interface InitializeResponse {
  */
 export function initializeCommunication(
   validMessageOrigins: string[] | undefined,
-  apiVersion: string,
+  apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
@@ -109,7 +97,7 @@ export function initializeCommunication(
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>(apiVersion, 'initialize', [
+    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>(apiVersionTag, 'initialize', [
       version,
       latestRuntimeApiVersion,
     ]).then(
@@ -146,15 +134,15 @@ export function uninitializeCommunication(): void {
 /**
  * @hidden
  * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendAndUnwrap function
  * and this function will be removed when the project is completed.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndUnwrapWithVersion<T>(apiVersion: string, actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([result]: [T]) => result);
+export function sendAndUnwrapWithVersion<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(([result]: [T]) => result);
 }
 
 /**
@@ -168,16 +156,16 @@ export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T>
 /**
  * @hidden
  * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReason function
  * and this function will be removed when the project is completed.
  */
 export function sendAndHandleStatusAndReasonWithVersion(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   ...args: any[]
 ): Promise<void> {
-  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(
     ([wasSuccessful, reason]: [boolean, string]) => {
       if (!wasSuccessful) {
         throw new Error(reason);
@@ -197,7 +185,7 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
 /**
  * @hidden
  * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReasonWithDefaultError function
  * and this function will be removed when the project is completed.
  *
@@ -205,12 +193,12 @@ export function sendAndHandleStatusAndReason(actionName: string, ...args: any[])
  * Limited to Microsoft-internal use
  */
 export function sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   defaultError: string,
   ...args: any[]
 ): Promise<void> {
-  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(
+  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(
     ([wasSuccessful, reason]: [boolean, string]) => {
       if (!wasSuccessful) {
         throw new Error(reason ? reason : defaultError);
@@ -238,7 +226,7 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
 /**
  * @hidden
  * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendAndHandleSdkError function
  * and this function will be removed when the project is completed.
  *
@@ -246,11 +234,11 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
  * Limited to Microsoft-internal use
  */
 export function sendAndHandleSdkErrorWithVersion<T>(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   ...args: any[]
 ): Promise<T> {
-  return sendMessageToParentAsyncWithVersion(apiVersion, actionName, args).then(([error, result]: [SdkError, T]) => {
+  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
       throw error;
     }
@@ -274,7 +262,7 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 /**
  * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendMessageToParentAsync function
  * and this function will be removed when the project is completed.
  *
@@ -282,18 +270,18 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParentAsyncWithVersion<T>(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   args: any[] | undefined = undefined,
 ): Promise<T> {
-  if (!isFollowApiVersionLabelFormat(apiVersion)) {
+  if (!isFollowApiVersionTagFormat(apiVersionTag)) {
     throw Error(
-      `apiVersion: ${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
   }
 
   return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(apiVersion, actionName, args);
+    const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     resolve(waitForResponse<T>(request.id));
@@ -333,7 +321,7 @@ function waitForResponse<T>(requestId: number): Promise<T> {
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParentWithVersion(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
   callback?: Function,
@@ -343,17 +331,17 @@ export function sendMessageToParentWithVersion(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentWithVersion(apiVersion: string, actionName: string, callback?: Function): void;
+export function sendMessageToParentWithVersion(apiVersionTag: string, actionName: string, callback?: Function): void;
 
 /**
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
- * Additional apiVersion parameter is added, which provides the ability to send api version number to parent
+ * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendMessageToParent function
  * and this function will be removed when the project is completed.
  */
 export function sendMessageToParentWithVersion(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   argsOrCallback?: any[] | Function,
   callback?: Function,
@@ -365,16 +353,16 @@ export function sendMessageToParentWithVersion(
     args = argsOrCallback;
   }
 
-  if (!isFollowApiVersionLabelFormat(apiVersion)) {
+  if (!isFollowApiVersionTagFormat(apiVersionTag)) {
     throw Error(
-      `apiVersion: ${apiVersion} passed in doesn't follow the pattern starting with 'v' followed by digits, please check.`,
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
   }
 
   // APIs with v0 represents beta changes haven't been implemented on them
   // Otherwise, minimum version number will be v1
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  const request = sendMessageToParentHelper(apiVersion, actionName, args);
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -428,13 +416,13 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * Limited to Microsoft-internal use
  */
 function sendMessageToParentHelper(
-  apiVersion: string,
+  apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(apiVersion, actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args);
 
   logger('Message %i information: %o', request.id, { actionName, args });
 
@@ -784,4 +772,16 @@ function createMessageEvent(func: string, args?: any[]): MessageRequest {
     func: func,
     args: args || [],
   };
+}
+
+/**
+ * @hidden
+ * Creates a string tag for labeling apiVersionTag, which is used for API function call to create message request
+ * sent to host(s).
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function getApiVersionTag(apiVersionNumber: ApiVersionNumber, functionName: ApiName): string {
+  return `${apiVersionNumber}_${functionName}`;
 }

@@ -152,13 +152,14 @@ export function processAdditionalValidOrigins(validMessageOrigins: string[]): vo
 
 /**
  * @hidden
- * Check if apiVersion developer sends follows the pattern starting with a lowercase 'v' and it is then
- * followed by one or more digits only. If yes, return true. Otherwise, return false.
+ * Check if apiVersionTag developer sends follows the pattern starting with a lowercase 'v', then
+ * followed by one or more digits, then concated with underscore and some characters to indicate api name.
+ * For example, 'v2_app.getContext'. If yes, return true. Otherwise, return false.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function isFollowApiVersionLabelFormat(apiVersion: string): boolean {
-  const pattern = /^v\d+$/;
-  return pattern.test(apiVersion);
+export function isFollowApiVersionTagFormat(apiVersionTag: string): boolean {
+  const pattern = /^v\d+_\w+$/;
+  return pattern.test(apiVersionTag);
 }
