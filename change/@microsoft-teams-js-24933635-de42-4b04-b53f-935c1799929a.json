@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added additional apiVersion argument on App, Dialog, GeoLocation, Location, Navigation, Pages, Tasks capabilities for telemetry",
+  "comment": "Added additional apiVersionTag argument on App, Dialog, GeoLocation, Location, Navigation, Pages, Tasks capabilities for telemetry",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
