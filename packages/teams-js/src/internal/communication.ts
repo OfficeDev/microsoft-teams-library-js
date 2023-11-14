@@ -383,7 +383,7 @@ export function sendMessageToParent(actionName: string, callback?: Function): vo
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, args: any[], callback?: Function): void;
+export function sendMessageToParent(actionName: string, args: any[] | undefined, callback?: Function): void;
 
 /**
  * @internal
@@ -612,7 +612,6 @@ function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = evt.data as MessageRequest;
-    const apiVersionTag = message.apiversiontag;
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -620,18 +619,14 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      sendMessageToParent(
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-            sendMessageResponseToChild(message.id, args, isPartialResponse);
-          }
-        },
-        apiVersionTag,
-      );
+      sendMessageToParent(message.func, message.args, (...args: any[]): void => {
+        if (Communication.childWindow) {
+          const isPartialResponse = args.pop();
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          sendMessageResponseToChild(message.id, args, isPartialResponse);
+        }
+      });
     }
   }
 }
