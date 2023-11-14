@@ -5,7 +5,6 @@ import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
   ChannelType,
-  errorNotSupportedOnPlatform,
   FrameContexts,
   HostClientType,
   HostName,
@@ -888,17 +887,6 @@ describe('Testing app capability', () => {
         });
 
         Object.values(FrameContexts).forEach((context) => {
-          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
-            expect.assertions(1);
-            try {
-              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
@@ -921,19 +909,6 @@ describe('Testing app capability', () => {
         });
 
         Object.values(FrameContexts).forEach((context) => {
-          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
-            expect.assertions(1);
-            try {
-              app.lifecycle.registerOnResumeHandler(() => {
-                return false;
-              });
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
           it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
@@ -1713,16 +1688,6 @@ describe('Testing app capability', () => {
         });
 
         Object.values(FrameContexts).forEach((context) => {
-          it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should throw error when app.lifecycle is not supported. context:${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
-            expect.assertions(1);
-            try {
-              app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
@@ -1748,19 +1713,6 @@ describe('Testing app capability', () => {
         });
 
         Object.values(FrameContexts).forEach((context) => {
-          it(`app.lifecycle.registerOnResumeHandler should throw error when app.lifecycle is not supported. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 1, supports: { app: {} } });
-            expect.assertions(1);
-            try {
-              app.lifecycle.registerOnResumeHandler(() => {
-                return false;
-              });
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
           it(`app.lifecycle.registerOnResumeHandler should successfully register handler. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 

@@ -18,15 +18,7 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { authentication } from './authentication';
-import {
-  ChannelType,
-  errorNotSupportedOnPlatform,
-  FrameContexts,
-  HostClientType,
-  HostName,
-  TeamType,
-  UserTeamRole,
-} from './constants';
+import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
 import { menus } from './menus';
@@ -869,9 +861,7 @@ export namespace app {
       if (!handler) {
         throw new Error('[app.lifecycle.registerBeforeSuspendOrTerminateHandler] Handler cannot be null');
       }
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+      ensureInitialized(runtime);
       Handlers.registerBeforeSuspendOrTerminateHandler(handler);
     }
 
@@ -887,21 +877,8 @@ export namespace app {
       if (!handler) {
         throw new Error('[app.lifecycle.registerOnResumeHandler] Handler cannot be null');
       }
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+      ensureInitialized(runtime);
       Handlers.registerOnResumeHandler(handler);
-    }
-
-    /**
-     * Checks if app.lifecycle is supported by the host.
-     * @returns boolean to represent whether the lifecycle capability is supported
-     * @throws Error if {@linkcode app.initialize} has not successfully completed
-     *
-     * @beta
-     */
-    export function isSupported(): boolean {
-      return ensureInitialized(runtime) && !!runtime.supports.app?.lifecycle;
     }
   }
 }
