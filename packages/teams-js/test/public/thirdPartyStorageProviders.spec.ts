@@ -41,7 +41,7 @@ describe('thirdPartyStorageProviders', () => {
     jest.mock('../../src/public/runtime', () => ({
       runtime: mockRuntime,
     }));
-    jest.mock('../../src/private/thirdPartyStorageProviders', () => ({
+    jest.mock('../../src/public/thirdPartyStorageProviders', () => ({
       getFilesDragAndDropViaCallback: () => mockGetFilesDragAndDropViaCallback,
     }));
 
