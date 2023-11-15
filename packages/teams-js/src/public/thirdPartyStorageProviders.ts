@@ -16,7 +16,11 @@ const Files3PLogger = getLogger('thirdPartyStorageProviders');
  */
 export namespace thirdPartyStorageProviders {
   /** Get context callback function type */
-  export type ThirdPartyAppCallback = (attachments: FilesFor3PApps[], error?: SdkError) => void;
+  const files: FilesFor3PApps[] = [];
+  let helper: AttachmentListHelper = {
+    fileType: '',
+    assembleAttachment: [],
+  };
 
   /**
    * Object used to represent a file
@@ -97,94 +101,92 @@ export namespace thirdPartyStorageProviders {
   }
 
   /**
+   * Defines the Callback function received from Third Party App
+   */
+  export interface ThirdPartyAppCallback {
+    /** Callback from third party app */
+    (files: FilesFor3PApps[], error?: SdkError): void;
+  }
+
+  let callback: ThirdPartyAppCallback | null = null;
+
+  /**
    * Get drag-and-drop files using a callback.
    *
    * @param {string} dragAndDropInput - The input related to the drag-and-drop operation.
-   * @param {ThirdPartyAppCallback} callback -
+   * @param {ThirdPartyAppCallback} thirdPartycallback - callback
    *   A callback function to handle the result of the operation
    */
-  export function getDragAndDropFiles(dragAndDropInput: string, callback: ThirdPartyAppCallback): void {
-    if (!callback) {
+  export function getDragAndDropFiles(dragAndDropInput: string, thirdPartycallback: ThirdPartyAppCallback): void {
+    if (!thirdPartycallback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
     }
-
+    callback = thirdPartycallback;
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
     if (!dragAndDropInput || dragAndDropInput === '') {
-      //condition changed
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      callback([], invalidInput);
+      thirdPartycallback([], invalidInput);
       return;
     }
-    getFilesDragAndDropViaCallback(dragAndDropInput, callback);
-  }
 
-  function getFilesDragAndDropViaCallback(
-    dragAndDropInput: string,
-    callback: (attachments: FilesFor3PApps[], error?: SdkError) => void,
-  ): void {
-    const files: FilesFor3PApps[] = [];
-    let helper: AttachmentListHelper = {
-      fileType: '',
-      assembleAttachment: [],
-    };
-
-    function handleGetDragAndDropFilesCallbackRequest(fileResult: FileResult): void {
-      if (callback) {
-        if (fileResult && fileResult.error) {
-          callback([], fileResult.error);
-        } else {
-          if (fileResult && fileResult.fileChunk) {
-            try {
-              const assemble: media.AssembleAttachment | null = decodeAttachment(
-                fileResult.fileChunk,
-                fileResult.fileType,
-              );
-              if (assemble) {
-                helper.assembleAttachment.push(assemble);
-              } else {
-                Files3PLogger(
-                  `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
-                );
-              }
-
-              // we will send the maximum integer as chunkSequence to identify the last chunk
-              if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
-                const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
-
-                if (fileResult.isLastFile && fileBlob) {
-                  // Convert blob to File
-                  const receivedFile = new File([fileBlob], fileResult.fileName, {
-                    type: fileBlob.type,
-                  });
-
-                  files.push(receivedFile);
-
-                  callback(files, fileResult.error);
-                }
-
-                helper = {
-                  fileType: '',
-                  assembleAttachment: [],
-                };
-              }
-            } catch (e) {
-              callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
-            }
-          } else {
-            callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
-          }
-        }
-      }
-    }
     sendMessageToParent(
       'thirdPartyStorageProviders.getDragAndDropFiles',
       [dragAndDropInput],
       handleGetDragAndDropFilesCallbackRequest,
     );
+  }
+
+  function handleGetDragAndDropFilesCallbackRequest(fileResult: FileResult): void {
+    if (callback) {
+      if (fileResult && fileResult.error) {
+        callback([], fileResult.error);
+      } else {
+        if (fileResult && fileResult.fileChunk) {
+          try {
+            const assemble: media.AssembleAttachment | null = decodeAttachment(
+              fileResult.fileChunk,
+              fileResult.fileType,
+            );
+            if (assemble) {
+              helper.assembleAttachment.push(assemble);
+            } else {
+              Files3PLogger(
+                `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
+              );
+            }
+
+            // we will send the maximum integer as chunkSequence to identify the last chunk
+            if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
+              const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
+
+              if (fileResult.isLastFile && fileBlob) {
+                // Convert blob to File
+                const receivedFile = new File([fileBlob], fileResult.fileName, {
+                  type: fileBlob.type,
+                });
+
+                files.push(receivedFile);
+
+                callback(files, fileResult.error);
+              }
+
+              helper = {
+                fileType: '',
+                assembleAttachment: [],
+              };
+            }
+          } catch (e) {
+            callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
+          }
+        } else {
+          callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+        }
+      }
+    }
   }
 
   /**

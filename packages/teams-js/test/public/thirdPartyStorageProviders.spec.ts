@@ -35,6 +35,7 @@ describe('thirdPartyStorageProviders', () => {
   });
 
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.mock('../../src/internal/mediaUtil', () => ({
       decodeAttachment: mockDecodeAttachment,
     }));
@@ -123,27 +124,6 @@ describe('thirdPartyStorageProviders', () => {
     expect(mockCallback).toHaveBeenCalledWith([], mockFileResult.error);
   });
 
-  it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
-    GlobalVars.isFramelessWindow = true;
-    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
-
-    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
-    expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
-    if (callbackused) {
-      // sending single file with 100 chunks
-      mockFileResults.forEach((mockFileResult) => {
-        callbackused(mockFileResult);
-      });
-      callbackused(mockFileResult2);
-    }
-
-    expect(mockCallback).toHaveBeenCalled();
-    expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Blob)]), undefined); // verify we recieved 1 blob object i.e. one file
-  });
-
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
@@ -167,6 +147,27 @@ describe('thirdPartyStorageProviders', () => {
     expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining(Array(50).fill(expect.any(Blob))), undefined);
     const receivedArray = mockCallback.mock.calls[0][0];
     expect(receivedArray).toHaveLength(50); // verify if we received 50 files
+  });
+
+  it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
+    GlobalVars.isFramelessWindow = true;
+    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
+
+    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
+    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    expect(sendMessageToParentSpy).toHaveBeenCalled();
+    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    if (callbackused) {
+      // sending single file with 100 chunks
+      mockFileResults.forEach((mockFileResult) => {
+        callbackused(mockFileResult);
+      });
+      callbackused(mockFileResult2);
+    }
+
+    expect(mockCallback).toHaveBeenCalled();
+    expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Blob)]), undefined); // verify we recieved 1 blob object i.e. one file
   });
 
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {

@@ -43,7 +43,7 @@ export namespace people {
    * @returns Promise of Array of PeoplePickerResult objects.
    */
   export function selectPeople(
-    param1: PeoplePickerInputs | selectPeopleCallbackFunctionType | undefined, // callback
+    param1: PeoplePickerInputs | selectPeopleCallbackFunctionType | undefined,
     param2?: PeoplePickerInputs,
   ): Promise<PeoplePickerResult[]> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.settings);

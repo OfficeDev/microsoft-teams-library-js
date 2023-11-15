@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Initial SDK changes to suppor 3P app drag and drop",
+  "comment": "Changes to support 3P app drag and drop",
   "packageName": "@microsoft/teams-js",
   "email": "mahimashukla@microsoft.com",
   "dependentChangeType": "patch"
