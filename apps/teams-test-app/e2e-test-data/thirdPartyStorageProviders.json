@@ -1,6 +1,7 @@
 {
   "name": "ThirdPartyStorageProviders",
   "platforms": "Web",
+  "version": ">=2.18.0",
   "testCases": [
     {
       "title": "thirdPartyStorageProviders API Call - Success",
