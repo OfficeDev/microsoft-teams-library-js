@@ -56,7 +56,6 @@ export class Utils {
         } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
-        console.log('Pushing message ....');
         this.topMessages.push(message);
       },
     } as Window;
