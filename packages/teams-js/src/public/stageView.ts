@@ -54,6 +54,11 @@ export namespace stageView {
   /**
    * The open mode for stage content.
    */
+
+  /**
+   * The stageview can be opened in three ways: popoutwithchat, popoutwithoutchat and modal. If the host doesn’t support the specified openmode, it will fallback to another mode in this order: popoutwithchat, popoutwithoutchat, modal. All hosts support modal as the minimum openmode. The default openmode is popoutwithchat, and if it’s not supported, the same fallback behavior applies.
+   */
+  
   export enum StageViewOpenMode {
     /**
      * Open the content in a modal.
