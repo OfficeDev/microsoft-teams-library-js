@@ -721,12 +721,16 @@ describe('meeting', () => {
             let returnedSdkError: SdkError | null;
             let returnedResult: boolean | null;
             const requestUrl = 'validUrl';
-            const sharingProtocol = meeting.SharingProtocol.Collaborative
-            meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
-              callbackCalled = true;
-              returnedResult = result;
-              returnedSdkError = error;
-            }, requestUrl, sharingProtocol);
+            const sharingProtocol = meeting.SharingProtocol.Collaborative;
+            meeting.shareAppContentToStage(
+              (error: SdkError, result: boolean) => {
+                callbackCalled = true;
+                returnedResult = result;
+                returnedSdkError = error;
+              },
+              requestUrl,
+              sharingProtocol,
+            );
 
             const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
             expect(shareAppContentToStageMessage).not.toBeNull();
@@ -740,7 +744,8 @@ describe('meeting', () => {
             expect(callbackCalled).toBe(true);
             expect(returnedSdkError).toBeNull();
             expect(returnedResult).toBe(true);
-            expect(shareAppContentToStageMessage.args).toContain(requestUrl, sharingProtocol);
+            expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+            expect(shareAppContentToStageMessage.args).toContain(sharingProtocol);
           });
 
           it('should throw if the shareAppContentToStage message sends and fails', async () => {
@@ -1656,4 +1661,3 @@ describe('meeting', () => {
     });
   });
 });
-
