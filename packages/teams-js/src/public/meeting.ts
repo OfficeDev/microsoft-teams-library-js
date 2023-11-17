@@ -439,9 +439,6 @@ export namespace meeting {
 
   /**
    * Represents the protocol option for sharing app content to the meeting stage.
-
-   * @hidden
-   * Hide from docs.
    */
   export enum SharingProtocol {
     /**
