@@ -333,7 +333,6 @@ export namespace files {
   }
 
   /**
-   * @hidden
    *
    * Download status enum
    *
