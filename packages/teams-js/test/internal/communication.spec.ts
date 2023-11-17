@@ -1323,9 +1323,15 @@ describe('Testing communication', () => {
         communication.initializeCommunication(undefined);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
-        utils.respondToMessage({
-          data: validResponseMessage,
-        } as NestedAppAuthRequest);
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuthRequest',
+          },
+          false,
+          validResponseMessage,
+        );
 
         expect(onMessageReceivedCb).toBeCalledWith(validResponseMessage);
       });
@@ -1337,9 +1343,15 @@ describe('Testing communication', () => {
         communication.initializeCommunication(undefined);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
-        utils.respondToMessage({
-          data: JSON.stringify({ messageType: 'InvalidMessage' }),
-        } as NestedAppAuthRequest);
+        utils.respondToMessage(
+          {
+            id: 0,
+            data: validMessage,
+            func: 'nestedAppAuthRequest',
+          },
+          false,
+          JSON.stringify({ messageType: 'InvalidMessage' }),
+        );
 
         expect(onMessageReceivedCb).not.toBeCalled();
       });
@@ -1351,10 +1363,14 @@ describe('Testing communication', () => {
         communication.initializeCommunication(undefined);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
-        utils.respondToMessage({
-          func: 'initialize',
-          id: 0,
-        } as MessageRequest);
+        utils.respondToMessage(
+          {
+            func: 'initialize',
+            id: 0,
+          } as MessageRequest,
+          false,
+          'initializeResponse',
+        );
 
         expect(onMessageReceivedCb).not.toBeCalled();
       });

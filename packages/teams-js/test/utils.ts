@@ -200,16 +200,13 @@ export class Utils {
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
-      const data = (message as NestedAppAuthRequest).data;
       this.processMessage({
         origin: this.validOrigin,
         source: this.mockWindow.parent,
-        data: data
-          ? data
-          : ({
-              id: message.id,
-              args: args,
-            } as MessageResponse),
+        data: {
+          id: message.id,
+          args: args,
+        } as MessageResponse,
       } as MessageEvent);
     }
   };
