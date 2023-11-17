@@ -9,6 +9,7 @@ import { runtime } from './runtime';
  * Namespace for profile related APIs.
  *
  * @beta
+ * @hidden
  */
 export namespace profile {
   /**
