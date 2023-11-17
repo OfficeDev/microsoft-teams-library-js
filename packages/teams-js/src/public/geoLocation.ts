@@ -1,6 +1,6 @@
-import { getApiVersionTag, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
-import { ApiName, ApiVersionNumber } from '../internal/constants';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';

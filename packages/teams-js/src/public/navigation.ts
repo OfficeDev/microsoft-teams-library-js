@@ -1,15 +1,14 @@
-import { getApiVersionTag } from '../internal/communication';
-import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { getGenericOnCompleteHandler } from '../internal/utils';
+import { FrameContexts } from './constants';
+import { TabInstance } from './interfaces';
 import {
   backStackNavigateBackHelper,
   navigateCrossDomainHelper,
   returnFocusHelper,
   tabsNavigateToTabHelper,
-} from '../internal/pagesUtil';
-import { getGenericOnCompleteHandler } from '../internal/utils';
-import { FrameContexts } from './constants';
-import { TabInstance } from './interfaces';
+} from './pages';
 import { runtime } from './runtime';
 /**
  * Navigation specific part of the SDK.

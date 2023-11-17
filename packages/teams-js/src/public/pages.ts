@@ -1,31 +1,129 @@
 import {
   Communication,
-  getApiVersionTag,
   sendAndHandleSdkErrorWithVersion,
+  sendAndHandleStatusAndReasonWithDefaultErrorWithVersion,
   sendAndHandleStatusAndReasonWithVersion,
   sendAndUnwrapWithVersion,
   sendMessageEventToChild,
   sendMessageToParentWithVersion,
 } from '../internal/communication';
-import { ApiName, ApiVersionNumber } from '../internal/constants';
 import { registerHandler, registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import {
-  backStackNavigateBackHelper,
-  getMruTabInstancesHelper,
-  getTabInstancesHelper,
-  navigateCrossDomainHelper,
-  returnFocusHelper,
-  setCurrentFrameHelper,
-  shareDeepLinkHelper,
-  tabsNavigateToTabHelper,
-} from '../internal/pagesUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
+
+export function navigateCrossDomainHelper(apiVersionTag: string, url: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+    if (!pages.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage =
+      'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
+    resolve(
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateCrossDomain', errorMessage, url),
+    );
+  });
+}
+
+export function backStackNavigateBackHelper(apiVersionTag: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.backStack.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage = 'Back navigation is not supported in the current client or context.';
+    resolve(sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateBack', errorMessage));
+  });
+}
+
+export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabInstance): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
+    resolve(
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+        apiVersionTag,
+        'navigateToTab',
+        errorMessage,
+        tabInstance,
+      ),
+    );
+  });
+}
+
+export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
+  ensureInitialized(runtime);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'returnFocus', [navigateForward]);
+}
+
+export function getTabInstancesHelper(
+  apiVersionTag: string,
+  tabInstanceParameters?: TabInstanceParameters,
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getTabInstances', tabInstanceParameters));
+  });
+}
+
+export function getMruTabInstancesHelper(
+  apiVersionTag: string,
+  tabInstanceParameters?: TabInstanceParameters,
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getMruTabInstances', tabInstanceParameters));
+  });
+}
+
+export function shareDeepLinkHelper(apiVersionTag: string, deepLinkParameters: ShareDeepLinkParameters): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'shareDeepLink', [
+    deepLinkParameters.subPageId,
+    deepLinkParameters.subPageLabel,
+    deepLinkParameters.subPageWebUrl,
+  ]);
+}
+
+export function setCurrentFrameHelper(apiVersionTag: string, frameInfo: FrameInfo): void {
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'setFrameContext', [frameInfo]);
+}
 
 /**
  * Navigation-specific part of the SDK.

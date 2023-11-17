@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import {
   Communication,
-  getApiVersionTag,
   sendMessageEventToChild,
   sendMessageToParent,
   sendMessageToParentWithVersion,
 } from './communication';
-import { ApiName, ApiVersionNumber } from './constants';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';

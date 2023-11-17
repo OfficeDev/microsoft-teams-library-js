@@ -1,16 +1,10 @@
-import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appUtil';
-import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
-import { ApiName, ApiVersionNumber } from '../internal/constants';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
-import {
-  getMruTabInstancesHelper,
-  getTabInstancesHelper,
-  setCurrentFrameHelper,
-  shareDeepLinkHelper,
-} from '../internal/pagesUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
+import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,
@@ -20,6 +14,7 @@ import {
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
+import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
 import { pages } from './pages';
 import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';

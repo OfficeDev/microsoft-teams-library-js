@@ -2,15 +2,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
 
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
-import { ApiName, ApiVersionNumber } from './constants';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
-import { isFollowApiVersionTagFormat } from './internalAPIs';
+import { isFollowingApiVersionTagFormat } from './internalAPIs';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
@@ -274,7 +274,7 @@ export function sendMessageToParentAsyncWithVersion<T>(
   actionName: string,
   args: any[] | undefined = undefined,
 ): Promise<T> {
-  if (!isFollowApiVersionTagFormat(apiVersionTag)) {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
     throw Error(
       `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
@@ -353,7 +353,7 @@ export function sendMessageToParentWithVersion(
     args = argsOrCallback;
   }
 
-  if (!isFollowApiVersionTagFormat(apiVersionTag)) {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
     throw Error(
       `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
@@ -766,16 +766,4 @@ function createMessageEvent(func: string, args?: any[]): MessageRequest {
     func: func,
     args: args || [],
   };
-}
-
-/**
- * @hidden
- * Creates a string tag for labeling apiVersionTag, which is used for API function call to create message request
- * sent to host(s).
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function getApiVersionTag(apiVersionNumber: ApiVersionNumber, functionName: ApiName): string {
-  return `${apiVersionNumber}_${functionName}`;
 }

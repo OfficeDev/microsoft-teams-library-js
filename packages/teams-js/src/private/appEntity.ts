@@ -1,6 +1,6 @@
-import { getApiVersionTag, sendMessageToParentWithVersion } from '../internal/communication';
-import { ApiName, ApiVersionNumber } from '../internal/constants';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
