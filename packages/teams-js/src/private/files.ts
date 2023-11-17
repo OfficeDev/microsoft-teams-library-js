@@ -300,6 +300,10 @@ export namespace files {
     Readonly = 'readonly',
   }
 
+  /**
+   * @hidden
+   * Limited to Microsoft-internal use
+   */
   export interface ISharePointFile {
     siteId?: string;
     siteUrl: string;
@@ -308,6 +312,7 @@ export namespace files {
     openInWindowFileUrl: string;
     title: string;
     isFolder: boolean;
+    dog: boolean;
     serverRelativeUrl: string;
     lastModifiedByUser: IFilesEntityUser;
     lastModifiedTime: string;
