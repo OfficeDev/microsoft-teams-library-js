@@ -1,3 +1,7 @@
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+
 import {
   Communication,
   sendAndHandleSdkErrorWithVersion,
@@ -293,7 +297,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_NavigateCrossDomain);
+      const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_NavigateCrossDomain);
       if (runtime.isLegacyTeams) {
         resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
@@ -664,7 +668,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Save_Success),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Save_Success),
           'settings.save.success',
         );
         this.notified = true;
@@ -672,7 +676,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Save_Failure),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Save_Failure),
           'settings.save.failure',
           [reason],
         );
@@ -707,7 +711,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Remove_Success),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Remove_Success),
           'settings.remove.success',
         );
         this.notified = true;
@@ -716,7 +720,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.Settings_Remove_Failure),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Remove_Failure),
           'settings.remove.failure',
           [reason],
         );
@@ -858,7 +862,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_FullTrust_EnterFullscreen),
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_FullTrust_EnterFullscreen),
         'enterFullscreen',
         [],
       );
@@ -876,7 +880,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_FullTrust_ExitFullscreen),
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_FullTrust_ExitFullscreen),
         'exitFullscreen',
         [],
       );
@@ -1023,7 +1027,7 @@ export namespace pages {
         }
         resolve(
           sendAndHandleSdkErrorWithVersion(
-            getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_CurrentApp_NavigateTo),
+            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_CurrentApp_NavigateTo),
             'pages.currentApp.navigateTo',
             params,
           ),
@@ -1052,7 +1056,7 @@ export namespace pages {
         }
         resolve(
           sendAndHandleSdkErrorWithVersion(
-            getApiVersionTag(ApiVersionNumber.V_1, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
+            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
             'pages.currentApp.navigateToDefaultPage',
           ),
         );

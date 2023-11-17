@@ -1,3 +1,6 @@
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
 import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -75,7 +78,7 @@ export namespace geoLocation {
     return new Promise<boolean>((resolve) => {
       resolve(
         sendAndHandleSdkErrorWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.GeoLocation_HasPermission),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_HasPermission),
           'permissions.has',
           permissions,
         ),
@@ -102,7 +105,7 @@ export namespace geoLocation {
     return new Promise<boolean>((resolve) => {
       resolve(
         sendAndHandleSdkErrorWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_1, ApiName.GeoLocation_RequestPermission),
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_RequestPermission),
           'permissions.request',
           permissions,
         ),

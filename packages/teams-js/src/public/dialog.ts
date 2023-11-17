@@ -3,6 +3,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+
 import { sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -248,7 +252,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_SendMessageToParentFromDialog),
         'messageForParent',
         [message],
       );
@@ -271,7 +275,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_1, ApiName.Dialog_Url_SendMessageToDialog),
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_SendMessageToDialog),
         'messageForChild',
         [message],
       );

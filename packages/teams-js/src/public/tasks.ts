@@ -1,6 +1,10 @@
 /* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/ban-types */
 
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+
 import { sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
