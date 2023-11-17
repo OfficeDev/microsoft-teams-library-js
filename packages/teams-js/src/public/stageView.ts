@@ -5,7 +5,7 @@ import { runtime } from './runtime';
 
 /**
  * Namespace to interact with the stage view specific part of the SDK.
- *
+ * Chris is making a change here too
  *  @beta
  */
 export namespace stageView {
