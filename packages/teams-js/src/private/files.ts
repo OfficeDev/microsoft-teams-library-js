@@ -301,12 +301,7 @@ export namespace files {
   }
 
   /**
-   * @hidden
-   *
-   * SharePoint file interface
-   *
-   * @internal
-   * Limited to Microsoft-internal use
+   * @hidden Limited to Microsoft-internal use
    */
   export interface ISharePointFile {
     siteId?: string;
