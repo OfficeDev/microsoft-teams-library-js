@@ -4,6 +4,12 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts, SdkError } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const appEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 /**
  * @hidden
  * Namespace to interact with the application entities specific part of the SDK.
@@ -104,7 +110,7 @@ export namespace appEntity {
     }
 
     sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_1, ApiName.AppEntity_SelectAppEntity),
+      getApiVersionTag(appEntityTelemetryVersionNumber, ApiName.AppEntity_SelectAppEntity),
       'appEntity.selectAppEntity',
       [threadId, categories, subEntityId],
       callback,

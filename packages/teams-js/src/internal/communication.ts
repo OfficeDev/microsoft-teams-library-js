@@ -10,9 +10,8 @@ import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
-import { isFollowingApiVersionTagFormat } from './internalAPIs';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
-import { getLogger } from './telemetry';
+import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');

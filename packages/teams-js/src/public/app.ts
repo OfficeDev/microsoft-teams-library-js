@@ -2,10 +2,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/**
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
- */
-
 import {
   Communication,
   initializeCommunication,
@@ -37,6 +33,11 @@ import {
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from './runtime';
 import { version } from './version';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Number of milliseconds we'll give the initialization call to return before timing it out
@@ -729,7 +730,10 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
-    return appInitializeHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_Initialize), validMessageOrigins);
+    return appInitializeHelper(
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
+      validMessageOrigins,
+    );
   }
 
   /**
@@ -776,7 +780,9 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(sendAndUnwrapWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_GetContext), 'getContext'));
+      resolve(
+        sendAndUnwrapWithVersion(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'),
+      );
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -786,7 +792,7 @@ export namespace app {
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
     sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyAppLoaded),
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded),
       Messages.AppLoaded,
       [version],
     );
@@ -798,7 +804,7 @@ export namespace app {
   export function notifySuccess(): void {
     ensureInitializeCalled();
     sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifySuccess),
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess),
       Messages.Success,
       [version],
     );
@@ -813,7 +819,7 @@ export namespace app {
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
     sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyFailure),
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyFailure),
       Messages.Failure,
       [appInitializationFailedRequest.reason, appInitializationFailedRequest.message],
     );
@@ -827,7 +833,7 @@ export namespace app {
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
     sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_NotifyExpectedFailure),
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyExpectedFailure),
       Messages.ExpectedFailure,
       [expectedFailureRequest.reason, expectedFailureRequest.message],
     );
@@ -843,7 +849,7 @@ export namespace app {
    */
   export function registerOnThemeChangeHandler(handler: themeHandler): void {
     registerOnThemeChangeHandlerHelper(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_RegisterOnThemeChangeHandler),
+      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
       handler,
     );
   }
@@ -855,7 +861,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when the operation has completed
    */
   export function openLink(deepLink: string): Promise<void> {
-    return openLinkHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.App_OpenLink), deepLink);
+    return openLinkHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_OpenLink), deepLink);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { isFollowingApiVersionTagFormat } from '../../src/internal/internalAPIs';
+import { isFollowingApiVersionTagFormat } from '../../src/internal/telemetry';
 
 describe('isFollowingApiVersionTagFormat', () => {
   it("test isFollowingApiVersionTagFormat with apiVersionTag 'v' - expect false", () => {

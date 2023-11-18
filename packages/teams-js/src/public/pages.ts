@@ -1,7 +1,3 @@
-/**
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
- */
-
 import {
   Communication,
   sendAndHandleSdkErrorWithVersion,
@@ -20,6 +16,11 @@ import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const pagesTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 export function navigateCrossDomainHelper(apiVersionTag: string, url: string): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -152,7 +153,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    returnFocusHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_ReturnFocus), navigateForward);
+    returnFocusHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus), navigateForward);
   }
 
   /**
@@ -169,7 +170,7 @@ export namespace pages {
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
     registerHandlerHelperWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_RegisterFocusEnterHandler),
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFocusEnterHandler),
       'focusEnter',
       handler,
       [],
@@ -188,7 +189,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    setCurrentFrameHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_SetCurrentFrame), frameInfo);
+    setCurrentFrameHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_SetCurrentFrame), frameInfo);
   }
 
   /**
@@ -254,7 +255,7 @@ export namespace pages {
       }
       resolve(
         sendAndUnwrapWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_GetConfig),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_GetConfig),
           'settings.getSettings',
         ),
       );
@@ -271,7 +272,10 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return navigateCrossDomainHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_NavigateCrossDomain), url);
+    return navigateCrossDomainHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateCrossDomain),
+      url,
+    );
   }
 
   /**
@@ -297,7 +301,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_NavigateCrossDomain);
+      const apiVersionTag: string = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateCrossDomain);
       if (runtime.isLegacyTeams) {
         resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
@@ -313,7 +317,10 @@ export namespace pages {
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    return shareDeepLinkHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_ShareDeepLink), deepLinkParameters);
+    return shareDeepLinkHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ShareDeepLink),
+      deepLinkParameters,
+    );
   }
 
   /**
@@ -325,7 +332,7 @@ export namespace pages {
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
     registerHandlerHelperWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_RegisterFullScreenHandler),
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFullScreenHandler),
       'fullScreenChange',
       handler,
       [],
@@ -390,7 +397,7 @@ export namespace pages {
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
       return tabsNavigateToTabHelper(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_NavigateToTab),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_NavigateToTab),
         tabInstance,
       );
     }
@@ -402,7 +409,7 @@ export namespace pages {
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return getTabInstancesHelper(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_GetTabInstances),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_GetTabInstances),
         tabInstanceParameters,
       );
     }
@@ -414,7 +421,7 @@ export namespace pages {
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
       return getMruTabInstancesHelper(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Tabs_GetMruTabInstances),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_GetMruTabInstances),
         tabInstanceParameters,
       );
     }
@@ -465,7 +472,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_SetValidityState),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetValidityState),
         'settings.setValidityState',
         [validityState],
       );
@@ -485,7 +492,7 @@ export namespace pages {
         }
         resolve(
           sendAndHandleStatusAndReasonWithVersion(
-            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_SetConfig),
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetConfig),
             'settings.setSettings',
             instanceConfig,
           ),
@@ -530,7 +537,7 @@ export namespace pages {
       saveHandler = handler;
       !isNullOrUndefined(handler) &&
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterOnSaveHandlerHelper),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnSaveHandlerHelper),
           'registerHandler',
           ['save'],
         );
@@ -573,7 +580,7 @@ export namespace pages {
       removeHandler = handler;
       !isNullOrUndefined(handler) &&
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterOnRemoveHandlerHelper),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnRemoveHandlerHelper),
           'registerHandler',
           ['remove'],
         );
@@ -597,7 +604,7 @@ export namespace pages {
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
       registerHandlerHelperWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_Config_RegisterChangeConfigHandler),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterChangeConfigHandler),
         'changeSettings',
         handler,
         [FrameContexts.content],
@@ -668,7 +675,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Save_Success),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Success),
           'settings.save.success',
         );
         this.notified = true;
@@ -676,7 +683,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Save_Failure),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Failure),
           'settings.save.failure',
           [reason],
         );
@@ -711,7 +718,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Remove_Success),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Success),
           'settings.remove.success',
         );
         this.notified = true;
@@ -720,7 +727,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Settings_Remove_Failure),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Failure),
           'settings.remove.failure',
           [reason],
         );
@@ -771,7 +778,9 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return backStackNavigateBackHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_BackStack_NavigateBack));
+      return backStackNavigateBackHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_NavigateBack),
+      );
     }
 
     /**
@@ -783,7 +792,7 @@ export namespace pages {
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
       registerBackButtonHandlerHelper(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_BackStack_RegisterBackButtonHandler),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonHandler),
         handler,
         () => {
           if (!isNullOrUndefined(handler) && !isSupported()) {
@@ -862,7 +871,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_FullTrust_EnterFullscreen),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_FullTrust_EnterFullscreen),
         'enterFullscreen',
         [],
       );
@@ -880,7 +889,7 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_FullTrust_ExitFullscreen),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_FullTrust_ExitFullscreen),
         'exitFullscreen',
         [],
       );
@@ -913,7 +922,7 @@ export namespace pages {
      */
     export function onClick(handler: handlerFunctionType): void {
       registerHandlerHelperWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnClick),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnClick),
         'appButtonClick',
         handler,
         [FrameContexts.content],
@@ -932,7 +941,7 @@ export namespace pages {
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
       registerHandlerHelperWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnHoverEnter),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverEnter),
         'appButtonHoverEnter',
         handler,
         [FrameContexts.content],
@@ -951,7 +960,7 @@ export namespace pages {
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
       registerHandlerHelperWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_AppButton_OnHoverLeave),
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverLeave),
         'appButtonHoverLeave',
         handler,
         [FrameContexts.content],
@@ -1027,7 +1036,7 @@ export namespace pages {
         }
         resolve(
           sendAndHandleSdkErrorWithVersion(
-            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_CurrentApp_NavigateTo),
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_CurrentApp_NavigateTo),
             'pages.currentApp.navigateTo',
             params,
           ),
@@ -1056,7 +1065,7 @@ export namespace pages {
         }
         resolve(
           sendAndHandleSdkErrorWithVersion(
-            getApiVersionTag(ApiVersionNumber.V_2, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
             'pages.currentApp.navigateToDefaultPage',
           ),
         );

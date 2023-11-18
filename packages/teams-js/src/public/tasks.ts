@@ -1,10 +1,6 @@
 /* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/ban-types */
 
-/**
- * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
- */
-
 import { sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -14,6 +10,11 @@ import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } 
 import { dialog } from './dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const tasksTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
@@ -49,7 +50,7 @@ export namespace tasks {
    * @param submitHandler - Handler to call when the task module is completed
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
-    const apiVersionTag: string = getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_StartTask);
+    const apiVersionTag: string = getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_StartTask);
     const dialogSubmitHandler = submitHandler
       ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err ?? '', sdkResponse.result ?? '')
       : undefined;
@@ -83,7 +84,7 @@ export namespace tasks {
     if (Object.keys(extra).length) {
       throw new Error('resize requires a TaskInfo argument containing only width and height');
     }
-    updateResizeHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_UpdateTask), taskInfo as DialogSize);
+    updateResizeHelper(getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_UpdateTask), taskInfo as DialogSize);
   }
 
   /**
@@ -96,7 +97,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    urlSubmitHelper(getApiVersionTag(ApiVersionNumber.V_1, ApiName.Tasks_SubmitTask), result, appIds);
+    urlSubmitHelper(getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_SubmitTask), result, appIds);
   }
 
   /**

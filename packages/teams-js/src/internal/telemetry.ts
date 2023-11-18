@@ -25,6 +25,20 @@ export function getApiVersionTag(apiVersionNumber: ApiVersionNumber, functionNam
 }
 
 /**
+ * @hidden
+ * Check if apiVersionTag developer sends follows the pattern starting with a lowercase 'v', then
+ * followed by one or more digits, then concatenated with underscore and some characters to indicate api name.
+ * For example, 'v2_app.getContext'. If yes, return true. Otherwise, return false.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function isFollowingApiVersionTagFormat(apiVersionTag: string): boolean {
+  const pattern = /^v\d+_[\w.]+$/;
+  return pattern.test(apiVersionTag);
+}
+
+/**
  * Use enum to set or update API version number
  * Note: V_0 = 'v0' is used for APIs who needs to be passed with correct version number
  * but haven't been implemented yet.

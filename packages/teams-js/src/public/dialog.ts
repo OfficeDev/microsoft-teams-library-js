@@ -3,10 +3,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-/**
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
- */
-
 import { sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
@@ -25,6 +21,11 @@ import {
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const dialogAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
   ensureInitialized(
@@ -208,7 +209,7 @@ export namespace dialog {
       messageFromChildHandler?: PostMessageChannel,
     ): void {
       urlOpenHelper(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Open),
+        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Open),
         urlDialogInfo,
         submitHandler,
         messageFromChildHandler,
@@ -229,7 +230,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Submit), result, appIds);
+      urlSubmitHelper(getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Submit), result, appIds);
     }
 
     /**
@@ -252,7 +253,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
         'messageForParent',
         [message],
       );
@@ -275,7 +276,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_SendMessageToDialog),
+        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
         'messageForChild',
         [message],
       );
@@ -345,7 +346,7 @@ export namespace dialog {
         messageFromChildHandler?: PostMessageChannel,
       ): void {
         botUrlOpenHelper(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Url_Bot_Open),
+          getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Bot_Open),
           botUrlDialogInfo,
           submitHandler,
           messageFromChildHandler,
@@ -428,7 +429,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper(getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_Update_Resize), dimensions);
+      updateResizeHelper(getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
     }
 
     /**
@@ -471,7 +472,7 @@ export namespace dialog {
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
       sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_AdaptiveCard_Open),
+        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
         'tasks.startTask',
         [dialogInfo],
         (err: string, result: string | object) => {
@@ -526,7 +527,7 @@ export namespace dialog {
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
         sendMessageToParentWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Dialog_AdaptiveCard_Bot_Open),
+          getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
           'tasks.startTask',
           [dialogInfo],
           (err: string, result: string | object) => {
