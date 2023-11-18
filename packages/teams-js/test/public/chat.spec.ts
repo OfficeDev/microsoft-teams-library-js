@@ -84,7 +84,7 @@ describe('chat', () => {
             message: 'someMessage',
           };
 
-          const normalizedChatRequest = {
+          const normalizedChatRequestArguments = {
             members: ['someUPN'],
             message: 'someMessage',
           };
@@ -93,7 +93,7 @@ describe('chat', () => {
 
           const openChatMessage = utils.findMessageByFunc('chat.openChat');
           expect(openChatMessage).not.toBeNull();
-          expect(openChatMessage.args).toEqual([normalizedChatRequest]);
+          expect(openChatMessage.args).toEqual([normalizedChatRequestArguments]);
         });
 
         it(`should wait until response is received from non-legacy Teams host before resolving promise - Context: ${context}`, async () => {
@@ -193,7 +193,7 @@ describe('chat', () => {
             topic: 'someTopic',
           };
 
-          const normalizedChatRequest = {
+          const normalizedChatRequestArguments = {
             members: ['someUPN', 'someUPN2'],
             message: 'someMessage',
             topic: 'someTopic',
@@ -203,7 +203,7 @@ describe('chat', () => {
 
           const openChatMessage = utils.findMessageByFunc('chat.openChat');
           expect(openChatMessage).not.toBeNull();
-          expect(openChatMessage.args).toEqual([normalizedChatRequest]);
+          expect(openChatMessage.args).toEqual([normalizedChatRequestArguments]);
         });
 
         it(`should successfully pass chatRequest to non-legacy Teams host when only one UPN is specified - Context: ${context}`, async () => {
@@ -216,7 +216,7 @@ describe('chat', () => {
             topic: 'someTopic',
           };
 
-          const normalizedChatRequestForASingleUser = {
+          const normalizedChatRequestArgumentsForASingleUser = {
             members: ['someUPN'],
             message: 'someMessage',
           };
@@ -225,7 +225,7 @@ describe('chat', () => {
 
           const openChatMessage = utils.findMessageByFunc('chat.openChat');
           expect(openChatMessage).not.toBeNull();
-          expect(openChatMessage.args).toEqual([normalizedChatRequestForASingleUser]);
+          expect(openChatMessage.args).toEqual([normalizedChatRequestArgumentsForASingleUser]);
         });
 
         it(`should wait until response is received from non-legacy Teams host before resolving promise  - Context: ${context}`, async () => {
