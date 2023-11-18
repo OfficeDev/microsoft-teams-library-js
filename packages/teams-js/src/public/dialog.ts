@@ -1,4 +1,3 @@
-/* eslint-disable strict-null-checks/all */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -25,7 +24,7 @@ import { runtime } from './runtime';
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
-const dialogAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
   ensureInitialized(
@@ -209,7 +208,7 @@ export namespace dialog {
       messageFromChildHandler?: PostMessageChannel,
     ): void {
       urlOpenHelper(
-        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Open),
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Open),
         urlDialogInfo,
         submitHandler,
         messageFromChildHandler,
@@ -230,7 +229,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      urlSubmitHelper(getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Submit), result, appIds);
+      urlSubmitHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Submit), result, appIds);
     }
 
     /**
@@ -253,7 +252,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
         'messageForParent',
         [message],
       );
@@ -276,7 +275,7 @@ export namespace dialog {
       }
 
       sendMessageToParentWithVersion(
-        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
         'messageForChild',
         [message],
       );
@@ -346,7 +345,7 @@ export namespace dialog {
         messageFromChildHandler?: PostMessageChannel,
       ): void {
         botUrlOpenHelper(
-          getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Url_Bot_Open),
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_Open),
           botUrlDialogInfo,
           submitHandler,
           messageFromChildHandler,
@@ -429,7 +428,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      updateResizeHelper(getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
+      updateResizeHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
     }
 
     /**
@@ -472,7 +471,7 @@ export namespace dialog {
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
       sendMessageToParentWithVersion(
-        getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
         'tasks.startTask',
         [dialogInfo],
         (err: string, result: string | object) => {
@@ -527,7 +526,7 @@ export namespace dialog {
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
         sendMessageToParentWithVersion(
-          getApiVersionTag(dialogAPIsTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
           'tasks.startTask',
           [dialogInfo],
           (err: string, result: string | object) => {

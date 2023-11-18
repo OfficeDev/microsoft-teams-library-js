@@ -1,12 +1,14 @@
-/**
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
- */
 import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const geoLocationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
@@ -51,7 +53,7 @@ export namespace geoLocation {
       throw errorNotSupportedOnPlatform;
     }
     return sendAndHandleSdkErrorWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_GetCurrentLocation),
+      getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_GetCurrentLocation),
       'location.getLocation',
       {
         allowChooseLocation: false,
@@ -78,7 +80,7 @@ export namespace geoLocation {
     return new Promise<boolean>((resolve) => {
       resolve(
         sendAndHandleSdkErrorWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_HasPermission),
+          getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_HasPermission),
           'permissions.has',
           permissions,
         ),
@@ -105,7 +107,7 @@ export namespace geoLocation {
     return new Promise<boolean>((resolve) => {
       resolve(
         sendAndHandleSdkErrorWithVersion(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_RequestPermission),
+          getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_RequestPermission),
           'permissions.request',
           permissions,
         ),
@@ -144,7 +146,7 @@ export namespace geoLocation {
         throw errorNotSupportedOnPlatform;
       }
       return sendAndHandleSdkErrorWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_Map_ChooseLocation),
+        getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_Map_ChooseLocation),
         'location.getLocation',
         {
           allowChooseLocation: true,
@@ -170,7 +172,7 @@ export namespace geoLocation {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
       return sendAndHandleSdkErrorWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.GeoLocation_ShowLocation),
+        getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_ShowLocation),
         'location.showLocation',
         location,
       );
