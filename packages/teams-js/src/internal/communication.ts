@@ -908,11 +908,24 @@ function createMessageRequest(
   };
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Creates a nested app authentication request.
+ *
+ * @param {string} message - The message to be included in the request. This is typically a stringified JSON object containing the details of the authentication request.
+ * The reason for using a string is to allow complex data structures to be sent as a message while avoiding potential issues with object serialization and deserialization.
+ *
+ * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
+ */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
     func: 'nestedAppAuthRequest',
     timestamp: Date.now(),
+    // Since this is a nested app auth request, we don't need to send any args.
+    // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],
     data: message,
   };
