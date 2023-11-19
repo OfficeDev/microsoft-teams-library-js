@@ -8,6 +8,7 @@ export interface MessageRequest {
   timestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
+  apiversiontag?: string;
 }
 
 /**
