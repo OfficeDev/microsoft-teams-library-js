@@ -769,11 +769,21 @@ function handleChildMessage(evt: DOMMessageEvent): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * Checks if the top window and the parent window are different.
+ *
+ * @returns {boolean} Returns true if the top window and the parent window are different, false otherwise.
+ */
+function areTopAndParentWindowsDistinct(): boolean {
+  return Communication.topWindow !== Communication.parentWindow;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
-
-  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
     return CommunicationPrivate.topMessageQueue;
   } else if (targetWindow === Communication.parentWindow) {
     return CommunicationPrivate.parentMessageQueue;
@@ -789,9 +799,7 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
-
-  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
     return Communication.topOrigin;
   } else if (targetWindow === Communication.parentWindow) {
     return Communication.parentOrigin;
@@ -807,9 +815,7 @@ function getTargetOrigin(targetWindow: Window | null): string | null {
  * Limited to Microsoft-internal use
  */
 function getTargetName(targetWindow: Window | null): string | null {
-  const haveDifferentTopAndParentWindows = Communication.topWindow !== Communication.parentWindow;
-
-  if (targetWindow === Communication.topWindow && haveDifferentTopAndParentWindows) {
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
     return 'top';
   } else if (targetWindow === Communication.parentWindow) {
     return 'parent';
