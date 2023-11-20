@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
-import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import {
+  Communication,
+  sendMessageEventToChild,
+  sendMessageToParent,
+  sendMessageToParentWithVersion,
+} from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -98,10 +104,34 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
  * @internal
  * Limited to Microsoft-internal use
  */
+export function registerHandlerWithVersion(
+  getApiVersionTag: string,
+  name: string,
+  handler: Function,
+  sendMessage = true,
+  args: unknown[] = [],
+): void {
+  if (handler) {
+    HandlersPrivate.handlers[name] = handler;
+    sendMessage && sendMessageToParentWithVersion(getApiVersionTag, 'registerHandler', [name, ...args]);
+  } else {
+    delete HandlersPrivate.handlers[name];
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
+    sendMessage &&
+      sendMessageToParentWithVersion(
+        getApiVersionTag(ApiVersionNumber.V_0, ApiName.RegisterHandler),
+        'registerHandler',
+        [name, ...args],
+      );
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -121,6 +151,35 @@ export function removeHandler(name: string): void {
  */
 export function doesHandlerExist(name: string): boolean {
   return HandlersPrivate.handlers[name] != null;
+}
+
+/**
+ * @hidden
+ * Undocumented helper function with shared code between deprecated version and current version of register*Handler APIs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @param apiVersionTag - The tag to indicate API version number with name
+ * @param name - The name of the handler to register.
+ * @param handler - The handler to invoke.
+ * @param contexts - The context within which it is valid to register this handler.
+ * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
+ */
+export function registerHandlerHelperWithVersion(
+  apiVersionTag: string,
+  name: string,
+  handler: Function,
+  contexts: FrameContexts[],
+  registrationHelper?: () => void,
+): void {
+  // allow for registration cleanup even when not finished initializing
+  handler && ensureInitialized(runtime, ...contexts);
+  if (registrationHelper) {
+    registrationHelper();
+  }
+
+  registerHandler(name, handler);
 }
 
 /**
@@ -154,9 +213,9 @@ export function registerHandlerHelper(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
+export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['themeChange']);
 }
 
 /**
@@ -181,7 +240,10 @@ export function handleThemeChange(theme: string): void {
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
+      'load',
+    ]);
 }
 
 /**
@@ -208,7 +270,10 @@ function handleLoad(context: LoadContext): void {
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
+      'beforeUnload',
+    ]);
 }
 
 /**
