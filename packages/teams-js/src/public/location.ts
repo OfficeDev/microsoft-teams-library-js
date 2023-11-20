@@ -1,9 +1,15 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const locationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
@@ -86,7 +92,12 @@ export namespace location {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('location.getLocation', [props], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(locationTelemetryVersionNumber, ApiName.Location_GetLocation),
+      'location.getLocation',
+      [props],
+      callback,
+    );
   }
 
   /**
@@ -113,7 +124,12 @@ export namespace location {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParent('location.showLocation', [location], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(locationTelemetryVersionNumber, ApiName.Location_ShowLocation),
+      'location.showLocation',
+      [location],
+      callback,
+    );
   }
 
   /**
