@@ -24,7 +24,15 @@ export namespace clipboard {
    *          rejects with error stating the reason for failure.
    */
   export async function write(blob: Blob): Promise<void> {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.meetingStage,
+      FrameContexts.task,
+      FrameContexts.settings,
+      FrameContexts.stage,
+      FrameContexts.sidePanel,
+    );
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -51,7 +59,15 @@ export namespace clipboard {
    *          Note: Returned blob type will contain one of the MIME type `image/png`, `text/plain` or `text/html`.
    */
   export async function read(): Promise<Blob> {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel);
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.meetingStage,
+      FrameContexts.task,
+      FrameContexts.settings,
+      FrameContexts.stage,
+      FrameContexts.sidePanel,
+    );
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
