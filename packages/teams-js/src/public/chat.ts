@@ -1,8 +1,14 @@
-import { sendAndHandleStatusAndReason } from '../internal/communication';
+import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const chatTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Describes information needed to start a chat
@@ -67,6 +73,7 @@ export namespace chat {
    * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
+    const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenChat);
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
@@ -74,13 +81,14 @@ export namespace chat {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleStatusAndReason(
+          sendAndHandleStatusAndReasonWithVersion(
+            apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
-        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
+        const sendPromise = sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'chat.openChat', {
           members: [openChatRequest.user],
           message: openChatRequest.message,
         });
@@ -100,6 +108,7 @@ export namespace chat {
    * @beta
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
+    const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenGroupChat);
     return new Promise<void>((resolve) => {
       if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
@@ -117,13 +126,14 @@ export namespace chat {
         }
         if (runtime.isLegacyTeams) {
           resolve(
-            sendAndHandleStatusAndReason(
+            sendAndHandleStatusAndReasonWithVersion(
+              apiVersionTag,
               'executeDeepLink',
               createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
             ),
           );
         } else {
-          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'chat.openChat', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,
