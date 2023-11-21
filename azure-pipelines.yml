@@ -724,9 +724,9 @@ extends:
               - task: CmdLine@2
                 displayName: 'Build Test App CDN'
                 inputs:
-                 script: |
-                  pnpm build-test-app-CDN
-                workingDirectory: '$(ClientSdkProjectDirectory)'
+                  script: |
+                    pnpm build-test-app-CDN
+                  workingDirectory: '$(ClientSdkProjectDirectory)'
               - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
                 displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
                 condition: succeeded()
