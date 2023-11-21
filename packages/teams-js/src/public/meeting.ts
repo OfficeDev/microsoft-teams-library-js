@@ -1,5 +1,5 @@
-import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
-import { doesHandlerExist, registerHandler, registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { doesHandlerExist, registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
@@ -860,7 +860,11 @@ export namespace meeting {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.speakingStateChanged', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterSpeakingStateChangeHandler),
+      'meeting.speakingStateChanged',
+      handler,
+    );
   }
 
   /**
@@ -886,7 +890,11 @@ export namespace meeting {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.raiseHandStateChanged', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterRaiseHandStateChangedHandler),
+      'meeting.raiseHandStateChanged',
+      handler,
+    );
   }
 
   /**
@@ -910,7 +918,11 @@ export namespace meeting {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.meetingReactionReceived', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMeetingReactionReceivedHandler),
+      'meeting.meetingReactionReceived',
+      handler,
+    );
   }
 
   /**
@@ -969,7 +981,11 @@ export namespace meeting {
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
-      sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_AppShareButton_SetOptions),
+        'meeting.appShareButton.setOptions',
+        [shareInformation],
+      );
     }
   }
 
@@ -1045,7 +1061,11 @@ export namespace meeting {
           setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
         }
       };
-      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+      registerHandlerWithVersion(
+        getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMicStateChangeHandler),
+        'meeting.micStateChanged',
+        micStateChangedCallback,
+      );
 
       const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection): void => {
         requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
@@ -1054,7 +1074,8 @@ export namespace meeting {
 
       callback(isHostAudioless);
     };
-    sendMessageToParent(
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestAppAudioHandling),
       'meeting.requestAppAudioHandling',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalRequest,
@@ -1087,7 +1108,8 @@ export namespace meeting {
       callback(isHostAudioless);
     };
 
-    sendMessageToParent(
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestAppAudioHandling),
       'meeting.requestAppAudioHandling',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalStop,
@@ -1113,6 +1135,10 @@ export namespace meeting {
 
   function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.updateMicState', [micState, reason]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_SetMicStateWithReason),
+      'meeting.updateMicState',
+      [micState, reason],
+    );
   }
 }

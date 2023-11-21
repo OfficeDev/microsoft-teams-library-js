@@ -1,8 +1,14 @@
-import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { runtime } from '../public/runtime';
 import { errorNotSupportedOnPlatform } from './constants';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const menuTelemetryVersionNumber: ApiVersionNumber = '???';
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.
@@ -154,9 +160,24 @@ export namespace menus {
    * Limited to Microsoft-internal use.
    */
   export function initialize(): void {
-    registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
-    registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
-    registerHandler('setModuleView', handleViewConfigItemPress, false);
+    registerHandlerWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterNavBarMenuItemPressHandler),
+      'navBarMenuItemPress',
+      handleNavBarMenuItemPress,
+      false,
+    );
+    registerHandlerWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterActionMenuItemPressHandler),
+      'actionMenuItemPress',
+      handleActionMenuItemPress,
+      false,
+    );
+    registerHandlerWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterSetModuleViewHandler),
+      'setModuleView',
+      handleViewConfigItemPress,
+      false,
+    );
   }
 
   /**
@@ -173,13 +194,21 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     viewConfigItemPressHandler = handler;
-    sendMessageToParent('setUpViews', [viewConfig]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_SetUpViews),
+      'setUpViews',
+      [viewConfig],
+    );
   }
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('viewConfigItemPress', [id]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleViewConfigItemPress),
+        'viewConfigItemPress',
+        [id],
+      );
     }
   }
 
@@ -196,13 +225,21 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     navBarMenuItemPressHandler = handler;
-    sendMessageToParent('setNavBarMenu', [items]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_SetNavBarMenu),
+      'setNavBarMenu',
+      [items],
+    );
   }
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleNavBarMenuItemPress', [id]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleNavBarMenuItemPress),
+        'handleNavBarMenuItemPress',
+        [id],
+      );
     }
   }
 
@@ -233,13 +270,21 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     actionMenuItemPressHandler = handler;
-    sendMessageToParent('showActionMenu', [params]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_ShowActionMenu),
+      'showActionMenu',
+      [params],
+    );
   }
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleActionMenuItemPress', [id]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleActionMenuItemPress),
+        'handleActionMenuItemPress',
+        [id],
+      );
     }
   }
 
