@@ -25,8 +25,7 @@ interface OpenChatRequest {
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
-   * The [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
-   * of the user with whom to begin a chat
+   * The Microsoft Entra UPN (e-mail address) of the user to chat with
    */
   user: string;
 }
@@ -40,8 +39,7 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
-   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
-   * of users with whom to begin a chat
+   * Array containing Microsoft Entra UPNs (e-mail addresss) of users to open chat with
    */
   users: string[];
   /**
@@ -81,7 +79,7 @@ export namespace chat {
         );
       } else {
         const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
-          members: [openChatRequest.user],
+          members: openChatRequest.user,
           message: openChatRequest.message,
         });
         resolve(sendPromise);
@@ -109,7 +107,7 @@ export namespace chat {
           user: openChatRequest.users[0],
           message: openChatRequest.message,
         };
-        resolve(openChat(chatRequest));
+        openChat(chatRequest);
       } else {
         ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
