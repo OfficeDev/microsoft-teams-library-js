@@ -7,7 +7,7 @@ import { runtime } from './runtime';
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
-const interactiveTelemetryVersionNumber: ApiVersionNumber = '???';
+const interactiveTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * APIs involving Live Share, a framework for building real-time collaborative apps.

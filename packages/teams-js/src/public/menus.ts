@@ -6,9 +6,9 @@ import { runtime } from '../public/runtime';
 import { errorNotSupportedOnPlatform } from './constants';
 
 /**
- * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
-const menuTelemetryVersionNumber: ApiVersionNumber = '???';
+const menuTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.
