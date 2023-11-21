@@ -41,8 +41,8 @@ const OpenChat = (): React.ReactElement =>
     title: 'Open Chat',
     onClick: {
       validateInput: (input) => {
-        if (!input.user) {
-          throw new Error('User is required on the input');
+        if (!input.user || !input.message) {
+          throw new Error('Both user and message are required on the input');
         }
       },
       submit: async (input) => {
