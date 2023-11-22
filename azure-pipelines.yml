@@ -264,6 +264,7 @@ extends:
               - template: tools/yaml-templates/build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: Bash@3
                 displayName: 'Run E2E Perf tests'
                 condition: succeeded()
@@ -288,6 +289,7 @@ extends:
               - template: tools/yaml-templates/build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
                 displayName: 'Run E2E integration tests'
                 condition: succeeded()
@@ -315,6 +317,7 @@ extends:
               - template: tools/yaml-templates/build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: CmdLine@2
                 displayName: 'Build Test App Local'
                 inputs:
@@ -349,6 +352,7 @@ extends:
               - template: tools/yaml-templates/build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: CmdLine@2
                 displayName: 'Build Test App CDN'
                 inputs:
