@@ -3,10 +3,10 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import * as decodeAttachmentModule from '../../src/internal/mediaUtil';
 import { ErrorCode, SdkError } from '../../src/public';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { thirdPartyStorageProviders } from '../../src/public/thirdPartyStorageProviders';
+import { thirdPartyCloudStorage } from '../../src/public/thirdPartyCloudStorage';
 import { Utils } from '../utils';
 
-describe('thirdPartyStorageProviders', () => {
+describe('thirdPartyCloudStorage', () => {
   const utils: Utils = new Utils();
   const mockDecodeAttachment = jest.fn();
   const mockGetFilesDragAndDropViaCallback = jest.fn();
@@ -16,13 +16,13 @@ describe('thirdPartyStorageProviders', () => {
     content: 'content',
     task: 'task',
   };
-  const mockFileResults: thirdPartyStorageProviders.FileResult[] = [];
+  const mockFileResults: thirdPartyCloudStorage.FileResult[] = [];
 
-  const mockFileChunk2: thirdPartyStorageProviders.FileChunk = {
+  const mockFileChunk2: thirdPartyCloudStorage.FileChunk = {
     chunk: 'file1chunk2',
     chunkSequence: Number.MAX_SAFE_INTEGER, // last chunk
   };
-  const mockFileResult2: thirdPartyStorageProviders.FileResult = {
+  const mockFileResult2: thirdPartyCloudStorage.FileResult = {
     fileChunk: mockFileChunk2,
     fileType: 'mockFileType',
     fileIndex: 1, // for now it means last file we can remove
@@ -42,7 +42,7 @@ describe('thirdPartyStorageProviders', () => {
     jest.mock('../../src/public/runtime', () => ({
       runtime: mockRuntime,
     }));
-    jest.mock('../../src/public/thirdPartyStorageProviders', () => ({
+    jest.mock('../../src/public/thirdPartyCloudStorage', () => ({
       getFilesDragAndDropViaCallback: () => mockGetFilesDragAndDropViaCallback,
     }));
 
@@ -51,12 +51,12 @@ describe('thirdPartyStorageProviders', () => {
     }));
 
     for (let i = 0; i < 100; i++) {
-      const mockFileChunk: thirdPartyStorageProviders.FileChunk = {
+      const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
         chunk: 'filechunk2',
         chunkSequence: i,
       };
 
-      const mockFileResult: thirdPartyStorageProviders.FileResult = {
+      const mockFileResult: thirdPartyCloudStorage.FileResult = {
         fileChunk: mockFileChunk,
         fileType: 'mockFileType',
         fileIndex: i + 1,
@@ -71,15 +71,15 @@ describe('thirdPartyStorageProviders', () => {
   it('should call the callback with error when callback is null', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     // eslint-disable-next-line strict-null-checks/all
-    expect(() => thirdPartyStorageProviders.getDragAndDropFiles('', null)).toThrowError(
+    expect(() => thirdPartyCloudStorage.getDragAndDropFiles('', null)).toThrowError(
       '[getDragAndDropFiles] Callback cannot be null',
     );
   });
 
   it('should throw error with error code INVALID_ARGUMENTS when dragAndDropInput not is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
-    thirdPartyStorageProviders.getDragAndDropFiles('', (attachments: Blob[], error?: SdkError) => {
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
+    thirdPartyCloudStorage.getDragAndDropFiles('', (attachments: Blob[], error?: SdkError) => {
       if (error) {
         expect(error).not.toBeNull();
         expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
@@ -89,21 +89,21 @@ describe('thirdPartyStorageProviders', () => {
 
   it('should ensure initialization and call getFilesDragAndDropViaCallback when valid input is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
     expect(() => {
-      thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+      thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     }).not.toThrowError();
   });
 
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
-    const mockFileChunk: thirdPartyStorageProviders.FileChunk = {
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
+    const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
       chunk: '',
       chunkSequence: 0,
     };
-    const mockFileResult: thirdPartyStorageProviders.FileResult = {
+    const mockFileResult: thirdPartyCloudStorage.FileResult = {
       fileChunk: mockFileChunk,
       fileType: 'mockFileType',
       error: {
@@ -115,7 +115,7 @@ describe('thirdPartyStorageProviders', () => {
     };
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -127,10 +127,10 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -152,10 +152,10 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {
@@ -173,14 +173,14 @@ describe('thirdPartyStorageProviders', () => {
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyStorageProviders: {} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
 
     jest.spyOn(decodeAttachmentModule, 'decodeAttachment').mockImplementation(() => {
       throw new Error('Mocked error from decodeAttachment');
     });
 
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyStorageProviders.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
     const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
     if (callbackused) {

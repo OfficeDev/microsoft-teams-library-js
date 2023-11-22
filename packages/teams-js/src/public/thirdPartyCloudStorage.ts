@@ -7,14 +7,14 @@ import { ErrorCode, SdkError } from './interfaces';
 import { media } from './media';
 import { runtime } from './runtime';
 
-const Files3PLogger = getLogger('thirdPartyStorageProviders');
+const Files3PLogger = getLogger('thirdPartyCloudStorage');
 
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
  * @beta
  */
-export namespace thirdPartyStorageProviders {
+export namespace thirdPartyCloudStorage {
   /** Get context callback function type */
   const files: FilesFor3PApps[] = [];
   let helper: AttachmentListHelper = {
@@ -134,7 +134,7 @@ export namespace thirdPartyStorageProviders {
     }
 
     sendMessageToParent(
-      'thirdPartyStorageProviders.getDragAndDropFiles',
+      'thirdPartyCloudStorage.getDragAndDropFiles',
       [dragAndDropInput],
       handleGetDragAndDropFilesCallbackRequest,
     );
@@ -190,12 +190,12 @@ export namespace thirdPartyStorageProviders {
   }
 
   /**
-   * Checks if the thirdPartyStorageProviders capability is supported by the host
-   * @returns boolean to represent whether the thirdPartyStorageProviders capability is supported
+   * Checks if the thirdPartyCloudStorage capability is supported by the host
+   * @returns boolean to represent whether the thirdPartyCloudStorage capability is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.thirdPartyStorageProviders ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.thirdPartyCloudStorage ? true : false;
   }
 }

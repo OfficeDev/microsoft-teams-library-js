@@ -51,7 +51,7 @@ import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
-import ThirdPartyStorageProvidersAPIs from './components/ThirdPartyStorageProvidersAPIs';
+import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
@@ -172,7 +172,7 @@ const App = (): ReactElement => {
         <StageViewAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
-        <ThirdPartyStorageProvidersAPIs />
+        <ThirdPartyCloudStorageAPIs />
         <VideoAPIs />
         <VideoExAPIs />
         <VisualMediaAPIs />
