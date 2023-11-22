@@ -1,10 +1,12 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiVersionNumber } from '../internal/telemetry';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const sharingTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
 const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 
