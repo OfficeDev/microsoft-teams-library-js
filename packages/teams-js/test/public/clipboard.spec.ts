@@ -21,7 +21,14 @@ describe('clipboard', () => {
   const base64ResponsePlainText = JSON.stringify({ mimeType: 'text/plain', content: 'SGVsbG8gd29ybGQ' });
   const base64ResponseHtmlText = JSON.stringify({ mimeType: 'text/html', content: 'SGVsbG8gd29ybGQ' });
   const dataToCopyNotSupported: Blob = new Blob(['Mock data not supported'], { type: 'application/json' });
-  const allowedContexts = [FrameContexts.content, FrameContexts.task, FrameContexts.stage, FrameContexts.sidePanel];
+  const allowedContexts = [
+    FrameContexts.content,
+    FrameContexts.meetingStage,
+    FrameContexts.task,
+    FrameContexts.settings,
+    FrameContexts.stage,
+    FrameContexts.sidePanel,
+  ];
   Object.assign(navigator, {
     clipboard: {},
   });
