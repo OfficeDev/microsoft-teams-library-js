@@ -1,0 +1,48 @@
+{
+  "name": "VisualMedia Image",
+  "platforms": "iOS",
+  "version": ">=2.18.0",
+  "checkIsSupported": {
+    "capabilityName": "VisualMediaImage",
+    "expectedOutput": "VisualMedia.image module is supported"
+  },
+  "testCases": [
+    {
+      "title": "captureImages API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_captureImages",
+      "inputValue": {
+        "maxVisualMediaCount": 9,
+        "sourceProps": {
+          "source": 1,
+          "cameraRestriction": 1
+        }
+      },
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestVisualMediaPermission",
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
+      },
+      "expectedAlertValue": "visualMedia.image.captureImages is called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[content: \"content1\", size: 4, name: a_pic, mimeType: jpg],[content: \"content2\", size: 1, name: b_pic, mimeType: jpg],"
+    },
+    {
+      "title": "uploadImages API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_uploadImages",
+      "inputValue": {
+        "maxVisualMediaCount": 9,
+        "sourceProps": {
+          "source": 2
+        }
+      },
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestVisualMediaPermission",
+        "consentPermission": "Allow",
+        "expectedOutput": "true"
+      },
+      "expectedAlertValue": "visualMedia.image.uploadImages is called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "[content: \"content1\", size: 4, name: a_pic, mimeType: jpg],[content: \"content2\", size: 1, name: b_pic, mimeType: jpg],"
+    }
+  ]
+}

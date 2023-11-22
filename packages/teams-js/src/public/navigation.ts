@@ -1,9 +1,21 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { TabInstance } from './interfaces';
-import { pages } from './pages';
+import {
+  backStackNavigateBackHelper,
+  navigateCrossDomainHelper,
+  returnFocusHelper,
+  tabsNavigateToTabHelper,
+} from './pages';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const navigationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 /**
  * Navigation specific part of the SDK.
  */
@@ -19,7 +31,10 @@ export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) =
  * @param navigateForward - Determines the direction to focus in teams app.
  */
 export function returnFocus(navigateForward?: boolean): void {
-  pages.returnFocus(navigateForward);
+  returnFocusHelper(
+    getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_ReturnFocus),
+    navigateForward,
+  );
 }
 
 /**
@@ -34,8 +49,10 @@ export function returnFocus(navigateForward?: boolean): void {
 export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  pages.tabs
-    .navigateToTab(tabInstance)
+  tabsNavigateToTabHelper(
+    getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_NavigateToTab),
+    tabInstance,
+  )
     .then(() => {
       completionHandler(true);
     })
@@ -69,8 +86,10 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
     FrameContexts.meetingStage,
   );
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  pages
-    .navigateCrossDomain(url)
+  navigateCrossDomainHelper(
+    getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_NavigateCrossDomain),
+    url,
+  )
     .then(() => {
       completionHandler(true);
     })
@@ -91,8 +110,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
 export function navigateBack(onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(runtime);
   const completionHandler: onCompleteHandlerFunctionType = onComplete ?? getGenericOnCompleteHandler();
-  pages.backStack
-    .navigateBack()
+  backStackNavigateBackHelper(getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_NavigateBack))
     .then(() => {
       completionHandler(true);
     })

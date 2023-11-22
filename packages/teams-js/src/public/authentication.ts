@@ -112,7 +112,7 @@ export namespace authentication {
           return value;
         } finally {
           if (!isDifferentParamsInCall) {
-            authParams = null;
+            authParams = undefined;
           }
         }
       })
@@ -125,7 +125,7 @@ export namespace authentication {
           throw err;
         } finally {
           if (!isDifferentParamsInCall) {
-            authParams = null;
+            authParams = undefined;
           }
         }
       });
@@ -260,7 +260,7 @@ export namespace authentication {
    * Limited to Microsoft-internal use
    */
   export function getUser(userRequest: UserRequest): void;
-  export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
+  export function getUser(userRequest?: UserRequest): Promise<UserProfile | null> {
     ensureInitializeCalled();
     return getUserHelper()
       .then((value: UserProfile) => {
@@ -444,7 +444,7 @@ export namespace authentication {
         authHandlers.success(result);
       }
     } finally {
-      authHandlers = null;
+      authHandlers = undefined;
       closeAuthenticationWindow();
     }
   }
@@ -455,7 +455,7 @@ export namespace authentication {
         authHandlers.fail(new Error(reason));
       }
     } finally {
-      authHandlers = null;
+      authHandlers = undefined;
       closeAuthenticationWindow();
     }
   }

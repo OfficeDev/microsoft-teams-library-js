@@ -1,6 +1,9 @@
 module.exports = {
   transform: {
-    '.(ts|tsx)': ['ts-jest', { tsconfig: { downlevelIteration: true, esModuleInterop: true } }],
+    '.(ts|tsx)': [
+      'ts-jest',
+      { tsconfig: { downlevelIteration: true, esModuleInterop: true, strictNullChecks: false } },
+    ],
   },
   testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$',
   testEnvironment: 'jsdom',
