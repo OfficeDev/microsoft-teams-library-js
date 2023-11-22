@@ -123,4 +123,3 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
     displayName: 'Copy Power Shell scripts to scripts'
-    
