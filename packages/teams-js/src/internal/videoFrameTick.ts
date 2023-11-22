@@ -36,7 +36,7 @@ export class VideoFrameTick {
    */
   public static tick(): void {
     const now = performance.now();
-    const timeoutIds = [];
+    const timeoutIds: string[] = [];
     // find all the timeouts that are due,
     // not to invoke them in the loop to avoid modifying the collection while iterating
     for (const key in VideoFrameTick.setTimeoutCallbacks) {

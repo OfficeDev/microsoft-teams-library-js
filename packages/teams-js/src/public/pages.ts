@@ -1,19 +1,134 @@
 import {
   Communication,
-  sendAndHandleSdkError,
-  sendAndHandleStatusAndReason,
-  sendAndHandleStatusAndReasonWithDefaultError,
-  sendAndUnwrap,
+  sendAndHandleSdkErrorWithVersion,
+  sendAndHandleStatusAndReasonWithDefaultErrorWithVersion,
+  sendAndHandleStatusAndReasonWithVersion,
+  sendAndUnwrapWithVersion,
   sendMessageEventToChild,
-  sendMessageToParent,
+  sendMessageToParentWithVersion,
 } from '../internal/communication';
-import { registerHandler, registerHandlerHelper } from '../internal/handlers';
+import { registerHandler, registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { app } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const pagesTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+export function navigateCrossDomainHelper(apiVersionTag: string, url: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.sidePanel,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.task,
+      FrameContexts.stage,
+      FrameContexts.meetingStage,
+    );
+    if (!pages.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage =
+      'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
+    resolve(
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateCrossDomain', errorMessage, url),
+    );
+  });
+}
+
+export function backStackNavigateBackHelper(apiVersionTag: string): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.backStack.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage = 'Back navigation is not supported in the current client or context.';
+    resolve(sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(apiVersionTag, 'navigateBack', errorMessage));
+  });
+}
+
+export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabInstance): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
+    resolve(
+      sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+        apiVersionTag,
+        'navigateToTab',
+        errorMessage,
+        tabInstance,
+      ),
+    );
+  });
+}
+
+export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
+  ensureInitialized(runtime);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'returnFocus', [navigateForward]);
+}
+
+export function getTabInstancesHelper(
+  apiVersionTag: string,
+  tabInstanceParameters?: TabInstanceParameters,
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getTabInstances', tabInstanceParameters));
+  });
+}
+
+export function getMruTabInstancesHelper(
+  apiVersionTag: string,
+  tabInstanceParameters?: TabInstanceParameters,
+): Promise<TabInformation> {
+  return new Promise<TabInformation>((resolve) => {
+    ensureInitialized(runtime);
+    if (!pages.tabs.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'getMruTabInstances', tabInstanceParameters));
+  });
+}
+
+export function shareDeepLinkHelper(apiVersionTag: string, deepLinkParameters: ShareDeepLinkParameters): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'shareDeepLink', [
+    deepLinkParameters.subPageId,
+    deepLinkParameters.subPageLabel,
+    deepLinkParameters.subPageWebUrl,
+  ]);
+}
+
+export function setCurrentFrameHelper(apiVersionTag: string, frameInfo: FrameInfo): void {
+  ensureInitialized(runtime, FrameContexts.content);
+  if (!pages.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'setFrameContext', [frameInfo]);
+}
 
 /**
  * Navigation-specific part of the SDK.
@@ -38,11 +153,7 @@ export namespace pages {
    * @param navigateForward - Determines the direction to focus in host.
    */
   export function returnFocus(navigateForward?: boolean): void {
-    ensureInitialized(runtime);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParent('returnFocus', [navigateForward]);
+    returnFocusHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus), navigateForward);
   }
 
   /**
@@ -58,11 +169,17 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    registerHandlerHelper('focusEnter', handler, [], () => {
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerHandlerHelperWithVersion(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFocusEnterHandler),
+      'focusEnter',
+      handler,
+      [],
+      () => {
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -72,11 +189,7 @@ export namespace pages {
    * user clicks 'Go To Website'
    */
   export function setCurrentFrame(frameInfo: FrameInfo): void {
-    ensureInitialized(runtime, FrameContexts.content);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParent('setFrameContext', [frameInfo]);
+    setCurrentFrameHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_SetCurrentFrame), frameInfo);
   }
 
   /**
@@ -140,7 +253,12 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndUnwrap('settings.getSettings'));
+      resolve(
+        sendAndUnwrapWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_GetConfig),
+          'settings.getSettings',
+        ),
+      );
     });
   }
 
@@ -154,24 +272,10 @@ export namespace pages {
    * @returns Promise that resolves when the navigation has completed.
    */
   export function navigateCrossDomain(url: string): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.settings,
-        FrameContexts.remove,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.meetingStage,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      const errorMessage =
-        'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.';
-      resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateCrossDomain', errorMessage, url));
-    });
+    return navigateCrossDomainHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateCrossDomain),
+      url,
+    );
   }
 
   /**
@@ -197,10 +301,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
+      const apiVersionTag: string = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateCrossDomain);
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReason('executeDeepLink', createTeamsAppLink(params)));
+        resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
-        resolve(sendAndHandleStatusAndReason('pages.navigateToApp', params));
+        resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'pages.navigateToApp', params));
       }
     });
   }
@@ -212,15 +317,10 @@ export namespace pages {
    * @param deepLinkParameters - ID and label for the link and fallback URL.
    */
   export function shareDeepLink(deepLinkParameters: ShareDeepLinkParameters): void {
-    ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-    sendMessageToParent('shareDeepLink', [
-      deepLinkParameters.subPageId,
-      deepLinkParameters.subPageLabel,
-      deepLinkParameters.subPageWebUrl,
-    ]);
+    return shareDeepLinkHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ShareDeepLink),
+      deepLinkParameters,
+    );
   }
 
   /**
@@ -231,11 +331,17 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
-    registerHandlerHelper('fullScreenChange', handler, [], () => {
-      if (handler && !isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerHandlerHelperWithVersion(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFullScreenHandler),
+      'fullScreenChange',
+      handler,
+      [],
+      () => {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -290,14 +396,10 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateToTab(tabInstance: TabInstance): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        const errorMessage = 'Invalid internalTabInstanceId and/or channelId were/was provided';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateToTab', errorMessage, tabInstance));
-      });
+      return tabsNavigateToTabHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_NavigateToTab),
+        tabInstance,
+      );
     }
     /**
      * Retrieves application tabs for the current user.
@@ -306,14 +408,10 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the user's tabs that are owned by this application {@link TabInstance}.
      */
     export function getTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrap('getTabInstances', tabInstanceParameters));
-      });
+      return getTabInstancesHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_GetTabInstances),
+        tabInstanceParameters,
+      );
     }
 
     /**
@@ -322,14 +420,10 @@ export namespace pages {
      * @returns Promise that resolves with the {@link TabInformation}. Contains information for the users' most recently used tabs {@link TabInstance}.
      */
     export function getMruTabInstances(tabInstanceParameters?: TabInstanceParameters): Promise<TabInformation> {
-      return new Promise<TabInformation>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndUnwrap('getMruTabInstances', tabInstanceParameters));
-      });
+      return getMruTabInstancesHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Tabs_GetMruTabInstances),
+        tabInstanceParameters,
+      );
     }
 
     /**
@@ -377,7 +471,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('settings.setValidityState', [validityState]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetValidityState),
+        'settings.setValidityState',
+        [validityState],
+      );
     }
 
     /**
@@ -392,7 +490,13 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleStatusAndReason('settings.setSettings', instanceConfig));
+        resolve(
+          sendAndHandleStatusAndReasonWithVersion(
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetConfig),
+            'settings.setSettings',
+            instanceConfig,
+          ),
+        );
       });
     }
 
@@ -405,7 +509,7 @@ export namespace pages {
      */
     export function registerOnSaveHandler(handler: saveEventType): void {
       registerOnSaveHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -426,12 +530,17 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime, FrameContexts.settings);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['save']);
+      !isNullOrUndefined(handler) &&
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnSaveHandlerHelper),
+          'registerHandler',
+          ['save'],
+        );
     }
 
     /**
@@ -443,7 +552,7 @@ export namespace pages {
      */
     export function registerOnRemoveHandler(handler: removeEventType): void {
       registerOnRemoveHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
       });
@@ -464,12 +573,17 @@ export namespace pages {
       versionSpecificHelper?: () => void,
     ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime, FrameContexts.remove, FrameContexts.settings);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['remove']);
+      !isNullOrUndefined(handler) &&
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnRemoveHandlerHelper),
+          'registerHandler',
+          ['remove'],
+        );
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -489,11 +603,17 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
-      registerHandlerHelper('changeSettings', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterChangeConfigHandler),
+        'changeSettings',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -554,12 +674,19 @@ export namespace pages {
       }
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.save.success');
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Success),
+          'settings.save.success',
+        );
         this.notified = true;
       }
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.save.failure', [reason]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Failure),
+          'settings.save.failure',
+          [reason],
+        );
         this.notified = true;
       }
       private ensureNotNotified(): void {
@@ -590,13 +717,20 @@ export namespace pages {
 
       public notifySuccess(): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.remove.success');
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Success),
+          'settings.remove.success',
+        );
         this.notified = true;
       }
 
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
-        sendMessageToParent('settings.remove.failure', [reason]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Failure),
+          'settings.remove.failure',
+          [reason],
+        );
         this.notified = true;
       }
 
@@ -644,14 +778,9 @@ export namespace pages {
      * @returns Promise that resolves when the navigation has completed.
      */
     export function navigateBack(): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(runtime);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        const errorMessage = 'Back navigation is not supported in the current client or context.';
-        resolve(sendAndHandleStatusAndReasonWithDefaultError('navigateBack', errorMessage));
-      });
+      return backStackNavigateBackHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_NavigateBack),
+      );
     }
 
     /**
@@ -662,11 +791,15 @@ export namespace pages {
      * @param handler - The handler to invoke when the user presses the host client's back button.
      */
     export function registerBackButtonHandler(handler: backButtonHandlerFunctionType): void {
-      registerBackButtonHandlerHelper(handler, () => {
-        if (handler && !isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerBackButtonHandlerHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonHandler),
+        handler,
+        () => {
+          if (!isNullOrUndefined(handler) && !isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -675,18 +808,22 @@ export namespace pages {
      *
      * @internal
      * Limited to Microsoft-internal use
-     *
+     * @param apiVersionTag - The tag indicating API version number with name
      * @param handler - The handler to invoke when the user presses the host client's back button.
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
-    export function registerBackButtonHandlerHelper(handler: () => boolean, versionSpecificHelper?: () => void): void {
+    export function registerBackButtonHandlerHelper(
+      apiVersionTag: string,
+      handler: () => boolean,
+      versionSpecificHelper?: () => void,
+    ): void {
       // allow for registration cleanup even when not finished initializing
-      handler && ensureInitialized(runtime);
+      !isNullOrUndefined(handler) && ensureInitialized(runtime);
       if (versionSpecificHelper) {
         versionSpecificHelper();
       }
       backButtonPressHandler = handler;
-      handler && sendMessageToParent('registerHandler', ['backButton']);
+      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['backButton']);
     }
 
     function handleBackButtonPress(): void {
@@ -733,7 +870,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('enterFullscreen', []);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_FullTrust_EnterFullscreen),
+        'enterFullscreen',
+        [],
+      );
     }
 
     /**
@@ -747,7 +888,11 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent('exitFullscreen', []);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_FullTrust_ExitFullscreen),
+        'exitFullscreen',
+        [],
+      );
     }
     /**
      * @hidden
@@ -776,11 +921,17 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonClick', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnClick),
+        'appButtonClick',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -789,11 +940,17 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverEnter),
+        'appButtonHoverEnter',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -802,11 +959,17 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
-      registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content], () => {
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverLeave),
+        'appButtonHoverLeave',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -871,7 +1034,13 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateTo', params));
+        resolve(
+          sendAndHandleSdkErrorWithVersion(
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_CurrentApp_NavigateTo),
+            'pages.currentApp.navigateTo',
+            params,
+          ),
+        );
       });
     }
 
@@ -894,7 +1063,12 @@ export namespace pages {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndHandleSdkError('pages.currentApp.navigateToDefaultPage'));
+        resolve(
+          sendAndHandleSdkErrorWithVersion(
+            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_CurrentApp_NavigateToDefaultPage),
+            'pages.currentApp.navigateToDefaultPage',
+          ),
+        );
       });
     }
 

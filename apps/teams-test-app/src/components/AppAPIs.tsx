@@ -106,13 +106,6 @@ const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
     },
   });
 
-const CheckLifecycleCapability = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkLifecycleCapability',
-    title: 'Check LifeCycle Capability',
-    onClick: async () => `app.lifecycle ${app.lifecycle.isSupported() ? 'is' : 'is not'} supported`,
-  });
-
 const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
@@ -120,7 +113,6 @@ const AppAPIs = (): ReactElement => (
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />
-    <CheckLifecycleCapability />
   </ModuleWrapper>
 );
 

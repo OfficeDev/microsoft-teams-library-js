@@ -1,9 +1,10 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
-import { registerHandlerHelper } from '../internal/handlers';
+import { registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { app } from './app';
+import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,
@@ -13,9 +14,15 @@ import {
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
+import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
 import { pages } from './pages';
 import { runtime } from './runtime';
 import { teamsCore } from './teamsAPIs';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const publicAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /** Execute deep link on complete function type */
 export type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
@@ -42,7 +49,10 @@ export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
  * https: protocol otherwise they will be ignored. Example: https://www.example.com
  */
 export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
-  app.initialize(validMessageOrigins).then(() => {
+  appInitializeHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_Initialize),
+    validMessageOrigins,
+  ).then(() => {
     if (callback) {
       callback();
     }
@@ -79,13 +89,17 @@ export function print(): void {
  */
 export function getContext(callback: getContextCallbackFunctionType): void {
   ensureInitializeCalled();
-  sendMessageToParent('getContext', (context: Context) => {
-    if (!context.frameContext) {
-      // Fallback logic for frameContext properties
-      context.frameContext = GlobalVars.frameContext;
-    }
-    callback(context);
-  });
+  sendMessageToParentWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_GetContext),
+    'getContext',
+    (context: Context) => {
+      if (!context.frameContext) {
+        // Fallback logic for frameContext properties
+        context.frameContext = GlobalVars.frameContext;
+      }
+      callback(context);
+    },
+  );
 }
 
 /**
@@ -98,7 +112,10 @@ export function getContext(callback: getContextCallbackFunctionType): void {
  * @param handler - The handler to invoke when the user changes their theme.
  */
 export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandlerFunctionType): void {
-  app.registerOnThemeChangeHandler(handler);
+  registerOnThemeChangeHandlerHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterOnThemeChangeHandlerHelper),
+    handler,
+  );
 }
 
 /**
@@ -111,7 +128,12 @@ export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandl
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void {
-  registerHandlerHelper('fullScreenChange', handler, []);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFullScreenHandler),
+    'fullScreenChange',
+    handler,
+    [],
+  );
 }
 
 /**
@@ -124,7 +146,12 @@ export function registerFullScreenHandler(handler: registerFullScreenHandlerFunc
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonClick', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonClickHandler),
+    'appButtonClick',
+    handler,
+    [FrameContexts.content],
+  );
 }
 
 /**
@@ -137,7 +164,12 @@ export function registerAppButtonClickHandler(handler: callbackFunctionType): vo
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonHoverEnter', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonHoverEnterHandler),
+    'appButtonHoverEnter',
+    handler,
+    [FrameContexts.content],
+  );
 }
 
 /**
@@ -150,7 +182,12 @@ export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('appButtonHoverLeave', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonHoverLeaveHandler),
+    'appButtonHoverLeave',
+    handler,
+    [FrameContexts.content],
+  );
 }
 
 /**
@@ -165,7 +202,10 @@ export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType
  * @param handler - The handler to invoke when the user presses their Team client's back button.
  */
 export function registerBackButtonHandler(handler: registerBackButtonHandlerFunctionType): void {
-  pages.backStack.registerBackButtonHandlerHelper(handler);
+  pages.backStack.registerBackButtonHandlerHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterBackButtonHandler),
+    handler,
+  );
 }
 
 /**
@@ -205,7 +245,12 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  registerHandlerHelper('focusEnter', handler, []);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFocusEnterHandler),
+    'focusEnter',
+    handler,
+    [],
+  );
 }
 
 /**
@@ -217,7 +262,12 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: callbackFunctionType): void {
-  registerHandlerHelper('changeSettings', handler, [FrameContexts.content]);
+  registerHandlerHelperWithVersion(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterChangeSettingsHandler),
+    'changeSettings',
+    handler,
+    [FrameContexts.content],
+  );
 }
 
 /**
@@ -235,7 +285,10 @@ export function getTabInstances(
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
   ensureInitialized(runtime);
-  pages.tabs.getTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
+  getTabInstancesHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_GetTabInstances),
+    tabInstanceParameters,
+  ).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
 }
@@ -254,7 +307,10 @@ export function getMruTabInstances(
   tabInstanceParameters?: TabInstanceParameters,
 ): void {
   ensureInitialized(runtime);
-  pages.tabs.getMruTabInstances(tabInstanceParameters).then((tabInfo: TabInformation) => {
+  getMruTabInstancesHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_GetMruTabInstances),
+    tabInstanceParameters,
+  ).then((tabInfo: TabInformation) => {
     callback(tabInfo);
   });
 }
@@ -268,7 +324,7 @@ export function getMruTabInstances(
  * @param deepLinkParameters - ID and label for the link and fallback URL.
  */
 export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
-  pages.shareDeepLink({
+  shareDeepLinkHelper(getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_ShareDeepLink), {
     subPageId: deepLinkParameters.subEntityId,
     subPageLabel: deepLinkParameters.subEntityLabel,
     subPageWebUrl: deepLinkParameters.subEntityWebUrl,
@@ -293,14 +349,13 @@ export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOn
     FrameContexts.stage,
     FrameContexts.meetingStage,
   );
-  onComplete = onComplete ? onComplete : getGenericOnCompleteHandler();
-  app
-    .openLink(deepLink)
+  const completionHandler: executeDeepLinkOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
+  openLinkHelper(getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_ExecuteDeepLink), deepLink)
     .then(() => {
-      onComplete(true);
+      completionHandler(true);
     })
     .catch((err: Error) => {
-      onComplete(false, err.message);
+      completionHandler(false, err.message);
     });
 }
 
@@ -313,7 +368,10 @@ export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOn
  * @param frameContext - FrameContext information to be set
  */
 export function setFrameContext(frameContext: FrameContext): void {
-  pages.setCurrentFrame(frameContext);
+  setCurrentFrameHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_SetFrameContext),
+    frameContext,
+  );
 }
 
 /**
@@ -332,5 +390,12 @@ export function initializeWithFrameContext(
   callback?: callbackFunctionType,
   validMessageOrigins?: string[],
 ): void {
-  pages.initializeWithFrameContext(frameContext, callback, validMessageOrigins);
+  appInitializeHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_Initialize),
+    validMessageOrigins,
+  ).then(() => callback && callback());
+  setCurrentFrameHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_SetFrameContext),
+    frameContext,
+  );
 }

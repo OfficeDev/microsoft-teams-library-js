@@ -190,6 +190,10 @@ describe('runtime', () => {
     return result;
   }
 
+  function generateVersionNumberOlderThanGivenVersion(version: string): string {
+    return `0.${version}`;
+  }
+
   describe('generateVersionBasedTeamsRuntimeConfig tests based on Teams default configuration', () => {
     Object.entries(mapTeamsVersionToSupportedCapabilities).forEach(([version, capabilityAdditionsForEachVersion]) => {
       capabilityAdditionsForEachVersion.forEach((capabilityAdditionsForClientTypesInASpecificVersion) => {
@@ -217,7 +221,7 @@ describe('runtime', () => {
             await utils.initializeWithContext('content', clientType);
 
             const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
-              '1.4.0',
+              generateVersionNumberOlderThanGivenVersion(version),
               versionAndPlatformAgnosticTeamsRuntimeConfig,
               mapTeamsVersionToSupportedCapabilities,
             ).supports;

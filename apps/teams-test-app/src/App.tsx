@@ -12,6 +12,7 @@ import BarCodeAPIs from './components/BarCodeAPIs';
 import CalendarAPIs from './components/CalendarAPIs';
 import CallAPIs from './components/CallAPIs';
 import ClipboardAPIs from './components/Clipboard';
+import CustomAPIs from './components/Custom';
 import DialogAPIs from './components/DialogAPIs';
 import DialogCardAPIs from './components/DialogCardAPIs';
 import DialogCardBotAPIs from './components/DialogCardBotAPIs';
@@ -53,6 +54,7 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
+import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -131,6 +133,7 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <ClipboardAPIs />
+        <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
         <DialogCardBotAPIs />
@@ -170,6 +173,7 @@ const App = (): ReactElement => {
         <TeamsAPIs />
         <VideoAPIs />
         <VideoExAPIs />
+        <VisualMediaAPIs />
       </div>
       <Version />
     </div>
