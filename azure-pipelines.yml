@@ -124,7 +124,7 @@ extends:
               - task: NodeTool@0
                 displayName: 'Install Node.js'
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
               - task: CmdLine@2
                 displayName: 'Setup pnpm'
                 inputs:
@@ -289,7 +289,7 @@ extends:
                     rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
@@ -406,7 +406,7 @@ extends:
                     rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
@@ -526,7 +526,7 @@ extends:
                     rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
@@ -653,7 +653,7 @@ extends:
                     rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
@@ -756,7 +756,7 @@ extends:
                   persistCredentials: true
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
@@ -862,7 +862,7 @@ extends:
                   workingDirectory: '$(System.DefaultWorkingDirectory)'
               - task: NodeTool@0
                 inputs:
-                  versionSpec: '16.x'
+                  versionSpec: '18.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
