@@ -375,7 +375,7 @@ extends:
             displayName: 'E2E Test - Default'
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-20.04'
+              image: 'ubuntu-2004'
               os: linux
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
