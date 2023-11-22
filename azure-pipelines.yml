@@ -249,4 +249,5 @@ extends:
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
-                  iOSAppHostingSdkGitPath: IOSAppHostingSdk              
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk   
+                             

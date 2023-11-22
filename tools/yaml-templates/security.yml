@@ -62,3 +62,4 @@ steps:
   - task: ComponentGovernanceComponentDetection@0
     condition: and( or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: 'Component Governance (main, release)'
+    

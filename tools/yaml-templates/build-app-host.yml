@@ -116,3 +116,4 @@ steps:
         sudo chmod -R 755 ./ 
         pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      

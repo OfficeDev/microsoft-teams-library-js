@@ -112,3 +112,4 @@ steps:
       searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
     condition: always()
+    
