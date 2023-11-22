@@ -2,6 +2,6 @@
   "type": "patch",
   "comment": "Added API version tags to barCode, calendar, call, clipboard, mail, marketplace and media capabilities",
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
 }
