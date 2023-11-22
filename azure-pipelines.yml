@@ -756,7 +756,7 @@ extends:
                   persistCredentials: true
               - task: NodeTool@0
                 inputs:
-                  versionSpec: 's'
+                  versionSpec: '16.x'
                 displayName: 'Install Node.js'
               - task: Cache@2
                 inputs:
