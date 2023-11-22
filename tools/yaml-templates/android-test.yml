@@ -82,3 +82,4 @@ steps:
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
       mergeTestResults: true
     condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
+    
