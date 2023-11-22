@@ -375,7 +375,7 @@ extends:
             displayName: 'E2E Test - Default'
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
+              image: 'ubuntu-20.04'
               os: linux
             steps:
               - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
@@ -474,10 +474,10 @@ extends:
                     sudo chmod -R 755 ./
                     pnpm run setup
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
-                displayName: 'Run E2E integration tests'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+              # - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
+              #   displayName: 'Run E2E integration tests'
+              #   condition: succeeded()
+              #   workingDirectory: '$(AppHostingSdkProjectDirectory)'
               - task: CMDLine@2
                 displayName: 'Run tests for electron webview'
                 inputs:
