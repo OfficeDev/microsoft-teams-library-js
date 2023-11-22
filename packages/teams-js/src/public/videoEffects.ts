@@ -1,11 +1,17 @@
-import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
 import { createEffectParameterChangeCallback, processMediaStream } from '../internal/videoEffectsUtils';
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to video extensibility of the SDK
@@ -222,7 +228,11 @@ export namespace videoEffects {
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
-    registerHandler(
+    registerHandlerWithVersion(
+      getApiVersionTag(
+        videoEffectsTelemetryVersionNumber,
+        ApiName.VideoEffects_RegisterSetFrameProcessTimeLimitHandler,
+      ),
       'video.setFrameProcessTimeLimit',
       (timeLimitInfo: { timeLimit: number }) =>
         videoPerformanceMonitor?.setFrameProcessTimeLimit(timeLimitInfo.timeLimit),
@@ -255,7 +265,11 @@ export namespace videoEffects {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('video.videoEffectChanged', [effectChangeType, effectId]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifySelectedVideoEffectChanged),
+      'video.videoEffectChanged',
+      [effectChangeType, effectId],
+    );
   }
 
   /**
@@ -268,12 +282,16 @@ export namespace videoEffects {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler(
+    registerHandlerWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterEffectParameterChangeHandler),
       'video.effectParameterChange',
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
       false,
     );
-    sendMessageToParent('video.registerForVideoEffect');
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoEffect),
+      'video.registerForVideoEffect',
+    );
   }
 
   /**
@@ -282,7 +300,11 @@ export namespace videoEffects {
    * @beta
    */
   function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParent('video.videoFrameProcessed', [timestamp]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifyVideoFrameProcessed),
+      'video.videoFrameProcessed',
+      [timestamp],
+    );
   }
 
   /**
@@ -291,7 +313,11 @@ export namespace videoEffects {
    * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
-    sendMessageToParent('video.notifyError', [errorMessage]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifyError),
+      'video.notifyError',
+      [errorMessage],
+    );
   }
 
   /**
@@ -317,7 +343,11 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler(
+    registerHandlerWithVersion(
+      getApiVersionTag(
+        videoEffectsTelemetryVersionNumber,
+        ApiName.VideoEffects_RegisterStartVideoExtensibilityVideoStreamHandler,
+      ),
       'video.startVideoExtensibilityVideoStream',
       async (mediaStreamInfo: { streamId: string }) => {
         // when a new streamId is ready:
@@ -328,7 +358,11 @@ export namespace videoEffects {
       false,
     );
 
-    sendMessageToParent('video.mediaStream.registerForVideoFrame', [config]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_MediaStream_RegisterForVideoFrame),
+      'video.mediaStream.registerForVideoFrame',
+      [config],
+    );
   }
 
   function createMonitoredVideoFrameHandler(
@@ -362,7 +396,8 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler(
+    registerHandlerWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterVideoBufferHandler),
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
@@ -381,7 +416,11 @@ export namespace videoEffects {
       },
       false,
     );
-    sendMessageToParent('video.registerForVideoFrame', [config]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoFrame),
+      'video.registerForVideoFrame',
+      [config],
+    );
   }
 
   function normalizeVideoBufferData(videoBufferData: VideoBufferData | LegacyVideoBufferData): VideoBufferData {

@@ -130,6 +130,40 @@ export function setCurrentFrameHelper(apiVersionTag: string, frameInfo: FrameInf
   sendMessageToParentWithVersion(apiVersionTag, 'setFrameContext', [frameInfo]);
 }
 
+export function configSetValidityStateHelper(apiVersionTag: string, validityState: boolean): void {
+  ensureInitialized(runtime, FrameContexts.settings, FrameContexts.remove);
+  if (!pages.config.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'settings.setValidityState', [validityState]);
+}
+
+export function getConfigHelper(apiVersionTag: string): Promise<pages.InstanceConfig> {
+  return new Promise<pages.InstanceConfig>((resolve) => {
+    ensureInitialized(
+      runtime,
+      FrameContexts.content,
+      FrameContexts.settings,
+      FrameContexts.remove,
+      FrameContexts.sidePanel,
+    );
+    if (!pages.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    resolve(sendAndUnwrapWithVersion(apiVersionTag, 'settings.getSettings'));
+  });
+}
+
+export function configSetConfigHelper(apiVersionTag: string, instanceConfig: pages.InstanceConfig): Promise<void> {
+  return new Promise<void>((resolve) => {
+    ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
+    if (!pages.config.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'settings.setSettings', instanceConfig));
+  });
+}
+
 /**
  * Navigation-specific part of the SDK.
  */
@@ -242,24 +276,7 @@ export namespace pages {
    * @returns Promise that resolves with the {@link InstanceConfig} object.
    */
   export function getConfig(): Promise<InstanceConfig> {
-    return new Promise<InstanceConfig>((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.settings,
-        FrameContexts.remove,
-        FrameContexts.sidePanel,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      resolve(
-        sendAndUnwrapWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_GetConfig),
-          'settings.getSettings',
-        ),
-      );
-    });
+    return getConfigHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_GetConfig));
   }
 
   /**
@@ -467,14 +484,9 @@ export namespace pages {
      * @param validityState - Indicates whether the save or remove button is enabled for the user.
      */
     export function setValidityState(validityState: boolean): void {
-      ensureInitialized(runtime, FrameContexts.settings, FrameContexts.remove);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      sendMessageToParentWithVersion(
+      return configSetValidityStateHelper(
         getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetValidityState),
-        'settings.setValidityState',
-        [validityState],
+        validityState,
       );
     }
 
@@ -485,19 +497,10 @@ export namespace pages {
      * @returns Promise that resolves when the operation has completed.
      */
     export function setConfig(instanceConfig: InstanceConfig): Promise<void> {
-      return new Promise<void>((resolve) => {
-        ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        resolve(
-          sendAndHandleStatusAndReasonWithVersion(
-            getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetConfig),
-            'settings.setSettings',
-            instanceConfig,
-          ),
-        );
-      });
+      return configSetConfigHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_SetConfig),
+        instanceConfig,
+      );
     }
 
     /**
@@ -508,11 +511,15 @@ export namespace pages {
      * @param handler - The handler to invoke when the user selects the Save button.
      */
     export function registerOnSaveHandler(handler: saveEventType): void {
-      registerOnSaveHandlerHelper(handler, () => {
-        if (!isNullOrUndefined(handler) && !isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerOnSaveHandlerHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnSaveHandler),
+        handler,
+        () => {
+          if (!isNullOrUndefined(handler) && !isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -522,10 +529,12 @@ export namespace pages {
      * @internal
      * Limited to Microsoft-internal use
      *
+     * @param apiVersionTag - The API version tag, which is used for telemetry, composed by API version number and source API name.
      * @param handler - The handler to invoke when the user selects the Save button.
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
     export function registerOnSaveHandlerHelper(
+      apiVersionTag: string,
       handler: (evt: SaveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
@@ -535,12 +544,7 @@ export namespace pages {
         versionSpecificHelper();
       }
       saveHandler = handler;
-      !isNullOrUndefined(handler) &&
-        sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnSaveHandlerHelper),
-          'registerHandler',
-          ['save'],
-        );
+      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['save']);
     }
 
     /**
@@ -551,11 +555,15 @@ export namespace pages {
      * @param handler - The handler to invoke when the user selects the Remove button.
      */
     export function registerOnRemoveHandler(handler: removeEventType): void {
-      registerOnRemoveHandlerHelper(handler, () => {
-        if (!isNullOrUndefined(handler) && !isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-      });
+      registerOnRemoveHandlerHelper(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnRemoveHandler),
+        handler,
+        () => {
+          if (!isNullOrUndefined(handler) && !isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
     }
 
     /**
@@ -565,10 +573,12 @@ export namespace pages {
      * @internal
      * Limited to Microsoft-internal use
      *
+     * @param apiVersionTag - The API version tag, which is used for telemetry, composed by API version number and source API name.
      * @param handler - The handler to invoke when the user selects the Remove button.
      * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
      */
     export function registerOnRemoveHandlerHelper(
+      apiVersionTag: string,
       handler: (evt: RemoveEvent) => void,
       versionSpecificHelper?: () => void,
     ): void {
@@ -578,12 +588,7 @@ export namespace pages {
         versionSpecificHelper();
       }
       removeHandler = handler;
-      !isNullOrUndefined(handler) &&
-        sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterOnRemoveHandlerHelper),
-          'registerHandler',
-          ['remove'],
-        );
+      !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['remove']);
     }
 
     function handleSave(result?: SaveParameters): void {
@@ -675,7 +680,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Success),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_SaveEvent_NotifySuccess),
           'settings.save.success',
         );
         this.notified = true;
@@ -683,7 +688,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Save_Failure),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_SaveEvent_NotifyFailure),
           'settings.save.failure',
           [reason],
         );
@@ -718,7 +723,7 @@ export namespace pages {
       public notifySuccess(): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Success),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RemoveEvent_NotifySuccess),
           'settings.remove.success',
         );
         this.notified = true;
@@ -727,7 +732,7 @@ export namespace pages {
       public notifyFailure(reason?: string): void {
         this.ensureNotNotified();
         sendMessageToParentWithVersion(
-          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Settings_Remove_Failure),
+          getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RemoveEvent_NotifyFailure),
           'settings.remove.failure',
           [reason],
         );

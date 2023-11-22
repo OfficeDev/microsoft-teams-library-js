@@ -1,7 +1,13 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the stage view specific part of the SDK.
@@ -90,7 +96,13 @@ export namespace stageView {
         throw new Error('[stageView.open] Stage view params cannot be null');
       }
 
-      resolve(sendAndHandleSdkError('stageView.open', stageViewParams));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Open),
+          'stageView.open',
+          stageViewParams,
+        ),
+      );
     });
   }
 

@@ -5,6 +5,9 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+const sharingTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 /**
  * Namespace to open a share dialog for web content.
  * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
@@ -90,6 +93,7 @@ export namespace sharing {
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: shareWebContentCallbackFunctionType,
   ): Promise<void> {
+    let apiVersionTag: string;
     // validate the given input (synchronous check)
     try {
       validateNonEmptyContent(shareWebContentRequest);

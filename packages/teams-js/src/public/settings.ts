@@ -1,8 +1,14 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { pages } from './pages';
+import { configSetConfigHelper, configSetValidityStateHelper, getConfigHelper, pages } from './pages';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const settingsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
@@ -64,7 +70,10 @@ export namespace settings {
    * @param validityState - Indicates whether the save or remove button is enabled for the user.
    */
   export function setValidityState(validityState: boolean): void {
-    pages.config.setValidityState(validityState);
+    configSetValidityStateHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_SetValidityState),
+      validityState,
+    );
   }
 
   /**
@@ -83,9 +92,11 @@ export namespace settings {
       FrameContexts.remove,
       FrameContexts.sidePanel,
     );
-    pages.getConfig().then((config: pages.InstanceConfig) => {
-      callback(config);
-    });
+    getConfigHelper(getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_GetSettings)).then(
+      (config: pages.InstanceConfig) => {
+        callback(config);
+      },
+    );
   }
 
   /**
@@ -100,8 +111,10 @@ export namespace settings {
   export function setSettings(instanceSettings: Settings, onComplete?: setSettingsOnCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
     const completionHandler: setSettingsOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
-    pages.config
-      .setConfig(instanceSettings)
+    configSetConfigHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_SetSettings),
+      instanceSettings,
+    )
       .then(() => {
         completionHandler(true);
       })
@@ -122,7 +135,10 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the save button.
    */
   export function registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void {
-    pages.config.registerOnSaveHandlerHelper(handler);
+    pages.config.registerOnSaveHandlerHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_RegisterOnSaveHandler),
+      handler,
+    );
   }
 
   /**
@@ -137,6 +153,9 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void {
-    pages.config.registerOnRemoveHandlerHelper(handler);
+    pages.config.registerOnRemoveHandlerHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_RegisterOnRemoveHandler),
+      handler,
+    );
   }
 }

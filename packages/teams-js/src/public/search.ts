@@ -1,8 +1,14 @@
-import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
+import { sendAndHandleStatusAndReasonWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const searchTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Allows your application to interact with the host M365 application's search box.
@@ -89,10 +95,22 @@ export namespace search {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandler(onClosedHandlerName, onClosedHandler);
-    registerHandler(onExecutedHandlerName, onExecuteHandler);
+    registerHandlerWithVersion(
+      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnClosedHandler),
+      onClosedHandlerName,
+      onClosedHandler,
+    );
+    registerHandlerWithVersion(
+      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecuteHandler),
+      onExecutedHandlerName,
+      onExecuteHandler,
+    );
     if (onChangeHandler) {
-      registerHandler(onChangeHandlerName, onChangeHandler);
+      registerHandlerWithVersion(
+        getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnChangeHandler),
+        onChangeHandlerName,
+        onChangeHandler,
+      );
     }
   }
 
@@ -110,7 +128,10 @@ export namespace search {
     }
     // This should let the host know to stop making the app scope show up in the search experience
     // Can also be used to clean up handlers on the host if desired
-    sendMessageToParent('search.unregister');
+    sendMessageToParentWithVersion(
+      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_UnregisterHandlers),
+      'search.unregister',
+    );
     removeHandler(onChangeHandlerName);
     removeHandler(onClosedHandlerName);
     removeHandler(onExecutedHandlerName);
@@ -140,7 +161,12 @@ export namespace search {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleStatusAndReason('search.closeSearch'));
+      resolve(
+        sendAndHandleStatusAndReasonWithVersion(
+          getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_CloseSearch),
+          'search.closeSearch',
+        ),
+      );
     });
   }
 }
