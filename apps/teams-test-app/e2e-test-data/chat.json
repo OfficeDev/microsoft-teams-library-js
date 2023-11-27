@@ -45,7 +45,7 @@
     {
       "title": "openChat2 API Call - Success",
       "type": "callResponse",
-      "version": ">2.17.0",
+      "version": ">2.2.0 && <=2.17.0",
       "boxSelector": "#box_openChat2",
       "inputValue": {
         "user": ["testUpn"],
@@ -57,7 +57,7 @@
     {
       "title": "openChat2 API Call - Success",
       "type": "callResponse",
-      "version": ">2.2.0 && <=2.17.0",
+      "version": ">2.17.0",
       "boxSelector": "#box_openChat2",
       "inputValue": {
         "user": ["testUpn"],
