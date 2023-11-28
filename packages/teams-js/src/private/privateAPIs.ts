@@ -125,6 +125,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.viewerAction,
     filePreviewParameters.fileOpenPreference,
     filePreviewParameters.conversationId,
+    filePreviewParameters.size,
   ];
 
   sendMessageToParent('openFilePreview', params);

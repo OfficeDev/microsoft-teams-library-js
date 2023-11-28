@@ -581,6 +581,7 @@ describe('AppSDK-privateAPIs', () => {
       viewerAction: ViewerActionTypes.view,
       fileOpenPreference: FileOpenPreference.Web,
       conversationId: 'someConversationId',
+      size: 'someSize',
     };
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
@@ -591,7 +592,7 @@ describe('AppSDK-privateAPIs', () => {
 
           const message = utils.findMessageByFunc('openFilePreview');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(14);
+          expect(message.args.length).toBe(15);
           expect(message.args[0]).toBe('someEntityId');
           expect(message.args[1]).toBe('someTitle');
           expect(message.args[2]).toBe('someDescription');
@@ -606,6 +607,7 @@ describe('AppSDK-privateAPIs', () => {
           expect(message.args[11]).toBe('view');
           expect(message.args[12]).toBe(FileOpenPreference.Web);
           expect(message.args[13]).toBe('someConversationId');
+          expect(message.args[14]).toBe('someSize');
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {
