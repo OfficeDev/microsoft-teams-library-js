@@ -8,62 +8,71 @@ steps:
   - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
     path: androidHost
     persistCredentials: true
-
+  
   - task: NodeTool@0
     inputs:
       versionSpec: '14.x'
     displayName: 'Install Node.js'
-
-  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
-  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
-  #   'command_name | operating_system | lockfile'
-  # in our case it is 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-  # and for the path is the directory which needs to be cached.
-  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
+  
   - task: Cache@2
     inputs:
       key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache pnpm
-
-  - script: |
-      corepack enable
-      corepack prepare pnpm@7.30.1 --activate
-      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
-
-  - script: |
-      pnpm install
+    inputs:
+      script: |
+        corepack enable
+        corepack prepare pnpm@7.30.1 --activate
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  
+  - task: CmdLine@2
     displayName: 'Install client sdk dependencies'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - script: |
-      pnpm build-force-blazor
+    inputs:
+      script: |
+        pnpm install
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+  
+  - task: CmdLine@2
     displayName: 'Build client sdk'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - bash: 'nohup pnpm start-test-app &'
+    inputs:
+      script: |
+        pnpm build-force-blazor
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+  
+  - task: Bash@3
     displayName: 'Run sample test app in background'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - bash: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+    inputs:
+      targetType: inline
+      script: 'nohup pnpm start-test-app &'
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+  
+  - task: Bash@3
     displayName: 'Install Emulator'
-    workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
-    # This task is flaky, but when it works it almost always completes in under 5 minutes.
-    # Setting the timeout to 10 minutes so we can fail faster when it fails.
-    timeoutInMinutes: 10
-
+    inputs:
+      targetType: inline
+      script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+      # This task is flaky, but when it works it almost always completes in under 5 minutes.
+      # Setting the timeout to 10 minutes so we can fail faster when it fails.
+      timeoutInMinutes: 10
+  
   - task: JavaToolInstaller@0
     inputs:
-      versionSpec: '11'
+      versionSpec: '17'
       jdkArchitectureOption: 'x64'
       jdkSourceOption: 'PreInstalled'
     displayName: 'Set default Java to x64'
-
-  - bash: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+  
+  - task: Bash@3
     displayName: 'Run Android E2E Tests'
-    workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
-
+    inputs:
+      targetType: inline
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+  
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
     inputs:
@@ -73,3 +82,4 @@ steps:
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
       mergeTestResults: true
     condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
+    
