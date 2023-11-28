@@ -314,7 +314,7 @@ describe('Testing communication', () => {
         it('should be pollyfilled onto the current window if the current window exists', async () => {
           expect.assertions(1);
 
-          communication.initializeCommunication(undefined);
+          communication.initializeCommunication(undefined, testApiVersion);
 
           expect(utils.mockWindow.nestedAppAuthBridge).toBeDefined();
         });
@@ -1288,7 +1288,7 @@ describe('Testing communication', () => {
     describe('postMessage', () => {
       it('should post a message when called with a valid NestedAppAuthRequest', () => {
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(validMessage);
 
         expect(utils.topMessages.length).toBe(1);
@@ -1299,7 +1299,7 @@ describe('Testing communication', () => {
       it('should not post a message when called with an invalid message', () => {
         const invalidMessage = 'Invalid message';
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(invalidMessage);
 
         expect(utils.topMessages.length).toBe(0);
@@ -1308,7 +1308,7 @@ describe('Testing communication', () => {
       it('should not post a message when called with a valid JSON that is not a NestedAppAuthRequest', () => {
         const nonRequestMessage = JSON.stringify({ messageType: 'NonRequestMessage' });
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.postMessage(nonRequestMessage);
 
         expect(utils.topMessages.length).toBe(0);
@@ -1320,7 +1320,7 @@ describe('Testing communication', () => {
         const onMessageReceivedCb = jest.fn();
 
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
         utils.respondToMessage(
@@ -1340,7 +1340,7 @@ describe('Testing communication', () => {
         const onMessageReceivedCb = jest.fn();
 
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
         utils.respondToMessage(
@@ -1360,7 +1360,7 @@ describe('Testing communication', () => {
         const onMessageReceivedCb = jest.fn();
 
         utils.mockWindow.top = utils.topWindow;
-        communication.initializeCommunication(undefined);
+        communication.initializeCommunication(undefined, testApiVersion);
         communication.Communication.currentWindow.nestedAppAuthBridge.addEventListener('message', onMessageReceivedCb);
 
         utils.respondToMessage(

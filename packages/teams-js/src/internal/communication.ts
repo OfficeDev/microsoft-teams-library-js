@@ -497,11 +497,15 @@ const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageT
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageToParentHelper(actionName: string, args: any[] | undefined): MessageRequestWithRequiredProperties {
+function sendMessageToParentHelper(
+  apiVersionTag: string,
+  actionName: string,
+  args: any[] | undefined,
+): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
 
   const targetWindow = Communication.parentWindow;
-  const request = createMessageRequest(actionName, args);
+  const request = createMessageRequest(apiVersionTag, actionName, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
