@@ -263,7 +263,7 @@ export enum SecondaryM365ContentIdName {
 
 /**
  * Information common to all actions
- *
+ * Contains information about this actions to help identify the action, and information about the object that triggered the action by user.
  * @beta
  */
 export interface ActionInfo {
