@@ -278,21 +278,6 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
 
 /**
  * @hidden
- * Send nested authentication message to the top window which is the broker for authentication.
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendNestedAuthMessageAsync<T>(message: string): Promise<T> {
-  return new Promise((resolve) => {
-    const request = sendNestedAuthRequestToTopWindow(message);
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    resolve(waitForResponse<T>(request.id));
-  });
-}
-
-/**
- * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
  * for telemetry work. The code inside of this function will be used to replace sendMessageToParentAsync function
