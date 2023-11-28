@@ -161,19 +161,19 @@ export namespace menus {
    */
   export function initialize(): void {
     registerHandlerWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterNavBarMenuItemPressHandler),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterNavBarMenuItemPressHandler),
       'navBarMenuItemPress',
       handleNavBarMenuItemPress,
       false,
     );
     registerHandlerWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterActionMenuItemPressHandler),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterActionMenuItemPressHandler),
       'actionMenuItemPress',
       handleActionMenuItemPress,
       false,
     );
     registerHandlerWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_RegisterSetModuleViewHandler),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterSetModuleViewHandler),
       'setModuleView',
       handleViewConfigItemPress,
       false,
@@ -195,7 +195,7 @@ export namespace menus {
     }
     viewConfigItemPressHandler = handler;
     sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_SetUpViews),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetUpViews),
       'setUpViews',
       [viewConfig],
     );
@@ -205,7 +205,7 @@ export namespace menus {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized(runtime);
       sendMessageToParentWithVersion(
-        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleViewConfigItemPress),
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleViewConfigItemPress),
         'viewConfigItemPress',
         [id],
       );
@@ -226,7 +226,7 @@ export namespace menus {
     }
     navBarMenuItemPressHandler = handler;
     sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_SetNavBarMenu),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetNavBarMenu),
       'setNavBarMenu',
       [items],
     );
@@ -236,7 +236,7 @@ export namespace menus {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
       sendMessageToParentWithVersion(
-        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleNavBarMenuItemPress),
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleNavBarMenuItemPress),
         'handleNavBarMenuItemPress',
         [id],
       );
@@ -271,7 +271,7 @@ export namespace menus {
     }
     actionMenuItemPressHandler = handler;
     sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_ShowActionMenu),
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_ShowActionMenu),
       'showActionMenu',
       [params],
     );
@@ -281,7 +281,7 @@ export namespace menus {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
       sendMessageToParentWithVersion(
-        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menu_HandleActionMenuItemPress),
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleActionMenuItemPress),
         'handleActionMenuItemPress',
         [id],
       );
