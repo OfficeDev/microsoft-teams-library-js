@@ -101,11 +101,14 @@ export function initializeCommunication(
     }
   }
 
-  // Extend the window, define the NAA listener and add the NAA bridge
-  tryPolyfillWithNestedAppAuthBridge(Communication.currentWindow, {
-    onMessage: processAuthBridgeMessage,
-    handlePostMessage: sendNestedAuthRequestToTopWindow,
-  });
+  // Extend the window, define the NAA listener and add the NAA bridge.
+  // This is currently applied for windows that are not frameless.
+  if (!GlobalVars.isFramelessWindow) {
+    tryPolyfillWithNestedAppAuthBridge(Communication.currentWindow, {
+      onMessage: processAuthBridgeMessage,
+      handlePostMessage: sendNestedAuthRequestToTopWindow,
+    });
+  }
 
   try {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
