@@ -15,7 +15,7 @@ const Files3PLogger = getLogger('thirdPartyCloudStorage');
  */
 export namespace thirdPartyCloudStorage {
   /** Get context callback function type */
-  const files: FilesFor3PApps[] = [];
+  const files: FileFor3PApps[] = [];
   let helper: AttachmentListHelper = {
     fileType: '',
     assembleAttachment: [],
@@ -26,7 +26,7 @@ export namespace thirdPartyCloudStorage {
    * @beta
    *
    */
-  export interface FilesFor3PApps extends Blob {
+  export interface FileFor3PApps extends Blob {
     /**
      * A number that represents the number of milliseconds since the Unix epoch
      */
@@ -114,7 +114,7 @@ export namespace thirdPartyCloudStorage {
    */
   export interface ThirdPartyAppCallback {
     /** Callback from third party app */
-    (files: FilesFor3PApps[], error?: SdkError): void;
+    (files: FileFor3PApps[], error?: SdkError): void;
   }
 
   let callback: ThirdPartyAppCallback | null = null;
