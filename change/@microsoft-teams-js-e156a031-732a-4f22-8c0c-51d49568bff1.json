@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added support for third party app's drag and drop",
+  "comment": "Added support for drag and dropping files from third party storage providers using the `thirdPartyCloudStorage` capability",
   "packageName": "@microsoft/teams-js",
   "email": "mahimashukla@microsoft.com",
   "dependentChangeType": "patch"
