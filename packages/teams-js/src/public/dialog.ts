@@ -135,7 +135,7 @@ export namespace dialog {
     }
 
     /**
-     * Submit the dialog module and close the dialog
+     * Submits the dialog module and close the dialog
      *
      * @remarks
      * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
