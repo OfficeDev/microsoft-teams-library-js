@@ -19,7 +19,7 @@ const ThirdPartyCloudStorage = (): React.ReactElement =>
       submit: async (input, setResult) => {
         // input will be the thread id
         const filesCallback = (
-          attachments: thirdPartyCloudStorage.FilesFor3PApps[],
+          attachments: thirdPartyCloudStorage.FileFor3PApps[],
           error?: SdkError | undefined,
         ): void => {
           if (error) {
