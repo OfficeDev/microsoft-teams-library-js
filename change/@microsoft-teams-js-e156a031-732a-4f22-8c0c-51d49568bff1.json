@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Changes to support 3P app drag and drop",
+  "comment": "Added support for third party app's drag and drop",
   "packageName": "@microsoft/teams-js",
   "email": "mahimashukla@microsoft.com",
   "dependentChangeType": "patch"
