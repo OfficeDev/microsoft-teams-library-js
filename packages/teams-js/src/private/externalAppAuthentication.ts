@@ -17,10 +17,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type OriginalRequestInfo =
-    | IQueryMessageExtensionRequest
-    | IActionBotInvokeRequest
-    | ISubmitActionInvokeRequest;
+  export type OriginalRequestInfo = IQueryMessageExtensionRequest | IActionExecuteInvokeRequest;
 
   /**
    * @hidden
@@ -47,53 +44,12 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  interface IActionBotInvokeRequest {
-    requestType: OriginalRequestType.ActionBotInvokeRequest;
-    action: ExecuteAction;
-    cardData?: IMsgExtCardData;
-  }
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  interface ISubmitActionInvokeRequest {
-    requestType: OriginalRequestType.SubmitActionInvokeRequest;
-    data: Record<string, unknown>; //object;
-  }
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  interface ExecuteAction {
+  interface IActionExecuteInvokeRequest {
+    requestType: OriginalRequestType.ActionExecuteInvokeRequest;
     type: string; // "invoke"
     id: string; // "action id"
     verb: string; // "action"
     data: Record<string, unknown>; //object; // {}
-  }
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  interface IMsgExtCardData {
-    cardId: string;
-    content: string;
-    contentType: M365CardContentType;
-    appId: string;
-    botId?: string;
-    contentUrl?: string;
-    signature?: string;
-    appName?: string;
-    source?: number;
-    titleId?: string;
   }
 
   /**
@@ -119,9 +75,8 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export enum OriginalRequestType {
-    ActionBotInvokeRequest = 'ActionBotInvokeRequest',
+    ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
     QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',
-    SubmitActionInvokeRequest = 'SubmitActionInvokeRequest',
   }
   /*********** END REQUEST TYPE ************/
 
@@ -132,7 +87,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type IInvokeResponse = BotInvokeErrorResponse | BotInvokeResultResponse;
+  export type InvokeResponse = IQueryMessageExtensionResponse | IActionExecuteResponse;
 
   /**
    * @hidden
@@ -140,42 +95,9 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type BotInvokeErrorResponse = {
-    type: BotResponseType.Error;
-    value: BotInvokeError;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type BotInvokeError = {
-    errorCode: number;
-    errorMessage: string;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type BotInvokeResultResponse = {
-    type: BotResponseType.Result;
-    value: BotInvokeResult;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export enum BotResponseType {
-    Result = 'result',
-    Error = 'error',
+  export enum InvokeResponseType {
+    ActionExecuteInvokeResponse = 'ActionExecuteInvokeResponse',
+    QueryMessageExtensionResponse = 'QueryMessageExtensionResponse',
   }
 
   /**
@@ -184,21 +106,10 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  // How to tell the difference between the two types? Can they be updated with a type/kind property
-  // so we can use discriminated union?
-  export type BotInvokeResult = BotInvokeNonActionExecuteResponse | BotInvokeExecuteResponse;
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type BotInvokeNonActionExecuteResponse = {
-    providerId?: string;
+  export interface IQueryMessageExtensionResponse {
+    responseType: InvokeResponseType.QueryMessageExtensionResponse;
     composeExtension?: ComposeExtensionResponse;
-    task?: TaskResult;
-  };
+  }
 
   /**
    * @hidden
@@ -206,12 +117,13 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type BotInvokeExecuteResponse = {
-    value: Record<string, unknown>; //object;
+  export interface IActionExecuteResponse {
+    responseType: InvokeResponseType.ActionExecuteInvokeResponse;
+    value: Record<string, unknown>;
     signature?: string;
     statusCode: number;
     type: string;
-  };
+  }
 
   /**
    * @hidden
@@ -222,8 +134,8 @@ export namespace externalAppAuthentication {
   export type ComposeExtensionResponse = {
     attachmentLayout: AttachmentLayout;
     type: ComposeResultTypes;
-    attachments: BotInvokeCard[];
-    suggestedActions?: BotInvokeSuggestedActions;
+    attachments: QueryMessageExtensionAttachment[];
+    suggestedActions?: QueryMessageExtensionSuggestedActions;
     text?: string;
   };
 
@@ -233,7 +145,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type BotInvokeSuggestedActions = {
+  export type QueryMessageExtensionSuggestedActions = {
     actions?: Actions[];
   };
 
@@ -255,7 +167,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type Card = {
+  export type QueryMessageExtensionCard = {
     contentType: string;
     content: Record<string, unknown>; //object;
     name?: string;
@@ -271,71 +183,9 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type BotInvokeCard = Card & {
-    preview?: Card;
+  export type QueryMessageExtensionAttachment = QueryMessageExtensionCard & {
+    preview?: QueryMessageExtensionCard;
   };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskResult = TaskContinueResult | TaskMessageResult;
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskContinueResult = {
-    type: TaskContinueType;
-    value: TaskInfo;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskInfo = {
-    title?: string;
-    height?: string | number;
-    width?: string | number;
-    url?: string;
-    fallbackUrl?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    card?: string | any;
-    completionBotId?: string;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskMessageResult = {
-    type: TaskMessageType;
-    value: string;
-  };
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskContinueType = 'continue';
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export type TaskMessageType = 'message';
 
   /**
    * @hidden
@@ -350,7 +200,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type ComposeResultTypes = 'result' | 'auth' | 'config' | 'message' | 'botMessagePreview' | 'silentAuth' | '';
+  export type ComposeResultTypes = 'result' | 'auth' | 'config' | 'message' | 'silentAuth' | '';
   /*********** END RESPONSE TYPE ************/
 
   /*********** BEGIN ERROR TYPE ***********/
@@ -371,9 +221,9 @@ export namespace externalAppAuthentication {
    */
   export function authenticateAndResendRequest(
     appId: string,
-    originalRequestInfo: OriginalRequestInfo,
     authenticateParameters: authentication.AuthenticatePopUpParameters,
-  ): Promise<IInvokeResponse> {
+    originalRequestInfo: OriginalRequestInfo,
+  ): Promise<InvokeResponse> {
     ensureInitialized(
       runtime,
       FrameContexts.content,
@@ -390,10 +240,11 @@ export namespace externalAppAuthentication {
     }
 
     // Convert any relative URLs into absolute URLs before sending them over to the parent window.
+    // Won't this use the calling app's origin?
     const link = document.createElement('a');
     link.href = authenticateParameters.url;
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
+    return sendMessageToParentAsync<[InvokeError, InvokeResponse]>(
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
@@ -403,7 +254,7 @@ export namespace externalAppAuthentication {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
-    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
+    ).then(([error, response]: [InvokeError, InvokeResponse]) => {
       if (error) {
         // TODO: update to new error types/confirm error codes
         throw error;
@@ -430,9 +281,9 @@ export namespace externalAppAuthentication {
 
     return sendMessageToParentAsync('externalAppAuthentication.authenticateWithSSO', [
       appId,
-      authTokenRequest?.resources,
-      authTokenRequest?.claims,
-      authTokenRequest?.silent,
+      authTokenRequest.resources,
+      authTokenRequest.claims,
+      authTokenRequest.silent,
     ]).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       // make sure host sdk is throwing the right type of errors
       if (!wasSuccessful) {
@@ -448,19 +299,19 @@ export namespace externalAppAuthentication {
    */
   export function authenticateWithSSOAndResendRequest(
     appId: string,
-    originalRequestInfo: OriginalRequestInfo,
     authTokenRequest: authentication.AuthTokenRequestParameters,
-  ): Promise<IInvokeResponse> {
+    originalRequestInfo: OriginalRequestInfo,
+  ): Promise<InvokeResponse> {
     ensureInitialized(runtime);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
+    return sendMessageToParentAsync<[InvokeError, InvokeResponse]>(
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, originalRequestInfo, authTokenRequest?.resources, authTokenRequest?.claims, authTokenRequest?.silent],
-    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
+      [appId, originalRequestInfo, authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
+    ).then(([error, response]: [InvokeError, InvokeResponse]) => {
       if (error) {
         // TODO: update to new error types/confirm error codes
         throw error;
