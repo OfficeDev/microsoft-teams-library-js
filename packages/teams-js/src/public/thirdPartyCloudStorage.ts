@@ -76,7 +76,7 @@ export namespace thirdPartyCloudStorage {
      */
     fileIndex: number;
     /**
-     * File type which is getting recieved
+     * File type/MIME type which is getting recieved
      */
     fileType: string;
     /**
@@ -122,7 +122,7 @@ export namespace thirdPartyCloudStorage {
   /**
    * Get drag-and-drop files using a callback.
    *
-   * @param {string} dragAndDropInput - The input related to the drag-and-drop operation.
+   * @param {string} dragAndDropInput - thread id received from the app.
    * @param {ThirdPartyAppCallback} thirdPartycallback - callback
    *   A callback function to handle the result of the operation
    */
@@ -167,16 +167,17 @@ export namespace thirdPartyCloudStorage {
 
             // we will send the maximum integer as chunkSequence to identify the last chunk
             if (fileResult.fileChunk.chunkSequence === Number.MAX_SAFE_INTEGER) {
-              const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
+              const fileBlob = createFile(helper.assembleAttachment, helper.fileType);
 
-              if (fileResult.isLastFile && fileBlob) {
+              if (fileBlob) {
                 // Convert blob to File
                 const receivedFile = new File([fileBlob], fileResult.fileName, {
                   type: fileBlob.type,
                 });
-
                 files.push(receivedFile);
+              }
 
+              if (fileResult.isLastFile) {
                 callback(files, fileResult.error);
               }
 
