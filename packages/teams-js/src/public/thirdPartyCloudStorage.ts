@@ -4,7 +4,6 @@ import { createFile, decodeAttachment } from '../internal/mediaUtil';
 import { getLogger } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
-import { media } from './media';
 import { runtime } from './runtime';
 
 const Files3PLogger = getLogger('thirdPartyCloudStorage');
@@ -91,13 +90,23 @@ export namespace thirdPartyCloudStorage {
   }
 
   /**
+   * Helper object to assembled file chunks
+   */
+  export interface AssembleAttachment {
+    /** A number representing the sequence of the attachment in the file chunks. */
+    sequence: number;
+    /** A Blob object representing the data of the file chunks. */
+    file: Blob;
+  }
+
+  /**
    * Helper class for assembling files
    */
   export interface AttachmentListHelper {
     /** A string representing the MIME type of the file */
     fileType: string;
-    /** An array of {@link media.AssembleAttachment | AssembleAttachment} objects representing the media files to be sent as attachment */
-    assembleAttachment: media.AssembleAttachment[];
+    /** An array of {@link AssembleAttachment | AssembleAttachment} objects representing files to be sent as attachment */
+    assembleAttachment: AssembleAttachment[];
   }
 
   /**
@@ -147,10 +156,7 @@ export namespace thirdPartyCloudStorage {
       } else {
         if (fileResult && fileResult.fileChunk) {
           try {
-            const assemble: media.AssembleAttachment | null = decodeAttachment(
-              fileResult.fileChunk,
-              fileResult.fileType,
-            );
+            const assemble: AssembleAttachment | null = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
             if (assemble) {
               helper.assembleAttachment.push(assemble);
             } else {
