@@ -87,7 +87,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type InvokeResponse = IQueryMessageExtensionResponse | IActionExecuteResponse;
+  export type IInvokeResponse = IQueryMessageExtensionResponse | IActionExecuteResponse;
 
   /**
    * @hidden
@@ -210,7 +210,7 @@ export namespace externalAppAuthentication {
   }
 
   export enum InvokeErrorCode {
-    ACTION_NOT_SUPPORTED_IN_CONTEXT = 1,
+    INTERNAL_ERROR, // Generic error
   }
   /*********** END ERROR TYPE ***********/
 
@@ -223,7 +223,7 @@ export namespace externalAppAuthentication {
     appId: string,
     authenticateParameters: authentication.AuthenticatePopUpParameters,
     originalRequestInfo: OriginalRequestInfo,
-  ): Promise<InvokeResponse> {
+  ): Promise<IInvokeResponse> {
     ensureInitialized(
       runtime,
       FrameContexts.content,
@@ -244,7 +244,7 @@ export namespace externalAppAuthentication {
     const link = document.createElement('a');
     link.href = authenticateParameters.url;
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageToParentAsync<[InvokeError, InvokeResponse]>(
+    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
@@ -254,7 +254,7 @@ export namespace externalAppAuthentication {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
-    ).then(([error, response]: [InvokeError, InvokeResponse]) => {
+    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
       if (error) {
         // TODO: update to new error types/confirm error codes
         throw error;
@@ -301,17 +301,17 @@ export namespace externalAppAuthentication {
     appId: string,
     authTokenRequest: authentication.AuthTokenRequestParameters,
     originalRequestInfo: OriginalRequestInfo,
-  ): Promise<InvokeResponse> {
+  ): Promise<IInvokeResponse> {
     ensureInitialized(runtime);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync<[InvokeError, InvokeResponse]>(
+    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
       [appId, originalRequestInfo, authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
-    ).then(([error, response]: [InvokeError, InvokeResponse]) => {
+    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
       if (error) {
         // TODO: update to new error types/confirm error codes
         throw error;

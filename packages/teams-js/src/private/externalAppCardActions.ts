@@ -40,7 +40,9 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export enum ActionOpenUrlErrorCode {
-    PLACEHOLDER_TO_BE_REMOVED = 1,
+    INVALID_LINK, // Deep link is invalid
+    NOT_SUPPORTED, // Deep link is not supported
+    INTERNAL_ERROR, // Generic error
   }
 
   /**
@@ -87,7 +89,7 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export enum ActionSubmitErrorCode {
-    PLACEHOLDER_TO_BE_REMOVED = 1,
+    INTERNAL_ERROR, // Generic error
   }
   /**
    * @hidden
@@ -132,7 +134,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function processOpenUrl(appId: string, url: string): Promise<ActionOpenUrlType> {
+  export function processActionOpenUrl(appId: string, url: string): Promise<ActionOpenUrlType> {
     // TODO: what FrameContexts is this allowed from? Temporarily using the same FrameContexts as executeDeepLink
     ensureInitialized(
       runtime,
@@ -149,10 +151,10 @@ export namespace externalAppCardActions {
     }
 
     // TODO: confirm no issues with deserialization
-    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
-      'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, url],
-    ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
+    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>('externalAppCardActions.processOpenUrl', [
+      appId,
+      url,
+    ]).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         // TODO: update to new error types/confirm error codes
         throw error;
