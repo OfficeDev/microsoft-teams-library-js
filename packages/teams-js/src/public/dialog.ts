@@ -110,7 +110,7 @@ export namespace dialog {
      *
      * @param urlDialogInfo - An object containing the parameters of the dialog module.
      * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode submit} function or when the user closes the dialog.
-     * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
+     * @param messageFromChildHandler - Handler that triggers if the dialog sends a message to the app.
      *
      * @beta
      */
