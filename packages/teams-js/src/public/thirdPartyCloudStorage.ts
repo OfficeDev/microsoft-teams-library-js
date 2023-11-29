@@ -160,7 +160,7 @@ export namespace thirdPartyCloudStorage {
             }
 
             // we will send the maximum integer as chunkSequence to identify the last chunk
-            if (fileResult.fileChunk.chunkSequence == Number.MAX_SAFE_INTEGER) {
+            if (fileResult.fileChunk.chunkSequence === Number.MAX_SAFE_INTEGER) {
               const fileBlob = createFile(helper.assembleAttachment, fileResult.fileType);
 
               if (fileResult.isLastFile && fileBlob) {
