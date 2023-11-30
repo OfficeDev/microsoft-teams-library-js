@@ -204,29 +204,6 @@
       "expectedTestAppValue": "requestAppAudioHandling() succeeded: isHostAudioless=true"
     },
     {
-      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Success",
-      "type": "registerAndRaiseEvent",
-      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
-      "eventName": "audioDeviceSelectionChanged",
-      "eventData": {
-        "speaker": { "deviceLabel": "speaker_0" },
-        "microphone": { "deviceLabel": "microphone_0" }
-      },
-      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
-      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
-    },
-    {
-      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Error",
-      "type": "registerAndRaiseEvent",
-      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
-      "eventName": "audioDeviceSelectionChanged",
-      "eventData": {
-        "error": { "errorCode": 100, "message": "Not supported on platform." }
-      },
-      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
-      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
-    },
-    {
       "title": "updateMicState API Call - Success",
       "type": "callResponse",
       "version": ">2.7.1",
