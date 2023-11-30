@@ -112,21 +112,21 @@ export namespace thirdPartyCloudStorage {
   /**
    * Defines the Callback function received from Third Party App
    */
-  export interface ThirdPartyAppCallback {
+  export interface DragAndDropFileCallback {
     /** Callback from third party app */
     (files: FileFor3PApps[], error?: SdkError): void;
   }
 
-  let callback: ThirdPartyAppCallback | null = null;
+  let callback: DragAndDropFileCallback | null = null;
 
   /**
    * Get drag-and-drop files using a callback.
    *
    * @param {string} dragAndDropInput - thread id received from the app.
-   * @param {ThirdPartyAppCallback} thirdPartycallback - callback
+   * @param {DragAndDropFileCallback} thirdPartycallback - callback
    *   A callback function to handle the result of the operation
    */
-  export function getDragAndDropFiles(dragAndDropInput: string, thirdPartycallback: ThirdPartyAppCallback): void {
+  export function getDragAndDropFiles(dragAndDropInput: string, thirdPartycallback: DragAndDropFileCallback): void {
     if (!thirdPartycallback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
     }
@@ -163,6 +163,7 @@ export namespace thirdPartyCloudStorage {
               Files3PLogger(
                 `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
               );
+              callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'error occurred while receiving data' });
             }
 
             // we will send the maximum integer as chunkSequence to identify the last chunk
