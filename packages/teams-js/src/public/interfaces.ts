@@ -975,6 +975,10 @@ export interface SdkError {
   message?: string;
 }
 
+export function isSdkError(err: unknown): err is SdkError {
+  return (err as SdkError)?.errorCode !== undefined;
+}
+
 /** Error codes used to identify different types of errors that can occur while developing apps. */
 export enum ErrorCode {
   /**

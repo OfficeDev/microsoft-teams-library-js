@@ -361,6 +361,30 @@ const RequestAppAudioHandling = (): React.ReactElement =>
     },
   });
 
+const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerAudioDeviceSelectionChangedHandler',
+    title: 'Register AudioDeviceSelectionChanged Handler',
+    onClick: async (setResult) => {
+      const audioDeviceSelectionChangedCallback = (
+        selectedDevicesInHost: meeting.AudioDeviceSelection | SdkError,
+      ): void => {
+        setResult('Received audioDeviceSelectionChanged event: ' + JSON.stringify(selectedDevicesInHost));
+      };
+      meeting.requestAppAudioHandling(
+        {
+          isAppHandlingAudio: true,
+          micMuteStateChangedCallback: (micState) => Promise.resolve(micState),
+          audioDeviceSelectionChangedCallback: audioDeviceSelectionChangedCallback,
+        },
+        () => {
+          return;
+        },
+      );
+      return generateRegistrationMsg('audioDeviceSelectionChaged event is received');
+    },
+  });
+
 const UpdateMicState = (): React.ReactElement =>
   ApiWithTextInput<meeting.MicState>({
     name: 'updateMicState',
@@ -398,6 +422,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingState />
     <SetOptions />
     <RequestAppAudioHandling />
+    <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
   </ModuleWrapper>
 );
