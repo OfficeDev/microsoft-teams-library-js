@@ -223,8 +223,13 @@ export namespace externalAppAuthentication {
   /**
    * @beta
    * @hidden
+   * Signals to the host to perform authentication using the given authentication parameters and then resend the request to the application specified by the app ID with the authentication result.
    * @internal
    * Limited to Microsoft-internal use
+   * @param appId ID of the application backend to which the request and authentication response should be sent
+   * @param authenticateParameters Parameters for the authentication pop-up
+   * @param originalRequestInfo Information about the original request that should be resent
+   * @returns A promise that resolves to the IInvokeResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
   export function authenticateAndResendRequest(
     appId: string,
@@ -260,8 +265,12 @@ export namespace externalAppAuthentication {
   /**
    * @beta
    * @hidden
+   * Signals to the host to perform SSO authentication for the application specified by the app ID
    * @internal
    * Limited to Microsoft-internal use
+   * @param appId ID of the application backend for which the host should attempt SSO authentication
+   * @param authTokenRequest Parameters for SSO authentication
+   * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
    */
   export function authenticateWithSSO(
     appId: string,
@@ -289,8 +298,13 @@ export namespace externalAppAuthentication {
   /**
    * @beta
    * @hidden
+   * Signals to the host to perform SSO authentication for the application specified by the app ID and then resend the request to the application backend with the authentication result
    * @internal
    * Limited to Microsoft-internal use
+   * @param appId ID of the application backend for which the host should attempt SSO authentication and resend the request and authentication response
+   * @param authTokenRequest Parameters for SSO authentication
+   * @param originalRequestInfo Information about the original request that should be resent
+   * @returns A promise that resolves to the IInvokeResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
   export function authenticateWithSSOAndResendRequest(
     appId: string,

@@ -93,8 +93,13 @@ export namespace externalAppCardActions {
   /**
    * @beta
    * @hidden
+   * Delegates an Adaptive Card Action.Submit request to the host for the application with the provided app ID
    * @internal
    * Limited to Microsoft-internal use
+   * @param appId ID of the application the request is intended for
+   * @param actionSubmitPayload The Adaptive Card Action.Submit payload
+   * @param cardActionsConfig The card actions configuration. This indicates which subtypes should be handled by this API
+   * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
    */
   export function processActionSubmit(
     appId: string,
@@ -121,8 +126,12 @@ export namespace externalAppCardActions {
   /**
    * @beta
    * @hidden
+   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID
    * @internal
    * Limited to Microsoft-internal use
+   * @param appId ID of the application the request is intended for
+   * @param url The URL to open
+   * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
    */
   export function processActionOpenUrl(appId: string, url: string): Promise<ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
