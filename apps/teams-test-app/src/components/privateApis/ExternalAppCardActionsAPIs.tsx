@@ -15,7 +15,7 @@ const CheckExternalAppCardActionsCapability = (): React.ReactElement =>
 const ProcessActionSubmit = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    actionSubmitPayload: externalAppCardActions.IAdaptiveCardSubmitAction;
+    actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit;
     cardActionsConfig?: externalAppCardActions.ICardActionsConfig;
   }>({
     name: 'processActionSubmit',

@@ -50,7 +50,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export interface IAdaptiveCardSubmitAction {
+  export interface IAdaptiveCardActionSubmit {
     id: string;
     data: Record<string, unknown>;
   }
@@ -61,7 +61,6 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export interface ICardActionsConfig {
-    // pulled from section 4.2
     enableImback: boolean;
     enableInvoke: boolean;
     enableDialog: boolean;
@@ -92,13 +91,14 @@ export namespace externalAppCardActions {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
   /**
+   * @beta
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
    */
   export function processActionSubmit(
     appId: string,
-    actionSubmitPayload: IAdaptiveCardSubmitAction,
+    actionSubmitPayload: IAdaptiveCardActionSubmit,
     cardActionsConfig?: ICardActionsConfig,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
@@ -119,6 +119,7 @@ export namespace externalAppCardActions {
   }
 
   /**
+   * @beta
    * @hidden
    * @internal
    * Limited to Microsoft-internal use

@@ -209,12 +209,19 @@ export namespace externalAppAuthentication {
     message?: string;
   }
 
+  /**
+   * @hidden
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
   export enum InvokeErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
   /*********** END ERROR TYPE ***********/
 
   /**
+   * @beta
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
@@ -251,6 +258,7 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
@@ -279,6 +287,7 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
