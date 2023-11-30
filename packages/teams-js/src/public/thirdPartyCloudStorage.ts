@@ -47,6 +47,7 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * File chunks an output of getDragAndDropFiles API from platform
+   * @beta
    */
   export interface FileChunk {
     /**
@@ -61,6 +62,7 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Output of getDragAndDropFiles API from platform
+   * @beta
    */
   export interface FileResult {
     /**
@@ -91,6 +93,7 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Helper object to assembled file chunks
+   * @beta
    */
   export interface AssembleAttachment {
     /** A number representing the sequence of the attachment in the file chunks. */
@@ -101,6 +104,7 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Helper class for assembling files
+   * @beta
    */
   export interface AttachmentListHelper {
     /** A string representing the MIME type of the file */
@@ -111,6 +115,7 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Defines the Callback function received from Third Party App
+   * @beta
    */
   export interface DragAndDropFileCallback {
     /** Callback from third party app */
