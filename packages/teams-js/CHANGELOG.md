@@ -20,7 +20,6 @@ Thu, 30 Nov 2023 20:36:13 GMT
 - Created new `MessageRequest` interface with required properties to enhance type-safety
 - Fixed more violations of strictNullChecks
 - Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
-- Reverted PR: "Fix calls to chat capability when only a single user is specified (#2050)"
 - Fixed strictNullChecks violations in `media.ts`, `mediaUtil.ts`, and other files
 - Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified
 - Fixed more `strictNullChecks` violations
@@ -56,7 +55,7 @@ Wed, 11 Oct 2023 16:51:27 GMT
 
 ### Patches
 
-- Reset registered handlers for unit testing 
+- Reset registered handlers for unit testing
 - Renamed Teams back-compat config for clarity
 - Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
 - Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`
