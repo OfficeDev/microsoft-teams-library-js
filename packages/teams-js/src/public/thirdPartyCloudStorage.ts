@@ -123,14 +123,17 @@ export namespace thirdPartyCloudStorage {
    * Get drag-and-drop files using a callback.
    *
    * @param {string} dragAndDropInput - thread id received from the app.
-   * @param {DragAndDropFileCallback} thirdPartycallback - callback
+   * @param {DragAndDropFileCallback} dragAndDropFileCallback - callback
    *   A callback function to handle the result of the operation
    */
-  export function getDragAndDropFiles(dragAndDropInput: string, thirdPartycallback: DragAndDropFileCallback): void {
-    if (!thirdPartycallback) {
+  export function getDragAndDropFiles(
+    dragAndDropInput: string,
+    dragAndDropFileCallback: DragAndDropFileCallback,
+  ): void {
+    if (!dragAndDropFileCallback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
     }
-    callback = thirdPartycallback;
+    callback = dragAndDropFileCallback;
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -138,7 +141,7 @@ export namespace thirdPartyCloudStorage {
 
     if (!dragAndDropInput || dragAndDropInput === '') {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      thirdPartycallback([], invalidInput);
+      dragAndDropFileCallback([], invalidInput);
       return;
     }
 
