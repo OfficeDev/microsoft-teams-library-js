@@ -14,7 +14,7 @@ Thu, 30 Nov 2023 20:36:13 GMT
 
 ### Patches
 
-- Added meetingStage and settings framecontexts to clipboard.
+- Added `meetingStage` and `settings` framecontexts to `clipboard`.
 - Fixed more strictNullChecks violations
 - Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
 - Created new `MessageRequest` interface with required properties to enhance type-safety
