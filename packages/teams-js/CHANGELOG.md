@@ -1,8 +1,30 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Nov 2023 18:15:02 GMT and should not be manually modified.
+This log was last generated on Thu, 30 Nov 2023 20:36:13 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.18.0
+
+Thu, 30 Nov 2023 20:36:13 GMT
+
+### Minor changes
+
+- Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates
+
+### Patches
+
+- Added meetingStage and settings framecontexts to clipboard.
+- Fixed more strictNullChecks violations
+- Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
+- Created new `MessageRequest` interface with required properties to enhance type-safety
+- Fixed more violations of strictNullChecks
+- Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
+- Reverted PR: "Fix calls to chat capability when only a single user is specified (#2050)"
+- Fixed strictNullChecks violations in `media.ts` and `mediaUtil.ts` files
+- Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified
+- Fixed more `strictNullChecks` violations
+- Deleted `isSupported` check from `app.lifecycle` subcapability since app resumption cannot be guaranteed even when it is supported.
 
 ## 2.17.0
 
