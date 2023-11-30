@@ -116,7 +116,7 @@ describe('externalAppAuthentication', () => {
           return expect(promise).rejects.toEqual(testError);
         });
       } else {
-        it(`should not allow calls from ${frameContext}`, async () => {
+        it(`should not allow calls from ${frameContext} context`, async () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           return expect(() =>
@@ -296,6 +296,23 @@ describe('externalAppAuthentication', () => {
           );
         });
       }
+    });
+  });
+  describe('isSupported', () => {
+    it('should throw when library is not initialized', () => {
+      return expect(() => externalAppAuthentication.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+    it('should return true when externalAppCardActions capability is supported', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+      return expect(externalAppAuthentication.isSupported()).toEqual(true);
+    });
+    it('should return false when externalAppCardActions capability is not supported', async () => {
+      expect.assertions(1);
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+      return expect(externalAppAuthentication.isSupported()).toEqual(false);
     });
   });
 });

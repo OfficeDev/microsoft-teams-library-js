@@ -210,7 +210,7 @@ export namespace externalAppAuthentication {
   }
 
   export enum InvokeErrorCode {
-    INTERNAL_ERROR, // Generic error
+    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
   /*********** END ERROR TYPE ***********/
 
