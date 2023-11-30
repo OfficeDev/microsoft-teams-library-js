@@ -1,12 +1,12 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 30 Nov 2023 20:36:13 GMT and should not be manually modified.
+This log was last generated on Thu, 30 Nov 2023 23:24:44 GMT and should not be manually modified.
 
 <!-- Start content -->
 
 ## 2.18.0
 
-Thu, 30 Nov 2023 20:36:13 GMT
+Thu, 30 Nov 2023 23:24:44 GMT
 
 ### Minor changes
 
@@ -15,10 +15,8 @@ Thu, 30 Nov 2023 20:36:13 GMT
 ### Patches
 
 - Added `meetingStage` and `settings` framecontexts to `clipboard`.
-- Fixed more strictNullChecks violations
 - Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
 - Created new `MessageRequest` interface with required properties to enhance type-safety
-- Fixed more violations of strictNullChecks
 - Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
 - Fixed strictNullChecks violations in `media.ts`, `mediaUtil.ts`, and other files
 - Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified

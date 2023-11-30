@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed revert from changelog, since this was re-added",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
