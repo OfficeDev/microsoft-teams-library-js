@@ -239,17 +239,13 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
-    // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-    // Won't this use the calling app's origin?
-    const link = document.createElement('a');
-    link.href = authenticateParameters.url;
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
         originalRequestInfo,
-        link.href,
+        authenticateParameters.url,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
