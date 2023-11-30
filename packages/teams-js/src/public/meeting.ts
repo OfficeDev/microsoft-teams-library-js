@@ -334,53 +334,6 @@ export namespace meeting {
      * @returns A promise with the updated microphone state
      */
     micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
-    /**
-     * Callback for the host to tell the app to change its speaker selection
-     */
-    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection | SdkError) => void;
-  }
-
-  /**
-   * Interface for AudioDeviceSelection from host selection.
-   * If the speaker or the microphone is undefined or don't have a device label, you can try to find the default devices
-   * by using
-   * ```ts
-   * const devices = await navigator.mediaDevices.enumerateDevices();
-   * const defaultSpeaker = devices.find((d) => d.deviceId === 'default' && d.kind === 'audiooutput');
-   * const defaultMic = devices.find((d) => d.deviceId === 'default' && d.kind === 'audioinput');
-   * ```
-   *
-   * @hidden
-   * Hide from docs.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @beta
-   */
-  export interface AudioDeviceSelection {
-    speaker?: AudioDeviceInfo;
-    microphone?: AudioDeviceInfo;
-  }
-
-  /**
-   * Interface for AudioDeviceInfo, includes a device label with the same format as {@link MediaDeviceInfo.label}
-   *
-   * Hosted app can use this label to compare it with the device info fetched from {@link navigator.mediaDevices.enumerateDevices()}.
-   * {@link MediaDeviceInfo} has  {@link MediaDeviceInfo.deviceId} as an unique identifier, but that id is also unique to the origin
-   * of the calling application, so {@link MediaDeviceInfo.deviceId} cannot be used here as an identifier. Notice there are some cases
-   * that devices may have the same device label, but we don't have a better way to solve this, keep this as a known limitation for now.
-   *
-   * @hidden
-   * Hide from docs.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * @beta
-   */
-  export interface AudioDeviceInfo {
-    deviceLabel: string;
   }
 
   /**
@@ -961,11 +914,6 @@ export namespace meeting {
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
-      const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection): void => {
-        requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
-      };
-      registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
-
       callback(isHostAudioless);
     };
     sendMessageToParent(
@@ -992,10 +940,6 @@ export namespace meeting {
 
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
-      }
-
-      if (doesHandlerExist('meeting.audioDeviceSelectionChanged')) {
-        removeHandler('meeting.audioDeviceSelectionChanged');
       }
 
       callback(isHostAudioless);
