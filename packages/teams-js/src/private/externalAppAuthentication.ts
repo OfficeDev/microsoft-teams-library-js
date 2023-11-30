@@ -200,7 +200,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type ComposeResultTypes = 'result' | 'auth' | 'config' | 'message' | 'silentAuth' | '';
+  export type ComposeResultTypes = 'result' | 'auth' | 'config' | 'message' | 'silentAuth';
   /*********** END RESPONSE TYPE ************/
 
   /*********** BEGIN ERROR TYPE ***********/
@@ -224,16 +224,7 @@ export namespace externalAppAuthentication {
     authenticateParameters: authentication.AuthenticatePopUpParameters,
     originalRequestInfo: OriginalRequestInfo,
   ): Promise<IInvokeResponse> {
-    ensureInitialized(
-      runtime,
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.remove,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -252,7 +243,6 @@ export namespace externalAppAuthentication {
       ],
     ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
       if (error) {
-        // TODO: update to new error types/confirm error codes
         throw error;
       } else {
         return response;
@@ -269,7 +259,7 @@ export namespace externalAppAuthentication {
     appId: string,
     authTokenRequest: authentication.AuthTokenRequestParameters,
   ): Promise<void> {
-    ensureInitialized(runtime);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -298,7 +288,7 @@ export namespace externalAppAuthentication {
     authTokenRequest: authentication.AuthTokenRequestParameters,
     originalRequestInfo: OriginalRequestInfo,
   ): Promise<IInvokeResponse> {
-    ensureInitialized(runtime);
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -309,7 +299,6 @@ export namespace externalAppAuthentication {
       [appId, originalRequestInfo, authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
       if (error) {
-        // TODO: update to new error types/confirm error codes
         throw error;
       } else {
         return response;

@@ -45,15 +45,7 @@ describe('externalAppAuthentication', () => {
       errorCode: 'INTERNAL_ERROR',
       message: 'test error message',
     };
-    const allowedFrameContexts = [
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.remove,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    ];
+    const allowedFrameContexts = [FrameContexts.content];
 
     it('should not allow calls before initialization', () => {
       return expect(() =>
@@ -222,66 +214,88 @@ describe('externalAppAuthentication', () => {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
-    it('should throw error from host failure', async () => {
-      expect.assertions(3);
-      const testError = {
-        errorCode: 'INTERNAL_ERROR',
-        message: 'test error message',
-      };
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-      const promise = externalAppAuthentication.authenticateWithSSOAndResendRequest(
-        'appId',
-        testAuthRequest,
-        testOriginalRequest,
-      );
+    const allowedFrameContexts = [FrameContexts.content];
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error from host failure in context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          const testError = {
+            errorCode: 'INTERNAL_ERROR',
+            message: 'test error message',
+          };
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const promise = externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            'appId',
+            testAuthRequest,
+            testOriginalRequest,
+          );
 
-      const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSOAndResendRequest');
-      if (message && message.args) {
-        expect(message).not.toBeNull();
-        expect(message.args).toEqual([
-          'appId',
-          testOriginalRequest,
-          testAuthRequest.resources,
-          testAuthRequest.claims,
-          testAuthRequest.silent,
-        ]);
-        // eslint-disable-next-line strict-null-checks/all
-        utils.respondToMessage(message, testError, null);
-      }
-      await expect(promise).rejects.toEqual(testError);
-    });
-    it('should return response on success', async () => {
-      expect.assertions(3);
-      const testResponse = {
-        responseType: externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse,
-        value: {},
-        signature: 'test signature',
-        statusCode: 200,
-        type: 'test type',
-      };
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-      const promise = externalAppAuthentication.authenticateWithSSOAndResendRequest(
-        'appId',
-        testAuthRequest,
-        testOriginalRequest,
-      );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSOAndResendRequest');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              'appId',
+              testOriginalRequest,
+              testAuthRequest.resources,
+              testAuthRequest.claims,
+              testAuthRequest.silent,
+            ]);
+            // eslint-disable-next-line strict-null-checks/all
+            utils.respondToMessage(message, testError, null);
+          }
+          await expect(promise).rejects.toEqual(testError);
+        });
+        it(`should return response on success in context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          const testResponse = {
+            responseType: externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse,
+            value: {},
+            signature: 'test signature',
+            statusCode: 200,
+            type: 'test type',
+          };
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const promise = externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            'appId',
+            testAuthRequest,
+            testOriginalRequest,
+          );
 
-      const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSOAndResendRequest');
-      if (message && message.args) {
-        expect(message).not.toBeNull();
-        expect(message.args).toEqual([
-          'appId',
-          testOriginalRequest,
-          testAuthRequest.resources,
-          testAuthRequest.claims,
-          testAuthRequest.silent,
-        ]);
-        // eslint-disable-next-line strict-null-checks/all
-        utils.respondToMessage(message, null, testResponse);
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSOAndResendRequest');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              'appId',
+              testOriginalRequest,
+              testAuthRequest.resources,
+              testAuthRequest.claims,
+              testAuthRequest.silent,
+            ]);
+            // eslint-disable-next-line strict-null-checks/all
+            utils.respondToMessage(message, null, testResponse);
+          }
+          await expect(promise).resolves.toEqual(testResponse);
+        });
+      } else {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          return expect(() =>
+            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              'appId',
+              testAuthRequest,
+              testOriginalRequest,
+            ),
+          ).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
+                `Current context: "${frameContext}".`,
+            ),
+          );
+        });
       }
-      await expect(promise).resolves.toEqual(testResponse);
     });
   });
 });

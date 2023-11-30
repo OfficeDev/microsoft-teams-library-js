@@ -101,29 +101,18 @@ export namespace externalAppCardActions {
     actionSubmitPayload: IAdaptiveCardSubmitAction,
     cardActionsConfig?: ICardActionsConfig,
   ): Promise<void> {
-    // TODO: what FrameContexts is this allowed from? Temporarily using the same FrameContexts as executeDeepLink
-    ensureInitialized(
-      runtime,
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    // TODO: confirm no issues with serialization and deserialization
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>('externalAppCardActions.processActionSubmit', [
       appId,
       actionSubmitPayload,
       cardActionsConfig,
     ]).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
-        // TODO: update to new error types/confirm error codes
         throw error;
       }
     });
@@ -135,16 +124,7 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export function processActionOpenUrl(appId: string, url: string): Promise<ActionOpenUrlType> {
-    // TODO: what FrameContexts is this allowed from? Temporarily using the same FrameContexts as executeDeepLink
-    ensureInitialized(
-      runtime,
-      FrameContexts.content,
-      FrameContexts.sidePanel,
-      FrameContexts.settings,
-      FrameContexts.task,
-      FrameContexts.stage,
-      FrameContexts.meetingStage,
-    );
+    ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
@@ -156,7 +136,6 @@ export namespace externalAppCardActions {
       url,
     ]).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
-        // TODO: update to new error types/confirm error codes
         throw error;
       } else {
         return response;
