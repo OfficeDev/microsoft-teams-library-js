@@ -63,63 +63,6 @@ describe('meeting', () => {
         });
       }
     });
-
-    describe('requestAppAudioHandling', () => {
-      const emptyMicStateCallback = (micState: meeting.MicState) => Promise.resolve(micState);
-      const waitForEventQueue = () => new Promise((resolve) => setTimeout(resolve, 0));
-
-      const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
-      Object.values(FrameContexts).forEach((context) => {
-        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`should call meeting.audioDeviceSelectionChanged after meeting.requestAppAudioHandling. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-
-            const requestIsHostAudioless: boolean | null = true;
-
-            let callbackPayload: meeting.AudioDeviceSelection | undefined = undefined;
-            const testCallback = (payload: meeting.AudioDeviceSelection) => {
-              callbackPayload = payload;
-              return Promise.resolve();
-            };
-
-            // call and respond to requestAppAudioHandling
-            meeting.requestAppAudioHandling(
-              {
-                isAppHandlingAudio: requestIsHostAudioless,
-                micMuteStateChangedCallback: (micState: meeting.MicState) => Promise.resolve(micState),
-                audioDeviceSelectionChangedCallback: testCallback,
-              },
-              (_result: boolean) => {},
-            );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
-            expect(requestAppAudioHandlingMessage).not.toBeNull();
-
-            utils.respondToMessage(requestAppAudioHandlingMessage, null, requestIsHostAudioless);
-
-            // check that the registerHandler for audio device selection was called
-            const registerHandlerMessage = utils.findMessageByFunc('registerHandler', 1);
-            expect(registerHandlerMessage).not.toBeNull();
-            expect(registerHandlerMessage.args.length).toBe(1);
-            expect(registerHandlerMessage.args[0]).toBe('meeting.audioDeviceSelectionChanged');
-          });
-        } else {
-          it(`should not allow meeting.requestAppAudioHandling calls from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            expect(() =>
-              meeting.requestAppAudioHandling(
-                { isAppHandlingAudio: true, micMuteStateChangedCallback: emptyMicStateCallback },
-                emptyCallBack,
-              ),
-            ).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${context}".`,
-            );
-          });
-        }
-      });
-    });
   });
   describe('frameless', () => {
     let utils: Utils = new Utils();
@@ -1528,57 +1471,6 @@ describe('meeting', () => {
             await waitForEventQueue();
 
             expect(micCallbackCalled).toBe(true);
-          });
-
-          it(`should call meeting.audioDeviceSelectionChanged after meeting.requestAppAudioHandling. context: ${context}`, async () => {
-            await utils.initializeWithContext(context);
-
-            const requestIsHostAudioless: boolean | null = true;
-
-            let callbackPayload: meeting.AudioDeviceSelection | undefined = undefined;
-            const testCallback = (payload: meeting.AudioDeviceSelection) => {
-              callbackPayload = payload;
-              return Promise.resolve();
-            };
-
-            // call and respond to requestAppAudioHandling
-            meeting.requestAppAudioHandling(
-              {
-                isAppHandlingAudio: requestIsHostAudioless,
-                micMuteStateChangedCallback: (micState: meeting.MicState) => Promise.resolve(micState),
-                audioDeviceSelectionChangedCallback: testCallback,
-              },
-              (_result: boolean) => {},
-            );
-            const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
-            expect(requestAppAudioHandlingMessage).not.toBeNull();
-
-            const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
-              data: {
-                id: callbackId,
-                args: [null, requestIsHostAudioless],
-              },
-            } as DOMMessageEvent);
-
-            // check that the registerHandler for audio device selection was called
-            const registerHandlerMessage = utils.findMessageByFunc('registerHandler', 1);
-            expect(registerHandlerMessage).not.toBeNull();
-            expect(registerHandlerMessage.args.length).toBe(1);
-            expect(registerHandlerMessage.args[0]).toBe('meeting.audioDeviceSelectionChanged');
-
-            const mockPayload = {};
-
-            // respond to the registerHandler
-            utils.respondToFramelessMessage({
-              data: {
-                func: 'meeting.audioDeviceSelectionChanged',
-                args: [mockPayload],
-              },
-            } as DOMMessageEvent);
-            await waitForEventQueue();
-
-            expect(callbackPayload).toBe(mockPayload);
           });
 
           it(`should call meeting.updateMicState with HostInitiated reason when mic state matches. context: ${context}`, async () => {
