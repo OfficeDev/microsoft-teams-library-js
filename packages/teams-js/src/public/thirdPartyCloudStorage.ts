@@ -15,7 +15,7 @@ const Files3PLogger = getLogger('thirdPartyCloudStorage');
  */
 export namespace thirdPartyCloudStorage {
   /** Get context callback function type */
-  const files: FileFor3PApps[] = [];
+  let files: FileFor3PApps[] = [];
   let helper: AttachmentListHelper = {
     fileType: '',
     assembleAttachment: [],
@@ -172,6 +172,7 @@ export namespace thirdPartyCloudStorage {
                 `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
               );
               callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'error occurred while receiving data' });
+              files = [];
             }
 
             // we will send the maximum integer as chunkSequence to identify the last chunk
@@ -188,6 +189,7 @@ export namespace thirdPartyCloudStorage {
 
               if (fileResult.isLastFile) {
                 callback(files, fileResult.error);
+                files = [];
               }
 
               helper = {
@@ -197,9 +199,11 @@ export namespace thirdPartyCloudStorage {
             }
           } catch (e) {
             callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
+            files = [];
           }
         } else {
           callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
+          files = [];
         }
       }
     }
