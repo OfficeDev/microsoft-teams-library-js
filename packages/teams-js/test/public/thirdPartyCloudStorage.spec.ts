@@ -30,6 +30,14 @@ describe('thirdPartyCloudStorage', () => {
     fileName: 'TestFile',
   };
 
+  const mockFileResult3: thirdPartyCloudStorage.FileResult = {
+    fileChunk: mockFileChunk2,
+    fileType: 'mockFileType',
+    fileIndex: 1, // for now it means last file we can remove
+    isLastFile: false,
+    fileName: 'TestFile',
+  };
+
   afterAll(() => {
     jest.restoreAllMocks();
   });
@@ -124,31 +132,6 @@ describe('thirdPartyCloudStorage', () => {
     expect(mockCallback).toHaveBeenCalledWith([], mockFileResult.error);
   });
 
-  it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
-    GlobalVars.isFramelessWindow = true;
-    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
-
-    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
-    expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
-    if (callbackused) {
-      // creating 50 file, each having 100 chunks
-      for (let i = 0; i < 50; i++) {
-        mockFileResults.forEach((mockFileResult) => {
-          callbackused(mockFileResult);
-        });
-        callbackused(mockFileResult2);
-      }
-    }
-
-    expect(mockCallback).toHaveBeenCalled();
-    expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining(Array(50).fill(expect.any(Blob))), undefined);
-    const receivedArray = mockCallback.mock.calls[0][0];
-    expect(receivedArray).toHaveLength(50); // verify if we received 50 files
-  });
-
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
     GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
@@ -168,6 +151,35 @@ describe('thirdPartyCloudStorage', () => {
 
     expect(mockCallback).toHaveBeenCalled();
     expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining([expect.any(Blob)]), undefined); // verify we recieved 1 blob object i.e. one file
+  });
+
+  it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
+    GlobalVars.isFramelessWindow = true;
+    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
+
+    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    expect(sendMessageToParentSpy).toHaveBeenCalled();
+    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    if (callbackused) {
+      // creating 50 file, each having 100 chunks
+      for (let i = 0; i < 50; i++) {
+        mockFileResults.forEach((mockFileResult) => {
+          callbackused(mockFileResult);
+        });
+        if (i == 49) {
+          callbackused(mockFileResult2);
+        } else {
+          callbackused(mockFileResult3);
+        }
+      }
+    }
+
+    expect(mockCallback).toHaveBeenCalled();
+    expect(mockCallback).toHaveBeenCalledWith(expect.arrayContaining(Array(50).fill(expect.any(Blob))), undefined);
+    const receivedArray = mockCallback.mock.calls[0][0];
+    expect(receivedArray).toHaveLength(50); // verify if we received 50 files
   });
 
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
