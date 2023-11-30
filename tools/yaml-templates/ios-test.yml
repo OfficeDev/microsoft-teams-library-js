@@ -9,6 +9,7 @@ steps:
     path: iOSHost
     persistCredentials: true
 
+<<<<<<< HEAD
   - task: InstallSSHKey@0
     displayName: 'Install an SSH key for OneDSTelemetry'
     inputs:
@@ -32,6 +33,8 @@ steps:
         pod install > /dev/null
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
+=======
+>>>>>>> 6f23f92877165e7909c202d039aa0db6fa481248
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
     inputs:
