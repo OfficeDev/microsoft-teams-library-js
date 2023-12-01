@@ -2,7 +2,7 @@ steps:
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
 
   - task: CmdLine@2
     displayName: 'Setup pnpm'
@@ -65,7 +65,7 @@ steps:
     inputs:
       targetType: inline
       script: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
-  
+
   - task: PowerShell@2
     name: package
     displayName: 'Set package.version Variable'
@@ -74,14 +74,14 @@ steps:
       script: |
         $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
         Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
-  
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'apps/teams-test-app/build'
       contents: '**'
       targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
     displayName: 'Copy Test app to artifacts staging directory'
-  
+
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
@@ -90,14 +90,14 @@ steps:
       archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
       replaceExistingArchive: true
     displayName: 'Zip Test app artifacts'
-  
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**\?(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -107,7 +107,7 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
       flattenFolders: true
     displayName: 'Copy TeamsJS Content for NPM'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -115,7 +115,7 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
-  
+
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -123,4 +123,3 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
     displayName: 'Copy Power Shell scripts to scripts'
-    
