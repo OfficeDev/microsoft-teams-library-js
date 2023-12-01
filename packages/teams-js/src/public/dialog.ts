@@ -2,10 +2,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isHostAdaptiveCardSchemaVersionUnsupported } from '../internal/utils';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import {
@@ -19,6 +20,93 @@ import {
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
+  ensureInitialized(
+    runtime,
+    FrameContexts.content,
+    FrameContexts.sidePanel,
+    FrameContexts.task,
+    FrameContexts.meetingStage,
+  );
+  if (!dialog.update.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  sendMessageToParentWithVersion(apiVersionTag, 'tasks.updateTask', [dimensions]);
+}
+
+export function urlOpenHelper(
+  apiVersionTag: string,
+  urlDialogInfo: UrlDialogInfo,
+  submitHandler?: dialog.DialogSubmitHandler,
+  messageFromChildHandler?: dialog.PostMessageChannel,
+): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!dialog.url.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
+  if (messageFromChildHandler) {
+    registerHandler('messageForParent', messageFromChildHandler);
+  }
+  const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
+  sendMessageToParentWithVersion(
+    apiVersionTag,
+    'tasks.startTask',
+    [dialogInfo],
+    (err: string, result: string | object) => {
+      submitHandler?.({ err, result });
+      removeHandler('messageForParent');
+    },
+  );
+}
+
+export function botUrlOpenHelper(
+  apiVersionTag: string,
+  urlDialogInfo: BotUrlDialogInfo,
+  submitHandler?: dialog.DialogSubmitHandler,
+  messageFromChildHandler?: dialog.PostMessageChannel,
+): void {
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+  if (!dialog.url.bot.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
+  if (messageFromChildHandler) {
+    registerHandler('messageForParent', messageFromChildHandler);
+  }
+  const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
+  sendMessageToParentWithVersion(
+    apiVersionTag,
+    'tasks.startTask',
+    [dialogInfo],
+    (err: string, result: string | object) => {
+      submitHandler?.({ err, result });
+      removeHandler('messageForParent');
+    },
+  );
+}
+
+export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
+  // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
+  // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
+  // FrameContexts.content will be removed once the bug is fixed.
+  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  if (!dialog.url.isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+
+  // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
+  sendMessageToParentWithVersion(apiVersionTag, 'tasks.completeTask', [
+    result,
+    appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
+  ]);
+}
 
 /**
  * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
@@ -119,19 +207,12 @@ export namespace dialog {
       submitHandler?: DialogSubmitHandler,
       messageFromChildHandler?: PostMessageChannel,
     ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      if (messageFromChildHandler) {
-        registerHandler('messageForParent', messageFromChildHandler);
-      }
-      const dialogInfo: DialogInfo = getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-        removeHandler('messageForParent');
-      });
+      urlOpenHelper(
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Open),
+        urlDialogInfo,
+        submitHandler,
+        messageFromChildHandler,
+      );
     }
 
     /**
@@ -148,16 +229,7 @@ export namespace dialog {
      * @beta
      */
     export function submit(result?: string | object, appIds?: string | string[]): void {
-      // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
-      // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
-      // FrameContexts.content will be removed once the bug is fixed.
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-
-      // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-      sendMessageToParent('tasks.completeTask', [result, appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : []]);
+      urlSubmitHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Submit), result, appIds);
     }
 
     /**
@@ -179,7 +251,11 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForParent', [message]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+        'messageForParent',
+        [message],
+      );
     }
 
     /**
@@ -198,7 +274,11 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
 
-      sendMessageToParent('messageForChild', [message]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
+        'messageForChild',
+        [message],
+      );
     }
 
     /**
@@ -264,19 +344,12 @@ export namespace dialog {
         submitHandler?: DialogSubmitHandler,
         messageFromChildHandler?: PostMessageChannel,
       ): void {
-        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-        if (messageFromChildHandler) {
-          registerHandler('messageForParent', messageFromChildHandler);
-        }
-        const dialogInfo: DialogInfo = getDialogInfoFromBotUrlDialogInfo(botUrlDialogInfo);
-
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-          removeHandler('messageForParent');
-        });
+        botUrlOpenHelper(
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_Open),
+          botUrlDialogInfo,
+          submitHandler,
+          messageFromChildHandler,
+        );
       }
 
       /**
@@ -355,17 +428,7 @@ export namespace dialog {
      * @beta
      */
     export function resize(dimensions: DialogSize): void {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.task,
-        FrameContexts.meetingStage,
-      );
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-      sendMessageToParent('tasks.updateTask', [dimensions]);
+      updateResizeHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
     }
 
     /**
@@ -407,9 +470,14 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-        submitHandler?.({ err, result });
-      });
+      sendMessageToParentWithVersion(
+        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
+        'tasks.startTask',
+        [dialogInfo],
+        (err: string, result: string | object) => {
+          submitHandler?.({ err, result });
+        },
+      );
     }
 
     /**
@@ -457,9 +525,14 @@ export namespace dialog {
 
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-        sendMessageToParent('tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-          submitHandler?.({ err, result });
-        });
+        sendMessageToParentWithVersion(
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
+          'tasks.startTask',
+          [dialogInfo],
+          (err: string, result: string | object) => {
+            submitHandler?.({ err, result });
+          },
+        );
       }
 
       /**
