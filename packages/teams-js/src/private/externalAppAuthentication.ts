@@ -14,7 +14,7 @@ export namespace externalAppAuthentication {
   /*********** BEGIN REQUEST TYPE ************/
   /**
    * @hidden
-   * 
+   * Information about the bot request that should be resent by the host
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -22,7 +22,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * Information about the message extension request that should be resent by the host
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -203,6 +203,14 @@ export namespace externalAppAuthentication {
   export enum InvokeErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
+
+  /**
+   * @hidden
+   * Wrapper to differentiate between InvokeError and IInvokeResponse response from host
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  type InvokeErrorWrapper = InvokeError & { responseType: undefined };
   /*********** END ERROR TYPE ***********/
 
   /**
@@ -228,7 +236,7 @@ export namespace externalAppAuthentication {
     }
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
+    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
@@ -238,11 +246,12 @@ export namespace externalAppAuthentication {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
-    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
-      if (error) {
-        throw error;
-      } else {
+    ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
+      if (wasSuccessful && response.responseType != null) {
         return response;
+      } else {
+        const error = response as InvokeError;
+        throw error;
       }
     });
   }
@@ -301,14 +310,15 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync<[InvokeError, IInvokeResponse]>(
+    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeError]>(
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
       [appId, originalRequestInfo, authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
-    ).then(([error, response]: [InvokeError, IInvokeResponse]) => {
-      if (error) {
-        throw error;
-      } else {
+    ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
+      if (wasSuccessful && response.responseType != null) {
         return response;
+      } else {
+        const error = response as InvokeError;
+        throw error;
       }
     });
   }
