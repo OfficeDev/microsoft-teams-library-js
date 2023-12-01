@@ -16,7 +16,7 @@ const ProcessActionSubmit = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit;
-    cardActionsConfig?: externalAppCardActions.ICardActionsConfig;
+    cardActionsConfig: externalAppCardActions.ICardActionsConfig;
   }>({
     name: 'processActionSubmit',
     title: 'Process Action Submit',
