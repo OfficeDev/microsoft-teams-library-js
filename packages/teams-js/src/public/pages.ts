@@ -867,8 +867,6 @@ export namespace pages {
      * ------
      * Place the tab into full-screen mode.
      *
-     * @internal
-     * Limited to Microsoft-internal use
      */
     export function enterFullscreen(): void {
       ensureInitialized(runtime, FrameContexts.content);
@@ -887,8 +885,6 @@ export namespace pages {
      * Hide from docs
      * ------
      * Reverts the tab into normal-screen mode.
-     * @internal
-     * Limited to Microsoft-internal use
      */
     export function exitFullscreen(): void {
       ensureInitialized(runtime, FrameContexts.content);
