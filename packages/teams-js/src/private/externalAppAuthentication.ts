@@ -154,10 +154,7 @@ export namespace externalAppAuthentication {
    */
   export type QueryMessageExtensionCard = {
     contentType: string;
-    content: Record<string, unknown>; //object;
-    name?: string;
-    thumbnailUrl?: string;
-    contentUrl?: string;
+    content: Record<string, unknown>;
     fallbackHtml?: string;
     signature?: string;
   };
