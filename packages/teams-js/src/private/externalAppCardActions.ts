@@ -110,7 +110,7 @@ export namespace externalAppCardActions {
   export function processActionSubmit(
     appId: string,
     actionSubmitPayload: IAdaptiveCardActionSubmit,
-    cardActionsConfig?: ICardActionsConfig,
+    cardActionsConfig: ICardActionsConfig,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 

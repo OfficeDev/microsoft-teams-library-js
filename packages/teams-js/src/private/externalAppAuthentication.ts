@@ -41,7 +41,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * Information about the Action.Execute request that should be resent by the host. Corresponds to schema in https://adaptivecards.io/explorer/Action.Execute.html
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -63,7 +63,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * Used to differentiate between IOriginalRequestInfo types
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -76,7 +76,7 @@ export namespace externalAppAuthentication {
   /*********** BEGIN RESPONSE TYPE ************/
   /**
    * @hidden
-   *
+   * The response from the bot returned via the host
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -84,7 +84,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * Used to differentiate between IInvokeResponse types
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -95,7 +95,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * The response from the bot returned via the host for a message extension request.
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -222,6 +222,7 @@ export namespace externalAppAuthentication {
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
+   * TODO - Add more validation here as we get more details on the allowed request schemas
    */
   function validateOriginalRequestInfo(originalRequestInfo: IOriginalRequestInfo): void {
     if (originalRequestInfo.requestType === OriginalRequestType.ActionExecuteInvokeRequest) {
