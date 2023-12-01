@@ -58,22 +58,6 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum M365CardContentType {
-    Error = 'error',
-    HeroCard = 'application/vnd.microsoft.card.hero',
-    ThumbnailCard = 'application/vnd.microsoft.card.thumbnail',
-    ConnectorCard = 'application/vnd.microsoft.teams.card.o365connector',
-    AdaptiveCard = 'application/vnd.microsoft.card.adaptive',
-    SignInCard = 'signincard',
-    AppInstallCard = 'appinstallcard',
-  }
-
-  /**
-   * @hidden
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
   export enum OriginalRequestType {
     ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
     QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',

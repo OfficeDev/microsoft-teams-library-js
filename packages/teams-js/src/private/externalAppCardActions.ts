@@ -18,7 +18,7 @@ export namespace externalAppCardActions {
   export enum ActionOpenUrlType {
     DeepLinkOther,
     DeepLinkStageView,
-    DeepLinkTaskModule,
+    DeepLinkDialog,
     GenericUrl,
   }
 
