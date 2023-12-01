@@ -17,7 +17,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     authenticateParameters: authentication.AuthenticatePopUpParameters;
-    originalRequestInfo: externalAppAuthentication.OriginalRequestInfo;
+    originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateAndResendRequest',
     title: 'Authenticate And Resend Request',
@@ -57,12 +57,12 @@ const AuthenticateWithSSO = (): React.ReactElement =>
           throw new Error('appId is required');
         }
         if (!input.authTokenRequest) {
-          throw new Error('authenticateParameters is required');
+          throw new Error('authTokenRequest is required');
         }
       },
       submit: async (input) => {
         await externalAppAuthentication.authenticateWithSSO(input.appId, input.authTokenRequest);
-        return 'Called successfully';
+        return 'Completed';
       },
     },
   });
@@ -71,7 +71,7 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     authTokenRequest: authentication.AuthTokenRequestParameters;
-    originalRequestInfo: externalAppAuthentication.OriginalRequestInfo;
+    originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateWithSSOAndResendRequest',
     title: 'Authenticate With SSO And Resend Request',
@@ -81,7 +81,7 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
           throw new Error('appId is required');
         }
         if (!input.authTokenRequest) {
-          throw new Error('authenticateParameters is required');
+          throw new Error('authTokenRequest is required');
         }
         if (!input.originalRequestInfo) {
           throw new Error('originalRequestInfo is required');

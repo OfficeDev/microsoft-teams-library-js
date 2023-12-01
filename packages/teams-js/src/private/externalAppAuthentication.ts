@@ -17,7 +17,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type OriginalRequestInfo = IQueryMessageExtensionRequest | IActionExecuteInvokeRequest;
+  export type IOriginalRequestInfo = IQueryMessageExtensionRequest | IActionExecuteInvokeRequest;
 
   /**
    * @hidden
@@ -44,7 +44,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  interface IActionExecuteInvokeRequest {
+  export interface IActionExecuteInvokeRequest {
     requestType: OriginalRequestType.ActionExecuteInvokeRequest;
     type: string; // "invoke"
     id: string; // "action id"
@@ -130,7 +130,7 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export type QueryMessageExtensionSuggestedActions = {
-    actions?: Actions[];
+    actions?: Action[];
   };
 
   /**
@@ -139,7 +139,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type Actions = {
+  export type Action = {
     type: string;
     title: string;
     value: string;
@@ -177,14 +177,14 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type AttachmentLayout = 'list' | 'grid';
+  export type AttachmentLayout = 'grid' | 'list';
   /**
    * @hidden
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export type ComposeResultTypes = 'result' | 'auth' | 'config' | 'message' | 'silentAuth';
+  export type ComposeResultTypes = 'auth' | 'config' | 'message' | 'result' | 'silentAuth';
   /*********** END RESPONSE TYPE ************/
 
   /*********** BEGIN ERROR TYPE ***********/
@@ -218,7 +218,7 @@ export namespace externalAppAuthentication {
   export function authenticateAndResendRequest(
     appId: string,
     authenticateParameters: authentication.AuthenticatePopUpParameters,
-    originalRequestInfo: OriginalRequestInfo,
+    originalRequestInfo: IOriginalRequestInfo,
   ): Promise<IInvokeResponse> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -272,7 +272,6 @@ export namespace externalAppAuthentication {
       authTokenRequest.claims,
       authTokenRequest.silent,
     ]).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-      // make sure host sdk is throwing the right type of errors
       if (!wasSuccessful) {
         throw error;
       }
@@ -293,7 +292,7 @@ export namespace externalAppAuthentication {
   export function authenticateWithSSOAndResendRequest(
     appId: string,
     authTokenRequest: authentication.AuthTokenRequestParameters,
-    originalRequestInfo: OriginalRequestInfo,
+    originalRequestInfo: IOriginalRequestInfo,
   ): Promise<IInvokeResponse> {
     ensureInitialized(runtime, FrameContexts.content);
 

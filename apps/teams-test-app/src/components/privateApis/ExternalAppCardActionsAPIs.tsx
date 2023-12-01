@@ -35,7 +35,7 @@ const ProcessActionSubmit = (): React.ReactElement =>
           input.actionSubmitPayload,
           input.cardActionsConfig,
         );
-        return 'Called successfully';
+        return 'Completed';
       },
     },
   });

@@ -140,7 +140,6 @@ export namespace externalAppCardActions {
       throw errorNotSupportedOnPlatform;
     }
 
-    // TODO: confirm no issues with deserialization
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>('externalAppCardActions.processOpenUrl', [
       appId,
       url,
