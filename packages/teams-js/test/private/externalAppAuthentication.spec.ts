@@ -27,7 +27,7 @@ describe('externalAppAuthentication', () => {
       height: 100,
       isExternal: true,
     };
-    const testOriginalRequest: externalAppAuthentication.OriginalRequestInfo = {
+    const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {
       requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
       type: 'invoke',
       id: '1',
@@ -192,7 +192,7 @@ describe('externalAppAuthentication', () => {
       claims: ['claims'],
       silent: true,
     };
-    const testOriginalRequest: externalAppAuthentication.OriginalRequestInfo = {
+    const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {
       requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
       type: 'invoke',
       id: '1',

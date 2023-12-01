@@ -6,20 +6,22 @@ import { runtime } from '../public/runtime';
 
 /**
  * @hidden
+ * Namespace to delegate adaptive card action execution to the host
  * @internal
  * Limited to Microsoft-internal use
  */
 export namespace externalAppCardActions {
   /**
    * @hidden
+   * The type of deeplink action that was executed by the host
    * @internal
    * Limited to Microsoft-internal use
    */
   export enum ActionOpenUrlType {
-    DeepLinkOther,
-    DeepLinkStageView,
-    DeepLinkDialog,
-    GenericUrl,
+    DeepLinkDialog = 'DeepLinkDialog',
+    DeepLinkOther = 'DeepLinkOther',
+    DeepLinkStageView = 'DeepLinkStageView',
+    GenericUrl = 'GenericUrl',
   }
 
   /**
@@ -36,6 +38,7 @@ export namespace externalAppCardActions {
 
   /**
    * @hidden
+   * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -47,6 +50,7 @@ export namespace externalAppCardActions {
 
   /**
    * @hidden
+   * The payload that is used when executing an Adaptive Card Action.Submit
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -57,6 +61,7 @@ export namespace externalAppCardActions {
 
   /**
    * @hidden
+   * The configuration for Adaptive Card Action.Submit. This indicates which subtypes should be handled.
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -84,6 +89,7 @@ export namespace externalAppCardActions {
 
   /**
    * @hidden
+   * Error codes that can be thrown from IExternalAppCardActionService.handleActionSubmit
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -140,10 +146,10 @@ export namespace externalAppCardActions {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>('externalAppCardActions.processOpenUrl', [
-      appId,
-      url,
-    ]).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
+    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+      'externalAppCardActions.processActionOpenUrl',
+      [appId, url],
+    ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;
       } else {

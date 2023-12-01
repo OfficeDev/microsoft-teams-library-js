@@ -117,7 +117,7 @@ describe('externalAppCardActions', () => {
       errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
-    const testResponse = externalAppCardActions.ActionOpenUrlType.DeepLinkTaskModule;
+    const testResponse = externalAppCardActions.ActionOpenUrlType.DeepLinkDialog;
     it('should not allow calls before initialization', async () => {
       return expect(() => externalAppCardActions.processActionOpenUrl(testAppId, testUrl)).toThrowError(
         new Error(errorLibraryNotInitialized),
@@ -140,7 +140,7 @@ describe('externalAppCardActions', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const promise = externalAppCardActions.processActionOpenUrl(testAppId, testUrl);
-          const message = utils.findMessageByFunc('externalAppCardActions.processOpenUrl');
+          const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testUrl]);
@@ -154,7 +154,7 @@ describe('externalAppCardActions', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const promise = externalAppCardActions.processActionOpenUrl(testAppId, testUrl);
-          const message = utils.findMessageByFunc('externalAppCardActions.processOpenUrl');
+          const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testUrl]);

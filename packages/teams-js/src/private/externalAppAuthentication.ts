@@ -6,6 +6,7 @@ import { runtime } from '../public/runtime';
 
 /**
  * @hidden
+ * Namespace to delegate authentication and message extension requests to the host
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -13,7 +14,7 @@ export namespace externalAppAuthentication {
   /*********** BEGIN REQUEST TYPE ************/
   /**
    * @hidden
-   *
+   * 
    * @internal
    * Limited to Microsoft-internal use
    */
