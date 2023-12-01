@@ -20,19 +20,27 @@ describe('externalAppAuthentication', () => {
     jest.clearAllMocks();
   });
 
+  const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {
+    requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
+    type: 'Action.Execute',
+    id: '1',
+    verb: 'action',
+    data: {},
+  };
+  const testOriginalRequestWithInvalidType: externalAppAuthentication.IOriginalRequestInfo = {
+    requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
+    type: 'INVALID_TYPE',
+    id: '1',
+    verb: 'action',
+    data: {},
+  };
+
   describe('authenticateAndResendRequest', () => {
     const testAuthRequest = {
       url: 'test url',
       width: 100,
       height: 100,
       isExternal: true,
-    };
-    const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {
-      requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
-      type: 'invoke',
-      id: '1',
-      verb: 'action',
-      data: {},
     };
     const testResponse = {
       responseType: externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse,
@@ -90,6 +98,23 @@ describe('externalAppAuthentication', () => {
             utils.respondToMessage(message, true, testResponse);
           }
           return expect(promise).resolves.toEqual(testResponse);
+        });
+        it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          try {
+            externalAppAuthentication.authenticateAndResendRequest(
+              'appId',
+              testAuthRequest,
+              testOriginalRequestWithInvalidType,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid action type ${testOriginalRequestWithInvalidType.type}. Action type must be "Action.Execute"`,
+            });
+          }
         });
         it(`should throw error from host on failure with context - ${frameContext}`, async () => {
           expect.assertions(3);
@@ -192,13 +217,6 @@ describe('externalAppAuthentication', () => {
       claims: ['claims'],
       silent: true,
     };
-    const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {
-      requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
-      type: 'invoke',
-      id: '1',
-      verb: 'action',
-      data: {},
-    };
     it('should not allow calls before initialization', () => {
       return expect(() =>
         externalAppAuthentication.authenticateWithSSOAndResendRequest('appId', testAuthRequest, testOriginalRequest),
@@ -245,6 +263,23 @@ describe('externalAppAuthentication', () => {
             utils.respondToMessage(message, false, testError);
           }
           await expect(promise).rejects.toEqual(testError);
+        });
+        it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          try {
+            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              'appId',
+              testAuthRequest,
+              testOriginalRequestWithInvalidType,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid action type ${testOriginalRequestWithInvalidType.type}. Action type must be "Action.Execute"`,
+            });
+          }
         });
         it(`should return response on success in context - ${frameContext}`, async () => {
           expect.assertions(3);

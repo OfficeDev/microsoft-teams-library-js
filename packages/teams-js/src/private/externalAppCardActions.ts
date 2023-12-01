@@ -61,7 +61,7 @@ export namespace externalAppCardActions {
 
   /**
    * @hidden
-   * The configuration for Adaptive Card Action.Submit. This indicates which subtypes should be handled.
+   * The configuration for Adaptive Card Action.Submit. This indicates which subtypes of actions are supported by the calling app.
    * @internal
    * Limited to Microsoft-internal use
    */

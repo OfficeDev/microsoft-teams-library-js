@@ -47,11 +47,19 @@ export namespace externalAppAuthentication {
    */
   export interface IActionExecuteInvokeRequest {
     requestType: OriginalRequestType.ActionExecuteInvokeRequest;
-    type: string; // "invoke"
-    id: string; // "action id"
-    verb: string; // "action"
-    data: Record<string, unknown>; //object; // {}
+    type: string; // This must be "Action.Execute"
+    id: string; // The unique identifier associated with the action
+    verb: string; // The card author defined verb associated with the action
+    data: string | Record<string, unknown>;
   }
+
+  /**
+   * @hidden
+   * This is the only allowed value for IActionExecuteInvokeRequest.type. Used for validation
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  const ActionExecuteInvokeRequestType = 'Action.Execute';
 
   /**
    * @hidden
@@ -211,6 +219,24 @@ export namespace externalAppAuthentication {
   /*********** END ERROR TYPE ***********/
 
   /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  function validateOriginalRequestInfo(originalRequestInfo: IOriginalRequestInfo): void {
+    if (originalRequestInfo.requestType === OriginalRequestType.ActionExecuteInvokeRequest) {
+      const actionExecuteRequest = originalRequestInfo as IActionExecuteInvokeRequest;
+      if (actionExecuteRequest.type !== ActionExecuteInvokeRequestType) {
+        const error: InvokeError = {
+          errorCode: InvokeErrorCode.INTERNAL_ERROR,
+          message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
+        };
+        throw error;
+      }
+    }
+  }
+
+  /**
    * @beta
    * @hidden
    * Signals to the host to perform authentication using the given authentication parameters and then resend the request to the application specified by the app ID with the authentication result.
@@ -231,6 +257,8 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+
+    validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
@@ -306,6 +334,8 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+
+    validateOriginalRequestInfo(originalRequestInfo);
 
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeError]>(
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
