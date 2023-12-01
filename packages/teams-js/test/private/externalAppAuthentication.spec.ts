@@ -87,7 +87,7 @@ describe('externalAppAuthentication', () => {
               testAuthRequest.isExternal,
             ]);
             // eslint-disable-next-line strict-null-checks/all
-            utils.respondToMessage(message, null, testResponse);
+            utils.respondToMessage(message, true, testResponse);
           }
           return expect(promise).resolves.toEqual(testResponse);
         });
@@ -111,7 +111,7 @@ describe('externalAppAuthentication', () => {
               testAuthRequest.height,
               testAuthRequest.isExternal,
             ]);
-            utils.respondToMessage(message, testError, null);
+            utils.respondToMessage(message, false, testError);
           }
           return expect(promise).rejects.toEqual(testError);
         });
@@ -242,7 +242,7 @@ describe('externalAppAuthentication', () => {
               testAuthRequest.silent,
             ]);
             // eslint-disable-next-line strict-null-checks/all
-            utils.respondToMessage(message, testError, null);
+            utils.respondToMessage(message, false, testError);
           }
           await expect(promise).rejects.toEqual(testError);
         });
@@ -274,7 +274,7 @@ describe('externalAppAuthentication', () => {
               testAuthRequest.silent,
             ]);
             // eslint-disable-next-line strict-null-checks/all
-            utils.respondToMessage(message, null, testResponse);
+            utils.respondToMessage(message, true, testResponse);
           }
           await expect(promise).resolves.toEqual(testResponse);
         });
