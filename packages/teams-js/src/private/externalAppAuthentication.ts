@@ -22,7 +22,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Information about the message extension request that should be resent by the host
+   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/en-us/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -95,7 +95,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * The response from the bot returned via the host for a message extension request.
+   * The response from the bot returned via the host for a message extension query request.
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -106,7 +106,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * The response from the bot returned via the host for an Action.Execute request.
    * @internal
    * Limited to Microsoft-internal use
    */
