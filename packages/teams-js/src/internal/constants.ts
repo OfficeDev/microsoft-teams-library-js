@@ -150,6 +150,7 @@ export const validOrigins = [
   'teams.cloud.microsoft',
   'outlook.cloud.microsoft',
   'm365.cloud.microsoft',
+  'copilot.microsoft.com',
 ];
 
 /**
