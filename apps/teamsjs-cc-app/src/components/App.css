@@ -3,7 +3,7 @@
 }
 
 .ui_action .ui-flex {
-  width: max-content;
+  width: 100%;
 }
 
 .ui-icon {
@@ -14,10 +14,23 @@
   width: 18px;
 }
 
+.app-getcontext .align-top {
+  vertical-align: top;
+}
+
+.app-getcontext {
+  width: 69%;
+}
+
+.app-openlink {
+  width: 50%;
+}
+
 .ui_action,
 .ui-table__cell__content {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .ui-pagessegment {
@@ -81,6 +94,7 @@
 
 .ui_input {
   width: 70%;
+  margin-right: 5px;
 }
 
 .ui_input div {
@@ -128,6 +142,10 @@
   align-self: center;
 }
 
+.btn_stageview {
+  font-size: smaller;
+}
+
 @media screen and (min-width: 700px) {
   .ui-table__cell:not(:last-child) {
     max-width: 12%;
@@ -154,6 +172,6 @@
   }
 
   .ui-table__cell:first-child {
-    max-width: 12%;
+    max-width: 14%;
   }
 }

@@ -56,7 +56,7 @@ export const StageView = () => {
             }}
           />
           <Tooltip content="stageView.open()" trigger={
-            <Button
+            <Button className="btn_stageview"
               onClick={async () => {
                 // open Developer Portal app in stage view
                 try {

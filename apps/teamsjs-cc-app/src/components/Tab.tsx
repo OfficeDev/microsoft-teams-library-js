@@ -4,7 +4,6 @@ import { ClientType, ICapabilityStatus, ICapabilityTable } from "../helpers/util
 import { useContext, useEffect, useState } from "react";
 
 import { AllModules } from "./Modules";
-import { Button } from "@fluentui/react-northstar";
 import { Host } from "./Host";
 import { MobileView } from "../helpers/MobileView";
 import { TeamsFxContext } from "./Context";
@@ -170,7 +169,7 @@ const Tab = () => {
         {isMobile && MobileView(tableRows, showSupportedOnly)}
         <Fluent.Segment>
           <a href="https://forms.office.com/r/Jxh7rqrmMr">
-            <Button> Suggestions </Button>
+            <Fluent.Button> Suggestions </Fluent.Button>
           </a>
         </Fluent.Segment>
       </Fluent.Flex>

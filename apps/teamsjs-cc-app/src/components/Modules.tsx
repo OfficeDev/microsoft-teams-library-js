@@ -33,7 +33,7 @@ export const AllModules = () => {
 
         if (entries && entries.length > 0) {
             const filteredEntries = entries.map(([entryName, entry]: any) => {
-                return [name + entryName, entry] as [string, IModule[]];
+                return [name + "." + entryName, entry] as [string, IModule[]];
             });
 
             if (filteredEntries.length > 0) {
@@ -45,7 +45,7 @@ export const AllModules = () => {
 
                     if (array && array.length > 0) {
                         const filteredArray = array.map(([arrayName, arrayItem]: any) => {
-                            return [subName + arrayName, arrayItem] as [string, IModule[]];
+                            return [subName + "." + arrayName, arrayItem] as [string, IModule[]];
                         });
                         newMsTeamsSdk = [...newMsTeamsSdk, ...filteredArray];
                     }
@@ -62,7 +62,7 @@ export const AllModules = () => {
             const moduleName = module[0] as string;
 
             const isSupported = module[1] && safeIsSupported(module[1]);
-            const moduleDetails = getModuleDetails(moduleName.toLowerCase());
+            const moduleDetails = getModuleDetails(moduleName.replaceAll(".", "").toLowerCase());
 
             let iconName: any = [];
 
@@ -78,7 +78,7 @@ export const AllModules = () => {
                 Icon = Fluent.AppsIcon;
             }
 
-            const isModulePresent = createdModules.filter((capabs: any) => { return capabs[0].toLowerCase() === moduleName.toLowerCase() });
+            const isModulePresent = createdModules.filter((capabs: any) => { return capabs[0].toLowerCase() === moduleName.replaceAll(".", "").toLowerCase() });
 
             let element: Function = empty;
 
