@@ -37,7 +37,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
     displayName: 'Install Node.js'
 
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
@@ -116,4 +116,3 @@ steps:
         sudo chmod -R 755 ./ 
         pnpm run setup
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
-      
