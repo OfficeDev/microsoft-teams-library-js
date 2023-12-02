@@ -36,6 +36,8 @@ import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
+import ExternalAppAuthenticationAPIs from './components/privateApis/ExternalAppAuthenticationAPIs';
+import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCardActionsAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
@@ -141,6 +143,8 @@ const App = (): ReactElement => {
         <DialogUpdateAPIs />
         <DialogUrlAPIs />
         <DialogUrlBotAPIs />
+        <ExternalAppAuthenticationAPIs />
+        <ExternalAppCardActionsAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />
