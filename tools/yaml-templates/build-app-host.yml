@@ -37,7 +37,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
     displayName: 'Install Node.js'
 
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
@@ -70,7 +70,7 @@ steps:
   - task: Cache@2
     inputs:
       key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: /home/vsts/.cache/Cypress
+      path: /home/cloudtest/.cache/Cypress
       cacheHitVar: CYPRESS_CACHE_RESTORED
     displayName: 'Cache Cypress binary'
 

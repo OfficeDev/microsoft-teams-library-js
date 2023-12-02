@@ -12,7 +12,8 @@
     "noEmitOnError": false,
     "noImplicitReturns": true,
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "./test", "./webpack.config.ts"]
 }
