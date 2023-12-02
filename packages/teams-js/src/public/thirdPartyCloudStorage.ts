@@ -138,16 +138,22 @@ export namespace thirdPartyCloudStorage {
     if (!dragAndDropFileCallback) {
       throw new Error('[getDragAndDropFiles] Callback cannot be null');
     }
-    callback = dragAndDropFileCallback;
+    if (!dragAndDropInput || dragAndDropInput === '') {
+      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      dragAndDropFileCallback([], invalidInput);
+      return;
+    }
+
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    if (!dragAndDropInput || dragAndDropInput === '') {
-      const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      dragAndDropFileCallback([], invalidInput);
-      return;
+    if (callback) {
+      callback = null;
+      throw new Error('getDragAndDropFiles cannot be called twice');
+    } else {
+      callback = dragAndDropFileCallback;
     }
 
     sendMessageToParent(
@@ -161,6 +167,7 @@ export namespace thirdPartyCloudStorage {
     if (callback) {
       if (fileResult && fileResult.error) {
         callback([], fileResult.error);
+        callback = null;
       } else {
         if (fileResult && fileResult.fileChunk) {
           try {
@@ -173,6 +180,7 @@ export namespace thirdPartyCloudStorage {
               );
               callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'error occurred while receiving data' });
               files = [];
+              callback = null;
             }
 
             // we will send the maximum integer as chunkSequence to identify the last chunk
@@ -187,9 +195,10 @@ export namespace thirdPartyCloudStorage {
                 files.push(receivedFile);
               }
 
-              if (fileResult.isLastFile) {
+              if (fileResult.isLastFile && callback) {
                 callback(files, fileResult.error);
                 files = [];
+                callback = null;
               }
 
               helper = {
@@ -198,12 +207,16 @@ export namespace thirdPartyCloudStorage {
               };
             }
           } catch (e) {
-            callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
-            files = [];
+            if (callback) {
+              callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
+              files = [];
+              callback = null;
+            }
           }
         } else {
           callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
           files = [];
+          callback = null;
         }
       }
     }

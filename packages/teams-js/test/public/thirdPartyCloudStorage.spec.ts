@@ -1,5 +1,4 @@
 import * as communicationModule from '../../src/internal/communication';
-import { GlobalVars } from '../../src/internal/globalVars';
 import * as decodeAttachmentModule from '../../src/internal/mediaUtil';
 import { ErrorCode, SdkError } from '../../src/public';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
@@ -76,35 +75,29 @@ describe('thirdPartyCloudStorage', () => {
     }
   });
 
-  it('should call the callback with error when callback is null', async () => {
-    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    // eslint-disable-next-line strict-null-checks/all
-    expect(() => thirdPartyCloudStorage.getDragAndDropFiles('', null)).toThrowError(
-      '[getDragAndDropFiles] Callback cannot be null',
-    );
-  });
-
-  it('should throw error with error code INVALID_ARGUMENTS when dragAndDropInput not is provided', async () => {
+  it('should call handleGetDragAndDropFilesCallbackRequest and the callback with an error', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
-    thirdPartyCloudStorage.getDragAndDropFiles('', (attachments: Blob[], error?: SdkError) => {
-      if (error) {
-        expect(error).not.toBeNull();
-        expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
-      }
+
+    jest.spyOn(decodeAttachmentModule, 'decodeAttachment').mockImplementation(() => {
+      throw new Error('Mocked error from decodeAttachment');
+    });
+
+    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    expect(sendMessageToParentSpy).toHaveBeenCalled();
+    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    if (callbackused) {
+      callbackused(mockFileResult2);
+    }
+
+    expect(mockCallback).toBeCalledWith([], {
+      errorCode: ErrorCode.INTERNAL_ERROR,
+      message: new Error('Mocked error from decodeAttachment'),
     });
   });
 
-  it('should ensure initialization and call getFilesDragAndDropViaCallback when valid input is provided', async () => {
-    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
-    expect(() => {
-      thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
-    }).not.toThrowError();
-  });
-
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
-    GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
     const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
@@ -129,11 +122,22 @@ describe('thirdPartyCloudStorage', () => {
     if (callbackused) {
       callbackused(mockFileResult);
     }
+
     expect(mockCallback).toHaveBeenCalledWith([], mockFileResult.error);
   });
 
+  it('should throw error when getDragAndDropFiles is called twice', async () => {
+    await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
+
+    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+
+    expect(() => thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback)).toThrowError(
+      'getDragAndDropFiles cannot be called twice',
+    );
+  });
+
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [single file]', async () => {
-    GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
 
@@ -154,7 +158,6 @@ describe('thirdPartyCloudStorage', () => {
   });
 
   it('should call handleGetDragAndDropFilesCallbackRequest and the callback without error [multiple files]', async () => {
-    GlobalVars.isFramelessWindow = true;
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
 
@@ -182,26 +185,26 @@ describe('thirdPartyCloudStorage', () => {
     expect(receivedArray).toHaveLength(50); // verify if we received 50 files
   });
 
-  it('should call handleGetDragAndDropFilesCallbackRequest and the callback with error', async () => {
-    GlobalVars.isFramelessWindow = true;
+  it('should call the callback with error when callback is null', async () => {
+    expect(() => thirdPartyCloudStorage.getDragAndDropFiles('', null)).toThrowError(
+      '[getDragAndDropFiles] Callback cannot be null',
+    );
+  });
+
+  it('should throw error with error code INVALID_ARGUMENTS when dragAndDropInput not is provided', async () => {
+    thirdPartyCloudStorage.getDragAndDropFiles('', (attachments: Blob[], error?: SdkError) => {
+      if (error) {
+        expect(error).not.toBeNull();
+        expect(error).toEqual({ errorCode: ErrorCode.INVALID_ARGUMENTS });
+      }
+    });
+  });
+
+  it('should ensure initialization and call getFilesDragAndDropViaCallback when valid input is provided', async () => {
     await utils.initializeWithContext(FrameContexts.task, HostClientType.android);
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
-
-    jest.spyOn(decodeAttachmentModule, 'decodeAttachment').mockImplementation(() => {
-      throw new Error('Mocked error from decodeAttachment');
-    });
-
-    const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
-    thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
-    expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
-    if (callbackused) {
-      callbackused(mockFileResult2);
-    }
-
-    expect(mockCallback).toBeCalledWith([], {
-      errorCode: ErrorCode.INTERNAL_ERROR,
-      message: new Error('Mocked error from decodeAttachment'),
-    });
+    expect(() => {
+      thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
+    }).not.toThrowError();
   });
 });
