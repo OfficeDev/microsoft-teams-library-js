@@ -127,9 +127,10 @@ export namespace thirdPartyCloudStorage {
   /**
    * Get drag-and-drop files using a callback.
    *
-   * @param {string} dragAndDropInput - thread id received from the app.
+   * @param {string} dragAndDropInput - thread id/ conversation id of the chat/channel received from the app.
    * @param {DragAndDropFileCallback} dragAndDropFileCallback - callback
    *   A callback function to handle the result of the operation
+   * @beta
    */
   export function getDragAndDropFiles(
     dragAndDropInput: string,
@@ -227,6 +228,7 @@ export namespace thirdPartyCloudStorage {
    * @returns boolean to represent whether the thirdPartyCloudStorage capability is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @beta
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.thirdPartyCloudStorage ? true : false;

@@ -186,6 +186,7 @@ describe('thirdPartyCloudStorage', () => {
   });
 
   it('should call the callback with error when callback is null', async () => {
+    // eslint-disable-next-line strict-null-checks/all
     expect(() => thirdPartyCloudStorage.getDragAndDropFiles('', null)).toThrowError(
       '[getDragAndDropFiles] Callback cannot be null',
     );
