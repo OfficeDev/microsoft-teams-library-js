@@ -26,7 +26,7 @@ export namespace thirdPartyCloudStorage {
    * @beta
    *
    */
-  export interface FileFor3PApps extends Blob {
+  export interface FilesFor3PStorage extends Blob {
     /**
      * A number that represents the number of milliseconds since the Unix epoch
      */
@@ -127,7 +127,7 @@ export namespace thirdPartyCloudStorage {
   /**
    * Get drag-and-drop files using a callback.
    *
-   * @param {string} dragAndDropInput - thread id/ conversation id of the chat/channel received from the app.
+   * @param {string} dragAndDropInput - Teams thread id or Teams conversation id from a Teams chat/channel
    * @param {DragAndDropFileCallback} dragAndDropFileCallback - callback
    *   A callback function to handle the result of the operation
    * @beta
