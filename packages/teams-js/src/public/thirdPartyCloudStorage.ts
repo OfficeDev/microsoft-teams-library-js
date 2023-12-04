@@ -15,7 +15,7 @@ const Files3PLogger = getLogger('thirdPartyCloudStorage');
  */
 export namespace thirdPartyCloudStorage {
   /** Get context callback function type */
-  let files: FileFor3PApps[] = [];
+  let files: FilesFor3PStorage[] = [];
   let helper: AttachmentListHelper = {
     fileType: '',
     assembleAttachment: [],
@@ -119,7 +119,7 @@ export namespace thirdPartyCloudStorage {
    */
   export interface DragAndDropFileCallback {
     /** Callback from third party app */
-    (files: FileFor3PApps[], error?: SdkError): void;
+    (files: FilesFor3PStorage[], error?: SdkError): void;
   }
 
   let callback: DragAndDropFileCallback | null = null;
