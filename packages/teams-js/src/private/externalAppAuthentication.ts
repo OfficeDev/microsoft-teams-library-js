@@ -29,9 +29,9 @@ export namespace externalAppAuthentication {
   export interface IQueryMessageExtensionRequest {
     requestType: OriginalRequestType.QueryMessageExtensionRequest;
     commandId: string;
-    parameters?: {
-      name?: string;
-      value?: string;
+    parameters: {
+      name: string;
+      value: string;
     }[];
     queryOptions?: {
       count: number;
@@ -139,7 +139,7 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export type QueryMessageExtensionSuggestedActions = {
-    actions?: Action[];
+    actions: Action[];
   };
 
   /**
