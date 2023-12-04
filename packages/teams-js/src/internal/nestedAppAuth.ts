@@ -1,3 +1,4 @@
+import { GlobalVars } from './globalVars';
 import { MessageRequestWithRequiredProperties } from './messageObjects';
 import { getLogger } from './telemetry';
 
@@ -98,11 +99,33 @@ type NestedAppAuthBridgeHandlers = {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function tryPolyfillWithNestedAppAuthBridge(window: Window | null, handlers: NestedAppAuthBridgeHandlers): void {
+export function tryPolyfillWithNestedAppAuthBridge(
+  clientSupportedSDKVersion: string,
+  window: Window | null,
+  handlers: NestedAppAuthBridgeHandlers,
+): void {
   const logger = tryPolyfillWithNestedAppAuthBridgeLogger;
+
+  if (GlobalVars.isFramelessWindow) {
+    logger('Cannot polyfill nestedAppAuthBridge as current window is frameless');
+    return;
+  }
 
   if (!window) {
     logger('Cannot polyfill nestedAppAuthBridge as current window does not exist');
+    return;
+  }
+
+  const parsedClientSupportedSDKVersion = (() => {
+    try {
+      return JSON.parse(clientSupportedSDKVersion);
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  if (!parsedClientSupportedSDKVersion || !parsedClientSupportedSDKVersion.supports?.nestedAppAuth) {
+    logger('Cannot polyfill nestedAppAuthBridge as current hub does not support nested app auth');
     return;
   }
 
