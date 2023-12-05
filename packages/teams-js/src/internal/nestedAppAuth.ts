@@ -36,7 +36,7 @@ export enum NestedAppAuthMessageEventNames {
  * @property {string} data - data associated with the request, represented as a string.
  */
 export interface NestedAppAuthRequest extends MessageRequestWithRequiredProperties {
-  func: 'nestedAppAuthRequest';
+  func: 'nestedAppAuth.execute';
   data: string;
 }
 

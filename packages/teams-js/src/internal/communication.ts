@@ -917,7 +917,7 @@ function createMessageRequest(
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
   return {
     id: CommunicationPrivate.nextMessageId++,
-    func: 'nestedAppAuthRequest',
+    func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
     // Since this is a nested app auth request, we don't need to send any args.
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.

@@ -809,7 +809,7 @@ describe('Testing communication', () => {
   });
   describe('sendNestedAuthRequestToTopWindow', () => {
     let utils: Utils = new Utils();
-    const requestName = 'nestedAppAuthRequest';
+    const requestName = 'nestedAppAuth.execute';
     const messageData = { messageType: 'nestedAppAuthRequest', id: 0, clientId: 'test' };
     const message = JSON.stringify(messageData);
 
@@ -1273,7 +1273,7 @@ describe('Testing communication', () => {
 
   describe('nestedAppAuthBridge', () => {
     let utils: Utils = new Utils();
-    const requestName = 'nestedAppAuthRequest';
+    const requestName = 'nestedAppAuth.execute';
     const messageData = { messageType: NestedAppAuthMessageEventNames.Request, id: 0, clientId: 'test' };
     const validMessage = JSON.stringify(messageData);
     const validResponseMessage = JSON.stringify({
@@ -1355,7 +1355,7 @@ describe('Testing communication', () => {
           {
             id: 0,
             data: validMessage,
-            func: 'nestedAppAuthRequest',
+            func: 'nestedAppAuth.execute',
           },
           false,
           validResponseMessage,
@@ -1375,7 +1375,7 @@ describe('Testing communication', () => {
           {
             id: 0,
             data: validMessage,
-            func: 'nestedAppAuthRequest',
+            func: 'nestedAppAuth.execute',
           },
           false,
           JSON.stringify({ messageType: 'InvalidMessage' }),
