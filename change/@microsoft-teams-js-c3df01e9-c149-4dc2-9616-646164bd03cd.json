@@ -1,7 +1,7 @@
 {
   "type": "minor",
-  "comment": "Added a new optional parameter, `shareOptions` and relevant interface `IShareAppContentToStageOptions` to `meeting.shareAppContentToStage`. The option being added here is `sharingProtocol` of new enum type `SharingProtocol`.",
+  "comment": "Added a new optional parameter, `shareOptions` and relevant interface `IShareAppContentToStageOptions` to `meeting.shareAppContentToStage`. Apps can choose between collaborative and screen sharing.",
   "packageName": "@microsoft/teams-js",
-  "email": "ashleyrocha16@gmail.com",
+  "email": "ashleyrocha@microsoft.com",
   "dependentChangeType": "patch"
 }
