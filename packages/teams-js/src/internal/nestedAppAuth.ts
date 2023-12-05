@@ -42,6 +42,20 @@ export interface NestedAppAuthRequest extends MessageRequestWithRequiredProperti
 
 /**
  * @hidden
+ * Interface for parsed data from a nested app authentication message.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @interface
+ * @property {NestedAppAuthMessageEventNames} messageType - The type of the nested app authentication message event.
+ */
+export interface ParsedNestedAppAuthMessageData {
+  messageType: NestedAppAuthMessageEventNames;
+}
+
+/**
+ * @hidden
  * Interface for a nested app authentication bridge.
  *
  * @internal
@@ -89,7 +103,7 @@ export interface NestedAuthExtendedWindow extends Window {
  */
 type NestedAppAuthBridgeHandlers = {
   onMessage: (evt: MessageEvent, onMessageReceived: (response: string) => void) => void;
-  handlePostMessage: (message: string) => void;
+  sendPostMessage: (message: string) => void;
 };
 
 /**
@@ -168,7 +182,7 @@ function createNestedAppAuthBridge(
     return null;
   }
 
-  const { onMessage, handlePostMessage } = bridgeHandlers;
+  const { onMessage, sendPostMessage } = bridgeHandlers;
   const nestedAppAuthBridgeHandler = (callback: (response: string) => void) => (evt: MessageEvent) =>
     onMessage(evt, callback);
 
@@ -200,7 +214,7 @@ function createNestedAppAuthBridge(
       }
 
       // Post the message to the top window
-      handlePostMessage(message);
+      sendPostMessage(message);
     },
     removeEventListener: (eventName: string, callback): void => {
       window.removeEventListener(eventName, nestedAppAuthBridgeHandler(callback));

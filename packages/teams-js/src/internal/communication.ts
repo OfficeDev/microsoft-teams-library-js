@@ -14,6 +14,7 @@ import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse }
 import {
   NestedAppAuthMessageEventNames,
   NestedAppAuthRequest,
+  ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuth';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
@@ -112,7 +113,7 @@ export function initializeCommunication(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         tryPolyfillWithNestedAppAuthBridge(clientSupportedSDKVersion, Communication.currentWindow, {
           onMessage: processAuthBridgeMessage,
-          handlePostMessage: sendNestedAuthRequestToTopWindow,
+          sendPostMessage: sendNestedAuthRequestToTopWindow,
         });
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
@@ -449,10 +450,11 @@ function sendRequestToTargetWindowHelper(
   request: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
 ): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
   const logger = sendRequestToTargetWindowHelperLogger;
+  const targetWindowName = getTargetName(targetWindow);
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger('Sending message %i to parent via framelessPostMessage interface', request.id);
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.id);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -461,10 +463,10 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger('Sending message %i to parent via postMessage', request.id);
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.id);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger('Adding message %i to parent message queue', request.id);
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.id);
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
@@ -546,7 +548,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
 
   const { args } = evt.data as MessageResponse;
   const [, message] = args ?? [];
-  const parsedData = (() => {
+  const parsedData: ParsedNestedAppAuthMessageData = (() => {
     try {
       return JSON.parse(message);
     } catch (e) {
