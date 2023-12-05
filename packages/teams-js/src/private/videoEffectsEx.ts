@@ -22,6 +22,8 @@ import { videoEffects } from '../public/videoEffects';
  * Limited to Microsoft-internal use
  */
 export namespace videoEffectsEx {
+  const frameProcessInterval = 2000;
+
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
     : new VideoPerformanceMonitor(sendMessageToParent);
@@ -217,10 +219,14 @@ export namespace videoEffectsEx {
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
             if (videoBufferData) {
               videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
+              const frameProcessTimeout = setTimeout(() => {
+                notifyError(`Frame not processed in ${frameProcessInterval}ms`, ErrorLevel.Warn);
+              }, frameProcessInterval);
               const timestamp = videoBufferData.timestamp;
               parameters.videoBufferHandler(
                 normalizedVideoBufferData(videoBufferData),
                 () => {
+                  clearTimeout(frameProcessTimeout);
                   videoPerformanceMonitor?.reportFrameProcessed();
                   notifyVideoFrameProcessed(timestamp);
                 },
