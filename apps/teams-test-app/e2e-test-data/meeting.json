@@ -1,7 +1,12 @@
 {
   "name": "Meeting",
   "platforms": "Web",
-  "testUrlParams": [["frameContext", "sidePanel"]],
+  "testUrlParams": [
+    [
+      "frameContext",
+      "sidePanel"
+    ]
+  ],
   "testCases": [
     {
       "title": "getIncomingClientAudioState API Call - Success",
@@ -91,7 +96,9 @@
       "boxSelector": "#box_registerRaiseHandStateChangedHandler",
       "eventName": "raiseHandStateChanged",
       "eventData": {
-        "raiseHandState": { "isHandRaised": true }
+        "raiseHandState": {
+          "isHandRaised": true
+        }
       },
       "expectedTestAppValue": "RaiseHand state changed to {\"isHandRaised\":true}"
     },
@@ -102,7 +109,9 @@
       "boxSelector": "#box_registerRaiseHandStateChangedHandler",
       "eventName": "raiseHandStateChanged",
       "eventData": {
-        "raiseHandState": { "isHandRaised": false },
+        "raiseHandState": {
+          "isHandRaised": false
+        },
         "error": {
           "errorCode": 1000,
           "message": "Encountered an error"
@@ -167,6 +176,19 @@
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
       },
       "expectedAlertValue": "shareAppContentToStage called",
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
