@@ -658,7 +658,8 @@ export namespace meeting {
    * `result` can either contain a true value, in case of a successful share or null when the share fails
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
-   * @param shareOptions - is an object that contains additional sharing options. See {@link IShareAppContentToStageOptions} for more information.
+   * @param shareOptions - is an object that contains additional sharing options. If omitted, the default
+   * sharing protocol will be `Collaborative`. See {@link IShareAppContentToStageOptions} for more information.
    */
   export function shareAppContentToStage(
     callback: errorCallbackFunctionType,
