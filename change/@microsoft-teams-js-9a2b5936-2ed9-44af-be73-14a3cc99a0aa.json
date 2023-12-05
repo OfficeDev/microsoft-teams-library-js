@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "notify error when a frame process timeouts",
+  "packageName": "@microsoft/teams-js",
+  "email": "hanluluo@microsoft.com",
+  "dependentChangeType": "patch"
+}
