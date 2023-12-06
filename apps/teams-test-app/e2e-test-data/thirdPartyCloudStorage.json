@@ -1,7 +1,7 @@
 {
   "name": "ThirdPartyCloudStorage",
   "platforms": "Web",
-  "version": ">=2.18.0",
+  "version": ">2.18.0",
   "checkIsSupported": {
     "domElementName": "thirdPartyCloudStorageCapability",
     "expectedOutput": "ThirdPartyCloudStorage is not supported"
