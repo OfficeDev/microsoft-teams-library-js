@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "notify error when a frame process timeouts",
+  "comment": "extract timeout logic into a func & add test",
   "packageName": "@microsoft/teams-js",
   "email": "hanluluo@microsoft.com",
   "dependentChangeType": "patch"
