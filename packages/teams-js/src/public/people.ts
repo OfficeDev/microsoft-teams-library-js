@@ -7,6 +7,9 @@ import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
+/**
+ * Allows your app to add a people picker enabling users to search for and select people in their organization.
+ */
 export namespace people {
   /** Select people callback function type */
   export type selectPeopleCallbackFunctionType = (error: SdkError, people: PeoplePickerResult[]) => void;
