@@ -4,7 +4,13 @@ import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFu
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
-
+/**
+ * @hidden
+ * Hidden from Docs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export namespace monetization {
   /**
    * @hidden

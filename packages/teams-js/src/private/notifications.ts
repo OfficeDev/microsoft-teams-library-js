@@ -3,7 +3,13 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ShowNotificationParameters } from './interfaces';
-
+/**
+ * @hidden
+ * Hidden from Docs
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export namespace notifications {
   /**
    * @hidden
