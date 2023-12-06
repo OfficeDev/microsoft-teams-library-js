@@ -327,7 +327,7 @@ export namespace externalAppAuthentication {
         const error = response as InvokeError;
         throw error;
       }
-    });
+    }) as Promise<IInvokeResponse>;
   }
 
   /**
@@ -382,7 +382,7 @@ export namespace externalAppAuthentication {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeError]>(
+    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
       [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
@@ -392,7 +392,7 @@ export namespace externalAppAuthentication {
         const error = response as InvokeError;
         throw error;
       }
-    });
+    }) as Promise<IInvokeResponse>;
   }
 
   /**
