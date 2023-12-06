@@ -89,7 +89,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.url.toString(),
+              testAuthRequest.url.href,
               testAuthRequest.width,
               testAuthRequest.height,
               testAuthRequest.isExternal,
@@ -131,7 +131,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.url.toString(),
+              testAuthRequest.url.href,
               testAuthRequest.width,
               testAuthRequest.height,
               testAuthRequest.isExternal,

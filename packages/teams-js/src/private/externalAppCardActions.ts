@@ -148,7 +148,7 @@ export namespace externalAppCardActions {
 
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url.toString()],
+      [appId, url.href],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;

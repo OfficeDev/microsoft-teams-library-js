@@ -22,7 +22,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Parameters for the authentication pop-up
+   * Parameters for the authentication pop-up. This interface is used exclusively with the externalAppAuthentication APIs
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -53,7 +53,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Parameters for SSO authentication
+   * Parameters for SSO authentication. This interface is used exclusively with the externalAppAuthentication APIs
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -315,7 +315,7 @@ export namespace externalAppAuthentication {
       [
         appId,
         originalRequestInfo,
-        authenticateParameters.url.toString(),
+        authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
