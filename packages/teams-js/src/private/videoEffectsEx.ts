@@ -22,7 +22,7 @@ import { videoEffects } from '../public/videoEffects';
  * Limited to Microsoft-internal use
  */
 export namespace videoEffectsEx {
-  const frameProcessInterval = 2000;
+  export const frameProcessInterval = 2000;
 
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
@@ -219,14 +219,12 @@ export namespace videoEffectsEx {
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
             if (videoBufferData) {
               videoPerformanceMonitor?.reportStartFrameProcessing(videoBufferData.width, videoBufferData.height);
-              const frameProcessTimeout = setTimeout(() => {
-                notifyError(`Frame not processed in ${frameProcessInterval}ms`, ErrorLevel.Warn);
-              }, frameProcessInterval);
+              const clearProcessingTimeout = createFrameProcessingTimeout();
               const timestamp = videoBufferData.timestamp;
               parameters.videoBufferHandler(
                 normalizedVideoBufferData(videoBufferData),
                 () => {
-                  clearTimeout(frameProcessTimeout);
+                  clearProcessingTimeout();
                   videoPerformanceMonitor?.reportFrameProcessed();
                   notifyVideoFrameProcessed(timestamp);
                 },
@@ -245,6 +243,16 @@ export namespace videoEffectsEx {
     }
   }
 
+  function createFrameProcessingTimeout(): () => void {
+    const frameProcessingTimer = setTimeout(() => {
+      notifyError(`Frame not processed in ${frameProcessInterval}ms`, ErrorLevel.Warn);
+    }, frameProcessInterval);
+
+    return function clearTimer() {
+      clearTimeout(frameProcessingTimer);
+    };
+  }
+
   function createMonitoredVideoFrameHandler(
     videoFrameHandler: VideoFrameHandler,
     videoPerformanceMonitor: VideoPerformanceMonitor,
@@ -253,7 +261,9 @@ export namespace videoEffectsEx {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const originalFrame = receivedVideoFrame.videoFrame as any;
       videoPerformanceMonitor.reportStartFrameProcessing(originalFrame.codedWidth, originalFrame.codedHeight);
+      const clearProcessingTimeout = createFrameProcessingTimeout();
       const processedFrame = await videoFrameHandler(receivedVideoFrame);
+      clearProcessingTimeout();
       videoPerformanceMonitor.reportFrameProcessed();
       return processedFrame;
     };
