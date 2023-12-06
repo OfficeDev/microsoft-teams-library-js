@@ -41,7 +41,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateAndResendRequest(
           input.appId,
-          {...input.authenticateParameters, url: new URL(input.authenticateParameters.url)},
+          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
           input.originalRequestInfo,
         );
         return JSON.stringify(result);
