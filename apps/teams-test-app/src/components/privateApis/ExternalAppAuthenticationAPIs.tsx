@@ -16,7 +16,12 @@ const CheckExternalAppAuthenticationCapability = (): React.ReactElement =>
 const AuthenticateAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters;
+    authenticateParameters: {
+      url: string;
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
     originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateAndResendRequest',
@@ -36,7 +41,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateAndResendRequest(
           input.appId,
-          input.authenticateParameters,
+          {...input.authenticateParameters, url: new URL(input.authenticateParameters.url)},
           input.originalRequestInfo,
         );
         return JSON.stringify(result);
