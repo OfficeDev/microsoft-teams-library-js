@@ -322,12 +322,12 @@ export namespace externalAppAuthentication {
       ],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
-        return response;
+        return response as IInvokeResponse;
       } else {
         const error = response as InvokeError;
         throw error;
       }
-    }) as Promise<IInvokeResponse>;
+    });
   }
 
   /**
@@ -387,12 +387,12 @@ export namespace externalAppAuthentication {
       [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
-        return response;
+        return response as IInvokeResponse;
       } else {
         const error = response as InvokeError;
         throw error;
       }
-    }) as Promise<IInvokeResponse>;
+    });
   }
 
   /**
