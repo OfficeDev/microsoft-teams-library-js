@@ -1,8 +1,27 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Nov 2023 18:15:02 GMT and should not be manually modified.
+This log was last generated on Thu, 30 Nov 2023 23:24:44 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.18.0
+
+Thu, 30 Nov 2023 23:24:44 GMT
+
+### Minor changes
+
+- Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates
+
+### Patches
+
+- Added `meetingStage` and `settings` framecontexts to `clipboard`.
+- Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
+- Created new `MessageRequest` interface with required properties to enhance type-safety
+- Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
+- Fixed strictNullChecks violations in `media.ts`, `mediaUtil.ts`, and other files
+- Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified
+- Fixed more `strictNullChecks` violations
+- Deleted `isSupported` check from `app.lifecycle` subcapability since app resumption cannot be guaranteed even when it is supported.
 
 ## 2.17.0
 
@@ -34,7 +53,7 @@ Wed, 11 Oct 2023 16:51:27 GMT
 
 ### Patches
 
-- Reset registered handlers for unit testing 
+- Reset registered handlers for unit testing
 - Renamed Teams back-compat config for clarity
 - Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
 - Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`
