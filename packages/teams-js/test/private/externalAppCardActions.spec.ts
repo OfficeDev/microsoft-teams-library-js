@@ -112,7 +112,7 @@ describe('externalAppCardActions', () => {
   describe('processActionOpenUrl', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testAppId = 'testAppId';
-    const testUrl = 'testUrl';
+    const testUrl = new URL('https://example.com');
     const testError = {
       errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
@@ -143,7 +143,7 @@ describe('externalAppCardActions', () => {
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl]);
+            expect(message.args).toEqual([testAppId, testUrl.toString()]);
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, null, testResponse);
           }
@@ -157,7 +157,7 @@ describe('externalAppCardActions', () => {
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl]);
+            expect(message.args).toEqual([testAppId, testUrl.toString()]);
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);

@@ -43,7 +43,7 @@ const ProcessActionSubmit = (): React.ReactElement =>
 const ProcessActionOpenUrl = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    url: string;
+    url: URL;
   }>({
     name: 'processActionOpenUrl',
     title: 'Process Action Open Url',
