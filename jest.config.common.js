@@ -2,7 +2,7 @@ module.exports = {
   transform: {
     '.(ts|tsx)': [
       'ts-jest',
-      { tsconfig: { downlevelIteration: true, esModuleInterop: true, strictNullChecks: false } },
+      { tsconfig: { downlevelIteration: true, esModuleInterop: true, strictNullChecks: false, target: 'ES2015' } },
     ],
   },
   testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$',
