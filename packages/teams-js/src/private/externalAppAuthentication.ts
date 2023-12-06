@@ -175,7 +175,7 @@ export namespace externalAppAuthentication {
   export type ComposeExtensionResponse = {
     attachmentLayout: AttachmentLayout;
     type: ComposeResultTypes;
-    attachments: QueryMessageExtensionAttachment[];
+    attachments?: QueryMessageExtensionAttachment[];
     suggestedActions?: QueryMessageExtensionSuggestedActions;
     text?: string;
   };
