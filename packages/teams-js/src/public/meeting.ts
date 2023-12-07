@@ -664,7 +664,7 @@ export namespace meeting {
   export function shareAppContentToStage(
     callback: errorCallbackFunctionType,
     appContentUrl: string,
-    shareOptions?: IShareAppContentToStageOptions,
+    shareOptions: IShareAppContentToStageOptions = { sharingProtocol: SharingProtocol.Collaborative },
   ): void {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
