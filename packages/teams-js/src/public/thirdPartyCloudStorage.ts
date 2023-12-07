@@ -60,7 +60,7 @@ export namespace thirdPartyCloudStorage {
      */
     chunkSequence: number;
     /**
-     * whether or not this is the final chunk in a file
+     * Indicates whether this chunk is the final segment of a file
      */
     endOfFile: boolean;
   }
@@ -97,7 +97,7 @@ export namespace thirdPartyCloudStorage {
   }
 
   /**
-   * Helper object to assembled file chunks
+   * Interface to assemble file chunks
    * @beta
    */
   export interface AssembleAttachment {
@@ -108,7 +108,7 @@ export namespace thirdPartyCloudStorage {
   }
 
   /**
-   * Helper class for assembling files
+   * Interface to assemble files
    * @beta
    */
   export interface AttachmentListHelper {
@@ -119,7 +119,7 @@ export namespace thirdPartyCloudStorage {
   }
 
   /**
-   * Defines the Callback function received from Third Party App
+   * Defines the callback function received from Third Party App
    * @beta
    */
   export interface DragAndDropFileCallback {
