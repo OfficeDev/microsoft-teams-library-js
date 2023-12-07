@@ -37,7 +37,7 @@ describe('externalAppAuthentication', () => {
 
   describe('authenticateAndResendRequest', () => {
     const testAuthRequest = {
-      url: 'test url',
+      url: new URL('https://example.com'),
       width: 100,
       height: 100,
       isExternal: true,
@@ -89,7 +89,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.url,
+              testAuthRequest.url.href,
               testAuthRequest.width,
               testAuthRequest.height,
               testAuthRequest.isExternal,
@@ -131,7 +131,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.url,
+              testAuthRequest.url.href,
               testAuthRequest.width,
               testAuthRequest.height,
               testAuthRequest.isExternal,
@@ -159,7 +159,6 @@ describe('externalAppAuthentication', () => {
 
   describe('authenticateWithSSO', () => {
     const testRequest = {
-      resources: ['resources'],
       claims: ['claims'],
       silent: true,
     };
@@ -190,7 +189,7 @@ describe('externalAppAuthentication', () => {
       const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSO');
       if (message && message.args) {
         expect(message).not.toBeNull();
-        expect(message.args).toEqual(['appId', testRequest.resources, testRequest.claims, testRequest.silent]);
+        expect(message.args).toEqual(['appId', testRequest.claims, testRequest.silent]);
         utils.respondToMessage(message, false, testError);
       }
       await expect(promise).rejects.toEqual(testError);
@@ -204,7 +203,7 @@ describe('externalAppAuthentication', () => {
       const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithSSO');
       if (message && message.args) {
         expect(message).not.toBeNull();
-        expect(message.args).toEqual(['appId', testRequest.resources, testRequest.claims, testRequest.silent]);
+        expect(message.args).toEqual(['appId', testRequest.claims, testRequest.silent]);
         utils.respondToMessage(message, true);
       }
       await expect(promise).resolves.toBeUndefined();
@@ -213,7 +212,6 @@ describe('externalAppAuthentication', () => {
 
   describe('authenticateWithSSOAndResendRequest', () => {
     const testAuthRequest = {
-      resources: ['resources'],
       claims: ['claims'],
       silent: true,
     };
@@ -255,7 +253,6 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.resources,
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);
@@ -304,7 +301,6 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               'appId',
               testOriginalRequest,
-              testAuthRequest.resources,
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);

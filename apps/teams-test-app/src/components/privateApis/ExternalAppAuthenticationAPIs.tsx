@@ -1,4 +1,4 @@
-import { authentication, externalAppAuthentication } from '@microsoft/teams-js';
+import { externalAppAuthentication } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils/ApiWithoutInput';
@@ -16,7 +16,12 @@ const CheckExternalAppAuthenticationCapability = (): React.ReactElement =>
 const AuthenticateAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authenticateParameters: authentication.AuthenticatePopUpParameters;
+    authenticateParameters: {
+      url: string;
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
     originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateAndResendRequest',
@@ -36,7 +41,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateAndResendRequest(
           input.appId,
-          input.authenticateParameters,
+          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
           input.originalRequestInfo,
         );
         return JSON.stringify(result);
@@ -47,7 +52,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
 const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authTokenRequest: authentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
   }>({
     name: 'authenticateWithSSO',
     title: 'Authenticate With SSO',
@@ -70,7 +75,7 @@ const AuthenticateWithSSO = (): React.ReactElement =>
 const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authTokenRequest: authentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
     originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateWithSSOAndResendRequest',
