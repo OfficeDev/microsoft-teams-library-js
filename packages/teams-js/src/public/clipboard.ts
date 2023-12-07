@@ -1,10 +1,16 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkError, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import * as utils from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
 import { ClipboardParams, ClipboardSupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const clipboardTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Interact with the system clipboard
@@ -48,7 +54,11 @@ export namespace clipboard {
       mimeType: blob.type as ClipboardSupportedMimeType,
       content: base64StringContent,
     };
-    return sendAndHandleSdkError('clipboard.writeToClipboard', writeParams);
+    return sendAndHandleSdkErrorWithVersion(
+      getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Write),
+      'clipboard.writeToClipboard',
+      writeParams,
+    );
   }
 
   /**
@@ -75,7 +85,10 @@ export namespace clipboard {
       const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
       return utils.base64ToBlob(response.mimeType, response.content);
     } else {
-      return sendAndHandleSdkError('clipboard.readFromClipboard');
+      return sendAndHandleSdkErrorWithVersion(
+        getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read),
+        'clipboard.readFromClipboard',
+      );
     }
   }
 
