@@ -20,6 +20,7 @@ export namespace thirdPartyCloudStorage {
     fileType: '',
     assembleAttachment: [],
   };
+  let lastChunkVal = true; // setting it to true so that the very first file and first chunk does not fail
 
   /**
    * Object used to represent a file
@@ -58,6 +59,10 @@ export namespace thirdPartyCloudStorage {
      * chunk sequence number
      */
     chunkSequence: number;
+    /**
+     * whether or not this is the final chunk in a file
+     */
+    endOfFile: boolean;
   }
 
   /**
@@ -156,6 +161,7 @@ export namespace thirdPartyCloudStorage {
     } else {
       callback = dragAndDropFileCallback;
     }
+    lastChunkVal = true;
 
     sendMessageToParent(
       'thirdPartyCloudStorage.getDragAndDropFiles',
@@ -172,6 +178,18 @@ export namespace thirdPartyCloudStorage {
       } else {
         if (fileResult && fileResult.fileChunk) {
           try {
+            if (!lastChunkVal && fileResult.fileChunk.chunkSequence === 0) {
+              // last chunk value was false
+              Files3PLogger("Last chunk is not received or 'endOfFile' value for previous chunk was not set to true");
+              lastChunkVal = true; // for next iteration
+
+              callback([], {
+                errorCode: ErrorCode.INTERNAL_ERROR,
+                message: 'error occurred while receiving data',
+              });
+              files = [];
+              callback = null;
+            }
             const assemble: AssembleAttachment | null = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
             if (assemble) {
               helper.assembleAttachment.push(assemble);
@@ -179,13 +197,17 @@ export namespace thirdPartyCloudStorage {
               Files3PLogger(
                 `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
               );
-              callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'error occurred while receiving data' });
+              callback
+                ? callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'error occurred while receiving data' })
+                : (callback = null);
               files = [];
               callback = null;
+              lastChunkVal = true;
             }
 
-            // we will send the maximum integer as chunkSequence to identify the last chunk
-            if (fileResult.fileChunk.chunkSequence === Number.MAX_SAFE_INTEGER) {
+            // we will store this value to determine whether we received the last chunk of the previous file
+            lastChunkVal = fileResult.fileChunk.endOfFile;
+            if (fileResult.fileChunk.endOfFile) {
               const fileBlob = createFile(helper.assembleAttachment, helper.fileType);
 
               if (fileBlob) {
@@ -200,6 +222,7 @@ export namespace thirdPartyCloudStorage {
                 callback(files, fileResult.error);
                 files = [];
                 callback = null;
+                lastChunkVal = true;
               }
 
               helper = {
@@ -212,12 +235,14 @@ export namespace thirdPartyCloudStorage {
               callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: e });
               files = [];
               callback = null;
+              lastChunkVal = true;
             }
           }
         } else {
           callback([], { errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' });
           files = [];
           callback = null;
+          lastChunkVal = true;
         }
       }
     }
