@@ -1,0 +1,32 @@
+{
+  "name": "ExternalAppCardActions",
+  "version": ">2.18.0",
+  "platform": "Web",
+  "checkIsSupported": {},
+  "testCases": [
+    {
+      "title": "processActionSubmit API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_processActionSubmit",
+      "inputValue": {
+        "appId": "testId",
+        "actionSubmitPayload": {
+          "id": "mockId",
+          "data": {}
+        }
+      },
+      "expectedAlertValue": "processActionSubmit called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "processActionOpenUrl API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_processActionOpenUrl",
+      "inputValue": {
+        "appId": "testId",
+        "url": "https://example.com"
+      },
+      "expectedTestAppValue": "something GenericUrl type value?"
+    }
+  ]
+}
