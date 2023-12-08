@@ -57,7 +57,7 @@ const ProcessActionOpenUrl = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await externalAppCardActions.processActionOpenUrl(input.appId, input.url);
+        const result = await externalAppCardActions.processActionOpenUrl(input.appId, new URL(input.url));
         return JSON.stringify(result);
       },
     },
