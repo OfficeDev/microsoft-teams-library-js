@@ -149,7 +149,7 @@ export namespace externalAppAuthentication {
    */
   export interface IQueryMessageExtensionResponse {
     responseType: InvokeResponseType.QueryMessageExtensionResponse;
-    composeExtension: ComposeExtensionResponse;
+    composeExtension?: ComposeExtensionResponse;
   }
 
   /**
