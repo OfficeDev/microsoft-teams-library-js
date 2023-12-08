@@ -771,13 +771,16 @@ describe('meeting', () => {
       const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`should successfully share app content to stage. content: ${context} context`, async () => {
+          it(`should successfully share app content to stage with default shareOptions. content: ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
             let callbackCalled = false;
             let returnedSdkError: SdkError | null;
             let returnedResult: boolean | null;
             const requestUrl = 'validUrl';
+            const shareOptions = {
+              sharingProtocol: meeting.SharingProtocol.Collaborative,
+            };
             meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
               callbackCalled = true;
               returnedResult = result;
@@ -797,6 +800,42 @@ describe('meeting', () => {
             expect(returnedSdkError).toBeNull();
             expect(returnedResult).toBe(true);
             expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+            expect(shareAppContentToStageMessage.args[1]).toMatchObject(shareOptions);
+          });
+          it(`should successfully share app content to stage. content: ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+
+            let callbackCalled = false;
+            let returnedSdkError: SdkError | null;
+            let returnedResult: boolean | null;
+            const requestUrl = 'validUrl';
+            const shareOptions = {
+              sharingProtocol: meeting.SharingProtocol.ScreenShare,
+            };
+            meeting.shareAppContentToStage(
+              (error: SdkError, result: boolean) => {
+                callbackCalled = true;
+                returnedResult = result;
+                returnedSdkError = error;
+              },
+              requestUrl,
+              shareOptions,
+            );
+
+            const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
+            expect(shareAppContentToStageMessage).not.toBeNull();
+            const callbackId = shareAppContentToStageMessage.id;
+            utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [null, true],
+              },
+            } as DOMMessageEvent);
+            expect(callbackCalled).toBe(true);
+            expect(returnedSdkError).toBeNull();
+            expect(returnedResult).toBe(true);
+            expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+            expect(shareAppContentToStageMessage.args[1]).toMatchObject(shareOptions);
           });
 
           it('should throw if the shareAppContentToStage message sends and fails', async () => {
