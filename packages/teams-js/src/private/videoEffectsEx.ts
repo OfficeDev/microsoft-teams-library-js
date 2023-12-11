@@ -22,7 +22,7 @@ import { videoEffects } from '../public/videoEffects';
  * Limited to Microsoft-internal use
  */
 export namespace videoEffectsEx {
-  export const frameProcessInterval = 2000;
+  export const frameProcessingTimeoutInMs = 2000;
 
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
@@ -245,8 +245,8 @@ export namespace videoEffectsEx {
 
   function createFrameProcessingTimeout(): () => void {
     const frameProcessingTimer = setTimeout(() => {
-      notifyError(`Frame not processed in ${frameProcessInterval}ms`, ErrorLevel.Warn);
-    }, frameProcessInterval);
+      notifyError(`Frame not processed in ${frameProcessingTimeoutInMs}ms`, ErrorLevel.Warn);
+    }, frameProcessingTimeoutInMs);
 
     return function clearTimer() {
       clearTimeout(frameProcessingTimer);

@@ -239,13 +239,13 @@ describe('videoEffectsEx', () => {
 
       it('should send notifyError when frameProcessed event time outs', async () => {
         await utils.initializeWithContext(FrameContexts.sidePanel);
-        const errorMessage = `Frame not processed in ${videoEffectsEx.frameProcessInterval}ms`;
+        const errorMessage = `Frame not processed in ${videoEffectsEx.frameProcessingTimeoutInMs}ms`;
         const videoBufferCallback = (
           _videoBufferData: videoEffectsEx.VideoBufferData,
           _notifyVideoFrameProcessed: () => void,
           _notifyError: (errorMessage: string) => void,
         ): void => {
-          setTimeout(() => {}, videoEffectsEx.frameProcessInterval + 1000);
+          setTimeout(() => {}, videoEffectsEx.frameProcessingTimeoutInMs + 1000);
         };
 
         videoEffectsEx.registerForVideoFrame({
@@ -270,7 +270,7 @@ describe('videoEffectsEx', () => {
           expect(message?.args?.length).toBe(2);
           expect(message?.args?.[0]).toEqual(errorMessage);
           expect(message?.args?.[1]).toEqual(videoEffectsEx.ErrorLevel.Warn);
-        }, videoEffectsEx.frameProcessInterval + 2000);
+        }, videoEffectsEx.frameProcessingTimeoutInMs + 2000);
       });
 
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
