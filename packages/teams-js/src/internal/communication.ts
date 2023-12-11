@@ -676,7 +676,11 @@ function flushMessageQueue(targetWindow: Window | any): void {
  * Limited to Microsoft-internal use
  */
 export function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
-  const messageQueueMonitor = Communication.currentWindow.setInterval(() => {
+  let messageQueueMonitor: ReturnType<typeof setInterval>;
+  /* const cannot be used to declare messageQueueMonitor here because of the JS temporal dead zone. In order for messageQueueMonitor to be referenced inside setInterval,
+     it has to be defined before the setInterval call. */
+  /* eslint-disable-next-line prefer-const */
+  messageQueueMonitor = Communication.currentWindow.setInterval(() => {
     if (getTargetMessageQueue(targetWindow).length === 0) {
       clearInterval(messageQueueMonitor);
       callback();

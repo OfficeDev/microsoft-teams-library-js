@@ -28,29 +28,21 @@ describe('externalAppCardActions', () => {
       id: 'testId',
       data: {},
     };
-    const testCardActionsConfig = {
-      enableImback: true,
-      enableInvoke: true,
-      enableDialog: true,
-      enableStageView: true,
-      enableSignIn: true,
-      enableO365Submit: true,
-    };
     const testError = {
       errorCode: externalAppCardActions.ActionSubmitErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
     it('should not allow calls before initialization', async () => {
-      return expect(() =>
-        externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload, testCardActionsConfig),
-      ).toThrowError(new Error(errorLibraryNotInitialized));
+      return expect(() => externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload)).toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
     });
     it('should throw error when externalAppCardActions capability is not supported', async () => {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       try {
-        externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload, testCardActionsConfig);
+        externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -61,15 +53,11 @@ describe('externalAppCardActions', () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          const promise = externalAppCardActions.processActionSubmit(
-            testAppId,
-            testActionSubmitPayload,
-            testCardActionsConfig,
-          );
+          const promise = externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload);
           const message = utils.findMessageByFunc('externalAppCardActions.processActionSubmit');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testActionSubmitPayload, testCardActionsConfig]);
+            expect(message.args).toEqual([testAppId, testActionSubmitPayload]);
             utils.respondToMessage(message, [true, undefined]);
           }
           return expect(promise).resolves.toBeUndefined();
@@ -78,15 +66,11 @@ describe('externalAppCardActions', () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          const promise = externalAppCardActions.processActionSubmit(
-            testAppId,
-            testActionSubmitPayload,
-            testCardActionsConfig,
-          );
+          const promise = externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload);
           const message = utils.findMessageByFunc('externalAppCardActions.processActionSubmit');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testActionSubmitPayload, testCardActionsConfig]);
+            expect(message.args).toEqual([testAppId, testActionSubmitPayload]);
             utils.respondToMessage(message, false, testError);
           }
           return expect(promise).rejects.toEqual(testError);
@@ -97,7 +81,7 @@ describe('externalAppCardActions', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           return expect(() =>
-            externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload, testCardActionsConfig),
+            externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload),
           ).toThrowError(
             new Error(
               `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
@@ -112,7 +96,7 @@ describe('externalAppCardActions', () => {
   describe('processActionOpenUrl', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testAppId = 'testAppId';
-    const testUrl = 'testUrl';
+    const testUrl = new URL('https://example.com');
     const testError = {
       errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
@@ -143,7 +127,7 @@ describe('externalAppCardActions', () => {
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl]);
+            expect(message.args).toEqual([testAppId, testUrl.href]);
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, null, testResponse);
           }
@@ -157,7 +141,7 @@ describe('externalAppCardActions', () => {
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl]);
+            expect(message.args).toEqual([testAppId, testUrl.href]);
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);
