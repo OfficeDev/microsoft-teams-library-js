@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as uuid from 'uuid';
 
-import * as validOrigins from '../../artifactsForCDN/validDomains.json';
+import * as validOrigins from '../artifactsForCDN/validDomains.json';
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
