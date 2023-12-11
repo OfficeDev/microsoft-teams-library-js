@@ -5,7 +5,7 @@
     "declarationDir": "./dts",
     "target": "es5",
     "lib": ["ES5", "DOM", "ES2015.promise"],
-    "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "noResolve": false,
     "noImplicitAny": false,
@@ -13,7 +13,8 @@
     "noImplicitReturns": true,
     "sourceMap": true,
     "declaration": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "./test", "./webpack.config.ts"]
 }
