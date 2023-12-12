@@ -60,21 +60,6 @@ export namespace externalAppCardActions {
   }
 
   /**
-   * @hidden
-   * The configuration for Adaptive Card Action.Submit. This indicates which subtypes of actions are supported by the calling app.
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface ICardActionsConfig {
-    enableImback: boolean;
-    enableInvoke: boolean;
-    enableDialog: boolean;
-    enableStageView: boolean;
-    enableSignIn: boolean;
-    enableO365Submit: boolean;
-  }
-
-  /**
    *
    * @hidden
    * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
@@ -107,11 +92,7 @@ export namespace externalAppCardActions {
    * @param cardActionsConfig The card actions configuration. This indicates which subtypes should be handled by this API
    * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
    */
-  export function processActionSubmit(
-    appId: string,
-    actionSubmitPayload: IAdaptiveCardActionSubmit,
-    cardActionsConfig: ICardActionsConfig,
-  ): Promise<void> {
+  export function processActionSubmit(appId: string, actionSubmitPayload: IAdaptiveCardActionSubmit): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
@@ -121,7 +102,6 @@ export namespace externalAppCardActions {
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>('externalAppCardActions.processActionSubmit', [
       appId,
       actionSubmitPayload,
-      cardActionsConfig,
     ]).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;

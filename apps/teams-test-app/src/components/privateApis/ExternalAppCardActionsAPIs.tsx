@@ -16,7 +16,6 @@ const ProcessActionSubmit = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit;
-    cardActionsConfig: externalAppCardActions.ICardActionsConfig;
   }>({
     name: 'processActionSubmit',
     title: 'Process Action Submit',
@@ -30,11 +29,7 @@ const ProcessActionSubmit = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await externalAppCardActions.processActionSubmit(
-          input.appId,
-          input.actionSubmitPayload,
-          input.cardActionsConfig,
-        );
+        await externalAppCardActions.processActionSubmit(input.appId, input.actionSubmitPayload);
         return 'Completed';
       },
     },
