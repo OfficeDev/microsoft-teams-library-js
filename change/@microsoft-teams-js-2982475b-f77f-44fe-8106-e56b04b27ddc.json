@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "added size property in openFilePreview API input params",
+  "comment": "Added `size` property to internal `FilePreviewParameters` interface",
   "packageName": "@microsoft/teams-js",
   "email": "email not defined",
   "dependentChangeType": "patch"
