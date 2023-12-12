@@ -172,6 +172,15 @@ export namespace meeting {
     };
   }
 
+  /** Defines additional sharing options which can be provided to the {@link shareAppContentToStage} API. */
+  export interface IShareAppContentToStageOptions {
+    /**
+     * The protocol option for sharing app content to the meeting stage. Defaults to `Collaborative`.
+     * See {@link SharingProtocol} for more information.
+     */
+    sharingProtocol?: SharingProtocol;
+  }
+
   /** Represents app permission to share contents to meeting. */
   export interface IAppContentStageSharingCapabilities {
     /**
@@ -334,6 +343,53 @@ export namespace meeting {
      * @returns A promise with the updated microphone state
      */
     micMuteStateChangedCallback: (micState: MicState) => Promise<MicState>;
+    /**
+     * Callback for the host to tell the app to change its speaker selection
+     */
+    audioDeviceSelectionChangedCallback?: (selectedDevices: AudioDeviceSelection | SdkError) => void;
+  }
+
+  /**
+   * Interface for AudioDeviceSelection from host selection.
+   * If the speaker or the microphone is undefined or don't have a device label, you can try to find the default devices
+   * by using
+   * ```ts
+   * const devices = await navigator.mediaDevices.enumerateDevices();
+   * const defaultSpeaker = devices.find((d) => d.deviceId === 'default' && d.kind === 'audiooutput');
+   * const defaultMic = devices.find((d) => d.deviceId === 'default' && d.kind === 'audioinput');
+   * ```
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export interface AudioDeviceSelection {
+    speaker?: AudioDeviceInfo;
+    microphone?: AudioDeviceInfo;
+  }
+
+  /**
+   * Interface for AudioDeviceInfo, includes a device label with the same format as {@link MediaDeviceInfo.label}
+   *
+   * Hosted app can use this label to compare it with the device info fetched from {@link navigator.mediaDevices.enumerateDevices()}.
+   * {@link MediaDeviceInfo} has  {@link MediaDeviceInfo.deviceId} as an unique identifier, but that id is also unique to the origin
+   * of the calling application, so {@link MediaDeviceInfo.deviceId} cannot be used here as an identifier. Notice there are some cases
+   * that devices may have the same device label, but we don't have a better way to solve this, keep this as a known limitation for now.
+   *
+   * @hidden
+   * Hide from docs.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export interface AudioDeviceInfo {
+    deviceLabel: string;
   }
 
   /**
@@ -435,6 +491,21 @@ export namespace meeting {
      * Note that a group call may return as this or {@link MeetingType.Adhoc}. These two different response types should be considered as equal.
      */
     GroupCall = 'groupCall',
+  }
+
+  /**
+   * Represents the protocol option for sharing app content to the meeting stage.
+   */
+  export enum SharingProtocol {
+    /**
+     * The default protocol for sharing app content to stage. To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
+     */
+    Collaborative = 'Collaborative',
+    /**
+     * A read-only protocol for sharing app content to stage, which uses screen sharing in meetings. If provided, this protocol will open
+     * the specified `contentUrl` passed to the {@link shareAppContentToStage} API in a new instance and screen share that instance.
+     */
+    ScreenShare = 'ScreenShare',
   }
 
   /**
@@ -634,13 +705,19 @@ export namespace meeting {
    * `result` can either contain a true value, in case of a successful share or null when the share fails
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
+   * @param shareOptions - is an object that contains additional sharing options. If omitted, the default
+   * sharing protocol will be `Collaborative`. See {@link IShareAppContentToStageOptions} for more information.
    */
-  export function shareAppContentToStage(callback: errorCallbackFunctionType, appContentUrl: string): void {
+  export function shareAppContentToStage(
+    callback: errorCallbackFunctionType,
+    appContentUrl: string,
+    shareOptions: IShareAppContentToStageOptions = { sharingProtocol: SharingProtocol.Collaborative },
+  ): void {
     if (!callback) {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl], callback);
+    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl, shareOptions], callback);
   }
 
   /**
@@ -914,6 +991,11 @@ export namespace meeting {
       };
       registerHandler('meeting.micStateChanged', micStateChangedCallback);
 
+      const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection): void => {
+        requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
+      };
+      registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
+
       callback(isHostAudioless);
     };
     sendMessageToParent(
@@ -940,6 +1022,10 @@ export namespace meeting {
 
       if (doesHandlerExist('meeting.micStateChanged')) {
         removeHandler('meeting.micStateChanged');
+      }
+
+      if (doesHandlerExist('meeting.audioDeviceSelectionChanged')) {
+        removeHandler('meeting.audioDeviceSelectionChanged');
       }
 
       callback(isHostAudioless);
