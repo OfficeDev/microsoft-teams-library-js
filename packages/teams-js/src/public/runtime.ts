@@ -170,6 +170,8 @@ interface IRuntimeV3 extends IBaseRuntime {
       };
       readonly update?: {};
     };
+    readonly externalAppAuthentication?: {};
+    readonly externalAppCardActions?: {};
     readonly geoLocation?: {
       readonly map?: {};
     };
@@ -203,6 +205,7 @@ interface IRuntimeV3 extends IBaseRuntime {
         readonly joinedTeams?: {};
       };
     };
+    readonly thirdPartyCloudStorage?: {};
     readonly teamsCore?: {};
     readonly video?: {
       readonly mediaStream?: {};

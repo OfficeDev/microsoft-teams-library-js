@@ -76,6 +76,7 @@ export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
+export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
   enablePrintCapability,

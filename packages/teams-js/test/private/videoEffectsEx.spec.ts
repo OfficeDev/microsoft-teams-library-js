@@ -1,5 +1,6 @@
 import { GlobalVars } from '../../src/internal/globalVars';
-import { DOMMessageEvent, MessageRequest } from '../../src/internal/interfaces';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { MessageRequest } from '../../src/internal/messageObjects';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { videoEffectsEx } from '../../src/private/videoEffectsEx';
 import { app } from '../../src/public/app';

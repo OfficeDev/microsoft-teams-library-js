@@ -1,6 +1,7 @@
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow, MessageResponse } from '../src/internal/interfaces';
+import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
+import { MessageResponse } from '../src/internal/messageObjects';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -129,10 +130,21 @@ export class Utils {
     return app.initialize(validMessageOrigins);
   };
 
-  public findMessageByFunc = (func: string): MessageRequest | null => {
-    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].func === func) {
-        return this.messages[i];
+  /**
+   * This function is used to find a message by function name.
+   * @param {string} func - The name of the function.
+   * @param {number | undefined} k - There could be multiple functions with that name,
+   * use this as a zero-based index to return the kth one. Default is 0, will return the first match.
+   * @returns {MessageRequest | null} The found message.
+   */
+  public findMessageByFunc = (func: string, k = 0): MessageRequest | null => {
+    let countOfMatchedMessages = 0;
+    for (const message of this.messages) {
+      if (message.func === func) {
+        if (countOfMatchedMessages === k) {
+          return message;
+        }
+        countOfMatchedMessages++;
       }
     }
     return null;
