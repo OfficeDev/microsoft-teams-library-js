@@ -571,6 +571,7 @@ describe('AppSDK-privateAPIs', () => {
       title: 'someTitle',
       description: 'someDescription',
       type: 'someType',
+      sizeInBytes: 'someSizeInBytes',
       objectUrl: 'someObjectUrl',
       downloadUrl: 'someDownloadUrl',
       webPreviewUrl: 'someWebPreviewUrl',
@@ -581,7 +582,6 @@ describe('AppSDK-privateAPIs', () => {
       viewerAction: ViewerActionTypes.view,
       fileOpenPreference: FileOpenPreference.Web,
       conversationId: 'someConversationId',
-      size: 'someSize',
     };
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
@@ -597,17 +597,17 @@ describe('AppSDK-privateAPIs', () => {
           expect(message.args[1]).toBe('someTitle');
           expect(message.args[2]).toBe('someDescription');
           expect(message.args[3]).toBe('someType');
-          expect(message.args[4]).toBe('someObjectUrl');
-          expect(message.args[5]).toBe('someDownloadUrl');
-          expect(message.args[6]).toBe('someWebPreviewUrl');
-          expect(message.args[7]).toBe('someWebEditUrl');
-          expect(message.args[8]).toBe('someBaseUrl');
-          expect(message.args[9]).toBe(true);
-          expect(message.args[10]).toBe('someSubEntityId');
-          expect(message.args[11]).toBe('view');
-          expect(message.args[12]).toBe(FileOpenPreference.Web);
-          expect(message.args[13]).toBe('someConversationId');
-          expect(message.args[14]).toBe('someSize');
+          expect(message.args[4]).toBe('someSizeInBytes');
+          expect(message.args[5]).toBe('someObjectUrl');
+          expect(message.args[6]).toBe('someDownloadUrl');
+          expect(message.args[7]).toBe('someWebPreviewUrl');
+          expect(message.args[8]).toBe('someWebEditUrl');
+          expect(message.args[9]).toBe('someBaseUrl');
+          expect(message.args[10]).toBe(true);
+          expect(message.args[11]).toBe('someSubEntityId');
+          expect(message.args[12]).toBe('view');
+          expect(message.args[13]).toBe(FileOpenPreference.Web);
+          expect(message.args[14]).toBe('someConversationId');
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {

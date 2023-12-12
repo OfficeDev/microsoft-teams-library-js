@@ -115,6 +115,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.title,
     filePreviewParameters.description,
     filePreviewParameters.type,
+    filePreviewParameters.sizeInBytes,
     filePreviewParameters.objectUrl,
     filePreviewParameters.downloadUrl,
     filePreviewParameters.webPreviewUrl,
@@ -125,7 +126,6 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.viewerAction,
     filePreviewParameters.fileOpenPreference,
     filePreviewParameters.conversationId,
-    filePreviewParameters.size,
   ];
 
   sendMessageToParent('openFilePreview', params);
