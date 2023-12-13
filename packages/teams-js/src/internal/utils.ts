@@ -11,17 +11,17 @@ import { pages } from '../public/pages';
 import { getLogger } from './telemetry';
 
 //This is in the top level so that we can make the request to acquire the validDomains from the CDN as soon as TeamsJS is instantiated
-const acquireDomainListFromCDN = fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
-  .then(async (response) => {
-    if (!response.ok) {
-      throw response.statusText;
-    }
-    const test = await response.json();
-    return test.validOrigins;
-  })
-  .catch((e) => {
-    throw new Error(e);
-  });
+// const acquireDomainListFromCDN = fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
+//   .then(async (response) => {
+//     if (!response.ok) {
+//       throw response.statusText;
+//     }
+//     const test = await response.json();
+//     return test.validOrigins;
+//   })
+//   .catch((e) => {
+//     throw new Error(e);
+//   });
 
 /**
  * @param pattern - reference pattern
@@ -57,7 +57,7 @@ const validateOriginLogger = getLogger('validateOrigin');
  * @internal
  * Limited to Microsoft-internal use
  */
-export async function validateOrigin(messageOrigin: URL): Promise<boolean> {
+export function validateOrigin(messageOrigin: URL): boolean {
   // Check whether the url is in the pre-known allowlist or supplied by user
   if (!isValidHttpsURL(messageOrigin)) {
     validateOriginLogger(
@@ -68,14 +68,14 @@ export async function validateOrigin(messageOrigin: URL): Promise<boolean> {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
-  const validOriginsFromCDN = await acquireDomainListFromCDN;
-  let validDomains = validOrigins.validOrigins;
-  if (validOriginsFromCDN) {
-    validDomains = validOriginsFromCDN;
-    console.log(validOriginsFromCDN);
-  }
+  // const validOriginsFromCDN = await acquireDomainListFromCDN;
+  const validDomains = validOrigins;
+  // if (validOriginsFromCDN) {
+  //   validDomains = validOriginsFromCDN;
+  //   console.log(validOriginsFromCDN);
+  // }
 
-  if (validDomains.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+  if (validOrigins.validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
   }
 
@@ -89,7 +89,7 @@ export async function validateOrigin(messageOrigin: URL): Promise<boolean> {
   validateOriginLogger(
     'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
     messageOrigin,
-    validDomains,
+    validOrigins.validOrigins,
     GlobalVars.additionalValidOrigins,
   );
   return false;

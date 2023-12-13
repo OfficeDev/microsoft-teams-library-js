@@ -491,7 +491,7 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
  * @internal
  * Limited to Microsoft-internal use
  */
-async function shouldProcessMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
+function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -505,7 +505,7 @@ async function shouldProcessMessage(messageSource: Window, messageOrigin: string
   ) {
     return true;
   } else {
-    const isOriginValid = await validateOrigin(new URL(messageOrigin));
+    const isOriginValid = validateOrigin(new URL(messageOrigin));
     if (!isOriginValid) {
       shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }
