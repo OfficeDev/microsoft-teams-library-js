@@ -2,26 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as uuid from 'uuid';
 
-import * as validOrigins from '../artifactsForCDN/validDomains.json';
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
-//import { validOrigins } from './constants';
+import { validOrigins } from './constants';
 import { getLogger } from './telemetry';
-
-//This is in the top level so that we can make the request to acquire the validDomains from the CDN as soon as TeamsJS is instantiated
-// const acquireDomainListFromCDN = fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
-//   .then(async (response) => {
-//     if (!response.ok) {
-//       throw response.statusText;
-//     }
-//     const test = await response.json();
-//     return test.validOrigins;
-//   })
-//   .catch((e) => {
-//     throw new Error(e);
-//   });
 
 /**
  * @param pattern - reference pattern
@@ -68,14 +54,8 @@ export function validateOrigin(messageOrigin: URL): boolean {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
-  // const validOriginsFromCDN = await acquireDomainListFromCDN;
-  const validDomains = validOrigins;
-  // if (validOriginsFromCDN) {
-  //   validDomains = validOriginsFromCDN;
-  //   console.log(validOriginsFromCDN);
-  // }
 
-  if (validOrigins.validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
   }
 
@@ -89,7 +69,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
   validateOriginLogger(
     'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
     messageOrigin,
-    validOrigins.validOrigins,
+    validOrigins,
     GlobalVars.additionalValidOrigins,
   );
   return false;
