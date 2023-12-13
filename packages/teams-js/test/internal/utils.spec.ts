@@ -4,6 +4,7 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
+  validateAppIdIsGuid,
   validateOrigin,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
@@ -274,6 +275,23 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('Blob cannot be empty.'));
       }
+    });
+  });
+
+  describe('validateAppIdIsGuid', () => {
+    it('should throw error when appId is not a valid GUID', async () => {
+      expect.assertions(1);
+      const appId = '123';
+      try {
+        await validateAppIdIsGuid(appId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + appId));
+      }
+    });
+    it('should not throw error when appId is a valid GUID', async () => {
+      expect.assertions(1);
+      const appId = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+      return expect(() => validateAppIdIsGuid(appId)).not.toThrow();
     });
   });
 });
