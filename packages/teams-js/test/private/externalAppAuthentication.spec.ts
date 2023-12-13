@@ -20,6 +20,7 @@ describe('externalAppAuthentication', () => {
     jest.clearAllMocks();
   });
 
+  // This ID was randomly generated for the purpose of these tests
   const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
 
   const testOriginalRequest: externalAppAuthentication.IOriginalRequestInfo = {

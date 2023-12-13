@@ -9,7 +9,9 @@ import { Utils } from '../utils';
 describe('externalAppCardActions', () => {
   let utils = new Utils();
 
-  const invalidAppId = 'invalidAppId';
+  // This ID was randomly generated for the purpose of these tests
+  const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
+  const invalidAppId = 'invalid-app-id';
 
   beforeEach(() => {
     utils = new Utils();
@@ -25,7 +27,6 @@ describe('externalAppCardActions', () => {
 
   describe('processActionSubmit', () => {
     const allowedFrameContexts = [FrameContexts.content];
-    const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
     const testActionSubmitPayload = {
       id: 'testId',
       data: {},
@@ -107,7 +108,6 @@ describe('externalAppCardActions', () => {
 
   describe('processActionOpenUrl', () => {
     const allowedFrameContexts = [FrameContexts.content];
-    const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
     const testUrl = new URL('https://example.com');
     const testError = {
       errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
