@@ -2,5 +2,30 @@
   "name": "ExternalAppAuthentication",
   "version": ">2.18.0",
   "platform": "Web",
-  "testCases": []
+  "checkIsSupported": {},
+  "testCases": [
+    {
+      "title": "authenticateWithSSOAndResendRequest API Call - No Response",
+      "type": "callResponse",
+      "boxSelector": "#box_authenticateWithSSOAndResendRequest",
+      "inputValue": {
+        "appId": "11111111-1111-1111-1111-111111111111",
+        "authTokenRequest": {
+          "claims": [],
+          "url": "https://example.com"
+        },
+        "originalRequestInfo": {
+          "requestType": "QueryMessageExtensionRequest",
+          "commandId": "mockedId",
+          "parameters": [
+            {
+              "name": "mockedName",
+              "value": "mockedValue"
+            }
+          ]
+        }
+      },
+      "expectedTestAppValue": "was called, but there was no response from the Host SDK."
+    }
+  ]
 }
