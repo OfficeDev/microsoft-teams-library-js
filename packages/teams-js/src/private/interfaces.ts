@@ -139,7 +139,7 @@ export interface FilePreviewParameters {
    * @internal
    * Limited to Microsoft-internal use
    */
-  sizeInBytes?: string;
+  sizeInBytes?: number;
 
   /**
    * @hidden

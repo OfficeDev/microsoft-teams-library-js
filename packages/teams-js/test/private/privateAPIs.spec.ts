@@ -571,7 +571,7 @@ describe('AppSDK-privateAPIs', () => {
       title: 'someTitle',
       description: 'someDescription',
       type: 'someType',
-      sizeInBytes: 'someSizeInBytes',
+      sizeInBytes: 1024,
       objectUrl: 'someObjectUrl',
       downloadUrl: 'someDownloadUrl',
       webPreviewUrl: 'someWebPreviewUrl',
@@ -597,7 +597,7 @@ describe('AppSDK-privateAPIs', () => {
           expect(message.args[1]).toBe('someTitle');
           expect(message.args[2]).toBe('someDescription');
           expect(message.args[3]).toBe('someType');
-          expect(message.args[4]).toBe('someSizeInBytes');
+          expect(message.args[4]).toBe(1024);
           expect(message.args[5]).toBe('someObjectUrl');
           expect(message.args[6]).toBe('someDownloadUrl');
           expect(message.args[7]).toBe('someWebPreviewUrl');
