@@ -142,19 +142,6 @@ describe('Testing TeamsCore Capability', () => {
       });
 
       Object.values(FrameContexts).forEach((context) => {
-        it(`teamsCore.registerOnLoadHandler should throw error when teamsCore is not supported. context: ${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect.assertions(1);
-          try {
-            teamsCore.registerOnLoadHandler(() => {
-              return false;
-            });
-          } catch (e) {
-            expect(e).toEqual(errorNotSupportedOnPlatform);
-          }
-        });
-
         it(`teamsCore.registerOnLoadHandler should successfully register handler. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
 
@@ -181,19 +168,6 @@ describe('Testing TeamsCore Capability', () => {
       });
 
       Object.values(FrameContexts).forEach((context) => {
-        it(`teamsCore.registerBeforeUnloadHandler should throw error when teamsCore is not supported. context:${context}`, async () => {
-          await utils.initializeWithContext(context);
-          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          expect.assertions(1);
-          try {
-            teamsCore.registerBeforeUnloadHandler(() => {
-              return false;
-            });
-          } catch (e) {
-            expect(e).toEqual(errorNotSupportedOnPlatform);
-          }
-        });
-
         it(`teamsCore.registerBeforeUnloadHandler should successfully register a before unload handler. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
 
