@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "remove isSupported checking",
+  "packageName": "@microsoft/teams-js",
+  "email": "kaelapolnitz@microsoft.com",
+  "dependentChangeType": "patch"
+}
