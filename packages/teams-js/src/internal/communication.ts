@@ -63,7 +63,9 @@ interface InitializeResponse {
 export function initializeCommunication(
   validMessageOrigins: string[] | undefined,
   apiVersionTag: string,
+  customMessageIdStarter?: number,
 ): Promise<InitializeResponse> {
+  CommunicationPrivate.nextMessageId = customMessageIdStarter ?? CommunicationPrivate.nextMessageId;
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
