@@ -737,6 +737,8 @@ export namespace app {
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https://www.example.com
    *
+   * @hidden
+   * @internal
    * @param customMessageIdStarter - a starting number from where the sequence of messageIds begin that we use to match the requests and responses from teams-js to host sdk.
    * The default value is zero. A higher seed value reduces the chance of collisions in messageIds when multiple teamsJS instances are running concurrently
    *
