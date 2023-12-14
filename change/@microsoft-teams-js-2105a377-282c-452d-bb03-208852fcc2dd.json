@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added optional `customeMessageIdStarter` parameter to `app.initialize` call to give an option to developers to set teh starting number fr messageIds",
+  "comment": "Added optional `customeMessageIdStarter` parameter to `app.initialize` call to give an option to developers to set the starting number for messageIds",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
