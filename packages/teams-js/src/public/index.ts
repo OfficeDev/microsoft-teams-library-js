@@ -46,6 +46,7 @@ export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { clipboard } from './clipboard';
 export { dialog } from './dialog';
+export { embeddedApp } from './embeddedApp';
 export { geoLocation } from './geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';

@@ -19,6 +19,7 @@ import DialogCardBotAPIs from './components/DialogCardBotAPIs';
 import DialogUpdateAPIs from './components/DialogUpdateAPIs';
 import DialogUrlAPIs from './components/DialogUrlAPIs';
 import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
+import EmbeddedAppAPIs from './components/EmbeddedAppAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -126,6 +127,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <EmbeddedAppAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
