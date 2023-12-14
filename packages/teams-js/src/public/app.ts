@@ -46,14 +46,10 @@ const initializationTimeoutInMs = 5000;
 
 const appLogger = getLogger('app');
 
-export function appInitializeHelper(
-  apiVersionTag: string,
-  validMessageOrigins?: string[],
-  customMessageIdStarter?: number,
-): Promise<void> {
+export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
-      () => initializeHelper(apiVersionTag, validMessageOrigins, customMessageIdStarter),
+      () => initializeHelper(apiVersionTag, validMessageOrigins),
       initializationTimeoutInMs,
       new Error('SDK initialization timed out.'),
     );
@@ -67,11 +63,7 @@ export function appInitializeHelper(
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
-function initializeHelper(
-  apiVersionTag: string,
-  validMessageOrigins?: string[],
-  customMessageIdStarter?: number,
-): Promise<void> {
+function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   return new Promise<void>((resolve) => {
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
@@ -79,81 +71,80 @@ function initializeHelper(
       GlobalVars.initializeCalled = true;
 
       Handlers.initializeHandlers();
-      GlobalVars.initializePromise = initializeCommunication(
-        validMessageOrigins,
-        apiVersionTag,
-        customMessageIdStarter,
-      ).then(({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
-        GlobalVars.frameContext = context;
-        GlobalVars.hostClientType = clientType;
-        GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
-        // Temporary workaround while the Host is updated with the new argument order.
-        // For now, we might receive any of these possibilities:
-        // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
-        // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
-        // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
-        // This code supports any of these possibilities
+      GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
+        ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
+          GlobalVars.frameContext = context;
+          GlobalVars.hostClientType = clientType;
+          GlobalVars.clientSupportedSDKVersion = clientSupportedSDKVersion;
+          // Temporary workaround while the Host is updated with the new argument order.
+          // For now, we might receive any of these possibilities:
+          // - `runtimeConfig` in `runtimeConfig` and `clientSupportedSDKVersion` in `clientSupportedSDKVersion`.
+          // - `runtimeConfig` in `clientSupportedSDKVersion` and `clientSupportedSDKVersion` in `runtimeConfig`.
+          // - `clientSupportedSDKVersion` in `runtimeConfig` and no `clientSupportedSDKVersion`.
+          // This code supports any of these possibilities
 
-        // Teams AppHost won't provide this runtime config
-        // so we assume that if we don't have it, we must be running in Teams.
-        // After Teams updates its client code, we can remove this default code.
-        try {
-          initializeHelperLogger('Parsing %s', runtimeConfig);
-          const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
-          initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
-          // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
-          if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
-            throw new Error('Received runtime config is invalid');
-          }
-          runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
-        } catch (e) {
-          if (e instanceof SyntaxError) {
-            try {
-              initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
-              // if the given runtime config was actually meant to be a SDK version, store it as such.
-              // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
-              // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
-              // remove this feature.
-              if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
-                GlobalVars.clientSupportedSDKVersion = runtimeConfig;
-              }
-              const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
-              initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
-
-              if (!givenRuntimeConfig) {
-                throw new Error(
-                  'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
-                );
-              } else {
-                applyRuntimeConfig(givenRuntimeConfig);
-              }
-            } catch (e) {
-              if (e instanceof SyntaxError) {
-                applyRuntimeConfig(
-                  generateVersionBasedTeamsRuntimeConfig(
-                    GlobalVars.clientSupportedSDKVersion,
-                    versionAndPlatformAgnosticTeamsRuntimeConfig,
-                    mapTeamsVersionToSupportedCapabilities,
-                  ),
-                );
-              } else {
-                throw e;
-              }
+          // Teams AppHost won't provide this runtime config
+          // so we assume that if we don't have it, we must be running in Teams.
+          // After Teams updates its client code, we can remove this default code.
+          try {
+            initializeHelperLogger('Parsing %s', runtimeConfig);
+            const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(runtimeConfig);
+            initializeHelperLogger('Checking if %o is a valid runtime object', givenRuntimeConfig ?? 'null');
+            // Check that givenRuntimeConfig is a valid instance of IBaseRuntime
+            if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
+              throw new Error('Received runtime config is invalid');
             }
-          } else {
-            // If it's any error that's not a JSON parsing error, we want the program to fail.
-            throw e;
-          }
-        }
+            runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
+          } catch (e) {
+            if (e instanceof SyntaxError) {
+              try {
+                initializeHelperLogger('Attempting to parse %s as an SDK version', runtimeConfig);
+                // if the given runtime config was actually meant to be a SDK version, store it as such.
+                // TODO: This is a temporary workaround to allow Teams to store clientSupportedSDKVersion even when
+                // it doesn't provide the runtimeConfig. After Teams updates its client code, we should
+                // remove this feature.
+                if (!isNaN(compareSDKVersions(runtimeConfig, defaultSDKVersionForCompatCheck))) {
+                  GlobalVars.clientSupportedSDKVersion = runtimeConfig;
+                }
+                const givenRuntimeConfig: IBaseRuntime | null = JSON.parse(clientSupportedSDKVersion);
+                initializeHelperLogger('givenRuntimeConfig parsed to %o', givenRuntimeConfig ?? 'null');
 
-        GlobalVars.initializeCompleted = true;
-      });
+                if (!givenRuntimeConfig) {
+                  throw new Error(
+                    'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
+                  );
+                } else {
+                  applyRuntimeConfig(givenRuntimeConfig);
+                }
+              } catch (e) {
+                if (e instanceof SyntaxError) {
+                  applyRuntimeConfig(
+                    generateVersionBasedTeamsRuntimeConfig(
+                      GlobalVars.clientSupportedSDKVersion,
+                      versionAndPlatformAgnosticTeamsRuntimeConfig,
+                      mapTeamsVersionToSupportedCapabilities,
+                    ),
+                  );
+                } else {
+                  throw e;
+                }
+              }
+            } else {
+              // If it's any error that's not a JSON parsing error, we want the program to fail.
+              throw e;
+            }
+          }
+
+          GlobalVars.initializeCompleted = true;
+        },
+      );
 
       authentication.initialize();
       menus.initialize();
       pages.config.initialize();
       dialog.initialize();
     }
+
     // Handle additional valid message origins if specified
     if (Array.isArray(validMessageOrigins)) {
       processAdditionalValidOrigins(validMessageOrigins);
@@ -736,22 +727,12 @@ export namespace app {
    *
    * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
    * https: protocol otherwise they will be ignored. Example: https://www.example.com
-   *
-   * @hidden
-   * @internal
-   * @param customMessageIdStarter - a starting number from where the sequence of messageIds begin that we use to match the requests and responses from teams-js to host sdk.
-   * The default value is zero. A higher seed value reduces the chance of collisions in messageIds when multiple teamsJS instances are running concurrently
-   *
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
-  export function initialize(validMessageOrigins?: string[], customMessageIdStarter?: number): Promise<void> {
-    if (customMessageIdStarter && customMessageIdStarter < 0) {
-      throw 'customMessageIdStarter cannot be a negative number';
-    }
+  export function initialize(validMessageOrigins?: string[]): Promise<void> {
     return appInitializeHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
       validMessageOrigins,
-      customMessageIdStarter,
     );
   }
 
