@@ -6,9 +6,8 @@
     {
       "title": "checkExternalAppAuthenticationCapability API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_checkExternalAppAuthenticationCapability",
-      "expectedTestAppValue": "External App Authentication module is supported."
+      "expectedTestAppValue": "External App Authentication module is supported"
     }
   ]
 }

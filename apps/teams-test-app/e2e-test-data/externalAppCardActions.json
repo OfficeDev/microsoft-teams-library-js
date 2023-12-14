@@ -6,9 +6,8 @@
     {
       "title": "checkExternalAppCardActionsCapability API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
       "boxSelector": "#box_checkExternalAppCardActionsCapability",
-      "expectedTestAppValue": "External App Card Actions module is supported."
+      "expectedTestAppValue": "External App Card Actions module is supported"
     }
   ]
 }
