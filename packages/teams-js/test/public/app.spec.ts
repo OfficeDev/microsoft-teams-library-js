@@ -112,6 +112,18 @@ describe('Testing app capability', () => {
         expect(initMessage.timestamp).not.toBeNull();
       });
 
+      it('app.initialize message will start messageId from provided customeMessageIdStarter', () => {
+        app.initialize(undefined, 1000);
+
+        expect(utils.processMessage).toBeDefined();
+        expect(utils.messages.length).toBe(1);
+
+        const initMessage = utils.findMessageByFunc('initialize');
+        expect(initMessage).not.toBeNull();
+        expect(initMessage.id).toBe(1000);
+        expect(initMessage.func).toBe('initialize');
+      });
+
       it('app.initialize should allow multiple initialize calls', () => {
         for (let i = 0; i < 2; i++) {
           app.initialize();
