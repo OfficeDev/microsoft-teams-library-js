@@ -3,5 +3,13 @@
   "version": ">2.18.0",
   "platform": "Web",
   "checkIsSupported": {},
-  "testCases": []
+  "testCases": [
+    {
+      "title": "checkExternalAppCardActionsCapability API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_checkExternalAppCardActionsCapability",
+      "expectedTestAppValue": "External App Card Actions module is supported."
+    }
+  ]
 }

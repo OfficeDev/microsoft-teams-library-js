@@ -2,6 +2,13 @@
   "name": "ExternalAppAuthentication",
   "version": ">2.18.0",
   "platform": "Web",
-  "checkIsSupported": {},
-  "testCases": []
+  "testCases": [
+    {
+      "title": "checkExternalAppAuthenticationCapability API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_checkExternalAppAuthenticationCapability",
+      "expectedTestAppValue": "External App Authentication module is supported."
+    }
+  ]
 }
