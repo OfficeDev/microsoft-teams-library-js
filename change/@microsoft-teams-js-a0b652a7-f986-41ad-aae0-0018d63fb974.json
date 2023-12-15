@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Removed unnecessary capability `app` from runtime.",
+  "comment": "Removed `app` and `app.lifecycle` from runtime.",
   "packageName": "@microsoft/teams-js",
   "email": "lakhveerkaur@microsoft.com",
   "dependentChangeType": "patch"
