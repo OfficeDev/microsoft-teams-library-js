@@ -581,6 +581,30 @@ describe('Testing authentication capability', () => {
           await expect(promise).resolves.toEqual('token');
         });
 
+        it(`authentication.getAuthToken should request token for the tenant specified in the authTokenRequest from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const authTokenRequest = {
+            resources: [mockResource],
+            claims: [mockClaim],
+            silent: false,
+            tenantId: 'tenantId',
+          };
+
+          const promise = authentication.getAuthToken(authTokenRequest);
+
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(4);
+          expect(message.args[0]).toEqual([mockResource]);
+          expect(message.args[1]).toEqual([mockClaim]);
+          expect(message.args[2]).toEqual(false);
+          expect(message.args[3]).toEqual('tenantId');
+
+          utils.respondToMessage(message, true, 'token');
+          await expect(promise).resolves.toEqual('token');
+        });
+
         it(`authentication.getAuthToken should return error in case of failure from ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
