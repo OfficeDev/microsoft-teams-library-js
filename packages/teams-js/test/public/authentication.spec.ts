@@ -507,7 +507,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
@@ -534,7 +534,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual(undefined);
             expect(message.args[2]).toEqual(undefined);
@@ -556,7 +556,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
@@ -572,7 +572,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
@@ -616,7 +616,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
@@ -632,7 +632,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
@@ -1172,7 +1172,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
@@ -1203,7 +1203,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toBeNull();
             expect(message.args[2]).toBeNull();
@@ -1229,7 +1229,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
@@ -1249,7 +1249,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
@@ -1274,7 +1274,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
@@ -1294,7 +1294,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
