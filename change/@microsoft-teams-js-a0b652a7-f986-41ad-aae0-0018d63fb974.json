@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed `app` and `app.lifecycle` from runtime.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
