@@ -134,6 +134,15 @@ export interface FilePreviewParameters {
 
   /**
    * @hidden
+   * The size of the file in bytes.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  sizeInBytes?: number;
+
+  /**
+   * @hidden
    * A url to the source of the file, used to open the content in the user's default browser
    *
    * @internal

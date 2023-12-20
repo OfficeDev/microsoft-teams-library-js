@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Marked `composeExtension` property on `IQueryMessageExtensionResponse` as optional and added additional input validation on `externalAppAuthentication` and `externalAppCardActions` APIs",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "patch"
+}

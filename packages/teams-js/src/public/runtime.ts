@@ -150,9 +150,6 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly app?: {
-      readonly lifecycle?: {};
-    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -205,6 +202,7 @@ interface IRuntimeV3 extends IBaseRuntime {
         readonly joinedTeams?: {};
       };
     };
+    readonly thirdPartyCloudStorage?: {};
     readonly teamsCore?: {};
     readonly video?: {
       readonly mediaStream?: {};
@@ -255,9 +253,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
-    app: {
-      lifecycle: {},
-    },
     appInstallDialog: {},
     appEntity: {},
     call: {},

@@ -1,0 +1,13 @@
+{
+  "name": "ExternalAppCardActions",
+  "version": ">2.18.0",
+  "platform": "Web",
+  "testCases": [
+    {
+      "title": "checkExternalAppCardActionsCapability API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_checkExternalAppCardActionsCapability",
+      "expectedTestAppValue": "External App Card Actions module is supported"
+    }
+  ]
+}
