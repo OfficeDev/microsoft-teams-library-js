@@ -12,7 +12,7 @@ import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow, validateOrigin } from './utils';
+import { getDomainsFromCDN, ssrSafeWindow, validateOrigin } from './utils';
 
 const communicationLogger = getLogger('communication');
 
@@ -64,6 +64,7 @@ export function initializeCommunication(
   validMessageOrigins: string[] | undefined,
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
+  getDomainsFromCDN();
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 

@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as uuid from 'uuid';
 
+import * as validOrigins from '../artifactsForCDN/validDomains.json';
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
-import { validOrigins } from './constants';
 import { getLogger } from './telemetry';
 
 /**
@@ -37,6 +37,26 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
   return false;
 }
 
+export function getDomainsFromCDN(): void {
+  if (fetch) {
+    fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
+      .then(async (response) => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+        if (response.json) {
+          const test = await response.json();
+          const validDomains = test.validOrigins;
+          console.log(validDomains);
+          GlobalVars.validOrigins = validDomains;
+        }
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+  }
+}
+
 const validateOriginLogger = getLogger('validateOrigin');
 
 /**
@@ -54,8 +74,9 @@ export function validateOrigin(messageOrigin: URL): boolean {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
+  const validDomains = GlobalVars.validOrigins.length !== 0 ? GlobalVars.validOrigins : validOrigins.validOrigins;
 
-  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+  if (validDomains.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
   }
 
@@ -69,7 +90,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
   validateOriginLogger(
     'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
     messageOrigin,
-    validOrigins,
+    validDomains,
     GlobalVars.additionalValidOrigins,
   );
   return false;

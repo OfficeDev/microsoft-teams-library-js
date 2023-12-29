@@ -99,6 +99,7 @@ export class Utils {
       },
       closed: false,
     };
+    global.fetch = jest.fn(() => Promise.resolve({ status: 200, ok: true } as Response));
   }
 
   public processMessage: null | ((ev: MessageEvent) => void);
