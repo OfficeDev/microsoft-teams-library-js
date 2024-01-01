@@ -38,23 +38,20 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 }
 
 export function getDomainsFromCDN(): void {
-  if (fetch) {
-    fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
-      .then(async (response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        if (response.json) {
-          const test = await response.json();
-          const validDomains = test.validOrigins;
-          console.log(validDomains);
-          GlobalVars.validOrigins = validDomains;
-        }
-      })
-      .catch((e) => {
-        throw new Error(e);
-      });
-  }
+  fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
+    .then(async (response) => {
+      if (!response.ok) {
+        throw response.statusText;
+      }
+      if (response.json) {
+        const test = await response.json();
+        const validDomains = test.validOrigins;
+        GlobalVars.validOrigins = validDomains;
+      }
+    })
+    .catch((e) => {
+      throw new Error(e);
+    });
 }
 
 const validateOriginLogger = getLogger('validateOrigin');
