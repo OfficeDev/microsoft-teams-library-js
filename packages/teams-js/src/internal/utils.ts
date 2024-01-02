@@ -7,6 +7,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
+import { validDomainsCdnEndpoint } from './constants';
 import { getLogger } from './telemetry';
 
 /**
@@ -38,7 +39,7 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
 }
 
 export function getDomainsFromCDN(): void {
-  fetch('https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json')
+  fetch(validDomainsCdnEndpoint)
     .then(async (response) => {
       if (!response.ok) {
         throw response.statusText;
