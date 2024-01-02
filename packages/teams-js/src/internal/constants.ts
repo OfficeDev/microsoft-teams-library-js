@@ -1,7 +1,5 @@
 import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
 
-export const validOriginsFallback = validOriginsJSON.validOrigins;
-
 /**
  * @hidden
  * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
@@ -111,6 +109,15 @@ export const getMediaCallbackSupportVersion = '2.0.0';
  * Limited to Microsoft-internal use
  */
 export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
+
+/**
+ * @hidden
+ * Fallback list of valid origins
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const validOriginsFallback = validOriginsJSON.validOrigins;
 
 /**
  * @hidden
