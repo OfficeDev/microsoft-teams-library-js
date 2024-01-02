@@ -1,3 +1,7 @@
+import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
+
+export const validOriginsFallback = validOriginsJSON.validOrigins;
+
 /**
  * @hidden
  * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.

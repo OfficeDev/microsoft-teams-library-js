@@ -2,12 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as uuid from 'uuid';
 
-import * as validOrigins from '../artifactsForCDN/validDomains.json';
 import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
-import { validDomainsCdnEndpoint } from './constants';
+import { validDomainsCdnEndpoint, validOriginsFallback } from './constants';
 import { getLogger } from './telemetry';
 
 /**
@@ -45,9 +44,8 @@ export function getDomainsFromCDN(): void {
         throw response.statusText;
       }
       if (response.json) {
-        const test = await response.json();
-        const validDomains = test.validOrigins;
-        GlobalVars.validOrigins = validDomains;
+        const validDomains = await response.json();
+        GlobalVars.validOrigins = validDomains.validOrigins;
       }
     })
     .catch((e) => {
@@ -72,7 +70,7 @@ export function validateOrigin(messageOrigin: URL): boolean {
     return false;
   }
   const messageOriginHost = messageOrigin.host;
-  const validDomains = GlobalVars.validOrigins.length !== 0 ? GlobalVars.validOrigins : validOrigins.validOrigins;
+  const validDomains = GlobalVars.validOrigins.length !== 0 ? GlobalVars.validOrigins : validOriginsFallback;
 
   if (validDomains.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
     return true;
