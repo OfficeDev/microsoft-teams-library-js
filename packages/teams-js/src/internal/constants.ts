@@ -1,4 +1,4 @@
-import { validOrigins } from '../artifactsForCDN/validDomains.json';
+import * as validDomains from '../artifactsForCDN/validDomains.json';
 
 /**
  * @hidden
@@ -110,6 +110,7 @@ export const getMediaCallbackSupportVersion = '2.0.0';
  */
 export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
+export const validDomainsFallback = validDomains;
 /**
  * @hidden
  * Fallback list of valid origins
@@ -117,7 +118,7 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
  * @internal
  * Limited to Microsoft-internal use
  */
-export const validOriginsFallback = validOrigins;
+export const validOriginsFallback = validDomainsFallback.validOrigins;
 
 /**
  * @hidden
