@@ -16,16 +16,9 @@ async function retrieveDomainsFromCDNAndStore(): Promise<string[]> {
         if (!response.ok) {
           return validOriginsFallback;
         }
-        return response
-          .json()
-          .then((validDomains) => {
-            if (validDomains) {
-              return validDomains.validOrigins;
-            }
-          })
-          .catch(() => {
-            return validOriginsFallback;
-          });
+        return response.json().then((validDomains) => {
+          return validDomains.validOrigins;
+        });
       })
       .catch(() => {
         return validOriginsFallback;
