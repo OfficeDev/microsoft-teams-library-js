@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "API Telemetry - Third Batch - Chat, liveShareHost(Interactive), Meeting, Menus, Monetization, People capabilities",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
