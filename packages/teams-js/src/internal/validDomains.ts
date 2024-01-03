@@ -3,6 +3,7 @@ import { validDomainsCdnEndpoint, validOriginsFallback } from './constants';
 import { getLogger } from './telemetry';
 import { isValidHttpsURL } from './utils';
 
+let validOrigins: string[] = [];
 export async function prefetchDomainsFromCDN(): Promise<void> {
   if (fetch) {
     await fetch(validDomainsCdnEndpoint);
@@ -10,21 +11,28 @@ export async function prefetchDomainsFromCDN(): Promise<void> {
 }
 
 async function retrieveDomainsFromCDNAndStore(): Promise<string[]> {
+  if (validOrigins.length !== 0) {
+    return validOrigins;
+  }
   if (fetch) {
     return fetch(validDomainsCdnEndpoint)
       .then((response) => {
         if (!response.ok) {
+          validOrigins = validOriginsFallback;
           return validOriginsFallback;
         }
         return response.json().then((validDomains) => {
-          return validDomains.validOrigins;
+          validOrigins = validDomains.validOrigins;
+          return validOrigins;
         });
       })
       .catch(() => {
-        return validOriginsFallback;
+        validOrigins = validOriginsFallback;
+        return validOrigins;
       });
   } else {
-    return validOriginsFallback;
+    validOrigins = validOriginsFallback;
+    return validOrigins;
   }
 }
 
@@ -63,7 +71,7 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateOrigin(messageOrigin: URL): Promise<boolean> {
-  return retrieveDomainsFromCDNAndStore().then((validOrigins) => {
+  return retrieveDomainsFromCDNAndStore().then((validDomains) => {
     // Check whether the url is in the pre-known allowlist or supplied by user
     if (!isValidHttpsURL(messageOrigin)) {
       validateOriginLogger(
@@ -74,7 +82,7 @@ export function validateOrigin(messageOrigin: URL): Promise<boolean> {
       return false;
     }
     const messageOriginHost = messageOrigin.host;
-    if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    if (validDomains.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
       return true;
     }
 
@@ -88,7 +96,7 @@ export function validateOrigin(messageOrigin: URL): Promise<boolean> {
     validateOriginLogger(
       'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
       messageOrigin,
-      validOrigins,
+      validDomains,
       GlobalVars.additionalValidOrigins,
     );
     return false;
