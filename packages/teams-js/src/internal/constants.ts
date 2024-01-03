@@ -1,4 +1,4 @@
-import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
+import { validOrigins } from '../artifactsForCDN/validDomains.json';
 
 /**
  * @hidden
@@ -117,7 +117,7 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
  * @internal
  * Limited to Microsoft-internal use
  */
-export const validOriginsFallback = validOriginsJSON.validOrigins;
+export const validOriginsFallback = validOrigins;
 
 /**
  * @hidden
@@ -126,7 +126,9 @@ export const validOriginsFallback = validOriginsJSON.validOrigins;
  * @internal
  * Limited to Microsoft-internal use
  */
-export const validDomainsCdnEndpoint = 'https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json';
+export const validDomainsCdnEndpoint = new URL(
+  'https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json',
+);
 
 /**
  * @hidden

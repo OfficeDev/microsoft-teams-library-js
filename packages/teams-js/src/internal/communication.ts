@@ -12,7 +12,8 @@ import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { getDomainsFromCDN, ssrSafeWindow, validateOrigin } from './utils';
+import { ssrSafeWindow } from './utils';
+import { validateOrigin } from './validDomains';
 
 const communicationLogger = getLogger('communication');
 
@@ -64,7 +65,6 @@ export function initializeCommunication(
   validMessageOrigins: string[] | undefined,
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
-  getDomainsFromCDN();
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
 
@@ -465,16 +465,15 @@ function processMessage(evt: DOMMessageEvent): void {
   // in their call to app.initialize
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
+
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
     processMessageLogger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
     return;
   }
-
   // Update our parent and child relationships based on this message
   updateRelationships(messageSource, messageOrigin);
-
   // Handle the message
   if (messageSource === Communication.parentWindow) {
     handleParentMessage(evt);
@@ -492,7 +491,7 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
  * @internal
  * Limited to Microsoft-internal use
  */
-function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+async function shouldProcessMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -506,7 +505,7 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   ) {
     return true;
   } else {
-    const isOriginValid = validateOrigin(new URL(messageOrigin));
+    const isOriginValid = await validateOrigin(new URL(messageOrigin));
     if (!isOriginValid) {
       shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }

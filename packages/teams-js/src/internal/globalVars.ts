@@ -9,5 +9,4 @@ export class GlobalVars {
   public static hostClientType: string | undefined = undefined;
   public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled = false;
-  public static validOrigins: string[] = [];
 }

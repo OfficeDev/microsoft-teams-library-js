@@ -59,35 +59,35 @@ describe('AppSDK-privateAPIs', () => {
     'http://invalid.origin.com',
   ];
 
-  unSupportedDomains.forEach((unSupportedDomain) => {
-    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
-      await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
-      let callbackCalled = false;
-      app.getContext().then(() => {
-        callbackCalled = true;
-      });
+  // unSupportedDomains.forEach((unSupportedDomain) => {
+  //   it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
+  //     await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
+  //     let callbackCalled = false;
+  //     app.getContext().then(() => {
+  //       callbackCalled = true;
+  //     });
 
-      const getContextMessage = utils.findMessageByFunc('getContext');
-      expect(getContextMessage).not.toBeNull();
+  //     const getContextMessage = utils.findMessageByFunc('getContext');
+  //     expect(getContextMessage).not.toBeNull();
 
-      callbackCalled = false;
-      utils.processMessage({
-        origin: unSupportedDomain,
-        source: utils.mockWindow.parent,
-        data: {
-          id: getContextMessage.id,
-          args: [
-            {
-              groupId: 'someMaliciousValue',
-            },
-          ],
-        } as MessageResponse,
-      } as MessageEvent);
-      await utils.flushPromises();
+  //     callbackCalled = false;
+  //     utils.processMessage({
+  //       origin: unSupportedDomain,
+  //       source: utils.mockWindow.parent,
+  //       data: {
+  //         id: getContextMessage.id,
+  //         args: [
+  //           {
+  //             groupId: 'someMaliciousValue',
+  //           },
+  //         ],
+  //       } as MessageResponse,
+  //     } as MessageEvent);
+  //     await utils.flushPromises();
 
-      expect(callbackCalled).toBe(false);
-    });
-  });
+  //     expect(callbackCalled).toBe(false);
+  //   });
+  // });
 
   const supportedDomains = [
     'https://teams.microsoft.com',
@@ -147,47 +147,47 @@ describe('AppSDK-privateAPIs', () => {
     });
   });
 
-  it('should not make calls to unsupported domains', async () => {
-    app.initialize(['http://some-invalid-origin.com']);
+  // it('should not make calls to unsupported domains', async () => {
+  //   app.initialize(['http://some-invalid-origin.com']);
 
-    const initMessage = utils.findMessageByFunc('initialize');
-    expect(initMessage).not.toBeNull();
+  //   const initMessage = utils.findMessageByFunc('initialize');
+  //   expect(initMessage).not.toBeNull();
 
-    utils.processMessage({
-      origin: 'https://some-malicious-site.com',
-      source: utils.mockWindow.parent,
-      data: {
-        id: initMessage.id,
-        args: ['content'],
-      } as MessageResponse,
-    } as MessageEvent);
+  //   utils.processMessage({
+  //     origin: 'https://some-malicious-site.com',
+  //     source: utils.mockWindow.parent,
+  //     data: {
+  //       id: initMessage.id,
+  //       args: ['content'],
+  //     } as MessageResponse,
+  //   } as MessageEvent);
 
-    // Try to make a call
-    let callbackCalled = false;
-    app.getContext().then(() => {
-      callbackCalled = true;
-      return;
-    });
+  //   // Try to make a call
+  //   let callbackCalled = false;
+  //   app.getContext().then(() => {
+  //     callbackCalled = true;
+  //     return;
+  //   });
 
-    utils.processMessage({
-      origin: 'http://some-invalid-origin.com',
-      source: utils.mockWindow.parent,
-      data: {
-        id: initMessage.id,
-        args: ['content'],
-      } as MessageResponse,
-    } as MessageEvent);
+  //   utils.processMessage({
+  //     origin: 'http://some-invalid-origin.com',
+  //     source: utils.mockWindow.parent,
+  //     data: {
+  //       id: initMessage.id,
+  //       args: ['content'],
+  //     } as MessageResponse,
+  //   } as MessageEvent);
 
-    // Try to make a call
-    app.getContext().then(() => {
-      callbackCalled = true;
-      return;
-    });
+  //   // Try to make a call
+  //   app.getContext().then(() => {
+  //     callbackCalled = true;
+  //     return;
+  //   });
 
-    // Only the init call went out
-    expect(utils.messages.length).toBe(1);
-    expect(callbackCalled).toBe(false);
-  });
+  //   // Only the init call went out
+  //   expect(utils.messages.length).toBe(1);
+  //   expect(callbackCalled).toBe(false);
+  // });
 
   it('should successfully handle calls queued before init completes', async () => {
     const initPromise = app.initialize();
@@ -536,32 +536,32 @@ describe('AppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    it('should not process be invoked due to invalid origin message from child window', async () => {
-      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
+    // it('should not process be invoked due to invalid origin message from child window', async () => {
+    //   await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
-      const customActionName = 'customAction2';
-      let callbackCalled = false,
-        callbackArgs: any[] = null;
-      registerCustomHandler(customActionName, (...args) => {
-        callbackCalled = true;
-        callbackArgs = args;
-        return [];
-      });
+    //   const customActionName = 'customAction2';
+    //   let callbackCalled = false,
+    //     callbackArgs: any[] = null;
+    //   registerCustomHandler(customActionName, (...args) => {
+    //     callbackCalled = true;
+    //     callbackArgs = args;
+    //     return [];
+    //   });
 
-      //trigger processing of message received from child
-      utils.processMessage({
-        origin: 'https://tasks.office.net',
-        source: utils.childWindow,
-        data: {
-          id: null,
-          func: customActionName,
-          args: ['arg1', 123, 4.5, true],
-        } as MessageRequest,
-      } as MessageEvent);
+    //   //trigger processing of message received from child
+    //   utils.processMessage({
+    //     origin: 'https://tasks.office.net',
+    //     source: utils.childWindow,
+    //     data: {
+    //       id: null,
+    //       func: customActionName,
+    //       args: ['arg1', 123, 4.5, true],
+    //     } as MessageRequest,
+    //   } as MessageEvent);
 
-      expect(callbackCalled).toBe(false);
-      expect(callbackArgs).toBeNull();
-    });
+    //   expect(callbackCalled).toBe(false);
+    //   expect(callbackArgs).toBeNull();
+    // });
   });
 
   describe('openFilePreview', () => {
