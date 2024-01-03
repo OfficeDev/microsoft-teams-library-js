@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added timeout notifications (2 seconds) to video frame processing in `videoEffectsEx` capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "hanluluo@microsoft.com",
+  "dependentChangeType": "patch"
+}
