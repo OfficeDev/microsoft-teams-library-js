@@ -1,5 +1,6 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { validateAppIdIsGuid } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -149,7 +150,7 @@ export namespace externalAppAuthentication {
    */
   export interface IQueryMessageExtensionResponse {
     responseType: InvokeResponseType.QueryMessageExtensionResponse;
-    composeExtension: ComposeExtensionResponse;
+    composeExtension?: ComposeExtensionResponse;
   }
 
   /**
@@ -270,7 +271,6 @@ export namespace externalAppAuthentication {
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
-   * TODO - Add more validation here as we get more details on the allowed request schemas
    */
   function validateOriginalRequestInfo(originalRequestInfo: IOriginalRequestInfo): void {
     if (originalRequestInfo.requestType === OriginalRequestType.ActionExecuteInvokeRequest) {
@@ -281,6 +281,21 @@ export namespace externalAppAuthentication {
           message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
         };
         throw error;
+      }
+    } else if (originalRequestInfo.requestType === OriginalRequestType.QueryMessageExtensionRequest) {
+      if (originalRequestInfo.commandId.length > 64) {
+        throw new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters');
+      }
+      if (originalRequestInfo.parameters.length > 5) {
+        throw new Error('originalRequestInfo.parameters exceeds the maximum size of 5');
+      }
+      for (const parameter of originalRequestInfo.parameters) {
+        if (parameter.name.length > 64) {
+          throw new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters');
+        }
+        if (parameter.value.length > 512) {
+          throw new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters');
+        }
       }
     }
   }
@@ -307,6 +322,7 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -347,6 +363,8 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
+
     return sendMessageToParentAsync('externalAppAuthentication.authenticateWithSSO', [
       appId,
       authTokenRequest.claims,
@@ -380,6 +398,7 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(

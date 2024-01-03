@@ -198,6 +198,9 @@ describe('videoEffectsEx', () => {
         expect(message).not.toBeNull();
         expect(message?.args?.length).toBe(1);
         expect(message?.args?.[0]).toBe(200);
+
+        const error = utils.findMessageByFunc('video.notifyError');
+        expect(error).toBeNull();
       });
 
       it('should invoke video frame event handler and successfully send notifyError', async () => {
@@ -232,6 +235,42 @@ describe('videoEffectsEx', () => {
         expect(message?.args?.length).toBe(2);
         expect(message?.args?.[0]).toEqual(errorMessage);
         expect(message?.args?.[1]).toEqual(videoEffectsEx.ErrorLevel.Warn);
+      });
+
+      it('should send notifyError when frameProcessed event time outs', async () => {
+        await utils.initializeWithContext(FrameContexts.sidePanel);
+        const errorMessage = `Frame not processed in ${videoEffectsEx.frameProcessingTimeoutInMs}ms`;
+        const videoBufferCallback = (
+          _videoBufferData: videoEffectsEx.VideoBufferData,
+          _notifyVideoFrameProcessed: () => void,
+          _notifyError: (errorMessage: string) => void,
+        ): void => {
+          setTimeout(() => {}, videoEffectsEx.frameProcessingTimeoutInMs + 1000);
+        };
+
+        videoEffectsEx.registerForVideoFrame({
+          ...registerForVideoFrameParameters,
+          videoBufferHandler: videoBufferCallback,
+        });
+        const videoFrameMock = {
+          width: 30,
+          height: 40,
+          data: 101,
+        };
+
+        utils.respondToFramelessMessage({
+          data: {
+            func: 'video.newVideoFrame',
+            args: [videoFrameMock],
+          },
+        } as DOMMessageEvent);
+        setTimeout(() => {
+          const message = utils.findMessageByFunc('video.notifyError');
+          expect(message).not.toBeNull();
+          expect(message?.args?.length).toBe(2);
+          expect(message?.args?.[0]).toEqual(errorMessage);
+          expect(message?.args?.[1]).toEqual(videoEffectsEx.ErrorLevel.Warn);
+        }, videoEffectsEx.frameProcessingTimeoutInMs + 2000);
       });
 
       it('should not invoke video frame event handler when videoFrame is undefined', async () => {
