@@ -123,8 +123,7 @@ export namespace chat {
           user: openChatRequest.users[0],
           message: openChatRequest.message,
         };
-        const openChatApiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenChat);
-        resolve(openChatHelper(openChatApiVersionTag, chatRequest));
+        resolve(openChatHelper(apiVersionTag, chatRequest));
       } else {
         ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
