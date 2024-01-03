@@ -66,7 +66,7 @@ export function initializeCommunication(
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
-  CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
+  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> => await processMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -453,7 +453,7 @@ const processMessageLogger = communicationLogger.extend('processMessage');
  * @internal
  * Limited to Microsoft-internal use
  */
-function processMessage(evt: DOMMessageEvent): void {
+async function processMessage(evt: DOMMessageEvent): Promise<void> {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
@@ -466,20 +466,22 @@ function processMessage(evt: DOMMessageEvent): void {
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
 
-  if (!shouldProcessMessage(messageSource, messageOrigin)) {
-    processMessageLogger(
-      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
-    );
-    return;
-  }
-  // Update our parent and child relationships based on this message
-  updateRelationships(messageSource, messageOrigin);
-  // Handle the message
-  if (messageSource === Communication.parentWindow) {
-    handleParentMessage(evt);
-  } else if (messageSource === Communication.childWindow) {
-    handleChildMessage(evt);
-  }
+  return shouldProcessMessage(messageSource, messageOrigin).then((result) => {
+    if (!result) {
+      processMessageLogger(
+        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+      );
+      return;
+    }
+    // Update our parent and child relationships based on this message
+    updateRelationships(messageSource, messageOrigin);
+    // Handle the message
+    if (messageSource === Communication.parentWindow) {
+      handleParentMessage(evt);
+    } else if (messageSource === Communication.childWindow) {
+      handleChildMessage(evt);
+    }
+  });
 }
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');

@@ -59,35 +59,35 @@ describe('AppSDK-privateAPIs', () => {
     'http://invalid.origin.com',
   ];
 
-  // unSupportedDomains.forEach((unSupportedDomain) => {
-  //   it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
-  //     await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
-  //     let callbackCalled = false;
-  //     app.getContext().then(() => {
-  //       callbackCalled = true;
-  //     });
+  unSupportedDomains.forEach((unSupportedDomain) => {
+    it('should reject utils.messages from unsupported domain: ' + unSupportedDomain, async () => {
+      await utils.initializeWithContext('content', null, ['http://invalid.origin.com']);
+      let callbackCalled = false;
+      app.getContext().then(() => {
+        callbackCalled = true;
+      });
 
-  //     const getContextMessage = utils.findMessageByFunc('getContext');
-  //     expect(getContextMessage).not.toBeNull();
+      const getContextMessage = utils.findMessageByFunc('getContext');
+      expect(getContextMessage).not.toBeNull();
 
-  //     callbackCalled = false;
-  //     utils.processMessage({
-  //       origin: unSupportedDomain,
-  //       source: utils.mockWindow.parent,
-  //       data: {
-  //         id: getContextMessage.id,
-  //         args: [
-  //           {
-  //             groupId: 'someMaliciousValue',
-  //           },
-  //         ],
-  //       } as MessageResponse,
-  //     } as MessageEvent);
-  //     await utils.flushPromises();
+      callbackCalled = false;
+      await utils.processMessage({
+        origin: unSupportedDomain,
+        source: utils.mockWindow.parent,
+        data: {
+          id: getContextMessage.id,
+          args: [
+            {
+              groupId: 'someMaliciousValue',
+            },
+          ],
+        } as MessageResponse,
+      } as MessageEvent);
+      await utils.flushPromises();
 
-  //     expect(callbackCalled).toBe(false);
-  //   });
-  // });
+      expect(callbackCalled).toBe(false);
+    });
+  });
 
   const supportedDomains = [
     'https://teams.microsoft.com',
@@ -147,47 +147,47 @@ describe('AppSDK-privateAPIs', () => {
     });
   });
 
-  // it('should not make calls to unsupported domains', async () => {
-  //   app.initialize(['http://some-invalid-origin.com']);
+  it('should not make calls to unsupported domains', async () => {
+    app.initialize(['http://some-invalid-origin.com']);
 
-  //   const initMessage = utils.findMessageByFunc('initialize');
-  //   expect(initMessage).not.toBeNull();
+    const initMessage = utils.findMessageByFunc('initialize');
+    expect(initMessage).not.toBeNull();
 
-  //   utils.processMessage({
-  //     origin: 'https://some-malicious-site.com',
-  //     source: utils.mockWindow.parent,
-  //     data: {
-  //       id: initMessage.id,
-  //       args: ['content'],
-  //     } as MessageResponse,
-  //   } as MessageEvent);
+    utils.processMessage({
+      origin: 'https://some-malicious-site.com',
+      source: utils.mockWindow.parent,
+      data: {
+        id: initMessage.id,
+        args: ['content'],
+      } as MessageResponse,
+    } as MessageEvent);
 
-  //   // Try to make a call
-  //   let callbackCalled = false;
-  //   app.getContext().then(() => {
-  //     callbackCalled = true;
-  //     return;
-  //   });
+    // Try to make a call
+    let callbackCalled = false;
+    app.getContext().then(() => {
+      callbackCalled = true;
+      return;
+    });
 
-  //   utils.processMessage({
-  //     origin: 'http://some-invalid-origin.com',
-  //     source: utils.mockWindow.parent,
-  //     data: {
-  //       id: initMessage.id,
-  //       args: ['content'],
-  //     } as MessageResponse,
-  //   } as MessageEvent);
+    utils.processMessage({
+      origin: 'http://some-invalid-origin.com',
+      source: utils.mockWindow.parent,
+      data: {
+        id: initMessage.id,
+        args: ['content'],
+      } as MessageResponse,
+    } as MessageEvent);
 
-  //   // Try to make a call
-  //   app.getContext().then(() => {
-  //     callbackCalled = true;
-  //     return;
-  //   });
+    // Try to make a call
+    app.getContext().then(() => {
+      callbackCalled = true;
+      return;
+    });
 
-  //   // Only the init call went out
-  //   expect(utils.messages.length).toBe(1);
-  //   expect(callbackCalled).toBe(false);
-  // });
+    // Only the init call went out
+    expect(utils.messages.length).toBe(1);
+    expect(callbackCalled).toBe(false);
+  });
 
   it('should successfully handle calls queued before init completes', async () => {
     const initPromise = app.initialize();
@@ -202,7 +202,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.findMessageByFunc('getContext')).toBeNull();
 
     // init completes
-    utils.respondToMessage(initMessage, 'content');
+    await utils.respondToMessage(initMessage, 'content');
     await initPromise;
 
     // Now the getContext call should have been dequeued
@@ -318,9 +318,9 @@ describe('AppSDK-privateAPIs', () => {
     };
 
     // respond in the wrong order
-    utils.respondToMessage(getContextMessage3, contextBridge3);
-    utils.respondToMessage(getContextMessage1, contextBridge1);
-    utils.respondToMessage(getContextMessage2, contextBridge2);
+    await utils.respondToMessage(getContextMessage3, contextBridge3);
+    await utils.respondToMessage(getContextMessage1, contextBridge1);
+    await utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
     return Promise.all([
@@ -359,7 +359,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Get many responses to the same message
     for (let i = 0; i < 100; i++) {
-      utils.respondToMessage(getContextMessage, expectedContext);
+      await utils.respondToMessage(getContextMessage, expectedContext);
     }
     await contextPromise;
 
@@ -377,17 +377,17 @@ describe('AppSDK-privateAPIs', () => {
       changedUserSettingValue = updatedValue;
     });
 
-    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
+    await utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
 
     expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
     expect(changedUserSettingValue).toBe('value');
   });
 
-  it('should treat messages to frameless windows as coming from the child', () => {
+  it('should treat messages to frameless windows as coming from the child', async () => {
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -401,11 +401,11 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(1);
   });
 
-  it('should properly pass partial responses to nested child frames ', () => {
+  it('should properly pass partial responses to nested child frames ', async () => {
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -417,7 +417,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Send a partial response back
     const parentMessage = utils.findMessageByFunc('testPartialFunc1');
-    utils.respondToNativeMessage(parentMessage, true, {});
+    await utils.respondToNativeMessage(parentMessage, true, {});
 
     // The child window should properly receive the partial response plus
     // the original event
@@ -427,7 +427,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(secondChildMessage.isPartialResponse).toBeTruthy();
 
     // Pass the final response (non partial)
-    utils.respondToNativeMessage(parentMessage, false, {});
+    await utils.respondToNativeMessage(parentMessage, false, {});
 
     // The child window should properly receive the non-partial response
     expect(utils.childMessages.length).toBe(3);
@@ -437,7 +437,7 @@ describe('AppSDK-privateAPIs', () => {
 
   it('Proxy messages to child window', async () => {
     await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://outlook.office.com',
       source: utils.childWindow,
       data: {
@@ -472,7 +472,7 @@ describe('AppSDK-privateAPIs', () => {
 
       //trigger child window setup
       //trigger processing of message received from child
-      utils.processMessage({
+      await utils.processMessage({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
@@ -504,7 +504,7 @@ describe('AppSDK-privateAPIs', () => {
         return [];
       });
 
-      utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
+      await utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
       expect(callbackCalled).toBe(true);
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
@@ -522,7 +522,7 @@ describe('AppSDK-privateAPIs', () => {
       });
 
       //trigger processing of message received from child
-      utils.processMessage({
+      await utils.processMessage({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
@@ -536,32 +536,32 @@ describe('AppSDK-privateAPIs', () => {
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
 
-    // it('should not process be invoked due to invalid origin message from child window', async () => {
-    //   await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
+    it('should not process be invoked due to invalid origin message from child window', async () => {
+      await utils.initializeWithContext('content', null, ['https://tasks.office.com']);
 
-    //   const customActionName = 'customAction2';
-    //   let callbackCalled = false,
-    //     callbackArgs: any[] = null;
-    //   registerCustomHandler(customActionName, (...args) => {
-    //     callbackCalled = true;
-    //     callbackArgs = args;
-    //     return [];
-    //   });
+      const customActionName = 'customAction2';
+      let callbackCalled = false,
+        callbackArgs: any[] = null;
+      registerCustomHandler(customActionName, (...args) => {
+        callbackCalled = true;
+        callbackArgs = args;
+        return [];
+      });
 
-    //   //trigger processing of message received from child
-    //   utils.processMessage({
-    //     origin: 'https://tasks.office.net',
-    //     source: utils.childWindow,
-    //     data: {
-    //       id: null,
-    //       func: customActionName,
-    //       args: ['arg1', 123, 4.5, true],
-    //     } as MessageRequest,
-    //   } as MessageEvent);
+      //trigger processing of message received from child
+      await utils.processMessage({
+        origin: 'https://tasks.office.net',
+        source: utils.childWindow,
+        data: {
+          id: null,
+          func: customActionName,
+          args: ['arg1', 123, 4.5, true],
+        } as MessageRequest,
+      } as MessageEvent);
 
-    //   expect(callbackCalled).toBe(false);
-    //   expect(callbackArgs).toBeNull();
-    // });
+      expect(callbackCalled).toBe(false);
+      expect(callbackArgs).toBeNull();
+    });
   });
 
   describe('openFilePreview', () => {

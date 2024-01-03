@@ -69,7 +69,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
     // Independent components might not know whether the SDK is initialized so might call it to be safe.
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
-      prefetchDomainsFromCDN();
       GlobalVars.initializeCalled = true;
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
@@ -731,6 +730,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    prefetchDomainsFromCDN();
     return appInitializeHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
       validMessageOrigins,
