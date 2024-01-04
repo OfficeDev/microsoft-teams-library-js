@@ -95,7 +95,7 @@ export namespace sharing {
     shareWebContentRequest: IShareRequest<IShareRequestContentType>,
     callback?: shareWebContentCallbackFunctionType,
   ): Promise<void> {
-    let apiVersionTag: string;
+    const apiVersionTag = '';
     // validate the given input (synchronous check)
     try {
       validateNonEmptyContent(shareWebContentRequest);
