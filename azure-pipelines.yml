@@ -58,6 +58,7 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
+          - repository: AppHostinGSdk2
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
     customBuildTags:
