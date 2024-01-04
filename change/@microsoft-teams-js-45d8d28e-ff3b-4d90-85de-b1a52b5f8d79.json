@@ -1,7 +1,7 @@
 {
   "type": "patch",
-  "comment": "added apiVersionTag for telemetry in Profile, Search, SecondaryBrowser, Settings, Sharing, StageView, VideoEffects, VisualMedia capabilites",
+  "comment": "Added apiVersionTag for telemetry in Profile, Search, SecondaryBrowser, Settings, Sharing, StageView, VideoEffects, VisualMedia capabilites",
   "packageName": "@microsoft/teams-js",
-  "email": "email not defined",
+  "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
 }
