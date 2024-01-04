@@ -174,7 +174,7 @@ extends:
 
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
-                  appHostGitPath: AppHostingSdk2
+                  appHostGitPath: AppHostingSdk
 
               - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
                 displayName: 'Run E2E integration tests'
