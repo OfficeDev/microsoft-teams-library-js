@@ -21,10 +21,6 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: refs/heads/main
-    - repository: AppHostingSdk2
-      type: git
-      name: ISS/metaos-hub-sdk
-      ref: release/2.18.0
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -58,7 +54,6 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
-          - repository: AppHostinGSdk2
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
     customBuildTags:
@@ -113,6 +108,7 @@ extends:
               image: 'ubuntu-latest'
               os: linux
             steps:
+              - checkout: self
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk
@@ -140,6 +136,7 @@ extends:
               image: 'ubuntu-2004'
               os: linux
             steps:
+              - checkout: self
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk
@@ -171,6 +168,10 @@ extends:
               image: 'ubuntu-2004'
               os: linux
             steps:
+              - checkout: self
+              - script: git checkout release/2.18.0
+                displayName: 'Switch to N-1 Version of Teams-Js library'
+
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk2
@@ -202,6 +203,7 @@ extends:
               image: 'ubuntu-latest'
               os: linux
             steps:
+              - checkout: self
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk

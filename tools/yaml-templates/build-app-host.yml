@@ -7,7 +7,7 @@ parameters:
     type: string
 
 steps:
-  - checkout: self
+  # - checkout: self
   - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
 
