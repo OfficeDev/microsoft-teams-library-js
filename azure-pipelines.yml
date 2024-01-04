@@ -24,7 +24,7 @@ resources:
     - repository: AppHostingSdk2
       type: git
       name: ISS/metaos-hub-sdk
-      ref: refs/release/2.18.0
+      ref: release/2.18.0
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
