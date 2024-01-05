@@ -175,7 +175,6 @@ extends:
 
               - bash: 'ls'
                 displayName: 'List all of repos names'
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
