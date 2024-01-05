@@ -168,14 +168,14 @@ extends:
               image: 'ubuntu-2004'
               os: linux
             steps:
-              - checkout: self
-                path: release/2.18.0
-                persistCredentials: true
+              # - checkout: self
+              #   path: release/2.18.0
+              #   persistCredentials: true
               # - script: git checkout release/2.18.0
               #   displayName: 'Switch to N-1 Version of Teams-Js library'
 
-              - bash: 'ls'
-                displayName: 'List all of repos names'
+              # - bash: 'ls'
+              #   displayName: 'List all of repos names'
 
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
