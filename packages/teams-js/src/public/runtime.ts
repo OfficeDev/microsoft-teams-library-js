@@ -513,11 +513,6 @@ export function generateVersionBasedTeamsRuntimeConfig(
           GlobalVars.hostClientType !== undefined &&
           capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)
         ) {
-          console.log(
-            `Adding capabilities from version ${versionNumber} for host client ${
-              GlobalVars.hostClientType
-            }:  ${JSON.stringify(capabilityReqs.capability)}`,
-          );
           newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
