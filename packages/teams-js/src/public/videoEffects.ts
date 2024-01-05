@@ -397,7 +397,7 @@ export namespace videoEffects {
     }
 
     registerHandlerWithVersion(
-      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterVideoBufferHandler),
+      getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoBufferHandler),
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {

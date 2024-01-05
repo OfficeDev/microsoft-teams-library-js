@@ -101,7 +101,7 @@ export namespace search {
       onClosedHandler,
     );
     registerHandlerWithVersion(
-      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecuteHandler),
+      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecutedHandler),
       onExecutedHandlerName,
       onExecuteHandler,
     );
