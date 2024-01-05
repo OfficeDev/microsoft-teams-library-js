@@ -190,8 +190,31 @@ describe('runtime', () => {
     return result;
   }
 
-  function generateVersionNumberOlderThanGivenVersion(version: string): string {
+  function getVersionsFromCapabilityMapOlderThanGivenVersion(version: string): string[] {
+    return Object.keys(mapTeamsVersionToSupportedCapabilities).filter(
+      (otherVer) => compareSDKVersions(otherVer, version) < 0,
+    );
+  }
+
+  function getVersionsFromCapabilityMapNewerThanGivenVersion(version: string): string[] {
+    return Object.keys(mapTeamsVersionToSupportedCapabilities).filter(
+      (otherVer) => compareSDKVersions(otherVer, version) > 0,
+    );
+  }
+
+  const oldestVersionInCapabilityMap = Object.keys(mapTeamsVersionToSupportedCapabilities).reduce((a, b) =>
+    compareSDKVersions(a, b) < 0 ? a : b,
+  );
+  const newestVersionInCapabilityMap = Object.keys(mapTeamsVersionToSupportedCapabilities).reduce((a, b) =>
+    compareSDKVersions(a, b) > 0 ? a : b,
+  );
+
+  function generateVersionOlderThanGivenVersion(version: string): string {
     return `0.${version}`;
+  }
+
+  function generateVersionNewerThanGivenVersion(version: string): string {
+    return `${version}.1`;
   }
 
   describe('generateVersionBasedTeamsRuntimeConfig tests based on Teams default configuration', () => {
@@ -226,50 +249,67 @@ describe('runtime', () => {
           );
 
           for (const clientType of capabilityAdditionsInASpecificVersion.hostClientTypes) {
-            await utils.initializeWithContext('content', clientType);
+            const olderVersionsInCapabilityMap = getVersionsFromCapabilityMapOlderThanGivenVersion(version);
+            const versionOlderThanAllVersionsInCapabilityMap =
+              generateVersionOlderThanGivenVersion(oldestVersionInCapabilityMap);
+            const oldVersionsToTestAgainst = [
+              ...olderVersionsInCapabilityMap,
+              versionOlderThanAllVersionsInCapabilityMap,
+            ];
 
-            const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
-              generateVersionNumberOlderThanGivenVersion(version),
-              versionAndPlatformAgnosticTeamsRuntimeConfig,
-              mapTeamsVersionToSupportedCapabilities,
-            ).supports;
+            for (const olderVersion of oldVersionsToTestAgainst) {
+              await utils.initializeWithContext('content', clientType);
 
-            individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
-              expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
-                false,
-              );
-            });
+              const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
+                olderVersion,
+                versionAndPlatformAgnosticTeamsRuntimeConfig,
+                mapTeamsVersionToSupportedCapabilities,
+              ).supports;
+
+              individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
+                expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
+                  false,
+                );
+              });
+            }
           }
         }
       }
     });
 
-    function getVersionsFromCapabilityMapNewerThanGivenVersion(version: string): string[] {
-      return Object.keys(mapTeamsVersionToSupportedCapabilities).filter(
-        (otherVer) => compareSDKVersions(otherVer, version) > 0,
-      );
-    }
-
-    it('Validate that all client types for a version LATER than when a capability began to be supported report that capability IS supported ', async () => {
+    it('Validate that all client types for a version NEWER than when a capability began to be supported report that capability IS supported ', async () => {
       for (const [version, capabilityAdditionsForEachVersion] of Object.entries(
         mapTeamsVersionToSupportedCapabilities,
       )) {
         for (const capabilityAdditionsInASpecificVersion of capabilityAdditionsForEachVersion) {
           const capabilityAdditionsForThisVersion = capabilityAdditionsInASpecificVersion.capability;
+          const individualCapabilityAdditionsForThisVersion: object[] = decomposeObject(
+            capabilityAdditionsForThisVersion,
+          );
 
           for (const clientType of capabilityAdditionsInASpecificVersion.hostClientTypes) {
-            const newerVersions = getVersionsFromCapabilityMapNewerThanGivenVersion(version);
+            const newerVersionsInCapabilityMap = getVersionsFromCapabilityMapOlderThanGivenVersion(version);
+            const versionNewerThanAllVersionsInCapabilityMap =
+              generateVersionNewerThanGivenVersion(newestVersionInCapabilityMap);
+            const newVersionsToTestAgainst = [
+              ...newerVersionsInCapabilityMap,
+              versionNewerThanAllVersionsInCapabilityMap,
+            ];
 
-            for (const newerVersion of newerVersions) {
+            for (const newerVersion of newVersionsToTestAgainst) {
               await utils.initializeWithContext('content', clientType);
 
-              const generatedCapabilityObjectForThisVersion = generateVersionBasedTeamsRuntimeConfig(
+              const generatedRuntimeConfigSupportedCapabilities = generateVersionBasedTeamsRuntimeConfig(
                 newerVersion,
                 versionAndPlatformAgnosticTeamsRuntimeConfig,
                 mapTeamsVersionToSupportedCapabilities,
               ).supports;
 
-              expect(isSubset(capabilityAdditionsForThisVersion, generatedCapabilityObjectForThisVersion)).toBe(true);
+              individualCapabilityAdditionsForThisVersion.forEach((capabilityAdditionForThisVersion) => {
+                expect(isSubset(capabilityAdditionForThisVersion, generatedRuntimeConfigSupportedCapabilities)).toBe(
+                  true,
+                );
+              });
             }
           }
         }
