@@ -437,7 +437,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
 };
@@ -513,6 +513,11 @@ export function generateVersionBasedTeamsRuntimeConfig(
           GlobalVars.hostClientType !== undefined &&
           capabilityReqs.hostClientTypes.includes(GlobalVars.hostClientType)
         ) {
+          console.log(
+            `Adding capabilities from version ${versionNumber} for host client ${
+              GlobalVars.hostClientType
+            }:  ${JSON.stringify(capabilityReqs.capability)}`,
+          );
           newSupports = mergeRuntimeCapabilities(newSupports, capabilityReqs.capability);
         }
       });
