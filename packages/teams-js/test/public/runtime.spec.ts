@@ -329,7 +329,7 @@ describe('runtime', () => {
   // and Android report it as unsupported in versions OLDER than 1.5.0 and also ensure that Desktop and Android report it as SUPPORTED in versions
   // NEWER than (or equal to) 1.5.0. However, those tests will not validate that iOS reports it as UNSUPPORTED in all versions, since the tests
   // are based on the platforms listed in the map and not on the platforms absent from the map.
-  describe('generateVersionBasedTeamsRuntimeConfig ensure only platforms ', () => {
+  describe('generateVersionBasedTeamsRuntimeConfig ensure only platform support is consistent', () => {
     const mapCapabilityAsStringToPlatformsListedInMap: Map<string, Set<string>> = new Map();
 
     const allAddedCapabilityReqsInAnyVersion: Array<Array<ICapabilityReqs>> = Object.values(
