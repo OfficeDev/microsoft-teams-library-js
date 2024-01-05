@@ -1,7 +1,7 @@
 import { validOriginsCdnEndpoint, validOriginsFallback } from './constants';
 import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
-import { isValidHttpsURL } from './utils';
+import { inServerSideRenderingEnvironment, isValidHttpsURL } from './utils';
 
 let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
@@ -18,25 +18,30 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
   if (isValidOriginsCacheEmpty()) {
     return validOriginsCache;
   }
-  return fetch(validOriginsCdnEndpoint)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Invalid Response from Fetch Call');
-      }
-      return response.json().then((validOriginsCDN) => {
-        if (validateValidOriginsFromCDN(JSON.stringify(validOriginsCDN))) {
-          validOriginsCache = validOriginsCDN.validOrigins;
-          return validOriginsCache;
-        } else {
-          throw new Error('Valid Origins List Is Invalid');
+  if (!inServerSideRenderingEnvironment()) {
+    return fetch(validOriginsCdnEndpoint)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Invalid Response from Fetch Call');
         }
+        return response.json().then((validOriginsCDN) => {
+          if (validateValidOriginsFromCDN(JSON.stringify(validOriginsCDN))) {
+            validOriginsCache = validOriginsCDN.validOrigins;
+            return validOriginsCache;
+          } else {
+            throw new Error('Valid Origins List Is Invalid');
+          }
+        });
+      })
+      .catch((e) => {
+        validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
+        validOriginsCache = validOriginsFallback;
+        return validOriginsCache;
       });
-    })
-    .catch((e) => {
-      validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
-      validOriginsCache = validOriginsFallback;
-      return validOriginsCache;
-    });
+  } else {
+    validOriginsCache = validOriginsFallback;
+    return validOriginsFallback;
+  }
 }
 
 function validateValidOriginsFromCDN(validOriginsJSON: string): boolean {
