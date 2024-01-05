@@ -13,7 +13,7 @@ import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
-import { validateOrigin } from './validDomains';
+import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
 

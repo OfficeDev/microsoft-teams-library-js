@@ -1,42 +1,58 @@
-import { GlobalVars } from '../internal/globalVars';
-import { validDomainsCdnEndpoint, validOriginsFallback } from './constants';
+import { validOriginsCdnEndpoint, validOriginsFallback } from './constants';
+import { GlobalVars } from './globalVars';
 import { getLogger } from './telemetry';
 import { isValidHttpsURL } from './utils';
 
-let validOrigins: string[] = [];
-export async function prefetchDomainsFromCDN(): Promise<void> {
-  if (fetch) {
-    await fetch(validDomainsCdnEndpoint);
-  }
-}
-
-async function retrieveDomainsFromCDNAndStore(): Promise<string[]> {
-  if (validOrigins.length !== 0) {
-    return validOrigins;
-  }
-  if (fetch) {
-    return fetch(validDomainsCdnEndpoint)
-      .then((response) => {
-        if (!response.ok) {
-          validOrigins = validOriginsFallback;
-          return validOriginsFallback;
-        }
-        return response.json().then((validDomains) => {
-          validOrigins = validDomains.validOrigins;
-          return validOrigins;
-        });
-      })
-      .catch(() => {
-        validOrigins = validOriginsFallback;
-        return validOrigins;
-      });
-  } else {
-    validOrigins = validOriginsFallback;
-    return validOrigins;
-  }
-}
-
+let validOriginsCache: string[] = [];
 const validateOriginLogger = getLogger('validateOrigin');
+
+export async function prefetchOriginsFromCDN(): Promise<void> {
+  await getValidOriginsListFromCDN();
+}
+
+function isValidOriginsCacheEmpty(): boolean {
+  return validOriginsCache.length !== 0;
+}
+
+async function getValidOriginsListFromCDN(): Promise<string[]> {
+  if (isValidOriginsCacheEmpty()) {
+    return validOriginsCache;
+  }
+  return fetch(validOriginsCdnEndpoint)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Invalid Response from Fetch Call');
+      }
+      return response.json().then((validOriginsCDN) => {
+        if (validateValidOriginsFromCDN(JSON.stringify(validOriginsCDN))) {
+          validOriginsCache = validOriginsCDN.validOrigins;
+          return validOriginsCache;
+        } else {
+          throw new Error('Valid Origins List Is Invalid');
+        }
+      });
+    })
+    .catch((e) => {
+      validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
+      validOriginsCache = validOriginsFallback;
+      return validOriginsCache;
+    });
+}
+
+function validateValidOriginsFromCDN(validOriginsJSON: string): boolean {
+  const validOriginsCDN = JSON.parse(validOriginsJSON);
+  if (!validOriginsCDN.validOrigins) {
+    return false;
+  }
+  for (let i = 0; i < validOriginsCDN.validOrigins.length; i++) {
+    try {
+      new URL('https://' + validOriginsCDN.validOrigins[i]);
+    } catch (_) {
+      return false;
+    }
+  }
+  return true;
+}
 
 /**
  * @param pattern - reference pattern
@@ -71,7 +87,7 @@ function validateHostAgainstPattern(pattern: string, host: string): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateOrigin(messageOrigin: URL): Promise<boolean> {
-  return retrieveDomainsFromCDNAndStore().then((validDomains) => {
+  return getValidOriginsListFromCDN().then((validOriginsList) => {
     // Check whether the url is in the pre-known allowlist or supplied by user
     if (!isValidHttpsURL(messageOrigin)) {
       validateOriginLogger(
@@ -82,7 +98,7 @@ export function validateOrigin(messageOrigin: URL): Promise<boolean> {
       return false;
     }
     const messageOriginHost = messageOrigin.host;
-    if (validDomains.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
+    if (validOriginsList.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
       return true;
     }
 
@@ -96,7 +112,7 @@ export function validateOrigin(messageOrigin: URL): Promise<boolean> {
     validateOriginLogger(
       'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
       messageOrigin,
-      validDomains,
+      validOriginsList,
       GlobalVars.additionalValidOrigins,
     );
     return false;
