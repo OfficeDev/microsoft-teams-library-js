@@ -169,8 +169,9 @@ extends:
               os: linux
             steps:
               - checkout: self
-              - script: git checkout release/2.18.0
-                displayName: 'Switch to N-1 Version of Teams-Js library'
+                path: release/2.18.0
+              # - script: git checkout release/2.18.0
+              #   displayName: 'Switch to N-1 Version of Teams-Js library'
 
               - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
