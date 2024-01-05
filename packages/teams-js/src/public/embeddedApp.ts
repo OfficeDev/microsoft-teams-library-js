@@ -1,5 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { app } from './app';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
@@ -21,10 +22,38 @@ export namespace embeddedApp {
    * @param embeddedAppId The app id of an application that is being embedded in your app.
    * Your app owns the iframe that is hosting the embedded app and must call this function
    * and wait for the promise to resolve before
+   * @param embeddedAppId The app id of an application that is being embedded in your app.
+   * Your app owns the iframe that is hosting the embedded app and must call this function
+   * and wait for the promise to resolve before
+   * @param notifyAppLoadedHandler This optional handler will be called if the embedded app wants to hide the loading experience
+   * and continue lazy loading.
+   * @param notifySuccessHandler This optional handler will be called if the embedded app has finished its entire load successfully.
+   * Things like logging and cleanup can happen here.
+   * @param notifyFailureHandler This optional handler will be called if the app failed to load succcessfully. If this happens and
+   * no handler was passed in, {@link embeddedApp.stop} will be called
+   *
    * @returns a Promise that resolves when the host has done what it needs to to respond to teamsjs messages successfully
    */
-  export function start(embeddedAppId: string, embeddedAppOrigin: string): Promise<void> {
+  export function start(
+    embeddedAppId: string,
+    embeddedAppOrigin: string,
+    notifyAppLoadedHandler?: () => void,
+    notifySuccessHandler?: () => void,
+    notifyFailureHandler?: (details: app.FailedReason | app.ExpectedFailureReason) => void,
+  ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content); // which frame contexts do we allow this from?
+
+    if (notifyAppLoadedHandler) {
+      notifyAppLoadedHandler();
+    }
+    if (notifySuccessHandler) {
+      notifySuccessHandler();
+    }
+    if (notifyFailureHandler) {
+      notifyFailureHandler(app.FailedReason.Timeout);
+    } else {
+      // we call embeddedApp.stop() if no handler is passed in
+    }
 
     return sendAndHandleSdkError('embeddedApp.start', {
       embeddedAppId: embeddedAppId,
@@ -33,11 +62,47 @@ export namespace embeddedApp {
   }
 
   /**
-   * This function tells the host that you are about to close the embedded app
+   * This function tells the host that you are about to close the embedded app. It also gives the embedded app
+   * an opportunity to suspend. May want to allow host to pass in a timeout for this
    */
-  export function stop(): Promise<void> {
+  export async function stop(): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content); // which frame contexts do we allow this from?
 
-    return sendAndHandleSdkError('embeddedApp.stop');
+    return new Promise((resolve, reject) => {
+      suspend()
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+      sendAndHandleSdkError('embeddedApp.stop');
+    });
+  }
+
+  /**
+   * Used to tell the child app that it should prepare to be suspended
+   * This can be received and handled by the embedded app in {@link app.lifecycle.registerBeforeSuspendOrTerminateHandler}
+   */
+  export function suspend(timeoutInMs?: number): Promise<void> {
+    console.log(`We should wait for ${timeoutInMs}ms and then finish the promise. Pick a reasonable default`);
+    return sendAndHandleSdkError('beforeUnload'); // this should be sent to the child
+  }
+
+  /**
+   * Used to tell the child app that it should resume execution
+   * This can be received and handled by the embedded app in {@link app.lifecycle.registerOnResumeHandler}
+   */
+  export function resume(): Promise<void> {
+    return sendAndHandleSdkError('load'); // this should be sent to the child
+  }
+
+  /**
+   * Used to tell the child app it has focus now
+   * @param navigateForward True if focus should start at the 'front' or 'top' of the embedded app, else false
+   * @returns void
+   */
+  export function giveFocus(navigateForward?: boolean): Promise<void> {
+    return sendAndHandleSdkError('focusEnter', [navigateForward]); // This should be sent to the child
   }
 }
