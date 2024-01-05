@@ -25,7 +25,7 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
           throw new Error('Invalid Response from Fetch Call');
         }
         return response.json().then((validOriginsCDN) => {
-          if (isValidOriginsFromCDN(JSON.stringify(validOriginsCDN))) {
+          if (isValidOriginsJSONValid(JSON.stringify(validOriginsCDN))) {
             validOriginsCache = validOriginsCDN.validOrigins;
             return validOriginsCache;
           } else {
@@ -44,24 +44,25 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
   }
 }
 
-function isValidOriginsFromCDN(validOriginsJSON: string): boolean {
+function isValidOriginsJSONValid(validOriginsJSON: string): boolean {
+  let validOriginsCDN = JSON.parse(validOriginsJSON);
   try {
-    const validOriginsCDN = JSON.parse(validOriginsJSON);
-    if (!validOriginsCDN.validOrigins) {
-      return false;
-    }
-    for (const validOrigin of validOriginsCDN.validOrigins) {
-      try {
-        new URL('https://' + validOrigin);
-      } catch (_) {
-        validateOriginLogger('isValidOriginsFromCDN call failed to validate origin: %s', validOrigin);
-        return false;
-      }
-    }
-    return true;
+    validOriginsCDN = JSON.parse(validOriginsJSON);
   } catch (_) {
     return false;
   }
+  if (!validOriginsCDN.validOrigins) {
+    return false;
+  }
+  for (const validOrigin of validOriginsCDN.validOrigins) {
+    try {
+      new URL('https://' + validOrigin);
+    } catch (_) {
+      validateOriginLogger('isValidOriginsFromCDN call failed to validate origin: %s', validOrigin);
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
