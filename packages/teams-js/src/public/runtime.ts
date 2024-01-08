@@ -437,7 +437,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
   '2.0.8': [
