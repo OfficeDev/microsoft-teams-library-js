@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Add ApiVersionTags to , , ,  and  capabilities",
+  "comment": "Add ApiVersionTags to `Conversations`, `Files`, `Logs`, `MeetingRoom`, `Notifications` capabilities",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
