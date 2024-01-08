@@ -62,8 +62,9 @@ export namespace embeddedApp {
   }
 
   /**
-   * This function tells the host that you are about to close the embedded app. It also gives the embedded app
-   * an opportunity to suspend. We may want to allow the caller to pass in an optional timeout for this
+   * This function tells the host that you are about to close the embedded app. It also gives
+   * the embedded app an opportunity to suspend. We may want to allow the caller to pass in
+   * an optional timeout for this.
    * @returns a Promise that resolves when the embedded app has been given enough time to handle the stop event.
    */
   export async function stop(): Promise<void> {
@@ -83,8 +84,11 @@ export namespace embeddedApp {
 
   /**
    * Used to tell the child app that it should prepare to be suspended
-   * This can be received and handled by the embedded app in {@link app.lifecycle.registerBeforeSuspendOrTerminateHandler}
-   * @returns A Promise that resolves when the embedded app has been given enough time to handle the suspend event.
+   * This can be received and handled by the embedded app in
+   * {@link app.lifecycle.registerBeforeSuspendOrTerminateHandler}
+   *
+   * @returns A Promise that resolves when the embedded app has been given enough time to
+   * handle the suspend event.
    */
   export function suspend(timeoutInMs?: number): Promise<void> {
     console.log(`We should wait for ${timeoutInMs}ms and then finish the promise. Pick a reasonable default`);
@@ -93,7 +97,8 @@ export namespace embeddedApp {
 
   /**
    * Used to tell the child app that it should resume execution
-   * This can be received and handled by the embedded app in {@link app.lifecycle.registerOnResumeHandler}
+   * This can be received and handled by the embedded app in
+   * {@link app.lifecycle.registerOnResumeHandler}
    */
   export function resume(): void {
     sendAndHandleSdkError('load'); // this should be sent to the child
@@ -101,7 +106,8 @@ export namespace embeddedApp {
 
   /**
    * Used to tell the child app it has focus now
-   * @param navigateForward True if focus should start at the 'front' or 'top' of the embedded app, else false
+   * @param navigateForward True if focus should start at the 'front' or 'top' of the
+   * embedded app, else false
    */
   export function giveFocus(navigateForward?: boolean): void {
     sendAndHandleSdkError('focusEnter', [navigateForward]); // This should be sent to the child
