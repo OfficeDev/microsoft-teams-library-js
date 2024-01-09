@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Updated documentation links to correct urls in `teamsAPIs`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "none"
+}
