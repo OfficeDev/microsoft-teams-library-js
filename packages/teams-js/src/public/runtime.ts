@@ -440,6 +440,12 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
       hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
+  '2.0.8': [
+    {
+      capability: { sharing: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
+    },
+  ],
 };
 
 const generateBackCompatRuntimeConfigLogger = runtimeLogger.extend('generateBackCompatRuntimeConfig');
