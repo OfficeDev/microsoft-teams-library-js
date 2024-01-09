@@ -136,7 +136,7 @@ export const validOriginsFallback = validOriginsLocal.validOrigins;
  * Limited to Microsoft-internal use
  */
 export const validOriginsCdnEndpoint = new URL(
-  'https://res-sdf.cdn.office.net/teams-js/validDomains/json/validDomains.json',
+  'https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json',
 );
 
 /**
