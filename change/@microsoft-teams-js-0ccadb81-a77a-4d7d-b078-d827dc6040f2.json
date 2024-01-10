@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Revert \"Extend RequestAppAudioHandling to support for audio device selection sync (#2030)\"",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
