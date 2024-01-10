@@ -11,9 +11,7 @@ Wed, 10 Jan 2024 19:55:18 GMT
 ### Minor changes
 
 - Changed target TypeScript platform to ES2015 (aka ES6) from ES5
-- Revert "Extend RequestAppAudioHandling to support for audio device selection sync (#2030)"
 - Removed `cardActionsConfig` property from `externalAppCardActions.processActionSubmit` API
-- Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates
 - Added `externalAppAuthentication` and `externalAppCardActions` 1P internal-only capabilities
 - Added `size` property to internal `FilePreviewParameters` interface
 - Added timeout notifications (2 seconds) to video frame processing in `videoEffectsEx` capability
@@ -22,7 +20,7 @@ Wed, 10 Jan 2024 19:55:18 GMT
 - Added a new optional parameter, `shareOptions` to `meeting.shareAppContentToStage`. Apps can choose between collaborative and screen sharing for the protocol used when sharing an app to stage.
 - Added support for drag and dropping files from third party storage providers using the `thirdPartyCloudStorage` capability
 - Marked `composeExtension` property on `IQueryMessageExtensionResponse` as optional and added additional input validation on `externalAppAuthentication` and `externalAppCardActions` APIs
-- Made composeExtension a required field on IQueryMessageExtensionResponse
+- Made `composeExtension` a required field on `IQueryMessageExtensionResponse`
 
 ### Patches
 
