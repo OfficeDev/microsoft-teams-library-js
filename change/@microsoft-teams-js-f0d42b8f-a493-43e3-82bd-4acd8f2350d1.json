@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "add apiVersionTag for telemetry in private APIs and remoteCamera, teams, videoEffectsEx capabilities",
+  "comment": "Added apiVersionTag for telemetry in `privateAPIs` and `remoteCamera`, `teams`, `videoEffectsEx` capabilities",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
