@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added new feature to acquire list of valid origins from a CDN endpoint",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
