@@ -193,6 +193,7 @@ export namespace thirdPartyCloudStorage {
             const assemble: AssembleAttachment | null = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
             if (assemble) {
               helper.assembleAttachment.push(assemble);
+              helper.fileType = fileResult.fileType;
             } else {
               Files3PLogger(
                 `Received a null assemble attachment for when decoding chunk sequence ${fileResult.fileChunk.chunkSequence}; not including the chunk in the assembled file.`,
