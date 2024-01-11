@@ -517,7 +517,7 @@ export namespace app {
     /**
      * PUID of the current user.
      */
-    id: string;
+    puid?: string;
 
     /**
      * The address book name of the current user.
