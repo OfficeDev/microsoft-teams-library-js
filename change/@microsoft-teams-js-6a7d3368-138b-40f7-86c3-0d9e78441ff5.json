@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Minor change in helper values",
+  "packageName": "@microsoft/teams-js",
+  "email": "mahimashuklaMSFT@gmail.com",
+  "dependentChangeType": "patch"
+}
