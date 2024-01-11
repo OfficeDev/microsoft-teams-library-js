@@ -515,6 +515,11 @@ export namespace app {
     id: string;
 
     /**
+     * PUID of the current user.
+     */
+    id: string;
+
+    /**
      * The address book name of the current user.
      */
     displayName?: string;
