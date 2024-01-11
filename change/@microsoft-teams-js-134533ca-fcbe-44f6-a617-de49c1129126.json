@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added support for `sharing` capability in default runtime for Teams mobile platform",
-  "packageName": "@microsoft/teams-js",
-  "email": "magli@microsoft.com",
-  "dependentChangeType": "patch"
-}

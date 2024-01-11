@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated runtime capabilities for webStorage to avoid duplicate entry",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
