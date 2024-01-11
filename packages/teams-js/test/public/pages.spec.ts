@@ -106,7 +106,7 @@ describe('Testing pages module', () => {
             return true;
           });
 
-          utils.sendMessage('focusEnter');
+          await utils.sendMessage('focusEnter');
           expect(handlerInvoked).toBe(true);
         });
 
@@ -119,7 +119,7 @@ describe('Testing pages module', () => {
             return false;
           });
 
-          utils.sendMessage('focusEnter');
+          await utils.sendMessage('focusEnter');
           expect(handlerInvoked).toBe(false);
         });
       });
@@ -247,7 +247,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('settings.getSettings');
             validateRequestWithoutArguments(message, 'settings.getSettings');
 
-            utils.respondToMessage(message!, expectedSettings);
+            await utils.respondToMessage(message!, expectedSettings);
             return expect(promise).resolves.toBe(expectedSettings);
           });
         } else {
@@ -295,7 +295,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false);
+            await utils.respondToMessage(navigateCrossDomainMessage!, false);
 
             await expect(promise).rejects.toThrow(
               'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
@@ -308,7 +308,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+            await utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
 
             await expect(promise).rejects.toThrow('Url is invalid');
           });
@@ -319,7 +319,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+            await utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
 
             await expect(promise).rejects.toThrow('Url is invalid');
           });
@@ -330,7 +330,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+            await utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
 
             await expect(promise).rejects.toThrow('Url is invalid');
           });
@@ -341,7 +341,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+            await utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
 
             await expect(promise).rejects.toThrow('Url is invalid');
           });
@@ -352,7 +352,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
+            await utils.respondToMessage(navigateCrossDomainMessage!, false, 'Url is invalid');
 
             await expect(promise).rejects.toThrow('Url is invalid');
           });
@@ -365,7 +365,7 @@ describe('Testing pages module', () => {
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             validateRequestWithoutArguments(navigateCrossDomainMessage, 'navigateCrossDomain');
 
-            utils.respondToMessage(navigateCrossDomainMessage!, true);
+            await utils.respondToMessage(navigateCrossDomainMessage!, true);
 
             await expect(promise).resolves.not.toThrow();
           });
@@ -410,7 +410,7 @@ describe('Testing pages module', () => {
           'https://invalid.origin.com',
         );
 
-        utils.respondToMessage(navigateCrossDomainMessage!, false);
+        await utils.respondToMessage(navigateCrossDomainMessage!, false);
 
         await expect(promise).rejects.toThrowError(
           'Cross-origin navigation is only supported for URLs matching the pattern registered in the manifest.',
@@ -460,7 +460,7 @@ describe('Testing pages module', () => {
             const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
             validateRequestWithoutArguments(navigateToAppMessage, 'pages.navigateToApp');
 
-            utils.respondToMessage(navigateToAppMessage!, true);
+            await utils.respondToMessage(navigateToAppMessage!, true);
 
             await expect(promise).resolves.toBe(undefined);
           });
@@ -479,7 +479,7 @@ describe('Testing pages module', () => {
               navigateToAppParams,
             );
 
-            utils.respondToMessage(navigateToAppMessage!, true);
+            await utils.respondToMessage(navigateToAppMessage!, true);
             await promise;
           });
 
@@ -503,7 +503,7 @@ describe('Testing pages module', () => {
               'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
             );
 
-            utils.respondToMessage(executeDeepLinkMessage!, true);
+            await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
           });
         } else {
@@ -558,7 +558,7 @@ describe('Testing pages module', () => {
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
             validateRequestWithoutArguments(navigateToMessage, 'pages.currentApp.navigateTo');
 
-            utils.respondToMessage(navigateToMessage!);
+            await utils.respondToMessage(navigateToMessage!);
 
             await expect(promise).resolves.toBe(undefined);
           });
@@ -577,7 +577,7 @@ describe('Testing pages module', () => {
               NavigateToParams,
             );
 
-            utils.respondToMessage(navigateToMessage!);
+            await utils.respondToMessage(navigateToMessage!);
             await promise;
           });
         } else {
@@ -627,7 +627,7 @@ describe('Testing pages module', () => {
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
             validateRequestWithoutArguments(navigateToDefaultPageMessage, 'pages.currentApp.navigateToDefaultPage');
 
-            utils.respondToMessage(navigateToDefaultPageMessage!);
+            await utils.respondToMessage(navigateToDefaultPageMessage!);
 
             await expect(promise).resolves.toBe(undefined);
           });
@@ -641,7 +641,7 @@ describe('Testing pages module', () => {
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
             validateRequestWithoutArguments(navigateToDefaultPageMessage, 'pages.currentApp.navigateToDefaultPage');
 
-            utils.respondToMessage(navigateToDefaultPageMessage!);
+            await utils.respondToMessage(navigateToDefaultPageMessage!);
             expect(await promise).toBeUndefined();
           });
         } else {
@@ -758,7 +758,7 @@ describe('Testing pages module', () => {
             return true;
           });
 
-          utils.sendMessage('fullScreenChange');
+          await utils.sendMessage('fullScreenChange');
           expect(handlerInvoked).toBe(true);
         });
 
@@ -771,7 +771,7 @@ describe('Testing pages module', () => {
             return false;
           });
 
-          utils.sendMessage('fullScreenChange');
+          await utils.sendMessage('fullScreenChange');
           expect(handlerInvoked).toBe(false);
         });
       });
@@ -845,7 +845,7 @@ describe('Testing pages module', () => {
             const navigateToTabMsg = utils.findMessageByFunc('navigateToTab');
             validateRequestWithoutArguments(navigateToTabMsg, 'navigateToTab');
 
-            utils.respondToMessage(navigateToTabMsg!, false);
+            await utils.respondToMessage(navigateToTabMsg!, false);
             await promise.catch((e) =>
               expect(e).toMatchObject(new Error('Invalid internalTabInstanceId and/or channelId were/was provided')),
             );
@@ -890,7 +890,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
 
-            utils.respondToMessage(message!, expectedTabInstanceParameters);
+            await utils.respondToMessage(message!, expectedTabInstanceParameters);
             expect(promise).resolves.toBe(expectedTabInstanceParameters);
           });
 
@@ -901,7 +901,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
 
-            utils.respondToMessage(message!);
+            await utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
           });
 
@@ -912,7 +912,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getTabInstances');
             validateRequestWithoutArguments(message, 'getTabInstances');
 
-            utils.respondToMessage(message!);
+            await utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
           });
         });
@@ -948,7 +948,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
 
-            utils.respondToMessage(message!, expectedTabInstanceParameters);
+            await utils.respondToMessage(message!, expectedTabInstanceParameters);
             expect(promise).resolves.toBe(expectedTabInstanceParameters);
           });
 
@@ -959,7 +959,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
 
-            utils.respondToMessage(message!);
+            await utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
           });
 
@@ -970,7 +970,7 @@ describe('Testing pages module', () => {
             const message = utils.findMessageByFunc('getMruTabInstances');
             validateRequestWithoutArguments(message, 'getMruTabInstances');
 
-            utils.respondToMessage(message!);
+            await utils.respondToMessage(message!);
             expect(promise).resolves.toBeUndefined();
           });
         });
@@ -1180,7 +1180,7 @@ describe('Testing pages module', () => {
               pages.config.registerOnSaveHandler(() => {
                 handlerCalled = true;
               });
-              utils.sendMessage('settings.save');
+              await utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
             });
 
@@ -1191,7 +1191,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
-              utils.sendMessage('settings.save', [
+              await utils.sendMessage('settings.save', [
                 {
                   webhookUrl: 'someWebhookUrl',
                 },
@@ -1211,7 +1211,7 @@ describe('Testing pages module', () => {
                 handler2Called = true;
               });
 
-              utils.sendMessage('settings.save');
+              await utils.sendMessage('settings.save');
 
               expect(handler1Called).toBe(false);
               expect(handler2Called).toBe(true);
@@ -1224,7 +1224,7 @@ describe('Testing pages module', () => {
                 saveEvent.notifySuccess();
                 handlerCalled = true;
               });
-              utils.sendMessage('settings.save');
+              await utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.success');
               validateRequestWithoutArguments(message, 'settings.save.success');
@@ -1237,7 +1237,7 @@ describe('Testing pages module', () => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
-              utils.sendMessage('settings.save');
+              await utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.failure');
               validateExpectedArgumentsInRequest(message, 'settings.save.failure', MatcherType.ToBe, 'someReason');
@@ -1256,7 +1256,7 @@ describe('Testing pages module', () => {
                 );
                 handlerCalled = true;
               });
-              utils.sendMessage('settings.save');
+              await utils.sendMessage('settings.save');
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.save.success');
               validateRequestWithoutArguments(message, 'settings.save.success');
@@ -1265,7 +1265,7 @@ describe('Testing pages module', () => {
             it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
               await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               pages.config.registerOnSaveHandler(undefined);
-              utils.processMessage({
+              await utils.processMessage({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1287,7 +1287,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
               expect(handlerCalled).toBe(false);
-              utils.processMessage({
+              await utils.processMessage({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1357,7 +1357,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.sendMessage('settings.remove');
+              await utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBeTruthy();
             });
@@ -1365,7 +1365,7 @@ describe('Testing pages module', () => {
             it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
               await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
               pages.config.registerOnRemoveHandler(undefined);
-              utils.processMessage({
+              await utils.processMessage({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1386,7 +1386,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
               expect(handlerCalled).toBe(false);
-              utils.processMessage({
+              await utils.processMessage({
                 origin: 'https://outlook.office365.com',
                 source: utils.childWindow,
                 data: {
@@ -1408,7 +1408,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.sendMessage('settings.remove');
+              await utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.remove.success');
@@ -1424,7 +1424,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.sendMessage('settings.remove');
+              await utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBe(true);
               const message = utils.findMessageByFunc('settings.remove.failure');
@@ -1484,7 +1484,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.sendMessage('changeSettings', '');
+              await utils.sendMessage('changeSettings', '');
               expect(handlerCalled).toBeTruthy();
             });
           } else {
@@ -1629,7 +1629,7 @@ describe('Testing pages module', () => {
               return true;
             });
 
-            utils.sendMessage('backButtonPress');
+            await utils.sendMessage('backButtonPress');
 
             const navigateBackMessage = utils.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).toBeNull();
@@ -1645,7 +1645,7 @@ describe('Testing pages module', () => {
               return false;
             });
 
-            utils.sendMessage('backButtonPress');
+            await utils.sendMessage('backButtonPress');
 
             const navigateBackMessage = utils.findMessageByFunc('navigateBack');
             expect(navigateBackMessage).not.toBeNull();
@@ -1846,7 +1846,7 @@ describe('Testing pages module', () => {
               pages.appButton.onClick(() => {
                 handlerCalled = true;
               });
-              utils.sendMessage('appButtonClick', '');
+              await utils.sendMessage('appButtonClick', '');
               expect(handlerCalled).toBeTruthy();
             });
           } else {
@@ -1899,7 +1899,7 @@ describe('Testing pages module', () => {
               pages.appButton.onHoverEnter(() => {
                 handlerCalled = true;
               });
-              utils.sendMessage('appButtonHoverEnter', '');
+              await utils.sendMessage('appButtonHoverEnter', '');
               expect(handlerCalled).toBeTruthy();
             });
           } else {
@@ -1952,7 +1952,7 @@ describe('Testing pages module', () => {
               pages.appButton.onHoverLeave(() => {
                 handlerCalled = true;
               });
-              utils.sendMessage('appButtonHoverLeave', '');
+              await utils.sendMessage('appButtonHoverLeave', '');
               expect(handlerCalled).toBeTruthy();
             });
           } else {
@@ -2089,7 +2089,7 @@ describe('Testing pages module', () => {
             handlerInvoked = true;
             return true;
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'focusEnter',
               args: [true],
@@ -2107,7 +2107,7 @@ describe('Testing pages module', () => {
             return false;
           });
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'focusEnter',
               args: [true],
@@ -2239,7 +2239,7 @@ describe('Testing pages module', () => {
             await utils.initializeWithContext(context);
             const promise = pages.getConfig();
             const message = utils.findMessageByFunc('settings.getSettings');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [expectedSettings],
@@ -2292,7 +2292,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('https://badorigin.com');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [
@@ -2312,7 +2312,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [false, 'Url is invalid'],
@@ -2327,7 +2327,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain(' ');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [false, 'Url is invalid'],
@@ -2342,7 +2342,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('blahblah');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [false, 'Url is invalid'],
@@ -2357,7 +2357,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('https://blahblah');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [false, 'Url is invalid'],
@@ -2372,7 +2372,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('blah://valid.origin.com');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: [false, 'Url is invalid'],
@@ -2389,7 +2389,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateCrossDomain('https://valid.origin.com');
             const navigateCrossDomainMessage = utils.findMessageByFunc('navigateCrossDomain');
             expect(navigateCrossDomainMessage).not.toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateCrossDomainMessage.id,
                 args: ['https://valid.origin.com'],
@@ -2435,7 +2435,7 @@ describe('Testing pages module', () => {
         expect(navigateCrossDomainMessage.args[0]).toBe('https://invalid.origin.com');
 
         expect(navigateCrossDomainMessage).not.toBeNull();
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: navigateCrossDomainMessage.id,
             args: [false],
@@ -2487,7 +2487,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: navigateToAppMessage.id, args: [true] },
             } as DOMMessageEvent);
 
@@ -2500,7 +2500,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const navigateToAppMessage = utils.findMessageByFunc('pages.navigateToApp');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateToAppMessage.id,
                 args: [navigateToAppParams],
@@ -2518,7 +2518,7 @@ describe('Testing pages module', () => {
             const promise = pages.navigateToApp(navigateToAppParams);
 
             const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: executeDeepLinkMessage.id, args: [true] },
             } as DOMMessageEvent);
             await promise;
@@ -2595,7 +2595,7 @@ describe('Testing pages module', () => {
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
             const promise = pages.currentApp.navigateTo(NavigateToParams);
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateToMessage.id,
                 args: [],
@@ -2610,7 +2610,7 @@ describe('Testing pages module', () => {
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { currentApp: {} } } });
             const promise = pages.currentApp.navigateTo(NavigateToParams);
             const navigateToMessage = utils.findMessageByFunc('pages.currentApp.navigateTo');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateToMessage.id,
                 args: [],
@@ -2665,7 +2665,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateToDefaultPageMessage.id,
                 args: [],
@@ -2682,7 +2682,7 @@ describe('Testing pages module', () => {
             const promise = pages.currentApp.navigateToDefaultPage();
 
             const navigateToDefaultPageMessage = utils.findMessageByFunc('pages.currentApp.navigateToDefaultPage');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: navigateToDefaultPageMessage.id,
                 args: [],
@@ -2793,7 +2793,7 @@ describe('Testing pages module', () => {
             return true;
           });
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: { func: 'fullScreenChange', args: [undefined] },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBe(true);
@@ -2808,7 +2808,7 @@ describe('Testing pages module', () => {
             return false;
           });
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: { func: 'fullScreenChange', args: [undefined] },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBe(false);
@@ -2898,7 +2898,7 @@ describe('Testing pages module', () => {
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -2911,7 +2911,7 @@ describe('Testing pages module', () => {
             const promise = pages.tabs.getTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getTabInstances');
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -2924,7 +2924,7 @@ describe('Testing pages module', () => {
             const promise = pages.tabs.getTabInstances();
             const message = utils.findMessageByFunc('getTabInstances');
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [undefined] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -2961,7 +2961,7 @@ describe('Testing pages module', () => {
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { tabs: {} } } });
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -2974,7 +2974,7 @@ describe('Testing pages module', () => {
             const promise = pages.tabs.getMruTabInstances(expectedTabInstanceParameters);
             const message = utils.findMessageByFunc('getMruTabInstances');
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [expectedTabInstanceParameters] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -2987,7 +2987,7 @@ describe('Testing pages module', () => {
             const promise = pages.tabs.getMruTabInstances();
             const message = utils.findMessageByFunc('getMruTabInstances');
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { id: message.id, args: [undefined] },
             } as DOMMessageEvent);
             expect(message).not.toBeNull();
@@ -3183,7 +3183,7 @@ describe('Testing pages module', () => {
               pages.config.registerOnSaveHandler(() => {
                 handlerCalled = true;
               });
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.save', args: [undefined] },
               } as DOMMessageEvent);
               expect(handlerCalled).toBe(true);
@@ -3196,7 +3196,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
                 expect(saveEvent.result['webhookUrl']).not.toBeNull();
               });
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   func: 'settings.save',
                   args: [{ webhookUrl: 'someWebhookUrl' }],
@@ -3217,7 +3217,7 @@ describe('Testing pages module', () => {
                 handler2Called = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.save', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3233,7 +3233,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.save', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3250,7 +3250,7 @@ describe('Testing pages module', () => {
                 saveEvent.notifyFailure('someReason');
                 handlerCalled = true;
               });
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.save', args: ['someReason'] },
               } as DOMMessageEvent);
 
@@ -3275,7 +3275,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.save', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3338,7 +3338,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.remove', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3354,7 +3354,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.remove', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3373,7 +3373,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'settings.remove', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3437,7 +3437,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'changeSettings', args: [undefined] },
               } as DOMMessageEvent);
               expect(handlerCalled).toBeTruthy();
@@ -3554,7 +3554,7 @@ describe('Testing pages module', () => {
               return true;
             });
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
@@ -3572,7 +3572,7 @@ describe('Testing pages module', () => {
               return false;
             });
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: { func: 'backButtonPress', args: [undefined] },
             } as DOMMessageEvent);
 
@@ -3721,7 +3721,7 @@ describe('Testing pages module', () => {
               pages.appButton.onClick(() => {
                 handlerCalled = true;
               });
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'appButtonClick', args: [undefined] },
               } as DOMMessageEvent);
               expect(handlerCalled).toBeTruthy();
@@ -3777,7 +3777,7 @@ describe('Testing pages module', () => {
                 handlerCalled = true;
               });
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'appButtonHoverEnter', args: [undefined] },
               } as DOMMessageEvent);
 
@@ -3833,7 +3833,7 @@ describe('Testing pages module', () => {
               pages.appButton.onHoverLeave(() => {
                 handlerCalled = true;
               });
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: { func: 'appButtonHoverLeave', args: [undefined] },
               } as DOMMessageEvent);
 
