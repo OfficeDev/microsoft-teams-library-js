@@ -164,7 +164,7 @@ describe('Testing TeamsCore Capability', () => {
             return false;
           });
 
-          utils.sendMessage('load');
+          await utils.sendMessage('load');
 
           expect(handlerInvoked).toBe(true);
         });
@@ -203,7 +203,7 @@ describe('Testing TeamsCore Capability', () => {
             return false;
           });
 
-          utils.sendMessage('beforeUnload');
+          await utils.sendMessage('beforeUnload');
 
           expect(handlerInvoked).toBe(true);
         });
@@ -211,7 +211,7 @@ describe('Testing TeamsCore Capability', () => {
         it(`teamsCore.registerBeforeUnloadHandler should call readyToUnload automatically when no before unload handler is registered. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
 
-          utils.sendMessage('beforeUnload');
+          await utils.sendMessage('beforeUnload');
 
           const readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
           expect(readyToUnloadMessage).not.toBeNull();
@@ -228,7 +228,7 @@ describe('Testing TeamsCore Capability', () => {
             return true;
           });
 
-          utils.sendMessage('beforeUnload');
+          await utils.sendMessage('beforeUnload');
 
           let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
           expect(readyToUnloadMessage).toBeNull();

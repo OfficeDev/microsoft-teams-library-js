@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Made composeExtension a required field on IQueryMessageExtensionResponse",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}
