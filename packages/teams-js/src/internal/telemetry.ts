@@ -1,3 +1,5 @@
+/*eslint sort-keys: ["error", "asc", {caseSensitive: false, minKeys:2 }]*/
+
 import { debug as registerLogger, Debugger } from 'debug';
 
 const topLevelLogger = registerLogger('teamsJs');
@@ -68,10 +70,10 @@ export enum ApiName {
   Calendar_ComposeMeeting = 'calendar.composeMeeting',
   Calendar_OpenCalendarItem = 'calendar.openCalendarItem',
   Call_StartCall = 'call.startCall',
-  Clipboard_Read = 'clipboard.read',
-  Clipboard_Write = 'clipboard.write',
   Chat_OpenChat = 'chat.openChat',
   Chat_OpenGroupChat = 'chat.openGroupChat',
+  Clipboard_Read = 'clipboard.read',
+  Clipboard_Write = 'clipboard.write',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
   Dialog_Update_Resize = 'dialog.update.resize',
@@ -125,18 +127,18 @@ export enum ApiName {
   Meeting_RequestAppAudioHandling = 'meeting.requestAppAudioHandling',
   Meeting_RequestStartLiveStreaming = 'meeting.requestStartLiveStreaming',
   Meeting_RequestStopLiveStreaming = 'meeting.requestStopLiveStreaming',
+  Meeting_SetMicStateWithReason = 'meeting.setMicStateWithReason',
   Meeting_ShareAppContentToStage = 'meeting.shareAppContentToStage',
   Meeting_StopSharingAppContentToStage = 'meeting.stopSharingAppContentToStage',
   Meeting_ToggleIncomingClientAudio = 'meeting.toggleIncomingClientAudio',
-  Meeting_SetMicStateWithReason = 'meeting.setMicStateWithReason',
   Menus_HandleActionMenuItemPress = 'menus.handleActionMenuItemPress',
   Menus_HandleNavBarMenuItemPress = 'menus.handleNavBarMenuItemPress',
   Menus_HandleViewConfigItemPress = 'menus.handleViewConfigItemPress',
   Menus_RegisterActionMenuItemPressHandler = 'menus.registerActionMenuItemPressHandler',
   Menus_RegisterNavBarMenuItemPressHandler = 'menus.registerNavBarMenuItemPressHandler',
   Menus_RegisterSetModuleViewHandler = 'menus.registerSetModuleViewHandler',
-  Menus_SetUpViews = 'menus.setUpViews',
   Menus_SetNavBarMenu = 'menus.setNavBarMenu',
+  Menus_SetUpViews = 'menus.setUpViews',
   Menus_ShowActionMenu = 'menus.showActionMenu',
   Monetization_OpenPurchaseExperience = 'monetization.openPurchaseExperience',
   Navigation_NavigateBack = 'navigation.navigateBack',
