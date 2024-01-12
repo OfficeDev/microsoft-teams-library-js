@@ -44,6 +44,8 @@ describe('thirdPartyCloudStorage', () => {
 
   beforeEach(() => {
     jest.restoreAllMocks();
+    global.fetch = jest.fn(() => Promise.resolve({ status: 200, ok: true } as Response));
+
     jest.mock('../../src/internal/mediaUtil', () => ({
       decodeAttachment: mockDecodeAttachment,
     }));

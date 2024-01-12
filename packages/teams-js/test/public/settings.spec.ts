@@ -33,7 +33,7 @@ describe('settings', () => {
 
   it('should successfully notify success on save when there is no registered handler', async () => {
     await utils.initializeWithContext(FrameContexts.settings);
-    utils.sendMessage('settings.save');
+    await utils.sendMessage('settings.save');
 
     const message = utils.findMessageByFunc('settings.save.success');
     expect(message).not.toBeNull();
@@ -118,7 +118,7 @@ describe('settings', () => {
           const message = utils.findMessageByFunc('settings.getSettings');
           expect(message).not.toBeNull();
 
-          utils.respondToMessage(message, expectedSettings);
+          await utils.respondToMessage(message, expectedSettings);
         });
       }
     });
@@ -211,7 +211,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handlerCalled).toBe(true);
     });
@@ -233,7 +233,7 @@ describe('settings', () => {
         expect(saveEvent.result['webhookUrl']).not.toBeNull();
       });
 
-      utils.sendMessage('settings.save', [
+      await utils.sendMessage('settings.save', [
         {
           webhookUrl: 'someWebhookUrl',
         },
@@ -254,7 +254,7 @@ describe('settings', () => {
         handler2Called = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handler1Called).toBe(false);
       expect(handler2Called).toBe(true);
@@ -269,7 +269,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.save.success');
@@ -286,7 +286,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.save.failure');
@@ -306,7 +306,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.save.success');
@@ -325,7 +325,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.save');
+      await utils.sendMessage('settings.save');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.save.failure');
@@ -353,7 +353,7 @@ describe('settings', () => {
     it('settings.registerOnRemoveHandler should successfully notify success on remove when there is no registered handler', async () => {
       await utils.initializeWithContext(FrameContexts.remove);
 
-      utils.sendMessage('settings.remove');
+      await utils.sendMessage('settings.remove');
 
       const message = utils.findMessageByFunc('settings.remove.success');
       expect(message).not.toBeNull();
@@ -377,7 +377,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.remove');
+      await utils.sendMessage('settings.remove');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.remove.success');
@@ -394,7 +394,7 @@ describe('settings', () => {
         handlerCalled = true;
       });
 
-      utils.sendMessage('settings.remove');
+      await utils.sendMessage('settings.remove');
 
       expect(handlerCalled).toBe(true);
       const message = utils.findMessageByFunc('settings.remove.failure');

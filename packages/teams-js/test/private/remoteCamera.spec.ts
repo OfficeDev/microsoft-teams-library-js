@@ -102,7 +102,7 @@ describe('remoteCamera', () => {
             error: null,
             participants: capableParticipantsMock,
           };
-          utils.respondToMessage(message, data.error, data.participants);
+          await utils.respondToMessage(message, data.error, data.participants);
 
           // check data is returned properly
           expect(returnedParticipant).toEqual(capableParticipantsMock);
@@ -130,7 +130,7 @@ describe('remoteCamera', () => {
             error: sdkErrorMock,
             participants: null,
           };
-          utils.respondToMessage(message, data.error, data.participants);
+          await utils.respondToMessage(message, data.error, data.participants);
 
           // check data is returned properly
           expect(returnedParticipant).toBeNull();
@@ -205,7 +205,7 @@ describe('remoteCamera', () => {
             error: null,
             requestResult: true,
           };
-          utils.respondToMessage(message, data.error, data.requestResult);
+          await utils.respondToMessage(message, data.error, data.requestResult);
 
           // check data is returned properly
           expect(returnedRequestResponse).toEqual(true);
@@ -233,7 +233,7 @@ describe('remoteCamera', () => {
             error: sdkErrorMock,
             requestResult: null,
           };
-          utils.respondToMessage(message, data.error, data.requestResult);
+          await utils.respondToMessage(message, data.error, data.requestResult);
 
           // check data is returned properly
           expect(returnedRequestResponse).toBeNull();
@@ -303,7 +303,7 @@ describe('remoteCamera', () => {
           const data = {
             error: null,
           };
-          utils.respondToMessage(message, data.error);
+          await utils.respondToMessage(message, data.error);
 
           // check data is returned properly
           expect(returnedSdkError).toBeNull();
@@ -327,7 +327,7 @@ describe('remoteCamera', () => {
           const data = {
             error: sdkErrorMock,
           };
-          utils.respondToMessage(message, data.error);
+          await utils.respondToMessage(message, data.error);
 
           // check data is returned properly
           expect(returnedSdkError).toEqual(sdkErrorMock);
@@ -387,7 +387,7 @@ describe('remoteCamera', () => {
           const data = {
             error: null,
           };
-          utils.respondToMessage(message, data.error);
+          await utils.respondToMessage(message, data.error);
 
           // check data is returned properly
           expect(returnedSdkError).toBeNull();
@@ -411,7 +411,7 @@ describe('remoteCamera', () => {
           const data = {
             error: sdkErrorMock,
           };
-          utils.respondToMessage(message, data.error);
+          await utils.respondToMessage(message, data.error);
 
           // check data is returned properly
           expect(returnedSdkError).toEqual(sdkErrorMock);
@@ -470,7 +470,7 @@ describe('remoteCamera', () => {
           };
           remoteCamera.registerOnCapableParticipantsChangeHandler(handlerMock);
 
-          utils.sendMessage('remoteCamera.capableParticipantsChange', capableParticipantsMock);
+          await utils.sendMessage('remoteCamera.capableParticipantsChange', capableParticipantsMock);
 
           expect(handlerInvoked).toEqual(true);
           expect(capableParticipants).toEqual(capableParticipantsMock);
@@ -530,7 +530,7 @@ describe('remoteCamera', () => {
           };
           remoteCamera.registerOnErrorHandler(handlerMock);
 
-          utils.sendMessage('remoteCamera.handlerError', errorReasonMock);
+          await utils.sendMessage('remoteCamera.handlerError', errorReasonMock);
 
           expect(handlerInvoked).toEqual(true);
           expect(handlerError).toEqual(errorReasonMock);
@@ -590,7 +590,7 @@ describe('remoteCamera', () => {
           };
           remoteCamera.registerOnDeviceStateChangeHandler(handlerMock);
 
-          utils.sendMessage('remoteCamera.deviceStateChange', deviceStateChangeMock);
+          await utils.sendMessage('remoteCamera.deviceStateChange', deviceStateChangeMock);
 
           expect(handlerInvoked).toEqual(true);
           expect(deviceState).toEqual(deviceStateChangeMock);
@@ -650,7 +650,7 @@ describe('remoteCamera', () => {
           };
           remoteCamera.registerOnSessionStatusChangeHandler(handlerMock);
 
-          utils.sendMessage('remoteCamera.sessionStatusChange', sessionStatusChangeMock);
+          await utils.sendMessage('remoteCamera.sessionStatusChange', sessionStatusChangeMock);
 
           expect(handlerInvoked).toEqual(true);
           expect(sessionStatus).toEqual(sessionStatusChangeMock);
