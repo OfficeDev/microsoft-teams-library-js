@@ -52,7 +52,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.open(urlDialogInfo);
@@ -87,7 +87,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should initiate the post message to dialog. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            dialog.url.sendMessageToDialog('exampleMessage');
+            dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
             const message = utils.findMessageByFunc('messageForChild');
             expect(message).not.toBeUndefined();
             expect(message.args).toStrictEqual(['exampleMessage']);
@@ -202,7 +202,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.update.resize(dimensions);
@@ -213,7 +213,7 @@ describe('Dialog', () => {
 
             it(`FRAMELESS: should throw error when dialog.update is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.update.resize(dimensions);
@@ -245,19 +245,19 @@ describe('Dialog', () => {
       describe('dialog.update.isSupported function', () => {
         it('dialog.update.isSupported should return false if the runtime says dialog is not supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
           expect(dialog.update.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.update.isSupported should return false if the runtime says dialog.update is not supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
           expect(dialog.update.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.update.isSupported should return true if the runtime says dialog and dialog.update is supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { update: {} } } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { update: {} } } });
           expect(dialog.update.isSupported()).toBeTruthy();
         });
 
@@ -276,7 +276,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.submit('someResult', ['someAppId', 'someOtherAppId']);
@@ -339,13 +339,13 @@ describe('Dialog', () => {
     describe('dialog.isSupported function', () => {
       it('dialog.isSupported should return false if the runtime says dialog is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+        utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
         expect(dialog.isSupported()).not.toBeTruthy();
       });
 
       it('dialog.update.isSupported should return true if the runtime says dialog is supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+        utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
         expect(dialog.isSupported()).toBeTruthy();
       });
       it('dialog.update.isSupported should throw before initialization', () => {
@@ -373,7 +373,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.bot.open(botUrlDialogInfo);
@@ -384,7 +384,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should throw error when dialog.url.bot is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
             expect.assertions(1);
             try {
               dialog.url.bot.open(botUrlDialogInfo);
@@ -395,7 +395,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             const botUrlDialogInfo: BotUrlDialogInfo = {
               url: 'someUrl',
               size: { height: DialogDimension.Large, width: DialogDimension.Large },
@@ -413,7 +413,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             dialog.url.bot.open(botUrlDialogInfo, emptyCallback, emptyCallback);
             const handlerMessage = utils.findMessageByFunc('registerHandler');
             expect(handlerMessage).not.toBeNull();
@@ -422,7 +422,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             expect.assertions(2);
             const submitString = 'succesfullySubmit';
             dialog.url.bot.open(botUrlDialogInfo, undefined, emptyCallback);
@@ -440,7 +440,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             utils.initializeWithContext(context).then(() => {
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               const submitString = 'succesfullySubmit';
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
@@ -462,7 +462,7 @@ describe('Dialog', () => {
 
           it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             utils.initializeWithContext(context).then(() => {
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
                 expect(result.result).toBeFalsy();
                 expect(result.err).toBe(error);
@@ -495,25 +495,25 @@ describe('Dialog', () => {
       describe('dialog.url.bot.isSupported function', () => {
         it('dialog.url.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
           expect(dialog.url.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.url.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
           expect(dialog.url.bot.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.url.bot.isSupported should return false if the runtime says dialog and dialog.url is supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: {} } } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: {} } } });
           expect(dialog.url.bot.isSupported()).toBeFalsy();
         });
 
         it('dialog.url.bot.isSupported should return true if the runtime says dialog and dialog.url.bot is supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
           expect(dialog.url.bot.isSupported()).toBeTruthy();
         });
 
@@ -524,89 +524,50 @@ describe('Dialog', () => {
       });
     });
 
-    describe('sendMessageToDialog', () => {
-      const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(errorLibraryNotInitialized);
-      });
+    describe('parentCommunication', () => {
+      describe('sendMessageToDialog', () => {
+        const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.sendMessageToDialog('message')).toThrowError(
+            errorLibraryNotInitialized,
+          );
+        });
 
-      Object.values(FrameContexts).forEach((frameContext) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
-          it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
-            await utils.initializeWithContext(frameContext);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            expect.assertions(1);
-            try {
-              dialog.url.sendMessageToDialog('exampleMessage');
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it(`FRAMELESS: should initiate the post message to Child: ${frameContext}`, async () => {
-            await utils.initializeWithContext(frameContext);
-            dialog.url.sendMessageToDialog('exampleMessage');
-            const message = utils.findMessageByFunc('messageForChild');
-            expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual(['exampleMessage']);
-          });
-        } else {
-          it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
-            await utils.initializeWithContext(frameContext);
-            expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${frameContext}".`,
-            );
-          });
-
-          it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
-            await utils.initializeWithContext(frameContext);
-            expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${frameContext}".`,
-            );
-          });
-        }
-      });
-    });
-
-    describe('sendMessageToParentFromDialog', () => {
-      const allowedContexts = [FrameContexts.task];
-
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(errorLibraryNotInitialized);
-      });
-
-      Object.keys(FrameContexts)
-        .map((k) => FrameContexts[k])
-        .forEach((frameContext) => {
-          if (frameContext === FrameContexts.task) {
+        Object.values(FrameContexts).forEach((frameContext) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
             it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
               await utils.initializeWithContext(frameContext);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
-                dialog.url.sendMessageToParentFromDialog('exampleMessage');
+                dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
               } catch (e) {
                 expect(e).toEqual(errorNotSupportedOnPlatform);
               }
             });
 
-            it(`FRAMELESS: should initiate the post message to Parent: ${frameContext}`, async () => {
+            it(`FRAMELESS: should initiate the post message to Child: ${frameContext}`, async () => {
               await utils.initializeWithContext(frameContext);
-              dialog.url.sendMessageToParentFromDialog('exampleMessage');
-              const message = utils.findMessageByFunc('messageForParent');
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { parentCommunication: {} } } } });
+              dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
+              const message = utils.findMessageByFunc('messageForChild');
               expect(message).not.toBeUndefined();
               expect(message.args).toStrictEqual(['exampleMessage']);
             });
           } else {
+            it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+              await utils.initializeWithContext(frameContext);
+              expect(() => dialog.url.parentCommunication.sendMessageToDialog('message')).toThrowError(
+                `This call is only allowed in following contexts: ${JSON.stringify(
+                  allowedContexts,
+                )}. Current context: "${frameContext}".`,
+              );
+            });
+
             it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
               await utils.initializeWithContext(frameContext);
-              expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(
+              expect(() => dialog.url.parentCommunication.sendMessageToDialog('message')).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
                 )}. Current context: "${frameContext}".`,
@@ -614,48 +575,126 @@ describe('Dialog', () => {
             });
           }
         });
-    });
-    describe('registerOnMessageFromParent', () => {
-      const allowedContexts = [FrameContexts.task];
-
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(errorLibraryNotInitialized);
       });
 
-      Object.keys(FrameContexts)
-        .map((k) => FrameContexts[k])
-        .forEach((frameContext) => {
-          if (frameContext === FrameContexts.task) {
-            it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
-              await utils.initializeWithContext(frameContext);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect.assertions(1);
-              try {
-                dialog.url.registerOnMessageFromParent(emptyCallback);
-              } catch (e) {
-                expect(e).toEqual(errorNotSupportedOnPlatform);
-              }
-            });
+      describe('sendMessageToParentFromDialog', () => {
+        const allowedContexts = [FrameContexts.task];
 
-            it(`FRAMELESS: should initiate the registration call: ${frameContext}`, async () => {
-              await utils.initializeWithContext(frameContext);
-              dialog.url.registerOnMessageFromParent(emptyCallback);
-              const message = utils.findMessageByFunc('registerHandler');
-              expect(message).not.toBeUndefined();
-              expect(message.args).toStrictEqual(['messageForChild']);
-            });
-          } else {
-            it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
-              await utils.initializeWithContext(frameContext);
-              expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(
-                `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts,
-                )}. Current context: "${frameContext}".`,
-              );
-            });
-          }
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.sendMessageToParentFromDialog('message')).toThrowError(
+            errorLibraryNotInitialized,
+          );
         });
+
+        Object.keys(FrameContexts)
+          .map((k) => FrameContexts[k])
+          .forEach((frameContext) => {
+            if (frameContext === FrameContexts.task) {
+              it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
+                expect.assertions(1);
+                try {
+                  dialog.url.parentCommunication.sendMessageToParentFromDialog('exampleMessage');
+                } catch (e) {
+                  expect(e).toEqual(errorNotSupportedOnPlatform);
+                }
+              });
+
+              it(`FRAMELESS: should initiate the post message to Parent: ${frameContext}`, async () => {
+                await utils.initializeWithContext(frameContext);
+                dialog.url.parentCommunication.sendMessageToParentFromDialog('exampleMessage');
+                const message = utils.findMessageByFunc('messageForParent');
+                expect(message).not.toBeUndefined();
+                expect(message.args).toStrictEqual(['exampleMessage']);
+              });
+            } else {
+              it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                expect(() => dialog.url.parentCommunication.sendMessageToParentFromDialog('message')).toThrowError(
+                  `This call is only allowed in following contexts: ${JSON.stringify(
+                    allowedContexts,
+                  )}. Current context: "${frameContext}".`,
+                );
+              });
+            }
+          });
+      });
+      describe('registerOnMessageFromParent', () => {
+        const allowedContexts = [FrameContexts.task];
+
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback)).toThrowError(
+            errorLibraryNotInitialized,
+          );
+        });
+
+        Object.keys(FrameContexts)
+          .map((k) => FrameContexts[k])
+          .forEach((frameContext) => {
+            if (frameContext === FrameContexts.task) {
+              it(`FRAMELESS: should throw error when dialog is not supported in ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
+                expect.assertions(1);
+                try {
+                  dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback);
+                } catch (e) {
+                  expect(e).toEqual(errorNotSupportedOnPlatform);
+                }
+              });
+
+              it(`FRAMELESS: should initiate the registration call: ${frameContext}`, async () => {
+                await utils.initializeWithContext(frameContext);
+                dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback);
+                const message = utils.findMessageByFunc('registerHandler');
+                expect(message).not.toBeUndefined();
+                expect(message.args).toStrictEqual(['messageForChild']);
+              });
+            } else {
+              it(`FRAMELESS: should not allow calls from ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                expect(() => dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback)).toThrowError(
+                  `This call is only allowed in following contexts: ${JSON.stringify(
+                    allowedContexts,
+                  )}. Current context: "${frameContext}".`,
+                );
+              });
+            }
+          });
+      });
+      describe('dialog.url.parentCommunication.isSupported function', () => {
+        it('dialog.url.parentCommunication.isSupported should return false if the runtime says dialog is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
+          expect(dialog.url.parentCommunication.isSupported()).not.toBeTruthy();
+        });
+
+        it('dialog.url.parentCommunication.isSupported should return false if dialog is supported but dialog.url.parentCommunication is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
+          expect(dialog.url.parentCommunication.isSupported()).not.toBeTruthy();
+        });
+
+        it('dialog.url.parentCommunication.isSupported should return false if the runtime says dialog.url is supported but dialog.url.parentCommunication is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: {} } } });
+          expect(dialog.url.parentCommunication.isSupported()).toBeFalsy();
+        });
+
+        it('dialog.url.parentCommunication.isSupported should return true if the runtime says dialog and dialog.url.parentCommunication is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { parentCommunication: {} } } } });
+          expect(dialog.url.parentCommunication.isSupported()).toBeTruthy();
+        });
+
+        it('dialog.url.parentCommunication.isSupported should throw before initialization', () => {
+          utils.uninitializeRuntimeConfig();
+          expect(() => dialog.url.parentCommunication.isSupported()).toThrowError(errorLibraryNotInitialized);
+        });
+      });
     });
 
     describe('Testing dialog.adaptiveCard', () => {
@@ -704,7 +743,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {
             it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -715,7 +754,7 @@ describe('Dialog', () => {
 
             it(`FRAMELESS: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -727,7 +766,7 @@ describe('Dialog', () => {
             it(`FRAMELESS: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({
-                apiVersion: 2,
+                apiVersion: 4,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -750,7 +789,7 @@ describe('Dialog', () => {
             it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: {} } },
                 });
@@ -776,7 +815,7 @@ describe('Dialog', () => {
             it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: {} } },
                 });
@@ -814,14 +853,14 @@ describe('Dialog', () => {
       describe('Testing dialog.adaptiveCard.isSupported function', () => {
         it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is not supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+          utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
           expect(dialog.adaptiveCard.isSupported()).not.toBeTruthy();
         });
 
         it('dialog.adaptiveCard.isSupported should return false if the runtime says dialog is supported and adaptiveCard is not', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
-            apiVersion: 2,
+            apiVersion: 4,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: {} },
           });
@@ -831,7 +870,7 @@ describe('Dialog', () => {
         it('dialog.adaptiveCard.isSupported should return true if the runtime says dialog and adaptiveCard is supported', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({
-            apiVersion: 2,
+            apiVersion: 4,
             hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
             supports: { dialog: { card: {} } },
           });
@@ -865,7 +904,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {
             it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -876,7 +915,7 @@ describe('Dialog', () => {
 
             it(`FRAMELESS: should throw error when dialog.adaptiveCard is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -887,7 +926,7 @@ describe('Dialog', () => {
 
             it(`FRAMELESS: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { card: {} } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { card: {} } } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -899,7 +938,7 @@ describe('Dialog', () => {
             it(`FRAMELESS: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({
-                apiVersion: 2,
+                apiVersion: 4,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -922,7 +961,7 @@ describe('Dialog', () => {
             it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: { bot: {} } } },
                 });
@@ -948,7 +987,7 @@ describe('Dialog', () => {
             it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: { bot: {} } } },
                 });
@@ -984,14 +1023,14 @@ describe('Dialog', () => {
         describe('Testing dialog.adaptiveCard.bot.isSupported function', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
           });
 
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1001,7 +1040,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1011,7 +1050,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1021,7 +1060,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: { bot: {} } } },
             });
@@ -1064,7 +1103,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.open(urlDialogInfo);
@@ -1099,7 +1138,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should initiate the post message to dialog. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            dialog.url.sendMessageToDialog('exampleMessage');
+            dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
             const message = utils.findMessageByFunc('messageForChild');
             expect(message).not.toBeUndefined();
             expect(message.args).toStrictEqual(['exampleMessage']);
@@ -1199,7 +1238,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
             it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.update.resize(dimensions);
@@ -1210,7 +1249,7 @@ describe('Dialog', () => {
 
             it(`FRAMED: should throw error when dialog.update is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.update.resize(dimensions);
@@ -1249,7 +1288,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.submit('someResult', ['someAppId', 'someOtherAppId']);
@@ -1319,7 +1358,7 @@ describe('Dialog', () => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect.assertions(1);
             try {
               dialog.url.bot.open(botUrlDialogInfo);
@@ -1330,7 +1369,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should throw error when dialog.url.bot is not supported in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
             expect.assertions(1);
             try {
               dialog.url.bot.open(botUrlDialogInfo);
@@ -1341,7 +1380,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             const botUrlDialogInfo: BotUrlDialogInfo = {
               url: 'someUrl',
               size: { height: DialogDimension.Large, width: DialogDimension.Large },
@@ -1359,7 +1398,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should initiate the registration for messageFromChildHandler if it is passed. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             dialog.url.bot.open(botUrlDialogInfo, emptyCallback, emptyCallback);
             const handlerMessage = utils.findMessageByFunc('registerHandler');
             expect(handlerMessage).not.toBeNull();
@@ -1368,7 +1407,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully unregister the messageForParent handler when dialog is closed. ${context} context`, async () => {
             await utils.initializeWithContext(context);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
             expect.assertions(2);
 
             const submitString = 'succesfullySubmit';
@@ -1382,7 +1421,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
             utils.initializeWithContext(context).then(() => {
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
 
               const submitString = 'succesfullySubmit';
@@ -1400,7 +1439,7 @@ describe('Dialog', () => {
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
             utils.initializeWithContext(context).then(() => {
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
               const error = { errorCode: 500, message: 'Internal Error Occured' };
               dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse): void => {
@@ -1425,81 +1464,40 @@ describe('Dialog', () => {
         }
       });
     });
+    describe('parentCommunication', () => {
+      describe('sendMessageToDialog', () => {
+        const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.sendMessageToDialog('message')).toThrowError(
+            errorLibraryNotInitialized,
+          );
+        });
 
-    describe('sendMessageToDialog', () => {
-      const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(errorLibraryNotInitialized);
-      });
-
-      Object.values(FrameContexts).forEach((frameContext) => {
-        if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
-          it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
-            await utils.initializeWithContext(frameContext);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-            expect.assertions(1);
-            try {
-              dialog.url.sendMessageToDialog('exampleMessage');
-            } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
-            }
-          });
-
-          it(`FRAMED: should initiate the post message to Child: ${frameContext}`, async () => {
-            await utils.initializeWithContext(frameContext);
-            dialog.url.sendMessageToDialog('exampleMessage');
-            const message = utils.findMessageByFunc('messageForChild');
-            expect(message).not.toBeUndefined();
-            expect(message.args).toStrictEqual(['exampleMessage']);
-          });
-        } else {
-          it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
-            await utils.initializeWithContext(frameContext);
-            expect(() => dialog.url.sendMessageToDialog('message')).toThrowError(
-              `This call is only allowed in following contexts: ${JSON.stringify(
-                allowedContexts,
-              )}. Current context: "${frameContext}".`,
-            );
-          });
-        }
-      });
-    });
-
-    describe('sendMessageToParentFromDialog', () => {
-      const allowedContexts = [FrameContexts.task];
-
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(errorLibraryNotInitialized);
-      });
-
-      Object.keys(FrameContexts)
-        .map((k) => FrameContexts[k])
-        .forEach((frameContext) => {
-          if (frameContext === FrameContexts.task) {
+        Object.values(FrameContexts).forEach((frameContext) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === frameContext)) {
             it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
               await utils.initializeWithContext(frameContext);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
-                dialog.url.sendMessageToParentFromDialog('exampleMessage');
+                dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
               } catch (e) {
                 expect(e).toEqual(errorNotSupportedOnPlatform);
               }
             });
 
-            it(`FRAMED: should initiate the post message to Parent: ${frameContext}`, async () => {
+            it(`FRAMED: should initiate the post message to Child: ${frameContext}`, async () => {
               await utils.initializeWithContext(frameContext);
-              dialog.url.sendMessageToParentFromDialog('exampleMessage');
-              const message = utils.findMessageByFunc('messageForParent');
+              dialog.url.parentCommunication.sendMessageToDialog('exampleMessage');
+              const message = utils.findMessageByFunc('messageForChild');
               expect(message).not.toBeUndefined();
               expect(message.args).toStrictEqual(['exampleMessage']);
             });
           } else {
             it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
               await utils.initializeWithContext(frameContext);
-              expect(() => dialog.url.sendMessageToParentFromDialog('message')).toThrowError(
+              expect(() => dialog.url.parentCommunication.sendMessageToDialog('message')).toThrowError(
                 `This call is only allowed in following contexts: ${JSON.stringify(
                   allowedContexts,
                 )}. Current context: "${frameContext}".`,
@@ -1507,48 +1505,96 @@ describe('Dialog', () => {
             });
           }
         });
-    });
-    describe('registerOnMessageFromParent', () => {
-      const allowedContexts = [FrameContexts.task];
-
-      it('should not allow calls before initialization', () => {
-        expect.assertions(1);
-        expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(errorLibraryNotInitialized);
       });
 
-      Object.keys(FrameContexts)
-        .map((k) => FrameContexts[k])
-        .forEach((frameContext) => {
-          if (frameContext === FrameContexts.task) {
-            it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
-              await utils.initializeWithContext(frameContext);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-              expect.assertions(1);
-              try {
-                dialog.url.registerOnMessageFromParent(emptyCallback);
-              } catch (e) {
-                expect(e).toEqual(errorNotSupportedOnPlatform);
-              }
-            });
+      describe('sendMessageToParentFromDialog', () => {
+        const allowedContexts = [FrameContexts.task];
 
-            it(`FRAMED: should initiate the registration call: ${frameContext}`, async () => {
-              await utils.initializeWithContext(frameContext);
-              dialog.url.registerOnMessageFromParent(emptyCallback);
-              const message = utils.findMessageByFunc('registerHandler');
-              expect(message).not.toBeUndefined();
-              expect(message.args).toStrictEqual(['messageForChild']);
-            });
-          } else {
-            it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
-              await utils.initializeWithContext(frameContext);
-              expect(() => dialog.url.registerOnMessageFromParent(emptyCallback)).toThrowError(
-                `This call is only allowed in following contexts: ${JSON.stringify(
-                  allowedContexts,
-                )}. Current context: "${frameContext}".`,
-              );
-            });
-          }
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.sendMessageToParentFromDialog('message')).toThrowError(
+            errorLibraryNotInitialized,
+          );
         });
+
+        Object.keys(FrameContexts)
+          .map((k) => FrameContexts[k])
+          .forEach((frameContext) => {
+            if (frameContext === FrameContexts.task) {
+              it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
+                expect.assertions(1);
+                try {
+                  dialog.url.parentCommunication.sendMessageToParentFromDialog('exampleMessage');
+                } catch (e) {
+                  expect(e).toEqual(errorNotSupportedOnPlatform);
+                }
+              });
+
+              it(`FRAMED: should initiate the post message to Parent: ${frameContext}`, async () => {
+                await utils.initializeWithContext(frameContext);
+                dialog.url.parentCommunication.sendMessageToParentFromDialog('exampleMessage');
+                const message = utils.findMessageByFunc('messageForParent');
+                expect(message).not.toBeUndefined();
+                expect(message.args).toStrictEqual(['exampleMessage']);
+              });
+            } else {
+              it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                expect(() => dialog.url.parentCommunication.sendMessageToParentFromDialog('message')).toThrowError(
+                  `This call is only allowed in following contexts: ${JSON.stringify(
+                    allowedContexts,
+                  )}. Current context: "${frameContext}".`,
+                );
+              });
+            }
+          });
+      });
+      describe('registerOnMessageFromParent', () => {
+        const allowedContexts = [FrameContexts.task];
+
+        it('should not allow calls before initialization', () => {
+          expect.assertions(1);
+          expect(() => dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback)).toThrowError(
+            errorLibraryNotInitialized,
+          );
+        });
+
+        Object.keys(FrameContexts)
+          .map((k) => FrameContexts[k])
+          .forEach((frameContext) => {
+            if (frameContext === FrameContexts.task) {
+              it(`FRAMED: should throw error when dialog is not supported in ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
+                expect.assertions(1);
+                try {
+                  dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback);
+                } catch (e) {
+                  expect(e).toEqual(errorNotSupportedOnPlatform);
+                }
+              });
+
+              it(`FRAMED: should initiate the registration call: ${frameContext}`, async () => {
+                await utils.initializeWithContext(frameContext);
+                dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback);
+                const message = utils.findMessageByFunc('registerHandler');
+                expect(message).not.toBeUndefined();
+                expect(message.args).toStrictEqual(['messageForChild']);
+              });
+            } else {
+              it(`FRAMED: should not allow calls from ${frameContext} context`, async () => {
+                await utils.initializeWithContext(frameContext);
+                expect(() => dialog.url.parentCommunication.registerOnMessageFromParent(emptyCallback)).toThrowError(
+                  `This call is only allowed in following contexts: ${JSON.stringify(
+                    allowedContexts,
+                  )}. Current context: "${frameContext}".`,
+                );
+              });
+            }
+          });
+      });
     });
 
     describe('Testing dialog.adaptiveCard', () => {
@@ -1597,7 +1643,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {
             it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1608,7 +1654,7 @@ describe('Dialog', () => {
 
             it(`FRAMED: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.open(adaptiveCardDialogInfo);
@@ -1620,7 +1666,7 @@ describe('Dialog', () => {
             it(`FRAMED: should pass along entire adaptiveCardDialogInfo parameter in ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({
-                apiVersion: 2,
+                apiVersion: 4,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: {} } },
               });
@@ -1641,7 +1687,7 @@ describe('Dialog', () => {
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: {} } },
                 });
@@ -1662,7 +1708,7 @@ describe('Dialog', () => {
             it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: {} } },
                 });
@@ -1713,7 +1759,7 @@ describe('Dialog', () => {
           if (allowedContexts.some((allowedContext) => allowedContext === context)) {
             it(`FRAMED: should throw error when dialog is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1724,7 +1770,7 @@ describe('Dialog', () => {
 
             it(`FRAMED: should throw error when dialog is supported and adaptiveCard is not in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: {} } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: {} } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1735,7 +1781,7 @@ describe('Dialog', () => {
 
             it(`FRAMED: should throw error when dialog.adaptiveCard.bot is not supported in ${context} context`, async () => {
               await utils.initializeWithContext(context);
-              utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { card: {} } } });
+              utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { card: {} } } });
               expect.assertions(1);
               try {
                 dialog.adaptiveCard.bot.open(botAdaptiveCardDialogInfo);
@@ -1747,7 +1793,7 @@ describe('Dialog', () => {
             it(`FRAMED: should pass along entire botUrlDialogInfo parameter in ${context} context`, async () => {
               await utils.initializeWithContext(context);
               utils.setRuntimeConfig({
-                apiVersion: 2,
+                apiVersion: 4,
                 hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                 supports: { dialog: { card: { bot: {} } } },
               });
@@ -1770,7 +1816,7 @@ describe('Dialog', () => {
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: { bot: {} } } },
                 });
@@ -1792,7 +1838,7 @@ describe('Dialog', () => {
             it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
               utils.initializeWithContext(context).then(() => {
                 utils.setRuntimeConfig({
-                  apiVersion: 2,
+                  apiVersion: 4,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
                   supports: { dialog: { card: { bot: {} } } },
                 });
@@ -1834,14 +1880,14 @@ describe('Dialog', () => {
         describe('Testing dialog.adaptiveCard.bot.isSupported function', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
-            utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+            utils.setRuntimeConfig({ apiVersion: 4, supports: {} });
             expect(dialog.adaptiveCard.bot.isSupported()).not.toBeTruthy();
           });
 
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1851,7 +1897,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.adaptiveCard.bot is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1861,7 +1907,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return false if the runtime says dialog.url.bot is not supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: {} },
             });
@@ -1871,7 +1917,7 @@ describe('Dialog', () => {
           it('dialog.adaptiveCard.bot.isSupported should return true if the runtime says dialog.adaptiveCard.bot is supported', async () => {
             await utils.initializeWithContext(FrameContexts.content);
             utils.setRuntimeConfig({
-              apiVersion: 2,
+              apiVersion: 4,
               hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
               supports: { dialog: { card: { bot: {} } } },
             });

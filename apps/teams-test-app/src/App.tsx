@@ -19,6 +19,7 @@ import DialogCardBotAPIs from './components/DialogCardBotAPIs';
 import DialogUpdateAPIs from './components/DialogUpdateAPIs';
 import DialogUrlAPIs from './components/DialogUrlAPIs';
 import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
+import DialogUrlParentCommunicationAPIs from './components/DialogUrlParentCommunicationAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -143,6 +144,7 @@ const App = (): ReactElement => {
         <DialogUpdateAPIs />
         <DialogUrlAPIs />
         <DialogUrlBotAPIs />
+        <DialogUrlParentCommunicationAPIs />
         <ExternalAppAuthenticationAPIs />
         <ExternalAppCardActionsAPIs />
         <FilesAPIs />
