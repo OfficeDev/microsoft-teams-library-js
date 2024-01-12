@@ -123,7 +123,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [videoFrameMock],
@@ -155,7 +155,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [videoFrameMock],
@@ -187,7 +187,7 @@ describe('videoEffectsEx', () => {
           data: 101,
           timestamp: 200,
         };
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [videoFrameMock],
@@ -223,7 +223,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [videoFrameMock],
@@ -258,7 +258,7 @@ describe('videoEffectsEx', () => {
           data: 101,
         };
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [videoFrameMock],
@@ -287,7 +287,7 @@ describe('videoEffectsEx', () => {
           ...registerForVideoFrameParameters,
           videoBufferHandler: videoBufferCallback,
         });
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.newVideoFrame',
             args: [undefined],
@@ -302,7 +302,7 @@ describe('videoEffectsEx', () => {
         const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
         // Act
         videoEffectsEx.registerForVideoFrame(registerForVideoFrameParameters);
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.setFrameProcessTimeLimit',
             args: [100],
@@ -342,7 +342,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
               args: [{ streamId: 'stream id' }],
@@ -371,7 +371,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
               args: [{ streamId: 'stream id', metadataInTexture: true }],
@@ -406,7 +406,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
               args: [{ streamId: 'stream id' }],
@@ -435,7 +435,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'video.startVideoExtensibilityVideoStream',
               args: [{ streamId: 'stream id' }],
@@ -549,7 +549,7 @@ describe('videoEffectsEx', () => {
         videoEffectsEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.effectParameterChange',
             args: [effectId, effectParameter],
@@ -571,7 +571,7 @@ describe('videoEffectsEx', () => {
         videoEffectsEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.effectParameterChange',
             args: [effectId, effectParameter],
@@ -599,7 +599,7 @@ describe('videoEffectsEx', () => {
         videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'video.effectParameterChange',
             args: [effectId, effectParameter],
@@ -770,7 +770,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.sendMessage('video.newVideoFrame', videoFrameMock);
+        await utils.sendMessage('video.newVideoFrame', videoFrameMock);
         expect(returnedVideoFrame!).toEqual(videoFrameMock);
         expect(handlerInvoked).toBeTruthy();
       });
@@ -794,7 +794,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.sendMessage('video.newVideoFrame', videoFrameMock);
+        await utils.sendMessage('video.newVideoFrame', videoFrameMock);
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
@@ -822,7 +822,7 @@ describe('videoEffectsEx', () => {
           data: 101,
           timestamp: 200,
         };
-        utils.sendMessage('video.newVideoFrame', videoFrameMock);
+        await utils.sendMessage('video.newVideoFrame', videoFrameMock);
         const message = utils.findMessageByFunc('video.videoFrameProcessed');
 
         expect(message).not.toBeNull();
@@ -850,7 +850,7 @@ describe('videoEffectsEx', () => {
           height: 40,
           data: 101,
         };
-        utils.sendMessage('video.newVideoFrame', videoFrameMock);
+        await utils.sendMessage('video.newVideoFrame', videoFrameMock);
         const message = utils.findMessageByFunc('video.notifyError');
 
         expect(message).not.toBeNull();
@@ -873,7 +873,7 @@ describe('videoEffectsEx', () => {
           ...registerForVideoFrameParameters,
           videoBufferHandler: videoBufferCallback,
         });
-        utils.sendMessage('video.newVideoFrame', undefined);
+        await utils.sendMessage('video.newVideoFrame', undefined);
         expect(handlerInvoked).toBe(false);
       });
 
@@ -905,7 +905,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -929,7 +929,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -951,7 +951,7 @@ describe('videoEffectsEx', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await utils.sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -1059,7 +1059,7 @@ describe('videoEffectsEx', () => {
         videoEffectsEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
         expect(returnedEffectId).toEqual(effectId);
         expect(returnedEffectParameter).toEqual(effectParameter);
         expect(handlerInvoked).toBeTruthy();
@@ -1076,7 +1076,7 @@ describe('videoEffectsEx', () => {
         videoEffectsEx.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
         await videoEffectCallBack.mock.results[0].value;
 
         // Assert
@@ -1099,7 +1099,7 @@ describe('videoEffectsEx', () => {
         videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
         const effectParameter = 'sampleEffectParameter';
-        utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
+        await utils.sendMessage('video.effectParameterChange', effectId, effectParameter);
         await videoEffectCallBack.mock.results[0].value.catch(() => {});
 
         // Assert

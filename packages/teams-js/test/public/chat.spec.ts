@@ -109,7 +109,7 @@ describe('chat', () => {
           expect(await isPromiseStillPending(promise)).toBe(true);
 
           const openChatMessage = utils.findMessageByFunc('chat.openChat');
-          utils.respondToMessage(openChatMessage, true);
+          await utils.respondToMessage(openChatMessage, true);
 
           await expect(promise).resolves.not.toThrow();
         });
@@ -134,7 +134,7 @@ describe('chat', () => {
           validateDeepLinkUsers(chatDeepLink, [chatRequest.user]);
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
 
-          utils.respondToMessage(executeDeepLinkMessage, true);
+          await utils.respondToMessage(executeDeepLinkMessage, true);
           await expect(promise).resolves.not.toThrow();
         });
       }
@@ -242,7 +242,7 @@ describe('chat', () => {
           expect(await isPromiseStillPending(chatPromise)).toBe(true);
 
           const openChatMessage = utils.findMessageByFunc('chat.openChat');
-          utils.respondToMessage(openChatMessage, true);
+          await utils.respondToMessage(openChatMessage, true);
 
           await expect(chatPromise).resolves.not.toThrow();
         });
@@ -269,7 +269,7 @@ describe('chat', () => {
           validateChatDeepLinkMessage(chatDeepLink, chatRequest.message);
           validateChatDeepLinkTopic(chatDeepLink, chatRequest.topic);
 
-          utils.respondToMessage(executeDeepLinkMessage, true);
+          await utils.respondToMessage(executeDeepLinkMessage, true);
           await expect(promise).resolves.not.toThrow();
         });
       }

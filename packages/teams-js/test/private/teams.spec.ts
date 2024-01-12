@@ -91,7 +91,7 @@ describe('Testing teams capabillity', () => {
 
             const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.getTeamChannels');
             expect(getCloudStorageFoldersMessage).not.toBeNull();
-            utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
+            await utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
             expect(callback).toHaveBeenCalled();
           });
         } else {
@@ -150,7 +150,7 @@ describe('Testing teams capabillity', () => {
 
           const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.refreshSiteUrl');
           expect(getCloudStorageFoldersMessage).not.toBeNull();
-          utils.respondToMessage(getCloudStorageFoldersMessage, false, 'Some Message');
+          await utils.respondToMessage(getCloudStorageFoldersMessage, false, 'Some Message');
           expect(callback).toHaveBeenCalled();
         });
       });
@@ -207,7 +207,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -221,7 +221,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -233,7 +233,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -244,7 +244,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
     });
@@ -332,7 +332,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         return expect(promise).resolves;
       });
 
@@ -343,7 +343,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
 
@@ -354,7 +354,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
 
@@ -365,7 +365,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
     });

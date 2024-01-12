@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Added in `validDomains.json` file and added publishing step to `build-test-publish.yml` pipeline",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "none"
-}

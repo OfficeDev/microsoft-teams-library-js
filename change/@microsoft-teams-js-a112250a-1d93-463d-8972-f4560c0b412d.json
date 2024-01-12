@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Updated the external app capabilities interfaces",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}

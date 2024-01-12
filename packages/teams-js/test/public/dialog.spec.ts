@@ -94,7 +94,7 @@ describe('Dialog', () => {
           });
 
           it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               expect.assertions(2);
               const urlDialogInfo: UrlDialogInfo = {
                 url: 'someUrl',
@@ -111,7 +111,7 @@ describe('Dialog', () => {
               const message = utils.findMessageByFunc('tasks.startTask');
 
               const callbackId = message.id;
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [undefined, submitString],
@@ -121,7 +121,7 @@ describe('Dialog', () => {
           });
 
           it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               expect.assertions(2);
               const urlDialogInfo: UrlDialogInfo = {
                 url: 'someUrl',
@@ -138,7 +138,7 @@ describe('Dialog', () => {
               const message = utils.findMessageByFunc('tasks.startTask');
 
               const callbackId = message.id;
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [error, undefined],
@@ -164,7 +164,7 @@ describe('Dialog', () => {
             const message = utils.findMessageByFunc('tasks.startTask');
             expect(doesHandlerExist('messageForParent')).toBeTruthy();
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, submitString],
@@ -429,7 +429,7 @@ describe('Dialog', () => {
             const message = utils.findMessageByFunc('tasks.startTask');
             expect(doesHandlerExist('messageForParent')).toBeTruthy();
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, submitString],
@@ -439,7 +439,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
               const submitString = 'succesfullySubmit';
               // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -451,7 +451,7 @@ describe('Dialog', () => {
               const message = utils.findMessageByFunc('tasks.startTask');
 
               const callbackId = message.id;
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [undefined, submitString],
@@ -461,7 +461,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
               dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
                 expect(result.result).toBeFalsy();
@@ -472,7 +472,7 @@ describe('Dialog', () => {
               const message = utils.findMessageByFunc('tasks.startTask');
 
               const callbackId = message.id;
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: callbackId,
                   args: [error, undefined],
@@ -748,7 +748,7 @@ describe('Dialog', () => {
             });
 
             it(`Frameless: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -764,7 +764,7 @@ describe('Dialog', () => {
                 const message = utils.findMessageByFunc('tasks.startTask');
 
                 const callbackId = message.id;
-                utils.respondToFramelessMessage({
+                await utils.respondToFramelessMessage({
                   data: {
                     id: callbackId,
                     args: [undefined, submitString],
@@ -774,7 +774,7 @@ describe('Dialog', () => {
             });
 
             it(`Frameless: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -790,7 +790,7 @@ describe('Dialog', () => {
                 const message = utils.findMessageByFunc('tasks.startTask');
 
                 const callbackId = message.id;
-                utils.respondToFramelessMessage({
+                await utils.respondToFramelessMessage({
                   data: {
                     id: callbackId,
                     args: [error, undefined],
@@ -920,7 +920,7 @@ describe('Dialog', () => {
             });
 
             it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -936,7 +936,7 @@ describe('Dialog', () => {
                 const message = utils.findMessageByFunc('tasks.startTask');
 
                 const callbackId = message.id;
-                utils.respondToFramelessMessage({
+                await utils.respondToFramelessMessage({
                   data: {
                     id: callbackId,
                     args: [undefined, submitString],
@@ -946,7 +946,7 @@ describe('Dialog', () => {
             });
 
             it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -961,7 +961,7 @@ describe('Dialog', () => {
                 const message = utils.findMessageByFunc('tasks.startTask');
 
                 const callbackId = message.id;
-                utils.respondToFramelessMessage({
+                await utils.respondToFramelessMessage({
                   data: {
                     id: callbackId,
                     args: [error, undefined],
@@ -1106,7 +1106,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               expect.assertions(2);
               const urlDialogInfo: UrlDialogInfo = {
                 url: 'someUrl',
@@ -1123,12 +1123,12 @@ describe('Dialog', () => {
               });
               const message = utils.findMessageByFunc('tasks.startTask');
 
-              utils.respondToMessage(message, undefined, submitString);
+              await utils.respondToMessage(message, undefined, submitString);
             });
           });
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               expect.assertions(2);
               const urlDialogInfo: UrlDialogInfo = {
                 url: 'someUrl',
@@ -1145,7 +1145,7 @@ describe('Dialog', () => {
               });
               const message = utils.findMessageByFunc('tasks.startTask');
 
-              utils.respondToMessage(message, error, undefined);
+              await utils.respondToMessage(message, error, undefined);
             });
           });
 
@@ -1166,7 +1166,7 @@ describe('Dialog', () => {
             expect(doesHandlerExist('messageForParent')).toBeTruthy();
             const message = utils.findMessageByFunc('tasks.startTask');
 
-            utils.respondToMessage(message, null, submitString);
+            await utils.respondToMessage(message, null, submitString);
             expect(doesHandlerExist('messageForParent')).toBeFalsy();
           });
         } else {
@@ -1376,12 +1376,12 @@ describe('Dialog', () => {
             expect(doesHandlerExist('messageForParent')).toBeTruthy();
             const message = utils.findMessageByFunc('tasks.startTask');
 
-            utils.respondToMessage(message, null, submitString);
+            await utils.respondToMessage(message, null, submitString);
             expect(doesHandlerExist('messageForParent')).toBeFalsy();
           });
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
 
@@ -1394,12 +1394,12 @@ describe('Dialog', () => {
               });
               const message = utils.findMessageByFunc('tasks.startTask');
 
-              utils.respondToMessage(message, undefined, submitString);
+              await utils.respondToMessage(message, undefined, submitString);
             });
           });
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
               const error = { errorCode: 500, message: 'Internal Error Occured' };
@@ -1410,7 +1410,7 @@ describe('Dialog', () => {
               });
               const message = utils.findMessageByFunc('tasks.startTask');
 
-              utils.respondToMessage(message, error, undefined);
+              await utils.respondToMessage(message, error, undefined);
             });
           });
         } else {
@@ -1639,7 +1639,7 @@ describe('Dialog', () => {
             });
 
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1655,12 +1655,12 @@ describe('Dialog', () => {
                 });
                 const message = utils.findMessageByFunc('tasks.startTask');
 
-                utils.respondToMessage(message, undefined, submitString);
+                await utils.respondToMessage(message, undefined, submitString);
               });
             });
 
             it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1676,7 +1676,7 @@ describe('Dialog', () => {
                 });
                 const message = utils.findMessageByFunc('tasks.startTask');
 
-                utils.respondToMessage(message, error, undefined);
+                await utils.respondToMessage(message, error, undefined);
               });
             });
           } else {
@@ -1768,7 +1768,7 @@ describe('Dialog', () => {
             });
 
             it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1785,12 +1785,12 @@ describe('Dialog', () => {
                 });
                 const message = utils.findMessageByFunc('tasks.startTask');
 
-                utils.respondToMessage(message, undefined, submitString);
+                await utils.respondToMessage(message, undefined, submitString);
               });
             });
 
             it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-              utils.initializeWithContext(context).then(() => {
+              utils.initializeWithContext(context).then(async () => {
                 utils.setRuntimeConfig({
                   apiVersion: 2,
                   hostVersionsInfo: { adaptiveCardSchemaVersion: minAdaptiveCardVersion },
@@ -1807,7 +1807,7 @@ describe('Dialog', () => {
                 });
                 const message = utils.findMessageByFunc('tasks.startTask');
 
-                utils.respondToMessage(message, error, undefined);
+                await utils.respondToMessage(message, error, undefined);
               });
             });
           } else {

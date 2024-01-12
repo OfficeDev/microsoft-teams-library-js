@@ -122,7 +122,7 @@ describe('mail', () => {
         error: dataError,
       };
 
-      utils.respondToMessage(openMailItemMessage, data.success, data.error);
+      await utils.respondToMessage(openMailItemMessage, data.success, data.error);
       await openMailItemPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
     });
 
@@ -138,7 +138,7 @@ describe('mail', () => {
         success: true,
       };
 
-      utils.respondToMessage(openMailItemMessage, data.success);
+      await utils.respondToMessage(openMailItemMessage, data.success);
       await promise;
 
       expect(openMailItemMessage).not.toBeNull();
@@ -158,7 +158,7 @@ describe('mail', () => {
         success: true,
       };
 
-      utils.respondToMessage(openMailItemMessage, data.success);
+      await utils.respondToMessage(openMailItemMessage, data.success);
 
       await expect(promise).resolves.not.toThrow();
     });
@@ -224,7 +224,7 @@ describe('mail', () => {
         error: dataError,
       };
 
-      utils.respondToMessage(composeMail, data.success, data.error);
+      await utils.respondToMessage(composeMail, data.success, data.error);
       await composeMailPromise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
     });
 
@@ -240,7 +240,7 @@ describe('mail', () => {
         success: true,
       };
 
-      utils.respondToMessage(composeMailMessage, data.success);
+      await utils.respondToMessage(composeMailMessage, data.success);
       await promise;
 
       expect(composeMailMessage).not.toBeNull();
@@ -260,7 +260,7 @@ describe('mail', () => {
         success: true,
       };
 
-      utils.respondToMessage(composeMailMessage, data.success);
+      await utils.respondToMessage(composeMailMessage, data.success);
       await expect(promise).resolves.not.toThrow();
     });
   });
