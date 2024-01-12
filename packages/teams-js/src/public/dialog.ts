@@ -236,7 +236,7 @@ export namespace dialog {
      * Subcapability that allows communication between the dialog and the parent app.
      *
      * @remarks
-     * Note that dialog can be invoked from parentless scnerios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
+     * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
      *
      * @beta
      */
