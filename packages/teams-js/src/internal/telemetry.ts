@@ -1,5 +1,3 @@
-/*eslint sort-keys: ["error", "asc", {caseSensitive: false, minKeys:2 }]*/
-
 import { debug as registerLogger, Debugger } from 'debug';
 
 const topLevelLogger = registerLogger('teamsJs');
