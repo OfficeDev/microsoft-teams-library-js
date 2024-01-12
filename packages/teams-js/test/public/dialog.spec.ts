@@ -439,7 +439,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMELESS: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               const submitString = 'succesfullySubmit';
               // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -461,7 +461,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMELESS: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               dialog.url.bot.open(botUrlDialogInfo, (result: dialog.ISdkResponse) => {
                 expect(result.result).toBeFalsy();
@@ -1420,7 +1420,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMED: Should successfully call the callback with result when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
 
@@ -1438,7 +1438,7 @@ describe('Dialog', () => {
           });
 
           it(`FRAMED: Should successfully call the callback with error when dialog is closed. ${context} context`, (done) => {
-            utils.initializeWithContext(context).then(() => {
+            utils.initializeWithContext(context).then(async () => {
               utils.setRuntimeConfig({ apiVersion: 4, supports: { dialog: { url: { bot: {} } } } });
               expect.assertions(2);
               const error = { errorCode: 500, message: 'Internal Error Occured' };
