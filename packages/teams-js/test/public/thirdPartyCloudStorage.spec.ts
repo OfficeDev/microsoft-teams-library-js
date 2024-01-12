@@ -61,7 +61,7 @@ describe('thirdPartyCloudStorage', () => {
     for (let i = 0; i < 3; i++) {
       const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
         chunk: 'filechunk2',
-        chunkSequence: i,
+        chunkSequence: i + 1,
         endOfFile: i === 2 ? true : false, // for last chunk 'endOfFile' will be true
       };
 
@@ -197,7 +197,7 @@ describe('thirdPartyCloudStorage', () => {
     utils.setRuntimeConfig({ apiVersion: 1, supports: { thirdPartyCloudStorage: {} } });
     const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
       chunk: '',
-      chunkSequence: 0,
+      chunkSequence: 1,
       endOfFile: false,
     };
     const mockFileResult: thirdPartyCloudStorage.FileResult = {

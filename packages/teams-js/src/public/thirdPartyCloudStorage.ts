@@ -178,7 +178,7 @@ export namespace thirdPartyCloudStorage {
       } else {
         if (fileResult && fileResult.fileChunk) {
           try {
-            if (!lastChunkVal && fileResult.fileChunk.chunkSequence === 0) {
+            if (!lastChunkVal && fileResult.fileChunk.chunkSequence === 1) {
               // last chunk value was false
               Files3PLogger("Last chunk is not received or 'endOfFile' value for previous chunk was not set to true");
               lastChunkVal = true; // for next iteration
