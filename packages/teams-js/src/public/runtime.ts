@@ -464,7 +464,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
     upgradeToNextVersion: (previousVersionRuntime: IRuntimeV3): IRuntimeV4 => {
       return {
         apiVersion: 4,
-        hostVersionsInfo: undefined,
+        hostVersionsInfo: previousVersionRuntime.hostVersionsInfo,
         isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: {
           ...previousVersionRuntime.supports,
