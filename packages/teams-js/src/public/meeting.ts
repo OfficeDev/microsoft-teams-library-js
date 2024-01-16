@@ -1,9 +1,15 @@
-import { sendMessageToParent } from '../internal/communication';
-import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { doesHandlerExist, registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const meetingTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * Interact with meetings, including retrieving meeting details, getting mic status, and sharing app content.
@@ -527,7 +533,11 @@ export namespace meeting {
       throw new Error('[get incoming client audio state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('getIncomingClientAudioState', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetIncomingClientAudioState),
+      'getIncomingClientAudioState',
+      callback,
+    );
   }
 
   /**
@@ -549,7 +559,11 @@ export namespace meeting {
       throw new Error('[toggle incoming client audio] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('toggleIncomingClientAudio', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_ToggleIncomingClientAudio),
+      'toggleIncomingClientAudio',
+      callback,
+    );
   }
 
   /**
@@ -576,7 +590,11 @@ export namespace meeting {
       FrameContexts.settings,
       FrameContexts.content,
     );
-    sendMessageToParent('meeting.getMeetingDetails', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetMeetingDetails),
+      'meeting.getMeetingDetails',
+      callback,
+    );
   }
 
   /**
@@ -597,7 +615,11 @@ export namespace meeting {
       throw new Error('[get Authentication Token For AnonymousUser] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage, FrameContexts.task);
-    sendMessageToParent('meeting.getAuthenticationTokenForAnonymousUser', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetAuthenticationTokenForAnonymousUser),
+      'meeting.getAuthenticationTokenForAnonymousUser',
+      callback,
+    );
   }
 
   /**
@@ -618,7 +640,11 @@ export namespace meeting {
       throw new Error('[get live stream state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.getLiveStreamState', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetLiveStreamState),
+      'meeting.getLiveStreamState',
+      callback,
+    );
   }
 
   /**
@@ -646,7 +672,12 @@ export namespace meeting {
       throw new Error('[request start live streaming] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.requestStartLiveStreaming', [streamUrl, streamKey], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestStartLiveStreaming),
+      'meeting.requestStartLiveStreaming',
+      [streamUrl, streamKey],
+      callback,
+    );
   }
 
   /**
@@ -665,7 +696,11 @@ export namespace meeting {
       throw new Error('[request stop live streaming] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    sendMessageToParent('meeting.requestStopLiveStreaming', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestStopLiveStreaming),
+      'meeting.requestStopLiveStreaming',
+      callback,
+    );
   }
 
   /**
@@ -685,7 +720,11 @@ export namespace meeting {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    registerHandler('meeting.liveStreamChanged', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterLiveStreamChangedHandler),
+      'meeting.liveStreamChanged',
+      handler,
+    );
   }
 
   /**
@@ -717,7 +756,12 @@ export namespace meeting {
       throw new Error('[share app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.shareAppContentToStage', [appContentUrl, shareOptions], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_ShareAppContentToStage),
+      'meeting.shareAppContentToStage',
+      [appContentUrl, shareOptions],
+      callback,
+    );
   }
 
   /**
@@ -742,7 +786,11 @@ export namespace meeting {
       throw new Error('[get app content stage sharing capabilities] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.getAppContentStageSharingCapabilities', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetAppContentStageSharingCapabilities),
+      'meeting.getAppContentStageSharingCapabilities',
+      callback,
+    );
   }
 
   /**
@@ -759,7 +807,11 @@ export namespace meeting {
       throw new Error('[stop sharing app content to stage] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.stopSharingAppContentToStage', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_StopSharingAppContentToStage),
+      'meeting.stopSharingAppContentToStage',
+      callback,
+    );
   }
 
   /**
@@ -781,7 +833,11 @@ export namespace meeting {
       throw new Error('[get app content stage sharing state] Callback cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.getAppContentStageSharingState', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_GetAppContentStageSharingState),
+      'meeting.getAppContentStageSharingState',
+      callback,
+    );
   }
 
   /**
@@ -804,7 +860,11 @@ export namespace meeting {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.speakingStateChanged', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterSpeakingStateChangeHandler),
+      'meeting.speakingStateChanged',
+      handler,
+    );
   }
 
   /**
@@ -830,7 +890,11 @@ export namespace meeting {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.raiseHandStateChanged', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterRaiseHandStateChangedHandler),
+      'meeting.raiseHandStateChanged',
+      handler,
+    );
   }
 
   /**
@@ -854,7 +918,11 @@ export namespace meeting {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandler('meeting.meetingReactionReceived', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMeetingReactionReceivedHandler),
+      'meeting.meetingReactionReceived',
+      handler,
+    );
   }
 
   /**
@@ -913,7 +981,11 @@ export namespace meeting {
       if (shareInformation.contentUrl) {
         new URL(shareInformation.contentUrl);
       }
-      sendMessageToParent('meeting.appShareButton.setOptions', [shareInformation]);
+      sendMessageToParentWithVersion(
+        getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_AppShareButton_SetOptions),
+        'meeting.appShareButton.setOptions',
+        [shareInformation],
+      );
     }
   }
 
@@ -989,16 +1061,25 @@ export namespace meeting {
           setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
         }
       };
-      registerHandler('meeting.micStateChanged', micStateChangedCallback);
+      registerHandlerWithVersion(
+        getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMicStateChangeHandler),
+        'meeting.micStateChanged',
+        micStateChangedCallback,
+      );
 
       const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection): void => {
         requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
       };
-      registerHandler('meeting.audioDeviceSelectionChanged', audioDeviceSelectionChangedCallback);
+      registerHandlerWithVersion(
+        getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterAudioDeviceSelectionChangedHandler),
+        'meeting.audioDeviceSelectionChanged',
+        audioDeviceSelectionChangedCallback,
+      );
 
       callback(isHostAudioless);
     };
-    sendMessageToParent(
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestAppAudioHandling),
       'meeting.requestAppAudioHandling',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalRequest,
@@ -1031,7 +1112,8 @@ export namespace meeting {
       callback(isHostAudioless);
     };
 
-    sendMessageToParent(
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RequestAppAudioHandling),
       'meeting.requestAppAudioHandling',
       [requestAppAudioHandlingParams.isAppHandlingAudio],
       callbackInternalStop,
@@ -1057,6 +1139,10 @@ export namespace meeting {
 
   function setMicStateWithReason(micState: MicState, reason: MicStateChangeReason): void {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    sendMessageToParent('meeting.updateMicState', [micState, reason]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_SetMicStateWithReason),
+      'meeting.updateMicState',
+      [micState, reason],
+    );
   }
 }
