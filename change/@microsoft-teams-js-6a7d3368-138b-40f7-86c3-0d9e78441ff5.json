@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Minor change in helper values",
+  "comment": "Fixed bug where `thirdPartyCloudStorage.getDragAndDropFiles` failed deterministically",
   "packageName": "@microsoft/teams-js",
   "email": "mahimashuklaMSFT@gmail.com",
   "dependentChangeType": "patch"
