@@ -1,4 +1,4 @@
-import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -20,7 +20,7 @@ const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_
 export namespace videoEffects {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
-    : new VideoPerformanceMonitor(sendMessageToParent);
+    : new VideoPerformanceMonitor(sendMessageToParentWithVersion);
 
   /** Notify video frame processed function type */
   export type notifyVideoFrameProcessedFunctionType = () => void;
