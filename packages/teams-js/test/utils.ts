@@ -196,7 +196,7 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = async (message: MessageRequest | NestedAppAuthRequest, ...args: unknown[]): void => {
+  public respondToMessage = async (message: MessageRequest | NestedAppAuthRequest, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
