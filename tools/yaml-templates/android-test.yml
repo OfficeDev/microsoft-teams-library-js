@@ -66,6 +66,12 @@ steps:
       jdkSourceOption: 'PreInstalled'
     displayName: 'Set default Java to x64'
 
+  # Provides credentials for Azure Artifacts feeds and external maven repositories.
+  - task: MavenAuthenticate@0
+    displayName: 'Authenticate machine'
+    inputs:
+      artifactsFeeds: 'LensSDKAndroidIA20'
+
   - task: Bash@3
     displayName: 'Run Android E2E Tests'
     inputs:
