@@ -84,7 +84,7 @@ describe('thirdPartyCloudStorage', () => {
       // creating 50 file, each having 3 chunks
       for (let i = 0; i < 50; i++) {
         if (i == 49) {
-          callbackused(mockLastFileResult); // it has just one chunk
+          callbackused(mockLastFileResult);
         } else {
           mockFileResults.forEach((mockFileResult) => {
             callbackused(mockFileResult);
