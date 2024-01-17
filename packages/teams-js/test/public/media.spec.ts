@@ -124,7 +124,7 @@ describe('media', () => {
             size: 300,
           } as media.File,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -145,7 +145,7 @@ describe('media', () => {
         expect(message.args.length).toBe(0);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
@@ -196,7 +196,7 @@ describe('media', () => {
             expect(message.args[0]).toEqual(DevicePermission.Media);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, true],
@@ -218,7 +218,7 @@ describe('media', () => {
             expect(message.args.length).toBe(1);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -282,7 +282,7 @@ describe('media', () => {
             expect(message.args[0]).toEqual(DevicePermission.Media);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, true],
@@ -304,7 +304,7 @@ describe('media', () => {
             expect(message.args.length).toBe(1);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -433,7 +433,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -473,7 +473,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -516,7 +516,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -555,7 +555,7 @@ describe('media', () => {
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.SIZE_EXCEEDED }],
@@ -580,7 +580,7 @@ describe('media', () => {
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, undefined, 2],
@@ -609,7 +609,7 @@ describe('media', () => {
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, undefined, 1],
@@ -635,7 +635,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined],
@@ -661,7 +661,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [err],
@@ -820,7 +820,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.FILE_NOT_FOUND }],
@@ -880,7 +880,7 @@ describe('media', () => {
 
         const callbackId = message.id;
         const response = 'decodedText';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, response],
@@ -906,7 +906,7 @@ describe('media', () => {
 
         const callbackId = message.id;
         const response = 'decodedText';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, response],
@@ -927,7 +927,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }],
