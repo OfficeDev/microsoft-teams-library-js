@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Reverted PR: \"Fix calls to chat capability when only a single user is specified (#2050)\"",
+  "comment": "Added apiVersionTags for telemetry in `Conversations`, `Files`, `Logs`, `MeetingRoom` and `Notifications` capabilities",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"

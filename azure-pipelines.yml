@@ -92,6 +92,11 @@ extends:
                   artifactName: 'CDNFeed'
 
                 - output: pipelineArtifact
+                  displayName: 'Publish validDomains to Build Artifacts'
+                  targetPath: '$(Build.ArtifactStagingDirectory)\validDomains'
+                  artifactName: 'validDomains'
+
+                - output: pipelineArtifact
                   displayName: 'Publish NPM feed to Build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\NPMFeed'
                   artifactName: 'NPMFeed'

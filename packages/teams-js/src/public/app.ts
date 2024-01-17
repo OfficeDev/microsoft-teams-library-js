@@ -18,6 +18,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
+import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -69,7 +70,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
-
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
@@ -730,6 +730,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    prefetchOriginsFromCDN();
     return appInitializeHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
       validMessageOrigins,

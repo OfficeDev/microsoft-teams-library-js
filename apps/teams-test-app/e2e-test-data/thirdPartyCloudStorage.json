@@ -1,0 +1,19 @@
+{
+  "name": "ThirdPartyCloudStorage",
+  "platforms": "Web",
+  "version": ">2.18.0",
+  "checkIsSupported": {
+    "domElementName": "thirdPartyCloudStorageCapability",
+    "expectedOutput": "ThirdPartyCloudStorage is not supported"
+  },
+  "testCases": [
+    {
+      "title": "thirdPartyCloudStorage API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_thirdPartyCloudStorage",
+      "inputValue": "testThreadId",
+      "expectedAlertValue": "thirdPartyCloudStorage called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "Received files in callback"
+    }
+  ]
+}

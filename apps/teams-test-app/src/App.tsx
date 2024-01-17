@@ -36,6 +36,8 @@ import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
+import ExternalAppAuthenticationAPIs from './components/privateApis/ExternalAppAuthenticationAPIs';
+import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCardActionsAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
@@ -51,6 +53,7 @@ import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
@@ -140,6 +143,8 @@ const App = (): ReactElement => {
         <DialogUpdateAPIs />
         <DialogUrlAPIs />
         <DialogUrlBotAPIs />
+        <ExternalAppAuthenticationAPIs />
+        <ExternalAppCardActionsAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />
@@ -171,6 +176,7 @@ const App = (): ReactElement => {
         <StageViewAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
+        <ThirdPartyCloudStorageAPIs />
         <VideoAPIs />
         <VideoExAPIs />
         <VisualMediaAPIs />
