@@ -1,3 +1,4 @@
+import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
@@ -49,7 +50,7 @@ export class Utils {
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
+      addEventListener: (type: string, listener: (ev: MessageEvent) => Promise<void>): void => {
         if (type === 'message') {
           this.processMessage = listener;
         }
@@ -99,9 +100,18 @@ export class Utils {
       },
       closed: false,
     };
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 200,
+        ok: true,
+        json: async () => {
+          return { validOrigins };
+        },
+      } as Response),
+    );
   }
 
-  public processMessage: null | ((ev: MessageEvent) => void);
+  public processMessage: null | ((ev: MessageEvent) => Promise<void>);
 
   public initializeWithContext = async (
     frameContext: string,
@@ -169,7 +179,7 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = (message: MessageRequest, ...args: unknown[]): void => {
+  public respondToMessage = async (message: MessageRequest, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -183,7 +193,7 @@ export class Utils {
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
-      this.processMessage({
+      await this.processMessage({
         origin: this.validOrigin,
         source: this.mockWindow.parent,
         data: {
@@ -194,14 +204,14 @@ export class Utils {
     }
   };
 
-  public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
+  public respondToMessageAsOpener = async (message: MessageRequest, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
     }
 
-    this.processMessage({
+    await this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.opener,
       data: {
@@ -221,14 +231,14 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = (func: string, ...args: unknown[]): void => {
+  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
       );
     }
 
-    this.processMessage({
+    await this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
       data: {

@@ -363,7 +363,7 @@ describe('Testing authentication capability', () => {
               });
 
               it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
-                utils.initializeWithContext(context, hostClientType).then(() => {
+                utils.initializeWithContext(context, hostClientType).then(async () => {
                   const authenticationParams = {
                     url: 'https://someUrl',
                     width: 100,
@@ -382,13 +382,13 @@ describe('Testing authentication capability', () => {
                   expect.assertions(2);
                   const message = utils.findMessageByFunc('authentication.authenticate');
                   expect(message).not.toBeNull();
-                  utils.respondToMessage(message, true, mockResult);
+                  await utils.respondToMessage(message, true, mockResult);
                 });
               });
 
               it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
                 expect.assertions(2);
-                utils.initializeWithContext(context, hostClientType).then(() => {
+                utils.initializeWithContext(context, hostClientType).then(async () => {
                   const authenticationParams = {
                     url: 'https://someUrl',
                     width: 100,
@@ -407,7 +407,7 @@ describe('Testing authentication capability', () => {
                   const message = utils.findMessageByFunc('authentication.authenticate');
                   expect(message).not.toBeNull();
 
-                  utils.respondToMessage(message, false, errorMessage);
+                  await utils.respondToMessage(message, false, errorMessage);
                 });
               });
             } else {
@@ -478,7 +478,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getAuthToken');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -489,7 +489,7 @@ describe('Testing authentication capability', () => {
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
           expect.assertions(6);
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               claims: [mockClaim],
@@ -512,13 +512,13 @@ describe('Testing authentication capability', () => {
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
 
-            utils.respondToMessage(message, true, 'token');
+            await utils.respondToMessage(message, true, 'token');
           });
         });
 
         it(`authentication.getAuthToken should successfully return error from getAuthToken in case of failure in legacy flow from ${context} context`, (done) => {
           expect.assertions(6);
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               failureCallback: (error) => {
@@ -539,7 +539,7 @@ describe('Testing authentication capability', () => {
             expect(message.args[1]).toEqual(undefined);
             expect(message.args[2]).toEqual(undefined);
 
-            utils.respondToMessage(message, false, errorMessage);
+            await utils.respondToMessage(message, false, errorMessage);
           });
         });
 
@@ -561,7 +561,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
 
-          utils.respondToMessage(message, true, 'token');
+          await utils.respondToMessage(message, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -577,7 +577,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
-          utils.respondToMessage(message, true, 'token');
+          await utils.respondToMessage(message, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -621,7 +621,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
-          utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
 
@@ -637,7 +637,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
-          utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
       });
@@ -659,7 +659,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getUser');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -669,7 +669,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
               done();
@@ -686,12 +686,12 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToMessage(message, true, mockResult);
+            await utils.respondToMessage(message, true, mockResult);
           });
         });
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (): void => {
               done();
             };
@@ -708,7 +708,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToMessage(message, false, mockResult);
+            await utils.respondToMessage(message, false, mockResult);
           });
         });
 
@@ -720,7 +720,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, false, mockResult);
+          await utils.respondToMessage(message, false, mockResult);
           await expect(promise).rejects.toThrowError(mockResult);
         });
 
@@ -732,7 +732,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, true, mockUser);
+          await utils.respondToMessage(message, true, mockUser);
           await expect(promise).resolves.toEqual(mockUser);
         });
 
@@ -744,7 +744,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, true, mockUserWithDataResidency);
+          await utils.respondToMessage(message, true, mockUserWithDataResidency);
           await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
       });
@@ -1037,7 +1037,7 @@ describe('Testing authentication capability', () => {
               expect(message.args[2]).toBe(authenticationParams.height);
               expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [true, mockResult],
@@ -1057,7 +1057,7 @@ describe('Testing authentication capability', () => {
               const promise = authentication.authenticate(authenticationParams);
 
               const message = utils.findMessageByFunc('authentication.authenticate');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   func: 'authentication.authenticate.failure',
@@ -1076,7 +1076,7 @@ describe('Testing authentication capability', () => {
       allowedContexts.forEach((context) => {
         allowedHostClientType.forEach((hostClientType) => {
           it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            utils.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(async () => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1101,7 +1101,7 @@ describe('Testing authentication capability', () => {
               expect(message.args[2]).toBe(authenticationParams.height);
               expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [true, mockResult],
@@ -1111,7 +1111,7 @@ describe('Testing authentication capability', () => {
           });
 
           it(`authentication.registerAuthenticationHandlers should handle auth failure with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            utils.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(async () => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1129,7 +1129,7 @@ describe('Testing authentication capability', () => {
               authentication.authenticate();
 
               const message = utils.findMessageByFunc('authentication.authenticate');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [errorMessage],
@@ -1154,7 +1154,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               claims: [mockClaim],
@@ -1177,7 +1177,7 @@ describe('Testing authentication capability', () => {
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, 'token'],
@@ -1187,7 +1187,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should throw error in case of failure in legacy flow from ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               failureCallback: (error) => {
@@ -1207,7 +1207,7 @@ describe('Testing authentication capability', () => {
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toBeNull();
             expect(message.args[2]).toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [false, errorMessage],
@@ -1233,7 +1233,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1254,7 +1254,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1278,7 +1278,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1299,7 +1299,7 @@ describe('Testing authentication capability', () => {
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1317,7 +1317,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
               done();
@@ -1334,7 +1334,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, mockResult],
@@ -1344,7 +1344,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (): void => {
               done();
             };
@@ -1361,7 +1361,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [false, mockResult],
@@ -1378,7 +1378,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, mockResult],
@@ -1395,7 +1395,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUser],
@@ -1412,7 +1412,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUserWithDataResidency],

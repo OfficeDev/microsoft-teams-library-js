@@ -1,6 +1,11 @@
-import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
+import {
+  sendAndHandleStatusAndReasonWithVersion,
+  sendAndUnwrapWithVersion,
+  sendMessageToParentWithVersion,
+} from '../internal/communication';
+import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ChatMembersInformation } from './interfaces';
@@ -10,7 +15,11 @@ import { ChatMembersInformation } from './interfaces';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const conversationsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export interface OpenConversationRequest {
   /**
    * @hidden
@@ -144,15 +153,20 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const sendPromise = sendAndHandleStatusAndReason('conversations.openConversation', {
-        title: openConversationRequest.title,
-        subEntityId: openConversationRequest.subEntityId,
-        conversationId: openConversationRequest.conversationId,
-        channelId: openConversationRequest.channelId,
-        entityId: openConversationRequest.entityId,
-      });
+      const sendPromise = sendAndHandleStatusAndReasonWithVersion(
+        getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_OpenConversation),
+        'conversations.openConversation',
+        {
+          title: openConversationRequest.title,
+          subEntityId: openConversationRequest.subEntityId,
+          conversationId: openConversationRequest.conversationId,
+          channelId: openConversationRequest.channelId,
+          entityId: openConversationRequest.entityId,
+        },
+      );
       if (openConversationRequest.onStartConversation) {
-        registerHandler(
+        registerHandlerWithVersion(
+          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterStartConversationHandler),
           'startConversation',
           (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
             openConversationRequest.onStartConversation?.({
@@ -164,7 +178,8 @@ export namespace conversations {
         );
       }
       if (openConversationRequest.onCloseConversation) {
-        registerHandler(
+        registerHandlerWithVersion(
+          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterCloseConversationHandler),
           'closeConversation',
           (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>
             openConversationRequest.onCloseConversation?.({
@@ -192,7 +207,10 @@ export namespace conversations {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('conversations.closeConversation');
+    sendMessageToParentWithVersion(
+      getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_CloseConversation),
+      'conversations.closeConversation',
+    );
     removeHandler('startConversation');
     removeHandler('closeConversation');
   }
@@ -216,7 +234,12 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndUnwrap('getChatMembers'));
+      resolve(
+        sendAndUnwrapWithVersion(
+          getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_GetChatMember),
+          'getChatMembers',
+        ),
+      );
     });
   }
 
