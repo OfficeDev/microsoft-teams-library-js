@@ -1,6 +1,7 @@
-import { sendAndHandleSdkError } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -9,7 +10,11 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const meetingRoomTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace meetingRoom {
   /**
    * @hidden
@@ -185,7 +190,12 @@ export namespace meetingRoom {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('meetingRoom.getPairedMeetingRoomInfo'));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_GetPairedMeetingRoomInfo),
+          'meetingRoom.getPairedMeetingRoomInfo',
+        ),
+      );
     });
   }
 
@@ -208,7 +218,13 @@ export namespace meetingRoom {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError('meetingRoom.sendCommandToPairedMeetingRoom', commandName));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_SendCommandToPairedMeetingRoom),
+          'meetingRoom.sendCommandToPairedMeetingRoom',
+          commandName,
+        ),
+      );
     });
   }
 
@@ -232,10 +248,17 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomCapabilitiesUpdate', (capabilities: MeetingRoomCapability) => {
-      ensureInitialized(runtime);
-      handler(capabilities);
-    });
+    registerHandlerWithVersion(
+      getApiVersionTag(
+        meetingRoomTelemetryVersionNumber,
+        ApiName.MeetingRoom_RegisterMeetingRoomCapabilitiesUpdateHandler,
+      ),
+      'meetingRoom.meetingRoomCapabilitiesUpdate',
+      (capabilities: MeetingRoomCapability) => {
+        ensureInitialized(runtime);
+        handler(capabilities);
+      },
+    );
   }
 
   /**
@@ -257,10 +280,14 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('meetingRoom.meetingRoomStatesUpdate', (states: MeetingRoomState) => {
-      ensureInitialized(runtime);
-      handler(states);
-    });
+    registerHandlerWithVersion(
+      getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_RegisterMeetingRoomStatesUpdateHandler),
+      'meetingRoom.meetingRoomStatesUpdate',
+      (states: MeetingRoomState) => {
+        ensureInitialized(runtime);
+        handler(states);
+      },
+    );
   }
 
   /**
