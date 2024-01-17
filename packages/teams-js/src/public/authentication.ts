@@ -8,7 +8,6 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
-import { ssrSafeWindow } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
