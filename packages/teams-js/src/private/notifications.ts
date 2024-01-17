@@ -1,5 +1,6 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ShowNotificationParameters } from './interfaces';
@@ -9,7 +10,11 @@ import { ShowNotificationParameters } from './interfaces';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const notificationsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace notifications {
   /**
    * @hidden
@@ -27,7 +32,11 @@ export namespace notifications {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParent('notifications.showNotification', [showNotificationParameters]);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(notificationsTelemetryVersionNumber, ApiName.Notifications_ShowNotification),
+      'notifications.showNotification',
+      [showNotificationParameters],
+    );
   }
 
   /**

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added apiVersionTags for telemetry in `Conversations`, `Files`, `Logs`, `MeetingRoom` and `Notifications` capabilities",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
