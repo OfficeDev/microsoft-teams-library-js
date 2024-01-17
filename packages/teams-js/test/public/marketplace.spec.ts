@@ -103,7 +103,7 @@ describe('Testing marketplace capability', () => {
               const getCartItemsMessage = utils.findMessageByFunc('marketplace.getCart');
               validateExpectedArgumentsInRequest(getCartItemsMessage, 'marketplace.getCart', MatcherType.ToStrictEqual);
 
-              utils.respondToMessage(getCartItemsMessage!);
+              await utils.respondToMessage(getCartItemsMessage!);
               await promise;
             });
           } else {
@@ -167,7 +167,7 @@ describe('Testing marketplace capability', () => {
                 },
               );
 
-              utils.respondToMessage(addOrUpdateCartItemsMessage!);
+              await utils.respondToMessage(addOrUpdateCartItemsMessage!);
               await promise;
             });
           } else {
@@ -244,7 +244,7 @@ describe('Testing marketplace capability', () => {
                 },
               );
 
-              utils.respondToMessage(removeCartItemsMessage!);
+              await utils.respondToMessage(removeCartItemsMessage!);
               await promise;
             });
           } else {
@@ -309,7 +309,7 @@ describe('Testing marketplace capability', () => {
                 },
               );
 
-              utils.respondToMessage(updateCartStatusMessage!);
+              await utils.respondToMessage(updateCartStatusMessage!);
               await promise;
             });
           } else {
@@ -399,7 +399,7 @@ describe('Testing marketplace capability', () => {
               const promise = marketplace.getCart();
 
               const getCartMessage = utils.findMessageByFunc('marketplace.getCart');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: getCartMessage!.id,
                   args: [undefined, cart],
@@ -477,7 +477,7 @@ describe('Testing marketplace capability', () => {
               const promise = marketplace.addOrUpdateCartItems(addOrUpdateCartItemsParams);
 
               const addOrUpdateCartItemsMessage = utils.findMessageByFunc('marketplace.addOrUpdateCartItems');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: addOrUpdateCartItemsMessage!.id,
                   args: [undefined, cart],
@@ -568,7 +568,7 @@ describe('Testing marketplace capability', () => {
               const promise = marketplace.removeCartItems(removeCartItemsParams);
 
               const removeCartItemsMessage = utils.findMessageByFunc('marketplace.removeCartItems');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: removeCartItemsMessage!.id,
                   args: [undefined, cart],
@@ -648,7 +648,7 @@ describe('Testing marketplace capability', () => {
               const promise = marketplace.updateCartStatus(cartStatusParams);
 
               const updateCartStatusMessage = utils.findMessageByFunc('marketplace.updateCartStatus');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: updateCartStatusMessage!.id,
                   args: [undefined, cart],
