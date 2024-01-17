@@ -98,8 +98,7 @@ const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
     title: 'Register Before Suspend/Terminate Handler',
     onClick: async (setResult) => {
       app.lifecycle.registerBeforeSuspendOrTerminateHandler((): void => {
-        alert('beforeSuspendOrTerminate received');
-        setResult('Success');
+        setResult('beforeSuspendOrTerminate received');
       });
 
       return 'registered';
