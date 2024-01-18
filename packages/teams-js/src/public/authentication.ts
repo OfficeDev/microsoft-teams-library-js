@@ -62,10 +62,10 @@ export namespace authentication {
    * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
    * @returns `Promise` that will be fulfilled with the result from the authentication pop-up, if successful. The string in this result is provided in the parameter
-   * passed by your app when it calls {@link notifySuccess} in the pop-up window after returning from the identity provider redirect.
+   * passed by your app when it calls {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} in the pop-up window after returning from the identity provider redirect.
    *
    * @throws `Error` if the authentication request fails or is canceled by the user. This error is provided in the parameter passed by your app when it calls
-   * {@link notifyFailure} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
+   * {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
    * the infrastructure depending on the failure (e.g., a user cancelation)
    *
    */
@@ -404,7 +404,12 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param _callbackUrl - This parameter is deprecated and unused
+   */
+  export function notifySuccess(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} instead.
    */
   export function notifySuccess(result?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
@@ -427,6 +432,12 @@ export namespace authentication {
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
    * @param _callbackUrl - This parameter is deprecated and unused
+   */
+  export function notifyFailure(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} instead.
    */
   export function notifyFailure(reason?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
