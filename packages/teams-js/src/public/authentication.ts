@@ -426,10 +426,9 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
+   * @param _callbackUrl - This parameter is deprecated and unused
    */
-  export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'reason', reason);
+  export function notifyFailure(reason?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
     sendMessageToParent('authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
