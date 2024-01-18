@@ -29,7 +29,7 @@
     {
       "title": "registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": "<2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -44,7 +44,7 @@
     {
       "title": "registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -59,7 +59,7 @@
     {
       "title": "registerForVideoEffect - Handler - Failed",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": "<2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -74,7 +74,7 @@
     {
       "title": "registerForVideoEffect - Handler - Failed",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -110,7 +110,7 @@
     {
       "title": "videoEx.registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": "<2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -126,7 +126,7 @@
     {
       "title": "videoEx.registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.3.0"
       },
       "type": "registerAndRaiseEvent",
@@ -142,7 +142,7 @@
     {
       "title": "videoEx.registerForVideoEffect - Handler - Failed",
       "version": ">2.12.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.3.0"
       },
       "type": "registerAndRaiseEvent",

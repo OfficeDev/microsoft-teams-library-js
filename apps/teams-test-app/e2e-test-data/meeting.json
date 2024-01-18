@@ -224,7 +224,7 @@
       "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Success",
       "type": "registerAndRaiseEvent",
       "version": ">2.17.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.8.0"
       },
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
@@ -240,7 +240,7 @@
       "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Error",
       "type": "registerAndRaiseEvent",
       "version": ">2.17.0",
-      "hostSdksVersion": {
+      "hostSdkVersion": {
         "web": ">=2.8.0"
       },
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
