@@ -319,7 +319,7 @@ export namespace dialog {
       }
 
       /**
-       * Checks if dialog.url.communication module is supported by the host
+       * Checks if dialog.url.parentCommunication capability is supported by the host
        *
        * @returns boolean to represent whether dialog.url.communication module is supported
        *
