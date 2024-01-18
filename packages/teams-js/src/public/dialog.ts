@@ -261,7 +261,10 @@ export namespace dialog {
         }
 
         sendMessageToParentWithVersion(
-          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
+          getApiVersionTag(
+            dialogTelemetryVersionNumber,
+            ApiName.Dialog_Url_ParentCommunication_SendMessageToParentFromDialog,
+          ),
           'messageForParent',
           [message],
         );
@@ -284,7 +287,7 @@ export namespace dialog {
         }
 
         sendMessageToParentWithVersion(
-          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_ParentCommunication_SendMessageToDialog),
           'messageForChild',
           [message],
         );
