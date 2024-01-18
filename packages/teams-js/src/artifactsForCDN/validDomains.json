@@ -34,6 +34,7 @@
     "teams.cloud.microsoft",
     "outlook.cloud.microsoft",
     "m365.cloud.microsoft",
-    "copilot.microsoft.com"
+    "copilot.microsoft.com",
+    "windows.msn.com"
   ]
 }
