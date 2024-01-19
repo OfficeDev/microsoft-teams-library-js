@@ -21,7 +21,7 @@ export interface ApiWithTextInputProps<T> {
   defaultInput?: string;
 }
 
-export const ApiWithTextInput = <T extends unknown>(props: ApiWithTextInputProps<T>): React.ReactElement => {
+export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.ReactElement => {
   const { name, defaultInput, onClick, title } = props;
   const [result, setResult] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);

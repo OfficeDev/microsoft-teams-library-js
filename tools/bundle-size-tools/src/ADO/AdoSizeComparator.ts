@@ -1,6 +1,6 @@
 import { WebApi } from 'azure-devops-node-api';
 import { BuildResult, BuildStatus } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import JSZip from 'jszip';
+import * as JSZip from 'jszip';
 import { join } from 'path';
 
 import { BundleComparison, BundleComparisonResult } from '../BundleBuddyTypes';
