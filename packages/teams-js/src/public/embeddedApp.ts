@@ -1,7 +1,10 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { app } from './app';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { meeting } from './meeting';
 import { runtime } from './runtime';
 
 /**
@@ -111,5 +114,41 @@ export namespace embeddedApp {
    */
   export function giveFocus(navigateForward?: boolean): void {
     sendAndHandleSdkError('focusEnter', [navigateForward]); // This should be sent to the child
+  }
+
+  export namespace meetingProvider {
+    export function registerMeetingProviderHandlers(
+      getMeetingDetailsHandler: () => meeting.IMeetingDetailsResponse | null,
+    ): void {
+      registerGetMeetingDetailsHandler(getMeetingDetailsHandler);
+    }
+
+    export function unregisterMeetingProviderHandlers(): void {
+      removeHandler('meeting.getMeetingDetails.request');
+    }
+
+    function registerGetMeetingDetailsHandler(handler: () => meeting.IMeetingDetailsResponse | null): void {
+      // allow for registration cleanup even when not finished initializing
+      ensureInitialized(runtime);
+
+      if (isNullOrUndefined(handler) || !isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      registerHandler('meeting.getMeetingDetails.request', () => {
+        const meetingDetails: meeting.IMeetingDetailsResponse | null = handler();
+        sendMessageToParent('meeting.getMeetingDetails.response', [meetingDetails]);
+      });
+    }
+
+    /**
+     * @beta
+     * @returns true if embedded apps are supported in this host and false otherwise
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && embeddedApp.isSupported() && runtime.supports.embeddedApp?.meetingProvider
+        ? true
+        : false;
+    }
   }
 }

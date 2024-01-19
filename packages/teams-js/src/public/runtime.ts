@@ -170,7 +170,9 @@ interface IRuntimeV3 extends IBaseRuntime {
       };
       readonly update?: {};
     };
-    readonly embeddedApp?: {};
+    readonly embeddedApp?: {
+      readonly meetingProvider?: {};
+    };
     readonly externalAppAuthentication?: {};
     readonly externalAppCardActions?: {};
     readonly geoLocation?: {
