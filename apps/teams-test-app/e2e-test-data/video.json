@@ -29,6 +29,24 @@
     {
       "title": "registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": "<2.3.0"
+      },
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerForVideoEffect",
+      "eventName": "videoEffectToApply",
+      "eventData": {
+        "effectId": "nextEffectId"
+      },
+      "expectedTestAppValue": "video effect changed to \"nextEffectId\"",
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined"
+    },
+    {
+      "title": "registerForVideoEffect - Handler - Success",
+      "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": ">=2.3.0"
+      },
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_registerForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -41,6 +59,24 @@
     {
       "title": "registerForVideoEffect - Handler - Failed",
       "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": "<2.3.0"
+      },
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_registerForVideoEffect",
+      "eventName": "videoEffectToApply",
+      "eventData": {
+        "effectId": "anInvalidEffectId"
+      },
+      "expectedTestAppValue": "failed to change effect to \"anInvalidEffectId\"",
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: false, effectId: anInvalidEffectId, detail: InvalidEffectId"
+    },
+    {
+      "title": "registerForVideoEffect - Handler - Failed",
+      "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": ">=2.3.0"
+      },
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_registerForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -74,6 +110,25 @@
     {
       "title": "videoEx.registerForVideoEffect - Handler - Success",
       "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": "<2.3.0"
+      },
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_videoExRegisterForVideoEffect",
+      "eventName": "videoEffectToApply",
+      "eventData": {
+        "effectId": "nextEffectId",
+        "effectParameter": "nextEffectParam"
+      },
+      "expectedTestAppValue": "video effect changed to \"nextEffectId\", effect param: \"nextEffectParam\"",
+      "expectedAlertValue": "setVideoEffectAppliedResult called with isReady: true, effectId: nextEffectId, detail: undefined"
+    },
+    {
+      "title": "videoEx.registerForVideoEffect - Handler - Success",
+      "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": ">=2.3.0"
+      },
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_videoExRegisterForVideoEffect",
       "eventName": "videoEffectToApply",
@@ -87,6 +142,9 @@
     {
       "title": "videoEx.registerForVideoEffect - Handler - Failed",
       "version": ">2.12.0",
+      "hostSdkVersion": {
+        "web": ">=2.3.0"
+      },
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_videoExRegisterForVideoEffect",
       "eventName": "videoEffectToApply",
