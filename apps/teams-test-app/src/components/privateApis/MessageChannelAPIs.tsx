@@ -1,4 +1,4 @@
-import { logs } from '@microsoft/teams-js';
+import { messageChannels } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils';
@@ -10,7 +10,7 @@ const GetTelemetryPort = (): React.ReactElement =>
     title: 'Check Telemetry Port Capability',
     onClick: async () => {
       // TODO this is test app, need to look at how this should be tested
-      const port = await logs.getTelemetryPort();
+      const port = await messageChannels.getTelemetryPort();
       return `Telemetry port: ${port}`;
     },
   });

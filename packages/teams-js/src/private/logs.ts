@@ -6,8 +6,6 @@ import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
-let telemetryPort: MessagePort | undefined;
-
 /**
  * @hidden
  * Namespace to interact with the logging part of the SDK.
@@ -54,5 +52,20 @@ export namespace logs {
     } else {
       removeHandler('log.request');
     }
+  }
+
+  /**
+   * @hidden
+   *
+   * Checks if the logs capability is supported by the host
+   * @returns boolean to represent whether the logs capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function isSupported(): boolean {
+    return ensureInitialized(runtime) && runtime.supports.logs ? true : false;
   }
 }

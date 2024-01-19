@@ -52,6 +52,9 @@ class CommunicationPrivate {
   public static promiseCallbacks: {
     [id: number]: Function; // (args[]) => void
   } = {};
+  public static portCallbacks: {
+    [id: number]: Function; // (args[], port) => void
+  } = {};
   public static messageListener: Function;
 }
 
@@ -143,6 +146,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
   CommunicationPrivate.promiseCallbacks = {};
+  CommunicationPrivate.portCallbacks = {};
 }
 
 /**
@@ -317,6 +321,34 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] | un
       args,
     );
     resolve(waitForResponse<T>(request.id));
+  });
+}
+
+/**
+ * @hidden
+ * Send a message to parent requesting a MessageChannel Port.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function requestPortFromParent(actionName: string, args: any[] | undefined = undefined): Promise<MessagePort> {
+  return new Promise((resolve) => {
+    const request = sendMessageToParentHelper(
+      getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),
+      actionName,
+      args,
+    );
+    resolve(waitForPort(request.id));
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function waitForPort(requestId: number): Promise<MessagePort> {
+  return new Promise<MessagePort>((resolve) => {
+    CommunicationPrivate.portCallbacks[requestId] = resolve;
   });
 }
 
@@ -690,10 +722,6 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
-    let port: MessagePort | null = null;
-    if (evt.ports && evt.ports[0] instanceof MessagePort) {
-      port = evt.ports[0];
-    }
     const callback = CommunicationPrivate.callbacks[message.id];
     logger('Received a response from parent for message %i', message.id);
     if (callback) {
@@ -711,10 +739,22 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
     if (promiseCallback) {
       logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
-      promiseCallback(port ? [port] : message.args);
+      promiseCallback(message.args);
 
       logger('Removing registered promise callback for message %i', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
+    }
+    const portCallback = CommunicationPrivate.portCallbacks[message.id];
+    if (portCallback) {
+      logger('Invoking the registered port callback for message %i with arguments %o', message.id, message.args);
+      let port: MessagePort | null = null;
+      if (evt.ports && evt.ports[0] instanceof MessagePort) {
+        port = evt.ports[0];
+      }
+      portCallback(port);
+
+      logger('Removing registered port callback for message %i', message.id);
+      delete CommunicationPrivate.portCallbacks[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
