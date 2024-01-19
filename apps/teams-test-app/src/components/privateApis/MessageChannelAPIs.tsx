@@ -15,10 +15,10 @@ const GetTelemetryPort = (): React.ReactElement =>
     },
   });
 
-const TelemetryAPIs = (): React.ReactElement => (
-  <ModuleWrapper title="Telemetry">
+const MessageChannelAPIs = (): React.ReactElement => (
+  <ModuleWrapper title="Message Channels">
     <GetTelemetryPort />
   </ModuleWrapper>
 );
 
-export default TelemetryAPIs;
+export default MessageChannelAPIs;
