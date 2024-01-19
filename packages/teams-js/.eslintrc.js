@@ -1,7 +1,7 @@
 module.exports = {
   ignorePatterns: ['.eslintrc.js'],
   parserOptions: {
-    project: './tsconfig.strictNullChecks.json',
+    project: './tsconfig.eslint.json',
   },
   plugins: ['strict-null-checks'],
   rules: {

@@ -106,7 +106,7 @@ export enum ApiName {
   GeoLocation_GetCurrentLocation = 'geoLocation.getCurrentLocation',
   GeoLocation_HasPermission = 'geoLocation.hasPermission',
   GeoLocation_Map_ChooseLocation = 'geoLocation.map.chooseLocation',
-  GeoLocation_RequestPermission = 'geoLocation.hasPermission',
+  GeoLocation_RequestPermission = 'geoLocation.requestPermission',
   GeoLocation_ShowLocation = 'geoLocation.showLocation',
   Interactive_GetClientInfo = 'interactive.getClientInfo',
   Interactive_GetClientRoles = 'interactive.getClientRoles',
