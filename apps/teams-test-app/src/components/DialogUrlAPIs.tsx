@@ -91,7 +91,7 @@ const DialogUrlAPIs = (): ReactElement => {
             return '';
           } else {
             setResult('Message sent to child');
-            dialog.url.sendMessageToDialog(message);
+            dialog.url.parentCommunication.sendMessageToDialog(message);
             return '';
           }
         },
@@ -126,7 +126,7 @@ const DialogUrlAPIs = (): ReactElement => {
             }
           } else {
             setResult('Message sent to parent');
-            dialog.url.sendMessageToParentFromDialog(message);
+            dialog.url.parentCommunication.sendMessageToParentFromDialog(message);
           }
           return '';
         },
@@ -149,7 +149,7 @@ const DialogUrlAPIs = (): ReactElement => {
             msg = message;
             setResult(message);
           };
-          dialog.url.registerOnMessageFromParent(callback);
+          dialog.url.parentCommunication.registerOnMessageFromParent(callback);
         }
         return msg;
       },
