@@ -11,6 +11,7 @@ const GetTelemetryPort = (): React.ReactElement =>
     onClick: async () => {
       // TODO this is test app, need to look at how this should be tested
       const port = await messageChannels.getTelemetryPort();
+      port.postMessage('test message through telemetry port');
       return `Telemetry port: ${port}`;
     },
   });
