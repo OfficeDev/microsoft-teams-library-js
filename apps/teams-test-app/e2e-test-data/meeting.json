@@ -1,12 +1,7 @@
 {
   "name": "Meeting",
   "platforms": "Web",
-  "testUrlParams": [
-    [
-      "frameContext",
-      "sidePanel"
-    ]
-  ],
+  "testUrlParams": [["frameContext", "sidePanel"]],
   "testCases": [
     {
       "title": "getIncomingClientAudioState API Call - Success",
@@ -229,6 +224,9 @@
       "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Success",
       "type": "registerAndRaiseEvent",
       "version": ">2.17.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
       "eventName": "audioDeviceSelectionChanged",
       "eventData": {
@@ -242,6 +240,9 @@
       "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Error",
       "type": "registerAndRaiseEvent",
       "version": ">2.17.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
       "eventName": "audioDeviceSelectionChanged",
       "eventData": {
