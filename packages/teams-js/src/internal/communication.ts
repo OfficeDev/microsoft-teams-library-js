@@ -690,6 +690,10 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
+    let port: MessagePort | null = null;
+    if (evt.ports && evt.ports[0] instanceof MessagePort) {
+      port = evt.ports[0];
+    }
     const callback = CommunicationPrivate.callbacks[message.id];
     logger('Received a response from parent for message %i', message.id);
     if (callback) {
@@ -707,7 +711,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
     if (promiseCallback) {
       logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
-      promiseCallback(message.args);
+      promiseCallback(port ? [port] : message.args);
 
       logger('Removing registered promise callback for message %i', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
