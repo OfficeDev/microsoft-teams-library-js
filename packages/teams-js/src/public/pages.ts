@@ -857,6 +857,8 @@ export namespace pages {
    * Hide from docs
    * ------
    * Provides APIs to interact with the full-trust part of the SDK. Limited to 1P applications
+   * @internal
+   * Limited to Microsoft-internal use
    */
   export namespace fullTrust {
     /**
@@ -864,6 +866,7 @@ export namespace pages {
      * Hide from docs
      * ------
      * Place the tab into full-screen mode.
+     *
      */
     export function enterFullscreen(): void {
       ensureInitialized(runtime, FrameContexts.content);

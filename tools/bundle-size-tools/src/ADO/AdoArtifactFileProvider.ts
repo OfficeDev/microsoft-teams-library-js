@@ -1,5 +1,5 @@
 import { WebApi } from 'azure-devops-node-api';
-import JSZip from 'jszip';
+import * as JSZip from 'jszip';
 
 import { BundleBuddyConfig, WebpackStatsJson } from '../BundleBuddyTypes';
 import { decompressStatsFile, unzipStream } from '../utilities';

@@ -45,6 +45,31 @@ describe('runtime', () => {
       expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
     });
 
+    it('applyRuntime fast-forwards v4 runtime config to latest version', () => {
+      const runtimeV4 = {
+        apiVersion: 4,
+        isLegacyTeams: false,
+        supports: {
+          dialog: {
+            card: {
+              bot: {},
+            },
+            url: {
+              bot: {},
+              parentCommunication: {},
+            },
+            update: {},
+          },
+        },
+      };
+      applyRuntimeConfig(runtimeV4);
+      expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
+      if (isRuntimeInitialized(runtime)) {
+        // eslint-disable-next-line strict-null-checks/all
+        expect(runtime.supports.dialog).toEqual(runtimeV4.supports.dialog);
+      }
+    });
+
     it('applyRuntime fast-forwards v3 runtime config to latest version', () => {
       const runtimeV3 = {
         apiVersion: 3,
@@ -78,13 +103,23 @@ describe('runtime', () => {
           },
         },
       };
+      const latestRuntimeDialogInfo = {
+        card: {
+          bot: {},
+        },
+        url: {
+          bot: {},
+          parentCommunication: {},
+        },
+        update: {},
+      };
       applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
         /* eslint-disable-next-line strict-null-checks/all, @typescript-eslint/no-explicit-any*/ /* must use any here since appNotification isn't supposed to be a property anymore */
         expect((runtime.supports as any).appNotification).toBeUndefined();
         // eslint-disable-next-line strict-null-checks/all
-        expect(runtime.supports.dialog).toEqual(runtimeV2.supports.dialog);
+        expect(runtime.supports.dialog).toEqual(latestRuntimeDialogInfo);
       }
     });
 
@@ -99,13 +134,21 @@ describe('runtime', () => {
           },
         },
       };
+      const latestRuntimeDialogInfo = {
+        card: undefined,
+        url: {
+          bot: {},
+          parentCommunication: {},
+        },
+        update: {},
+      };
 
       const fastForwardConfig = fastForwardRuntime(runtimeV1);
       expect(fastForwardConfig).toEqual({
         apiVersion: latestRuntimeApiVersion,
         hostVersionsInfo: undefined,
         isLegacyTeams: false,
-        supports: { dialog: { card: undefined, url: { bot: {}, update: {} }, update: {} } },
+        supports: { dialog: latestRuntimeDialogInfo },
       });
     });
 
