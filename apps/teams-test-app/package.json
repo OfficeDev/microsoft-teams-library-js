@@ -20,6 +20,7 @@
     "start:local": "webpack serve --config webpack.local.config.js"
   },
   "dependencies": {
+    "@azure/msal-browser": "3.7.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },

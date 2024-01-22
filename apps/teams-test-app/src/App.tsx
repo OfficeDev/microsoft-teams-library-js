@@ -1,5 +1,6 @@
 import './App.css';
 
+import { PublicClientNext, IPublicClientApplication } from '@azure/msal-browser';
 import { app, appInitialization, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -61,13 +62,33 @@ import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
+let auth: IPublicClientApplication | null = null;
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize();
   } else {
-    app.initialize();
+    app.initialize().then(async () => {
+      auth = await PublicClientNext.createPublicClientApplication({
+        auth: {
+          clientId: '36b1586d-b1da-45d2-9b32-899c3757b6f8',
+          redirectUri: `${window.location.origin}/callback/v2`,
+          supportsNestedAppAuth: true,
+        },
+      });
+
+      auth
+        ?.acquireTokenSilent({
+          scopes: ['api://taskmeow.com/botid-36b1586d-b1da-45d2-9b32-899c3757b6f8/access_as_user'],
+        })
+        .then((authResponse) => {
+          console.log('>>>', authResponse);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
   }
 }
 
