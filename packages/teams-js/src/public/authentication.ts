@@ -226,6 +226,7 @@ export namespace authentication {
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
+          authTokenRequest?.tenantId,
         ]),
       );
     }).then(([success, result]: [boolean, string]) => {
@@ -546,6 +547,10 @@ export namespace authentication {
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
+    /**
+     * An optional identifier of the home tenant for which to acquire the acess token for (used in cross-tenant shared channels).
+     */
+    tenantId?: string;
   }
 
   /**
