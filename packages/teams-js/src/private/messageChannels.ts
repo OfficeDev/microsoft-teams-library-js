@@ -2,8 +2,6 @@ import { requestPortFromParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { runtime } from '../public/runtime';
 
-let telemetryPort: MessagePort | undefined;
-
 /**
  * @hidden
  * Namespace to request message ports from the host application.
@@ -12,6 +10,7 @@ let telemetryPort: MessagePort | undefined;
  * Limited to Microsoft-internal use
  */
 export namespace messageChannels {
+  let telemetryPort: MessagePort | undefined;
   /**
    * @hidden
    *
@@ -26,26 +25,35 @@ export namespace messageChannels {
    */
   export async function getTelemetryPort(): Promise<MessagePort> {
     // If the port has already been initialized, return it.
-    // TODO is there a pattern for holding things like this?
     if (telemetryPort) {
       return telemetryPort;
     }
 
-    if (ensureInitialized(runtime)) {
-      // Send request for port
-      try {
-        const response = await requestPortFromParent('messageChannels.getTelemetryPort');
-        if (response instanceof MessagePort) {
-          telemetryPort = response;
-          return telemetryPort;
-        } else {
-          throw new Error('MessageChannels.getTelemetryPort: Host did not return a MessagePort.');
-        }
-      } catch (e) {
-        throw new Error('MessageChannels.getTelemetryPort: Error thrown from message promise.');
-      }
-    }
+    ensureInitialized(runtime);
 
-    throw new Error('MessageChannels.getTelemetryPort: SDK not initialized.');
+    // Send request for telemetry port
+    let response: MessagePort | undefined;
+    try {
+      response = await requestPortFromParent('messageChannels.getTelemetryPort');
+    } catch (e) {
+      throw new Error('MessageChannels.getTelemetryPort: Error thrown from message promise.');
+    }
+    if (response instanceof MessagePort) {
+      telemetryPort = response;
+      return telemetryPort;
+    } else {
+      throw new Error('MessageChannels.getTelemetryPort: Host did not return a MessagePort.');
+    }
+  }
+
+  /**
+   * @hidden
+   * Undocumented function used to clear state between unit tests
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function _clearTelemetryPort() {
+    telemetryPort = undefined;
   }
 }
