@@ -557,7 +557,9 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Gets a list of cloud storage folders added to the channel
+   * Gets a list of cloud storage folders added to the channel. This function will not timeout;
+   * the callback will only return when the host responds with a list of folders or error.
+   *
    * @param channelId - ID of the channel whose cloud storage folders should be retrieved
    * @param callback - Callback that will be triggered post folders load
    *
