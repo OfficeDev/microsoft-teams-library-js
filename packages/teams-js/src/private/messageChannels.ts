@@ -53,7 +53,7 @@ export namespace messageChannels {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function _clearTelemetryPort() {
+  export function _clearTelemetryPort(): void {
     telemetryPort = undefined;
   }
 }

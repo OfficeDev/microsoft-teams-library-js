@@ -660,17 +660,7 @@ describe('Testing communication', () => {
     let utils: Utils = new Utils();
     const actionName = 'test';
     beforeEach(() => {
-      class MockMessagePort {
-        postMessage = jest.fn();
-        onmessage = jest.fn();
-        start = jest.fn();
-        close = jest.fn();
-        onmessageerror = null;
-        addEventListener = jest.fn();
-        removeEventListener = jest.fn();
-        dispatchEvent = jest.fn();
-      }
-
+      class MockMessagePort {}
       global.MessagePort = MockMessagePort as unknown as typeof MessagePort;
       utils = new Utils();
       communication.uninitializeCommunication();

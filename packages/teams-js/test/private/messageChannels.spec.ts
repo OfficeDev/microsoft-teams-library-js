@@ -1,9 +1,9 @@
+import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { messageChannels } from '../../src/private/messageChannels';
 import { app } from '../../src/public/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
-import * as communication from '../../src/internal/communication';
 
 describe('messageChannels', () => {
   // Use to send a mock message from the app.
@@ -16,17 +16,7 @@ describe('messageChannels', () => {
     utils.childWindow.closed = false;
 
     // Mock out MessagePort to support constructor and instanceof checks
-    class MockMessagePort {
-      postMessage = jest.fn();
-      onmessage = jest.fn();
-      start = jest.fn();
-      close = jest.fn();
-      onmessageerror = null;
-      addEventListener = jest.fn();
-      removeEventListener = jest.fn();
-      dispatchEvent = jest.fn();
-    }
-
+    class MockMessagePort {}
     global.MessagePort = MockMessagePort as unknown as typeof MessagePort;
   });
 
