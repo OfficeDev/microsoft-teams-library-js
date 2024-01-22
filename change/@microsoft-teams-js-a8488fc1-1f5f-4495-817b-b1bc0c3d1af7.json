@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "enable acquiring of access token for cross tenant resources",
+  "comment": "Enabled acquiring of access token for cross-tenant resources",
   "packageName": "@microsoft/teams-js",
   "email": "153236114+arsa-MSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
