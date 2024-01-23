@@ -1,9 +1,20 @@
-import { app } from './app';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import {
+  app,
+  notifyAppLoadedHelper,
+  notifyExpectedFailureHelper,
+  notifyFailureHelper,
+  notifySuccessHelper,
+} from './app';
 
 /**
  * @deprecated
  * As of 2.0.0, please use {@link app} namespace instead.
+ *
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
+const appInitializationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace appInitialization {
   /**
    * @deprecated
@@ -41,7 +52,9 @@ export namespace appInitialization {
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
    */
   export function notifyAppLoaded(): void {
-    app.notifyAppLoaded();
+    notifyAppLoadedHelper(
+      getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifyAppLoaded),
+    );
   }
 
   /**
@@ -51,7 +64,9 @@ export namespace appInitialization {
    * Notifies the frame that app initialization is successful and is ready for user interaction.
    */
   export function notifySuccess(): void {
-    app.notifySuccess();
+    notifySuccessHelper(
+      getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifySuccess),
+    );
   }
 
   /**
@@ -63,7 +78,10 @@ export namespace appInitialization {
    * during initialization as well as an optional message.
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
-    app.notifyFailure(appInitializationFailedRequest);
+    notifyFailureHelper(
+      getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifyFailure),
+      appInitializationFailedRequest,
+    );
   }
 
   /**
@@ -74,6 +92,9 @@ export namespace appInitialization {
    * @param expectedFailureRequest - The expected failure request containing the reason and an optional message
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
-    app.notifyExpectedFailure(expectedFailureRequest);
+    notifyExpectedFailureHelper(
+      getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifyExpectedFailure),
+      expectedFailureRequest,
+    );
   }
 }
