@@ -1,9 +1,15 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isValidHttpsURL } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const secondaryBrowserTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to power up the in-app browser experiences in the host app.
@@ -36,7 +42,11 @@ export namespace secondaryBrowser {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
 
-    return sendAndHandleSdkError('secondaryBrowser.open', url.toString());
+    return sendAndHandleSdkErrorWithVersion(
+      getApiVersionTag(secondaryBrowserTelemetryVersionNumber, ApiName.SecondaryBrowser_OpenUrl),
+      'secondaryBrowser.open',
+      url.toString(),
+    );
   }
 
   /**

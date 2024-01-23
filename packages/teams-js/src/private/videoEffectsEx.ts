@@ -1,4 +1,4 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { inServerSideRenderingEnvironment } from '../internal/utils';
@@ -26,7 +26,7 @@ export namespace videoEffectsEx {
 
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
-    : new VideoPerformanceMonitor(sendMessageToParent);
+    : new VideoPerformanceMonitor(sendMessageToParentWithVersion);
   /**
    * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
