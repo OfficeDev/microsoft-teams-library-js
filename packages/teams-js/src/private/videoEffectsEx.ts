@@ -1,4 +1,4 @@
-import { sendMessageToParent, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
