@@ -1,7 +1,8 @@
-import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
+import { sendAndUnwrapWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -13,7 +14,11 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace teams {
   export enum ChannelType {
     Regular = 0,
@@ -59,7 +64,12 @@ export namespace teams {
       throw new Error('[teams.getTeamChannels] Callback cannot be null');
     }
 
-    sendMessageToParent('teams.getTeamChannels', [groupId], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_GetTeamChannels),
+      'teams.getTeamChannels',
+      [groupId],
+      callback,
+    );
   }
 
   /**
@@ -88,7 +98,12 @@ export namespace teams {
       throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
     }
 
-    sendMessageToParent('teams.refreshSiteUrl', [threadId], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_RefreshSiteUrl),
+      'teams.refreshSiteUrl',
+      [threadId],
+      callback,
+    );
   }
 
   /**
@@ -149,7 +164,14 @@ export namespace teams {
           }
 
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-          resolve(sendAndUnwrap('getUserJoinedTeams', teamInstanceParameters));
+          resolve(
+            sendAndUnwrapWithVersion(
+              getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_JoinedTeams_GetUserJoinedTeams),
+              'getUserJoinedTeams',
+              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+              teamInstanceParameters,
+            ),
+          );
         });
       }
       /**
@@ -190,7 +212,13 @@ export namespace teams {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-        resolve(sendAndUnwrap('getConfigSetting', key));
+        resolve(
+          sendAndUnwrapWithVersion(
+            getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_GetConfigSetting),
+            'getConfigSetting',
+            key,
+          ),
+        );
       });
     }
 
