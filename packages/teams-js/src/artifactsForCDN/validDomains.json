@@ -36,6 +36,7 @@
     "m365.cloud.microsoft",
     "copilot.microsoft.com",
     "windows.msn.com",
+    "loop.microsoft.com",
     "*.loop.microsoft.com",
     "loop.cloud.microsoft",
     "loop.cloud-dev.microsoft"
