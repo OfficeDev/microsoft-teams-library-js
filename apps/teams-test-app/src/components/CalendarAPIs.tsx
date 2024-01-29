@@ -37,12 +37,27 @@ const OpenCalendarItem = (): React.ReactElement =>
       },
     },
   });
+const JoinMeetingItem = (): React.ReactElement =>
+  ApiWithTextInput<string>({
+    name: 'joinMeetingItem',
+    title: 'Join Meeting',
+    onClick: {
+      submit: async (input) => {
+        await calendar.joinMeeting(input);
+        return 'Completed';
+      },
+      validateInput: (x) => {
+        console.log(x);
+      },
+    },
+  });
 
 const CalendarAPIs = (): ReactElement => (
   <ModuleWrapper title="Calendar">
     <CheckCalendarCapability />
     <ComposeMeeting />
     <OpenCalendarItem />
+    <JoinMeetingItem />
   </ModuleWrapper>
 );
 

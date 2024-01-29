@@ -75,6 +75,27 @@ export namespace calendar {
       }
     });
   }
+  /**
+   * Checks if the calendar capability is supported by the host
+   * @returns boolean to represent whether the calendar capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw new Error('Not supported');
+      }
+      resolve(
+        sendAndHandleStatusAndReasonWithVersion(
+          getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_JoinMeeting),
+          'calendar.joinMeeting',
+          joinMeetingParams,
+        ),
+      );
+    });
+  }
 
   /**
    * Checks if the calendar capability is supported by the host
@@ -105,5 +126,56 @@ export namespace calendar {
     subject?: string;
     /** The body content of the meeting. */
     content?: string;
+  }
+
+  export interface JoinMeetingParams {
+    skypeTeamsMeetingUrl: string | null;
+    subject: string | null;
+    source: string;
+    conversationId: string;
+    messageId: string;
+    rootMessageId: string;
+    isBroadcastMeeting: boolean;
+    t2BroadcastParticipantRoleDetails: IT2BroadcastParticipantRoleDetails | undefined;
+  }
+
+  export interface IT2BroadcastParticipantRoleDetails {
+    broadcastId: string;
+    broadcastRole: Promise<BroadcastParticipantRole> | BroadcastParticipantRole;
+    isBroadcastMeeting: boolean;
+    broadcastCorrelationId: string;
+    allowBroadcastProducerJoinsInT2: boolean;
+    isT2SupportedBroadcastMeeting: (
+      broadcastRole: BroadcastParticipantRole,
+      allowBroadcastProducerJoinsInT2: boolean,
+      clientType?: ClientType,
+    ) => boolean;
+    handleBroadcastMeetingRedirect: (
+      broadcastRole: BroadcastParticipantRole,
+      entityCommand: any,
+      broadcastId: string,
+      logger: any,
+      broadcastCorrelationId: string,
+      clientType?: ClientType,
+    ) => void;
+  }
+
+  export enum BroadcastParticipantRole {
+    Attendee = 'Attendee',
+    Contributor = 'Contributor',
+    None = 'None',
+    Producer = 'Producer',
+  }
+
+  export enum ClientType {
+    Web = 'web',
+    Desktop = 'desktop',
+    CDLWorker = 'cdlworker',
+    Embed = 'embed', // it is used in telemetry service and service request headers for embed experiences
+    Maglev = 'maglev',
+    OutlookWeb = 'Outlook Web',
+    OutlookDesktop = 'Outlook Desktop',
+    OfficeWeb = 'Office Web',
+    OfficeDesktop = 'Office Desktop',
   }
 }
