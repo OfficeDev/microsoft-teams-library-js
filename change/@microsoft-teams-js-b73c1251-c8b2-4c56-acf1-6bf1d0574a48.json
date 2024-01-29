@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Fixed spelling error",
+  "comment": "Fixed spelling error in documentation for `tenantId` property on `AuthTokenRequestParameters` interface",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
   "dependentChangeType": "none"
