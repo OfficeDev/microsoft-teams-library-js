@@ -1,7 +1,7 @@
 {
-  "type": "patch",
+  "type": "none",
   "comment": "Fixed spelling error",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
-  "dependentChangeType": "patch"
+  "dependentChangeType": "none"
 }
