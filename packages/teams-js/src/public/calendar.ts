@@ -129,14 +129,14 @@ export namespace calendar {
   }
 
   export interface JoinMeetingParams {
-    skypeTeamsMeetingUrl: string | null;
-    subject: string | null;
+    skypeTeamsMeetingUrl: string;
+    subject: string;
     source: string;
     conversationId: string;
     messageId: string;
     rootMessageId: string;
-    isBroadcastMeeting: boolean;
-    t2BroadcastParticipantRoleDetails: IT2BroadcastParticipantRoleDetails | undefined;
+    isBroadcastMeeting?: boolean | undefined;
+    t2BroadcastParticipantRoleDetails?: IT2BroadcastParticipantRoleDetails | undefined;
   }
 
   export interface IT2BroadcastParticipantRoleDetails {
