@@ -20,6 +20,7 @@ import DialogUpdateAPIs from './components/DialogUpdateAPIs';
 import DialogUrlAPIs from './components/DialogUrlAPIs';
 import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
+import KeyboardShortcutsAPIs from './components/KeyboardShortcuts';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
 import LogAPIs from './components/LogsAPIs';
@@ -90,6 +91,17 @@ if (
 
 export const noHostSdkMsg = ' was called, but there was no response from the Host SDK.';
 
+// registeredKey could be things like "a", "Enter", etc.
+function registerForKeyPress(registeredKey: string): void {
+  window.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (event && event.key === registeredKey) {
+      alert(`Key pressed: ${event.key}`);
+    }
+  });
+}
+
+registerForKeyPress('Enter');
+
 /**
  * Generates and returns an error message explaining that a string input was expected
  * to be parsed into a JSON object but there was a parsing error.
@@ -126,6 +138,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <KeyboardShortcutsAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />

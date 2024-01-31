@@ -246,6 +246,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly interactive?: {};
     readonly secondaryBrowser?: {};
+    readonly keyboardShortcuts?: {};
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};

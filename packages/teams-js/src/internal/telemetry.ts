@@ -116,6 +116,8 @@ export enum ApiName {
   Interactive_GetNtpTime = 'interactive.getNtpTime',
   Interactive_RegisterClientId = 'interactive.registerClientId',
   Interactive_SetFluidContainerId = 'interactive.setFluidContainerId',
+  KeyboardShortcuts_GetKeyboardEventsHostCanHandle = 'keyboardShortcuts.getKeyboardEventsHostCanHandle',
+  KeyboardShortcuts_SendKeyboardShortcutToHost = 'keyboardShortcuts.sendKeyboardShortcutToHost',
   Location_GetLocation = 'location.getLocation',
   Location_ShowLocation = 'location.showLocation',
   Logs_Receive = 'log.receive',
