@@ -283,7 +283,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
+     * The current UI theme of the host. Possible values: "default", "dark", "contrast" or "glass".
      */
     theme: string;
 
