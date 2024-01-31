@@ -11,7 +11,7 @@ import {
  * @deprecated
  * As of 2.0.0, please use {@link app} namespace instead.
  *
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const appInitializationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
