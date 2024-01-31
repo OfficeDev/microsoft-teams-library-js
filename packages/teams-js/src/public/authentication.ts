@@ -548,7 +548,7 @@ export namespace authentication {
      */
     silent?: boolean;
     /**
-     * An optional identifier of the home tenant for which to acquire the acess token for (used in cross-tenant shared channels).
+     * An optional identifier of the home tenant for which to acquire the access token for (used in cross-tenant shared channels).
      */
     tenantId?: string;
   }
