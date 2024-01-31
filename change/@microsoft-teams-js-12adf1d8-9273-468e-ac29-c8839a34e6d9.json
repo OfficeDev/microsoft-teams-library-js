@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added apiVersionTag for telemetry in `AppInitialization`, `AppInstallDialog`, `AppWindow` capabilities and update `videoEffectsUtil` and other files.",
+  "comment": "Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
