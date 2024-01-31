@@ -41,14 +41,9 @@ const JoinMeetingItem = (): React.ReactElement =>
   ApiWithTextInput<string>({
     name: 'joinMeetingItem',
     title: 'Join Meeting',
-    onClick: {
-      submit: async (input) => {
-        await calendar.joinMeeting(input);
-        return 'Completed';
-      },
-      validateInput: (x) => {
-        console.log(x);
-      },
+    onClick: async (input) => {
+      await calendar.joinMeeting(input);
+      return 'Completed';
     },
   });
 

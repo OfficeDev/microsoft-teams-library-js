@@ -135,47 +135,5 @@ export namespace calendar {
     conversationId: string;
     messageId: string;
     rootMessageId: string;
-    isBroadcastMeeting?: boolean | undefined;
-    t2BroadcastParticipantRoleDetails?: IT2BroadcastParticipantRoleDetails | undefined;
-  }
-
-  export interface IT2BroadcastParticipantRoleDetails {
-    broadcastId: string;
-    broadcastRole: Promise<BroadcastParticipantRole> | BroadcastParticipantRole;
-    isBroadcastMeeting: boolean;
-    broadcastCorrelationId: string;
-    allowBroadcastProducerJoinsInT2: boolean;
-    isT2SupportedBroadcastMeeting: (
-      broadcastRole: BroadcastParticipantRole,
-      allowBroadcastProducerJoinsInT2: boolean,
-      clientType?: ClientType,
-    ) => boolean;
-    handleBroadcastMeetingRedirect: (
-      broadcastRole: BroadcastParticipantRole,
-      entityCommand: any,
-      broadcastId: string,
-      logger: any,
-      broadcastCorrelationId: string,
-      clientType?: ClientType,
-    ) => void;
-  }
-
-  export enum BroadcastParticipantRole {
-    Attendee = 'Attendee',
-    Contributor = 'Contributor',
-    None = 'None',
-    Producer = 'Producer',
-  }
-
-  export enum ClientType {
-    Web = 'web',
-    Desktop = 'desktop',
-    CDLWorker = 'cdlworker',
-    Embed = 'embed', // it is used in telemetry service and service request headers for embed experiences
-    Maglev = 'maglev',
-    OutlookWeb = 'Outlook Web',
-    OutlookDesktop = 'Outlook Desktop',
-    OfficeWeb = 'Office Web',
-    OfficeDesktop = 'Office Desktop',
   }
 }
