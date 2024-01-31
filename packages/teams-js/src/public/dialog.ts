@@ -271,7 +271,7 @@ export namespace dialog {
       }
 
       /**
-       *  Send message to the dialog from the parent
+       *  Send message to the dialog from the parent, DO NOT CHECK IN
        *
        * @param message - The message to send
        *

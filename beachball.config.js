@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const postbump = (packagePath, packageName, packageVersion) => {
-  fs.rm(`${packagePath}/CHANGELOG.json`, err => {
+  fs.rm(`${packagePath}/CHANGELOG.json`, (err) => {
     if (err) {
       console.log(err.message);
       return;
@@ -11,11 +11,14 @@ const postbump = (packagePath, packageName, packageVersion) => {
 };
 
 // Overriding the default entry renderer so that it just shows the comment without the author.
-const customRenderEntry = ChangelogEntry => new Promise(res => res(`- ${ChangelogEntry.comment}`));
+const customRenderEntry = (ChangelogEntry) => new Promise((res) => res(`- ${ChangelogEntry.comment}`));
 
 module.exports = {
   branch: 'origin/main',
   bumpDeps: false,
+  changeFilePrompt: {
+    changePrompt: 'Testing 1, 2, 3',
+  },
   disallowedChangeTypes: ['prerelease'],
   generateChangelog: true,
   hooks: { postbump },
