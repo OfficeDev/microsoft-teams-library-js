@@ -262,6 +262,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly config?: {};
       readonly currentApp?: {};
       readonly fullTrust?: {};
+      readonly responseButton?: {};
       readonly tabs?: {};
     };
     readonly people?: {};

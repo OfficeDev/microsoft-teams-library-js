@@ -15,7 +15,14 @@ import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import {
+  ErrorCode,
+  FrameInfo,
+  ShareDeepLinkParameters,
+  TabInformation,
+  TabInstance,
+  TabInstanceParameters,
+} from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -1102,6 +1109,119 @@ export namespace pages {
     export function isSupported(): boolean {
       return ensureInitialized(runtime) && runtime.supports.pages
         ? runtime.supports.pages.currentApp
+          ? true
+          : false
+        : false;
+    }
+  }
+
+  /**
+   * Provides APIs to interact with the button in hosts
+   *
+   * @beta
+   */
+  export namespace responseButton {
+    /**
+     * The required information that the app needs to let host apps know.
+     *
+     * @beta
+     */
+    export interface ResponseInfo {
+      /**
+       * The unique ID helps the host and apps identify which button it refers to.
+       *
+       * @beta
+       */
+      responseId: string;
+      /**
+       * Id of File on OneDrive
+       *
+       * @beta
+       */
+      oneDriveFileId: string;
+      /**
+       * The exact message where the action was invoked from
+       *
+       * @beta
+       */
+      messageId: string;
+
+      /**
+       * The conversation where the action was invoked from
+       *
+       * @beta
+       */
+      conversionId: string;
+    }
+
+    /**
+     * Notify host apps to show the response button.
+     * @param params - Parameters sent to host apps contain the required information.
+     *
+     * @beta
+     */
+    export function showResponseButton(params: ResponseInfo): Promise<void> {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      if (!params) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+      return sendAndHandleSdkErrorWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_ShowResponseButton),
+        'pages.responseButton.showResponseButton',
+        params,
+      );
+    }
+
+    /**
+     * Notify host apps to hide the response button
+     *
+     * @beta
+     */
+    export function hideResponseButton(): Promise<void> {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      return sendAndHandleSdkErrorWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_HideResponseButton),
+        'pages.responseButton.hideResponseButton',
+      );
+    }
+
+    /**
+     * Registers a handler for when the button in the host apps is clicked by the user
+     * @param appEventHandler - The handler to invoke when the user clicks on the button in host apps.
+     *
+     * @beta
+     */
+    export function responseButtonEventHandler(appEventHandler: handlerFunctionType): void {
+      registerHandlerHelperWithVersion(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_ResponseButtonEventHandler),
+        'pages.responseButton.responseButtonEventHandler',
+        appEventHandler,
+        [FrameContexts.content],
+        () => {
+          if (!isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
+    }
+
+    /**
+     * @hidden
+     *
+     * Checks if the pages.responseButton capability is supported by the host
+     * @returns boolean to represent whether the pages.responseButton capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.responseButton
           ? true
           : false
         : false;
