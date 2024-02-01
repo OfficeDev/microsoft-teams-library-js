@@ -39,7 +39,9 @@ export namespace messageChannels {
       return telemetryPort;
     }
 
-    isSupported();
+          if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
 
     // Send request for telemetry port, will throw if the request is rejected
     telemetryPort = await requestPortFromParentWithVersion(
