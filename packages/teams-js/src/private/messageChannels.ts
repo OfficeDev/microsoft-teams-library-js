@@ -1,6 +1,7 @@
 import { requestPortFromParentWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
@@ -39,9 +40,9 @@ export namespace messageChannels {
       return telemetryPort;
     }
 
-          if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
 
     // Send request for telemetry port, will throw if the request is rejected
     telemetryPort = await requestPortFromParentWithVersion(
