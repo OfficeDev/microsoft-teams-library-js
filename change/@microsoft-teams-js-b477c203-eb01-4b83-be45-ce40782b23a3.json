@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Add glass as possible value to theme",
+  "packageName": "@microsoft/teams-js",
+  "email": "abhishek.webyog@gmail.com",
+  "dependentChangeType": "none"
+}
