@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Doc updates for Teams mobile clarifications.",
+  "comment": "Clarified mobile usage in documentation for `app`, `barCode`, `media`, `meeting`, and `teamsAPIs` capabilities.",
   "packageName": "@microsoft/teams-js",
   "email": "joshuapa@microsoft.com",
   "dependentChangeType": "patch"
