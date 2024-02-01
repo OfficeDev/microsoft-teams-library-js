@@ -789,6 +789,10 @@ export namespace app {
 
   /**
    * Notifies the frame that app has loaded and to hide the loading indicator if one is shown.
+   * 
+   * @remarks
+   * For information about mobile behavior, see the [Content pages](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/create-tab-pages/content-page?tabs=teamsjs-v2#show-a-native-loading-indicator) article.
+   * 
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();

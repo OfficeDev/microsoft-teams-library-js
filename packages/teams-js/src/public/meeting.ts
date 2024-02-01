@@ -163,7 +163,7 @@ export namespace meeting {
    */
   export interface LiveStreamState {
     /**
-     * true when the current meeting is being streamed through RTMP, or false if it is not.
+     * `true` when the current meeting is being streamed through RTMP, or `false` if it is not.
      */
     isStreaming: boolean;
 
@@ -191,7 +191,7 @@ export namespace meeting {
   export interface IAppContentStageSharingCapabilities {
     /**
      * indicates whether app has permission to share contents to meeting stage.
-     * true when your `configurableTabs` or `staticTabs` entry's `context` array includes `meetingStage`.
+     * `true` when your `configurableTabs` or `staticTabs` entry's `context` array includes `meetingStage`.
      */
     doesAppHaveSharePermission: boolean;
   }
@@ -210,7 +210,7 @@ export namespace meeting {
    */
   export interface ISpeakingState {
     /**
-     * true when one or more participants in a meeting are speaking, or false if no participants are speaking
+     * `true` when one or more participants in a meeting are speaking, or `false` if no participants are speaking
      */
     isSpeakingDetected: boolean;
 
@@ -525,8 +525,8 @@ export namespace meeting {
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
-   * `result` will be true when incoming audio is muted and false when incoming audio is unmuted, or null when the request fails.
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when fetch is successful.
+   * `result` will be `true` when incoming audio is muted and `false` when incoming audio is unmuted, or `null` when the request fails.
    */
   export function getIncomingClientAudioState(callback: errorCallbackFunctionType): void {
     if (!callback) {
@@ -551,8 +551,8 @@ export namespace meeting {
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when toggle is successful.
-   * `result` will be true when incoming audio is muted and false when incoming audio is unmuted, or null when the toggling fails.
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when toggle is successful.
+   * `result` will be `true` when incoming audio is muted and `false` when incoming audio is unmuted, or `null` when the toggling fails.
    */
   export function toggleIncomingClientAudio(callback: errorCallbackFunctionType): void {
     if (!callback) {
@@ -571,8 +571,8 @@ export namespace meeting {
    * Allows an app to get the meeting details for the meeting
    *
    * @param callback - Callback contains 2 parameters, `error` and `meetingDetailsResponse`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when get is successful
-   * `result` can either contain a {@link IMeetingDetailsResponse} value, in case of a successful get or null when the get fails
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when get is successful
+   * `result` can either contain a {@link IMeetingDetailsResponse} value, in case of a successful get or `null` when the get fails
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -602,8 +602,8 @@ export namespace meeting {
    * Allows an app to get the authentication token for the anonymous or guest user in the meeting
    *
    * @param callback - Callback contains 2 parameters, `error` and `authenticationTokenOfAnonymousUser`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when get is successful
-   * `authenticationTokenOfAnonymousUser` can either contain a string value, in case of a successful get or null when the get fails
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when get is successful
+   * `authenticationTokenOfAnonymousUser` can either contain a string value, in case of a successful get or `null` when the get fails
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -632,8 +632,8 @@ export namespace meeting {
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
    * @param callback - Callback contains 2 parameters: `error` and `liveStreamState`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when the request is successful
-   * `liveStreamState` can either contain a `LiveStreamState` value, or null when operation fails
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when the request is successful
+   * `liveStreamState` can either contain a `LiveStreamState` value, or `null` when operation fails
    */
   export function getLiveStreamState(callback: getLiveStreamStateCallbackFunctionType): void {
     if (!callback) {
@@ -659,7 +659,7 @@ export namespace meeting {
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
-   * @param callback - completion callback that contains an `error` parameter, which can be of type `SdkError` in case of an error, or null when operation is successful
+   * @param callback - completion callback that contains an `error` parameter, which can be of type `SdkError` in case of an error, or `null` when operation is successful
    * @param streamUrl - the url to the RTMP stream resource
    * @param streamKey - the key to the RTMP stream resource
    */
@@ -689,7 +689,7 @@ export namespace meeting {
    * The `meetingExtensionDefinition.supportsStreaming` field in your app manifest must be `true` to use this API.
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/meetingExtensionDefinition.
    *
-   * @param callback - completion callback that contains an error parameter, which can be of type `SdkError` in case of an error, or null when operation is successful
+   * @param callback - completion callback that contains an error parameter, which can be of type `SdkError` in case of an error, or `null` when operation is successful
    */
   export function requestStopLiveStreaming(callback: liveStreamErrorCallbackFunctionType): void {
     if (!callback) {
@@ -740,8 +740,8 @@ export namespace meeting {
    * Use {@link getAppContentStageSharingState} to determine whether app content is already being shared to the meeting stage.
    *
    * @param callback - Callback contains 2 parameters, `error` and `result`.
-   * `error` can either contain an error of type `SdkError`, in case of an error, or null when share is successful
-   * `result` can either contain a true value, in case of a successful share or null when the share fails
+   * `error` can either contain a value of type `SdkError`, in case of an error, or `null` when share is successful
+   * `result` can either contain a `true` value, in case of a successful share or `null` when the share fails
    * @param appContentUrl - is the input URL to be shared to the meeting stage.
    * the URL origin must be included in your app manifest's `validDomains` field.
    * @param shareOptions - is an object that contains additional sharing options. If omitted, the default
@@ -778,8 +778,8 @@ export namespace meeting {
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    *
    * @param callback - Completion callback contains 2 parameters: `error` and `appContentStageSharingCapabilities`.
-   * `error` can either contain an error of type `SdkError` (error indication), or null (non-error indication).
-   * `appContentStageSharingCapabilities` will contain an {@link IAppContentStageSharingCapabilities} object if the request succeeds, or null if it failed.
+   * `error` can either contain a value of type `SdkError` (error indication), or `null` (non-error indication).
+   * `appContentStageSharingCapabilities` will contain an {@link IAppContentStageSharingCapabilities} object if the request succeeds, or `null` if it failed.
    */
   export function getAppContentStageSharingCapabilities(callback: getAppContentCallbackFunctionType): void {
     if (!callback) {
@@ -799,8 +799,8 @@ export namespace meeting {
    * Terminates current stage sharing session in meeting
    *
    * @param callback - Callback contains 2 parameters, error and result.
-   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * result can either contain a true boolean value (successful termination), or null (unsuccessful fetch)
+   * error can either contain a value of type SdkError (error indication), or `null` (non-error indication)
+   * result can either contain a `true` boolean value (successful termination), or `null` (unsuccessful fetch)
    */
   export function stopSharingAppContentToStage(callback: errorCallbackFunctionType): void {
     if (!callback) {
@@ -825,8 +825,8 @@ export namespace meeting {
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
    *
    * @param callback - Callback contains 2 parameters, `error` and `appContentStageSharingState`.
-   * error can either contain an error of type SdkError (error indication), or null (non-error indication)
-   * `appContentStageSharingState` can either contain an `IAppContentStageSharingState` object if the request succeeds, or null if it failed
+   * error can either contain a value of type SdkError (error indication), or `null` (non-error indication)
+   * `appContentStageSharingState` can either contain an `IAppContentStageSharingState` object if the request succeeds, or `null` if it failed
    */
   export function getAppContentStageSharingState(callback: getAppContentStageCallbackFunctionType): void {
     if (!callback) {
@@ -846,7 +846,7 @@ export namespace meeting {
    *
    * @remarks
    * This API returns {@link ISpeakingState}, which will have `isSpeakingDetected` and/or an error object.
-   * If any participant is speaking, `isSpeakingDetected` will be true, or false if no participants are speaking.
+   * If any participant is speaking, `isSpeakingDetected` will be `true`, or `false` if no participants are speaking.
    * Only one handler can be registered at a time. Subsequent registrations replace existing registrations.
    * This API can only be used in the `sidePanel` and `meetingStage` frame contexts.
    * For private scheduled meetings, meet now, or calls, include the `OnlineMeetingIncomingAudio.Detect.Chat` RSC permission in your app manifest.
@@ -869,7 +869,7 @@ export namespace meeting {
 
   /**
    * Registers a handler for changes to the selfParticipant's (current user's) raiseHandState. If the selfParticipant raises their hand, isHandRaised
-   * will be true. By default and if the selfParticipant hand is lowered, isHandRaised will be false. This API will return {@link RaiseHandStateChangedEventData}
+   * will be `true`. By default and if the selfParticipant hand is lowered, isHandRaised will be `false`. This API will return {@link RaiseHandStateChangedEventData}
    * that will have the raiseHandState or an error object. Only one handler can be registered at a time. A subsequent registration
    * replaces an existing registration.
    *
@@ -992,11 +992,11 @@ export namespace meeting {
   /**
    * Have the app handle audio (mic & speaker) and turn off host audio.
    *
-   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is true, the host will switch to audioless mode
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is `true`, the host will switch to audioless mode
    *   Registers for mic mute status change events, which are events that the app can receive from the host asking the app to
    *   mute or unmute the microphone.
    *
-   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is false, the host will switch out of audioless mode
+   * When {@link RequestAppAudioHandlingParams.isAppHandlingAudio} is `false`, the host will switch out of audioless mode
    *   Unregisters the mic mute status change events so the app will no longer receive these events
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
@@ -1004,7 +1004,7 @@ export namespace meeting {
    *
    * @param requestAppAudioHandlingParams - {@link RequestAppAudioHandlingParams} object with values for the audio switchover
    * @param callback - Callback with one parameter, the result
-   * can either be true (the host is now in audioless mode) or false (the host is not in audioless mode)
+   * can either be `true` (the host is now in audioless mode) or `false` (the host is not in audioless mode)
    *
    * @hidden
    * Hide from docs.

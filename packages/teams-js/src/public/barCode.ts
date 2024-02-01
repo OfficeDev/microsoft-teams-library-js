@@ -63,7 +63,12 @@ export namespace barCode {
   /**
    * Checks whether or not media has user permission
    *
-   * @returns true if the user has granted the app permission to media information, false otherwise
+   * @remarks 
+   * For additional information about deivce permissions, see the Learn articles:
+   *  - [Integrate QR or barcode scanner capability](https://learn.microsoft.com/microsoftteams/platform/concepts/device-capabilities/qr-barcode-scanner-capability)
+   *  - [Request device permissions for your Teams app](https://learn.microsoft.com/microsoftteams/platform/concepts/device-capabilities/native-device-permissions?tabs=mobile%2Cteamsjs-v2%2Cmobile1#specify-permissions)
+   * 
+   * @returns `true` if the user has granted the app permission to media information, `false` otherwise. The **media** permission refers to both camera and gallery.
    *
    * @beta
    */
@@ -88,7 +93,12 @@ export namespace barCode {
   /**
    * Requests user permission for media
    *
-   * @returns true if the user has granted the app permission to the media, false otherwise
+   * @remarks 
+   * For additional information about deivce permissions, see the Learn articles:
+   *  - [Integrate QR or barcode scanner capability](https://learn.microsoft.com/microsoftteams/platform/concepts/device-capabilities/qr-barcode-scanner-capability)
+   *  - [Request device permissions for your Teams app](https://learn.microsoft.com/microsoftteams/platform/concepts/device-capabilities/native-device-permissions?tabs=mobile%2Cteamsjs-v2%2Cmobile1#specify-permissions)
+   * 
+   * @returns `true` if the user has granted the app permission to the media, `false` otherwise. The **media** permission refers to both camera and gallery.
    *
    * @beta
    */

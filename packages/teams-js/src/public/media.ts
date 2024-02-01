@@ -756,6 +756,9 @@ export namespace media {
   /**
    * Select an attachment using camera/gallery
    *
+   * @remarks
+   * For additional details about media capabilities, see the [Integrate media capabilities](https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/device-capabilities/media-capabilities) article.
+   * 
    * @param mediaInputs - The input params to customize the media to be selected
    * @param callback - The callback to invoke after fetching the media
    */
