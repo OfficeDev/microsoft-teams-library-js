@@ -3,6 +3,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { messageChannels } from '../../src/private/messageChannels';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -61,9 +62,26 @@ describe('messageChannels', () => {
       });
     });
     describe('Testing messageChannels.getTelemetryPort', () => {
+      beforeEach(async () => {
+        await utils.initializeWithContext(context);
+      });
+
+      it('throws if the capability is not supported', async () => {
+        expect.assertions(1);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+        try {
+          await messageChannels.getTelemetryPort();
+        } catch (e) {
+          expect(e).toEqual(errorNotSupportedOnPlatform);
+        }
+      });
+
       it('should return port from message and then from local variable', async () => {
         expect.assertions(2);
-        await utils.initializeWithContext(context);
+
+        // API should be supported
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { messageChannels: {} } });
+
         const messagePromise = messageChannels.getTelemetryPort();
 
         const port = new MessagePort();
@@ -80,7 +98,10 @@ describe('messageChannels', () => {
 
       it('should throw if the message function rejects', async () => {
         expect.assertions(1);
-        await utils.initializeWithContext(context);
+
+        // API should be supported
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { messageChannels: {} } });
+
         // Create a spy on requestPortFromParent that rejects with an error
         const spy = jest.spyOn(communication, 'requestPortFromParentWithVersion');
         spy.mockImplementation(() => Promise.reject(new Error('some error')));
