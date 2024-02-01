@@ -63,6 +63,31 @@ export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?:
   }
 }
 
+export function notifyAppLoadedHelper(apiVersionTag: string): void {
+  sendMessageToParentWithVersion(apiVersionTag, app.Messages.AppLoaded, [version]);
+}
+
+export function notifyExpectedFailureHelper(
+  apiVersionTag: string,
+  expectedFailureRequest: app.IExpectedFailureRequest,
+): void {
+  sendMessageToParentWithVersion(apiVersionTag, app.Messages.ExpectedFailure, [
+    expectedFailureRequest.reason,
+    expectedFailureRequest.message,
+  ]);
+}
+
+export function notifyFailureHelper(apiVersiontag: string, appInitializationFailedRequest: app.IFailedRequest): void {
+  sendMessageToParentWithVersion(apiVersiontag, app.Messages.Failure, [
+    appInitializationFailedRequest.reason,
+    appInitializationFailedRequest.message,
+  ]);
+}
+
+export function notifySuccessHelper(apiVersionTag: string): void {
+  sendMessageToParentWithVersion(apiVersionTag, app.Messages.Success, [version]);
+}
+
 const initializeHelperLogger = appLogger.extend('initializeHelper');
 function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -796,11 +821,7 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded),
-      Messages.AppLoaded,
-      [version],
-    );
+    notifyAppLoadedHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded));
   }
 
   /**
@@ -808,11 +829,7 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess),
-      Messages.Success,
-      [version],
-    );
+    notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
   }
 
   /**
@@ -823,10 +840,9 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyFailure),
-      Messages.Failure,
-      [appInitializationFailedRequest.reason, appInitializationFailedRequest.message],
+      appInitializationFailedRequest,
     );
   }
 
@@ -837,10 +853,9 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyExpectedFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyExpectedFailure),
-      Messages.ExpectedFailure,
-      [expectedFailureRequest.reason, expectedFailureRequest.message],
+      expectedFailureRequest,
     );
   }
 
