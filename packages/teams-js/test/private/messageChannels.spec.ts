@@ -1,6 +1,7 @@
 import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { messageChannels } from '../../src/private/messageChannels';
+import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -28,58 +29,67 @@ describe('messageChannels', () => {
       app._uninitialize();
     }
     // Clear the cached telemetry port
+    // Adding to _unititialize breaks the global state initialization so leaving it here
     messageChannels._clearTelemetryPort();
   });
 
-  describe('Testing messageChannels.getTelemetryPort', () => {
-    it('should throw if called before initialization', async () => {
+  describe('Testing messageChannels APIs before initialization', () => {
+    it('isSupported should throw if called before initialization', () => {
+      utils.uninitializeRuntimeConfig();
+      expect(() => messageChannels.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('getTelemetryPort should throw if called before initialization', async () => {
       expect.assertions(1);
       utils.uninitializeRuntimeConfig();
       await expect(messageChannels.getTelemetryPort()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
+  });
 
-    it('should return port from message and then from local variable', async () => {
-      expect.assertions(2);
-      await utils.initializeWithContext('content');
-      const messagePromise = messageChannels.getTelemetryPort();
+  Object.values(FrameContexts).forEach((context) => {
+    describe('Testing isSupported', () => {
+      it('should return true if the capability is supported', async () => {
+        await utils.initializeWithContext(context);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { messageChannels: {} } });
+        expect(messageChannels.isSupported()).toBe(true);
+      });
 
-      const port = new MessagePort();
-      await utils.respondToMessageWithPorts({ id: 1, func: 'messageChannels.getTelemetryPort' }, [], [port]);
-
-      const receivedPort = await messagePromise;
-
-      expect(receivedPort).toBe(port);
-
-      const port2 = await messageChannels.getTelemetryPort();
-
-      expect(port2).toBe(port);
+      it('should return false if the capability is not supported', async () => {
+        await utils.initializeWithContext(context);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+        expect(messageChannels.isSupported()).toBe(false);
+      });
     });
+    describe('Testing messageChannels.getTelemetryPort', () => {
+      it('should return port from message and then from local variable', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(context);
+        const messagePromise = messageChannels.getTelemetryPort();
 
-    it('should throw if no port is returned with message', async () => {
-      expect.assertions(1);
-      await utils.initializeWithContext('content');
-      const messagePromise = messageChannels.getTelemetryPort();
+        const port = new MessagePort();
+        await utils.respondToMessageWithPorts({ id: 1, func: 'messageChannels.getTelemetryPort' }, [], [port]);
 
-      await utils.respondToMessageWithPorts({ id: 1, func: 'messageChannels.getTelemetryPort' }, [], []);
+        const receivedPort = await messagePromise;
 
-      await expect(messagePromise).rejects.toThrowError(
-        new Error('MessageChannels.getTelemetryPort: Host did not return a MessagePort.'),
-      );
-    });
+        expect(receivedPort).toBe(port);
 
-    it('should throw if the message function rejects', async () => {
-      expect.assertions(1);
-      await utils.initializeWithContext('content');
-      // Create a spy on requestPortFromParent that rejects with an error
-      const spy = jest.spyOn(communication, 'requestPortFromParent');
-      spy.mockImplementation(() => Promise.reject(new Error('some error')));
+        const port2 = await messageChannels.getTelemetryPort();
 
-      await expect(messageChannels.getTelemetryPort()).rejects.toThrow(
-        'MessageChannels.getTelemetryPort: Error thrown from message promise.',
-      );
+        expect(port2).toBe(port);
+      });
 
-      // Restore the original function after the test
-      spy.mockRestore();
+      it('should throw if the message function rejects', async () => {
+        expect.assertions(1);
+        await utils.initializeWithContext(context);
+        // Create a spy on requestPortFromParent that rejects with an error
+        const spy = jest.spyOn(communication, 'requestPortFromParentWithVersion');
+        spy.mockImplementation(() => Promise.reject(new Error('some error')));
+
+        await expect(messageChannels.getTelemetryPort()).rejects.toThrow('some error');
+
+        // Restore the original function after the test
+        spy.mockRestore();
+      });
     });
   });
 });

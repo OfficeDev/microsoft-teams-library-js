@@ -327,17 +327,21 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] | un
 /**
  * @hidden
  * Send a message to parent requesting a MessageChannel Port.
- *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function requestPortFromParent(actionName: string, args: any[] | undefined = undefined): Promise<MessagePort> {
-  return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(
-      getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),
-      actionName,
-      args,
+export function requestPortFromParentWithVersion(
+  apiVersionTag: string,
+  actionName: string,
+  args: any[] | undefined = undefined,
+): Promise<MessagePort> {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
+    throw Error(
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
+  }
+  return new Promise((resolve) => {
+    const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
     resolve(waitForPort(request.id));
   });
 }
@@ -347,8 +351,14 @@ export function requestPortFromParent(actionName: string, args: any[] | undefine
  * Limited to Microsoft-internal use
  */
 function waitForPort(requestId: number): Promise<MessagePort> {
-  return new Promise<MessagePort>((resolve) => {
-    CommunicationPrivate.portCallbacks[requestId] = resolve;
+  return new Promise<MessagePort>((resolve, reject) => {
+    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, [error]: [SdkError]) => {
+      if (port instanceof MessagePort) {
+        resolve(port);
+      } else {
+        reject(error);
+      }
+    };
   });
 }
 
@@ -751,7 +761,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       if (evt.ports && evt.ports[0] instanceof MessagePort) {
         port = evt.ports[0];
       }
-      portCallback(port);
+      portCallback(port, message.args);
 
       logger('Removing registered port callback for message %i', message.id);
       delete CommunicationPrivate.portCallbacks[message.id];

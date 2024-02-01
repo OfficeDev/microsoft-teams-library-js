@@ -656,7 +656,7 @@ describe('Testing communication', () => {
       }
     });
   });
-  describe('requestPortFromParent', () => {
+  describe('requestPortFromParentWithVersion', () => {
     let utils: Utils = new Utils();
     const actionName = 'test';
     beforeEach(() => {
@@ -674,7 +674,7 @@ describe('Testing communication', () => {
     it('should send framelessPostMessage to window when running in a frameless window and Communication.currentWindow is set and has a nativeInterface', () => {
       GlobalVars.isFramelessWindow = true;
 
-      communication.requestPortFromParent(actionName);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -684,7 +684,7 @@ describe('Testing communication', () => {
       utils.mockWindow.parent = undefined;
       communication.initializeCommunication(undefined, testApiVersion);
 
-      const messagePromise = communication.requestPortFromParent(actionName);
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -699,7 +699,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow = undefined;
 
-      communication.requestPortFromParent(actionName);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -710,7 +710,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow = undefined;
 
-      const messagePromise = communication.requestPortFromParent(actionName);
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const port = new MessagePort();
       await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], [port]);
@@ -725,7 +725,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      communication.requestPortFromParent(actionName);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -737,7 +737,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      const messagePromise = communication.requestPortFromParent(actionName);
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const port = new MessagePort();
       await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], [port]);
@@ -749,7 +749,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
 
       const arg1 = 'testArg1';
-      communication.requestPortFromParent(actionName, [arg1]);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName, [arg1]);
 
       expect(utils.messages.length).toBe(1);
       if (utils.messages[0].args === undefined) {
@@ -763,7 +763,7 @@ describe('Testing communication', () => {
       communication.Communication.parentWindow = utils.mockWindow.parent;
       communication.Communication.parentOrigin = utils.validOrigin;
 
-      communication.requestPortFromParent(actionName);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -774,7 +774,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.requestPortFromParent(actionName);
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -791,7 +791,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const arg1 = 'testArg1';
-      communication.requestPortFromParent(actionName, [arg1]);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName, [arg1]);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -808,7 +808,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
 
-      communication.requestPortFromParent(actionName);
+      communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       let sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage !== null) {
