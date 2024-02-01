@@ -16,7 +16,7 @@
     "build-test-app-CDN": "pnpm --filter teams-test-app build:CDN",
     "build-test-app-local": "pnpm --filter teams-test-app build:local",
     "build-test-app-V1": "pnpm --filter teams-test-app build:CDNV1",
-    "changefile": "pnpm beachball",
+    "changefile": "pnpm beachball --no-commit",
     "clean": "lerna run clean --stream",
     "clean:full": "pnpm clean && pnpm clean:modules",
     "clean:modules": "lerna clean -y && rimraf node_modules",
