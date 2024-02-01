@@ -721,6 +721,31 @@ describe('Testing communication', () => {
       expect(sentMessage).toBeDefined();
       expect(receivedPort).toBe(port);
     });
+
+    it('should reject with the default error if no port is sent and no custom error', async () => {
+      utils.mockWindow.parent = undefined;
+      communication.initializeCommunication(undefined, testApiVersion);
+      communication.Communication.currentWindow = undefined;
+
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
+
+      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], []);
+
+      await expect(messagePromise).rejects.toThrowError('Host responded without port or error details.');
+    });
+
+    it('should reject with the error from the parent if no port is sent', async () => {
+      utils.mockWindow.parent = undefined;
+      communication.initializeCommunication(undefined, testApiVersion);
+      communication.Communication.currentWindow = undefined;
+
+      const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
+      const error = { errorCode: 500, message: 'Unknown error' };
+      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [error], []);
+
+      await expect(messagePromise).rejects.toMatchObject(error);
+    });
+
     it('should never send message if there is no nativeInterface on the currentWindow when message is sent', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow.nativeInterface = undefined;

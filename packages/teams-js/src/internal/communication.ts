@@ -356,7 +356,7 @@ function waitForPort(requestId: number): Promise<MessagePort> {
       if (port instanceof MessagePort) {
         resolve(port);
       } else {
-        reject(error);
+        reject(error ?? new Error('Host responded without port or error details.'));
       }
     };
   });
