@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Add private MessageChannels capability",
+  "comment": "Added private MessageChannels capability",
   "packageName": "@microsoft/teams-js",
   "email": "kerrynb@microsoft.com",
   "dependentChangeType": "patch"
