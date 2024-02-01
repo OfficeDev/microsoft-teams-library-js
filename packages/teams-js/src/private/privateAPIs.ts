@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { Communication, sendMessageEventToChild, sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -15,11 +16,20 @@ import { FilePreviewParameters, UserSettingTypes } from './interfaces';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const privateAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParent('uploadCustomApp', [manifestBlob], onComplete ? onComplete : getGenericOnCompleteHandler());
+  sendMessageToParentWithVersion(
+    getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_UploadCustomApp),
+    'uploadCustomApp',
+    [manifestBlob],
+    onComplete ? onComplete : getGenericOnCompleteHandler(),
+  );
 }
 
 /**
@@ -37,7 +47,12 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParent(actionName, args, callback);
+  sendMessageToParentWithVersion(
+    getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_SendCustomMessage),
+    actionName,
+    args,
+    callback,
+  );
 }
 
 /**
@@ -74,9 +89,13 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
  */
 export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
   ensureInitialized(runtime);
-  registerHandler(actionName, (...args: any[]) => {
-    return customHandler.apply(this, args);
-  });
+  registerHandlerWithVersion(
+    getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterCustomHandler),
+    actionName,
+    (...args: any[]) => {
+      return customHandler.apply(this, args);
+    },
+  );
 }
 
 /**
@@ -95,7 +114,13 @@ export function registerUserSettingsChangeHandler(
 ): void {
   ensureInitialized(runtime);
 
-  registerHandler('userSettingsChange', handler, true, [settingTypes]);
+  registerHandlerWithVersion(
+    getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterUserSettingsChangeHandler),
+    'userSettingsChange',
+    handler,
+    true,
+    [settingTypes],
+  );
 }
 
 /**
@@ -128,5 +153,9 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.sizeInBytes,
   ];
 
-  sendMessageToParent('openFilePreview', params);
+  sendMessageToParentWithVersion(
+    getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_OpenFilePreview),
+    'openFilePreview',
+    params,
+  );
 }

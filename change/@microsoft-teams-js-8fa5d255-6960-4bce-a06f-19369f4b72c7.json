@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Updated how beachball works to encourage people to use a pre-existing change message if possible so that our patch notes will be more consistent.",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "none"
+}
