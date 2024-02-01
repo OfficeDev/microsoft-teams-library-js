@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
