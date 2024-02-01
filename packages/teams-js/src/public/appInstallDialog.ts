@@ -1,9 +1,15 @@
-import { sendMessageToParent } from '../internal/communication';
-import { sendAndHandleStatusAndReason } from '../internal/communication';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
 import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const appInstallDialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 export namespace appInstallDialog {
   /** Represents set of parameters needed to open the appInstallDialog. */
@@ -31,15 +37,22 @@ export namespace appInstallDialog {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
+      const apiVersionTag = getApiVersionTag(
+        appInstallDialogTelemetryVersionNumber,
+        ApiName.AppInstallDialog_OpenAppInstallDialog,
+      );
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleStatusAndReason(
+          sendAndHandleStatusAndReasonWithVersion(
+            apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
           ),
         );
       } else {
-        sendMessageToParent('appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+        sendMessageToParentWithVersion(apiVersionTag, 'appInstallDialog.openAppInstallDialog', [
+          openAPPInstallDialogParams,
+        ]);
         resolve();
       }
     });

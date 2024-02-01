@@ -1,8 +1,9 @@
 import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
-import { sendMessageToParent } from './communication';
-import { registerHandler } from './handlers';
+import { sendMessageToParentWithVersion } from './communication';
+import { registerHandlerWithVersion } from './handlers';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
   AllowSharedBufferSource,
@@ -17,7 +18,13 @@ import { VideoPerformanceMonitor } from './videoPerformanceMonitor';
 /**
  * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
+const videoEffectsUtilTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
 interface VideoFrame {
   /**
    * The width of the VideoFrame in pixels, potentially including non-visible padding, and prior to
@@ -299,7 +306,11 @@ class TransformerWithMetadata {
     private notifyError: (string) => void,
     private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   ) {
-    registerHandler(
+    registerHandlerWithVersion(
+      getApiVersionTag(
+        videoEffectsUtilTelemetryVersionNumber,
+        ApiName.VideoEffectsUtils_TransformerWithMetadata_Constructor,
+      ),
       'video.mediaStream.audioInferenceDiscardStatusChange',
       ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
         this.shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
@@ -442,12 +453,20 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_ReportVideoEffectChanged),
+          'video.videoEffectReadiness',
+          [true, effectId, undefined, effectParam],
+        );
       })
       .catch((reason) => {
         const validReason =
           reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
-        sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason, effectParam]);
+        sendMessageToParentWithVersion(
+          getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_EffectFailure),
+          'video.videoEffectReadiness',
+          [false, effectId, validReason, effectParam],
+        );
       });
   };
 }

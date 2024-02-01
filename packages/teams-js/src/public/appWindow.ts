@@ -2,9 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
@@ -13,6 +14,11 @@ import { runtime } from './runtime';
 export type onCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** addEventListner function type */
 export type addEventListnerFunctionType = (message: any) => void;
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const appWindowTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /** Represents a window or frame within the host app. */
 export interface IAppWindow {
@@ -46,7 +52,12 @@ export class ChildAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime);
-    sendMessageToParent('messageForChild', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    sendMessageToParentWithVersion(
+      getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_PostMessage),
+      'messageForChild',
+      [message],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
   /**
    * Add a listener that will be called when an event is received from the ChildAppWindow.
@@ -57,7 +68,11 @@ export class ChildAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime);
     if (type === 'message') {
-      registerHandler('messageForParent', listener);
+      registerHandlerWithVersion(
+        getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_AddEventListener),
+        'messageForParent',
+        listener,
+      );
     }
   }
 }
@@ -84,7 +99,12 @@ export class ParentAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
-    sendMessageToParent('messageForParent', [message], onComplete ? onComplete : getGenericOnCompleteHandler());
+    sendMessageToParentWithVersion(
+      getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_PostMessage),
+      'messageForParent',
+      [message],
+      onComplete ? onComplete : getGenericOnCompleteHandler(),
+    );
   }
 
   /**
@@ -96,7 +116,11 @@ export class ParentAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
     if (type === 'message') {
-      registerHandler('messageForChild', listener);
+      registerHandlerWithVersion(
+        getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_AddEventListener),
+        'messageForChild',
+        listener,
+      );
     }
   }
 }
