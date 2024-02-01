@@ -307,7 +307,12 @@ function handleBeforeUnload(): void {
  */
 export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeUnloadHandler),
+      'registerHandler',
+      ['beforeUnload'],
+    );
 }
 
 /**
@@ -316,5 +321,10 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
  */
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParentWithVersion(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterLoadHandler),
+      'registerHandler',
+      ['load'],
+    );
 }
