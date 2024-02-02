@@ -55,6 +55,8 @@ export namespace messageChannels {
   /**
    * @hidden
    *
+   * @beta
+   *
    * Checks if the messageChannels capability is supported by the host
    * @returns boolean to represent whether the messageChannels capability is supported
    *
@@ -70,6 +72,8 @@ export namespace messageChannels {
   /**
    * @hidden
    * Undocumented function used to clear state between unit tests
+   *
+   * @beta
    *
    * @internal
    * Limited to Microsoft-internal use
