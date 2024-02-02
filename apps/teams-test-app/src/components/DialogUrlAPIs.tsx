@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
 import { ModuleWrapper } from './utils/ModuleWrapper';
+import { removeAllWhitespace } from './utils/JsonStrings';
 
 const DialogUrlAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -60,6 +61,11 @@ const DialogUrlAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: removeAllWhitespace(`{
+        "url": "https://localhost:4000",
+        "title": "Dialog Title",
+        "size": "large"
+      }`),
     });
 
   const SendMessageToChild = (): ReactElement =>
@@ -96,6 +102,7 @@ const DialogUrlAPIs = (): ReactElement => {
           }
         },
       },
+      defaultInput: '"Hello from parent"',
     });
 
   const SendMessageToParent = (): ReactElement =>
@@ -131,6 +138,7 @@ const DialogUrlAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: '"Hello from child"',
     });
 
   const RegisterForParentMessage = (): ReactElement =>
@@ -175,6 +183,10 @@ const DialogUrlAPIs = (): ReactElement => {
           },
         },
       },
+      defaultInput: removeAllWhitespace(`{
+        "result": "Success",
+        "appIds": ["appId1", "appId2"]      
+      }`),
     });
 
   return (

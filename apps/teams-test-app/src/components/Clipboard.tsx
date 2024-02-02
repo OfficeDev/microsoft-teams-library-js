@@ -31,6 +31,7 @@ const CopyText = (): React.ReactElement =>
         return JSON.stringify(true);
       },
     },
+    defaultInput: `"copy this test"`,
   });
 
 const CopyImage = (): React.ReactElement =>
@@ -55,6 +56,7 @@ const CopyImage = (): React.ReactElement =>
         return JSON.stringify(true);
       },
     },
+    defaultInput: '"image/jpeg"',
   });
 
 const pasteHelper = (blob: Blob, setResult: (result: string) => void): void => {

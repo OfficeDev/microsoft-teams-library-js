@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
-import { removeAllWhiteSpace } from './utils/JsonStrings';
+import { removeAllWhitespace } from './utils/JsonStrings';
 
 const CheckAppInstallDialogCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -27,7 +27,7 @@ const OpenAppInstallDialog = (): React.ReactElement =>
         return 'called';
       },
     },
-    defaultInput: removeAllWhiteSpace(`{
+    defaultInput: removeAllWhitespace(`{
       "appId": "957f8a7e-fbcd-411d-b69f-acb7eb58b515"
     }`),
   });

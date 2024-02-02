@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
+import { removeAllWhitespace } from './utils/JsonStrings';
 
 const CheckCalendarCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -19,6 +20,13 @@ const ComposeMeeting = (): React.ReactElement =>
       await calendar.composeMeeting(input);
       return 'Completed';
     },
+    defaultInput: removeAllWhitespace(`{
+      "attendees": ["attendees"],
+      "startTime": "startTime",
+      "endTime": "endTime",
+      "subject": "subject",
+      "content": "content"
+    }`),
   });
 
 const OpenCalendarItem = (): React.ReactElement =>
@@ -36,6 +44,9 @@ const OpenCalendarItem = (): React.ReactElement =>
         }
       },
     },
+    defaultInput: removeAllWhitespace(`{
+      "itemId": "123"
+    }`),
   });
 
 const CalendarAPIs = (): ReactElement => (
