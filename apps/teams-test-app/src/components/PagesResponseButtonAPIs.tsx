@@ -23,8 +23,8 @@ const ShowResponseButton = (): React.ReactElement =>
 
 const HideResponseButton = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'uploadImages',
-    title: 'Upload Images',
+    name: 'hideResponseButton',
+    title: 'Hide Response Button',
     onClick: async () => {
       await pages.responseButton.hideResponseButton();
       return 'Completed';

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added a new subcapability, pages.responseButton, which will enable communication related to the response button between the host and the app through APIs.",
+  "packageName": "@microsoft/teams-js",
+  "email": "maggiegong@microsoft.com",
+  "dependentChangeType": "patch"
+}
