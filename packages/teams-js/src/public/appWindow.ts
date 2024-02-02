@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -52,7 +52,7 @@ export class ChildAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime);
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_PostMessage),
       'messageForChild',
       [message],
@@ -99,7 +99,7 @@ export class ParentAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_PostMessage),
       'messageForParent',
       [message],

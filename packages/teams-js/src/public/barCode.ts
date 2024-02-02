@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -51,7 +51,7 @@ export namespace barCode {
       }
 
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_ScanBarCode),
           'media.scanBarCode',
           barCodeConfig,
@@ -76,7 +76,7 @@ export namespace barCode {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_HasPermission),
           'permissions.has',
           permissions,
@@ -101,7 +101,7 @@ export namespace barCode {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_RequestPermission),
           'permissions.request',
           permissions,

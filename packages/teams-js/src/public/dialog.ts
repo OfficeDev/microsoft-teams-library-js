@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -37,7 +37,7 @@ export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize
   if (!dialog.update.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersionTag, 'tasks.updateTask', [dimensions]);
+  sendMessageToParent(apiVersionTag, 'tasks.updateTask', [dimensions]);
 }
 
 export function urlOpenHelper(
@@ -55,15 +55,10 @@ export function urlOpenHelper(
     registerHandler('messageForParent', messageFromChildHandler);
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-  sendMessageToParentWithVersion(
-    apiVersionTag,
-    'tasks.startTask',
-    [dialogInfo],
-    (err: string, result: string | object) => {
-      submitHandler?.({ err, result });
-      removeHandler('messageForParent');
-    },
-  );
+  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+    submitHandler?.({ err, result });
+    removeHandler('messageForParent');
+  });
 }
 
 export function botUrlOpenHelper(
@@ -81,15 +76,10 @@ export function botUrlOpenHelper(
     registerHandler('messageForParent', messageFromChildHandler);
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
-  sendMessageToParentWithVersion(
-    apiVersionTag,
-    'tasks.startTask',
-    [dialogInfo],
-    (err: string, result: string | object) => {
-      submitHandler?.({ err, result });
-      removeHandler('messageForParent');
-    },
-  );
+  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+    submitHandler?.({ err, result });
+    removeHandler('messageForParent');
+  });
 }
 
 export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
@@ -102,7 +92,7 @@ export function urlSubmitHelper(apiVersionTag: string, result?: string | object,
   }
 
   // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-  sendMessageToParentWithVersion(apiVersionTag, 'tasks.completeTask', [
+  sendMessageToParent(apiVersionTag, 'tasks.completeTask', [
     result,
     appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
   ]);
@@ -260,7 +250,7 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(
             dialogTelemetryVersionNumber,
             ApiName.Dialog_Url_ParentCommunication_SendMessageToParentFromDialog,
@@ -286,7 +276,7 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_ParentCommunication_SendMessageToDialog),
           'messageForChild',
           [message],
@@ -496,7 +486,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
         'tasks.startTask',
         [dialogInfo],
@@ -551,7 +541,7 @@ export namespace dialog {
 
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
           'tasks.startTask',
           [dialogInfo],

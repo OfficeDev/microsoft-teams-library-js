@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelperWithVersion } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
@@ -89,7 +89,7 @@ export function print(): void {
  */
 export function getContext(callback: getContextCallbackFunctionType): void {
   ensureInitializeCalled();
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_GetContext),
     'getContext',
     (context: Context) => {

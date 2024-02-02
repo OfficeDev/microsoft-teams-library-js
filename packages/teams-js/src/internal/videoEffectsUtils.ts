@@ -1,7 +1,7 @@
 import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
-import { sendMessageToParentWithVersion } from './communication';
+import { sendMessageToParent } from './communication';
 import { registerHandlerWithVersion } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
@@ -453,7 +453,7 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_ReportVideoEffectChanged),
           'video.videoEffectReadiness',
           [true, effectId, undefined, effectParam],
@@ -462,7 +462,7 @@ export function createEffectParameterChangeCallback(
       .catch((reason) => {
         const validReason =
           reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_EffectFailure),
           'video.videoEffectReadiness',
           [false, effectId, validReason, effectParam],

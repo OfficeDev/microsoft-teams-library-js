@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
-import { sendAndHandleSdkErrorWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
   getMediaCallbackSupportVersion,
@@ -149,7 +149,7 @@ export namespace media {
       return;
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_CaptureImage),
       'captureImage',
       callback,
@@ -173,7 +173,7 @@ export namespace media {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_HasPermission),
           'permissions.has',
           permissions,
@@ -199,7 +199,7 @@ export namespace media {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_RequestPermission),
           'permissions.request',
           permissions,
@@ -306,7 +306,7 @@ export namespace media {
           }
         }
       }
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_GetMedia),
         'getMedia',
         localUriId,
@@ -324,11 +324,7 @@ export namespace media {
       const params = [actionName, this.content];
       this.content &&
         !isNullOrUndefined(callback) &&
-        sendMessageToParentWithVersion(
-          getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_GetMedia),
-          'getMedia',
-          params,
-        );
+        sendMessageToParent(getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_GetMedia), 'getMedia', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -552,7 +548,7 @@ export namespace media {
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_Controller),
         'media.controller',
         [params],
@@ -786,7 +782,7 @@ export namespace media {
 
     const params = [mediaInputs];
     // What comes back from native as attachments would just be objects and will be missing getMedia method on them
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_SelectMedia),
       'selectMedia',
       params,
@@ -838,7 +834,7 @@ export namespace media {
     }
 
     const params = [uriList];
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_ViewImages),
       'viewImages',
       params,
@@ -902,7 +898,7 @@ export namespace media {
       return;
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_ScanBarCode),
       'media.scanBarCode',
       [config],

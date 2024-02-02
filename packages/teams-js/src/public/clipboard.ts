@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -54,7 +54,7 @@ export namespace clipboard {
       mimeType: blob.type as ClipboardSupportedMimeType,
       content: base64StringContent,
     };
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Write),
       'clipboard.writeToClipboard',
       writeParams,
@@ -85,7 +85,7 @@ export namespace clipboard {
       const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
       return utils.base64ToBlob(response.mimeType, response.content);
     } else {
-      return sendAndHandleSdkErrorWithVersion(
+      return sendAndHandleSdkError(
         getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read),
         'clipboard.readFromClipboard',
       );

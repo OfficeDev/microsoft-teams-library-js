@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Communication, sendMessageEventToChild, sendMessageToParentWithVersion } from '../internal/communication';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -24,7 +24,7 @@ const privateAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_UploadCustomApp),
     'uploadCustomApp',
     [manifestBlob],
@@ -47,7 +47,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_SendCustomMessage),
     actionName,
     args,
@@ -153,7 +153,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.sizeInBytes,
   ];
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_OpenFilePreview),
     'openFilePreview',
     params,

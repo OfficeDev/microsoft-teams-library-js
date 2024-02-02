@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -32,7 +32,7 @@ export namespace notifications {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(notificationsTelemetryVersionNumber, ApiName.Notifications_ShowNotification),
       'notifications.showNotification',
       [showNotificationParameters],

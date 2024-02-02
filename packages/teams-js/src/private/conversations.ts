@@ -1,8 +1,4 @@
-import {
-  sendAndHandleStatusAndReasonWithVersion,
-  sendAndUnwrapWithVersion,
-  sendMessageToParentWithVersion,
-} from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -153,7 +149,7 @@ export namespace conversations {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const sendPromise = sendAndHandleStatusAndReasonWithVersion(
+      const sendPromise = sendAndHandleStatusAndReason(
         getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_OpenConversation),
         'conversations.openConversation',
         {
@@ -207,7 +203,7 @@ export namespace conversations {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_CloseConversation),
       'conversations.closeConversation',
     );
@@ -235,7 +231,7 @@ export namespace conversations {
         throw errorNotSupportedOnPlatform;
       }
       resolve(
-        sendAndUnwrapWithVersion(
+        sendAndUnwrap(
           getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_GetChatMember),
           'getChatMembers',
         ),

@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -236,7 +236,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_GetCapableParticipants),
       'remoteCamera.getCapableParticipants',
       callback,
@@ -270,7 +270,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RequestControl),
       'remoteCamera.requestControl',
       [participant],
@@ -299,7 +299,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_SendControlCommand),
       'remoteCamera.sendControlCommand',
       [ControlCommand],
@@ -324,7 +324,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_TerminateSession),
       'remoteCamera.terminateSession',
       callback,

@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -42,11 +42,7 @@ export namespace logs {
         'log.request',
         () => {
           const log: string = handler();
-          sendMessageToParentWithVersion(
-            getApiVersionTag(logsTelemetryVersionNumber, ApiName.Logs_Receive),
-            'log.receive',
-            [log],
-          );
+          sendMessageToParent(getApiVersionTag(logsTelemetryVersionNumber, ApiName.Logs_Receive), 'log.receive', [log]);
         },
       );
     } else {

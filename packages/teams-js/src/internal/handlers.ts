@@ -5,12 +5,7 @@ import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
-import {
-  Communication,
-  sendMessageEventToChild,
-  sendMessageToParent,
-  sendMessageToParentWithVersion,
-} from './communication';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -113,7 +108,7 @@ export function registerHandlerWithVersion(
 ): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParentWithVersion(getApiVersionTag, 'registerHandler', [name, ...args]);
+    sendMessage && sendMessageToParent(getApiVersionTag, 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -127,11 +122,10 @@ export function registerHandler(name: string, handler: Function, sendMessage = t
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
     sendMessage &&
-      sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_0, ApiName.RegisterHandler),
-        'registerHandler',
-        [name, ...args],
-      );
+      sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_0, ApiName.RegisterHandler), 'registerHandler', [
+        name,
+        ...args,
+      ]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -215,7 +209,7 @@ export function registerHandlerHelper(
  */
 export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['themeChange']);
 }
 
 /**
@@ -241,9 +235,7 @@ export function handleThemeChange(theme: string): void {
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
   !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
-      'load',
-    ]);
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', ['load']);
 }
 
 /**
@@ -271,7 +263,7 @@ function handleLoad(context: LoadContext): void {
 export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
   HandlersPrivate.beforeUnloadHandler = handler;
   !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
       'beforeUnload',
     ]);
 }
@@ -308,7 +300,7 @@ function handleBeforeUnload(): void {
 export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
   !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeUnloadHandler),
       'registerHandler',
       ['beforeUnload'],
@@ -322,9 +314,7 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
   !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterLoadHandler),
-      'registerHandler',
-      ['load'],
-    );
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterLoadHandler), 'registerHandler', [
+      'load',
+    ]);
 }

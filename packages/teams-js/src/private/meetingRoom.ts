@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -191,7 +191,7 @@ export namespace meetingRoom {
         throw errorNotSupportedOnPlatform;
       }
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_GetPairedMeetingRoomInfo),
           'meetingRoom.getPairedMeetingRoomInfo',
         ),
@@ -219,7 +219,7 @@ export namespace meetingRoom {
         throw errorNotSupportedOnPlatform;
       }
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_SendCommandToPairedMeetingRoom),
           'meetingRoom.sendCommandToPairedMeetingRoom',
           commandName,

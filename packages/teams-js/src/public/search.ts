@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReasonWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -128,7 +128,7 @@ export namespace search {
     }
     // This should let the host know to stop making the app scope show up in the search experience
     // Can also be used to clean up handlers on the host if desired
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_UnregisterHandlers),
       'search.unregister',
     );
@@ -162,7 +162,7 @@ export namespace search {
       }
 
       resolve(
-        sendAndHandleStatusAndReasonWithVersion(
+        sendAndHandleStatusAndReason(
           getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_CloseSearch),
           'search.closeSearch',
         ),

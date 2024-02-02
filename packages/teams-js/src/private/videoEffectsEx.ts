@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -30,7 +30,7 @@ export namespace videoEffectsEx {
 
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
-    : new VideoPerformanceMonitor(sendMessageToParentWithVersion);
+    : new VideoPerformanceMonitor(sendMessageToParent);
   /**
    * @hidden
    * Error level when notifying errors to the host, the host will decide what to do acording to the error level.
@@ -224,7 +224,7 @@ export namespace videoEffectsEx {
           },
           false,
         );
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(
             videoEffectsExTelemetryVersionNumber,
             ApiName.VideoEffectsEx_MediaStream_RegisterForVideoFrame,
@@ -254,7 +254,7 @@ export namespace videoEffectsEx {
           },
           false,
         );
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_RegisterForVideoFrame),
           'video.registerForVideoFrame',
           [parameters.config],
@@ -321,7 +321,7 @@ export namespace videoEffectsEx {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_NotifySelectedVideoEffectChanged),
       'video.videoEffectChanged',
       [effectChangeType, effectId, effectParam],
@@ -352,7 +352,7 @@ export namespace videoEffectsEx {
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
       false,
     );
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_RegisterForVideoEffect),
       'video.registerForVideoEffect',
     );
@@ -398,7 +398,7 @@ export namespace videoEffectsEx {
     if (!videoEffects.isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_UpdatePersonalizedEffects),
       'video.personalizedEffectsChanged',
       [effects],
@@ -433,7 +433,7 @@ export namespace videoEffectsEx {
    * Limited to Microsoft-internal use
    */
   function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_NotifyVideoFrameProcessed),
       'video.videoFrameProcessed',
       [timestamp],
@@ -451,7 +451,7 @@ export namespace videoEffectsEx {
    * Limited to Microsoft-internal use
    */
   function notifyError(errorMessage: string, errorLevel: ErrorLevel = ErrorLevel.Warn): void {
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_NotifyError),
       'video.notifyError',
       [errorMessage, errorLevel],
