@@ -8,9 +8,9 @@
   "developer": {
     "name": "M365",
     "mpnId": "",
-    "websiteUrl": "https://<REPLACE WITH URL OF THE APP>",
-    "privacyUrl": "https://<REPLACE WITH URL OF THE APP>",
-    "termsOfUseUrl": "https://<REPLACE WITH URL OF THE APP>"
+    "websiteUrl": "https://localhost:4000",
+    "privacyUrl": "https://localhost:4000",
+    "termsOfUseUrl": "https://localhost:4000"
   },
   "description": {
     "short": "App to test infrastructure",
@@ -20,7 +20,7 @@
   "accentColor": "#FFFFFF",
   "configurableTabs": [
     {
-      "configurationUrl": "https://<REPLACE WITH URL OF THE APP>",
+      "configurationUrl": "https://localhost:4000",
       "canUpdateConfiguration": true,
       "scopes": ["groupChat", "team"],
       "context": [
@@ -37,8 +37,8 @@
     {
       "entityId": "test",
       "name": "Test",
-      "contentUrl": "https://<REPLACE WITH URL OF THE APP>",
-      "websiteUrl": "https://<REPLACE WITH URL OF THE APP>",
+      "contentUrl": "https://localhost:4000",
+      "websiteUrl": "https://localhost:4000",
       "scopes": ["personal"]
     },
     { "entityId": "about", "scopes": ["personal"] }

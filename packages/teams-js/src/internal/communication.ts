@@ -352,11 +352,12 @@ export function requestPortFromParentWithVersion(
  */
 function waitForPort(requestId: number): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
-    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, [error]: [SdkError]) => {
+    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: any[]) => {
       if (port instanceof MessagePort) {
         resolve(port);
       } else {
-        reject(error ?? new Error('Host responded without port or error details.'));
+        // First arg is the error message, if present
+        reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
       }
     };
   });
