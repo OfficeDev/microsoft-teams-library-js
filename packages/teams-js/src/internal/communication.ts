@@ -53,7 +53,7 @@ class CommunicationPrivate {
     [id: number]: Function; // (args[]) => void
   } = {};
   public static portCallbacks: {
-    [id: number]: Function; // (args[], port) => void
+    [id: number]: (port?: MessagePort, args?: unknown[]) => void;
   } = {};
   public static messageListener: Function;
 }
@@ -340,10 +340,8 @@ export function requestPortFromParentWithVersion(
       `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
     );
   }
-  return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-    resolve(waitForPort(request.id));
-  });
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
+  return waitForPort(request.id);
 }
 
 /**
@@ -352,7 +350,7 @@ export function requestPortFromParentWithVersion(
  */
 function waitForPort(requestId: number): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
-    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: any[]) => {
+    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
       if (port instanceof MessagePort) {
         resolve(port);
       } else {
@@ -758,7 +756,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const portCallback = CommunicationPrivate.portCallbacks[message.id];
     if (portCallback) {
       logger('Invoking the registered port callback for message %i with arguments %o', message.id, message.args);
-      let port: MessagePort | null = null;
+      let port: MessagePort | undefined;
       if (evt.ports && evt.ports[0] instanceof MessagePort) {
         port = evt.ports[0];
       }
