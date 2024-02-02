@@ -71,6 +71,8 @@ export namespace messageChannels {
    * @hidden
    * Undocumented function used to clear state between unit tests
    *
+   * @beta
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
