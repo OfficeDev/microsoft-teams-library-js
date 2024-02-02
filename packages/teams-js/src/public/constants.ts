@@ -165,7 +165,10 @@ export enum ChannelType {
 /** An error object indicating that the requested operation or feature is not supported on the current platform or device.
  * @typedef {Object} SdkError
  */
-export const errorNotSupportedOnPlatform: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
+export const errorNotSupportedOnPlatform: SdkError = {
+  errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
+  message: 'Not supported on current platform',
+};
 
 /**
  * @hidden
