@@ -34,6 +34,7 @@ const ThirdPartyCloudStorage = (): React.ReactElement =>
         return 'thirdPartyCloudStorage.getDragAndDropFiles() was called';
       },
     },
+    defaultInput: '"dragAndDropInput"',
   });
 
 const ThirdPartyCloudStorageAPIs = (): ReactElement => (

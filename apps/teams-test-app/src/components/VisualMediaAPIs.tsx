@@ -33,6 +33,10 @@ const CaptureImages = (): React.ReactElement =>
         return output;
       },
     },
+    defaultInput: JSON.stringify({
+      maxVisualMediaCount: 1,
+      sourceProps: { source: visualMedia.Source.Camera, cameraRestriction: visualMedia.CameraRestriction.FrontOrRear },
+    }),
   });
 
 const UploadImages = (): React.ReactElement =>
@@ -54,6 +58,7 @@ const UploadImages = (): React.ReactElement =>
         return output;
       },
     },
+    defaultInput: JSON.stringify({ maxVisualMediaCount: 1, sourceProps: { source: visualMedia.Source.Gallery } }),
   });
 
 const HasVisualMediaPermission = (): React.ReactElement =>

@@ -259,7 +259,8 @@
       "inputValue": {
         "isMicMuted": true
       },
-      "expectedAlertValue": "updateMicState called"
+      "expectedAlertValue": "updateMicState called",
+      "expectedTestAppValue": "updateMicState called with micState: isMicMuted: true"
     }
   ]
 }

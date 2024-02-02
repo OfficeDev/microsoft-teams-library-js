@@ -104,6 +104,7 @@ const RegisterBeforeUnloadHandler = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: '4',
   });
 
 const CheckTeamsCoreCapability = (): React.ReactElement =>
