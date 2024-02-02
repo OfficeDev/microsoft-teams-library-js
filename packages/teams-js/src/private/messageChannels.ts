@@ -55,6 +55,8 @@ export namespace messageChannels {
   /**
    * @hidden
    *
+   * @beta
+   *
    * Checks if the messageChannels capability is supported by the host
    * @returns boolean to represent whether the messageChannels capability is supported
    *
