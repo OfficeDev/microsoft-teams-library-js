@@ -5,7 +5,6 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
 import { ModuleWrapper } from './utils/ModuleWrapper';
-import { removeAllWhitespace } from './utils/JsonStrings';
 
 const DialogUrlBotAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -58,12 +57,12 @@ const DialogUrlBotAPIs = (): ReactElement => {
           return '';
         },
       },
-      defaultInput: removeAllWhitespace(`{
-        "url": "https://localhost:4000",
-        "completionBotId": "123",
-        "title": "Dialog Url Bot Open",
-        "size": "large"
-      }`),
+      defaultInput: JSON.stringify({
+        url: 'https://localhost:4000',
+        completionBotId: '123',
+        title: 'Dialog Url Bot Open',
+        size: 'large',
+      }),
     });
   return (
     <ModuleWrapper title="Dialog.Url.Bot">

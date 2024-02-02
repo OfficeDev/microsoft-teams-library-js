@@ -5,7 +5,6 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { isTestBackCompat } from './utils/isTestBackCompat';
 import { ModuleWrapper } from './utils/ModuleWrapper';
-import { removeAllWhitespace } from './utils/JsonStrings';
 
 const DialogCardBotAPIs = (): ReactElement => {
   const childWindowRef = React.useRef<IAppWindow | null>(null);
@@ -58,19 +57,19 @@ const DialogCardBotAPIs = (): ReactElement => {
           return '';
         },
       },
-      defaultInput: removeAllWhitespace(`{
-        "card": {
-          "type": "AdaptiveCard",
-          "version": "1.0",
-          "body": [
+      defaultInput: JSON.stringify({
+        card: {
+          type: 'AdaptiveCard',
+          version: '1.0',
+          body: [
             {
-              "type": "TextBlock",
-              "text": "Hello, Adaptive Card Bot!"
-            }
-          ]
+              type: 'TextBlock',
+              text: 'Hello, Adaptive Card Bot!',
+            },
+          ],
         },
-        "completionBotId": "completionBotId"
-      }`),
+        completionBotId: 'completionBotId',
+      }),
     });
   return (
     <ModuleWrapper title="Dialog.Card.Bot">

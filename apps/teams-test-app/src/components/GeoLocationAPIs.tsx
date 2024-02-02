@@ -53,6 +53,10 @@ const ShowLocation = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      latitude: 47.6062,
+      longitude: 122.3321,
+    }),
   });
 
 const HasGeoLocationPermission = (): React.ReactElement =>

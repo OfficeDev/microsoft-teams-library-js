@@ -10,7 +10,6 @@ import React from 'react';
 import { noHostSdkMsg } from '../../App';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
-import { removeAllWhitespace } from '../utils/JsonStrings';
 
 const CheckChatCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -52,10 +51,10 @@ const OpenChat = (): React.ReactElement =>
         return 'chat.openChat() was called';
       },
     },
-    defaultInput: removeAllWhitespace(`{
-      "user": ["testUpn"],
-      "message": "testMessage"
-    }`),
+    defaultInput: JSON.stringify({
+      user: ['testUpn'],
+      message: 'testMessage',
+    }),
   });
 
 const DeprecatedOpenGroupChat = (): React.ReactElement =>
@@ -91,10 +90,10 @@ const OpenGroupChat = (): React.ReactElement =>
         return 'chat.openGroupChat() was called';
       },
     },
-    defaultInput: removeAllWhitespace(`{
-      "users": ["testUpn1", "testUpn2"],
-      "message": "testMessage"
-    }`),
+    defaultInput: JSON.stringify({
+      users: ['testUpn1', 'testUpn2'],
+      message: 'testMessage',
+    }),
   });
 
 const DeprecatedOpenConversation = (): React.ReactElement =>

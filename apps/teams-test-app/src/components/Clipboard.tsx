@@ -31,7 +31,7 @@ const CopyText = (): React.ReactElement =>
         return JSON.stringify(true);
       },
     },
-    defaultInput: `"copy this test"`,
+    defaultInput: '"copy this test"',
   });
 
 const CopyImage = (): React.ReactElement =>

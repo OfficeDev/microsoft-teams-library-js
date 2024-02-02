@@ -3,7 +3,6 @@ import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
-import { removeAllWhitespace } from './utils/JsonStrings';
 
 const CheckCallCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -31,11 +30,11 @@ const StartCall = (): React.ReactElement =>
         return 'result: ' + result;
       },
     },
-    defaultInput: removeAllWhitespace(`{
-      "targets": ["user1", "user2"],
-      "requestedModalities": ["video"],
-      "source": "source"
-    }`),
+    defaultInput: JSON.stringify({
+      targets: ['user1', 'user2'],
+      requestedModalities: ['video'],
+      source: 'source',
+    }),
   });
 
 const CallAPIs: React.FC = () => (
