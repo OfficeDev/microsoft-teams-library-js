@@ -167,7 +167,6 @@ export enum ChannelType {
  */
 export const errorNotSupportedOnPlatform: SdkError = {
   errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-  message: 'Not supported on current platform',
 };
 
 /**
