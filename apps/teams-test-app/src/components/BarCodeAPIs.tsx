@@ -26,7 +26,7 @@ const ScanBarCode = (): React.ReactElement =>
         return JSON.stringify(scannedCode);
       },
     },
-    defaultInput: `{}`,
+    defaultInput: '{}',
   });
 
 const HasBarCodePermission = (): React.ReactElement =>

@@ -60,6 +60,7 @@ const OpenLink = (): ReactElement =>
         },
       },
     },
+    defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
   });
 
 const RegisterOnThemeChangeHandler = (): ReactElement =>

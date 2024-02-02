@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
+import { removeAllWhiteSpace } from './utils/JsonStrings';
 
 const CheckAppEntityCapability = (): React.ReactElement =>
   ApiWithoutInput({
@@ -53,6 +54,11 @@ const SelectAppEntity = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: removeAllWhiteSpace(`{
+      "threadId": "123",
+      "categories": ["books", "animals"],
+      "subEntityId": "abc"
+    }`),
   });
 
 const AppEntityAPIs = (): ReactElement => (
