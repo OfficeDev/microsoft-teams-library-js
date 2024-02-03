@@ -78,17 +78,17 @@ export namespace clipboard {
       FrameContexts.stage,
       FrameContexts.sidePanel,
     );
+    const apiVersionTag = getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     if (isHostClientMobile() || GlobalVars.hostClientType === HostClientType.macos) {
-      const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
+      const response = JSON.parse(
+        await sendAndHandleSdkError(apiVersionTag, 'clipboard.readFromClipboard'),
+      ) as ClipboardParams;
       return utils.base64ToBlob(response.mimeType, response.content);
     } else {
-      return sendAndHandleSdkError(
-        getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read),
-        'clipboard.readFromClipboard',
-      );
+      return sendAndHandleSdkError(apiVersionTag, 'clipboard.readFromClipboard');
     }
   }
 
