@@ -52,6 +52,9 @@ class CommunicationPrivate {
   public static promiseCallbacks: {
     [id: number]: Function; // (args[]) => void
   } = {};
+  public static portCallbacks: {
+    [id: number]: (port?: MessagePort, args?: unknown[]) => void;
+  } = {};
   public static messageListener: Function;
 }
 
@@ -143,6 +146,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
   CommunicationPrivate.promiseCallbacks = {};
+  CommunicationPrivate.portCallbacks = {};
 }
 
 /**
@@ -317,6 +321,43 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] | un
       args,
     );
     resolve(waitForResponse<T>(request.id));
+  });
+}
+
+/**
+ * @hidden
+ * Send a message to parent requesting a MessageChannel Port.
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function requestPortFromParentWithVersion(
+  apiVersionTag: string,
+  actionName: string,
+  args: any[] | undefined = undefined,
+): Promise<MessagePort> {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
+    throw Error(
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
+    );
+  }
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
+  return waitForPort(request.id);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function waitForPort(requestId: number): Promise<MessagePort> {
+  return new Promise<MessagePort>((resolve, reject) => {
+    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
+      if (port instanceof MessagePort) {
+        resolve(port);
+      } else {
+        // First arg is the error message, if present
+        reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
+      }
+    };
   });
 }
 
@@ -711,6 +752,18 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
       logger('Removing registered promise callback for message %i', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
+    }
+    const portCallback = CommunicationPrivate.portCallbacks[message.id];
+    if (portCallback) {
+      logger('Invoking the registered port callback for message %i with arguments %o', message.id, message.args);
+      let port: MessagePort | undefined;
+      if (evt.ports && evt.ports[0] instanceof MessagePort) {
+        port = evt.ports[0];
+      }
+      portCallback(port, message.args);
+
+      logger('Removing registered port callback for message %i', message.id);
+      delete CommunicationPrivate.portCallbacks[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler

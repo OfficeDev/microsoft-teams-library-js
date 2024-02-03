@@ -23,6 +23,7 @@ export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
 export { files } from './files';
 export { meetingRoom } from './meetingRoom';
+export { messageChannels } from './messageChannels';
 export { notifications } from './notifications';
 export { remoteCamera } from './remoteCamera';
 export { appEntity } from './appEntity';

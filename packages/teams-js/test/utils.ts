@@ -200,6 +200,14 @@ export class Utils {
     message: MessageRequest | NestedAppAuthRequest,
     ...args: unknown[]
   ): Promise<void> => {
+    return this.respondToMessageWithPorts(message, args);
+  };
+
+  public respondToMessageWithPorts = async (
+    message: MessageRequest | NestedAppAuthRequest,
+    args: unknown[] = [],
+    ports: MessagePort[] = [],
+  ): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -210,6 +218,7 @@ export class Utils {
           id: message.id,
           args: args,
         } as MessageResponse,
+        ports,
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
@@ -220,7 +229,8 @@ export class Utils {
           id: message.id,
           args: args,
         } as MessageResponse,
-      } as MessageEvent);
+        ports,
+      } as unknown as MessageEvent);
     }
   };
 
@@ -248,6 +258,22 @@ export class Utils {
         args: args,
         isPartialResponse,
       } as MessageResponse,
+    } as DOMMessageEvent);
+  };
+
+  public respondToNativeMessageWithPorts = (
+    message: MessageRequest,
+    isPartialResponse: boolean,
+    args: unknown[],
+    ports: MessagePort[],
+  ): void => {
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
+      data: {
+        id: message.id,
+        args: args,
+        isPartialResponse,
+      } as MessageResponse,
+      ports,
     } as DOMMessageEvent);
   };
 

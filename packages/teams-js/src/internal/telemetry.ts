@@ -176,6 +176,7 @@ export enum ApiName {
   Menus_SetNavBarMenu = 'menus.setNavBarMenu',
   Menus_SetUpViews = 'menus.setUpViews',
   Menus_ShowActionMenu = 'menus.showActionMenu',
+  MessageChannels_GetTelemetryPort = 'messageChannels.getTelemetryPort',
   Monetization_OpenPurchaseExperience = 'monetization.openPurchaseExperience',
   Navigation_NavigateBack = 'navigation.navigateBack',
   Navigation_NavigateCrossDomain = 'navigation.navigateCrossDomain',
