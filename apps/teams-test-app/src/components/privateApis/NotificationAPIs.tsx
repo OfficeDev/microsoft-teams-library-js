@@ -1,4 +1,4 @@
-import { notifications, ShowNotificationParameters } from '@microsoft/teams-js';
+import { notifications, NotificationTypes, ShowNotificationParameters } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -26,6 +26,10 @@ const ShowNotification = (): React.ReactElement =>
         return 'Called';
       },
     },
+    defaultInput: JSON.stringify({
+      message: 'Test message',
+      notificationType: NotificationTypes.fileDownloadStart,
+    }),
   });
 
 const NotificationAPIs = (): ReactElement => (

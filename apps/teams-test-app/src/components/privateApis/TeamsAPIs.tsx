@@ -28,6 +28,7 @@ const GetTeamsChannels = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: '"groupId1"',
   });
 
 const RefreshSiteUrl = (): React.ReactElement =>
@@ -54,6 +55,7 @@ const RefreshSiteUrl = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: '"this is a url"',
   });
 
 const TeamsAPIs: React.FC = () => (
