@@ -16,9 +16,7 @@ const SelectPeople = (): React.ReactElement =>
     name: 'selectPeople',
     title: 'Select People',
     onClick: {
-      validateInput: (_input) => {
-        return;
-      },
+      validateInput: () => {},
       submit: {
         withPromise: async (input) => {
           const result = input ? await people.selectPeople(input) : people.selectPeople();
