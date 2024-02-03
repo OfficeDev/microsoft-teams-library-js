@@ -41,6 +41,7 @@ import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCard
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
+import MessageChannelAPIs from './components/privateApis/MessageChannelAPIs';
 import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
@@ -157,6 +158,7 @@ const App = (): ReactElement => {
         <MeetingAPIs />
         <MeetingRoomAPIs />
         <MenusAPIs />
+        <MessageChannelAPIs />
         <MonetizationAPIs />
         <NotificationAPIs />
         <PagesAPIs />
