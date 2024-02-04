@@ -222,7 +222,7 @@ const ViewImagesWithUrls = (): React.ReactElement =>
         return '';
       },
     },
-    defaultInput: `["one", "two", "three"]`,
+    defaultInput: '["one", "two", "three"]',
   });
 
 const HasMediaPermission = (): React.ReactElement =>

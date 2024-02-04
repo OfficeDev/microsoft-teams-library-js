@@ -259,7 +259,7 @@
       "inputValue": {
         "isMicMuted": true
       },
-      "expectedAlertValue": "updateMicState called with miState: isMicMuted: true, reason:1",
+      "expectedAlertValue": "updateMicState called with miState: isMicMuted:true, reason:1",
       "expectedTestAppValue": "updateMicState called with micState: isMicMuted: true"
     }
   ]
