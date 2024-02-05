@@ -8,6 +8,7 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
@@ -16,6 +17,13 @@ import { runtime } from './runtime';
  *
  * This object is used for starting or completing authentication flows.
  */
+
+/**
+ * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
+ */
+const authenticationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const authenticationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
   let authWindowMonitor: number | undefined;
@@ -101,7 +109,11 @@ export namespace authentication {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    return authenticateHelper(authenticateParams)
+    const apiVersionTag =
+      authenticateParams.successCallback || authenticateParams.failureCallback
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_Authenticate)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_Authenticate);
+    return authenticateHelper(apiVersionTag, authenticateParams)
       .then((value: string) => {
         try {
           if (authenticateParams && authenticateParams.successCallback) {
@@ -130,7 +142,7 @@ export namespace authentication {
       });
   }
 
-  function authenticateHelper(authenticateParameters: AuthenticateParameters): Promise<string> {
+  function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       if (
         GlobalVars.hostClientType === HostClientType.desktop ||
@@ -150,7 +162,7 @@ export namespace authentication {
         link.href = authenticateParameters.url;
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
-          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
+          sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
             link.href,
             authenticateParameters.width,
             authenticateParameters.height,
@@ -202,7 +214,11 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
     ensureInitializeCalled();
-    return getAuthTokenHelper(authTokenRequest)
+    const apiVersionTag =
+      authTokenRequest && (authTokenRequest.successCallback || authTokenRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetAuthToken)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetAuthToken);
+    return getAuthTokenHelper(apiVersionTag, authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
           authTokenRequest.successCallback(value);
@@ -219,10 +235,10 @@ export namespace authentication {
       });
   }
 
-  function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
+  function getAuthTokenHelper(apiVersionTag: string, authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>((resolve) => {
       resolve(
-        sendMessageToParentAsync('authentication.getAuthToken', [
+        sendMessageToParentAsync(apiVersionTag, 'authentication.getAuthToken', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
@@ -262,7 +278,11 @@ export namespace authentication {
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile | null> {
     ensureInitializeCalled();
-    return getUserHelper()
+    const apiVersionTag =
+      userRequest && (userRequest.successCallback || userRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetAuthToken)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetAuthToken);
+    return getUserHelper(apiVersionTag)
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {
           userRequest.successCallback(value);
@@ -279,9 +299,9 @@ export namespace authentication {
       });
   }
 
-  function getUserHelper(): Promise<UserProfile> {
+  function getUserHelper(apiVersionTag: string): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>((resolve) => {
-      resolve(sendMessageToParentAsync('authentication.getUser'));
+      resolve(sendMessageToParentAsync(apiVersionTag, 'authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
         return result as UserProfile;
