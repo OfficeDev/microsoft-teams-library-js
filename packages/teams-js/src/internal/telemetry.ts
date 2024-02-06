@@ -127,6 +127,7 @@ export enum ApiName {
   GeoLocation_Map_ChooseLocation = 'geoLocation.map.chooseLocation',
   GeoLocation_RequestPermission = 'geoLocation.requestPermission',
   GeoLocation_ShowLocation = 'geoLocation.showLocation',
+  HandleBeforeUnload = 'handleBeforeUnload',
   Interactive_GetClientInfo = 'interactive.getClientInfo',
   Interactive_GetClientRoles = 'interactive.getClientRoles',
   Interactive_GetFluidContainerId = 'interactive.getFluidContainerId',

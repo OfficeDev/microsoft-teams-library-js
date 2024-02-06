@@ -274,7 +274,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
-    sendMessageToParent('readyToUnload', []);
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.HandleBeforeUnload), 'readyToUnload', []);
   };
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {

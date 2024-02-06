@@ -1138,7 +1138,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleStatusAndReason(actionName, 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleStatusAndReason(testApiVersion, actionName, 'arg1', 'arg2', 'arg3');
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');
@@ -1231,7 +1231,14 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleStatusAndReasonWithDefaultError(actionName, 'default error', 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleStatusAndReasonWithDefaultError(
+        testApiVersion,
+        actionName,
+        'default error',
+        'arg1',
+        'arg2',
+        'arg3',
+      );
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');
@@ -1334,7 +1341,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleSdkError(actionName, 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleSdkError(testApiVersion, actionName, 'arg1', 'arg2', 'arg3');
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');
