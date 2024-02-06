@@ -434,7 +434,10 @@ export namespace authentication {
    */
   export function notifySuccess(result?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.success', [result]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifySuccess)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifySuccess);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -462,7 +465,10 @@ export namespace authentication {
    */
   export function notifyFailure(reason?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.failure', [reason]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifyFailure)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifyFailure);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }

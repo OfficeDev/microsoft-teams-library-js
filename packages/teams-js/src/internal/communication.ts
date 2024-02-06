@@ -655,14 +655,19 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      sendMessageToParent(message.func, message.args, (...args: any[]): void => {
-        if (Communication.childWindow) {
-          const isPartialResponse = args.pop();
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          sendMessageResponseToChild(message.id, args, isPartialResponse);
-        }
-      });
+      sendMessageToParent(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+        message.func,
+        message.args,
+        (...args: any[]): void => {
+          if (Communication.childWindow) {
+            const isPartialResponse = args.pop();
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            sendMessageResponseToChild(message.id, args, isPartialResponse);
+          }
+        },
+      );
     }
   }
 }
