@@ -1,0 +1,19 @@
+.apiWithTextInputHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 0 5px;
+  gap: 5px;
+  input[type='text'] {
+    width: 95%;
+    max-width: 400px;
+  }
+}
+
+.apiWithTextInputHeaderButtonRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
