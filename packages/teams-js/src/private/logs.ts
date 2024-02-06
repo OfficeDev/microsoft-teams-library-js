@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
@@ -37,7 +37,7 @@ export namespace logs {
     }
 
     if (handler) {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(logsTelemetryVersionNumber, ApiName.Logs_RegisterLogRequestHandler),
         'log.request',
         () => {

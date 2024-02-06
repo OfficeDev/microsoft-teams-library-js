@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { doesHandlerExist, registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
@@ -720,7 +720,7 @@ export namespace meeting {
       throw new Error('[register live stream changed handler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel);
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterLiveStreamChangedHandler),
       'meeting.liveStreamChanged',
       handler,
@@ -860,7 +860,7 @@ export namespace meeting {
       throw new Error('[registerSpeakingStateChangeHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterSpeakingStateChangeHandler),
       'meeting.speakingStateChanged',
       handler,
@@ -890,7 +890,7 @@ export namespace meeting {
       throw new Error('[registerRaiseHandStateChangedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterRaiseHandStateChangedHandler),
       'meeting.raiseHandStateChanged',
       handler,
@@ -918,7 +918,7 @@ export namespace meeting {
       throw new Error('[registerMeetingReactionReceivedHandler] Handler cannot be null');
     }
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMeetingReactionReceivedHandler),
       'meeting.meetingReactionReceived',
       handler,
@@ -1061,7 +1061,7 @@ export namespace meeting {
           setMicStateWithReason(micState, MicStateChangeReason.AppFailedToChange);
         }
       };
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterMicStateChangeHandler),
         'meeting.micStateChanged',
         micStateChangedCallback,
@@ -1070,7 +1070,7 @@ export namespace meeting {
       const audioDeviceSelectionChangedCallback = (selectedDevicesInHost: AudioDeviceSelection): void => {
         requestAppAudioHandlingParams.audioDeviceSelectionChangedCallback?.(selectedDevicesInHost);
       };
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_RegisterAudioDeviceSelectionChangedHandler),
         'meeting.audioDeviceSelectionChanged',
         audioDeviceSelectionChangedCallback,

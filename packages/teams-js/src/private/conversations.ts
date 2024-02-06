@@ -1,5 +1,5 @@
 import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -161,7 +161,7 @@ export namespace conversations {
         },
       );
       if (openConversationRequest.onStartConversation) {
-        registerHandlerWithVersion(
+        registerHandler(
           getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterStartConversationHandler),
           'startConversation',
           (subEntityId: string, conversationId: string, channelId: string, entityId: string) =>
@@ -174,7 +174,7 @@ export namespace conversations {
         );
       }
       if (openConversationRequest.onCloseConversation) {
-        registerHandlerWithVersion(
+        registerHandler(
           getApiVersionTag(conversationsTelemetryVersionNumber, ApiName.Conversations_RegisterCloseConversationHandler),
           'closeConversation',
           (subEntityId: string, conversationId?: string, channelId?: string, entityId?: string) =>

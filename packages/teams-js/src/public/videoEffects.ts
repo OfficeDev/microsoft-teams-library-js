@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
@@ -228,7 +228,7 @@ export namespace videoEffects {
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsTelemetryVersionNumber,
         ApiName.VideoEffects_RegisterSetFrameProcessTimeLimitHandler,
@@ -282,7 +282,7 @@ export namespace videoEffects {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterEffectParameterChangeHandler),
       'video.effectParameterChange',
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
@@ -343,7 +343,7 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsTelemetryVersionNumber,
         ApiName.VideoEffects_RegisterStartVideoExtensibilityVideoStreamHandler,
@@ -396,7 +396,7 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoBufferHandler),
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

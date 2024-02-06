@@ -1,5 +1,5 @@
 import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -95,18 +95,18 @@ export namespace search {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnClosedHandler),
       onClosedHandlerName,
       onClosedHandler,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecutedHandler),
       onExecutedHandlerName,
       onExecuteHandler,
     );
     if (onChangeHandler) {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnChangeHandler),
         onChangeHandlerName,
         onChangeHandler,

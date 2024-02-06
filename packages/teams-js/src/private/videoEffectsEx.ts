@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../internal/utils';
@@ -197,7 +197,7 @@ export namespace videoEffectsEx {
     }
 
     if (ensureInitialized(runtime, FrameContexts.sidePanel)) {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(
           videoEffectsExTelemetryVersionNumber,
           ApiName.VideoEffectsEx_RegisterSetFrameProcessTimeLimitHandler,
@@ -207,7 +207,7 @@ export namespace videoEffectsEx {
         false,
       );
       if (runtime.supports.video?.mediaStream) {
-        registerHandlerWithVersion(
+        registerHandler(
           getApiVersionTag(
             videoEffectsExTelemetryVersionNumber,
             ApiName.VideoEffectsEx_RegisterStartVideoExtensibilityVideoStreamHandler,
@@ -233,7 +233,7 @@ export namespace videoEffectsEx {
           [parameters.config],
         );
       } else if (runtime.supports.video?.sharedFrame) {
-        registerHandlerWithVersion(
+        registerHandler(
           getApiVersionTag(videoEffectsExTelemetryVersionNumber, ApiName.VideoEffectsEx_RegisterNewVideoFrameHandler),
           'video.newVideoFrame',
           (videoBufferData: VideoBufferData | LegacyVideoBufferData) => {
@@ -343,7 +343,7 @@ export namespace videoEffectsEx {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsExTelemetryVersionNumber,
         ApiName.VideoEffectsEx_RegisterEffectParameterChangeHandler,

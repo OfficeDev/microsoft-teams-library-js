@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -89,7 +89,7 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
  */
 export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
   ensureInitialized(runtime);
-  registerHandlerWithVersion(
+  registerHandler(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterCustomHandler),
     actionName,
     (...args: any[]) => {
@@ -114,7 +114,7 @@ export function registerUserSettingsChangeHandler(
 ): void {
   ensureInitialized(runtime);
 
-  registerHandlerWithVersion(
+  registerHandler(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterUserSettingsChangeHandler),
     'userSettingsChange',
     handler,

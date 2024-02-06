@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -68,7 +68,7 @@ export class ChildAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime);
     if (type === 'message') {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_AddEventListener),
         'messageForParent',
         listener,
@@ -116,7 +116,7 @@ export class ParentAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
     if (type === 'message') {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_AddEventListener),
         'messageForChild',
         listener,

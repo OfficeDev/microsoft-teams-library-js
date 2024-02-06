@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { runtime } from '../public/runtime';
@@ -160,19 +160,19 @@ export namespace menus {
    * Limited to Microsoft-internal use.
    */
   export function initialize(): void {
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterNavBarMenuItemPressHandler),
       'navBarMenuItemPress',
       handleNavBarMenuItemPress,
       false,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterActionMenuItemPressHandler),
       'actionMenuItemPress',
       handleActionMenuItemPress,
       false,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterSetModuleViewHandler),
       'setModuleView',
       handleViewConfigItemPress,

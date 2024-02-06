@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
@@ -1166,7 +1166,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderListChangeHandler),
       'files.cloudStorageProviderListChange',
       handler,
@@ -1192,7 +1192,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderContentChangeHandler),
       'files.cloudStorageProviderContentChange',
       handler,

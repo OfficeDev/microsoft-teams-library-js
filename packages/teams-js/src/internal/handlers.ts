@@ -99,8 +99,8 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerHandlerWithVersion(
-  getApiVersionTag: string,
+export function registerHandler(
+  apiVersionTag: string,
   name: string,
   handler: Function,
   sendMessage = true,
@@ -108,24 +108,7 @@ export function registerHandlerWithVersion(
 ): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent(getApiVersionTag, 'registerHandler', [name, ...args]);
-  } else {
-    delete HandlersPrivate.handlers[name];
-  }
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
-  if (handler) {
-    HandlersPrivate.handlers[name] = handler;
-    sendMessage &&
-      sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_0, ApiName.RegisterHandler), 'registerHandler', [
-        name,
-        ...args,
-      ]);
+    sendMessage && sendMessageToParent(apiVersionTag, 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }

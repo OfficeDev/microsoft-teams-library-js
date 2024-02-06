@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
@@ -351,7 +351,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         remoteCameraTelemetryVersionNumber,
         ApiName.RemoteCamera_RegisterOnCapableParticipantsChangeHandler,
@@ -379,7 +379,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnErrorHandler),
       'remoteCamera.handlerError',
       handler,
@@ -404,7 +404,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnDeviceStateChangeHandler),
       'remoteCamera.deviceStateChange',
       handler,
@@ -429,7 +429,7 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnSessionStatusChangeHandler),
       'remoteCamera.sessionStatusChange',
       handler,

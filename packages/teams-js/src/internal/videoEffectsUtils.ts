@@ -2,7 +2,7 @@ import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
-import { registerHandlerWithVersion } from './handlers';
+import { registerHandler } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
@@ -306,7 +306,7 @@ class TransformerWithMetadata {
     private notifyError: (string) => void,
     private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   ) {
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsUtilTelemetryVersionNumber,
         ApiName.VideoEffectsUtils_TransformerWithMetadata_Constructor,
