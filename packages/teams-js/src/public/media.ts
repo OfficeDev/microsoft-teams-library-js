@@ -358,7 +358,11 @@ export namespace media {
         }
       }
 
-      registerHandler('getMedia' + actionName, handleGetMediaRequest);
+      registerHandler(
+        getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_RegisterGetMediaRequestHandler),
+        'getMedia' + actionName,
+        handleGetMediaRequest,
+      );
     }
   }
 

@@ -465,8 +465,18 @@ export namespace pages {
      * Limited to Microsoft-internal use
      */
     export function initialize(): void {
-      registerHandler('settings.save', handleSave, false);
-      registerHandler('settings.remove', handleRemove, false);
+      registerHandler(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterSettingsSaveHandler),
+        'settings.save',
+        handleSave,
+        false,
+      );
+      registerHandler(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterSettingsRemoveHandler),
+        'settings.remove',
+        handleRemove,
+        false,
+      );
     }
 
     /**
@@ -766,7 +776,12 @@ export namespace pages {
      * Limited to Microsoft-internal use.
      */
     export function _initialize(): void {
-      registerHandler('backButtonPress', handleBackButtonPress, false);
+      registerHandler(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_BackStack_RegisterBackButtonPressHandler),
+        'backButtonPress',
+        handleBackButtonPress,
+        false,
+      );
     }
 
     /**
