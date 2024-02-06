@@ -1,4 +1,4 @@
-import './utils.scss';
+import './utils.css';
 
 import * as React from 'react';
 
@@ -75,10 +75,10 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
     <ApiContainer title={title} result={result} name={name}>
       <span className="apiWithTextInputHeader">
         <input type="text" name={`input_${name}`} defaultValue={inputText} ref={inputRef} placeholder={name} />
-        <span className="apiWithTextInputHeaderButtonRow">
-          <input name={`button_${name}`} type="button" value="Send" onClick={onClickCallback} />
-          <input name={`button_${name}_showDefault`} type="button" value="Default" onClick={onDefaultCallback} />
-        </span>
+        <input name={`button_${name}`} type="button" value="Send" onClick={onClickCallback} />
+        <button name={`button_${name}_showDefault`} onClick={onDefaultCallback}>
+          Default
+        </button>
       </span>
     </ApiContainer>
   );
