@@ -34,8 +34,24 @@ export namespace authentication {
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
   export function initialize(): void {
-    registerHandler('authentication.authenticate.success', handleSuccess, false);
-    registerHandler('authentication.authenticate.failure', handleFailure, false);
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateSuccessHandler,
+      ),
+      'authentication.authenticate.success',
+      handleSuccess,
+      false,
+    );
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateFailureHandler,
+      ),
+      'authentication.authenticate.failure',
+      handleFailure,
+      false,
+    );
   }
 
   let authParams: AuthenticateParameters | undefined;
@@ -401,16 +417,30 @@ export namespace authentication {
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    registerHandler('initialize', () => {
-      return [FrameContexts.authentication, GlobalVars.hostClientType];
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterInitializeHandler,
+      ),
+      'initialize',
+      () => {
+        return [FrameContexts.authentication, GlobalVars.hostClientType];
+      },
+    );
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    registerHandler('navigateCrossDomain', () => {
-      return false;
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterNavigateCrossDomainHandler,
+      ),
+      'navigateCrossDomain',
+      () => {
+        return false;
+      },
+    );
   }
 
   /**

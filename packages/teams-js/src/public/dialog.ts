@@ -52,7 +52,11 @@ export function urlOpenHelper(
   }
 
   if (messageFromChildHandler) {
-    registerHandler('messageForParent', messageFromChildHandler);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_RegisterMessageForParentHandler),
+      'messageForParent',
+      messageFromChildHandler,
+    );
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
   sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
@@ -73,7 +77,11 @@ export function botUrlOpenHelper(
   }
 
   if (messageFromChildHandler) {
-    registerHandler('messageForParent', messageFromChildHandler);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_RegisterMessageForParentHandler),
+      'messageForParent',
+      messageFromChildHandler,
+    );
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
   sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
@@ -162,7 +170,12 @@ export namespace dialog {
    * @beta
    */
   export function initialize(): void {
-    registerHandler('messageForChild', handleDialogMessage, false);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_RegisterMessageForChildHandler),
+      'messageForChild',
+      handleDialogMessage,
+      false,
+    );
   }
 
   function handleDialogMessage(message: string): void {
@@ -303,7 +316,14 @@ export namespace dialog {
         // handler since the original does not allow for post messages.
         // It is replaced by the user specified listener that is passed in.
         removeHandler('messageForChild');
-        registerHandler('messageForChild', listener);
+        registerHandler(
+          getApiVersionTag(
+            dialogTelemetryVersionNumber,
+            ApiName.Dialog_Url_ParentCommunication_RegisterMessageForChildHandler,
+          ),
+          'messageForChild',
+          listener,
+        );
         storedMessages.reverse();
         while (storedMessages.length > 0) {
           const message = storedMessages.pop();

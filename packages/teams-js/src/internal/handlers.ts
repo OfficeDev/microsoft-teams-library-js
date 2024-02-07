@@ -137,13 +137,13 @@ export function doesHandlerExist(name: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  *
- * @param apiVersionTag - The tag to indicate API version number with name
+ * @param apiVersionTag - The tag of the api version and name
  * @param name - The name of the handler to register.
  * @param handler - The handler to invoke.
  * @param contexts - The context within which it is valid to register this handler.
  * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
  */
-export function registerHandlerHelperWithVersion(
+export function registerHandlerHelper(
   apiVersionTag: string,
   name: string,
   handler: Function,
@@ -156,34 +156,7 @@ export function registerHandlerHelperWithVersion(
     registrationHelper();
   }
 
-  registerHandler(name, handler);
-}
-
-/**
- * @hidden
- * Undocumented helper function with shared code between deprecated version and current version of register*Handler APIs
- *
- * @internal
- * Limited to Microsoft-internal use
- *
- * @param name - The name of the handler to register.
- * @param handler - The handler to invoke.
- * @param contexts - The context within which it is valid to register this handler.
- * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
- */
-export function registerHandlerHelper(
-  name: string,
-  handler: Function,
-  contexts: FrameContexts[],
-  registrationHelper?: () => void,
-): void {
-  // allow for registration cleanup even when not finished initializing
-  handler && ensureInitialized(runtime, ...contexts);
-  if (registrationHelper) {
-    registrationHelper();
-  }
-
-  registerHandler(name, handler);
+  registerHandler(apiVersionTag, name, handler);
 }
 
 /**

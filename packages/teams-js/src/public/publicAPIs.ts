@@ -1,6 +1,6 @@
 import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
-import { registerHandlerHelperWithVersion } from '../internal/handlers';
+import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -128,7 +128,7 @@ export function registerOnThemeChangeHandler(handler: registerOnThemeChangeHandl
  * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
  */
 export function registerFullScreenHandler(handler: registerFullScreenHandlerFunctionType): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFullScreenHandler),
     'fullScreenChange',
     handler,
@@ -146,7 +146,7 @@ export function registerFullScreenHandler(handler: registerFullScreenHandlerFunc
  * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
  */
 export function registerAppButtonClickHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonClickHandler),
     'appButtonClick',
     handler,
@@ -164,7 +164,7 @@ export function registerAppButtonClickHandler(handler: callbackFunctionType): vo
  * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
  */
 export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonHoverEnterHandler),
     'appButtonHoverEnter',
     handler,
@@ -182,7 +182,7 @@ export function registerAppButtonHoverEnterHandler(handler: callbackFunctionType
  *
  */
 export function registerAppButtonHoverLeaveHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterAppButtonHoverLeaveHandler),
     'appButtonHoverLeave',
     handler,
@@ -245,7 +245,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFocusEnterHandler),
     'focusEnter',
     handler,
@@ -262,7 +262,7 @@ export function registerFocusEnterHandler(handler: (navigateForward: boolean) =>
  * @param handler - The handler to invoke when the user click on Settings.
  */
 export function registerChangeSettingsHandler(handler: callbackFunctionType): void {
-  registerHandlerHelperWithVersion(
+  registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterChangeSettingsHandler),
     'changeSettings',
     handler,

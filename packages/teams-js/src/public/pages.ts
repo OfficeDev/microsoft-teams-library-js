@@ -7,7 +7,7 @@ import {
   sendMessageEventToChild,
   sendMessageToParent,
 } from '../internal/communication';
-import { registerHandler, registerHandlerHelperWithVersion } from '../internal/handlers';
+import { registerHandler, registerHandlerHelper } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
@@ -194,7 +194,7 @@ export namespace pages {
    * Limited to Microsoft-internal use
    */
   export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
-    registerHandlerHelperWithVersion(
+    registerHandlerHelper(
       getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFocusEnterHandler),
       'focusEnter',
       handler,
@@ -339,7 +339,7 @@ export namespace pages {
    * @param handler - The handler to invoke when the user toggles full-screen view for a tab.
    */
   export function registerFullScreenHandler(handler: fullScreenChangeFunctionType): void {
-    registerHandlerHelperWithVersion(
+    registerHandlerHelper(
       getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFullScreenHandler),
       'fullScreenChange',
       handler,
@@ -609,7 +609,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the user clicks on Settings.
      */
     export function registerChangeConfigHandler(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(
+      registerHandlerHelper(
         getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_Config_RegisterChangeConfigHandler),
         'changeSettings',
         handler,
@@ -935,7 +935,7 @@ export namespace pages {
      * @param handler - The handler to invoke when the personal app button is clicked in the app bar.
      */
     export function onClick(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(
+      registerHandlerHelper(
         getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnClick),
         'appButtonClick',
         handler,
@@ -954,7 +954,7 @@ export namespace pages {
      * @param handler - The handler to invoke when entering hover of the personal app button in the app bar.
      */
     export function onHoverEnter(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(
+      registerHandlerHelper(
         getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverEnter),
         'appButtonHoverEnter',
         handler,
@@ -973,7 +973,7 @@ export namespace pages {
      * @param handler - The handler to invoke when exiting hover of the personal app button in the app bar.
      */
     export function onHoverLeave(handler: handlerFunctionType): void {
-      registerHandlerHelperWithVersion(
+      registerHandlerHelper(
         getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_AppButton_OnHoverLeave),
         'appButtonHoverLeave',
         handler,
