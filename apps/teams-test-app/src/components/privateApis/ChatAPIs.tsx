@@ -52,7 +52,7 @@ const OpenChat = (): React.ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      user: ['testUpn'],
+      user: 'testUpn',
       message: 'testMessage',
     }),
   });
