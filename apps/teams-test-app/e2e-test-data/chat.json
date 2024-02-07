@@ -48,7 +48,7 @@
       "version": ">2.2.0 && <=2.17.0",
       "boxSelector": "#box_openChat2",
       "inputValue": {
-        "user": "testUpn",
+        "user": ["testUpn"],
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
@@ -60,10 +60,10 @@
       "version": ">2.17.0",
       "boxSelector": "#box_openChat2",
       "inputValue": {
-        "user": ["testUpn"],
+        "user": "testUpn",
         "message": "testMessage"
       },
-      "expectedAlertValue": "openChat called with {\"members\":[[\"testUpn\"]],\"message\":\"testMessage\"}",
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
       "expectedTestAppValue": "chat.openChat() was called"
     },
     {
