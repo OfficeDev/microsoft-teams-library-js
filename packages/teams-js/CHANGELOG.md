@@ -1,8 +1,31 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 10 Jan 2024 19:55:18 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Feb 2024 18:02:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.20.0
+
+Wed, 07 Feb 2024 18:02:49 GMT
+
+### Minor changes
+
+- Added communication for nested app auth
+- Added private MessageChannels capability
+- Enabled acquiring of access token for cross-tenant resources
+- Added new subcapability `dialog.url.parentCommunication` for dialog-parent communication related APIs. The isSupported function in this subcapability will return `false` if it is invoked from a parentless scenario.
+
+### Patches
+
+- Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.
+- Added apiVersionTag for telemetry in `Profile`, `Search`, `SecondaryBrowser`, `Settings`, `Sharing`, `StageView`, `VideoEffects` and `VisualMedia` capabilites
+- Fixed bug where `thirdPartyCloudStorage.getDragAndDropFiles` failed deterministically
+- Updated eslint package and fixed subsequent linting errors
+- Removed unused `callbackUrl` parameter from `authentication.notifySuccess` and `authentication.notifyFailure` (in an API-compatible way)
+- Added telemetry to `chat`, `interactive`, `meeting`, `menus`,`monetization` and `people` capabilities
+- Added apiVersionTags for telemetry in `Conversations`, `Files`, `Logs`, `MeetingRoom` and `Notifications` capabilities
+- Added windows.msn.com to validOrigins list
+- Added apiVersionTag for telemetry in `privateAPIs` and `remoteCamera`, `teams`, `videoEffectsEx` capabilities
 
 ## 2.19.0
 
