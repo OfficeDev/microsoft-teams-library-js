@@ -6,8 +6,3 @@
   padding: 0 5px;
   gap: 5px;
 }
-
-.apiWithTextInputHeader input[type='text'] {
-  width: 95%;
-  max-width: 400px;
-}

@@ -75,7 +75,13 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
     <ApiContainer title={title} result={result} name={name}>
       <span className="apiWithTextInputHeader">
         <input type="text" name={`input_${name}`} defaultValue={inputText} ref={inputRef} placeholder={name} />
-        <input name={`button_${name}`} id={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
+        <input
+          name={`button_${name}`}
+          id={`box_${name}_button`}
+          type="button"
+          value={title}
+          onClick={onClickCallback}
+        />
         <button name={`button_${name}_showDefault`} onClick={onDefaultCallback}>
           Default
         </button>
