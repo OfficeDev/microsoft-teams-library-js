@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added communication for nested app auth",
-  "packageName": "@microsoft/teams-js",
-  "email": "ameyagholkar@microsoft.com",
-  "dependentChangeType": "patch"
-}
