@@ -81,21 +81,6 @@ export namespace calendar {
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
-  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content);
-      if (!isSupported()) {
-        throw new Error('Not supported');
-      }
-      resolve(
-        sendAndHandleStatusAndReasonWithVersion(
-          getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_JoinMeeting),
-          'calendar.joinMeeting',
-          joinMeetingParams,
-        ),
-      );
-    });
-  }
 
   /**
    * Checks if the calendar capability is supported by the host
@@ -127,28 +112,4 @@ export namespace calendar {
     /** The body content of the meeting. */
     content?: string;
   }
-
-  /** Join meeting parameters */
-  export interface JoinMeetingParams {
-    /** The meeting url to join. */
-    skypeTeamsMeetingUrl: string;
-    /** The subject of the meeting. */
-    subject: string;
-    /** The conversation id of the meeting. */
-    source: EventActionSource;
-    /** The conversation id of the meeting. */
-    conversationId: string;
-    /** The message id of the meeting. */
-    messageId: string;
-    /** The root message id of the meeting. */
-    rootMessageId: string;
-  }
-
-  /** Event action source */
-  export type EventActionSource =
-    | 'calendar_grid_context_menu'
-    | 'calendar_grid_peek'
-    | 'calendar_grid_event_card_join_button'
-    | 'calendar_form_ribbon_join_button'
-    | 'calendar_form_join_teams_meeting_button';
 }

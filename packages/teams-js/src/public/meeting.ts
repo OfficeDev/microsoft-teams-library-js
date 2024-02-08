@@ -1,6 +1,8 @@
 import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -856,6 +858,47 @@ export namespace meeting {
     ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
     registerHandler('meeting.meetingReactionReceived', handler);
   }
+
+  /**
+   * This function is used to join a meeting
+   * @param joinMeetingParams
+   */
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    return new Promise<void>((resolve) => {
+      ensureInitialized(runtime, FrameContexts.content);
+      resolve(
+        sendAndHandleStatusAndReasonWithVersion(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
+          'meeting.joinMeeting',
+          joinMeetingParams,
+        ),
+      );
+    });
+  }
+
+  /** Join meeting parameters */
+  export interface JoinMeetingParams {
+    /** The meeting url to join. */
+    skypeTeamsMeetingUrl: string;
+    /** The subject of the meeting. */
+    subject: string;
+    /** The conversation id of the meeting. */
+    source: EventActionSource;
+    /** The conversation id of the meeting. */
+    conversationId: string;
+    /** The message id of the meeting. */
+    messageId: string;
+    /** The root message id of the meeting. */
+    rootMessageId: string;
+  }
+
+  /** Event action source */
+  export type EventActionSource =
+    | 'calendar_grid_context_menu'
+    | 'calendar_grid_peek'
+    | 'calendar_grid_event_card_join_button'
+    | 'calendar_form_ribbon_join_button'
+    | 'calendar_form_join_teams_meeting_button';
 
   /**
    * Nested namespace for functions to control behavior of the app share button
