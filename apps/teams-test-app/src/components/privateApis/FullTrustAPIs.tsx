@@ -53,6 +53,9 @@ const GetUserJoinedTeams = (): React.ReactElement =>
       const result = await teams.fullTrust.joinedTeams.getUserJoinedTeams(input);
       return JSON.stringify(result);
     },
+    defaultInput: JSON.stringify({
+      favoriteTeamsOnly: false,
+    }),
   });
 
 const CheckTeamsFullTrustGetUserJoinedCapability = (): React.ReactElement =>
@@ -86,6 +89,7 @@ const GetConfigSetting = (): React.ReactElement =>
         return result;
       },
     },
+    defaultInput: '"key1"',
   });
 
 const FullTrustAPIs = (): ReactElement => (

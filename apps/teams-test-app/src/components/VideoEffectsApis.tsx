@@ -20,6 +20,7 @@ const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
         return 'Success';
       },
     },
+    defaultInput: '"anEffectId"',
   });
 
 const RegisterForVideoEffect = (): React.ReactElement =>

@@ -1,3 +1,5 @@
+import './utils.css';
+
 import * as React from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -25,6 +27,12 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
   const { name, defaultInput, onClick, title } = props;
   const [result, setResult] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const [inputText, setInputText] = React.useState('');
+
+  const onDefaultCallback = React.useCallback(() => {
+    setInputText(defaultInput ?? '');
+  }, [defaultInput]);
 
   const onClickCallback = React.useCallback(async () => {
     if (!inputRef || !inputRef.current || !inputRef.current.value) {
@@ -65,9 +73,18 @@ export const ApiWithTextInput = <T,>(props: ApiWithTextInputProps<T>): React.Rea
 
   return (
     <ApiContainer title={title} result={result} name={name}>
-      <span>
-        <input type="text" name={`input_${name}`} defaultValue={defaultInput} ref={inputRef} placeholder={name} />
-        <input name={`button_${name}`} type="button" value={title} onClick={onClickCallback} />
+      <span className="apiWithTextInputHeader">
+        <input type="text" name={`input_${name}`} defaultValue={inputText} ref={inputRef} placeholder={name} />
+        <input
+          name={`button_${name}`}
+          id={`box_${name}_button`}
+          type="button"
+          value={title}
+          onClick={onClickCallback}
+        />
+        <button name={`button_${name}_showDefault`} onClick={onDefaultCallback}>
+          Default
+        </button>
       </span>
     </ApiContainer>
   );

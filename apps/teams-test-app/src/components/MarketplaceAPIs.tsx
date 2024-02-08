@@ -29,6 +29,27 @@ const AddOrUpdateCartItems = (): ReactElement =>
         return JSON.stringify(cart);
       },
     },
+    defaultInput: JSON.stringify({
+      cartId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      cartItems: [
+        {
+          id: 'itemId',
+          name: 'Cart Item 1',
+          quantity: 1,
+          price: 10,
+          imageUrl: 'https://example.com',
+          accessories: [
+            {
+              id: 'accessoryId',
+              name: 'Accessory 1',
+              quantity: 1,
+              price: 5,
+              imageUrl: 'https://example.com',
+            },
+          ],
+        },
+      ],
+    }),
   });
 
 const RemoveCartItems = (): ReactElement =>
@@ -46,6 +67,10 @@ const RemoveCartItems = (): ReactElement =>
         return JSON.stringify(cart);
       },
     },
+    defaultInput: JSON.stringify({
+      cartId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      cartItemIds: ['itemId'],
+    }),
   });
 
 const UpdateCartStatus = (): ReactElement =>
@@ -63,6 +88,11 @@ const UpdateCartStatus = (): ReactElement =>
         return JSON.stringify(cart);
       },
     },
+    defaultInput: JSON.stringify({
+      cartId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      cartStatus: marketplace.CartStatus.Open,
+      statusInfo: 'User cart is open',
+    }),
   });
 
 const CheckMarketplaceCapability = (): ReactElement =>

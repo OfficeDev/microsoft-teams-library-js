@@ -26,6 +26,7 @@ const MoveToLink = (): ReactElement =>
         return Promise.resolve('Moved to new link');
       },
     },
+    defaultInput: '"https://www.bing.com"',
   });
 
 const OpenLinkInNewWindow = (): ReactElement =>
@@ -46,6 +47,7 @@ const OpenLinkInNewWindow = (): ReactElement =>
         return Promise.resolve('Link opened');
       },
     },
+    defaultInput: '"https://www.bing.com"',
   });
 
 const Links = (): ReactElement => (

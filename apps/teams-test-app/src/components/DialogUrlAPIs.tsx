@@ -60,6 +60,11 @@ const DialogUrlAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: JSON.stringify({
+        url: 'https://localhost:4000',
+        title: 'Dialog Title',
+        size: 'large',
+      }),
     });
 
   const SendMessageToChild = (): ReactElement =>
@@ -96,6 +101,7 @@ const DialogUrlAPIs = (): ReactElement => {
           }
         },
       },
+      defaultInput: '"Hello from parent"',
     });
 
   const SendMessageToParent = (): ReactElement =>
@@ -131,6 +137,7 @@ const DialogUrlAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: '"Hello from child"',
     });
 
   const RegisterForParentMessage = (): ReactElement =>
@@ -175,6 +182,10 @@ const DialogUrlAPIs = (): ReactElement => {
           },
         },
       },
+      defaultInput: JSON.stringify({
+        result: 'Success',
+        appIds: ['appId1', 'appId2'],
+      }),
     });
 
   return (

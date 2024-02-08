@@ -20,6 +20,14 @@ const UpdatePersonalizedEffects = (): React.ReactElement =>
         return 'Success';
       },
     },
+    defaultInput: JSON.stringify([
+      {
+        id: 'effectId',
+        name: 'effectName',
+        type: 'effectType',
+        thumbnail: 'effectThumbnail',
+      },
+    ]),
   });
 
 const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
@@ -42,6 +50,7 @@ const NotifySelectedVideoEffectChanged = (): React.ReactElement =>
         return 'Success';
       },
     },
+    defaultInput: '"effectId1, effectParam1"',
   });
 
 const RegisterForVideoEffect = (): React.ReactElement =>
@@ -79,6 +88,7 @@ const NotifyFatalError = (): React.ReactElement =>
         return 'Success';
       },
     },
+    defaultInput: '"this error was fatal"',
   });
 
 const CheckIsSupported = (): React.ReactElement =>

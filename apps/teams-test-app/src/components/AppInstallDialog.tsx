@@ -26,6 +26,9 @@ const OpenAppInstallDialog = (): React.ReactElement =>
         return 'called';
       },
     },
+    defaultInput: JSON.stringify({
+      appId: '957f8a7e-fbcd-411d-b69f-acb7eb58b515',
+    }),
   });
 
 const AppInstallDialogAPIs: React.FC = () => (

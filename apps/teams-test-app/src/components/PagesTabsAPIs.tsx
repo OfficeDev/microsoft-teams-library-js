@@ -43,6 +43,21 @@ const NavigateToTab = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      tabName: 'tab1',
+      internalTabInstanceId: 'internalTab1',
+      lastViewUnixEpochTime: '0',
+      entityId: 'entity1',
+      channelid: 'channel1',
+      channelName: 'channelName1',
+      channelIsFavorite: false,
+      teamId: 'team1',
+      teamName: 'teamName1',
+      teamIsFavorite: false,
+      groupId: 'group1',
+      url: 'https://localhost:4000',
+      websiteUrl: 'https://localhost:4000',
+    }),
   });
 
 const GetTabInstances = (): React.ReactElement =>
@@ -65,6 +80,7 @@ const GetTabInstances = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({ favoriteChannelOnly: false, favoriteTeamsOnly: false }),
   });
 
 const GetMruTabInstances = (): React.ReactElement =>
@@ -87,6 +103,7 @@ const GetMruTabInstances = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({ favoriteChannelOnly: false, favoriteTeamsOnly: false }),
   });
 
 const CheckPagesTabsCapability = (): React.ReactElement =>
