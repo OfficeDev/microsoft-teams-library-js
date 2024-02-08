@@ -930,8 +930,8 @@ export namespace meeting {
    * This function is used to join a meeting
    * @param joinMeetingParams
    */
-  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
-    return new Promise<void>((resolve) => {
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<string | object> {
+    return new Promise<string | object>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
       resolve(
         sendAndHandleStatusAndReasonWithVersion(
