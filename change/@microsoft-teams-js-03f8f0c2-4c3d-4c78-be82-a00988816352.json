@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added Content context where Live Share is now supported. Live Share SDK works now in Chat/Channel Tab and Collab Stage view contexts with this change.",
+  "packageName": "@microsoft/teams-js",
+  "email": "pradan@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}
