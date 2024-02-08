@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
 import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -51,11 +51,9 @@ export namespace calendar {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
-      const apiVersionTag = getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_ComposeMeeting);
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleStatusAndReasonWithVersion(
-            apiVersionTag,
+          sendAndHandleStatusAndReason(
             'executeDeepLink',
             createTeamsDeepLinkForCalendar(
               composeMeetingParams.attendees,
@@ -68,7 +66,11 @@ export namespace calendar {
         );
       } else {
         resolve(
-          sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'calendar.composeMeeting', composeMeetingParams),
+          sendAndHandleStatusAndReasonWithVersion(
+            getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_ComposeMeeting),
+            'calendar.composeMeeting',
+            composeMeetingParams,
+          ),
         );
       }
     });
