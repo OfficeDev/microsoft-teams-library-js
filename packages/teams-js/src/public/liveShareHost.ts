@@ -165,7 +165,7 @@ export namespace liveShare {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) &&
+    return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel, FrameContexts.content) &&
       runtime.supports.interactive
       ? true
       : false;
