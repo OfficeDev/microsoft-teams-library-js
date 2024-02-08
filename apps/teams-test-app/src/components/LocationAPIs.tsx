@@ -33,6 +33,10 @@ const GetLocation = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      allowChooseLocation: true,
+      showMap: true,
+    }),
   });
 
 const ShowLocation = (): React.ReactElement =>
@@ -58,6 +62,10 @@ const ShowLocation = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      latitude: 47.6062,
+      longitude: 122.3321,
+    }),
   });
 
 const LocationAPIs = (): ReactElement => (

@@ -170,7 +170,7 @@
       "version": ">2.0.0",
       "boxSelector": "#box_getExternalProviders",
       "checkboxState": true,
-      "expectedAlertValue": "getExternalProviders called",
+      "expectedAlertValue": "getExternalProviders called with true",
       "expectedTestAppValue": "[{\"name\":\"firstProvider\",\"description\":\"dDesc\",\"thumbnails\":[],\"providerCode\":\"GOOGLEDRIVE\",\"providerType\":2}]"
     },
     {

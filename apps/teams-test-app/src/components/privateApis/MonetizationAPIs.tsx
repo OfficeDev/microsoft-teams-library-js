@@ -42,6 +42,10 @@ const OpenPurchaseExperience = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      planId: 'planId',
+      term: 'term',
+    }),
   });
 
 const MonetizationAPIs = (): ReactElement => (

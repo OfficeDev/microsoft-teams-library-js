@@ -53,6 +53,11 @@ const SelectAppEntity = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: JSON.stringify({
+      threadId: '123',
+      categories: ['books', 'animals'],
+      subEntityId: 'abc',
+    }),
   });
 
 const AppEntityAPIs = (): ReactElement => (
