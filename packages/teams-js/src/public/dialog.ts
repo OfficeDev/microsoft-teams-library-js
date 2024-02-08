@@ -233,79 +233,105 @@ export namespace dialog {
     }
 
     /**
-     *  Send message to the parent from dialog
+     * Subcapability that allows communication between the dialog and the parent app.
      *
      * @remarks
-     * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
-     *
-     * @param message - The message to send to the parent
+     * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
      *
      * @beta
      */
-    export function sendMessageToParentFromDialog(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      message: any,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+    export namespace parentCommunication {
+      /**
+       *  Send message to the parent from dialog
+       *
+       * @remarks
+       * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
+       *
+       * @param message - The message to send to the parent
+       *
+       * @beta
+       */
+      export function sendMessageToParentFromDialog(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        message: any,
+      ): void {
+        ensureInitialized(runtime, FrameContexts.task);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+
+        sendMessageToParentWithVersion(
+          getApiVersionTag(
+            dialogTelemetryVersionNumber,
+            ApiName.Dialog_Url_ParentCommunication_SendMessageToParentFromDialog,
+          ),
+          'messageForParent',
+          [message],
+        );
       }
 
-      sendMessageToParentWithVersion(
-        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToParentFromDialog),
-        'messageForParent',
-        [message],
-      );
-    }
+      /**
+       *  Send message to the dialog from the parent
+       *
+       * @param message - The message to send
+       *
+       * @beta
+       */
+      export function sendMessageToDialog(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        message: any,
+      ): void {
+        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
 
-    /**
-     *  Send message to the dialog from the parent
-     *
-     * @param message - The message to send
-     *
-     * @beta
-     */
-    export function sendMessageToDialog(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      message: any,
-    ): void {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        sendMessageToParentWithVersion(
+          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_ParentCommunication_SendMessageToDialog),
+          'messageForChild',
+          [message],
+        );
       }
 
-      sendMessageToParentWithVersion(
-        getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_SendMessageToDialog),
-        'messageForChild',
-        [message],
-      );
-    }
+      /**
+       * Register a listener that will be triggered when a message is received from the app that opened the dialog.
+       *
+       * @remarks
+       * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
+       *
+       * @param listener - The listener that will be triggered.
+       *
+       * @beta
+       */
+      export function registerOnMessageFromParent(listener: PostMessageChannel): void {
+        ensureInitialized(runtime, FrameContexts.task);
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
 
-    /**
-     * Register a listener that will be triggered when a message is received from the app that opened the dialog.
-     *
-     * @remarks
-     * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
-     *
-     * @param listener - The listener that will be triggered.
-     *
-     * @beta
-     */
-    export function registerOnMessageFromParent(listener: PostMessageChannel): void {
-      ensureInitialized(runtime, FrameContexts.task);
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        // We need to remove the original 'messageForChild'
+        // handler since the original does not allow for post messages.
+        // It is replaced by the user specified listener that is passed in.
+        removeHandler('messageForChild');
+        registerHandler('messageForChild', listener);
+        storedMessages.reverse();
+        while (storedMessages.length > 0) {
+          const message = storedMessages.pop();
+          listener(message);
+        }
       }
 
-      // We need to remove the original 'messageForChild'
-      // handler since the original does not allow for post messages.
-      // It is replaced by the user specified listener that is passed in.
-      removeHandler('messageForChild');
-      registerHandler('messageForChild', listener);
-      storedMessages.reverse();
-      while (storedMessages.length > 0) {
-        const message = storedMessages.pop();
-        listener(message);
+      /**
+       * Checks if dialog.url.parentCommunication capability is supported by the host
+       *
+       * @returns boolean to represent whether dialog.url.parentCommunication capability is supported
+       *
+       * @throws Error if {@linkcode app.initialize} has not successfully completed
+       *
+       * @beta
+       */
+      export function isSupported(): boolean {
+        return ensureInitialized(runtime) && !!runtime.supports.dialog?.url?.parentCommunication;
       }
     }
 

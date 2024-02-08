@@ -507,7 +507,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
@@ -534,7 +534,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual(undefined);
             expect(message.args[2]).toEqual(undefined);
@@ -556,7 +556,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
@@ -572,12 +572,36 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
           await utils.respondToMessage(message, true, 'token');
+          await expect(promise).resolves.toEqual('token');
+        });
+
+        it(`authentication.getAuthToken should request token for the tenant specified in the authTokenRequest from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const authTokenRequest = {
+            resources: [mockResource],
+            claims: [mockClaim],
+            silent: false,
+            tenantId: 'tenantId',
+          };
+
+          const promise = authentication.getAuthToken(authTokenRequest);
+
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(4);
+          expect(message.args[0]).toEqual([mockResource]);
+          expect(message.args[1]).toEqual([mockClaim]);
+          expect(message.args[2]).toEqual(false);
+          expect(message.args[3]).toEqual('tenantId');
+
+          utils.respondToMessage(message, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -592,7 +616,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
@@ -608,7 +632,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
@@ -764,76 +788,6 @@ describe('Testing authentication capability', () => {
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe(mockResult);
           });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook with ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook and no result param specified from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              null,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should successfully notify auth success if callbackUrl is not for win32 Outlook ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
-            const message = utils.findMessageByFunc('authentication.authenticate.success');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(mockResult);
-          });
         } else {
           it(`authentication.notifySuccess should not allow calls from ${context} context`, async () => {
             await utils.initializeWithContext(context);
@@ -886,69 +840,14 @@ describe('Testing authentication capability', () => {
             expect(message.args[0]).toBe(errorMessage);
           });
 
-          it(`authentication.notifyFailure should do window redirect if callbackUrl is for win32 Outlook and auth failure happens from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                `https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=${errorMessage}&authFailure`,
-              );
-            });
-
+          it(`authentication.notifyFailure should successfully notify auth failure if reason is empty from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
-            authentication.notifyFailure(
-              errorMessage,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is not for win32 Outlook from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(
-              errorMessage,
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(errorMessage);
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is not for win32 Outlook and reason is empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(
-              '',
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
+            authentication.notifyFailure('');
             const message = utils.findMessageByFunc('authentication.authenticate.failure');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe('');
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl and reason are empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure('', '');
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe('');
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(errorMessage, '');
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(errorMessage);
           });
         } else {
           it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
@@ -1148,7 +1047,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
@@ -1179,7 +1078,7 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toBeNull();
             expect(message.args[2]).toBeNull();
@@ -1205,7 +1104,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
@@ -1225,7 +1124,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
@@ -1250,7 +1149,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
@@ -1270,7 +1169,7 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();

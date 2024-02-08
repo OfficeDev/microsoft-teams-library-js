@@ -11,6 +11,12 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
+import {
+  NestedAppAuthMessageEventNames,
+  NestedAppAuthRequest,
+  ParsedNestedAppAuthMessageData,
+  tryPolyfillWithNestedAppAuthBridge,
+} from './nestedAppAuth';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
@@ -27,6 +33,8 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window | null;
   public static childOrigin: string | null;
+  public static topWindow: Window | any;
+  public static topOrigin: string | null;
 }
 
 /**
@@ -36,12 +44,16 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
+  public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: {
     [id: number]: Function; // (arg1, arg2, ...etc) => void
   } = {};
   public static promiseCallbacks: {
     [id: number]: Function; // (args[]) => void
+  } = {};
+  public static portCallbacks: {
+    [id: number]: (port?: MessagePort, args?: unknown[]) => void;
   } = {};
   public static messageListener: Function;
 }
@@ -75,6 +87,7 @@ export function initializeCommunication(
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
       : Communication.currentWindow.opener;
+  Communication.topWindow = Communication.currentWindow.top;
 
   // Listen to messages from the parent or child frame.
   // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
@@ -102,6 +115,10 @@ export function initializeCommunication(
       latestRuntimeApiVersion,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
+        tryPolyfillWithNestedAppAuthBridge(clientSupportedSDKVersion, Communication.currentWindow, {
+          onMessage: processAuthBridgeMessage,
+          sendPostMessage: sendNestedAuthRequestToTopWindow,
+        });
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
     );
@@ -129,6 +146,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.nextMessageId = 0;
   CommunicationPrivate.callbacks = {};
   CommunicationPrivate.promiseCallbacks = {};
+  CommunicationPrivate.portCallbacks = {};
 }
 
 /**
@@ -307,6 +325,43 @@ export function sendMessageToParentAsync<T>(actionName: string, args: any[] | un
 }
 
 /**
+ * @hidden
+ * Send a message to parent requesting a MessageChannel Port.
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function requestPortFromParentWithVersion(
+  apiVersionTag: string,
+  actionName: string,
+  args: any[] | undefined = undefined,
+): Promise<MessagePort> {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
+    throw Error(
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
+    );
+  }
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
+  return waitForPort(request.id);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function waitForPort(requestId: number): Promise<MessagePort> {
+  return new Promise<MessagePort>((resolve, reject) => {
+    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
+      if (port instanceof MessagePort) {
+        resolve(port);
+      } else {
+        // First arg is the error message, if present
+        reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
+      }
+    };
+  });
+}
+
+/**
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -409,6 +464,57 @@ export function sendMessageToParent(actionName: string, argsOrCallback?: any[] |
   }
 }
 
+const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendNestedAuthRequestToTopWindow');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
+  const logger = sendNestedAuthRequestToTopWindowLogger;
+
+  const targetWindow = Communication.topWindow;
+  const request = createNestedAppAuthRequest(message);
+
+  logger('Message %i information: %o', request.id, { actionName: request.func });
+
+  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
+}
+
+const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function sendRequestToTargetWindowHelper(
+  targetWindow: Window,
+  request: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
+): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
+  const logger = sendRequestToTargetWindowHelperLogger;
+  const targetWindowName = getTargetName(targetWindow);
+
+  if (GlobalVars.isFramelessWindow) {
+    if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.id);
+      (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
+    }
+  } else {
+    const targetOrigin = getTargetOrigin(targetWindow);
+
+    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+    // queue the message and send it after the origin is established
+    if (targetWindow && targetOrigin) {
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.id);
+      targetWindow.postMessage(request, targetOrigin);
+    } else {
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.id);
+      getTargetMessageQueue(targetWindow).push(request);
+    }
+  }
+  return request;
+}
+
 const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
 
 /**
@@ -421,30 +527,14 @@ function sendMessageToParentHelper(
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
+
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
+  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.id, { actionName, args });
 
-  if (GlobalVars.isFramelessWindow) {
-    if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger('Sending message %i to parent via framelessPostMessage interface', request.id);
-      (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
-    }
-  } else {
-    const targetOrigin = getTargetOrigin(targetWindow);
-
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      logger('Sending message %i to parent via postMessage', request.id);
-      targetWindow.postMessage(request, targetOrigin);
-    } else {
-      logger('Adding message %i to parent message queue', request.id);
-      getTargetMessageQueue(targetWindow).push(request);
-    }
-  }
-  return request;
+  return sendRequestToTargetWindowHelper(targetWindow, request);
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -482,6 +572,82 @@ async function processMessage(evt: DOMMessageEvent): Promise<void> {
       handleChildMessage(evt);
     }
   });
+}
+
+const processAuthBridgeMessageLogger = communicationLogger.extend('processAuthBridgeMessage');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (response: string) => void): void {
+  const logger = processAuthBridgeMessageLogger;
+
+  // Process only if we received a valid message
+  if (!evt || !evt.data || typeof evt.data !== 'object') {
+    logger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  const { args } = evt.data as MessageResponse;
+  const [, message] = args ?? [];
+  const parsedData: ParsedNestedAppAuthMessageData = (() => {
+    try {
+      return JSON.parse(message);
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  // Validate that it is a valid auth bridge response message
+  if (
+    !parsedData ||
+    typeof parsedData !== 'object' ||
+    parsedData.messageType !== NestedAppAuthMessageEventNames.Response
+  ) {
+    logger('Unrecognized data format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  // Process only if the message is coming from a different window and a valid origin
+  // valid origins are either a pre-known origin or one specified by the app developer
+  // in their call to app.initialize
+  const messageSource = evt.source || (evt as unknown as DOMMessageEvent)?.originalEvent?.source;
+  const messageOrigin = evt.origin || (evt as unknown as DOMMessageEvent)?.originalEvent?.origin;
+  if (!messageSource) {
+    logger('Message being ignored by app because it is coming for a target that is null');
+    return;
+  }
+
+  if (!shouldProcessMessage(messageSource, messageOrigin)) {
+    logger(
+      'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+    );
+    return;
+  }
+
+  /**
+   * In most cases, top level window and the parent window will be same.
+   * If they're not, perform the necessary updates for the top level window.
+   *
+   * Top window logic to flush messages is kept independent so that we don't affect
+   * any of the code for the existing communication channel.
+   */
+  if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
+    Communication.topWindow = messageSource;
+    Communication.topOrigin = messageOrigin;
+  }
+
+  // Clean up pointers to closed parent and child windows
+  if (Communication.topWindow && Communication.topWindow.closed) {
+    Communication.topWindow = null;
+    Communication.topOrigin = null;
+  }
+
+  flushMessageQueue(Communication.topWindow);
+
+  // Return the response to the registered callback
+  onMessageReceived(message);
 }
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
@@ -587,6 +753,18 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       logger('Removing registered promise callback for message %i', message.id);
       delete CommunicationPrivate.promiseCallbacks[message.id];
     }
+    const portCallback = CommunicationPrivate.portCallbacks[message.id];
+    if (portCallback) {
+      logger('Invoking the registered port callback for message %i with arguments %o', message.id, message.args);
+      let port: MessagePort | undefined;
+      if (evt.ports && evt.ports[0] instanceof MessagePort) {
+        port = evt.ports[0];
+      }
+      portCallback(port, message.args);
+
+      logger('Removing registered port callback for message %i', message.id);
+      delete CommunicationPrivate.portCallbacks[message.id];
+    }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
@@ -635,13 +813,29 @@ function handleChildMessage(evt: DOMMessageEvent): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * Checks if the top window and the parent window are different.
+ *
+ * @returns {boolean} Returns true if the top window and the parent window are different, false otherwise.
+ */
+function areTopAndParentWindowsDistinct(): boolean {
+  return Communication.topWindow !== Communication.parentWindow;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  return targetWindow === Communication.parentWindow
-    ? CommunicationPrivate.parentMessageQueue
-    : targetWindow === Communication.childWindow
-    ? CommunicationPrivate.childMessageQueue
-    : [];
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return CommunicationPrivate.topMessageQueue;
+  } else if (targetWindow === Communication.parentWindow) {
+    return CommunicationPrivate.parentMessageQueue;
+  } else if (targetWindow === Communication.childWindow) {
+    return CommunicationPrivate.childMessageQueue;
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -649,11 +843,31 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  return targetWindow === Communication.parentWindow
-    ? Communication.parentOrigin
-    : targetWindow === Communication.childWindow
-    ? Communication.childOrigin
-    : null;
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return Communication.topOrigin;
+  } else if (targetWindow === Communication.parentWindow) {
+    return Communication.parentOrigin;
+  } else if (targetWindow === Communication.childWindow) {
+    return Communication.childOrigin;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function getTargetName(targetWindow: Window | null): string | null {
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return 'top';
+  } else if (targetWindow === Communication.parentWindow) {
+    return 'parent';
+  } else if (targetWindow === Communication.childWindow) {
+    return 'child';
+  } else {
+    return null;
+  }
 }
 
 const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
@@ -664,7 +878,8 @@ const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
 function flushMessageQueue(targetWindow: Window | any): void {
   const targetOrigin = getTargetOrigin(targetWindow);
   const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
+  const target = getTargetName(targetWindow);
+
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -744,6 +959,29 @@ function createMessageRequest(
     timestamp: Date.now(),
     args: args || [],
     apiversiontag: apiVersionTag,
+  };
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Creates a nested app authentication request.
+ *
+ * @param {string} message - The message to be included in the request. This is typically a stringified JSON object containing the details of the authentication request.
+ * The reason for using a string is to allow complex data structures to be sent as a message while avoiding potential issues with object serialization and deserialization.
+ *
+ * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
+ */
+function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+  return {
+    id: CommunicationPrivate.nextMessageId++,
+    func: 'nestedAppAuth.execute',
+    timestamp: Date.now(),
+    // Since this is a nested app auth request, we don't need to send any args.
+    // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
+    args: [],
+    data: message,
   };
 }
 

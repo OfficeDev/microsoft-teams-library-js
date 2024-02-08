@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Allow unused variables if they are prefixed with underscore",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "none"
+}

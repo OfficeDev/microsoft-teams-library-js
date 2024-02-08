@@ -49,6 +49,15 @@ const OpenStageView = (): ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'appId1',
+      contentUrl: 'contentUrl1',
+      threadId: 'threadId1',
+      title: 'title1',
+      websiteUrl: 'websiteUrl1',
+      entityId: 'entityId1',
+      openMode: stageView.StageViewOpenMode.modal,
+    }),
   });
 
 const StageViewAPIs = (): ReactElement => (

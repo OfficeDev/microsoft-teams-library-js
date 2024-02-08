@@ -3,6 +3,7 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageResponse } from '../src/internal/messageObjects';
+import { NestedAppAuthRequest } from '../src/internal/nestedAppAuth';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -24,11 +25,15 @@ export class Utils {
   // A list of this.messages the library sends to the app.
   public messages: MessageRequest[] = [];
 
+  // A list of this.messages the library sends to the top window.
+  public topMessages: MessageRequest[] = [];
+
   // A list of this.messages the library sends to the auth popup.
   public childMessages: MessageRequest[] = [];
 
   public childWindow;
   public parentWindow: Window;
+  public topWindow: Window;
 
   public constructor() {
     this.messages = [];
@@ -42,6 +47,17 @@ export class Utils {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
         this.messages.push(message);
+      },
+    } as Window;
+
+    this.topWindow = {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
+        if (message.func === 'initialize' && targetOrigin !== '*') {
+          throw new Error('initialize messages to parent window must have a targetOrigin of *');
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
+        }
+        this.topMessages.push(message);
       },
     } as Window;
 
@@ -68,6 +84,7 @@ export class Utils {
         },
       },
       parent: this.parentWindow,
+      top: this.parentWindow,
       opener: undefined,
       nativeInterface: {
         framelessPostMessage: (message: string): void => {
@@ -179,7 +196,18 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = async (message: MessageRequest, ...args: unknown[]): Promise<void> => {
+  public respondToMessage = async (
+    message: MessageRequest | NestedAppAuthRequest,
+    ...args: unknown[]
+  ): Promise<void> => {
+    return this.respondToMessageWithPorts(message, args);
+  };
+
+  public respondToMessageWithPorts = async (
+    message: MessageRequest | NestedAppAuthRequest,
+    args: unknown[] = [],
+    ports: MessagePort[] = [],
+  ): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -190,6 +218,7 @@ export class Utils {
           id: message.id,
           args: args,
         } as MessageResponse,
+        ports,
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
@@ -200,7 +229,8 @@ export class Utils {
           id: message.id,
           args: args,
         } as MessageResponse,
-      } as MessageEvent);
+        ports,
+      } as unknown as MessageEvent);
     }
   };
 
@@ -228,6 +258,22 @@ export class Utils {
         args: args,
         isPartialResponse,
       } as MessageResponse,
+    } as DOMMessageEvent);
+  };
+
+  public respondToNativeMessageWithPorts = (
+    message: MessageRequest,
+    isPartialResponse: boolean,
+    args: unknown[],
+    ports: MessagePort[],
+  ): void => {
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
+      data: {
+        id: message.id,
+        args: args,
+        isPartialResponse,
+      } as MessageResponse,
+      ports,
     } as DOMMessageEvent);
   };
 

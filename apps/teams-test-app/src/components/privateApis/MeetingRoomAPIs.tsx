@@ -37,6 +37,7 @@ const SendCommandToPairedMeetingRoom = (): React.ReactElement =>
         return 'sendCommandToPairedMeetingRoom have been called';
       },
     },
+    defaultInput: '"command name"',
   });
 
 const RegisterMeetingRoomCapabilitiesUpdateHandler = (): React.ReactElement =>

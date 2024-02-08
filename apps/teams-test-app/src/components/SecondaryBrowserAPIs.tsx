@@ -29,6 +29,7 @@ const Open = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: '"https://www.bing.com"',
   });
 
 const SecondaryBrowserAPIs = (): ReactElement => (

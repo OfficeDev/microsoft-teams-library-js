@@ -1,7 +1,8 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { callCallbackWithErrorOrResultFromPromiseAndReturnPromise } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
@@ -9,7 +10,12 @@ import { runtime } from './runtime';
 
 /**
  * Allows your app to add a people picker enabling users to search for and select people in their organization.
+ *
+ * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
  */
+const peopleTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const peopleTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace people {
   /** Select people callback function type */
   export type selectPeopleCallbackFunctionType = (error: SdkError, people: PeoplePickerResult[]) => void;
@@ -53,21 +59,28 @@ export namespace people {
 
     let callback: selectPeopleCallbackFunctionType | undefined = undefined;
     let peoplePickerInputs: PeoplePickerInputs | undefined = undefined;
+    let apiVersionTag = '';
 
     if (typeof param1 === 'function') {
       [callback, peoplePickerInputs] = [param1, param2];
+      apiVersionTag = getApiVersionTag(peopleTelemetryVersionNumber_v1, ApiName.People_SelectPeople);
     } else {
       peoplePickerInputs = param1;
+      apiVersionTag = getApiVersionTag(peopleTelemetryVersionNumber_v2, ApiName.People_SelectPeople);
     }
 
     return callCallbackWithErrorOrResultFromPromiseAndReturnPromise<PeoplePickerResult[]>(
       selectPeopleHelper,
       callback /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */,
+      apiVersionTag,
       peoplePickerInputs,
     );
   }
 
-  function selectPeopleHelper(peoplePickerInputs?: PeoplePickerInputs): Promise<PeoplePickerResult[]> {
+  function selectPeopleHelper(
+    apiVersionTag: string,
+    peoplePickerInputs?: PeoplePickerInputs,
+  ): Promise<PeoplePickerResult[]> {
     return new Promise<PeoplePickerResult[]>((resolve) => {
       if (!isCurrentSDKVersionAtLeast(peoplePickerRequiredVersion)) {
         throw { errorCode: ErrorCode.OLD_PLATFORM };
@@ -81,7 +94,7 @@ export namespace people {
         throw errorNotSupportedOnPlatform;
       }
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      resolve(sendAndHandleSdkError('people.selectPeople', peoplePickerInputs));
+      resolve(sendAndHandleSdkErrorWithVersion(apiVersionTag, 'people.selectPeople', peoplePickerInputs));
     });
   }
 

@@ -1,6 +1,12 @@
 /* eslint-disable strict-null-checks/all */
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { VideoFrameTick } from '../../src/internal/videoFrameTick';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const videoPerformanceMonitorTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 jest.useFakeTimers();
 function advanceTimersByTime(time: number): void {
@@ -35,11 +41,18 @@ describe('VideoPerformanceMonitor', () => {
     videoPerformanceMonitor.reportVideoEffectChanged('effectId1', 'effectParam');
     advanceTimersByTime(10);
     videoPerformanceMonitor.reportFrameProcessed();
-    expect(reportPerformanceEvent).toBeCalledWith('video.performance.firstFrameProcessed', [
-      expect.any(Number), // timestamp
-      'effectId2',
-      'effectParam',
-    ]);
+    expect(reportPerformanceEvent).toBeCalledWith(
+      getApiVersionTag(
+        videoPerformanceMonitorTelemetryVersionNumber,
+        ApiName.VideoPerformanceMonitor_ReportFrameProcessed,
+      ),
+      'video.performance.firstFrameProcessed',
+      [
+        expect.any(Number), // timestamp
+        'effectId2',
+        'effectParam',
+      ],
+    );
   });
 
   it('should report processStarts/ends', () => {
@@ -54,7 +67,14 @@ describe('VideoPerformanceMonitor', () => {
     videoPerformanceMonitor.reportGettingTextureStream('streamId');
     advanceTimersByTime(10);
     videoPerformanceMonitor.reportTextureStreamAcquired();
-    expect(reportPerformanceEvent).toBeCalledWith('video.performance.textureStreamAcquired', ['streamId', 10]);
+    expect(reportPerformanceEvent).toBeCalledWith(
+      getApiVersionTag(
+        videoPerformanceMonitorTelemetryVersionNumber,
+        ApiName.VideoPerformanceMonitor_ReportTextureStreamAcquired,
+      ),
+      'video.performance.textureStreamAcquired',
+      ['streamId', 10],
+    );
   });
 
   it('should report videoExtensibilityFrameProcessingSlow event', async () => {
@@ -67,6 +87,13 @@ describe('VideoPerformanceMonitor', () => {
       advanceTimersByTime(101);
       videoPerformanceMonitor.reportFrameProcessed();
     }
-    expect(reportPerformanceEvent).toBeCalledWith('video.performance.frameProcessingSlow', [101]);
+    expect(reportPerformanceEvent).toBeCalledWith(
+      getApiVersionTag(
+        videoPerformanceMonitorTelemetryVersionNumber,
+        ApiName.VideoPerformanceMonitor_StartMonitorSlowFrameProcessing,
+      ),
+      'video.performance.frameProcessingSlow',
+      [101],
+    );
   });
 });

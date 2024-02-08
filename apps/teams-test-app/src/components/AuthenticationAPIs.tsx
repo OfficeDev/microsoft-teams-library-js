@@ -86,6 +86,7 @@ const NotifyFailure = (): React.ReactElement =>
       authentication.notifyFailure(input);
       return 'called';
     },
+    defaultInput: '"fakeFailResult"',
   });
 
 const NotifySuccess = (): React.ReactElement =>
@@ -96,6 +97,7 @@ const NotifySuccess = (): React.ReactElement =>
       authentication.notifySuccess(input);
       return 'called';
     },
+    defaultInput: '"fakeSuccessResult"',
   });
 
 const Authenticate = (): React.ReactElement =>
@@ -129,6 +131,7 @@ const Authenticate = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: '{"url":"https://www.microsoft.com"}',
   });
 
 const getAuthParams = (authParam: authAuthenticateParams): authentication.AuthenticatePopUpParameters => {

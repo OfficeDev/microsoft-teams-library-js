@@ -1,9 +1,15 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateShowProfileRequest } from '../internal/profileUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const profileTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace for profile related APIs.
@@ -40,7 +46,13 @@ export namespace profile {
         },
       };
 
-      resolve(sendAndHandleSdkError('profile.showProfile', requestInternal));
+      resolve(
+        sendAndHandleSdkErrorWithVersion(
+          getApiVersionTag(profileTelemetryVersionNumber, ApiName.Profile_ShowProfile),
+          'profile.showProfile',
+          requestInternal,
+        ),
+      );
     });
   }
 

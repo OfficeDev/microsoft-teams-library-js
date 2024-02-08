@@ -19,6 +19,13 @@ const ComposeMeeting = (): React.ReactElement =>
       await calendar.composeMeeting(input);
       return 'Completed';
     },
+    defaultInput: JSON.stringify({
+      attendees: ['attendees'],
+      startTime: 'startTime',
+      endTime: 'endTime',
+      subject: 'subject',
+      content: 'content',
+    }),
   });
 
 const OpenCalendarItem = (): React.ReactElement =>
@@ -36,6 +43,9 @@ const OpenCalendarItem = (): React.ReactElement =>
         }
       },
     },
+    defaultInput: JSON.stringify({
+      itemId: '123',
+    }),
   });
 const JoinMeetingItem = (): React.ReactElement =>
   ApiWithTextInput<string>({

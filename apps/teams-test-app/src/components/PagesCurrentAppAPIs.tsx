@@ -19,6 +19,7 @@ const NavigateTo = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({ pageId: 'page1' }),
   });
 
 const NavigateToDefaultPage = (): React.ReactElement =>

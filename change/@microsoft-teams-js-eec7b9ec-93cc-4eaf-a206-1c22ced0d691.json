@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added windows.msn.com to validOrigins list",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}

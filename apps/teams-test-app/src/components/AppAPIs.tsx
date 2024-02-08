@@ -60,6 +60,7 @@ const OpenLink = (): ReactElement =>
         },
       },
     },
+    defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
   });
 
 const RegisterOnThemeChangeHandler = (): ReactElement =>
@@ -98,8 +99,7 @@ const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
     title: 'Register Before Suspend/Terminate Handler',
     onClick: async (setResult) => {
       app.lifecycle.registerBeforeSuspendOrTerminateHandler((): void => {
-        alert('beforeSuspendOrTerminate received');
-        setResult('Success');
+        setResult('beforeSuspendOrTerminate received');
       });
 
       return 'registered';

@@ -1,6 +1,7 @@
-import { sendMessageToParent } from '../internal/communication';
-import { registerHandler } from '../internal/handlers';
+import { sendMessageToParentWithVersion } from '../internal/communication';
+import { registerHandlerWithVersion } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -10,7 +11,11 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const remoteCameraTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace remoteCamera {
   /**
    * @hidden
@@ -231,7 +236,11 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.getCapableParticipants', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_GetCapableParticipants),
+      'remoteCamera.getCapableParticipants',
+      callback,
+    );
   }
 
   /**
@@ -261,7 +270,12 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.requestControl', [participant], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RequestControl),
+      'remoteCamera.requestControl',
+      [participant],
+      callback,
+    );
   }
 
   /**
@@ -285,7 +299,12 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.sendControlCommand', [ControlCommand], callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_SendControlCommand),
+      'remoteCamera.sendControlCommand',
+      [ControlCommand],
+      callback,
+    );
   }
 
   /**
@@ -305,7 +324,11 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParent('remoteCamera.terminateSession', callback);
+    sendMessageToParentWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_TerminateSession),
+      'remoteCamera.terminateSession',
+      callback,
+    );
   }
 
   /**
@@ -328,7 +351,14 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.capableParticipantsChange', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(
+        remoteCameraTelemetryVersionNumber,
+        ApiName.RemoteCamera_RegisterOnCapableParticipantsChangeHandler,
+      ),
+      'remoteCamera.capableParticipantsChange',
+      handler,
+    );
   }
 
   /**
@@ -349,7 +379,11 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.handlerError', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnErrorHandler),
+      'remoteCamera.handlerError',
+      handler,
+    );
   }
 
   /**
@@ -370,7 +404,11 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.deviceStateChange', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnDeviceStateChangeHandler),
+      'remoteCamera.deviceStateChange',
+      handler,
+    );
   }
 
   /**
@@ -391,7 +429,11 @@ export namespace remoteCamera {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandler('remoteCamera.sessionStatusChange', handler);
+    registerHandlerWithVersion(
+      getApiVersionTag(remoteCameraTelemetryVersionNumber, ApiName.RemoteCamera_RegisterOnSessionStatusChangeHandler),
+      'remoteCamera.sessionStatusChange',
+      handler,
+    );
   }
 
   /**
