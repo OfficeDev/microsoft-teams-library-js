@@ -166,8 +166,20 @@
       "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
     },
     {
-      "title": "shareAppContentToStage API Call - Success",
+      "title": "shareAppContentToStage API Call (<2.19.0) - Success",
       "type": "callResponse",
+      "version": "<2.19.0",
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + undefined",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call (>=2.19.0) - Success",
+      "type": "callResponse",
+      "version": ">=2.19.0",
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com"
@@ -176,8 +188,23 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call with shareOptions - Success",
+      "title": "shareAppContentToStage API Call with shareOptions (<2.19.0) - Success",
       "type": "callResponse",
+      "version": "<2.19.0",
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + undefined",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions (>=2.19.0) - Success",
+      "type": "callResponse",
+      "version": ">=2.19.0",
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com",
@@ -252,9 +279,20 @@
       "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
     },
     {
-      "title": "updateMicState API Call - Success",
+      "title": "updateMicState API Call (<=2.20.0) - Success",
       "type": "callResponse",
-      "version": ">2.7.1",
+      "version": ">2.7.1 && <=2.20.0",
+      "boxSelector": "#box_updateMicState",
+      "inputValue": {
+        "isMicMuted": true
+      },
+      "expectedAlertValue": "updateMicState called with micState: isMicMuted:true, reason:1",
+      "expectedTestAppValue": "updateMicState called with micState: isMicMuted:[object Object]"
+    },
+    {
+      "title": "updateMicState API Call (>2.20.0) - Success",
+      "type": "callResponse",
+      "version": ">2.20.0",
       "boxSelector": "#box_updateMicState",
       "inputValue": {
         "isMicMuted": true
