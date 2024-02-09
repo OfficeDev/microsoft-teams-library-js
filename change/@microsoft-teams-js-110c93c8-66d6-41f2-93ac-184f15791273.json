@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added a new subcapability, pages.responseButton, which will enable communication related to the response button between the host and the app through APIs.",
+  "comment": "Added a new subcapability, `pages.responseButton`, which will enable the app to interact with the response button in the app header. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
   "packageName": "@microsoft/teams-js",
   "email": "maggiegong@microsoft.com",
   "dependentChangeType": "patch"
