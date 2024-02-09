@@ -281,7 +281,7 @@
     {
       "title": "updateMicState API Call - Success",
       "type": "callResponse",
-      "version": ">2.7.1 && <2.19.0",
+      "version": ">2.7.1 && <=2.20.0",
       "boxSelector": "#box_updateMicState",
       "inputValue": {
         "isMicMuted": true
