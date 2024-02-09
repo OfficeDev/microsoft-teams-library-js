@@ -1116,7 +1116,7 @@ export namespace pages {
   }
 
   /**
-   * Provides APIs to interact with the button in hosts
+   * Provides APIs to interact with the response button in hosts
    *
    * @beta
    */
