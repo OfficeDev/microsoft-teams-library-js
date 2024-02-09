@@ -279,7 +279,7 @@
       "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
     },
     {
-      "title": "updateMicState API Call - Success",
+      "title": "updateMicState API Call (<=2.20.0) - Success",
       "type": "callResponse",
       "version": ">2.7.1 && <=2.20.0",
       "boxSelector": "#box_updateMicState",
@@ -290,7 +290,7 @@
       "expectedTestAppValue": "updateMicState called with micState: isMicMuted:[object Object]"
     },
     {
-      "title": "updateMicState API Call - Success",
+      "title": "updateMicState API Call (>2.20.0) - Success",
       "type": "callResponse",
       "version": ">2.20.0",
       "boxSelector": "#box_updateMicState",
