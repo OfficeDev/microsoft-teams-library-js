@@ -193,7 +193,7 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call (>=2.19.0, host SDK>=2.8.0) - Success",
+      "title": "shareAppContentToStage API Call (TJS >=2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
       "version": ">=2.19.0",
       "hostSdkVersion": {
