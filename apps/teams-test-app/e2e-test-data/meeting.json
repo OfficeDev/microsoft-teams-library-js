@@ -188,7 +188,7 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call with shareOptions - Success",
+      "title": "shareAppContentToStage API Call with shareOptions (<2.19.0) - Success",
       "type": "callResponse",
       "version": "<2.19.0",
       "boxSelector": "#box_shareAppContentToStage",
@@ -202,7 +202,7 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call with shareOptions - Success",
+      "title": "shareAppContentToStage API Call with shareOptions (>=2.19.0) - Success",
       "type": "callResponse",
       "version": ">=2.19.0",
       "boxSelector": "#box_shareAppContentToStage",
