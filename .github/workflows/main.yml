@@ -65,20 +65,23 @@ jobs:
           name: Unit Test Results (Jest ${{ matrix.node-version }})
           path: packages/*/test-results/unit/unit-tests-report.xml
 
-  # publish-test-results:
-  #   name: 'Publish Unit Tests Results'
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   if: always()
+  publish-test-results:
+    name: 'Publish Unit Tests Results'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
 
-  #   steps:
-  #     - name: Download Artifacts
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         path: artifacts
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
 
-  #     - name: Publish Unit Test Results
-  #       uses: EnricoMi/publish-unit-test-result-action@v2
-  #       with:
-  #         files: artifacts/**/*.xml
-  #         comment_mode: off
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: artifacts/**/*.xml
+          comment_mode: off
