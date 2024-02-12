@@ -7,6 +7,7 @@ import {
   ResumeContext,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
@@ -79,12 +80,19 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
-const RegisterOnResumeHandler = (): React.ReactElement =>
-  ApiWithoutInput({
+const RegisterOnResumeHandler = (): React.ReactElement => {
+  const navigate = useNavigate(); // Hook to programmatically navigate
+
+  return ApiWithoutInput({
     name: 'RegisterOnResumeHandler',
     title: 'Register On Resume Handler',
     onClick: async (setResult) => {
-      app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
+      app.lifecycle.registerOnResumeHandler(async (context: ResumeContext): Promise<void> => {
+        // Extract the path from the contentUrl
+        const url = new URL(context.contentUrl);
+        const path = url.pathname;
+        // Navigate to the path
+        navigate(path);
         setResult('successfully called with context:' + JSON.stringify(context));
         app.notifySuccess();
       });
@@ -92,6 +100,7 @@ const RegisterOnResumeHandler = (): React.ReactElement =>
       return 'registered';
     },
   });
+};
 
 const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
   ApiWithoutInput({

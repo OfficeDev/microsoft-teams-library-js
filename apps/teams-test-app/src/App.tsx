@@ -2,6 +2,7 @@ import './App.css';
 
 import { app, appInitialization, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import AppAPIs from './components/AppAPIs';
 import AppEntityAPIs from './components/AppEntityAPIs';
@@ -123,68 +124,86 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
+const EmptyPage = () => (
+  <div>
+    This is an empty page.
+    {/* <AppAPIs /> */}
+  </div>
+);
+
 const App = (): ReactElement => {
   return (
-    <div>
-      <div className="App-container">
-        <AppAPIs />
-        <AppInitializationAPIs />
-        <AppInstallDialogAPIs />
-        <AuthenticationAPIs />
-        <AppEntityAPIs />
-        <BarCodeAPIs />
-        <CalendarAPIs />
-        <CallAPIs />
-        <ChatAPIs />
-        <ClipboardAPIs />
-        <CustomAPIs />
-        <DialogAPIs />
-        <DialogCardAPIs />
-        <DialogCardBotAPIs />
-        <DialogUpdateAPIs />
-        <DialogUrlAPIs />
-        <DialogUrlBotAPIs />
-        <ExternalAppAuthenticationAPIs />
-        <ExternalAppCardActionsAPIs />
-        <FilesAPIs />
-        <FullTrustAPIs />
-        <GeoLocationAPIs />
-        <Links />
-        <LocationAPIs />
-        <LogAPIs />
-        <MailAPIs />
-        <MarketplaceAPIs />
-        <MediaAPIs />
-        <MeetingAPIs />
-        <MeetingRoomAPIs />
-        <MenusAPIs />
-        <MessageChannelAPIs />
-        <MonetizationAPIs />
-        <NotificationAPIs />
-        <PagesAPIs />
-        <PagesAppButtonAPIs />
-        <PagesBackStackAPIs />
-        <PagesConfigAPIs />
-        <PagesCurrentAppAPIs />
-        <PagesTabsAPIs />
-        <PeopleAPIs />
-        <PrivateAPIs />
-        <ProfileAPIs />
-        <RemoteCameraAPIs />
-        <SearchAPIs />
-        <SecondaryBrowserAPIs />
-        <SharingAPIs />
-        <WebStorageAPIs />
-        <StageViewAPIs />
-        <TeamsCoreAPIs />
-        <TeamsAPIs />
-        <ThirdPartyCloudStorageAPIs />
-        <VideoAPIs />
-        <VideoExAPIs />
-        <VisualMediaAPIs />
-      </div>
-      <Version />
-    </div>
+    <Router>
+      {/* <Nav /> */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <div className="App-container">
+                <AppAPIs />
+                <AppInitializationAPIs />
+                <AppInstallDialogAPIs />
+                <AuthenticationAPIs />
+                <AppEntityAPIs />
+                <BarCodeAPIs />
+                <CalendarAPIs />
+                <CallAPIs />
+                <ChatAPIs />
+                <ClipboardAPIs />
+                <CustomAPIs />
+                <DialogAPIs />
+                <DialogCardAPIs />
+                <DialogCardBotAPIs />
+                <DialogUpdateAPIs />
+                <DialogUrlAPIs />
+                <DialogUrlBotAPIs />
+                <ExternalAppAuthenticationAPIs />
+                <ExternalAppCardActionsAPIs />
+                <FilesAPIs />
+                <FullTrustAPIs />
+                <GeoLocationAPIs />
+                <Links />
+                <LocationAPIs />
+                <LogAPIs />
+                <MailAPIs />
+                <MarketplaceAPIs />
+                <MediaAPIs />
+                <MeetingAPIs />
+                <MeetingRoomAPIs />
+                <MenusAPIs />
+                <MessageChannelAPIs />
+                <MonetizationAPIs />
+                <NotificationAPIs />
+                <PagesAPIs />
+                <PagesAppButtonAPIs />
+                <PagesBackStackAPIs />
+                <PagesConfigAPIs />
+                <PagesCurrentAppAPIs />
+                <PagesTabsAPIs />
+                <PeopleAPIs />
+                <PrivateAPIs />
+                <ProfileAPIs />
+                <RemoteCameraAPIs />
+                <SearchAPIs />
+                <SecondaryBrowserAPIs />
+                <SharingAPIs />
+                <WebStorageAPIs />
+                <StageViewAPIs />
+                <TeamsCoreAPIs />
+                <TeamsAPIs />
+                <ThirdPartyCloudStorageAPIs />
+                <VideoAPIs />
+                <VideoExAPIs />
+                <VisualMediaAPIs />
+              </div>
+              <Version />
+            </>
+          }
+        />
+        <Route path="/second-page" element={<EmptyPage />} />
+      </Routes>
+    </Router>
   );
 };
 
