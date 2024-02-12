@@ -124,7 +124,12 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
-const EmptyPage = () => <div>This is an empty page.</div>;
+const EmptyPage = (): ReactElement => (
+  <div>
+    This is an empty page.
+    <AppAPIs />
+  </div>
+);
 
 const App = (): ReactElement => {
   return (
