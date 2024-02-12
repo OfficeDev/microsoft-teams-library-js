@@ -188,10 +188,9 @@ export function handleThemeChange(theme: string): void {
  *
  * @deprecated
  */
-export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+export function registerOnLoadHandler(apiVersionTag: string, handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  !isNullOrUndefined(handler) &&
-    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['load']);
 }
 
 /**
@@ -216,12 +215,12 @@ function handleLoad(context: LoadContext): void {
  *
  * @deprecated
  */
-export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+export function registerBeforeUnloadHandler(
+  apiVersionTag: string,
+  handler: (readyToUnload: () => void) => boolean,
+): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  !isNullOrUndefined(handler) &&
-    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
-      'beforeUnload',
-    ]);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -257,7 +256,7 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
   !isNullOrUndefined(handler) &&
     sendMessageToParent(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeUnloadHandler),
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeSuspendOrTerminateHandler),
       'registerHandler',
       ['beforeUnload'],
     );
@@ -270,7 +269,7 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
   !isNullOrUndefined(handler) &&
-    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterLoadHandler), 'registerHandler', [
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterOnResumeHandler), 'registerHandler', [
       'load',
     ]);
 }

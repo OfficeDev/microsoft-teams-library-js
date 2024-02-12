@@ -218,7 +218,10 @@ export function registerBackButtonHandler(handler: registerBackButtonHandlerFunc
  * @param handler - The handler to invoke when the page is loaded.
  */
 export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
-  teamsCore.registerOnLoadHandlerHelper(handler);
+  teamsCore.registerOnLoadHandlerHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterOnLoadHandler),
+    handler,
+  );
 }
 
 /**
@@ -232,7 +235,10 @@ export function registerOnLoadHandler(handler: (context: LoadContext) => void): 
  * invoke the readyToUnload function provided to it once it's ready to be unloaded.
  */
 export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFunctionType) => boolean): void {
-  teamsCore.registerBeforeUnloadHandlerHelper(handler);
+  teamsCore.registerBeforeUnloadHandlerHelper(
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterBeforeUnloadHandler),
+    handler,
+  );
 }
 
 /**
@@ -391,7 +397,7 @@ export function initializeWithFrameContext(
   validMessageOrigins?: string[],
 ): void {
   appInitializeHelper(
-    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_Initialize),
+    getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_InitializeWithFrameContext),
     validMessageOrigins,
   ).then(() => callback && callback());
   setCurrentFrameHelper(

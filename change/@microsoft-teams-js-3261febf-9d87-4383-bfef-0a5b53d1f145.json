@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Removed all of testing communicating functions tagged with `WithVersion` and now fully support sending api version tags for all of APIs",
+  "comment": "Updated all capabilities to send API version telemetry",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"

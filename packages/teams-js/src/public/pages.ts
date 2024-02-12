@@ -12,7 +12,8 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
-import { app } from './app';
+import { prefetchOriginsFromCDN } from '../internal/validOrigins';
+import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
@@ -231,7 +232,11 @@ export namespace pages {
     callback?: handlerFunctionType,
     validMessageOrigins?: string[],
   ): void {
-    app.initialize(validMessageOrigins).then(() => callback && callback());
+    prefetchOriginsFromCDN();
+    appInitializeHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_InitializeWithFrameContext),
+      validMessageOrigins,
+    ).then(() => callback && callback());
     setCurrentFrame(frameInfo);
   }
 
