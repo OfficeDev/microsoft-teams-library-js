@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Added `@internal` tag to `pages.fulltrust` namespace",
-  "packageName": "@microsoft/teams-js",
-  "email": "sakov@microsoft.com",
-  "dependentChangeType": "none"
-}
