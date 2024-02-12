@@ -166,9 +166,25 @@
       "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
     },
     {
-      "title": "shareAppContentToStage API Call (<2.19.0) - Success",
+      "title": "shareAppContentToStage API Call (host SDK <2.8.0) - Success",
+      "type": "callResponse",
+      "hostSdkVersion": {
+        "web": "<2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object]",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call (TJS <2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
       "version": "<2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com"
@@ -177,9 +193,12 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call (>=2.19.0) - Success",
+      "title": "shareAppContentToStage API Call (TJS >=2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
       "version": ">=2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com"
@@ -188,9 +207,28 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call with shareOptions (<2.19.0) - Success",
+      "title": "shareAppContentToStage API Call with shareOptions (host sdk<2.8.0) - Success",
+      "type": "callResponse",
+      "hostSdkVersion": {
+        "web": "<2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object]",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions (TJS<2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
       "version": "<2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com",
@@ -202,9 +240,12 @@
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
-      "title": "shareAppContentToStage API Call with shareOptions (>=2.19.0) - Success",
+      "title": "shareAppContentToStage API Call with shareOptions (TJS>=2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
       "version": ">=2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com",
