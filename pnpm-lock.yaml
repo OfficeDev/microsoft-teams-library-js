@@ -312,6 +312,9 @@ importers:
       react-dom:
         specifier: ^17.0.1
         version: 17.0.2(react@17.0.2)
+      react-router-dom:
+        specifier: ^6.21.3
+        version: 6.21.3(react-dom@17.0.2)(react@17.0.2)
     devDependencies:
       '@microsoft/teams-js':
         specifier: workspace:*
@@ -3998,6 +4001,11 @@ packages:
   /@polka/url@1.0.0-next.21:
     resolution: {integrity: sha1-XeWiOFo1MJQn9gEZkrVEUU1VmqE=}
     dev: true
+
+  /@remix-run/router@1.14.2:
+    resolution: {integrity: sha512-ACXpdMM9hmKZww21yEqWwiLws/UPLhNKvimN8RrYSqPSvB3ov7sLvAcfvaxePeLvccTQKGdkDIhLYApZVDFuKg==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /@sigstore/protobuf-specs@0.1.0:
     resolution: {integrity: sha512-a31EnjuIDSX8IXBUib3cYLDRlPMU36AWX4xS8ysLaNu4ZzUesDiPt83pgrW2X1YLMe5L2HbDyaKK5BrL4cNKaQ==}
@@ -11335,6 +11343,29 @@ packages:
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: true
+
+  /react-router-dom@6.21.3(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-kNzubk7n4YHSrErzjLK72j0B5i969GsuCGazRl3G6j1zqZBLjuSlYBdVdkDOgzGdPIffUOc9nmgiadTEVoq91g==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.14.2
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+      react-router: 6.21.3(react@17.0.2)
+    dev: false
+
+  /react-router@6.21.3(react@17.0.2):
+    resolution: {integrity: sha512-a0H638ZXULv1OdkmiK6s6itNhoy33ywxmUFT/xtSoVyf9VnC7n7+VT4LjVzdIHSaF5TIh9ylUgxMXksHTgGrKg==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.14.2
+      react: 17.0.2
+    dev: false
 
   /react@17.0.2:
     resolution: {integrity: sha1-0LXMUW0p6z7uOD91tihkz7aAADc=}

@@ -33,6 +33,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   devServer: {
+    historyApiFallback: true, // enables react router
     static: {
       directory: path.join(__dirname, 'build'),
       publicPath: '/',
