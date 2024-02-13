@@ -946,7 +946,7 @@ export namespace meeting {
           'meeting.joinMeeting',
           {
             ...joinMeetingParams,
-            skypeTeamsMeetingUrl: joinMeetingParams.joinWebUrl.href,
+            joinWebUrl: joinMeetingParams.joinWebUrl.href,
           },
         ),
       );
