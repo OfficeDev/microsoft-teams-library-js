@@ -927,45 +927,85 @@ export namespace meeting {
   }
 
   /**
-   * This function is used to join a meeting
-   * @param joinMeetingParams
+   * This function is used to join a meeting.
+   * This opens a meeting in a new window for the desktop app.
+   * In case of a web app, it will close the current app and open the meeting in the same tab.
+   * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
+   * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
-  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<string | object> {
-    return new Promise<string | object>((resolve) => {
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
       resolve(
         sendAndHandleStatusAndReasonWithVersion(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
           'meeting.joinMeeting',
-          joinMeetingParams,
+          {
+            ...joinMeetingParams,
+            skypeTeamsMeetingUrl: joinMeetingParams.joinWebUrl.href,
+          },
         ),
       );
     });
   }
 
-  /** Join meeting parameters */
+  /**
+   * Contains information associated with parameters required for joining the Microsoft Teams meetings.
+   * More details can be found at:
+   * [Online Meeting Base - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/onlinemeetingbase?view=graph-rest-1.0)
+   */
   export interface JoinMeetingParams {
-    /** The meeting url to join. */
-    skypeTeamsMeetingUrl: string;
+    /** The join URL of the online meeting. */
+    joinWebUrl: URL;
     /** The subject of the meeting. */
-    subject: string;
-    /** The conversation id of the meeting. */
+    subject?: string;
+    /** The source of the join button click. {@link EventActionSource} */
     source: EventActionSource;
-    /** The conversation id of the meeting. */
-    conversationId: string;
-    /** The message id of the meeting. */
-    messageId: string;
-    /** The root message id of the meeting. */
-    rootMessageId: string;
+    /** The chat information associated with this online meeting. {@link ChatInfo}*/
+    chatInfo: ChatInfo;
   }
 
-  /** Event action source */
-  export type EventActionSource =
-    | 'calendar_grid_context_menu'
-    | 'calendar_grid_peek'
-    | 'calendar_grid_event_card_join_button'
-    | 'calendar_form_ribbon_join_button'
-    | 'calendar_form_join_teams_meeting_button';
+  /**
+   * Contains information associated with Microsoft Teams meetings.
+   * More details can be found at:
+   * [Chat Info - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/chatinfo?view=graph-rest-1.0)
+   */
+  export interface ChatInfo {
+    /** The unique identifier of a message in a Microsoft Teams channel. */
+    messageId: string;
+    /** The ID of the reply message. */
+    replyChainMessageId: string;
+    /** The unique identifier for a thread in Microsoft Teams. */
+    threadId: string;
+  }
+
+  /** The source of the join button click. */
+  export enum EventActionSource {
+    /**
+     * Source is calendar grid context menu.
+     */
+    CalendarGridContextMenu = 'calendar_grid_context_menu',
+    /**
+     * Source is calendar grid peek.
+     */
+    CalendarGridPeek = 'calendar_grid_peek',
+    /**
+     * Source is calendar grid event card join button.
+     */
+    CalendarGridEventCardJoinButton = 'calendar_grid_event_card_join_button',
+    /**
+     * Source is calendar form ribbon join button.
+     */
+    CalendarFormRibbonJoinButton = 'calendar_form_ribbon_join_button',
+    /**
+     * Source is calendar form join teams meeting button.
+     */
+    CalendarFormJoinTeamsMeetingButton = 'calendar_form_join_teams_meeting_button',
+    /**
+     * Other sources.
+     */
+    Other = 'other',
+  }
 
   /**
    * Nested namespace for functions to control behavior of the app share button
