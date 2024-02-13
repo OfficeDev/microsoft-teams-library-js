@@ -933,7 +933,11 @@ export namespace meeting {
    * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
    * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
+
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    if (!joinMeetingParamsValid(joinMeetingParams)) {
+      return Promise.reject('Invalid joinMeetingParams');
+    }
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
       resolve(
@@ -947,6 +951,31 @@ export namespace meeting {
         ),
       );
     });
+  }
+
+  /**
+   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl, chatInfo or source is valid else false.
+   * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
+   * @returns false if joinMeetingParams' joinWebUrl, chatInfo or source is not valid else true.
+   */
+  export function joinMeetingParamsValid(joinMeetingParams: JoinMeetingParams): boolean {
+    if (
+      !joinMeetingParams ||
+      !joinMeetingParams.chatInfo ||
+      !joinMeetingParams.source ||
+      !joinMeetingParams.joinWebUrl
+    ) {
+      return false;
+    }
+    if (
+      joinMeetingParams.joinWebUrl.href === '' ||
+      joinMeetingParams.chatInfo.messageId === '' ||
+      joinMeetingParams.chatInfo.replyChainMessageId === '' ||
+      joinMeetingParams.chatInfo.threadId === ''
+    ) {
+      return false;
+    }
+    return true;
   }
 
   /**
