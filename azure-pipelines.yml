@@ -13,10 +13,10 @@ trigger:
 
 resources:
   repositories:
-    - repository: CustomPipelineTemplates
+    - repository: OfficePipelineTemplates
       type: git
-      name: OE/OfficePipelineTemplates
-      ref: refs/heads/main
+      name: 1ESPipelineTemplates/OfficePipelineTemplates
+      ref: refs/tags/release
     - repository: AppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk
@@ -29,7 +29,7 @@ resources:
       name: ISS/metaos-hub-sdk-ios
 
 extends:
-  template: v1/Office.Official.PipelineTemplate.yml@CustomPipelineTemplates
+  template: v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared

@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added telemetry to `chat`, `interactive`, `meeting`, `menus`,`monetization` and `people` capabilities",
-  "packageName": "@microsoft/teams-js",
-  "email": "kangxuanye@microsoft.com",
-  "dependentChangeType": "patch"
-}
