@@ -1,5 +1,5 @@
-import { sendAndHandleStatusAndReasonWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion, removeHandler } from '../internal/handlers';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -95,18 +95,18 @@ export namespace search {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnClosedHandler),
       onClosedHandlerName,
       onClosedHandler,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecutedHandler),
       onExecutedHandlerName,
       onExecuteHandler,
     );
     if (onChangeHandler) {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnChangeHandler),
         onChangeHandlerName,
         onChangeHandler,
@@ -128,7 +128,7 @@ export namespace search {
     }
     // This should let the host know to stop making the app scope show up in the search experience
     // Can also be used to clean up handlers on the host if desired
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_UnregisterHandlers),
       'search.unregister',
     );
@@ -162,7 +162,7 @@ export namespace search {
       }
 
       resolve(
-        sendAndHandleStatusAndReasonWithVersion(
+        sendAndHandleStatusAndReason(
           getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_CloseSearch),
           'search.closeSearch',
         ),

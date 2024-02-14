@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -52,7 +52,7 @@ export class ChildAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime);
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_PostMessage),
       'messageForChild',
       [message],
@@ -68,7 +68,7 @@ export class ChildAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime);
     if (type === 'message') {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ChildAppWindow_AddEventListener),
         'messageForParent',
         listener,
@@ -99,7 +99,7 @@ export class ParentAppWindow implements IAppWindow {
    */
   public postMessage(message: any, onComplete?: onCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_PostMessage),
       'messageForParent',
       [message],
@@ -116,7 +116,7 @@ export class ParentAppWindow implements IAppWindow {
   public addEventListener(type: string, listener: addEventListnerFunctionType): void {
     ensureInitialized(runtime, FrameContexts.task);
     if (type === 'message') {
-      registerHandlerWithVersion(
+      registerHandler(
         getApiVersionTag(appWindowTelemetryVersionNumber, ApiName.AppWindow_ParentAppWindow_AddEventListener),
         'messageForChild',
         listener,

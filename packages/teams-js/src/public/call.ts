@@ -1,4 +1,4 @@
-import { sendAndUnwrapWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { errorCallNotStarted } from '../internal/constants';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -68,7 +68,7 @@ export namespace call {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndUnwrapWithVersion(
+          sendAndUnwrap(
             apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForCall(
@@ -84,7 +84,7 @@ export namespace call {
           }),
         );
       } else {
-        return sendMessageToParentWithVersion(apiVersionTag, 'call.startCall', [startCallParams], resolve);
+        return sendMessageToParent(apiVersionTag, 'call.startCall', [startCallParams], resolve);
       }
     });
   }

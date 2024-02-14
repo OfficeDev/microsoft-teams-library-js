@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isValidHttpsURL } from '../internal/utils';
@@ -42,7 +42,7 @@ export namespace secondaryBrowser {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
 
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(secondaryBrowserTelemetryVersionNumber, ApiName.SecondaryBrowser_OpenUrl),
       'secondaryBrowser.open',
       url.toString(),
