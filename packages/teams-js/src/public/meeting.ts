@@ -935,44 +935,44 @@ export namespace meeting {
    */
 
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
-    if (!joinMeetingParamsValid(joinMeetingParams)) {
+    if (!validateJoinMeetingParams(joinMeetingParams)) {
       return Promise.reject('Invalid joinMeetingParams');
     }
+    const { threadId, messageId, replyChainMessageId } = joinMeetingParams.chatInfo;
+
+    const serializedJoinMeetingParams = {
+      joinWebUrl: joinMeetingParams.joinWebUrl.href,
+      subject: joinMeetingParams.subject,
+      source: joinMeetingParams.source || EventActionSource.Other,
+      chatInfo: {
+        threadId,
+        messageId: messageId || '0',
+        replyChainMessageId: replyChainMessageId || '0',
+      },
+    };
+
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
       resolve(
         sendAndHandleStatusAndReasonWithVersion(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
           'meeting.joinMeeting',
-          {
-            ...joinMeetingParams,
-            joinWebUrl: joinMeetingParams.joinWebUrl.href,
-          },
+          serializedJoinMeetingParams,
         ),
       );
     });
   }
 
   /**
-   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl, chatInfo or source is valid else false.
+   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl and chatInfo are valid else false.
    * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
-   * @returns false if joinMeetingParams' joinWebUrl, chatInfo or source is not valid else true.
+   * @returns false if joinMeetingParams' joinWebUrl or chatInfo is not valid else true.
    */
-  export function joinMeetingParamsValid(joinMeetingParams: JoinMeetingParams): boolean {
-    if (
-      !joinMeetingParams ||
-      !joinMeetingParams.chatInfo ||
-      !joinMeetingParams.source ||
-      !joinMeetingParams.joinWebUrl
-    ) {
+  function validateJoinMeetingParams(joinMeetingParams: JoinMeetingParams): boolean {
+    if (!joinMeetingParams?.chatInfo?.threadId || !joinMeetingParams?.joinWebUrl) {
       return false;
     }
-    if (
-      joinMeetingParams.joinWebUrl.href === '' ||
-      joinMeetingParams.chatInfo.messageId === '' ||
-      joinMeetingParams.chatInfo.replyChainMessageId === '' ||
-      joinMeetingParams.chatInfo.threadId === ''
-    ) {
+    if (joinMeetingParams.joinWebUrl.href === '' || joinMeetingParams.chatInfo.threadId === '') {
       return false;
     }
     return true;
@@ -986,12 +986,12 @@ export namespace meeting {
   export interface JoinMeetingParams {
     /** The join URL of the online meeting. */
     joinWebUrl: URL;
+    /** The chat information associated with this online meeting. {@link ChatInfo}*/
+    chatInfo: ChatInfo;
     /** The subject of the meeting. */
     subject?: string;
     /** The source of the join button click. {@link EventActionSource} */
-    source: EventActionSource;
-    /** The chat information associated with this online meeting. {@link ChatInfo}*/
-    chatInfo: ChatInfo;
+    source?: EventActionSource;
   }
 
   /**
@@ -1000,12 +1000,12 @@ export namespace meeting {
    * [Chat Info - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/chatinfo?view=graph-rest-1.0)
    */
   export interface ChatInfo {
-    /** The unique identifier of a message in a Microsoft Teams channel. */
-    messageId: string;
-    /** The ID of the reply message. */
-    replyChainMessageId: string;
     /** The unique identifier for a thread in Microsoft Teams. */
     threadId: string;
+    /** The unique identifier of a message in a Microsoft Teams channel. */
+    messageId?: string;
+    /** The ID of the reply message. */
+    replyChainMessageId?: string;
   }
 
   /** The source of the join button click. */

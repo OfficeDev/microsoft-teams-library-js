@@ -1372,6 +1372,75 @@ describe('meeting', () => {
       });
     });
 
+    describe('joinMeeting', () => {
+      const chatInfoParams: meeting.ChatInfo = {
+        messageId: 'mockMessageId',
+        replyChainMessageId: 'mockReplyChainMessageId',
+        threadId: 'mockThreadId',
+      };
+
+      const mockJoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        subject: 'mockSubject',
+        source: meeting.EventActionSource.Other,
+        chatInfo: chatInfoParams,
+      };
+
+      it('should reject if joinMeetingParams is not provided', async () => {
+        const response = meeting.joinMeeting(null);
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+
+      it('should reject if chatInfo is not provided', async () => {
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+          chatInfo: null,
+        });
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+
+      it('should reject if threadId is not provided', async () => {
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+          chatInfo: {
+            ...chatInfoParams,
+            threadId: null,
+          },
+        });
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is not provided', async () => {
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+          joinWebUrl: null,
+        });
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is empty', async () => {
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+          chatInfo: {
+            ...chatInfoParams,
+            threadId: '',
+          },
+        });
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is empty', async () => {
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+          chatInfo: {
+            ...chatInfoParams,
+            threadId: '',
+          },
+        });
+        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+      });
+    });
+
     describe('setOptions', () => {
       let contentUrl = 'https://www.test.com';
       let shareInformation: meeting.appShareButton.ShareInformation = {
