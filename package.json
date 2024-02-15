@@ -120,6 +120,10 @@
       "url-parse": "^1.5.0",
       "word-wrap": "^1.2.4",
       "y18n": "^4.0.1"
+    },
+    "overrides-explanation": {
+      "WHAT IS THIS SECTION": "pnpm ignores this section and comments aren't allowed in JSON files. This section documents why the above overrides have been put in place. If you add an override, describe it in this section.",
+      "socks": "There is a vulnerability in the ip package which has no fix. We consume ip via socks (eventually via lerna). Socks released a new version that removed the ip dependency. We are using this newer version of socks to avoid the vulnerability. If ip is ever updated or lerna (or any package in the chain) eventually updates to a version of socks that doesn't depend on ip, we can remove this override"
     }
   },
   "dependencies": {
