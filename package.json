@@ -121,5 +121,10 @@
   },
   "dependencies": {
     "uuid": "^9.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "socks": "^2.7.3"
+    }
   }
 }
