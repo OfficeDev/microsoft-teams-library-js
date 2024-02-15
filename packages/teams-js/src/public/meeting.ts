@@ -951,7 +951,7 @@ export namespace meeting {
       },
     };
     return new Promise<void>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content);
+      ensureInitialized(runtime);
       resolve(
         sendAndHandleStatusAndReasonWithVersion(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
