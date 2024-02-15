@@ -940,9 +940,9 @@ export namespace meeting {
     }
     const { threadId, messageId, replyChainMessageId } = joinMeetingParams.chatInfo;
 
+    joinMeetingParams.joinWebUrl = new URL(joinMeetingParams.joinWebUrl);
     const serializedJoinMeetingParams = {
       joinWebUrl: joinMeetingParams.joinWebUrl.href,
-      subject: joinMeetingParams.subject,
       source: joinMeetingParams.source || EventActionSource.Other,
       chatInfo: {
         threadId,
@@ -950,7 +950,6 @@ export namespace meeting {
         replyChainMessageId: replyChainMessageId || '0',
       },
     };
-
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content);
       resolve(
@@ -969,10 +968,18 @@ export namespace meeting {
    * @returns false if joinMeetingParams' joinWebUrl or chatInfo is not valid else true.
    */
   function validateJoinMeetingParams(joinMeetingParams: JoinMeetingParams): boolean {
-    if (!joinMeetingParams?.chatInfo?.threadId || !joinMeetingParams?.joinWebUrl) {
+    if (
+      !joinMeetingParams?.chatInfo?.threadId ||
+      !joinMeetingParams?.joinWebUrl ||
+      joinMeetingParams.chatInfo.threadId === ''
+    ) {
       return false;
     }
-    if (joinMeetingParams.joinWebUrl.href === '' || joinMeetingParams.chatInfo.threadId === '') {
+    if (typeof joinMeetingParams.joinWebUrl === 'string' && joinMeetingParams.joinWebUrl === '') {
+      return false;
+    }
+
+    if (joinMeetingParams.joinWebUrl instanceof URL && joinMeetingParams.joinWebUrl.href === '') {
       return false;
     }
     return true;
@@ -985,7 +992,7 @@ export namespace meeting {
    */
   export interface JoinMeetingParams {
     /** The join URL of the online meeting. */
-    joinWebUrl: URL;
+    joinWebUrl: URL | string;
     /** The chat information associated with this online meeting. {@link ChatInfo}*/
     chatInfo: ChatInfo;
     /** The subject of the meeting. */

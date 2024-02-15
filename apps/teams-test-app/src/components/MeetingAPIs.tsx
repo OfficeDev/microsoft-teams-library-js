@@ -414,6 +414,34 @@ const UpdateMicState = (): React.ReactElement =>
     defaultInput: JSON.stringify({ isMicMuted: true }),
   });
 
+const JoinMeeting = (): React.ReactElement =>
+  ApiWithTextInput<meeting.JoinMeetingParams>({
+    name: 'joinMeeting',
+    title: 'Join a meeting',
+    onClick: {
+      validateInput: (input) => {
+        if (input.joinWebUrl === undefined) {
+          throw new Error('JoinUrl not passed');
+        }
+      },
+      submit: async (input, setResult) => {
+        meeting.joinMeeting(input);
+        setResult('joinMeeting() succeeded');
+        return `Join meeting called with joinWebUrl: ${input.joinWebUrl}`;
+      },
+    },
+    defaultInput: JSON.stringify({
+      joinWebUrl: new URL('https://www.example.com'),
+      chatInfo: {
+        threadId: 'threadId',
+        messageId: 'messageId',
+        replyChainMessageId: 'replyChainMessageId',
+      },
+      subject: 'subject',
+      source: 'Other',
+    }),
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -435,6 +463,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestAppAudioHandling />
     <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
+    <JoinMeeting />
   </ModuleWrapper>
 );
 
