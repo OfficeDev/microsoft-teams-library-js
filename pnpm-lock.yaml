@@ -1,10 +1,24 @@
 lockfileVersion: '6.0'
 
 overrides:
-  minimist: ^1.2.8
-  semver: ^7.5.4
+  axios: ^1.6.0
+  dns-packet: ^1.3.2
+  follow-redirects: ^1.15.4
+  glob-parent: ^5.1.2
+  lodash: ^4.17.21
+  merge: ^2.1.1
+  minimist: ^0.2.4
+  postcss: ^8.4.31
+  semver: ^7.5.2
+  serialize-javascript: ^3.1.0
+  set-value: ^2.0.1
   socks: ^2.7.3
   string_decoder: ^1.3.0
+  tough-cookie: ^4.1.3
+  underscore: 1.12.1
+  url-parse: ^1.5.0
+  word-wrap: ^1.2.4
+  y18n: ^4.0.1
 
 importers:
 
@@ -3187,10 +3201,6 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@leichtgewicht/ip-codec@2.0.4:
-    resolution: {integrity: sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==}
-    dev: true
-
   /@lerna/child-process@6.6.2:
     resolution: {integrity: sha512-QyKIWEnKQFnYu2ey+SAAm1A5xjzJLJJj3bhIZd3QKyXKKjaJ0hlxam/OsWSltxTNbcyH1jRJjC6Cxv31usv0Ag==}
     engines: {node: ^14.17.0 || >=16.0.0}
@@ -6167,11 +6177,11 @@ packages:
       webpack: ^5.1.0
     dependencies:
       fast-glob: 3.2.12
-      glob-parent: 6.0.2
+      glob-parent: 5.1.2
       globby: 11.1.0
       normalize-path: 3.0.0
       schema-utils: 3.1.1
-      serialize-javascript: 6.0.2
+      serialize-javascript: 3.1.0
       webpack: 5.88.2(webpack-cli@5.1.4)
     dev: true
 
@@ -6487,7 +6497,7 @@ packages:
     hasBin: true
     dependencies:
       get-stdin: 0.1.0
-      minimist: 1.2.8
+      minimist: 0.2.4
     dev: true
 
   /detect-indent@5.0.0:
@@ -6530,11 +6540,11 @@ packages:
     resolution: {integrity: sha1-s55/HabrCnW6nBcySzR1PEfgZU0=}
     dev: true
 
-  /dns-packet@5.6.1:
-    resolution: {integrity: sha512-l4gcSouhcgIKRvyy99RNVOgxXiicE+2jZoNmaNmZ6JXiGajBOJAesk1OBlJuM5k2c+eudGdLxDqXuPCKIj6kpw==}
-    engines: {node: '>=6'}
+  /dns-packet@1.3.4:
+    resolution: {integrity: sha512-BQ6F4vycLXBvdrJZ6S3gZewt6rcrks9KBgM9vrhW+knGRqc8uEdT7fuCwloc7nny5xNoMJ17HGH0R/6fpo8ECA==}
     dependencies:
-      '@leichtgewicht/ip-codec': 2.0.4
+      ip: 1.1.8
+      safe-buffer: 5.2.1
     dev: true
 
   /doctrine@2.1.0:
@@ -7707,13 +7717,6 @@ packages:
       is-glob: 4.0.3
     dev: true
 
-  /glob-parent@6.0.2:
-    resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
-    engines: {node: '>=10.13.0'}
-    dependencies:
-      is-glob: 4.0.3
-    dev: true
-
   /glob-to-regexp@0.4.1:
     resolution: {integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==}
 
@@ -7865,7 +7868,7 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
       neo-async: 2.6.2
       source-map: 0.6.1
       wordwrap: 1.0.0
@@ -8313,6 +8316,10 @@ packages:
     dependencies:
       jsbn: 1.1.0
       sprintf-js: 1.1.3
+    dev: true
+
+  /ip@1.1.8:
+    resolution: {integrity: sha512-PuExPYUiu6qMBQb4l06ecm6T6ujzhmh+MeJcW9wa89PoAz5pvd4zPgN5WJV104mb6S2T1AwNIAaB70JNrLQWhg==}
     dev: true
 
   /ipaddr.js@1.9.1:
@@ -9957,8 +9964,8 @@ packages:
       kind-of: 6.0.3
     dev: true
 
-  /minimist@1.2.8:
-    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
+  /minimist@0.2.4:
+    resolution: {integrity: sha512-Pkrrm8NjyQ8yVt8Am9M+yUt74zE3iokhzbG1bFVNjLB92vwM71hf40RkEsryg98BujhVOncKm/C1xROxZ030LQ==}
     dev: true
 
   /minipass-collect@1.0.2:
@@ -10056,7 +10063,7 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
     dev: true
 
   /mkdirp@1.0.4:
@@ -10099,7 +10106,7 @@ packages:
     resolution: {integrity: sha1-d+tGBX9NetvRbZKQ+nKZ9vpkzO0=}
     hasBin: true
     dependencies:
-      dns-packet: 5.6.1
+      dns-packet: 1.3.4
       thunky: 1.1.0
     dev: true
 
@@ -11844,8 +11851,8 @@ packages:
       - supports-color
     dev: true
 
-  /serialize-javascript@6.0.2:
-    resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
+  /serialize-javascript@3.1.0:
+    resolution: {integrity: sha512-JIJT1DGiWmIKhzRsG91aS6Ze4sFUrYbltlkg2onR5OrnNM02Kl/hnY/T4FN2omvyeBbQmMJv+K4cPOpGzOTFBg==}
     dependencies:
       randombytes: 2.1.0
     dev: true
@@ -11940,7 +11947,7 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: 0.2.4
       shelljs: 0.8.5
     dev: true
 
@@ -12272,7 +12279,7 @@ packages:
     hasBin: true
     dependencies:
       duplexer: 0.1.2
-      minimist: 1.2.8
+      minimist: 0.2.4
       through: 2.3.8
     dev: true
 
@@ -12422,7 +12429,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.20
       jest-worker: 27.5.1
       schema-utils: 3.3.0
-      serialize-javascript: 6.0.2
+      serialize-javascript: 3.1.0
       terser: 5.19.4
       webpack: 5.88.2(webpack-cli@5.1.4)
     dev: true
@@ -12661,7 +12668,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       json5: 2.2.3
-      minimist: 1.2.8
+      minimist: 0.2.4
       strip-bom: 3.0.0
     dev: true
 
@@ -13524,9 +13531,8 @@ packages:
     engines: {node: '>=0.4'}
     dev: true
 
-  /y18n@5.0.8:
-    resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
-    engines: {node: '>=10'}
+  /y18n@4.0.3:
+    resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}
     dev: true
 
   /yallist@3.1.1:
@@ -13561,7 +13567,7 @@ packages:
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
-      y18n: 5.0.8
+      y18n: 4.0.3
       yargs-parser: 20.2.4
     dev: true
 
@@ -13574,7 +13580,7 @@ packages:
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.3
-      y18n: 5.0.8
+      y18n: 4.0.3
       yargs-parser: 21.1.1
     dev: true
 
