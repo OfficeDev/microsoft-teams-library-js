@@ -43,7 +43,7 @@ export {
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';
 export { barCode } from './barCode';
-export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
+export { chat, OpenGroupChatRequest, OpenChatRequest } from './chat';
 export { clipboard } from './clipboard';
 export { dialog } from './dialog';
 export { geoLocation } from './geoLocation';

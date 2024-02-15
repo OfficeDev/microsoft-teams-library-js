@@ -16,7 +16,19 @@ import { runtime } from '../public/runtime';
  */
 const chatTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-interface OpenChatRequest {
+/**
+ * Used when starting a chat with more than one person
+ *
+ * @see OpenGroupChat for use in a chat with more than one person
+ *
+ * @beta
+ */
+export interface OpenChatRequest {
+  /**
+   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
+   * of users with whom to begin a chat
+   */
+  users: string[];
   /**
    * An optional message used when initiating chat
    */
@@ -24,33 +36,13 @@ interface OpenChatRequest {
 }
 
 /**
- * Used when starting a chat with one person
- *
- * @see OpenGroupChatRequest for use when a chat with more than one person
- *
- * @beta
- */
-export interface OpenSingleChatRequest extends OpenChatRequest {
-  /**
-   * The [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
-   * of the user with whom to begin a chat
-   */
-  user: string;
-}
-
-/**
  * Used when starting a chat with more than one person
  *
- * @see OpenSingleChatRequest for use in a chat with only one person
+ * @see OpenChatRequest for use in a chat with only one person
  *
  * @beta
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
-  /**
-   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
-   * of users with whom to begin a chat
-   */
-  users: string[];
   /**
    * The display name of a conversation for 3 or more users (chats with fewer than three users will ignore this field)
    */
@@ -73,12 +65,12 @@ export namespace chat {
    *
    * @beta
    */
-  export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
+  export function openChat(openChatRequest: OpenChatRequest): Promise<void> {
     const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenChat);
     return openChatHelper(apiVersionTag, openChatRequest);
   }
 
-  function openChatHelper(apiVersionTag: string, openChatRequest: OpenSingleChatRequest): Promise<void> {
+  function openChatHelper(apiVersionTag: string, openChatRequest: OpenChatRequest): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
@@ -89,12 +81,12 @@ export namespace chat {
           sendAndHandleStatusAndReason(
             apiVersionTag,
             'executeDeepLink',
-            createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
+            createTeamsDeepLinkForChat(openChatRequest.users, undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
         const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
-          members: [openChatRequest.user],
+          members: openChatRequest.users,
           message: openChatRequest.message,
         });
         resolve(sendPromise);
@@ -119,8 +111,8 @@ export namespace chat {
         throw Error('OpenGroupChat Failed: No users specified');
       }
       if (openChatRequest.users.length === 1) {
-        const chatRequest: OpenSingleChatRequest = {
-          user: openChatRequest.users[0],
+        const chatRequest: OpenChatRequest = {
+          users: openChatRequest.users,
           message: openChatRequest.message,
         };
         resolve(openChatHelper(apiVersionTag, chatRequest));

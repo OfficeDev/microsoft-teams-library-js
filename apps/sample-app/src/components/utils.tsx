@@ -7,7 +7,7 @@ import {
   webLightTheme,
 } from '@fluentui/react-components';
 import { Message } from '@microsoft/microsoft-graph-types';
-import { app, call, chat, mail, OpenSingleChatRequest } from '@microsoft/teams-js';
+import { app, call, chat, mail, OpenChatRequest } from '@microsoft/teams-js';
 
 import { MessageListItem } from './Emails';
 import { AvatarItem } from './PeopleAvatars';
@@ -65,8 +65,8 @@ export const handleVideoCall = async (a: AvatarItem): Promise<void> => {
   return alert(result);
 };
 export const handleMessage = async (a: AvatarItem): Promise<void> => {
-  const chatParams: OpenSingleChatRequest = {
-    user: a.id || '',
+  const chatParams: OpenChatRequest = {
+    users: [a.id] as string[],
   };
   await chat.openChat(chatParams);
 };

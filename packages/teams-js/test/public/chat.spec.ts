@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app } from '../../src/public/app';
-import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
+import { chat, OpenChatRequest, OpenGroupChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import {
@@ -44,8 +44,8 @@ describe('chat', () => {
 
   describe('Testing chat.openChat function', () => {
     it('should not allow calls before initialization', () => {
-      const chatRequest: OpenSingleChatRequest = {
-        user: 'someUPN',
+      const chatRequest: OpenChatRequest = {
+        users: ['someUPN'],
         message: 'someMessage',
       };
       return expect(chat.openChat(chatRequest)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
@@ -53,8 +53,8 @@ describe('chat', () => {
 
     it('should not allow calls from settings context', async () => {
       await utils.initializeWithContext('settings');
-      const chatRequest: OpenSingleChatRequest = {
-        user: 'someUPN',
+      const chatRequest: OpenChatRequest = {
+        users: ['someUPN'],
         message: 'someMessage',
       };
       return expect(chat.openChat(chatRequest)).rejects.toThrowError(
@@ -66,8 +66,8 @@ describe('chat', () => {
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`openChat should throw error if chat capability is not supported in runtime config - Context: ${context}`, async () => {
-          const chatRequest: OpenSingleChatRequest = {
-            user: 'someUPN',
+          const chatRequest: OpenChatRequest = {
+            users: 'someUPN',
             message: 'someMessage',
           };
           await utils.initializeWithContext(context);
@@ -79,8 +79,8 @@ describe('chat', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { chat: {} } });
 
-          const chatRequest: OpenSingleChatRequest = {
-            user: 'someUPN',
+          const chatRequest: OpenChatRequest = {
+            users: 'someUPN',
             message: 'someMessage',
           };
 
@@ -100,7 +100,7 @@ describe('chat', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: false, supports: { chat: {} } });
 
-          const chatRequest: OpenSingleChatRequest = {
+          const chatRequest: OpenChatRequest = {
             user: 'someUPN',
             message: 'someMessage',
           };
@@ -118,7 +118,7 @@ describe('chat', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, isLegacyTeams: true, supports: { chat: {} } });
 
-          const chatRequest: OpenSingleChatRequest = {
+          const chatRequest: OpenChatRequest = {
             user: 'someUPN',
             message: 'someMessage',
           };

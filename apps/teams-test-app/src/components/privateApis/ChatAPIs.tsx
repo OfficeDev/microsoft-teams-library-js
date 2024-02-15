@@ -1,9 +1,9 @@
 import {
   chat,
   conversations,
+  OpenChatRequest,
   OpenConversationRequest,
   OpenGroupChatRequest,
-  OpenSingleChatRequest,
 } from '@microsoft/teams-js';
 import React from 'react';
 
@@ -19,12 +19,12 @@ const CheckChatCapability = (): React.ReactElement =>
   });
 
 const DeprecatedOpenChat = (): React.ReactElement =>
-  ApiWithTextInput<OpenSingleChatRequest>({
+  ApiWithTextInput<OpenChatRequest>({
     name: 'openChat',
     title: '[Deprecated] Open Chat',
     onClick: {
       validateInput: (input) => {
-        if (!input.user) {
+        if (!input.users) {
           throw new Error('user is required on the input');
         }
       },
@@ -37,12 +37,12 @@ const DeprecatedOpenChat = (): React.ReactElement =>
   });
 
 const OpenChat = (): React.ReactElement =>
-  ApiWithTextInput<OpenSingleChatRequest>({
+  ApiWithTextInput<OpenChatRequest>({
     name: 'openChat2',
     title: 'Open Chat',
     onClick: {
       validateInput: (input) => {
-        if (!input.user) {
+        if (!input.users) {
           throw new Error('User is required on the input');
         }
       },
