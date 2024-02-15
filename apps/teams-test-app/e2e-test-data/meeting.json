@@ -347,19 +347,33 @@
       "version": ">2.20.0",
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
-        "joinMeetingParams": {
-          "joinWebUrl": "https://www.example12.com",
-          "chatInfo": {
-            "threadId": "threadId",
-            "messageId": "messageId",
-            "replyChainMessageId": "replyChainMessageId"
-          },
-          "subject": "subject",
-          "source": "Other"
-        }
+        "joinWebUrl": "https://www.example.com",
+        "chatInfo": {
+          "threadId": "threadId",
+          "messageId": "messageId",
+          "replyChainMessageId": "replyChainMessageId"
+        },
+        "subject": "subject",
+        "source": "Other"
       },
-      "expectedAlertValue": "joinMeeting called",
+      "expectedAlertValue": "joinMeeting called with ",
       "expectedTestAppValue": "Join meeting called with joinWebUrl: joinWebUrl"
+    },
+    {
+      "title": "joinMeeting API Call - Error",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "joinWebUrl": "https://www.example.com",
+        "chatInfo": {
+          "messageId": "messageId",
+          "replyChainMessageId": "replyChainMessageId"
+        },
+        "subject": "subject",
+        "source": "Other"
+      },
+      "expectedTestAppValue": "JoinUrl or chatInfo not passed"
     }
   ]
 }

@@ -415,37 +415,34 @@ const UpdateMicState = (): React.ReactElement =>
   });
 
 const JoinMeeting = (): React.ReactElement =>
-  ApiWithTextInput<{ joinMeetingParams: meeting.JoinMeetingParams }>({
+  ApiWithTextInput<meeting.JoinMeetingParams>({
     name: 'joinMeeting',
     title: 'Join a meeting',
     onClick: {
       validateInput: (input) => {
-        console.log(input.joinMeetingParams);
-        if (!input.joinMeetingParams?.joinWebUrl || !input.joinMeetingParams.chatInfo?.threadId) {
+        if (!input?.joinWebUrl || !input.chatInfo?.threadId) {
           console.log('error code', {
-            joinWebUrl: !input.joinMeetingParams?.joinWebUrl,
-            threadId: !input.joinMeetingParams?.chatInfo?.threadId,
+            joinWebUrl: !input?.joinWebUrl,
+            threadId: !input?.chatInfo?.threadId,
           });
           throw new Error('JoinUrl or chatInfo not passed');
         }
       },
       submit: async (input, setResult) => {
-        meeting.joinMeeting(input.joinMeetingParams);
+        meeting.joinMeeting(input);
         setResult('joinMeeting() succeeded');
         return 'Join meeting called with joinWebUrl: joinWebUrl';
       },
     },
     defaultInput: JSON.stringify({
-      joinMeetingParams: {
-        joinWebUrl: new URL('https://www.example.com'),
-        chatInfo: {
-          threadId: 'threadId',
-          messageId: 'messageId',
-          replyChainMessageId: 'replyChainMessageId',
-        },
-        subject: 'subject',
-        source: 'Other',
+      joinWebUrl: new URL('https://www.example.com'),
+      chatInfo: {
+        threadId: 'threadId',
+        messageId: 'messageId',
+        replyChainMessageId: 'replyChainMessageId',
       },
+      subject: 'subject',
+      source: 'Other',
     }),
   });
 
