@@ -124,6 +124,7 @@
   },
   "pnpm": {
     "overrides": {
+      "minimist": "^1.2.8",
       "socks": "^2.7.3"
     }
   }

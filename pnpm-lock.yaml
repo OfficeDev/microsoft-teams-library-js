@@ -1,6 +1,7 @@
 lockfileVersion: '6.0'
 
 overrides:
+  minimist: ^1.2.8
   socks: ^2.7.3
 
 importers:
@@ -6484,7 +6485,7 @@ packages:
     hasBin: true
     dependencies:
       get-stdin: 0.1.0
-      minimist: 0.1.0
+      minimist: 1.2.8
     dev: true
 
   /detect-indent@5.0.0:
@@ -9952,10 +9953,6 @@ packages:
       arrify: 1.0.1
       is-plain-obj: 1.1.0
       kind-of: 6.0.3
-    dev: true
-
-  /minimist@0.1.0:
-    resolution: {integrity: sha512-wR5Ipl99t0mTGwLjQJnBjrP/O7zBbLZqvA3aw32DmLx+nXHfWctUjzDjnDx09pX1Po86WFQazF9xUzfMea3Cnw==}
     dev: true
 
   /minimist@1.2.8:
