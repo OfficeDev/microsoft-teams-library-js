@@ -943,6 +943,7 @@ export namespace meeting {
     joinMeetingParams.joinWebUrl = new URL(joinMeetingParams.joinWebUrl);
     const serializedJoinMeetingParams = {
       joinWebUrl: joinMeetingParams.joinWebUrl.href,
+      subject: joinMeetingParams.subject,
       source: joinMeetingParams.source || EventActionSource.Other,
       chatInfo: {
         threadId,

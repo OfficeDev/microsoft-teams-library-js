@@ -421,10 +421,6 @@ const JoinMeeting = (): React.ReactElement =>
     onClick: {
       validateInput: (input) => {
         if (!input?.joinWebUrl || !input.chatInfo?.threadId) {
-          console.log('error code', {
-            joinWebUrl: !input?.joinWebUrl,
-            threadId: !input?.chatInfo?.threadId,
-          });
           throw new Error('JoinUrl or chatInfo not passed');
         }
       },

@@ -373,7 +373,7 @@
         "subject": "subject",
         "source": "Other"
       },
-      "expectedTestAppValue": "JoinUrl or chatInfo not passed"
+      "expectedTestAppValue": "Error: Error: JoinUrl or chatInfo not passed"
     }
   ]
 }
