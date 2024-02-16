@@ -1439,6 +1439,13 @@ describe('meeting', () => {
         });
         await expect(response).rejects.toEqual('Invalid joinMeetingParams');
       });
+
+      it(`should successfully joinMeeting`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const response = meeting.joinMeeting({
+          ...mockJoinMeetingParams,
+        });
+      });
     });
 
     describe('setOptions', () => {

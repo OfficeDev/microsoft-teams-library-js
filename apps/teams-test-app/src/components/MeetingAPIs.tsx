@@ -427,11 +427,11 @@ const JoinMeeting = (): React.ReactElement =>
       submit: async (input, setResult) => {
         meeting.joinMeeting(input);
         setResult('joinMeeting() succeeded');
-        return 'Join meeting called with joinWebUrl: joinWebUrl';
+        return `joinMeeting called with joinWebUrl: \"${input.joinWebUrl}\"`;
       },
     },
     defaultInput: JSON.stringify({
-      joinWebUrl: new URL('https://www.example.com'),
+      joinWebUrl: new URL('https://www.example.com/'),
       chatInfo: {
         threadId: 'threadId',
         messageId: 'messageId',

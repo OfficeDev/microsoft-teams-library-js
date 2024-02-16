@@ -347,17 +347,17 @@
       "version": ">2.20.0",
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
-        "joinWebUrl": "https://www.example.com",
+        "joinWebUrl": "https://www.example.com/",
+        "subject": "subject",
+        "source": "Other",
         "chatInfo": {
           "threadId": "threadId",
           "messageId": "messageId",
           "replyChainMessageId": "replyChainMessageId"
-        },
-        "subject": "subject",
-        "source": "Other"
+        }
       },
-      "expectedAlertValue": "joinMeeting called with ",
-      "expectedTestAppValue": "Join meeting called with joinWebUrl: joinWebUrl"
+      "expectedAlertValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\"",
+      "expectedTestAppValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\""
     },
     {
       "title": "joinMeeting API Call - Error",
@@ -365,13 +365,13 @@
       "version": ">2.20.0",
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
-        "joinWebUrl": "https://www.example.com",
+        "joinWebUrl": "https://www.example.com/",
+        "subject": "subject",
+        "source": "Other",
         "chatInfo": {
           "messageId": "messageId",
           "replyChainMessageId": "replyChainMessageId"
-        },
-        "subject": "subject",
-        "source": "Other"
+        }
       },
       "expectedTestAppValue": "Error: Error: JoinUrl or chatInfo not passed"
     }
