@@ -427,7 +427,7 @@ const JoinMeeting = (): React.ReactElement =>
       submit: async (input, setResult) => {
         meeting.joinMeeting(input);
         setResult('joinMeeting() succeeded');
-        return `joinMeeting called with joinWebUrl: \"${input.joinWebUrl}\"`;
+        return `joinMeeting called with joinWebUrl: "${input.joinWebUrl}"`;
       },
     },
     defaultInput: JSON.stringify({
