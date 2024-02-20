@@ -1,5 +1,5 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { sendAndHandleSdkError } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../public/constants';
@@ -191,7 +191,7 @@ export namespace meetingRoom {
         throw errorNotSupportedOnPlatform;
       }
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_GetPairedMeetingRoomInfo),
           'meetingRoom.getPairedMeetingRoomInfo',
         ),
@@ -219,7 +219,7 @@ export namespace meetingRoom {
         throw errorNotSupportedOnPlatform;
       }
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_SendCommandToPairedMeetingRoom),
           'meetingRoom.sendCommandToPairedMeetingRoom',
           commandName,
@@ -248,7 +248,7 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         meetingRoomTelemetryVersionNumber,
         ApiName.MeetingRoom_RegisterMeetingRoomCapabilitiesUpdateHandler,
@@ -280,7 +280,7 @@ export namespace meetingRoom {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(meetingRoomTelemetryVersionNumber, ApiName.MeetingRoom_RegisterMeetingRoomStatesUpdateHandler),
       'meetingRoom.meetingRoomStatesUpdate',
       (states: MeetingRoomState) => {

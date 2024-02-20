@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
@@ -30,7 +30,7 @@ export namespace mail {
       }
 
       resolve(
-        sendAndHandleStatusAndReasonWithVersion(
+        sendAndHandleStatusAndReason(
           getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_OpenMailItem),
           'mail.openMailItem',
           openMailItemParams,
@@ -53,7 +53,7 @@ export namespace mail {
       }
 
       resolve(
-        sendAndHandleStatusAndReasonWithVersion(
+        sendAndHandleStatusAndReason(
           getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMail),
           'mail.composeMail',
           composeMailParams,

@@ -1,5 +1,5 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
@@ -579,7 +579,7 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolders] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetCloudStorageFolders),
       'files.getCloudStorageFolders',
       [channelId],
@@ -612,7 +612,7 @@ export namespace files {
       throw new Error('[files.addCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageFolder),
       'files.addCloudStorageFolder',
       [channelId],
@@ -651,7 +651,7 @@ export namespace files {
       throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DeleteCloudStorageFolder),
       'files.deleteCloudStorageFolder',
       [channelId, folderToDelete],
@@ -692,7 +692,7 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetCloudStorageFolderContents),
       'files.getCloudStorageFolderContents',
       [folder, providerCode],
@@ -729,7 +729,7 @@ export namespace files {
       throw new Error('[files.openCloudStorageFile] provided file is a subDirectory');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_OpenCloudStorageFile),
       'files.openCloudStorageFile',
       [file, providerCode, fileOpenPreference],
@@ -756,7 +756,7 @@ export namespace files {
       throw new Error('[files.getExternalProviders] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetExternalProviders),
       'files.getExternalProviders',
       [excludeAddedProviders],
@@ -796,7 +796,7 @@ export namespace files {
     if (!callback) {
       throw new Error('[files.copyMoveFiles] callback cannot be null');
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_CopyMoveFiles),
       'files.copyMoveFiles',
       [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
@@ -822,7 +822,7 @@ export namespace files {
       throw new Error('[files.getFileDownloads] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetFileDownloads),
       'files.getFileDownloads',
       [],
@@ -851,7 +851,7 @@ export namespace files {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_OpenDownloadFolder),
       'files.openDownloadFolder',
       [fileObjectId],
@@ -882,7 +882,7 @@ export namespace files {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProvider] callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageProvider),
       'files.addCloudStorageProvider',
       [],
@@ -921,7 +921,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RemoveCloudStorageProvider),
       'files.removeCloudStorageProvider',
       [logoutRequest],
@@ -958,7 +958,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageProviderFile),
       'files.addCloudStorageProviderFile',
       [addNewFileRequest],
@@ -995,7 +995,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RenameCloudStorageProviderFile),
       'files.renameCloudStorageProviderFile',
       [renameFileRequest],
@@ -1040,7 +1040,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DeleteCloudStorageProviderFile),
       'files.deleteCloudStorageProviderFile',
       [deleteFileRequest],
@@ -1088,7 +1088,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DownloadCloudStorageProviderFile),
       'files.downloadCloudStorageProviderFile',
       [downloadFileRequest],
@@ -1140,7 +1140,7 @@ export namespace files {
       );
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_UploadCloudStorageProviderFile),
       'files.uploadCloudStorageProviderFile',
       [uploadFileRequest],
@@ -1166,7 +1166,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderListChangeHandler),
       'files.cloudStorageProviderListChange',
       handler,
@@ -1192,7 +1192,7 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderContentChangeHandler),
       'files.cloudStorageProviderContentChange',
       handler,

@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { peoplePickerRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { validatePeoplePickerInput } from '../internal/mediaUtil';
@@ -94,7 +94,7 @@ export namespace people {
         throw errorNotSupportedOnPlatform;
       }
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      resolve(sendAndHandleSdkErrorWithVersion(apiVersionTag, 'people.selectPeople', peoplePickerInputs));
+      resolve(sendAndHandleSdkError(apiVersionTag, 'people.selectPeople', peoplePickerInputs));
     });
   }
 

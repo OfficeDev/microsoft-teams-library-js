@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -37,7 +37,7 @@ export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize
   if (!dialog.update.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParentWithVersion(apiVersionTag, 'tasks.updateTask', [dimensions]);
+  sendMessageToParent(apiVersionTag, 'tasks.updateTask', [dimensions]);
 }
 
 export function urlOpenHelper(
@@ -52,18 +52,17 @@ export function urlOpenHelper(
   }
 
   if (messageFromChildHandler) {
-    registerHandler('messageForParent', messageFromChildHandler);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_RegisterMessageForParentHandler),
+      'messageForParent',
+      messageFromChildHandler,
+    );
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-  sendMessageToParentWithVersion(
-    apiVersionTag,
-    'tasks.startTask',
-    [dialogInfo],
-    (err: string, result: string | object) => {
-      submitHandler?.({ err, result });
-      removeHandler('messageForParent');
-    },
-  );
+  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+    submitHandler?.({ err, result });
+    removeHandler('messageForParent');
+  });
 }
 
 export function botUrlOpenHelper(
@@ -78,18 +77,17 @@ export function botUrlOpenHelper(
   }
 
   if (messageFromChildHandler) {
-    registerHandler('messageForParent', messageFromChildHandler);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_RegisterMessageForParentHandler),
+      'messageForParent',
+      messageFromChildHandler,
+    );
   }
   const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
-  sendMessageToParentWithVersion(
-    apiVersionTag,
-    'tasks.startTask',
-    [dialogInfo],
-    (err: string, result: string | object) => {
-      submitHandler?.({ err, result });
-      removeHandler('messageForParent');
-    },
-  );
+  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
+    submitHandler?.({ err, result });
+    removeHandler('messageForParent');
+  });
 }
 
 export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
@@ -102,7 +100,7 @@ export function urlSubmitHelper(apiVersionTag: string, result?: string | object,
   }
 
   // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-  sendMessageToParentWithVersion(apiVersionTag, 'tasks.completeTask', [
+  sendMessageToParent(apiVersionTag, 'tasks.completeTask', [
     result,
     appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
   ]);
@@ -172,7 +170,12 @@ export namespace dialog {
    * @beta
    */
   export function initialize(): void {
-    registerHandler('messageForChild', handleDialogMessage, false);
+    registerHandler(
+      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_RegisterMessageForChildHandler),
+      'messageForChild',
+      handleDialogMessage,
+      false,
+    );
   }
 
   function handleDialogMessage(message: string): void {
@@ -260,7 +263,7 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(
             dialogTelemetryVersionNumber,
             ApiName.Dialog_Url_ParentCommunication_SendMessageToParentFromDialog,
@@ -286,7 +289,7 @@ export namespace dialog {
           throw errorNotSupportedOnPlatform;
         }
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_ParentCommunication_SendMessageToDialog),
           'messageForChild',
           [message],
@@ -313,7 +316,14 @@ export namespace dialog {
         // handler since the original does not allow for post messages.
         // It is replaced by the user specified listener that is passed in.
         removeHandler('messageForChild');
-        registerHandler('messageForChild', listener);
+        registerHandler(
+          getApiVersionTag(
+            dialogTelemetryVersionNumber,
+            ApiName.Dialog_Url_ParentCommunication_RegisterMessageForChildHandler,
+          ),
+          'messageForChild',
+          listener,
+        );
         storedMessages.reverse();
         while (storedMessages.length > 0) {
           const message = storedMessages.pop();
@@ -496,7 +506,7 @@ export namespace dialog {
         throw errorNotSupportedOnPlatform;
       }
       const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo);
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Open),
         'tasks.startTask',
         [dialogInfo],
@@ -551,7 +561,7 @@ export namespace dialog {
 
         const dialogInfo: DialogInfo = getDialogInfoFromBotAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
 
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_AdaptiveCard_Bot_Open),
           'tasks.startTask',
           [dialogInfo],

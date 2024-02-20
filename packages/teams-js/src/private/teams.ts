@@ -1,4 +1,4 @@
-import { sendAndUnwrapWithVersion, sendMessageToParentWithVersion } from '../internal/communication';
+import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
@@ -64,7 +64,7 @@ export namespace teams {
       throw new Error('[teams.getTeamChannels] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_GetTeamChannels),
       'teams.getTeamChannels',
       [groupId],
@@ -98,7 +98,7 @@ export namespace teams {
       throw new Error('[teams.refreshSiteUrl] Callback cannot be null');
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_RefreshSiteUrl),
       'teams.refreshSiteUrl',
       [threadId],
@@ -165,7 +165,7 @@ export namespace teams {
 
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           resolve(
-            sendAndUnwrapWithVersion(
+            sendAndUnwrap(
               getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_JoinedTeams_GetUserJoinedTeams),
               'getUserJoinedTeams',
               /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -213,7 +213,7 @@ export namespace teams {
           throw errorNotSupportedOnPlatform;
         }
         resolve(
-          sendAndUnwrapWithVersion(
+          sendAndUnwrap(
             getApiVersionTag(teamsTelemetryVersionNumber, ApiName.Teams_FullTrust_GetConfigSetting),
             'getConfigSetting',
             key,
