@@ -1,9 +1,10 @@
-import { sendAndHandleSdkError } from '../internal/communication';
-import { ensureInitialized } from '../internal/internalAPIs';
+import { sendAndHandleSdkError, sendAndHandleTeamsJSError } from '../internal/communication';
+import { ensureInitialized, ensureInitializedFixed } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
+import { errors } from '../internal/TeamsJSError';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { DevicePermission, ErrorCode } from './interfaces';
+import { DevicePermission } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -40,18 +41,18 @@ export namespace barCode {
    *
    * @beta
    */
-  export function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
+  export async function scanBarCode(barCodeConfig: BarCodeConfig): Promise<string> {
     return new Promise<string>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+      ensureInitializedFixed(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        throw errors.notSupportedOnPlatform();
       }
       if (!validateScanBarCodeInput(barCodeConfig)) {
-        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+        throw errors.invalidArguments();
       }
 
       resolve(
-        sendAndHandleSdkError(
+        sendAndHandleTeamsJSError(
           getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_ScanBarCode),
           'media.scanBarCode',
           barCodeConfig,

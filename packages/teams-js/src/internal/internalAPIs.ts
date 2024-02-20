@@ -1,4 +1,4 @@
-import { HostClientType } from '../public/constants';
+import { FrameContexts, HostClientType } from '../public/constants';
 import { ErrorCode, SdkError } from '../public/interfaces';
 import { IBaseRuntime, isRuntimeInitialized, Runtime } from '../public/runtime';
 import {
@@ -7,6 +7,7 @@ import {
   userOriginUrlValidationRegExp,
 } from './constants';
 import { GlobalVars } from './globalVars';
+import { errors } from './TeamsJSError';
 import { getLogger } from './telemetry';
 import { compareSDKVersions } from './utils';
 
@@ -66,6 +67,43 @@ export function ensureInitialized(runtime: IBaseRuntime, ...expectedFrameContext
         `This call is only allowed in following contexts: ${JSON.stringify(expectedFrameContexts)}. ` +
           `Current context: "${GlobalVars.frameContext}".`,
       );
+    }
+  }
+  return isRuntimeInitialized(runtime);
+}
+
+/**
+ * Ensures `initialize` was called and response from Host was received and processed and that `runtime` is initialized.
+ * If expected FrameContexts are provided, it also validates that the current FrameContext matches one of the expected ones.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function ensureInitializedFixed(
+  runtime: IBaseRuntime,
+  ...expectedFrameContexts: FrameContexts[]
+): runtime is Runtime {
+  // This global var can potentially be removed in the future if we use the initialization status of the runtime object as our source of truth
+  if (!GlobalVars.initializeCompleted) {
+    ensureInitializedLogger(
+      '%s. initializeCalled: %s',
+      errorLibraryNotInitialized,
+      GlobalVars.initializeCalled.toString(),
+    );
+    throw errors.libraryNotInitialized();
+  }
+
+  if (expectedFrameContexts && expectedFrameContexts.length > 0) {
+    let found = false;
+    for (let i = 0; i < expectedFrameContexts.length; i++) {
+      if (expectedFrameContexts[i] === GlobalVars.frameContext) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      throw errors.wrongFrameContext(expectedFrameContexts);
     }
   }
   return isRuntimeInitialized(runtime);

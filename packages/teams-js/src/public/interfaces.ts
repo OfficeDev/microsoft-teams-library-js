@@ -986,6 +986,14 @@ export enum ErrorCode {
    */
   NOT_SUPPORTED_ON_PLATFORM = 100,
   /**
+   * Function called from incorrect Frame Context
+   */
+  CALLED_FROM_WRONG_FRAME_CONTEXT = 101,
+  /**
+   * Library must be initialized before using this code
+   */
+  LIBRARY_NOT_INITIALIZED = 102,
+  /**
    * Internal error encountered while performing the required operation.
    */
   INTERNAL_ERROR = 500,

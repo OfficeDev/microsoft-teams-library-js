@@ -17,6 +17,7 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuth';
+import { errors } from './TeamsJSError';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
@@ -210,11 +211,23 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * EVENTUALLY DELETE AND REPLACE WITH SENDANDHANDLETEAMSJSERROR
  */
 export function sendAndHandleSdkError<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
   return sendMessageToParentAsync(apiVersionTag, actionName, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
       throw error;
+    }
+    return result;
+  });
+}
+
+export function sendAndHandleTeamsJSError<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
+  // CHANGE THIS TO RETURN CORRECT ERRORS
+  return sendMessageToParentAsync(apiVersionTag, actionName, args).then(([error, result]: [SdkError, T]) => {
+    if (error) {
+      throw errors.errorFromHost(error);
     }
     return result;
   });

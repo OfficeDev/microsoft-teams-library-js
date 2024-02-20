@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { errors } from '../../src/internal/TeamsJSError';
 import { app } from '../../src/public/app';
 import { barCode } from '../../src/public/barCode';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
@@ -44,7 +45,7 @@ describe('barCode', () => {
 
   describe('Testing scanBarCode API', () => {
     it('should not allow scanBarCode calls before initialization', () => {
-      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errors.libraryNotInitialized());
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -52,13 +53,13 @@ describe('barCode', () => {
         it(`should throw error when barCode is not supported in runtime config. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          await expect(barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errorNotSupportedOnPlatform);
+          await expect(barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errors.notSupportedOnPlatform());
         });
 
         it('scanBarCode call in default version of platform support fails', async () => {
           await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
           utils.setClientSupportedSDKVersion(defaultPlatformVersion);
-          expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errorNotSupportedOnPlatform);
+          expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errors.notSupportedOnPlatform());
         });
 
         it('scanBarCode calls with successful result', async () => {
@@ -102,7 +103,7 @@ describe('barCode', () => {
             },
           } as DOMMessageEvent);
 
-          await expect(promise).rejects.toEqual({ errorCode: ErrorCode.OPERATION_TIMED_OUT });
+          await expect(promise).rejects.toEqual(errors.errorFromHost({ errorCode: ErrorCode.OPERATION_TIMED_OUT }));
         });
 
         it('should not allow scanBarCode calls with invalid timeOutIntervalInSec', async () => {
@@ -111,9 +112,7 @@ describe('barCode', () => {
           const barCodeConfig = {
             timeOutIntervalInSec: 0,
           };
-          await expect(barCode.scanBarCode(barCodeConfig)).rejects.toEqual({
-            errorCode: ErrorCode.INVALID_ARGUMENTS,
-          });
+          await expect(barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errors.invalidArguments());
         });
 
         it('should allow scanBarCode calls when timeOutIntervalInSec is not passed in config params', async () => {
@@ -125,11 +124,7 @@ describe('barCode', () => {
       } else {
         it(`should not allow scanBarCode calls from the wrong context. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
-          expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toThrowError(
-            `This call is only allowed in following contexts: ${JSON.stringify(
-              allowedContexts,
-            )}. Current context: "${context}".`,
-          );
+          expect(() => barCode.scanBarCode(barCodeConfig)).rejects.toEqual(errors.wrongFrameContext(allowedContexts));
         });
       }
     });
