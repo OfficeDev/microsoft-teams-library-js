@@ -54,7 +54,7 @@ export namespace teamsCore {
   /**
    * Registers a handler to be called when the page has been requested to load.
    *
-   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/app-caching)
+   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/app-caching)
    * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke when the page is loaded.
@@ -104,7 +104,7 @@ export namespace teamsCore {
   /**
    * Registers a handler to be called before the page is unloaded.
    *
-   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/app-caching)
+   * @remarks Check out [App Caching in Teams](https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/app-caching)
    * for a more detailed explanation about using this API.
    *
    * @param handler - The handler to invoke before the page is unloaded. If this handler returns true the page should

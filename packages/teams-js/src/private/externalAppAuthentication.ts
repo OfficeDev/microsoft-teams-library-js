@@ -77,7 +77,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/en-us/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
+   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
    * @internal
    * Limited to Microsoft-internal use
    */

@@ -32,7 +32,7 @@ interface OpenChatRequest {
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
-   * The [Microsoft Entra UPN](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
+   * The [Microsoft Entra UPN](https://learn.microsoft.com/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
    * of the user with whom to begin a chat
    */
   user: string;
@@ -47,7 +47,7 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
-   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
+   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
    * of users with whom to begin a chat
    */
   users: string[];
