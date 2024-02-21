@@ -247,7 +247,7 @@ export interface SecondaryId {
 
 /**
  * These correspond with field names in the MSGraph.
- * See (commonly accessed resources)[https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources].
+ * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta
  */
 export enum SecondaryM365ContentIdName {
