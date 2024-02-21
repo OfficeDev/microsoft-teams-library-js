@@ -79,7 +79,7 @@ describe('thirdPartyCloudStorage', () => {
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    const callbackused = sendMessageToParentSpy.mock.calls[0][3]; // calling the callback which was passed
     if (callbackused) {
       // creating 50 file, each having 3 chunks
       for (let i = 0; i < 50; i++) {
@@ -122,7 +122,7 @@ describe('thirdPartyCloudStorage', () => {
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    const callbackused = sendMessageToParentSpy.mock.calls[0][3]; // calling the callback which was passed
 
     if (callbackused) {
       callbackused(mockFileResultnew);
@@ -152,7 +152,7 @@ describe('thirdPartyCloudStorage', () => {
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    const callbackused = sendMessageToParentSpy.mock.calls[0][3]; // calling the callback which was passed
     if (callbackused) {
       // now send last chunk
       const mockFileChunk: thirdPartyCloudStorage.FileChunk = {
@@ -191,7 +191,7 @@ describe('thirdPartyCloudStorage', () => {
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    const callbackused = sendMessageToParentSpy.mock.calls[0][3]; // calling the callback which was passed
     if (callbackused) {
       callbackused(mockLastFileResult);
     }
@@ -224,7 +224,7 @@ describe('thirdPartyCloudStorage', () => {
     const sendMessageToParentSpy = jest.spyOn(communicationModule, 'sendMessageToParent');
     thirdPartyCloudStorage.getDragAndDropFiles('mockDragAndDropInput', mockCallback);
     expect(sendMessageToParentSpy).toHaveBeenCalled();
-    const callbackused = sendMessageToParentSpy.mock.calls[0][2]; // calling the callback which was passed
+    const callbackused = sendMessageToParentSpy.mock.calls[0][3]; // calling the callback which was passed
     if (callbackused) {
       callbackused(mockFileResult);
     }

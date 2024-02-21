@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -86,14 +86,14 @@ export namespace chat {
       }
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleStatusAndReasonWithVersion(
+          sendAndHandleStatusAndReason(
             apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
-        const sendPromise = sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'chat.openChat', {
+        const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
           members: [openChatRequest.user],
           message: openChatRequest.message,
         });
@@ -131,14 +131,14 @@ export namespace chat {
         }
         if (runtime.isLegacyTeams) {
           resolve(
-            sendAndHandleStatusAndReasonWithVersion(
+            sendAndHandleStatusAndReason(
               apiVersionTag,
               'executeDeepLink',
               createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
             ),
           );
         } else {
-          const sendPromise = sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,

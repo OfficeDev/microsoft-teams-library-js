@@ -1,8 +1,8 @@
 import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
-import { sendMessageToParentWithVersion } from './communication';
-import { registerHandlerWithVersion } from './handlers';
+import { sendMessageToParent } from './communication';
+import { registerHandler } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
@@ -306,7 +306,7 @@ class TransformerWithMetadata {
     private notifyError: (string) => void,
     private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   ) {
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsUtilTelemetryVersionNumber,
         ApiName.VideoEffectsUtils_TransformerWithMetadata_Constructor,
@@ -453,7 +453,7 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_ReportVideoEffectChanged),
           'video.videoEffectReadiness',
           [true, effectId, undefined, effectParam],
@@ -462,7 +462,7 @@ export function createEffectParameterChangeCallback(
       .catch((reason) => {
         const validReason =
           reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_EffectFailure),
           'video.videoEffectReadiness',
           [false, effectId, validReason, effectParam],

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Communication, sendMessageEventToChild, sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
@@ -24,7 +24,7 @@ const privateAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1
 export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolean, reason?: string) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_UploadCustomApp),
     'uploadCustomApp',
     [manifestBlob],
@@ -47,7 +47,7 @@ export function uploadCustomApp(manifestBlob: Blob, onComplete?: (status: boolea
 export function sendCustomMessage(actionName: string, args?: any[], callback?: (...args: any[]) => void): void {
   ensureInitialized(runtime);
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_SendCustomMessage),
     actionName,
     args,
@@ -89,7 +89,7 @@ export function sendCustomEvent(actionName: string, args?: any[]): void {
  */
 export function registerCustomHandler(actionName: string, customHandler: (...args: any[]) => any[]): void {
   ensureInitialized(runtime);
-  registerHandlerWithVersion(
+  registerHandler(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterCustomHandler),
     actionName,
     (...args: any[]) => {
@@ -114,7 +114,7 @@ export function registerUserSettingsChangeHandler(
 ): void {
   ensureInitialized(runtime);
 
-  registerHandlerWithVersion(
+  registerHandler(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_RegisterUserSettingsChangeHandler),
     'userSettingsChange',
     handler,
@@ -153,7 +153,7 @@ export function openFilePreview(filePreviewParameters: FilePreviewParameters): v
     filePreviewParameters.sizeInBytes,
   ];
 
-  sendMessageToParentWithVersion(
+  sendMessageToParent(
     getApiVersionTag(privateAPIsTelemetryVersionNumber, ApiName.PrivateAPIs_OpenFilePreview),
     'openFilePreview',
     params,

@@ -1,9 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateAppIdIsGuid } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -103,10 +109,14 @@ export namespace externalAppCardActions {
 
     validateAppIdIsGuid(appId);
 
-    return sendMessageToParentAsync<[boolean, ActionSubmitError]>('externalAppCardActions.processActionSubmit', [
-      appId,
-      actionSubmitPayload,
-    ]).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
+    return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionSubmit,
+      ),
+      'externalAppCardActions.processActionSubmit',
+      [appId, actionSubmitPayload],
+    ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
       }
@@ -133,6 +143,10 @@ export namespace externalAppCardActions {
     validateAppIdIsGuid(appId);
 
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
+      ),
       'externalAppCardActions.processActionOpenUrl',
       [appId, url.href],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {

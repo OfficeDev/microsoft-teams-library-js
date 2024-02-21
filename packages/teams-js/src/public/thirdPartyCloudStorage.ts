@@ -1,12 +1,17 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createFile, decodeAttachment } from '../internal/mediaUtil';
-import { getLogger } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 const Files3PLogger = getLogger('thirdPartyCloudStorage');
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const thirdPartyCloudStorageTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
@@ -163,6 +168,10 @@ export namespace thirdPartyCloudStorage {
     lastChunkVal = true;
 
     sendMessageToParent(
+      getApiVersionTag(
+        thirdPartyCloudStorageTelemetryVersionNumber,
+        ApiName.ThirdPartyCloudStorage_GetDragAndDropFiles,
+      ),
       'thirdPartyCloudStorage.getDragAndDropFiles',
       [dragAndDropInput],
       handleGetDragAndDropFilesCallbackRequest,

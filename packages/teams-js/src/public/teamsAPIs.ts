@@ -1,6 +1,7 @@
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { ssrSafeWindow } from '../internal/utils';
 import { errorNotSupportedOnPlatform } from './constants';
@@ -9,7 +10,11 @@ import { runtime } from './runtime';
 
 /**
  * Namespace containing the set of APIs that support Teams-specific functionalities.
+ *
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
+const teamsAPIsTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace teamsCore {
   /** Ready to unload function type */
   export type readyToUnloadFunctionType = () => void;
@@ -57,11 +62,15 @@ export namespace teamsCore {
    * @beta
    */
   export function registerOnLoadHandler(handler: registerOnLoadHandlerFunctionType): void {
-    registerOnLoadHandlerHelper(handler, () => {
-      if (!isNullOrUndefined(handler) && !isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerOnLoadHandlerHelper(
+      getApiVersionTag(teamsAPIsTelemetryVersionNumber_v2, ApiName.TeamsAPIs_RegisterOnLoadHandler),
+      handler,
+      () => {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -71,12 +80,14 @@ export namespace teamsCore {
    * @internal
    * Limited to Microsoft-internal use
    *
+   * @param apiVersionTag - The tag indicating API version number with name
    * @param handler - The handler to invoke when the page is loaded.
    * @param versionSpecificHelper - The helper function containing logic pertaining to a specific version of the API.
    *
    * @deprecated
    */
   export function registerOnLoadHandlerHelper(
+    apiVersionTag: string,
     handler: registerOnLoadHandlerFunctionType,
     versionSpecificHelper?: () => void,
   ): void {
@@ -87,7 +98,7 @@ export namespace teamsCore {
       versionSpecificHelper();
     }
 
-    Handlers.registerOnLoadHandler(handler);
+    Handlers.registerOnLoadHandler(apiVersionTag, handler);
   }
 
   /**
@@ -102,11 +113,15 @@ export namespace teamsCore {
    * @beta
    */
   export function registerBeforeUnloadHandler(handler: registerBeforeUnloadHandlerFunctionType): void {
-    registerBeforeUnloadHandlerHelper(handler, () => {
-      if (!isNullOrUndefined(handler) && !isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
-    });
+    registerBeforeUnloadHandlerHelper(
+      getApiVersionTag(teamsAPIsTelemetryVersionNumber_v2, ApiName.TeamsAPIs_RegisterBeforeUnloadHandler),
+      handler,
+      () => {
+        if (!isNullOrUndefined(handler) && !isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
+      },
+    );
   }
 
   /**
@@ -123,6 +138,7 @@ export namespace teamsCore {
    * @deprecated
    */
   export function registerBeforeUnloadHandlerHelper(
+    apiVersionTag: string,
     handler: registerBeforeUnloadHandlerFunctionType,
     versionSpecificHelper?: () => void,
   ): void {
@@ -131,7 +147,7 @@ export namespace teamsCore {
     if (!isNullOrUndefined(handler) && versionSpecificHelper) {
       versionSpecificHelper();
     }
-    Handlers.registerBeforeUnloadHandler(handler);
+    Handlers.registerBeforeUnloadHandler(apiVersionTag, handler);
   }
 
   /**

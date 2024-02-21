@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added new subcapability `dialog.url.parentCommunication` for dialog-parent communication related APIs. The isSupported function in this subcapability will return `false` if it is invoked from a parentless scenario.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}

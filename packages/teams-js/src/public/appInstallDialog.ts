@@ -1,5 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
-import { sendAndHandleStatusAndReasonWithVersion } from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { createTeamsDeepLinkForAppInstallDialog } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -43,16 +42,14 @@ export namespace appInstallDialog {
       );
       if (runtime.isLegacyTeams) {
         resolve(
-          sendAndHandleStatusAndReasonWithVersion(
+          sendAndHandleStatusAndReason(
             apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
           ),
         );
       } else {
-        sendMessageToParentWithVersion(apiVersionTag, 'appInstallDialog.openAppInstallDialog', [
-          openAPPInstallDialogParams,
-        ]);
+        sendMessageToParent(apiVersionTag, 'appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
         resolve();
       }
     });
