@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed testing api version number and corrected faulty tag on API",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
