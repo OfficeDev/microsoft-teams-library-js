@@ -1,4 +1,4 @@
-import { sendMessageToParent, sendAndHandleStatusAndReason } from '../internal/communication';
+import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
