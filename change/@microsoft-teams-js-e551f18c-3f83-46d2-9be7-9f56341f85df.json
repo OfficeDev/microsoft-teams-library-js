@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Removed testing api version number and corrected faulty tag on API",
+  "comment": "Fixed bug where `authentication.getUser` telemetry was being incorrectly recorded",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
