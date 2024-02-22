@@ -1145,4 +1145,34 @@ export namespace meeting {
       [micState, reason],
     );
   }
+
+  export interface TogetherModeConfiguration {
+    readonly testStr: string;
+  }
+
+  // TODO: add doc
+  export function updateTogetherModeConfiguration(
+    configuration: TogetherModeConfiguration,
+    callback: (error: SdkError | null, response: string | null) => void,
+  ): void {
+    if (!configuration) {
+      throw new Error('[update together mode configuration] Configuration cannot be empty');
+    }
+    if (!callback) {
+      throw new Error('[update together mode configuration] Callback cannot be null');
+    }
+    ensureInitialized(
+      runtime,
+      FrameContexts.sidePanel,
+      FrameContexts.meetingStage,
+      FrameContexts.settings,
+      FrameContexts.content,
+    );
+    sendMessageToParent(
+      getApiVersionTag(meetingTelemetryVersionNumber, ApiName.Meeting_UpdateTogetherModeConfiguration),
+      'meeting.updateTogetherModeConfiguration',
+      [configuration],
+      callback,
+    );
+  }
 }

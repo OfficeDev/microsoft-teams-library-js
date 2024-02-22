@@ -1,7 +1,7 @@
 import './App.css';
 
 import { Button, FluentProvider, LargeTitle, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
-import { app, authentication } from '@microsoft/teams-js';
+import { app, authentication, meeting } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
 import { ProfileContent } from './components/Profile';
@@ -38,6 +38,12 @@ const App: React.FC = () => {
         alert('Initialization Error: App should be sideloaded onto a host');
         appInitializationFailed();
       }
+
+      setTimeout(() => {
+        meeting.updateTogetherModeConfiguration({ testStr: '2333333wwww' }, (error, response) => {
+          console.log('updateTogetherModeConfiguration', error, response);
+        });
+      }, 3000);
     })();
   }, [setIsInitialized, setCurrTheme]);
 

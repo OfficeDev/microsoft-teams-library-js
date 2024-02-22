@@ -183,6 +183,7 @@ export enum ApiName {
   Meeting_ShareAppContentToStage = 'meeting.shareAppContentToStage',
   Meeting_StopSharingAppContentToStage = 'meeting.stopSharingAppContentToStage',
   Meeting_ToggleIncomingClientAudio = 'meeting.toggleIncomingClientAudio',
+  Meeting_UpdateTogetherModeConfiguration = 'meeting.updateTogetherModeConfiguration',
   MeetingRoom_GetPairedMeetingRoomInfo = 'meetingRoom.getPairedMeetingRoomInfo',
   MeetingRoom_RegisterMeetingRoomCapabilitiesUpdateHandler = 'meetingRoom.registerMeetingRoomCapabilitiesUpdateHandler',
   MeetingRoom_RegisterMeetingRoomStatesUpdateHandler = 'meetingRoom.registerMeetingRoomStatesUpdateHandler',

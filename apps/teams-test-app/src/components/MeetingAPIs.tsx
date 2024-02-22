@@ -414,6 +414,26 @@ const UpdateMicState = (): React.ReactElement =>
     defaultInput: JSON.stringify({ isMicMuted: true }),
   });
 
+const UpdateTogetherModeConfiguration = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'updateTogetherModeConfiguration',
+    title: 'Update Together Mode Configuration',
+    onClick: async (setResult) => {
+      const configuration = {
+        testStr: 'blahblah',
+      };
+      const callback = (error: SdkError | null, response: string | null): void => {
+        if (error) {
+          setResult(JSON.stringify(error));
+        } else {
+          setResult(JSON.stringify(response));
+        }
+      };
+      meeting.updateTogetherModeConfiguration(configuration, callback);
+      return '';
+    },
+  });
+
 const MeetingAPIs = (): ReactElement => (
   <ModuleWrapper title="Meeting">
     <GetIncomingClientAudioState />
@@ -435,6 +455,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestAppAudioHandling />
     <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
+    <UpdateTogetherModeConfiguration />
   </ModuleWrapper>
 );
 
