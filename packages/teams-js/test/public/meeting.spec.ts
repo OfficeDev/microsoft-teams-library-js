@@ -1429,15 +1429,23 @@ describe('meeting', () => {
         await expect(response).rejects.toEqual('Invalid joinMeetingParams');
       });
 
-      it('should reject if joinWebUrl is empty', async () => {
+      it('should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
         const response = meeting.joinMeeting({
           ...mockJoinMeetingParams,
-          chatInfo: {
-            ...chatInfoParams,
-            threadId: '',
-          },
+          joinWebUrl: 'https://example.com',
         });
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        expect(response).resolves.toBeUndefined();
+      });
+
+      it('should reject if joinWebUrl is incorrect URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect(() =>
+          meeting.joinMeeting({
+            ...mockJoinMeetingParams,
+            joinWebUrl: 'this is incorrect url in string format',
+          }),
+        ).toThrowError('this is incorrect url in string format');
       });
 
       it(`should successfully joinMeeting`, async () => {
@@ -1445,6 +1453,7 @@ describe('meeting', () => {
         const response = meeting.joinMeeting({
           ...mockJoinMeetingParams,
         });
+        expect(response).resolves.toBeUndefined();
       });
     });
 
