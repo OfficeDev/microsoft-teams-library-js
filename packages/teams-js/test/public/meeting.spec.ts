@@ -1388,7 +1388,7 @@ describe('meeting', () => {
 
       it('should reject if joinMeetingParams is not provided', async () => {
         const response = meeting.joinMeeting(null);
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should reject if chatInfo is not provided', async () => {
@@ -1396,7 +1396,7 @@ describe('meeting', () => {
           ...mockJoinMeetingParams,
           chatInfo: null,
         });
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should reject if threadId is not provided', async () => {
@@ -1407,7 +1407,7 @@ describe('meeting', () => {
             threadId: null,
           },
         });
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should reject if joinWebUrl is not provided', async () => {
@@ -1415,7 +1415,7 @@ describe('meeting', () => {
           ...mockJoinMeetingParams,
           joinWebUrl: null,
         });
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should reject if joinWebUrl is empty', async () => {
@@ -1426,7 +1426,7 @@ describe('meeting', () => {
             threadId: '',
           },
         });
-        await expect(response).rejects.toEqual('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should resolve if joinWebUrl is correct URL in string format', async () => {

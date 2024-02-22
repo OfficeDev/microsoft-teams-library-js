@@ -935,7 +935,7 @@ export namespace meeting {
 
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
     if (!validateJoinMeetingParams(joinMeetingParams)) {
-      return Promise.reject('Invalid joinMeetingParams');
+      return Promise.reject(new Error('Invalid joinMeetingParams'));
     }
     const { threadId, messageId, replyChainMessageId } = joinMeetingParams.chatInfo;
 
