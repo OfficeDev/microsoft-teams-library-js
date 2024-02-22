@@ -6,7 +6,7 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { MessageRequest, Utils } from '../utils';
 
-const testApiVersion = getApiVersionTag(ApiVersionNumber.V_0, 'mockedApiName' as ApiName);
+const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
 
 describe('Testing communication', () => {
   describe('initializeCommunication', () => {
