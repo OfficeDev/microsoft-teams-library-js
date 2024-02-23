@@ -1372,67 +1372,83 @@ describe('meeting', () => {
       });
     });
 
-    describe('joinMeeting', () => {
-      const chatInfoParams: meeting.ChatInfo = {
+    describe('joinChannelMeeting', () => {
+      const mockJoinChannelMeetingParams: meeting.JoinChannelMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        subject: 'mockSubject',
+        source: meeting.EventActionSource.Other,
         messageId: 'mockMessageId',
         replyChainMessageId: 'mockReplyChainMessageId',
         threadId: 'mockThreadId',
       };
 
-      const mockJoinMeetingParams: meeting.JoinMeetingParams = {
-        joinWebUrl: new URL('https://example.com'),
-        subject: 'mockSubject',
-        source: meeting.EventActionSource.Other,
-        chatInfo: chatInfoParams,
-      };
-
-      it('should reject if joinMeetingParams is not provided', async () => {
-        const response = meeting.joinMeeting(null);
-        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+      it('should reject if mockJoinChannelMeetingParams is not provided', async () => {
+        const response = meeting.joinChannelMeeting(null);
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
       });
 
-      it('should reject if chatInfo is not provided', async () => {
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
-          chatInfo: null,
+      it('should reject if replyChainMessageId is not provided', async () => {
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          replyChainMessageId: null,
         });
-        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
+      });
+
+      it('should reject if messageId is not provided', async () => {
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          messageId: null,
+        });
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
       });
 
       it('should reject if threadId is not provided', async () => {
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
-          chatInfo: {
-            ...chatInfoParams,
-            threadId: null,
-          },
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          threadId: null,
         });
-        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
       });
 
       it('should reject if joinWebUrl is not provided', async () => {
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
           joinWebUrl: null,
         });
-        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
       });
 
-      it('should reject if joinWebUrl is empty', async () => {
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
-          chatInfo: {
-            ...chatInfoParams,
-            threadId: '',
-          },
+      it('should reject if threadId is empty', async () => {
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          threadId: '',
         });
-        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
+      });
+
+      it('should reject if replyChainMessageId or messageId is empty', async () => {
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          messageId: '',
+          replyChainMessageId: '',
+        });
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
+      });
+
+      it('should reject if messageId or replyChainMessageId is 0', async () => {
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+          messageId: '0',
+          replyChainMessageId: '0',
+        });
+        await expect(response).rejects.toThrowError('Invalid joinChannelMeetingParams');
       });
 
       it('should resolve if joinWebUrl is correct URL in string format', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
           joinWebUrl: 'https://example.com',
         });
         expect(response).resolves.toBeUndefined();
@@ -1441,8 +1457,8 @@ describe('meeting', () => {
       it('should reject if joinWebUrl is incorrect URL in string format', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         expect(() =>
-          meeting.joinMeeting({
-            ...mockJoinMeetingParams,
+          meeting.joinChannelMeeting({
+            ...mockJoinChannelMeetingParams,
             joinWebUrl: 'this is incorrect url in string format',
           }),
         ).toThrowError('this is incorrect url in string format');
@@ -1450,8 +1466,73 @@ describe('meeting', () => {
 
       it(`should successfully joinMeeting`, async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        const response = meeting.joinMeeting({
-          ...mockJoinMeetingParams,
+        const response = meeting.joinChannelMeeting({
+          ...mockJoinChannelMeetingParams,
+        });
+        expect(response).resolves.toBeUndefined();
+      });
+    });
+
+    describe('joinPrivateMeeting', () => {
+      const mockJoinPrivateMeetingParams: meeting.JoinPrivateMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        subject: 'mockSubject',
+        source: meeting.EventActionSource.Other,
+        threadId: 'mockThreadId',
+      };
+
+      it('should reject if mockJoinPrivateMeetingParams is not provided', async () => {
+        const response = meeting.joinPrivateMeeting(null);
+        await expect(response).rejects.toThrowError('Invalid joinPrivateMeetingParams');
+      });
+
+      it('should reject if threadId is not provided', async () => {
+        const response = meeting.joinPrivateMeeting({
+          ...mockJoinPrivateMeetingParams,
+          threadId: null,
+        });
+        await expect(response).rejects.toThrowError('Invalid joinPrivateMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is not provided', async () => {
+        const response = meeting.joinPrivateMeeting({
+          ...mockJoinPrivateMeetingParams,
+          joinWebUrl: null,
+        });
+        await expect(response).rejects.toThrowError('Invalid joinPrivateMeetingParams');
+      });
+
+      it('should reject if threadId is empty', async () => {
+        const response = meeting.joinPrivateMeeting({
+          ...mockJoinPrivateMeetingParams,
+          threadId: '',
+        });
+        await expect(response).rejects.toThrowError('Invalid joinPrivateMeetingParams');
+      });
+
+      it('should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const response = meeting.joinPrivateMeeting({
+          ...mockJoinPrivateMeetingParams,
+          joinWebUrl: 'https://example.com',
+        });
+        expect(response).resolves.toBeUndefined();
+      });
+
+      it('should reject if joinWebUrl is incorrect URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect(() =>
+          meeting.joinPrivateMeeting({
+            ...mockJoinPrivateMeetingParams,
+            joinWebUrl: 'this is incorrect url in string format',
+          }),
+        ).toThrowError('this is incorrect url in string format');
+      });
+
+      it(`should successfully joinMeeting`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const response = meeting.joinPrivateMeeting({
+          ...mockJoinPrivateMeetingParams,
         });
         expect(response).resolves.toBeUndefined();
       });
