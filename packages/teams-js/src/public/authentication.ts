@@ -296,8 +296,8 @@ export namespace authentication {
     ensureInitializeCalled();
     const apiVersionTag =
       userRequest && (userRequest.successCallback || userRequest.failureCallback)
-        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetAuthToken)
-        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetAuthToken);
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetUser)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetUser);
     return getUserHelper(apiVersionTag)
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {
