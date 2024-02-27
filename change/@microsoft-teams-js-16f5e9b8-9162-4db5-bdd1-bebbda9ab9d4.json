@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added `meeting.joinPrivateMeeting` and `meeting.joinChannelMeeting` function",
+  "comment": "Added `meeting.joinMeeting` function",
   "packageName": "@microsoft/teams-js",
   "email": "adityadarji@microsoft.com",
   "dependentChangeType": "patch"

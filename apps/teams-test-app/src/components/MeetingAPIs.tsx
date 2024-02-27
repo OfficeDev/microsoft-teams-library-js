@@ -414,52 +414,24 @@ const UpdateMicState = (): React.ReactElement =>
     defaultInput: JSON.stringify({ isMicMuted: true }),
   });
 
-const JoinPrivateMeeting = (): React.ReactElement =>
-  ApiWithTextInput<meeting.JoinPrivateMeetingParams>({
-    name: 'joinPrivateMeeting',
-    title: 'Join a private meeting',
+const JoinMeeting = (): React.ReactElement =>
+  ApiWithTextInput<meeting.JoinMeetingParams>({
+    name: 'joinMeeting',
+    title: 'Join a meeting',
     onClick: {
       validateInput: (input) => {
-        if (!input?.joinWebUrl || !input.threadId) {
-          throw new Error('joinWebUrl or threadId not passed');
+        if (!input?.joinWebUrl) {
+          throw new Error('joinWebUrl not passed');
         }
       },
       submit: async (input, setResult) => {
-        meeting.joinPrivateMeeting(input);
-        setResult('joinPrivateMeeting() succeeded');
-        return `joinPrivateMeeting called with joinWebUrl: "${input.joinWebUrl}"`;
+        meeting.joinMeeting(input);
+        setResult('joinMeeting() succeeded');
+        return `joinMeeting called with joinWebUrl: ${input.joinWebUrl}`;
       },
     },
     defaultInput: JSON.stringify({
       joinWebUrl: new URL('https://www.example.com/'),
-      threadId: 'threadId',
-      subject: 'subject',
-      source: 'Other',
-    }),
-  });
-
-const JoinChannelMeeting = (): React.ReactElement =>
-  ApiWithTextInput<meeting.JoinChannelMeetingParams>({
-    name: 'joinChannelMeeting',
-    title: 'Join a channel meeting',
-    onClick: {
-      validateInput: (input) => {
-        if (!input?.joinWebUrl || !input.threadId || !input.messageId || !input.replyChainMessageId) {
-          throw new Error('joinWebUrl, threadId, messageId or replyChainMessageId not passed');
-        }
-      },
-      submit: async (input, setResult) => {
-        meeting.joinChannelMeeting(input);
-        setResult('joinChannelMeeting() succeeded');
-        return `joinChannelMeeting called with joinWebUrl: "${input.joinWebUrl}"`;
-      },
-    },
-    defaultInput: JSON.stringify({
-      joinWebUrl: new URL('https://www.example.com/'),
-      threadId: 'threadId',
-      messageId: 'messageId',
-      replyChainMessageId: 'replyChainMessageId',
-      subject: 'subject',
       source: 'Other',
     }),
   });
@@ -485,8 +457,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestAppAudioHandling />
     <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
-    <JoinPrivateMeeting />
-    <JoinChannelMeeting />
+    <JoinMeeting />
   </ModuleWrapper>
 );
 

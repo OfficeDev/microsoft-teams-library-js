@@ -926,59 +926,22 @@ export namespace meeting {
   }
 
   /**
-   * This function is used to join a private meeting.
-   * This opens a meeting in a new window for the desktop app.
-   * In case of a web app, it will close the current app and open the meeting in the same tab.
-   * @param joinPrivateMeetingParams The parameters for joining the private meeting. {@link JoinPrivateMeetingParams}
-   * @throws error if the meeting join fails, the promise will reject to an object with the error message.
-   */
-  export function joinPrivateMeeting(joinPrivateMeetingParams: JoinPrivateMeetingParams): Promise<void> {
-    if (!validateJoinMeetingParamsBasic(joinPrivateMeetingParams)) {
-      return Promise.reject(new Error('Invalid joinPrivateMeetingParams'));
-    }
-
-    joinPrivateMeetingParams.joinWebUrl = new URL(joinPrivateMeetingParams.joinWebUrl);
-
-    const serializedJoinPrivateMeetingParams = {
-      joinWebUrl: joinPrivateMeetingParams.joinWebUrl.href,
-      subject: joinPrivateMeetingParams.subject,
-      source: joinPrivateMeetingParams.source || EventActionSource.Other,
-      threadId: joinPrivateMeetingParams.threadId,
-      messageId: '0',
-      replyChainMessageId: '0',
-    };
-    return new Promise<void>((resolve) => {
-      ensureInitialized(runtime);
-      resolve(
-        sendAndHandleStatusAndReason(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
-          'meeting.joinMeeting',
-          serializedJoinPrivateMeetingParams,
-        ),
-      );
-    });
-  }
-
-  /**
    * This function is used to join a meeting.
    * This opens a meeting in a new window for the desktop app.
    * In case of a web app, it will close the current app and open the meeting in the same tab.
    * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
    * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
-  export function joinChannelMeeting(joinChannelMeetingParams: JoinChannelMeetingParams): Promise<void> {
-    if (
-      !validateJoinMeetingParamsBasic(joinChannelMeetingParams) ||
-      !validateJoinChannelMeetingParams(joinChannelMeetingParams)
-    ) {
-      return Promise.reject(new Error('Invalid joinChannelMeetingParams'));
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    if (!validateJoinMeetingParams(joinMeetingParams)) {
+      return Promise.reject(new Error('Invalid joinMeetingParams'));
     }
 
-    joinChannelMeetingParams.joinWebUrl = new URL(joinChannelMeetingParams.joinWebUrl);
+    joinMeetingParams.joinWebUrl = new URL(joinMeetingParams.joinWebUrl);
+
     const serializedJoinMeetingParams = {
-      ...joinChannelMeetingParams,
-      joinWebUrl: joinChannelMeetingParams.joinWebUrl.href,
-      source: joinChannelMeetingParams.source || EventActionSource.Other,
+      joinWebUrl: joinMeetingParams.joinWebUrl.href,
+      source: joinMeetingParams.source || EventActionSource.Other,
     };
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime);
@@ -997,10 +960,8 @@ export namespace meeting {
    * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
    * @returns false if joinMeetingParams' joinWebUrl or threadId is not valid else true.
    */
-  function validateJoinMeetingParamsBasic(
-    joinMeetingParams: JoinPrivateMeetingParams | JoinChannelMeetingParams,
-  ): boolean {
-    if (!joinMeetingParams?.joinWebUrl || !joinMeetingParams?.threadId || joinMeetingParams.threadId === '') {
+  function validateJoinMeetingParams(joinMeetingParams: JoinMeetingParams): boolean {
+    if (!joinMeetingParams?.joinWebUrl) {
       return false;
     }
 
@@ -1014,54 +975,15 @@ export namespace meeting {
   }
 
   /**
-   * This function is used to check the validity of joinChannelMeetingParams which return true if the joinChannelMeetingParams' messageId and replyChainMessageId are valid else false.
-   * @param joinChannelMeetingParams The parameters for joining the meeting. {@link JoinChannelMeetingParams}
-   * @returns  false if joinMeetingParams' messageId or replyChainMessageId is not valid else true.
-   */
-  function validateJoinChannelMeetingParams(joinChannelMeetingParams: JoinChannelMeetingParams): boolean {
-    if (!joinChannelMeetingParams?.messageId || !joinChannelMeetingParams?.replyChainMessageId) {
-      return false;
-    }
-
-    if (joinChannelMeetingParams.messageId === '' || joinChannelMeetingParams.replyChainMessageId === '') {
-      return false;
-    }
-
-    if (joinChannelMeetingParams.messageId === '0' || joinChannelMeetingParams.replyChainMessageId === '0') {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Contains information associated with parameters required for joining the private Microsoft Teams meetings.
+   * Contains information associated with parameters required for joining the Microsoft Teams meetings.
    * More details regarding parameters can be found at:
    * [Online Meeting Base - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/onlinemeetingbase?view=graph-rest-1.0)
-   * [threadId - Chat Info - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/chatinfo?view=graph-rest-1.0)
    */
-  export interface JoinPrivateMeetingParams {
+  export interface JoinMeetingParams {
     /** The join URL of the online meeting. */
     joinWebUrl: URL | string;
-    /** The unique identifier for a thread in Microsoft Teams. */
-    threadId: string;
-    /** The subject of the meeting. */
-    subject?: string;
     /** The source of the join button click. {@link EventActionSource} */
     source?: EventActionSource;
-  }
-
-  /**
-   * Contains information associated with parameters required for joining the channel Microsoft Teams meetings.
-   * More details regarding parameters can be found at:
-   * [Online Meeting Base - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/onlinemeetingbase?view=graph-rest-1.0)
-   * [threadId, messageId, replyChainMessageId - Chat Info - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/chatinfo?view=graph-rest-1.0)
-   */
-  export interface JoinChannelMeetingParams extends JoinPrivateMeetingParams {
-    /** The unique identifier of a message in a Microsoft Teams channel. */
-    messageId: string;
-    /** The ID of the reply message. */
-    replyChainMessageId: string;
   }
 
   /** The source of the join button click. */
@@ -1069,23 +991,23 @@ export namespace meeting {
     /**
      * Source is calendar grid context menu.
      */
-    CalendarGridContextMenu = 'calendar_grid_context_menu',
+    M365CalendarGridContextMenu = 'm365_calendar_grid_context_menu',
     /**
      * Source is calendar grid peek.
      */
-    CalendarGridPeek = 'calendar_grid_peek',
+    M365CalendarGridPeek = 'm365_calendar_grid_peek',
     /**
      * Source is calendar grid event card join button.
      */
-    CalendarGridEventCardJoinButton = 'calendar_grid_event_card_join_button',
+    M365CalendarGridEventCardJoinButton = 'm365_calendar_grid_event_card_join_button',
     /**
      * Source is calendar form ribbon join button.
      */
-    CalendarFormRibbonJoinButton = 'calendar_form_ribbon_join_button',
+    M365CalendarFormRibbonJoinButton = 'm365_calendar_form_ribbon_join_button',
     /**
      * Source is calendar form join teams meeting button.
      */
-    CalendarFormJoinTeamsMeetingButton = 'calendar_form_join_teams_meeting_button',
+    M365CalendarFormJoinTeamsMeetingButton = 'm365_calendar_form_join_teams_meeting_button',
     /**
      * Other sources.
      */

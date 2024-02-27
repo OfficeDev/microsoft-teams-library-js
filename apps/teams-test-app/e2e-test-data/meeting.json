@@ -342,60 +342,27 @@
       "expectedTestAppValue": "updateMicState called with micState: isMicMuted:true"
     },
     {
-      "title": "joinPrivateMeeting API Call - Success",
+      "title": "joinMeeting API Call - Success",
       "type": "callResponse",
       "version": ">2.20.0",
-      "boxSelector": "#box_joinPrivateMeeting",
+      "boxSelector": "#box_joinMeeting",
       "inputValue": {
         "joinWebUrl": "https://www.example.com/",
-        "subject": "subject",
-        "source": "Other",
-        "threadId": "threadId"
+        "source": "Other"
       },
       "expectedAlertValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\"",
-      "expectedTestAppValue": "joinPrivateMeeting called with joinWebUrl: \"https://www.example.com/\""
+      "expectedTestAppValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\""
     },
     {
-      "title": "joinPrivateMeeting API Call - Error",
+      "title": "joinMeeting API Call - Error",
       "type": "callResponse",
       "version": ">2.20.0",
-      "boxSelector": "#box_joinPrivateMeeting",
+      "boxSelector": "#box_joinMeeting",
       "inputValue": {
         "joinWebUrl": "https://www.example.com/",
-        "subject": "subject",
         "source": "Other"
       },
       "expectedTestAppValue": "Error: Error: joinWebUrl or threadId not passed"
-    },
-    {
-      "title": "joinChannelMeeting API Call - Success",
-      "type": "callResponse",
-      "version": ">2.20.0",
-      "boxSelector": "#box_joinChannelMeeting",
-      "inputValue": {
-        "joinWebUrl": "https://www.example.com/",
-        "messageId": "messageId",
-        "replyChainMessageId": "replyChainMessageId",
-        "subject": "subject",
-        "source": "Other",
-        "threadId": "threadId"
-      },
-      "expectedAlertValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\"",
-      "expectedTestAppValue": "joinChannelMeeting called with joinWebUrl: \"https://www.example.com/\""
-    },
-    {
-      "title": "joinChannelMeeting API Call - Error",
-      "type": "callResponse",
-      "version": ">2.20.0",
-      "boxSelector": "#box_joinChannelMeeting",
-      "inputValue": {
-        "joinWebUrl": "https://www.example.com/",
-        "messageId": "messageId",
-        "subject": "subject",
-        "source": "Other",
-        "threadId": "threadId"
-      },
-      "expectedTestAppValue": "Error: Error: joinWebUrl, threadId, messageId or replyChainMessageId not passed"
     }
   ]
 }
