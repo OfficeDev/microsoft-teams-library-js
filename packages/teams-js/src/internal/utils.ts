@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Buffer } from 'buffer';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
