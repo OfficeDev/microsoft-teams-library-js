@@ -331,7 +331,6 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
     if (!base64String) {
       reject('Base64 string cannot be null or empty.');
     }
-    const byteCharacters = atob(base64String);
     /**
      * For images we need to convert binary data to image to achieve that:
      *   1. A new Uint8Array is created with a length equal to the length of byteCharacters.
@@ -342,12 +341,14 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
      *      constructor expects binary data.
      */
     if (mimeType.startsWith('image/')) {
+      const byteCharacters = atob(base64String);
       const byteArray = new Uint8Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteArray[i] = byteCharacters.charCodeAt(i);
       }
       resolve(new Blob([byteArray], { type: mimeType }));
     }
+    const byteCharacters = Buffer.from(base64String, 'base64').toString();
     resolve(new Blob([byteCharacters], { type: mimeType }));
   });
 }
