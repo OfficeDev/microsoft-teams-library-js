@@ -929,7 +929,7 @@ export namespace meeting {
    * This function is used to join a meeting.
    * This opens a meeting in a new window for the desktop app.
    * In case of a web app, it will close the current app and open the meeting in the same tab.
-   * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
+   * @param joinMeetingParams This takes {@link JoinMeetingParams} for joining the meeting. If source isn't passed then it is marked as 'Other' by default.
    * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
@@ -956,9 +956,9 @@ export namespace meeting {
   }
 
   /**
-   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl and threadId are valid else false.
-   * @param joinMeetingParams The parameters for joining the meeting. {@link JoinMeetingParams}
-   * @returns false if joinMeetingParams' joinWebUrl or threadId is not valid else true.
+   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl is valid else false.
+   * @param joinMeetingParams This takes {@link JoinMeetingParams} for validating the join meeting params.
+   * @returns false if joinMeetingParams' joinWebUrl is not valid else true.
    */
   function validateJoinMeetingParams(joinMeetingParams: JoinMeetingParams): boolean {
     if (!joinMeetingParams?.joinWebUrl) {
@@ -982,7 +982,7 @@ export namespace meeting {
   export interface JoinMeetingParams {
     /** The join URL of the online meeting. */
     joinWebUrl: URL | string;
-    /** The source of the join button click. {@link EventActionSource} */
+    /** The source of the join button click. If not passed, 'Other' is the default value of source. {@link EventActionSource} */
     source?: EventActionSource;
   }
 
