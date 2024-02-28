@@ -64,6 +64,110 @@ describe('meeting', () => {
       }
     });
 
+    describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
+      const mockjoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        source: meeting.EventActionSource.Other,
+      };
+
+      it(`FRAMED: should successfully send the joinMeeting message`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(2);
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToMessage(joinMeetingMessage, data.success);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(2);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: 'https://example.com/',
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToMessage(joinMeetingMessage, data.success);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(2);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          joinWebUrl: 'https://example.com/',
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToMessage(joinMeetingMessage, data.success);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+        }
+      });
+
+      it(`FRAMED: should successfully throw if the joinMeeting message sends and fails`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(1);
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage) {
+          const data = {
+            success: false,
+            error: dataError,
+          };
+
+          utils.respondToMessage(joinMeetingMessage, data.success, data.error);
+          await promise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
+        }
+      });
+    });
+
     describe('requestAppAudioHandling', () => {
       const emptyMicStateCallback = (micState: meeting.MicState) => Promise.resolve(micState);
       const waitForEventQueue = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -1373,6 +1477,8 @@ describe('meeting', () => {
     });
 
     describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
       const mockjoinMeetingParams: meeting.JoinMeetingParams = {
         joinWebUrl: new URL('https://example.com'),
         source: meeting.EventActionSource.Other,
@@ -1391,15 +1497,6 @@ describe('meeting', () => {
         await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
-      it('should resolve if joinWebUrl is correct URL in string format', async () => {
-        await utils.initializeWithContext(FrameContexts.content);
-        const response = meeting.joinMeeting({
-          ...mockjoinMeetingParams,
-          joinWebUrl: 'https://example.com',
-        });
-        expect(response).resolves.toBeUndefined();
-      });
-
       it('should reject if joinWebUrl is incorrect URL in string format', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         expect(() =>
@@ -1410,12 +1507,121 @@ describe('meeting', () => {
         ).toThrowError('this is incorrect url in string format');
       });
 
-      it(`should successfully joinMeeting`, async () => {
+      it('FRAMELESS: should successfully send the joinMeeting message', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        const response = meeting.joinMeeting({
+        expect.assertions(3);
+
+        const promise = meeting.joinMeeting({
           ...mockjoinMeetingParams,
         });
-        expect(response).resolves.toBeUndefined();
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToFramelessMessage({
+            data: {
+              id: joinMeetingMessage?.id,
+              args: [data.success],
+            },
+          } as DOMMessageEvent);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMELESS: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(3);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: 'https://example.com/',
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToFramelessMessage({
+            data: {
+              id: joinMeetingMessage?.id,
+              args: [data.success],
+            },
+          } as DOMMessageEvent);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMELESS: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(2);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          joinWebUrl: 'https://example.com/',
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          utils.respondToFramelessMessage({
+            data: {
+              id: joinMeetingMessage?.id,
+              args: [data.success],
+            },
+          } as DOMMessageEvent);
+          await promise;
+
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+        }
+      });
+
+      it('FRAMELESS: should successfully throw if the joinMeeting message sends and fails', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        expect.assertions(1);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+
+        const data = {
+          success: false,
+          error: dataError,
+        };
+
+        utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [data.success, data.error],
+          },
+        } as DOMMessageEvent);
+        await promise.catch((e) => expect(e).toMatchObject(new Error(dataError)));
       });
     });
 
