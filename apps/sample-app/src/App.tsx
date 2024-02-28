@@ -1,7 +1,7 @@
 import './App.css';
 
 import { Button, FluentProvider, LargeTitle, Spinner, teamsLightTheme, Text, Theme } from '@fluentui/react-components';
-import { app, authentication, meeting } from '@microsoft/teams-js';
+import { app, authentication, pages } from '@microsoft/teams-js';
 import React, { useState } from 'react';
 
 import { ProfileContent } from './components/Profile';
@@ -40,9 +40,27 @@ const App: React.FC = () => {
       }
 
       setTimeout(() => {
-        meeting.updateTogetherModeConfiguration({ testStr: '2333333wwww' }, (error, response) => {
-          console.log('updateTogetherModeConfiguration', error, response);
+        pages.config.setValidityState(true);
+
+        pages.config.registerOnSaveHandler((saveEvent) => {
+          const configPromise = pages.config.setConfig({
+            websiteUrl: 'https://yourWebsite.com',
+            contentUrl: 'https://yourWebsite.com/red',
+            entityId: 'redIconTab',
+            suggestedDisplayName: 'MyNewTab',
+          });
+          configPromise
+            .then(() => {
+              saveEvent.notifySuccess();
+            })
+            .catch(() => {
+              saveEvent.notifyFailure('failure message');
+            });
         });
+        console.log('updateTogetherModeConfiguration');
+        // meeting.updateTogetherModeConfiguration({ testStr: '2333333wwww' }, (error, response) => {
+        //   console.log('updateTogetherModeConfiguration', error, response);
+        // });
       }, 3000);
     })();
   }, [setIsInitialized, setCurrTheme]);
