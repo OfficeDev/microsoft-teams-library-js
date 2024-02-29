@@ -77,6 +77,7 @@ describe('meeting', () => {
         expect.assertions(2);
         const promise = meeting.joinMeeting({
           ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -92,7 +93,7 @@ describe('meeting', () => {
           expect(joinMeetingMessage).not.toBeNull();
           expect(joinMeetingMessage?.args?.at(0)).toEqual({
             joinWebUrl: 'https://example.com/',
-            source: meeting.EventActionSource.Other,
+            source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
           });
         }
       });
@@ -125,11 +126,11 @@ describe('meeting', () => {
 
       it('FRAMED: should resolve if joinWebUrl is correct URL in string format', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        expect.assertions(2);
+        expect.assertions(3);
 
         const promise = meeting.joinMeeting({
-          ...mockjoinMeetingParams,
           joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -144,6 +145,10 @@ describe('meeting', () => {
 
           expect(joinMeetingMessage).not.toBeNull();
           expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
+          });
         }
       });
 
@@ -1513,6 +1518,7 @@ describe('meeting', () => {
 
         const promise = meeting.joinMeeting({
           ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarGridContextMenu,
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -1534,7 +1540,7 @@ describe('meeting', () => {
           expect(joinMeetingMessage.args.length).toEqual(1);
           expect(joinMeetingMessage?.args?.at(0)).toEqual({
             joinWebUrl: 'https://example.com/',
-            source: meeting.EventActionSource.Other,
+            source: meeting.EventActionSource.M365CalendarGridContextMenu,
           });
         }
       });
@@ -1573,11 +1579,11 @@ describe('meeting', () => {
 
       it('FRAMELESS: should resolve if joinWebUrl is correct URL in string format', async () => {
         await utils.initializeWithContext(FrameContexts.content);
-        expect.assertions(2);
+        expect.assertions(3);
 
         const promise = meeting.joinMeeting({
-          ...mockjoinMeetingParams,
           joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -1597,6 +1603,10 @@ describe('meeting', () => {
 
           expect(joinMeetingMessage).not.toBeNull();
           expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
+          });
         }
       });
 

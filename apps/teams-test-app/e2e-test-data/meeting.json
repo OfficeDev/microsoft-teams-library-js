@@ -350,8 +350,8 @@
         "joinWebUrl": "https://www.example.com/",
         "source": "Other"
       },
-      "expectedAlertValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\"",
-      "expectedTestAppValue": "joinMeeting called with joinWebUrl: \"https://www.example.com/\""
+      "expectedAlertValue": "joinMeeting called with joinWebUrl: https://www.example.com/",
+      "expectedTestAppValue": "joinMeeting called with joinWebUrl: https://www.example.com/"
     },
     {
       "title": "joinMeeting API Call - Error",
@@ -359,10 +359,9 @@
       "version": ">2.20.0",
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
-        "joinWebUrl": "https://www.example.com/",
         "source": "Other"
       },
-      "expectedTestAppValue": "Error: Error: joinWebUrl or threadId not passed"
+      "expectedTestAppValue": "Error: Error: joinWebUrl not passed"
     }
   ]
 }
