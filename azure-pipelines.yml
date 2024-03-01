@@ -255,3 +255,102 @@ extends:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
                   iOSAppHostingSdkGitPath: IOSAppHostingSdk
+
+          - job: E2ETestIOS-backcompat
+            displayName: 'E2E Test - IOS - backcompat'
+            pool:
+              name: Azure Pipelines
+              image: internal-macos12
+              os: macOS
+            steps:
+              - checkout: self
+              - checkout: IOSAppHostingSdk
+
+              - task: Bash@3
+                displayName: 'Install XCTestHtmlReport for publishing result'
+                inputs:
+                  targetType: inline
+                  script: |
+                    brew install xctesthtmlreport
+                  workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+              - task: NodeTool@0
+                inputs:
+                  versionSpec: '18.x'
+                displayName: 'Install Node.js'
+
+              - task: Cache@2
+                inputs:
+                  key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+                  path: $(Pipeline.Workspace)/.pnpm-store
+                displayName: Cache pnpm
+
+              - task: CmdLine@2
+                displayName: 'Setup pnpm'
+                inputs:
+                  script: |
+                    corepack enable
+                    corepack prepare pnpm@7.30.1 --activate
+                    pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+
+              - task: CmdLine@2
+                displayName: 'Install client sdk dependencies'
+                inputs:
+                  script: |
+                    pnpm install
+                  workingDirectory: '$(ClientSdkProjectDirectory)'
+
+              - task: CmdLine@2
+                displayName: 'Build client sdk'
+                inputs:
+                  script: |
+                    pnpm build-force-blazor
+                  workingDirectory: '$(ClientSdkProjectDirectory)'
+
+              - task: Bash@3
+                displayName: 'Run sample test app in background'
+                inputs:
+                  targetType: inline
+                  script: 'nohup pnpm start-test-app &'
+                  workingDirectory: '$(ClientSdkProjectDirectory)'
+
+              - task: Bash@3
+                displayName: 'Disable Slow Animation'
+                inputs:
+                  targetType: inline
+                  script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+                  workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+              - task: CmdLine@2
+                displayName: 'Build iOS UI/E2E Tests'
+                inputs:
+                  script: |
+                    cd backcompattool
+                    ls
+                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+              - task: Bash@3
+                displayName: 'iOS UI/E2E Tests'
+                inputs:
+                  targetType: inline
+                  script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkScheme) -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+              - task: Bash@3
+                displayName: 'Generate E2E test report'
+                condition: succeededOrFailed()
+                inputs:
+                  targetType: inline
+                  script: |
+                    xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
+                  workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+              - task: PublishTestResults@2
+                displayName: 'Publish Test Results'
+                inputs:
+                  testResultsFiles: '**/*.junit'
+                  failTaskOnFailedTests: false
+                  testRunTitle: 'E2E Tests - iOS'
+                  searchFolder: '$(Agent.BuildDirectory)/iOSHost'
+                  mergeTestResults: true
+                condition: always()
