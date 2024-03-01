@@ -10,6 +10,16 @@ import { runtime } from './runtime';
  */
 const appInstallDialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
+interface Capability<TCapability> {
+  /**
+   * Checks if a capability is supported by the host
+   * @returns boolean to represent whether the capability is supported
+   *
+   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   */
+  isSupported(): this is TCapability;
+}
+
 export namespace appInstallDialog {
   /** Represents set of parameters needed to open the appInstallDialog. */
   export interface OpenAppInstallDialogParams {
@@ -17,51 +27,62 @@ export namespace appInstallDialog {
     appId: string;
   }
 
-  /**
-   * Displays a dialog box that allows users to install a specific app within the host environment.
-   *
-   * @param openAPPInstallDialogParams - See {@link OpenAppInstallDialogParams | OpenAppInstallDialogParams} for more information.
-   */
-  export function openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void> {
-    return new Promise((resolve) => {
-      ensureInitialized(
-        runtime,
-        FrameContexts.content,
-        FrameContexts.sidePanel,
-        FrameContexts.settings,
-        FrameContexts.task,
-        FrameContexts.stage,
-        FrameContexts.meetingStage,
-      );
-      if (!isSupported()) {
-        throw new Error('Not supported');
-      }
-      const apiVersionTag = getApiVersionTag(
-        appInstallDialogTelemetryVersionNumber,
-        ApiName.AppInstallDialog_OpenAppInstallDialog,
-      );
-      if (runtime.isLegacyTeams) {
-        resolve(
-          sendAndHandleStatusAndReason(
-            apiVersionTag,
-            'executeDeepLink',
-            createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
-          ),
+  class AppInstallDialog implements Capability<appInstallDialog.IAppInstallDialog> {
+    public openAppInstallDialog(
+      openAPPInstallDialogParams: appInstallDialog.OpenAppInstallDialogParams,
+    ): Promise<void> {
+      return new Promise((resolve) => {
+        ensureInitialized(
+          runtime,
+          FrameContexts.content,
+          FrameContexts.sidePanel,
+          FrameContexts.settings,
+          FrameContexts.task,
+          FrameContexts.stage,
+          FrameContexts.meetingStage,
         );
-      } else {
-        sendMessageToParent(apiVersionTag, 'appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
-        resolve();
-      }
-    });
+        if (!this.isSupported()) {
+          throw new Error('Not supported');
+        }
+        const apiVersionTag = getApiVersionTag(
+          appInstallDialogTelemetryVersionNumber,
+          ApiName.AppInstallDialog_OpenAppInstallDialog,
+        );
+        if (runtime.isLegacyTeams) {
+          resolve(
+            sendAndHandleStatusAndReason(
+              apiVersionTag,
+              'executeDeepLink',
+              createTeamsDeepLinkForAppInstallDialog(openAPPInstallDialogParams.appId),
+            ),
+          );
+        } else {
+          sendMessageToParent(apiVersionTag, 'appInstallDialog.openAppInstallDialog', [openAPPInstallDialogParams]);
+          resolve();
+        }
+      });
+    }
+
+    public isSupported(): this is appInstallDialog.IAppInstallDialog {
+      return ensureInitialized(runtime) && runtime.supports.appInstallDialog ? true : false;
+    }
   }
 
   /**
-   * Checks if the appInstallDialog capability is supported by the host
-   * @returns boolean to represent whether the appInstallDialog capability is supported
+   * Retrieve an object representing all appDialog API calls that are supported on the current host.
    *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
+   * @returns @type {Capability<appInstallDialog.IAppInstallDialog>}
    */
-  export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.appInstallDialog ? true : false;
+  export function getFunctions(): Capability<appInstallDialog.IAppInstallDialog> {
+    return new AppInstallDialog();
+  }
+
+  export interface IAppInstallDialog {
+    /**
+     * Displays a dialog box that allows users to install a specific app within the host environment.
+     *
+     * @param openAPPInstallDialogParams - See {@link OpenAppInstallDialogParams | OpenAppInstallDialogParams} for more information.
+     */
+    openAppInstallDialog(openAPPInstallDialogParams: OpenAppInstallDialogParams): Promise<void>;
   }
 }
