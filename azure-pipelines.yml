@@ -329,6 +329,8 @@ extends:
                   script: |
                     cd backcompattool
                     ls
+                    pnpm install
+                    pnpm test
                     pnpm test:e2e
                   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
