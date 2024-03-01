@@ -41,7 +41,7 @@ export {
   UrlDialogInfo,
 } from './interfaces';
 export { app } from './app';
-export { appInstallDialog } from './appInstallDialog';
+export { appInstallDialog, Capability } from './appInstallDialog';
 export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { clipboard } from './clipboard';

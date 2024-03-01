@@ -8,7 +8,8 @@ const CheckAppInstallDialogCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkCapabilityAppInstallDialog',
     title: 'Check Capability App Install Dialog',
-    onClick: async () => `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () =>
+      `AppInstallDialog module ${appInstallDialog.getFunctions().isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const OpenAppInstallDialog = (): React.ReactElement =>
@@ -22,8 +23,12 @@ const OpenAppInstallDialog = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await appInstallDialog.openAppInstallDialog(input);
-        return 'called';
+        const functions = appInstallDialog.getFunctions();
+        if (functions.isSupported()) {
+          await functions.openAppInstallDialog(input);
+          return 'called';
+        }
+        return 'not supported';
       },
     },
     defaultInput: JSON.stringify({

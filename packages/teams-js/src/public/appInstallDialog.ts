@@ -10,7 +10,11 @@ import { runtime } from './runtime';
  */
 const appInstallDialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-interface Capability<TCapability> {
+/**
+ * Represents a basic TeamsJS capability
+ * If this was real it would live in its own file
+ */
+export interface Capability<TCapability> {
   /**
    * Checks if a capability is supported by the host
    * @returns boolean to represent whether the capability is supported
@@ -77,6 +81,13 @@ export namespace appInstallDialog {
     return new AppInstallDialog();
   }
 
+  /**
+   * @private
+   * Hide from docs
+   * ------
+   * Registers a handler for app install dialog events.
+   * @param handler The handler to invoke when the event is fired
+   */
   export interface IAppInstallDialog {
     /**
      * Displays a dialog box that allows users to install a specific app within the host environment.

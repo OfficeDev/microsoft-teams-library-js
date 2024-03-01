@@ -1,5 +1,3 @@
-import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { teamsDeepLinkUrlPathForAppInstall } from '../../src/internal/deepLinkConstants';
 import { app, appInstallDialog, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
@@ -29,8 +27,15 @@ describe('appInstallDialog', () => {
     }
   });
 
-  it('should throw if called before initialization', () => {
-    utils.uninitializeRuntimeConfig();
+  it('Make sure openAppInstallDialog only callable when isSupported returns true', async () => {
+    await utils.initializeWithContext(FrameContexts.content);
+    utils.setRuntimeConfig({
+      apiVersion: 1,
+      isLegacyTeams: false,
+      supports: {
+        appInstallDialog: {},
+      },
+    });
     const appInstallDialogCapability = appInstallDialog.getFunctions();
     if (appInstallDialogCapability.isSupported()) {
       expect(appInstallDialogCapability.openAppInstallDialog({ appId: 'appId' })).toBeTruthy(); // COMPILES
