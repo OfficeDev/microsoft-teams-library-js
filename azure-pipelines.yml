@@ -265,6 +265,8 @@ extends:
             steps:
               - checkout: self
               - checkout: IOSAppHostingSdk
+                path: iOSHost
+                persistCredentials: true
 
               - task: Bash@3
                 displayName: 'Install XCTestHtmlReport for publishing result'
