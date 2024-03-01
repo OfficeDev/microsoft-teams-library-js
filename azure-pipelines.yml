@@ -256,7 +256,7 @@ extends:
                 parameters:
                   iOSAppHostingSdkGitPath: IOSAppHostingSdk
 
-          - job: E2ETestIOS-backcompat
+          - job: E2ETestIOSBackCompat
             displayName: 'E2E Test - IOS - backcompat'
             pool:
               name: Azure Pipelines
