@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Camelized `apiversiontag` to be `apiVersionTag`",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
