@@ -1,4 +1,4 @@
-import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -946,7 +946,7 @@ export namespace meeting {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime);
       resolve(
-        sendAndHandleStatusAndReason(
+        sendAndHandleSdkError(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
           'meeting.joinMeeting',
           serializedJoinMeetingParams,
