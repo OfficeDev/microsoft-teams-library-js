@@ -108,7 +108,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://outlook.live.com',
     'https://outlook.office365.com',
     'https://outlook-sdf.office365.com',
-    'https://retailservices.teams.microsoft.com',
     'https://test.www.office.com',
     'https://www.office.com',
     'https://word.office.com',
