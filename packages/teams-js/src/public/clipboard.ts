@@ -82,7 +82,11 @@ export namespace clipboard {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (isHostClientMobile() || GlobalVars.hostClientType === HostClientType.macos) {
+    if (
+      isHostClientMobile() ||
+      GlobalVars.hostClientType === HostClientType.macos ||
+      GlobalVars.hostClientType === HostClientType.desktop
+    ) {
       const response = JSON.parse(
         await sendAndHandleSdkError(apiVersionTag, 'clipboard.readFromClipboard'),
       ) as ClipboardParams;
