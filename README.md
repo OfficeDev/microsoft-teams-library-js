@@ -1,7 +1,7 @@
 # Microsoft Teams JavaScript client library
 
 [![Microsoft Teams Library JS CI](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
-[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
+[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/M365%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
 
 Welcome to the Teams client library monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 

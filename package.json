@@ -127,6 +127,7 @@
     }
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "uuid": "^9.0.0"
   }
 }

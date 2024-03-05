@@ -120,6 +120,16 @@ describe('utils', () => {
       expect(result.type).toBe(ClipboardSupportedMimeType.TextPlain);
     });
 
+    it('should convert base64 string with special characters to Blob for non-image MIME type', async () => {
+      const base64Data = '4oCvV2hhdOKAmXMgdGhlIGxhdGVzdCB1cGRhdGUuLi4=';
+      const mimeType = ClipboardSupportedMimeType.TextPlain;
+      const result = await base64ToBlob(mimeType, base64Data);
+      const stringResult = await getBase64StringFromBlob(result);
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(ClipboardSupportedMimeType.TextPlain);
+      expect(stringResult).toEqual('4oCvV2hhdOKAmXMgdGhlIGxhdGVzdCB1cGRhdGUuLi4=');
+    });
+
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'PHA+SGVsbG8sIHdvcmxkITwvcD4=';
       const mimeType = ClipboardSupportedMimeType.TextHtml;

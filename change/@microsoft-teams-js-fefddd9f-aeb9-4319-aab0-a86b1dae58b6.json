@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fixed bug in API Version telemetry",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
