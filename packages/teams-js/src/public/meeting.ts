@@ -1,4 +1,4 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { FrameContexts } from './constants';
@@ -93,7 +93,25 @@ export namespace meeting {
    * Hide from docs
    * Data structure to represent call details
    */
-  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+  export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
+    /**
+     * @hidden
+     * Unique identifier for the original caller
+     */
+    originalCaller?: string;
+
+    /**
+     * @hidden
+     * Entity dialed by the caller
+     */
+    dialedEntity?: string;
+
+    /**
+     * @hidden
+     * Tracking identifier for grouping related calls
+     */
+    trackingId?: string;
+  }
 
   /**
    * @hidden
@@ -106,6 +124,11 @@ export namespace meeting {
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
+
+    /**
+     * event id of the meeting
+     */
+    id?: string;
 
     /**
      * @hidden
@@ -577,6 +600,28 @@ export namespace meeting {
       FrameContexts.content,
     );
     sendMessageToParent('meeting.getMeetingDetails', callback);
+  }
+
+  /**
+   * @hidden
+   * Allows an app to get the verbose meeting details for the meeting
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function getMeetingDetailsVerbose(): Promise<IMeetingDetailsResponse> {
+    ensureInitialized(
+      runtime,
+      FrameContexts.sidePanel,
+      FrameContexts.meetingStage,
+      FrameContexts.settings,
+      FrameContexts.content,
+    );
+
+    return new Promise<IMeetingDetailsResponse>((resolve) => {
+      const shouldGetVerboseDetails = true;
+      resolve(sendAndHandleSdkError('meeting.getMeetingDetails', shouldGetVerboseDetails));
+    });
   }
 
   /**

@@ -56,6 +56,16 @@ const GetMeetingDetails = (): React.ReactElement =>
     },
   });
 
+const GetMeetingDetailsVerbose = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'getMeetingDetailsVerbose',
+    title: 'Get Meeting Details Verbose',
+    onClick: async () => {
+      const result = await meeting.getMeetingDetailsVerbose();
+      return JSON.stringify(result);
+    },
+  });
+
 const GetAuthenticationTokenForAnonymousUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAuthTokenForAnonymousUser',
@@ -408,6 +418,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
     <GetMeetingDetails />
+    <GetMeetingDetailsVerbose />
     <GetAuthenticationTokenForAnonymousUser />
     <GetLiveStreamState />
     <RequestStartLiveStreaming />
