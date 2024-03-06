@@ -5,6 +5,10 @@ on:
 jobs:
   Release:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: write
+      pull-requests: write
     steps:
       - name: Setup Node
         uses: actions/setup-node@v4.0.2
