@@ -1,12 +1,7 @@
 {
   "name": "Meeting",
   "platforms": "Web",
-  "testUrlParams": [
-    [
-      "frameContext",
-      "sidePanel"
-    ]
-  ],
+  "testUrlParams": [["frameContext", "sidePanel"]],
   "testCases": [
     {
       "title": "getIncomingClientAudioState API Call - Success",
@@ -358,7 +353,7 @@
       "type": "callResponse",
       "version": ">2.20.0",
       "hostSdkVersion": {
-        "web": ">2.12.0"
+        "web": ">=2.12.0"
       },
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
@@ -373,7 +368,7 @@
       "type": "callResponse",
       "version": ">2.20.0",
       "hostSdkVersion": {
-        "web": ">2.12.0"
+        "web": ">=2.12.0"
       },
       "boxSelector": "#box_joinMeeting",
       "inputValue": {
