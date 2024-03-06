@@ -1450,11 +1450,15 @@ describe('meeting', () => {
       };
 
       it('should reject if mockjoinMeetingParams is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
         const response = meeting.joinMeeting(null);
         await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
       it('should reject if joinWebUrl is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
         const response = meeting.joinMeeting({
           ...mockjoinMeetingParams,
           joinWebUrl: null,

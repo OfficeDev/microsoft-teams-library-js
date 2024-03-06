@@ -934,7 +934,7 @@ export namespace meeting {
    * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
-    if (joinMeetingParams === null || joinMeetingParams === undefined) {
+    if (joinMeetingParams?.joinWebUrl === undefined || joinMeetingParams?.joinWebUrl === null) {
       return Promise.reject(new Error('Invalid joinMeetingParams'));
     }
 
