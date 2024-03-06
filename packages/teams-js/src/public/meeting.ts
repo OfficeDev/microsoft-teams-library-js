@@ -926,6 +926,18 @@ export namespace meeting {
   }
 
   /**
+   * @hidden
+   * Hide from docs beacuse it's only used internally as a serialization/deserialization type
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export interface ISerializedJoinMeetingParams {
+    joinWebUrl: string;
+    source: EventActionSource;
+  }
+
+  /**
    * This function is used to join a meeting.
    * This opens a meeting in a new window for the desktop app.
    * In case of a web app, it will close the current app and open the meeting in the same tab.
@@ -940,7 +952,7 @@ export namespace meeting {
 
     ensureInitialized(runtime);
 
-    const serializedJoinMeetingParams = {
+    const serializedJoinMeetingParams: ISerializedJoinMeetingParams = {
       joinWebUrl: joinMeetingParams.joinWebUrl.href,
       source: joinMeetingParams.source || EventActionSource.Other,
     };

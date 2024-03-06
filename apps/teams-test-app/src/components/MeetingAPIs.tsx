@@ -415,7 +415,7 @@ const UpdateMicState = (): React.ReactElement =>
   });
 
 const JoinMeeting = (): React.ReactElement =>
-  ApiWithTextInput<meeting.JoinMeetingParams>({
+  ApiWithTextInput<meeting.ISerializedJoinMeetingParams>({
     name: 'joinMeeting',
     title: 'Join a meeting',
     onClick: {
@@ -425,7 +425,7 @@ const JoinMeeting = (): React.ReactElement =>
         }
       },
       submit: async (input, setResult) => {
-        meeting.joinMeeting(input);
+        meeting.joinMeeting({ joinWebUrl: new URL(input.joinWebUrl), source: input.source });
         setResult('joinMeeting() succeeded');
         return `joinMeeting called with joinWebUrl: ${input.joinWebUrl}`;
       },
