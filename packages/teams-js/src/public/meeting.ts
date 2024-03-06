@@ -1,4 +1,4 @@
-import { sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -923,6 +923,85 @@ export namespace meeting {
       'meeting.meetingReactionReceived',
       handler,
     );
+  }
+
+  /**
+   * @hidden
+   * Hide from docs beacuse it's only used internally as a serialization/deserialization type
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export interface ISerializedJoinMeetingParams {
+    joinWebUrl: string;
+    source: EventActionSource;
+  }
+
+  /**
+   * This function is used to join a meeting.
+   * This opens a meeting in a new window for the desktop app.
+   * In case of a web app, it will close the current app and open the meeting in the same tab.
+   * There is currently no support or experience for this on mobile platforms.
+   * @param joinMeetingParams This takes {@link JoinMeetingParams} for joining the meeting. If source isn't passed then it is marked as 'Other' by default.
+   * @throws error if the meeting join fails, the promise will reject to an object with the error message.
+   */
+  export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
+    if (joinMeetingParams?.joinWebUrl === undefined || joinMeetingParams?.joinWebUrl === null) {
+      return Promise.reject(new Error('Invalid joinMeetingParams'));
+    }
+
+    ensureInitialized(runtime);
+
+    const serializedJoinMeetingParams: ISerializedJoinMeetingParams = {
+      joinWebUrl: joinMeetingParams.joinWebUrl.href,
+      source: joinMeetingParams.source || EventActionSource.Other,
+    };
+
+    return sendAndHandleSdkError(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
+      'meeting.joinMeeting',
+      serializedJoinMeetingParams,
+    );
+  }
+
+  /**
+   * Contains information associated with parameters required for joining the Microsoft Teams meetings.
+   * More details regarding parameters can be found at:
+   * [Online Meeting Base - Microsoft Graph v1.0](https://learn.microsoft.com/en-us/graph/api/resources/onlinemeetingbase?view=graph-rest-1.0)
+   */
+  export interface JoinMeetingParams {
+    /** The join URL of the online meeting. */
+    joinWebUrl: URL;
+    /** The source of the join button click. If not passed, 'Other' is the default value of source. {@link EventActionSource} */
+    source?: EventActionSource;
+  }
+
+  /** The source of the join button click. */
+  export enum EventActionSource {
+    /**
+     * Source is calendar grid context menu.
+     */
+    M365CalendarGridContextMenu = 'm365_calendar_grid_context_menu',
+    /**
+     * Source is calendar grid peek.
+     */
+    M365CalendarGridPeek = 'm365_calendar_grid_peek',
+    /**
+     * Source is calendar grid event card join button.
+     */
+    M365CalendarGridEventCardJoinButton = 'm365_calendar_grid_event_card_join_button',
+    /**
+     * Source is calendar form ribbon join button.
+     */
+    M365CalendarFormRibbonJoinButton = 'm365_calendar_form_ribbon_join_button',
+    /**
+     * Source is calendar form join teams meeting button.
+     */
+    M365CalendarFormJoinTeamsMeetingButton = 'm365_calendar_form_join_teams_meeting_button',
+    /**
+     * Other sources.
+     */
+    Other = 'other',
   }
 
   /**

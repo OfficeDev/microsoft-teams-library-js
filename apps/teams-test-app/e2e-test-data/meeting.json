@@ -298,8 +298,12 @@
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
       "eventName": "audioDeviceSelectionChanged",
       "eventData": {
-        "speaker": { "deviceLabel": "speaker_0" },
-        "microphone": { "deviceLabel": "microphone_0" }
+        "speaker": {
+          "deviceLabel": "speaker_0"
+        },
+        "microphone": {
+          "deviceLabel": "microphone_0"
+        }
       },
       "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
       "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
@@ -314,7 +318,10 @@
       "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
       "eventName": "audioDeviceSelectionChanged",
       "eventData": {
-        "error": { "errorCode": 100, "message": "Not supported on platform." }
+        "error": {
+          "errorCode": 100,
+          "message": "Not supported on platform."
+        }
       },
       "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
       "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
@@ -340,6 +347,34 @@
       },
       "expectedAlertValue": "updateMicState called with micState: isMicMuted:true, reason:1",
       "expectedTestAppValue": "updateMicState called with micState: isMicMuted:true"
+    },
+    {
+      "title": "joinMeeting API Call - Success",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "hostSdkVersion": {
+        "web": ">=2.12.0"
+      },
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "joinWebUrl": "https://www.example.com/",
+        "source": "Other"
+      },
+      "expectedAlertValue": "joinMeeting called with joinWebUrl: https://www.example.com/",
+      "expectedTestAppValue": "joinMeeting called with joinWebUrl: https://www.example.com/"
+    },
+    {
+      "title": "joinMeeting API Call - Error",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "hostSdkVersion": {
+        "web": ">=2.12.0"
+      },
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "source": "Other"
+      },
+      "expectedTestAppValue": "Error: Error: joinWebUrl not passed"
     }
   ]
 }

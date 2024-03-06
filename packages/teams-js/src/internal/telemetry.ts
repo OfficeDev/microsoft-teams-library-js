@@ -83,6 +83,7 @@ export enum ApiName {
   BarCode_ScanBarCode = 'barCode.scanBarCode',
   Calendar_ComposeMeeting = 'calendar.composeMeeting',
   Calendar_OpenCalendarItem = 'calendar.openCalendarItem',
+  Meeting_JoinMeeting = 'meeting.joinMeeting',
   Call_StartCall = 'call.startCall',
   Chat_OpenChat = 'chat.openChat',
   Chat_OpenGroupChat = 'chat.openGroupChat',
