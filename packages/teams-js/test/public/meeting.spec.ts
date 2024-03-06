@@ -95,7 +95,7 @@ describe('meeting', () => {
         await utils.initializeWithContext(FrameContexts.content);
 
         meeting.joinMeeting({
-          joinWebUrl: 'https://example.com/',
+          joinWebUrl: new URL('https://example.com/'),
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -114,7 +114,7 @@ describe('meeting', () => {
         await utils.initializeWithContext(FrameContexts.content);
 
         meeting.joinMeeting({
-          joinWebUrl: 'https://example.com/',
+          joinWebUrl: new URL('https://example.com/'),
           source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
         });
 
@@ -1462,16 +1462,6 @@ describe('meeting', () => {
         await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
       });
 
-      it('should reject if joinWebUrl is incorrect URL in string format', async () => {
-        await utils.initializeWithContext(FrameContexts.content);
-        expect(() =>
-          meeting.joinMeeting({
-            ...mockjoinMeetingParams,
-            joinWebUrl: 'this is incorrect url in string format',
-          }),
-        ).toThrowError('this is incorrect url in string format');
-      });
-
       it('FRAMELESS: should successfully send the joinMeeting message', async () => {
         await utils.initializeWithContext(FrameContexts.content);
 
@@ -1503,7 +1493,7 @@ describe('meeting', () => {
         await utils.initializeWithContext(FrameContexts.content);
 
         const promise = meeting.joinMeeting({
-          joinWebUrl: 'https://example.com/',
+          joinWebUrl: new URL('https://example.com/'),
         });
 
         const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
@@ -1536,7 +1526,7 @@ describe('meeting', () => {
         await utils.initializeWithContext(FrameContexts.content);
 
         const promise = meeting.joinMeeting({
-          joinWebUrl: 'https://example.com/',
+          joinWebUrl: new URL('https://example.com/'),
           source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
         });
 

@@ -929,49 +929,27 @@ export namespace meeting {
    * This function is used to join a meeting.
    * This opens a meeting in a new window for the desktop app.
    * In case of a web app, it will close the current app and open the meeting in the same tab.
+   * There is currently no support or experience for this on mobile platforms.
    * @param joinMeetingParams This takes {@link JoinMeetingParams} for joining the meeting. If source isn't passed then it is marked as 'Other' by default.
    * @throws error if the meeting join fails, the promise will reject to an object with the error message.
    */
   export function joinMeeting(joinMeetingParams: JoinMeetingParams): Promise<void> {
-    if (!validateJoinMeetingParams(joinMeetingParams)) {
+    if (joinMeetingParams === null || joinMeetingParams === undefined) {
       return Promise.reject(new Error('Invalid joinMeetingParams'));
     }
 
-    joinMeetingParams.joinWebUrl = new URL(joinMeetingParams.joinWebUrl);
+    ensureInitialized(runtime);
 
     const serializedJoinMeetingParams = {
       joinWebUrl: joinMeetingParams.joinWebUrl.href,
       source: joinMeetingParams.source || EventActionSource.Other,
     };
-    return new Promise<void>((resolve) => {
-      ensureInitialized(runtime);
-      resolve(
-        sendAndHandleSdkError(
-          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
-          'meeting.joinMeeting',
-          serializedJoinMeetingParams,
-        ),
-      );
-    });
-  }
 
-  /**
-   * This function is used to check the validity of joinMeetingParams which return true if the joinMeetingParams' joinWebUrl is valid else false.
-   * @param joinMeetingParams This takes {@link JoinMeetingParams} for validating the join meeting params.
-   * @returns false if joinMeetingParams' joinWebUrl is not valid else true.
-   */
-  function validateJoinMeetingParams(joinMeetingParams: JoinMeetingParams): boolean {
-    if (!joinMeetingParams?.joinWebUrl) {
-      return false;
-    }
-
-    const joinUrl = new URL(joinMeetingParams.joinWebUrl);
-
-    if (joinUrl.href === '') {
-      return false;
-    }
-
-    return true;
+    return sendAndHandleSdkError(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_JoinMeeting),
+      'meeting.joinMeeting',
+      serializedJoinMeetingParams,
+    );
   }
 
   /**
@@ -981,7 +959,7 @@ export namespace meeting {
    */
   export interface JoinMeetingParams {
     /** The join URL of the online meeting. */
-    joinWebUrl: URL | string;
+    joinWebUrl: URL;
     /** The source of the join button click. If not passed, 'Other' is the default value of source. {@link EventActionSource} */
     source?: EventActionSource;
   }
