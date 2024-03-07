@@ -43,3 +43,6 @@ microsoft-teams-library-js.sln
 artifacts/
 bin/
 obj/
+
+#VS Code Local Files
+*.sln
