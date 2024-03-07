@@ -29,6 +29,7 @@ import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import MenusAPIs from './components/MenusAPIs';
 import OtherAppStateChangedAPIs from './components/OtherAppStateChangeAPIs';
+import NestedAppAuthAPIs from './components/NestedAppAuthAPIs';
 import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
@@ -163,6 +164,7 @@ const App = (): ReactElement => {
         <MenusAPIs />
         <MessageChannelAPIs />
         <MonetizationAPIs />
+        <NestedAppAuthAPIs />
         <NotificationAPIs />
         <OtherAppStateChangedAPIs />
         <PagesAPIs />

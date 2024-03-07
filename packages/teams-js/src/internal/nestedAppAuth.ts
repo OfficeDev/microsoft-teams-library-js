@@ -132,6 +132,7 @@ export function tryPolyfillWithNestedAppAuthBridge(
 
   const parsedClientSupportedSDKVersion = (() => {
     try {
+      window.alert(clientSupportedSDKVersion);
       return JSON.parse(clientSupportedSDKVersion);
     } catch (e) {
       return null;
