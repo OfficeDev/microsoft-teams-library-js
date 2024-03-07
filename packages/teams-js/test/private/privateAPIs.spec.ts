@@ -97,7 +97,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://int.teams.microsoft.com',
     'https://teams.live.com',
     'https://devspaces.skype.com',
-    'https://ssauth.skype.com',
     'https://local.teams.live.com',
     'https://local.teams.live.com:8080',
     'https://local.teams.office.com',
