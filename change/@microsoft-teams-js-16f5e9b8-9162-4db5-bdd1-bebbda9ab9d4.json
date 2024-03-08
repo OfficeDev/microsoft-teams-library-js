@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `meeting.joinMeeting` function",
+  "packageName": "@microsoft/teams-js",
+  "email": "adityadarji@microsoft.com",
+  "dependentChangeType": "patch"
+}

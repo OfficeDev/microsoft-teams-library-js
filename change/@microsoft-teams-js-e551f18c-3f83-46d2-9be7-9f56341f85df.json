@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fixed bug where `authentication.getUser` telemetry was being incorrectly recorded",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}

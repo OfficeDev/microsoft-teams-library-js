@@ -40,13 +40,11 @@ export function isFollowingApiVersionTagFormat(apiVersionTag: string): boolean {
 
 /**
  * Use enum to set or update API version number
- * Note: V_0 = 'v0' is used for APIs who needs to be passed with correct version number
- * but haven't been implemented yet.
+ * v3 will be used for next beta version of APIs if they have used v2
  * @internal
  * Limited to Microsoft-internal use
  */
 export enum ApiVersionNumber {
-  V_0 = 'v0',
   V_1 = 'v1',
   V_2 = 'v2',
   V_3 = 'v3',
@@ -85,6 +83,7 @@ export enum ApiName {
   BarCode_ScanBarCode = 'barCode.scanBarCode',
   Calendar_ComposeMeeting = 'calendar.composeMeeting',
   Calendar_OpenCalendarItem = 'calendar.openCalendarItem',
+  Meeting_JoinMeeting = 'meeting.joinMeeting',
   Call_StartCall = 'call.startCall',
   Chat_OpenChat = 'chat.openChat',
   Chat_OpenGroupChat = 'chat.openGroupChat',

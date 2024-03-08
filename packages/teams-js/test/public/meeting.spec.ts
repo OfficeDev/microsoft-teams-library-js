@@ -64,6 +64,75 @@ describe('meeting', () => {
       }
     });
 
+    describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
+      const mockjoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        source: meeting.EventActionSource.Other,
+      };
+
+      it(`FRAMED: should successfully send the joinMeeting message`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+          source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+
+          expect(joinMeetingMessage?.args?.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
+          });
+        }
+      });
+    });
+
     describe('requestAppAudioHandling', () => {
       const emptyMicStateCallback = (micState: meeting.MicState) => Promise.resolve(micState);
       const waitForEventQueue = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -1369,6 +1438,138 @@ describe('meeting', () => {
 
         expect(handlerCalled).toBeTruthy();
         expect(response).toBe(meetingReaction);
+      });
+    });
+
+    describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
+      const mockjoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        source: meeting.EventActionSource.Other,
+      };
+
+      it('should reject if mockjoinMeetingParams is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const response = meeting.joinMeeting(null);
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const response = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          joinWebUrl: null,
+        });
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+      });
+
+      it('FRAMELESS: should successfully send the joinMeeting message', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarGridContextMenu,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+
+        await expect(promise).resolves.not.toThrow();
+        await expect(promise).resolves.toBe(true);
+        expect(joinMeetingMessage?.args?.length).toEqual(1);
+        expect(joinMeetingMessage?.args?.at(0)).toEqual({
+          joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarGridContextMenu,
+        });
+      });
+
+      it('FRAMELESS: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          await utils.respondToFramelessMessage({
+            data: {
+              id: joinMeetingMessage?.id,
+              args: [null, true],
+            },
+          } as DOMMessageEvent);
+
+          await expect(promise).resolves.not.toThrow();
+          await expect(promise).resolves.toBe(true);
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMELESS: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+          source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+
+        await expect(promise).resolves.not.toThrow();
+        await expect(promise).resolves.toBe(true);
+        expect(joinMeetingMessage?.args?.length).toEqual(1);
+        expect(joinMeetingMessage?.args?.at(0)).toEqual({
+          joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
+        });
+      });
+
+      it('FRAMELESS: should successfully throw if the joinMeeting message sends and fails', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
+          },
+        } as DOMMessageEvent);
+        await expect(promise).rejects.toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
       });
     });
 
