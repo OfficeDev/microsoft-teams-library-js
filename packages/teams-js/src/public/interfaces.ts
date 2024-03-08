@@ -196,7 +196,7 @@ export enum FileOpenPreference {
 }
 
 /**
- * Types of Actions Object
+ * Types of Action Objects
  *
  * @beta
  */
