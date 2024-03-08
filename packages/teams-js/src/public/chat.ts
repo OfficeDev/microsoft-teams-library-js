@@ -7,8 +7,6 @@ import { runtime } from '../public/runtime';
 
 /**
  * Describes information needed to start a chat
- *
- * @beta
  */
 
 /**
@@ -27,8 +25,6 @@ interface OpenChatRequest {
  * Used when starting a chat with one person
  *
  * @see OpenGroupChatRequest for use when a chat with more than one person
- *
- * @beta
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
@@ -42,8 +38,6 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
  * Used when starting a chat with more than one person
  *
  * @see OpenSingleChatRequest for use in a chat with only one person
- *
- * @beta
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
@@ -59,8 +53,6 @@ export interface OpenGroupChatRequest extends OpenChatRequest {
 
 /**
  * Contains functionality to start chat with others
- *
- * @beta
  */
 export namespace chat {
   /**
@@ -70,8 +62,6 @@ export namespace chat {
    * @param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
-   *
-   * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
     const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenChat);
@@ -109,8 +99,6 @@ export namespace chat {
    * @param openChatRequest: {@link OpenGroupChatRequest} - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
-   *
-   * @beta
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
     const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenGroupChat);
@@ -154,8 +142,6 @@ export namespace chat {
    * @returns boolean to represent whether the chat capability is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @beta
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.chat ? true : false;

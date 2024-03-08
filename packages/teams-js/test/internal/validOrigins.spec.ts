@@ -30,7 +30,7 @@ describe('validOrigins', () => {
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
-      const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
+      const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin);
       expect(result).toBe(true);
     });
@@ -158,7 +158,7 @@ describe('validOrigins', () => {
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
-      const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
+      const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin);
       expect(result).toBe(true);
     });
@@ -279,7 +279,7 @@ describe('validOrigins', () => {
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
-      const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
+      const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin);
       expect(result).toBe(true);
     });
@@ -400,7 +400,7 @@ describe('validOrigins', () => {
       expect(result).toBe(true);
     });
     it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', async () => {
-      const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
+      const messageOrigin = new URL('https://test.www.office.com');
       const result = await validateOrigin(messageOrigin);
       expect(result).toBe(true);
     });
