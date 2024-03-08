@@ -1,7 +1,7 @@
 import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -609,7 +609,7 @@ export namespace meeting {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function getMeetingDetailsVerbose(): Promise<IMeetingDetailsResponse> {
+  export async function getMeetingDetailsVerbose(): Promise<IMeetingDetailsResponse> {
     ensureInitialized(
       runtime,
       FrameContexts.sidePanel,
@@ -618,10 +618,20 @@ export namespace meeting {
       FrameContexts.content,
     );
 
-    return new Promise<IMeetingDetailsResponse>((resolve) => {
-      const shouldGetVerboseDetails = true;
-      resolve(sendAndHandleSdkError('meeting.getMeetingDetails', shouldGetVerboseDetails));
-    });
+    const shouldGetVerboseDetails = true;
+    const response = (await sendAndHandleSdkError(
+      'meeting.getMeetingDetails',
+      shouldGetVerboseDetails,
+    )) as IMeetingDetailsResponse;
+
+    if (
+      (response.details?.type == CallType.GroupCall || response.details?.type == CallType.OneOnOneCall) &&
+      !response.details.originalCaller
+    ) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    return response;
   }
 
   /**
