@@ -1,79 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Buffer } from 'buffer';
 import * as uuid from 'uuid';
 
-import { GlobalVars } from '../internal/globalVars';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
-import { validOrigins } from './constants';
-import { getLogger } from './telemetry';
-
-/**
- * @param pattern - reference pattern
- * @param host - candidate string
- * @returns returns true if host matches pre-know valid pattern
- *
- * @example
- *    validateHostAgainstPattern('*.teams.microsoft.com', 'subdomain.teams.microsoft.com') returns true
- *    validateHostAgainstPattern('teams.microsoft.com', 'team.microsoft.com') returns false
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-function validateHostAgainstPattern(pattern: string, host: string): boolean {
-  if (pattern.substring(0, 2) === '*.') {
-    const suffix = pattern.substring(1);
-    if (
-      host.length > suffix.length &&
-      host.split('.').length === suffix.split('.').length &&
-      host.substring(host.length - suffix.length) === suffix
-    ) {
-      return true;
-    }
-  } else if (pattern === host) {
-    return true;
-  }
-  return false;
-}
-
-const validateOriginLogger = getLogger('validateOrigin');
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function validateOrigin(messageOrigin: URL): boolean {
-  // Check whether the url is in the pre-known allowlist or supplied by user
-  if (!isValidHttpsURL(messageOrigin)) {
-    validateOriginLogger(
-      'Origin %s is invalid because it is not using https protocol. Protocol being used: %s',
-      messageOrigin,
-      messageOrigin.protocol,
-    );
-    return false;
-  }
-  const messageOriginHost = messageOrigin.host;
-
-  if (validOrigins.some((pattern) => validateHostAgainstPattern(pattern, messageOriginHost))) {
-    return true;
-  }
-
-  for (const domainOrPattern of GlobalVars.additionalValidOrigins) {
-    const pattern = domainOrPattern.substring(0, 8) === 'https://' ? domainOrPattern.substring(8) : domainOrPattern;
-    if (validateHostAgainstPattern(pattern, messageOriginHost)) {
-      return true;
-    }
-  }
-
-  validateOriginLogger(
-    'Origin %s is invalid because it is not an origin approved by this library or included in the call to app.initialize.\nOrigins approved by this library: %o\nOrigins included in app.initialize: %o',
-    messageOrigin,
-    validOrigins,
-    GlobalVars.additionalValidOrigins,
-  );
-  return false;
-}
 
 /**
  * @internal
@@ -400,7 +332,6 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
     if (!base64String) {
       reject('Base64 string cannot be null or empty.');
     }
-    const byteCharacters = atob(base64String);
     /**
      * For images we need to convert binary data to image to achieve that:
      *   1. A new Uint8Array is created with a length equal to the length of byteCharacters.
@@ -411,12 +342,14 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
      *      constructor expects binary data.
      */
     if (mimeType.startsWith('image/')) {
+      const byteCharacters = atob(base64String);
       const byteArray = new Uint8Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteArray[i] = byteCharacters.charCodeAt(i);
       }
       resolve(new Blob([byteArray], { type: mimeType }));
     }
+    const byteCharacters = Buffer.from(base64String, 'base64').toString();
     resolve(new Blob([byteCharacters], { type: mimeType }));
   });
 }
@@ -466,4 +399,19 @@ export function ssrSafeWindow(): Window {
  */
 export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
+}
+
+const appIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * @param appID The app ID to validate against the GUID format
+ * @throws Error if appID is not a valid GUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateAppIdIsGuid(appId: string): void {
+  if (!appIdRegex.test(appId)) {
+    throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
+  }
 }

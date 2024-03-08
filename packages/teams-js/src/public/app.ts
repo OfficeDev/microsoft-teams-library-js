@@ -5,9 +5,9 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReasonWithVersion,
-  sendAndUnwrapWithVersion,
-  sendMessageToParentWithVersion,
+  sendAndHandleStatusAndReason,
+  sendAndUnwrap,
+  sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -18,6 +18,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
+import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -62,6 +63,31 @@ export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?:
   }
 }
 
+export function notifyAppLoadedHelper(apiVersionTag: string): void {
+  sendMessageToParent(apiVersionTag, app.Messages.AppLoaded, [version]);
+}
+
+export function notifyExpectedFailureHelper(
+  apiVersionTag: string,
+  expectedFailureRequest: app.IExpectedFailureRequest,
+): void {
+  sendMessageToParent(apiVersionTag, app.Messages.ExpectedFailure, [
+    expectedFailureRequest.reason,
+    expectedFailureRequest.message,
+  ]);
+}
+
+export function notifyFailureHelper(apiVersiontag: string, appInitializationFailedRequest: app.IFailedRequest): void {
+  sendMessageToParent(apiVersiontag, app.Messages.Failure, [
+    appInitializationFailedRequest.reason,
+    appInitializationFailedRequest.message,
+  ]);
+}
+
+export function notifySuccessHelper(apiVersionTag: string): void {
+  sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
+}
+
 const initializeHelperLogger = appLogger.extend('initializeHelper');
 function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -69,7 +95,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
-
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
@@ -175,7 +200,7 @@ export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', deepLink));
+    resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', deepLink));
   });
 }
 
@@ -283,7 +308,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
+     * The current UI theme of the host. Possible values: "default", "dark", "contrast" or "glass".
      */
     theme: string;
 
@@ -730,6 +755,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    prefetchOriginsFromCDN();
     return appInitializeHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
       validMessageOrigins,
@@ -780,9 +806,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(
-        sendAndUnwrapWithVersion(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'),
-      );
+      resolve(sendAndUnwrap(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -791,11 +815,7 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded),
-      Messages.AppLoaded,
-      [version],
-    );
+    notifyAppLoadedHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded));
   }
 
   /**
@@ -803,11 +823,7 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess),
-      Messages.Success,
-      [version],
-    );
+    notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
   }
 
   /**
@@ -818,10 +834,9 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyFailure),
-      Messages.Failure,
-      [appInitializationFailedRequest.reason, appInitializationFailedRequest.message],
+      appInitializationFailedRequest,
     );
   }
 
@@ -832,10 +847,9 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyExpectedFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyExpectedFailure),
-      Messages.ExpectedFailure,
-      [expectedFailureRequest.reason, expectedFailureRequest.message],
+      expectedFailureRequest,
     );
   }
 

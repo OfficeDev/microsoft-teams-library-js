@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -67,7 +67,7 @@ describe('appInstallDialog', () => {
     const msg = utils.findMessageByFunc('appInstallDialog.openAppInstallDialog');
     expect(msg).toBeTruthy();
     expect(msg.args).toEqual([mockOpenAppInstallDialogParams]);
-    utils.respondToMessage(msg, undefined);
+    await utils.respondToMessage(msg, undefined);
     const response = await promise;
     expect(response).toBeUndefined();
   });
@@ -90,7 +90,7 @@ describe('appInstallDialog', () => {
     expect(appInstallDialogDeepLink.pathname).toEqual(
       teamsDeepLinkUrlPathForAppInstall + mockOpenAppInstallDialogParams.appId,
     );
-    utils.respondToMessage(executeDeepLinkMsg, true);
+    await utils.respondToMessage(executeDeepLinkMsg, true);
     const response = await promise;
     expect(response).toBeUndefined();
   });

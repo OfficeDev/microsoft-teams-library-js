@@ -118,7 +118,7 @@ describe('location', () => {
       });
 
       it('getLocation calls with successful result', (done) => {
-        utils.initializeWithContext(FrameContexts.content).then(() => {
+        utils.initializeWithContext(FrameContexts.content).then(async () => {
           utils.setClientSupportedSDKVersion(minVersionForLocationAPIs);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
@@ -138,7 +138,7 @@ describe('location', () => {
           expect(message.args[0]).toEqual(defaultLocationProps);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, defaultLocation],
@@ -148,7 +148,7 @@ describe('location', () => {
       });
 
       it('getLocation calls with error', (done) => {
-        utils.initializeWithContext(FrameContexts.content).then(() => {
+        utils.initializeWithContext(FrameContexts.content).then(async () => {
           utils.setClientSupportedSDKVersion(minVersionForLocationAPIs);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
@@ -164,7 +164,7 @@ describe('location', () => {
           expect(message.args[0]).toEqual(defaultLocationProps);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
@@ -240,7 +240,7 @@ describe('location', () => {
       });
 
       it('showLocation calls with successful result', (done) => {
-        utils.initializeWithContext(FrameContexts.content).then(() => {
+        utils.initializeWithContext(FrameContexts.content).then(async () => {
           utils.setClientSupportedSDKVersion(minVersionForLocationAPIs);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
@@ -256,7 +256,7 @@ describe('location', () => {
           expect(message.args[0]).toEqual(defaultLocation);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, true],
@@ -266,7 +266,7 @@ describe('location', () => {
       });
 
       it('showLocation calls with error', (done) => {
-        utils.initializeWithContext(FrameContexts.content).then(() => {
+        utils.initializeWithContext(FrameContexts.content).then(async () => {
           utils.setClientSupportedSDKVersion(minVersionForLocationAPIs);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { location: {} } });
 
@@ -282,7 +282,7 @@ describe('location', () => {
           expect(message.args[0]).toEqual(defaultLocation);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],

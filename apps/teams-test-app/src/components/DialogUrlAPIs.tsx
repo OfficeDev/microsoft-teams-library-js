@@ -60,6 +60,11 @@ const DialogUrlAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: JSON.stringify({
+        url: 'https://localhost:4000',
+        title: 'Dialog Title',
+        size: 'large',
+      }),
     });
 
   const SendMessageToChild = (): ReactElement =>
@@ -91,11 +96,12 @@ const DialogUrlAPIs = (): ReactElement => {
             return '';
           } else {
             setResult('Message sent to child');
-            dialog.url.sendMessageToDialog(message);
+            dialog.url.parentCommunication.sendMessageToDialog(message);
             return '';
           }
         },
       },
+      defaultInput: '"Hello from parent"',
     });
 
   const SendMessageToParent = (): ReactElement =>
@@ -126,11 +132,12 @@ const DialogUrlAPIs = (): ReactElement => {
             }
           } else {
             setResult('Message sent to parent');
-            dialog.url.sendMessageToParentFromDialog(message);
+            dialog.url.parentCommunication.sendMessageToParentFromDialog(message);
           }
           return '';
         },
       },
+      defaultInput: '"Hello from child"',
     });
 
   const RegisterForParentMessage = (): ReactElement =>
@@ -149,7 +156,7 @@ const DialogUrlAPIs = (): ReactElement => {
             msg = message;
             setResult(message);
           };
-          dialog.url.registerOnMessageFromParent(callback);
+          dialog.url.parentCommunication.registerOnMessageFromParent(callback);
         }
         return msg;
       },
@@ -175,6 +182,10 @@ const DialogUrlAPIs = (): ReactElement => {
           },
         },
       },
+      defaultInput: JSON.stringify({
+        result: 'Success',
+        appIds: ['appId1', 'appId2'],
+      }),
     });
 
   return (

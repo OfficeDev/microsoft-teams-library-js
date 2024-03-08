@@ -101,6 +101,14 @@ steps:
   - task: CopyFiles@2
     inputs:
       Contents: |
+        packages\teams-js\src\artifactsForCDN\validDomains.json
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\validDomains\json'
+      flattenFolders: true
+    displayName: 'Copy validDomains for CDN'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
         packages\teams-js\package.json
         packages\teams-js\README.md
         LICENSE

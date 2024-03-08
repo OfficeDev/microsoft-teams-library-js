@@ -27,6 +27,7 @@ const DialogUpdateAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: '{"width": 500, "height": 500}',
     });
 
   const CheckDialogResizeCapability = (): ReactElement =>

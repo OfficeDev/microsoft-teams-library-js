@@ -1,8 +1,74 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Nov 2023 18:15:02 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Feb 2024 18:02:49 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.20.0
+
+Wed, 07 Feb 2024 18:02:49 GMT
+
+### Minor changes
+
+- Added communication for nested app auth
+- Added private `messageChannels` capability
+- Enabled acquiring of access token for cross-tenant resources
+- Added new subcapability `dialog.url.parentCommunication` for dialog-parent communication related APIs. The isSupported function in this subcapability will return `false` if it is invoked from a parentless scenario.
+
+### Patches
+
+- Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.
+- Added apiVersionTag for telemetry in `profile`, `search`, `secondaryBrowser`, `settings`, `sharing`, `stageView`, `videoEffects` and `visualMedia` capabilites
+- Fixed bug where `thirdPartyCloudStorage.getDragAndDropFiles` failed deterministically
+- Updated eslint package and fixed subsequent linting errors
+- Removed unused `callbackUrl` parameter from `authentication.notifySuccess` and `authentication.notifyFailure` (in an API-compatible way)
+- Added telemetry to `chat`, `interactive`, `meeting`, `menus`,`monetization` and `people` capabilities
+- Added apiVersionTags for telemetry in `conversations`, `files`, `logs`, `meetingRoom` and `notifications` capabilities
+- Added windows.msn.com to validOrigins list
+- Added apiVersionTag for telemetry in `privateAPIs` and `remoteCamera`, `teams`, `videoEffectsEx` capabilities
+
+## 2.19.0
+
+Wed, 10 Jan 2024 19:55:18 GMT
+
+### Minor changes
+
+- Changed target TypeScript platform to ES2015 (aka ES6) from ES5
+- Removed `cardActionsConfig` property from `externalAppCardActions.processActionSubmit` API
+- Added `externalAppAuthentication` and `externalAppCardActions` 1P internal-only capabilities
+- Added `size` property to internal `FilePreviewParameters` interface
+- Added timeout notifications (2 seconds) to video frame processing in `videoEffectsEx` capability
+- Added new feature to acquire list of valid origins from a CDN endpoint
+- Updated the external app capabilities interfaces
+- Added a new optional parameter, `shareOptions` to `meeting.shareAppContentToStage`. Apps can choose between collaborative and screen sharing for the protocol used when sharing an app to stage.
+- Added support for drag and dropping files from third party storage providers using the `thirdPartyCloudStorage` capability
+- Marked `composeExtension` property on `IQueryMessageExtensionResponse` as optional and added additional input validation on `externalAppAuthentication` and `externalAppCardActions` APIs
+- Made `composeExtension` a required field on `IQueryMessageExtensionResponse`
+
+### Patches
+
+- Added support for `sharing` capability in default runtime for Teams mobile platform
+- Updated runtime capabilities for webStorage to avoid duplicate entry
+- Removed `app` and `app.lifecycle` from runtime.
+
+## 2.18.0
+
+Thu, 30 Nov 2023 23:24:44 GMT
+
+### Minor changes
+
+- Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates
+
+### Patches
+
+- Added `meetingStage` and `settings` framecontexts to `clipboard`.
+- Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
+- Created new `MessageRequest` interface with required properties to enhance type-safety
+- Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
+- Fixed strictNullChecks violations in `media.ts`, `mediaUtil.ts`, and other files
+- Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified
+- Fixed more `strictNullChecks` violations
+- Deleted `isSupported` check from `app.lifecycle` subcapability since app resumption cannot be guaranteed even when it is supported.
 
 ## 2.17.0
 
@@ -34,7 +100,7 @@ Wed, 11 Oct 2023 16:51:27 GMT
 
 ### Patches
 
-- Reset registered handlers for unit testing 
+- Reset registered handlers for unit testing
 - Renamed Teams back-compat config for clarity
 - Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
 - Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`

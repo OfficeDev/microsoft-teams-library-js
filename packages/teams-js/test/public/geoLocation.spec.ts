@@ -86,7 +86,7 @@ describe('geoLocation', () => {
           expect(message.args[0]).toEqual(defaultLocationProps);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, defaultLocation],
@@ -109,7 +109,7 @@ describe('geoLocation', () => {
           expect(message.args[0]).toEqual(defaultLocationProps);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
@@ -184,7 +184,7 @@ describe('geoLocation', () => {
           expect(message.args[0]).toEqual(DevicePermission.GeoLocation);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, true],
@@ -206,7 +206,7 @@ describe('geoLocation', () => {
           expect(message.args.length).toBe(1);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -281,7 +281,7 @@ describe('geoLocation', () => {
           expect(message.args[0]).toEqual(DevicePermission.GeoLocation);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, true],
@@ -303,7 +303,7 @@ describe('geoLocation', () => {
           expect(message.args.length).toBe(1);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -416,7 +416,7 @@ describe('geoLocation', () => {
             expect(message.args[0]).toEqual(defaultLocation);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, true],
@@ -441,7 +441,7 @@ describe('geoLocation', () => {
             expect(message.args[0]).toEqual(defaultLocation);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
@@ -531,7 +531,7 @@ describe('geoLocation', () => {
             expect(message.args[0]).toEqual(defaultLocationPropsForChooseLocation);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, defaultLocation],
@@ -557,7 +557,7 @@ describe('geoLocation', () => {
             expect(message.args[0]).toEqual(defaultLocationPropsForChooseLocation);
 
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],

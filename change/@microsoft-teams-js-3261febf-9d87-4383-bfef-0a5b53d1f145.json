@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated all capabilities to send API version telemetry",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}

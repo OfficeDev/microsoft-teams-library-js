@@ -55,6 +55,11 @@ const RequestControl = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: JSON.stringify({
+      id: 'id1',
+      displayName: 'displayName1',
+      active: false,
+    }),
   });
 
 const SendControlCommand = (): React.ReactElement =>
@@ -84,6 +89,7 @@ const SendControlCommand = (): React.ReactElement =>
         });
       },
     },
+    defaultInput: `"${remoteCamera.ControlCommand.ZoomIn}"`,
   });
 
 const TerminateSession = (): React.ReactElement =>

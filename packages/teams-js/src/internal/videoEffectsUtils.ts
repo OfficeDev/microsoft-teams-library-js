@@ -3,6 +3,7 @@ import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
   AllowSharedBufferSource,
@@ -17,7 +18,13 @@ import { VideoPerformanceMonitor } from './videoPerformanceMonitor';
 /**
  * @hidden
  * Align with the W3C spec: https://www.w3.org/TR/webcodecs/
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
+const videoEffectsUtilTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
 interface VideoFrame {
   /**
    * The width of the VideoFrame in pixels, potentially including non-visible padding, and prior to
@@ -300,6 +307,10 @@ class TransformerWithMetadata {
     private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   ) {
     registerHandler(
+      getApiVersionTag(
+        videoEffectsUtilTelemetryVersionNumber,
+        ApiName.VideoEffectsUtils_TransformerWithMetadata_Constructor,
+      ),
       'video.mediaStream.audioInferenceDiscardStatusChange',
       ({ discardAudioInferenceResult }: { discardAudioInferenceResult: boolean }) => {
         this.shouldDiscardAudioInferenceResult = discardAudioInferenceResult;
@@ -372,7 +383,7 @@ class TransformerWithMetadata {
     // The rectangle of pixels to copy from the texture. The first two rows are the header.
     const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
     // allocate buffer for the header
-    // The texture is in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12).
+    // The texture is in NV12 format (https://learn.microsoft.com/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12).
     // NV12 has one luma "luminance" plane Y and one UV plane with U and V values interleaved.
     // In NV12, chroma planes (blue and red) are subsampled in both the horizontal and vertical dimensions by a factor of 2.
     // So for a 2×2 group of pixels, you have 4 Y samples and 1 U and 1 V sample, each sample being 1 byte.
@@ -442,12 +453,20 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParent('video.videoEffectReadiness', [true, effectId, undefined, effectParam]);
+        sendMessageToParent(
+          getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_ReportVideoEffectChanged),
+          'video.videoEffectReadiness',
+          [true, effectId, undefined, effectParam],
+        );
       })
       .catch((reason) => {
         const validReason =
           reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
-        sendMessageToParent('video.videoEffectReadiness', [false, effectId, validReason, effectParam]);
+        sendMessageToParent(
+          getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_EffectFailure),
+          'video.videoEffectReadiness',
+          [false, effectId, validReason, effectParam],
+        );
       });
   };
 }

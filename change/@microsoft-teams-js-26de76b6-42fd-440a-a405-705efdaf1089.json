@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Created new `MessageRequest` interface with required properties to enhance type-safety",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

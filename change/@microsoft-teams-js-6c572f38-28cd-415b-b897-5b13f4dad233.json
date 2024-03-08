@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Added `copilot.microsoft.com` to validOrigins list",
+  "comment": "Released 2.20.0",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"

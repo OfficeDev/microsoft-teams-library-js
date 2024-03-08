@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities",
+  "comment": "Fixed bug in API Version telemetry",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"

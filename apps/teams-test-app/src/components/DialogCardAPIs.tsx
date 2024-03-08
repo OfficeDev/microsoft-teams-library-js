@@ -54,6 +54,8 @@ const DialogCardAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput:
+        '{"card": {"type": "AdaptiveCard","version": "1.0","body": [{"type": "TextBlock","text": "Hello, Adaptive Card!"}]}}',
     });
   return (
     <ModuleWrapper title="Dialog.Card">

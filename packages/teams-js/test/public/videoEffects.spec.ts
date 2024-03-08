@@ -21,14 +21,14 @@ describe('video', () => {
   describe.each([
     {
       framedOrFrameless: 'frameless',
-      sendMessage: (func: string, ...args: unknown[]) => {
-        utils.respondToFramelessMessage({ data: { func, args } } as DOMMessageEvent);
+      sendMessage: async (func: string, ...args: unknown[]) => {
+        await utils.respondToFramelessMessage({ data: { func, args } } as DOMMessageEvent);
       },
     },
     {
       framedOrFrameless: 'framed',
-      sendMessage: (func: string, ...args: unknown[]) => {
-        utils.sendMessage(func, ...args);
+      sendMessage: async (func: string, ...args: unknown[]) => {
+        await utils.sendMessage(func, ...args);
       },
     },
   ] as const)('$framedOrFrameless', ({ framedOrFrameless, sendMessage }) => {
@@ -103,12 +103,12 @@ describe('video', () => {
           expect(messageForRegister).toBeNull();
         });
 
-        it('should listen to videoEffects.setFrameProcessTimeLimit', () => {
+        it('should listen to videoEffects.setFrameProcessTimeLimit', async () => {
           expect.assertions(2);
           const setFrameProcessTimeLimitSpy = jest.spyOn(VideoPerformanceMonitor.prototype, 'setFrameProcessTimeLimit');
           // Act
           videoEffects.registerForVideoFrame(registerForVideoFrameParameters);
-          sendMessage('video.setFrameProcessTimeLimit', { timeLimit: 100 });
+          await sendMessage('video.setFrameProcessTimeLimit', { timeLimit: 100 });
 
           // Assert
           expect(setFrameProcessTimeLimitSpy).toBeCalledTimes(1);
@@ -136,7 +136,7 @@ describe('video', () => {
             ...registerForVideoFrameParameters,
             videoBufferHandler,
           });
-          sendMessage('video.newVideoFrame', frameData);
+          await sendMessage('video.newVideoFrame', frameData);
 
           // Assert
           expect(videoBufferHandler).toHaveBeenCalledTimes(1);
@@ -165,7 +165,7 @@ describe('video', () => {
           // Act
           videoEffects.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
           const videoFrameMock = { width: 30, height: 40, data: 101, timestamp: 200 };
-          sendMessage('video.newVideoFrame', videoFrameMock);
+          await sendMessage('video.newVideoFrame', videoFrameMock);
 
           // Assert
           expect(reportStartFrameProcessingSpy).toBeCalledWith(30, 40);
@@ -191,7 +191,7 @@ describe('video', () => {
             videoBufferHandler,
           });
           const videoFrameMock = { width: 30, height: 40, data: 101 };
-          sendMessage('video.newVideoFrame', videoFrameMock);
+          await sendMessage('video.newVideoFrame', videoFrameMock);
 
           // Assert
           const message = utils.findMessageByFunc('video.notifyError');
@@ -208,7 +208,7 @@ describe('video', () => {
 
           // Act
           videoEffects.registerForVideoFrame({ ...registerForVideoFrameParameters, videoBufferHandler });
-          sendMessage('video.newVideoFrame', undefined);
+          await sendMessage('video.newVideoFrame', undefined);
 
           // Assert
           expect(videoBufferHandler).not.toHaveBeenCalled();
@@ -236,7 +236,7 @@ describe('video', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -260,7 +260,7 @@ describe('video', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -282,7 +282,7 @@ describe('video', () => {
             ...registerForVideoFrameParameters,
             videoFrameHandler,
           });
-          sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
+          await sendMessage('video.startVideoExtensibilityVideoStream', { streamId: 'stream id' });
           await utils.flushPromises();
 
           // Assert
@@ -340,7 +340,7 @@ describe('video', () => {
         // Act
         videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
-        sendMessage('video.effectParameterChange', effectId);
+        await sendMessage('video.effectParameterChange', effectId);
 
         // Assert
         expect(reportApplyingVideoEffectSpy).toHaveBeenCalledTimes(1);
@@ -362,7 +362,7 @@ describe('video', () => {
         // Act
         videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
-        sendMessage('video.effectParameterChange', effectId);
+        await sendMessage('video.effectParameterChange', effectId);
         await videoEffectCallBack.mock.results[0].value;
 
         // Assert
@@ -385,7 +385,7 @@ describe('video', () => {
         // Act
         videoEffects.registerForVideoEffect(videoEffectCallBack);
         const effectId = 'sampleEffectId';
-        sendMessage('video.effectParameterChange', effectId);
+        await sendMessage('video.effectParameterChange', effectId);
         await videoEffectCallBack.mock.results[0].value.catch(() => {});
 
         // Assert

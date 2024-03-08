@@ -57,6 +57,12 @@ const DialogUrlBotAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: JSON.stringify({
+        url: 'https://localhost:4000',
+        completionBotId: '123',
+        title: 'Dialog Url Bot Open',
+        size: 'large',
+      }),
     });
   return (
     <ModuleWrapper title="Dialog.Url.Bot">

@@ -1,9 +1,11 @@
 import {
+  FileOpenPreference,
   FilePreviewParameters,
   openFilePreview,
   registerUserSettingsChangeHandler,
   uploadCustomApp,
   UserSettingTypes,
+  ViewerActionTypes,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
@@ -43,6 +45,7 @@ const RegisterUserSettingsChangeHandler = (): React.ReactElement =>
         return 'Called';
       },
     },
+    defaultInput: JSON.stringify(['fileOpenPreference', 'theme', 'someOtherSettingType']),
   });
 
 const PrivateAPIs = (): ReactElement => {
@@ -102,6 +105,22 @@ const PrivateAPIs = (): ReactElement => {
           return 'Called';
         },
       },
+      defaultInput: JSON.stringify({
+        entityId: 'entityId1',
+        title: 'title1',
+        description: 'description1',
+        type: 'txt',
+        sizeInBytes: '99',
+        objectUrl: 'this is a url',
+        downloadUrl: 'this is a download url',
+        webPreviewUrl: 'this is a web preview url',
+        webEditUrl: 'this is a web edit url',
+        editFile: false,
+        subEntityId: 'subEntityId1',
+        viewerAction: ViewerActionTypes.view,
+        fileOpenPreference: FileOpenPreference.Web,
+        conversationId: 'conversationId1',
+      }),
     });
 
   return (
