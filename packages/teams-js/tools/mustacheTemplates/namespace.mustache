@@ -1,0 +1,39 @@
+
+/**
+ * {{comment}}
+{{#beta}}
+ *
+ * @beta
+{{/beta}}
+ */
+export namespace {{capabilityName}} {
+    {{#exportedInterfaces}}
+    {{> interface}}
+    {{/exportedInterfaces}}
+
+    {{#exportedReturnFunctions}}
+    {{> returnFunction}}
+    {{}}
+    {{}}
+    {{/exportedReturnFunctions}}
+    {{#exportedFireAndForgetFunctions}}
+    {{> fireAndForgetFunction}}
+    {{}}
+    {{}}
+    {{/exportedFireAndForgetFunctions}}
+    /**
+     * Checks if {{capabilityName}} capability is supported by the host
+     * @returns boolean to represent whether {{capabilityName}} is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     {{#beta}}
+     *
+     * @beta
+     {{/beta}}
+     */
+    export function isSupported(): boolean {
+        // TODO: add update the runtime object in runtime.ts by adding the new runtime.supports values to it
+        return ensureInitialized(runtime){{#needsToBeSupported}} && runtime.supports.{{.}}{{/needsToBeSupported}}{{#requiresDevicePermissions}} && runtime.supports.permissions{{/requiresDevicePermissions}} ? true : false;
+    }
+    {{> subcapability}}
+}

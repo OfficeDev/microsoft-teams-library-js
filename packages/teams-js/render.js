@@ -16,6 +16,8 @@ var partials = {
     parameterList: get('./tools/mustacheTemplates/parameterList.mustache'),
     functionComment: get('./tools/mustacheTemplates/functionComment.mustache'),
     functionValidation: get('./tools/mustacheTemplates/functionValidation.mustache'),
+    namespace: get('./tools/mustacheTemplates/namespace.mustache'),
+    subcapability: get('./tools/mustacheTemplates/subcapability.mustache'),
 };
 
 // This looks a bit silly, but lets mustache format comma separate lists correctly without requiring
@@ -31,6 +33,20 @@ data.exportedFireAndForgetFunctions.forEach(entry => {
         entry.parameters[entry.parameters.length - 1].last = true;
     }
 });
+
+function buildUpOtherRequiredCapabilities(jsonObject, needsToBeSupported, currentCapability = undefined) {
+    var capabilityName = currentCapability ? `${currentCapability}.${jsonObject.capabilityName}` : jsonObject.capabilityName;
+    needsToBeSupported.push(capabilityName);
+    // Make a copy of the array so we don't end up with identical arrays for each subcapability
+    jsonObject.needsToBeSupported = [...needsToBeSupported];
+    if (jsonObject.subcapabilities) {
+        jsonObject.subcapabilities.forEach(subcapability => {
+            buildUpOtherRequiredCapabilities(subcapability, needsToBeSupported, capabilityName)
+        });
+    }
+}
+
+buildUpOtherRequiredCapabilities(data, [], undefined);
 
 // Uncomment if you want to see what we turn the data into after processing it and before using it to
 // render mustache templates
