@@ -50,7 +50,15 @@
             "parameters": [
                 {
                     "name": "sayThisToJeff",
-                    "type": "string",
+                    "urlType": {
+                        "mustBeHttps": true
+                    },
+                    "comment": "Message for Jeff",
+                    "optional": true
+                },
+                {
+                    "name": "messageId",
+                    "uuidType": {},
                     "comment": "Message for Jeff",
                     "optional": true
                 }
@@ -65,7 +73,9 @@
             "parameters": [
                 {
                     "name": "location",
-                    "type": "Location",
+                    "objectType": {
+                        "typeName": "Location"
+                    },
                     "comment": "Location to be sent to the host"
                 }
             ]

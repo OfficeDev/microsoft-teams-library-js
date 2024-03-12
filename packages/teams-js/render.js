@@ -15,6 +15,7 @@ var partials = {
     fireAndForgetFunction: get('./tools/mustacheTemplates/fireAndForgetFunction.mustache'),
     parameterList: get('./tools/mustacheTemplates/parameterList.mustache'),
     functionComment: get('./tools/mustacheTemplates/functionComment.mustache'),
+    functionValidation: get('./tools/mustacheTemplates/functionValidation.mustache'),
 };
 
 // This looks a bit silly, but lets mustache format comma separate lists correctly without requiring

@@ -1,9 +1,7 @@
 {{> functionComment}}
 export function {{name}}({{> parameterList}}): void {
-    ensureInitialized(runtime{{#limitedToFrameContexts}}, FrameContexts.{{frameContext}}{{/limitedToFrameContexts}});
-    if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-    }
+    {{> functionValidation}}
+
     return sendMessageToParent(
         // TODO: Replace ApiName.YOUR_TELEMETRY_NAME_HERE with a reference to a new entry you have added to telemetry.ts
         getApiVersionTag({{capabilityName}}TelemetryVersionNumber, ApiName.YOUR_TELEMETRY_NAME_HERE),

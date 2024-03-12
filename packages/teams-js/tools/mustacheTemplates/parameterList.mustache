@@ -1,1 +1,1 @@
-{{#parameters}}{{name}}{{#optional}}?{{/optional}}: {{type}}{{^last}}, {{/last}}{{/parameters}}
+{{#parameters}}{{name}}{{#optional}}?{{/optional}}: {{#stringType}}string{{/stringType}}{{#booleanType}}boolean{{/booleanType}}{{#numberType}}number{{/numberType}}{{#urlType}}URL{{/urlType}}{{#enumType}}{{name}}{{/enumType}}{{#objectType}}{{typeName}}{{/objectType}}{{#uuidType}}string{{/uuidType}}{{^last}}, {{/last}}{{/parameters}}

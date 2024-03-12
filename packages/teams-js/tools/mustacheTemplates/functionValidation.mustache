@@ -1,0 +1,74 @@
+ensureInitialized(runtime{{#limitedToFrameContexts}}, FrameContexts.{{frameContext}}{{/limitedToFrameContexts}});
+if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+}
+{{#parameters}}
+{{!string validation}}
+{{#stringType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{#minLength}}
+
+if ({{name}}{{#optional}}!{{/optional}}.length < {{minLength}}) {
+    throw new Error("{{name}} must be at least {{minLength}} characters");
+}
+{{/minLength}}
+{{#maxLength}}
+
+if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
+    throw new Error("{{name}} must be less than {{maxLength}} characters");
+}
+{{/maxLength}}
+{{/stringType}}
+{{!number validation}}
+{{#numberType}}
+{{#min}}
+
+if ({{name}}{{#optional}}!{{/optional}} < {{min}}) {
+    throw new Error("{{name}} must be at least {{min}}");
+}
+{{/min}}
+{{#max}}
+
+if ({{name}}{{#optional}}!{{/optional}} > {{max}}) {
+    throw new Error("{{name}} must be less than {{max}}");
+}
+{{/max}}
+{{/numberType}}
+{{!URL validation}}
+{{#urlType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{#mustBeHttps}}
+
+if ({{name}}{{#optional}}!{{/optional}}.protocol.toLowerCase() !== 'https') {
+    throw new Error('{{name}} must use https protocol');
+}
+{{/mustBeHttps}}
+{{/urlType}}
+{{!object validation}}
+{{#objectType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{/objectType}}
+{{#uuidType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+
+if (!{{name}}) {
+    throw new Error('{{name}} must not be empty');
+}
+
+if (validate({{name}}) === false) {
+    throw new Error('id must be a valid UUID');
+}
+{{/uuidType}}
+{{/parameters}}

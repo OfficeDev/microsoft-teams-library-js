@@ -4,6 +4,8 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';{{! Is there any way to only write this if the right part of the json exists?}}
 import { runtime } from './runtime';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
+import { validate } from 'uuid';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
