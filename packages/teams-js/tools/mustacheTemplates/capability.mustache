@@ -1,0 +1,49 @@
+// TODO: remove any imports that are unused 
+import { sendMessageToParent, sendMessageToParentAsync } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';{{! Is there any way to only write this if the right part of the json exists?}}
+import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const {{capabilityName}}TelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+/**
+ * {{comment}}
+{{#beta}}
+ *
+ * @beta
+{{/beta}}
+ */
+export namespace {{capabilityName}} {
+    {{#exportedInterfaces}}
+    {{> interface}}
+    {{/exportedInterfaces}}
+
+    {{#exportedReturnFunctions}}
+    {{> returnFunction}}
+    {{}}
+    {{}}
+    {{/exportedReturnFunctions}}
+    {{#exportedFireAndForgetFunctions}}
+    {{> fireAndForgetFunction}}
+    {{}}
+    {{}}
+    {{/exportedFireAndForgetFunctions}}
+    /**
+     * Checks if {{capabilityName}} capability is supported by the host
+     * @returns boolean to represent whether {{capabilityName}} is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     {{#beta}}
+     *
+     * @beta
+     {{/beta}}
+     */
+    export function isSupported(): boolean {
+        // TODO: add {{capabilityName}} to the runtime object in runtime.ts
+        return ensureInitialized(runtime) && runtime.supports.{{capabilityName}}{{#requiresDevicePermissions}} && runtime.supports.permissions{{/requiresDevicePermissions}} ? true : false;
+    }
+}

@@ -1,0 +1,19 @@
+/**
+ * {{comment}}
+{{#beta}}
+ *
+ * @beta
+{{/beta}}
+ */
+export interface {{name}} {
+    {{#members}}
+    /**
+     {{comment}}
+     {{#remark}}
+     @remarks
+     {{remark}}
+     {{/remark}}
+     */
+    {{name}}{{#optional}}?{{/optional}}: {{type}};
+    {{/members}}
+}

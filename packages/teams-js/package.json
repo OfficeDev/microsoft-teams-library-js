@@ -18,13 +18,16 @@
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest",
-    "test:verbose": "pnpm test -- --verbose false --silent false"
+    "test:verbose": "pnpm test -- --verbose false --silent false",
+    "mustacheCapabilityPOC": "node render.js > src/public/geoLocation2.ts"
   },
   "dependencies": {
-    "debug": "^4.3.3"
+    "debug": "^4.3.3",
+    "mustache": "^4.2.0"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@types/debug": "^4.1.7",
+    "@types/mustache": "^4.2.5"
   },
   "license": "MIT",
   "files": [

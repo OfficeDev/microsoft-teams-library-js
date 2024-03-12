@@ -1,0 +1,74 @@
+{
+    "capabilityName": "geoLocation2",
+    "comment": "Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.",
+    "beta": true,
+    "requiresDevicePermissions": true,
+    "exportedInterfaces": [
+        {
+            "name": "Location",
+            "comment": "Data struture to represent the location information",
+            "members": [
+                {
+                    "name": "latitude",
+                    "type": "number",
+                    "comment": "Latitude of the location"
+                },
+                {
+                    "name": "longitude",
+                    "type": "number",
+                    "comment": "Longitude of the location"
+                },
+                {
+                    "name": "accuracy",
+                    "type": "number",
+                    "comment": "Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location",
+                    "optional": true,
+                    "remark": "This property is only in scope for mobile"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "number",
+                    "optional": true,
+                    "comment": "Time stamp when the location was captured"
+                }
+            ]
+        }
+    ],
+    "exportedReturnFunctions": [
+        {
+            "name": "getCurrentLocation",
+            "returns": "Location",
+            "returnComment": "A promise that resolves with the location of the user",
+            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}]
+        },
+        {
+            "name": "getGreetingsFromJeff",
+            "returns": "boolean",
+            "throwsComment": "Error if Jeff ignored you",
+            "returnComment": "Whether or not Jeff says hi",
+            "limitedToFrameContexts": [{"frameContext":"content"}],
+            "parameters": [
+                {
+                    "name": "sayThisToJeff",
+                    "type": "string",
+                    "comment": "Message for Jeff",
+                    "optional": true
+                }
+            ]
+        }
+    ],
+    "exportedFireAndForgetFunctions": [
+        {
+            "name": "showLocation",
+            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
+            "comment": "Shows the location on map corresponding to the given coordinates",
+            "parameters": [
+                {
+                    "name": "location",
+                    "type": "Location",
+                    "comment": "Location to be sent to the host"
+                }
+            ]
+        }
+    ]
+}
