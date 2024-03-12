@@ -49,17 +49,25 @@
             "limitedToFrameContexts": [{"frameContext":"content"}],
             "parameters": [
                 {
+                    "name": "variousStrings",
+                    "stringType": true,
+                    "array": {
+                        "minLength": 1,
+                        "maxLength": 3
+                    },
+                    "comment": "List of random strings, must be 1 to 3 items long"
+                },
+                {
                     "name": "sayThisToJeff",
                     "urlType": {
                         "mustBeHttps": true
                     },
-                    "comment": "Message for Jeff",
-                    "optional": true
+                    "comment": "Message for Jeff"
                 },
                 {
                     "name": "messageId",
                     "uuidType": {},
-                    "comment": "Message for Jeff",
+                    "comment": "UUID of message for Jeff",
                     "optional": true
                 }
             ]

@@ -71,4 +71,24 @@ if (validate({{name}}) === false) {
     throw new Error('id must be a valid UUID');
 }
 {{/uuidType}}
+{{#array}}
+{{#minLength}}
+
+if ({{name}}.length < {{minLength}}) {
+    throw new Error('{{name}} must have at least {{minLength}} entries');
+}
+{{/minLength}}
+{{#maxLength}}
+
+if ({{name}}.length > {{maxLength}}) {
+    throw new Error('{{name}} must have no more than {{maxLength}} entries');
+}
+{{/maxLength}}
+
+{{name}}.forEach(element => {
+    if (isNullOrUndefined(element)) {
+        throw new Error("{{name}} can't contain null or undefined items");
+    }
+});
+{{/array}}
 {{/parameters}}
