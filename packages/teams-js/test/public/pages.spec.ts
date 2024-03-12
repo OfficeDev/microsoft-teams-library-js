@@ -5,7 +5,15 @@ import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
+import {
+  ActionObjectType,
+  FrameInfo,
+  OriginalSourceType,
+  SecondaryM365ContentIdName,
+  ShareDeepLinkParameters,
+  TabInstance,
+  TabInstanceParameters,
+} from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
@@ -1994,6 +2002,221 @@ describe('Testing pages module', () => {
           utils.uninitializeRuntimeConfig();
           utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { appButton: {} } } });
           expect(() => pages.appButton.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+      });
+    });
+
+    describe('Testing pages.responseButton namespace', () => {
+      const allowedContexts = [FrameContexts.content];
+      const actionObjects = [
+        {
+          itemId: '1',
+          secondaryId: {
+            name: SecondaryM365ContentIdName.DriveId,
+            value: 'secondaryDriveValue',
+          },
+          originalSource: {
+            messageId: 'mockMessageId',
+            conversationId: 'mockConversationId',
+            type: OriginalSourceType.Email,
+          },
+          type: ActionObjectType.M365Content,
+        },
+      ];
+
+      const mockDefaultResponseInfo: pages.responseButton.ResponseInfo = {
+        responseId: pages.responseButton.ResponseId.reply,
+        actionInfo: { actionId: 'actionId', actionObjects: actionObjects },
+      };
+
+      describe('Testing pages.responseButton.showResponseButton function', () => {
+        it('pages.responseButton.showResponseButton should not allow calls before initialization', () => {
+          expect(() => pages.responseButton.showResponseButton(mockDefaultResponseInfo)).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+            it(`pages.responseButton.showResponseButton should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.responseButton.showResponseButton(mockDefaultResponseInfo);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.showResponseButton should throw error when pages.responseButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.responseButton.showResponseButton(mockDefaultResponseInfo);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.showResponseButton calls with successful result when initialized with ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+              const promise = pages.responseButton.showResponseButton(mockDefaultResponseInfo);
+              const message = utils.findMessageByFunc('pages.responseButton.showResponseButton');
+              expect(message).not.toBeNull();
+              expect(message.args.length).toBe(1);
+              expect(message.args[0]).toEqual(mockDefaultResponseInfo);
+              await utils.respondToMessage(message!);
+              return expect(promise).resolves;
+            });
+          } else {
+            it(`pages.responseButton.showResponseButton does not allow calls from ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { showResponseButton: {} } } });
+              expect(() => pages.responseButton.showResponseButton(mockDefaultResponseInfo)).toThrowError(
+                `This call is only allowed in following contexts: ${JSON.stringify(
+                  allowedContexts,
+                )}. Current context: "${context}".`,
+              );
+            });
+          }
+        });
+      });
+
+      describe('Testing pages.responseButton.hideResponseButton function', () => {
+        it('pages.responseButton.hideResponseButton should not allow calls before initialization', () => {
+          expect(() => pages.responseButton.hideResponseButton()).toThrowError(new Error(errorLibraryNotInitialized));
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+            it(`pages.responseButton.hideResponseButton should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.responseButton.hideResponseButton();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.hideResponseButton should throw error when pages.responseButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.responseButton.hideResponseButton();
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.hideResponseButton should successfully register a response button handler when initialized with ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+              const promise = pages.responseButton.hideResponseButton();
+              const message = utils.findMessageByFunc('pages.responseButton.hideResponseButton');
+              validateRequestWithoutArguments(message, 'pages.responseButton.hideResponseButton');
+              await utils.respondToMessage(message!);
+              return expect(promise).resolves;
+            });
+          } else {
+            it(`pages.responseButton.hideResponseButton does not allow calls from ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+              expect(() => pages.responseButton.hideResponseButton()).toThrowError(
+                `This call is only allowed in following contexts: ${JSON.stringify(
+                  allowedContexts,
+                )}. Current context: "${context}".`,
+              );
+            });
+          }
+        });
+      });
+
+      describe('Testing pages.responseButton.registerResponseButtonClickEventHandler function', () => {
+        it('pages.responseButton.registerResponseButtonClickEventHandler should not allow calls before initialization', () => {
+          expect(() => pages.responseButton.registerResponseButtonClickEventHandler(emptyCallback)).toThrowError(
+            new Error(errorLibraryNotInitialized),
+          );
+        });
+
+        Object.values(FrameContexts).forEach((context) => {
+          if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
+            it(`pages.responseButton.responseButtonEventHandler should throw error when pages is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+              expect.assertions(1);
+              try {
+                pages.responseButton.registerResponseButtonClickEventHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.registerResponseButtonClickEventHandler should throw error when pages.responseButton is not supported when initialized with ${context}`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+              expect.assertions(1);
+              try {
+                pages.responseButton.registerResponseButtonClickEventHandler(emptyCallback);
+              } catch (e) {
+                expect(e).toEqual(errorNotSupportedOnPlatform);
+              }
+            });
+
+            it(`pages.responseButton.registerResponseButtonClickEventHandler should successfully register a response button handler when initialized with ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+              let handlerCalled = false;
+              pages.responseButton.registerResponseButtonClickEventHandler(() => {
+                handlerCalled = true;
+              });
+              await utils.sendMessage('pages.responseButton.registerResponseButtonClickEventHandler', '');
+              expect(handlerCalled).toBeTruthy();
+            });
+          } else {
+            it(`pages.responseButton.registerResponseButtonClickEventHandler does not allow calls from ${context} context`, async () => {
+              await utils.initializeWithContext(context);
+              utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+              expect(() => pages.responseButton.registerResponseButtonClickEventHandler(emptyCallback)).toThrowError(
+                `This call is only allowed in following contexts: ${JSON.stringify(
+                  allowedContexts,
+                )}. Current context: "${context}".`,
+              );
+            });
+          }
+        });
+      });
+
+      describe('Testing pages.responseButton.isSupported function', () => {
+        it('pages.responseButton.isSupported should return false if the runtime says its not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect(pages.responseButton.isSupported()).not.toBeTruthy();
+        });
+        it('pages.responseButton.isSupported should return false if the runtime says pages.responseButton is not supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
+          expect(pages.responseButton.isSupported()).not.toBeTruthy();
+        });
+
+        it('pages.responseButton.isSupported should return true if the runtime says pages.responseButton is supported', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({
+            apiVersion: 1,
+            supports: { pages: { responseButton: {} } },
+          });
+          expect(pages.responseButton.isSupported()).toBeTruthy();
+        });
+
+        it('pages.responseButton.isSupported should throw if called before initialization', () => {
+          utils.uninitializeRuntimeConfig();
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: { responseButton: {} } } });
+          expect(() => pages.responseButton.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
         });
       });
     });

@@ -15,7 +15,15 @@ import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import {
+  ActionInfo,
+  ErrorCode,
+  FrameInfo,
+  ShareDeepLinkParameters,
+  TabInformation,
+  TabInstance,
+  TabInstanceParameters,
+} from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -170,6 +178,8 @@ export namespace pages {
   export type saveEventType = (evt: pages.config.SaveEvent) => void;
   /** Remove event function */
   export type removeEventType = (evt: pages.config.RemoveEvent) => void;
+  /** Response Button event function */
+  export type responseButtonEventType = (evt: pages.responseButton.ResponseButtonEvent) => void;
 
   /**
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
@@ -1102,6 +1112,230 @@ export namespace pages {
     export function isSupported(): boolean {
       return ensureInitialized(runtime) && runtime.supports.pages
         ? runtime.supports.pages.currentApp
+          ? true
+          : false
+        : false;
+    }
+  }
+
+  /**
+   * Provides APIs to interact with the response button in hosts
+   *
+   * @beta
+   */
+  export namespace responseButton {
+    let responseButtonHandler: undefined | ((evt: ResponseButtonEvent) => void);
+    /**
+     * The required information that the app needs to let host know about the response button.
+     *
+     * @beta
+     */
+    export interface ResponseInfo {
+      /**
+       * The unique ID helps the host and apps identify which button it refers to.
+       * To facilitate easy extension for apps and hosts, we also accept the string type if the response id has not yet been added to the enum.
+       *
+       * @beta
+       */
+      responseId: ResponseId | string;
+      /**
+       * The actionInfo that contains the original source for the action object
+       *
+       * @beta
+       */
+      actionInfo: ActionInfo;
+    }
+
+    /**
+     * This is intended to indicate what type of response button the host should display.
+     *
+     * @beta
+     */
+    export enum ResponseId {
+      /** reply button */
+      reply = 'reply',
+    }
+
+    /**
+     * Describes the results of the settings.remove event. Includes notifySuccess, and notifyFailure
+     * to indicate the status of whether the settings.save call succeeded or not and why.
+     *
+     * @beta
+     */
+    export interface ResponseButtonEvent {
+      /**
+       * Indicates that the response button event has been invoked after user click event.
+       */
+      notifySuccess(): void;
+      /**
+       * Indicates that response button event has been invoked failed and user didn't see expected button click behavior.
+       * @param reason - Specifies a reason for the failure. If provided, this string is displayed to the user; otherwise a generic error is displayed.
+       */
+      notifyFailure(reason?: string): void;
+    }
+
+    /**
+     * @hidden
+     * Hide from docs because this function is only used during initialization
+     *
+     * Adds register handlers for settings.save and settings.remove upon initialization. Function is called in {@link app.initializeHelper}
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export function initialize(): void {
+      registerHandler(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_RegisterResponseButton),
+        'pages.responseButton.registerResponseButton',
+        handleResponseButtonEvent,
+        false,
+      );
+    }
+
+    /**
+     * Notify host apps to show the response button.
+     * @param params - Parameters {@link ResponseInfo} sent to host apps contain the required information.
+     * @returns Promise that resolves when the response button has been shown on the host app or reject with an error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error.
+     *
+     * @beta
+     */
+    export function showResponseButton(params: ResponseInfo): Promise<void> {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      checkValidResponseInfo(params);
+      return sendAndHandleSdkError(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_ShowResponseButton),
+        'pages.responseButton.showResponseButton',
+        params,
+      );
+    }
+
+    /**
+     * Check if the input contains a valid responseID and originalSource.
+     *
+     * @beta
+     */
+    function checkValidResponseInfo(info: ResponseInfo): void {
+      if (!info || !info.responseId || info.responseId == '' || !info.actionInfo) {
+        throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
+      }
+    }
+
+    /**
+     * Notify host apps to hide the response button
+     * @returns Promise that resolves when the response button has been shown on the host app or reject with an error. Function can also throw a NOT_SUPPORTED_ON_PLATFORM error.
+     *
+     * @beta
+     */
+    export function hideResponseButton(): Promise<void> {
+      ensureInitialized(runtime, FrameContexts.content);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+      return sendAndHandleSdkError(
+        getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ResponseButton_HideResponseButton),
+        'pages.responseButton.hideResponseButton',
+      );
+    }
+
+    /**
+     * Register for a handler that’s triggered when the end user clicks on one of the button options in the host.
+     * The object passed to the handler must be used to notify whether to proceed with the button event.
+     * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+     * @param handler - The handler to invoke when the user clicks on the button in host apps.
+     *
+     * @beta
+     */
+    export function registerResponseButtonClickEventHandler(handler: responseButtonEventType): void {
+      registerHandlerHelper(
+        getApiVersionTag(
+          pagesTelemetryVersionNumber,
+          ApiName.Pages_ResponseButton_RegisterResponseButtonClickEventHandler,
+        ),
+        'pages.responseButton.registerResponseButtonClickEventHandler',
+        handler,
+        [FrameContexts.content],
+        () => {
+          if (!isNullOrUndefined(handler) && !isSupported()) {
+            throw errorNotSupportedOnPlatform;
+          }
+        },
+      );
+    }
+
+    /**
+     * @hidden
+     * Hide from docs, since this class is not directly used.
+     *
+     * @beta
+     */
+    function handleResponseButtonEvent(): void {
+      const responseButtonEventType = new ResponseButtonEventImpl();
+      if (responseButtonHandler) {
+        responseButtonHandler(responseButtonEventType);
+      } else if (Communication.childWindow) {
+        sendMessageEventToChild('pages.responseButton', []);
+      } else {
+        // If no handler is registered, we assume success.
+        responseButtonEventType.notifySuccess();
+      }
+    }
+
+    /**
+     * @hidden
+     * Hide from docs, since this class is not directly used.
+     *
+     * @beta
+     */
+    class ResponseButtonEventImpl implements ResponseButtonEvent {
+      public notified = false;
+
+      public notifySuccess(): void {
+        this.ensureNotNotified();
+        sendMessageToParent(
+          getApiVersionTag(
+            pagesTelemetryVersionNumber,
+            ApiName.Pages_ResponseButton_RegisterResponsButtonClickEvent_Success,
+          ),
+          'pages.responseButton.registerResponseButtonClickEvent.success',
+        );
+        this.notified = true;
+      }
+
+      public notifyFailure(reason?: string): void {
+        this.ensureNotNotified();
+        sendMessageToParent(
+          getApiVersionTag(
+            pagesTelemetryVersionNumber,
+            ApiName.Pages_ResponseButton_RegisterResponsButtonClickEvent_Failure,
+          ),
+          'pages.responseButton.registerResponseButtonClickEvent.failure',
+          [reason],
+        );
+        this.notified = true;
+      }
+
+      private ensureNotNotified(): void {
+        if (this.notified) {
+          throw new Error('The responseButtonEventType may only notify success or failure once.');
+        }
+      }
+    }
+
+    /**
+     * @hidden
+     *
+     * Checks if the pages.responseButton capability is supported by the host
+     * @returns boolean to represent whether the pages.responseButton capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.pages
+        ? runtime.supports.pages.responseButton
           ? true
           : false
         : false;

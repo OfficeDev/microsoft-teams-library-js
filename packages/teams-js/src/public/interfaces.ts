@@ -231,6 +231,11 @@ export interface M365ContentAction extends BaseActionObject<ActionObjectType.M36
   itemId: string;
   /** Represents an optional secondary identifier for an action in a Microsoft 365 content item. */
   secondaryId?: SecondaryId;
+
+  /**
+   * Indicates the original source of the action object.
+   */
+  originalSource?: OriginalSource<OriginalSourceType>;
 }
 
 /**
@@ -259,6 +264,38 @@ export enum SecondaryM365ContentIdName {
   SiteId = 'siteId',
   /** User ID */
   UserId = 'userId',
+}
+
+/**
+ * The original source of the action object from
+ *
+ * @param T The type of original source
+ *
+ * @beta
+ */
+export interface OriginalSource<T extends OriginalSourceType> {
+  /** Represents original source type. */
+  type: T;
+}
+/**
+ * The properties of where the action objects original from
+ *
+ * @beta
+ */
+export enum OriginalSourceType {
+  /** Represents that the original source is from an email. */
+  Email = 'email',
+}
+/**
+ * Stores information necessary to represent the related email and to group the attachments.
+ *
+ * @beta
+ */
+export interface EmailOriginalSource extends OriginalSource<OriginalSourceType.Email> {
+  /** The exact message where the action was invoked from */
+  messageId: string;
+  /** The conversation where the action was invoked from */
+  conversationId: string;
 }
 
 /**
