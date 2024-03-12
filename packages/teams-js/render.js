@@ -34,6 +34,10 @@ data.exportedFireAndForgetFunctions.forEach(entry => {
     }
 });
 
+// Build up arrays of each capability higher in the hierarchy that needs to be supported
+// and then add it to the JSON object we are going to process.
+// It would be silly to make people add things to their json like:
+// `requiresSupport: ["geoLocation", "geoLocation.getCurrentPosition"]` by hand in my opinion.
 function buildUpOtherRequiredCapabilities(jsonObject, needsToBeSupported, currentCapability = undefined) {
     var capabilityName = currentCapability ? `${currentCapability}.${jsonObject.capabilityName}` : jsonObject.capabilityName;
     needsToBeSupported.push(capabilityName);
@@ -43,10 +47,14 @@ function buildUpOtherRequiredCapabilities(jsonObject, needsToBeSupported, curren
         jsonObject.subcapabilities.forEach(subcapability => {
             buildUpOtherRequiredCapabilities(subcapability, needsToBeSupported, capabilityName)
         });
+    } else {
+        jsonObject.subcapabilities = false;
     }
 }
 
 buildUpOtherRequiredCapabilities(data, [], undefined);
+
+
 
 // Uncomment if you want to see what we turn the data into after processing it and before using it to
 // render mustache templates

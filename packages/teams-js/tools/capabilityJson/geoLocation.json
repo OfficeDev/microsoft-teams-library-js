@@ -118,8 +118,7 @@
                     "beta": true,
                     "exportedInterfaces": false,
                     "exportedReturnFunctions": false,
-                    "exportedFireAndForgetFunctions": false,
-                    "subcapabilities": false
+                    "exportedFireAndForgetFunctions": false
                 }
             ]
         }
