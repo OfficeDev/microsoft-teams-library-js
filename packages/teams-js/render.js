@@ -20,19 +20,26 @@ var partials = {
     subcapability: get('./tools/mustacheTemplates/subcapability.mustache'),
 };
 
-// This looks a bit silly, but lets mustache format comma separate lists correctly without requiring
-// json authors to go remember to put `"last": true` on the last item in each parameter list.
-data.exportedReturnFunctions.forEach(entry => {
-    if (entry.parameters !== undefined) {
-        entry.parameters[entry.parameters.length - 1].last = true;
-    }
-});
+function functionListUpdate(functionList) {
+    functionList.forEach(entry => {
+        // This looks a bit silly, but lets mustache format comma separate lists correctly without requiring
+        // json authors to go remember to put `"last": true` on the last item in each parameter list.
+        if (entry.requiredParameters !== undefined) {
+            entry.requiredParameters[entry.requiredParameters.length - 1].last = true;
+        }
+        if (entry.optionalParameters !== undefined) {
+            entry.optionalParameters[entry.optionalParameters.length - 1].last = true;
+        }
+        // If there are both required and optional parameter lists, we need to add a runtime property so that
+        // we know to combine the two lists using a comma in parameter lists
+        if (entry.requiredParameters && entry.optionalParameters) {
+            entry.needToCombineParameterLists = true;
+        }
+    });
+}
 
-data.exportedFireAndForgetFunctions.forEach(entry => {
-    if (entry.parameters !== undefined) {
-        entry.parameters[entry.parameters.length - 1].last = true;
-    }
-});
+functionListUpdate(data.exportedReturnFunctions);
+functionListUpdate(data.exportedFireAndForgetFunctions);
 
 // Build up arrays of each capability higher in the hierarchy that needs to be supported
 // and then add it to the JSON object we are going to process.

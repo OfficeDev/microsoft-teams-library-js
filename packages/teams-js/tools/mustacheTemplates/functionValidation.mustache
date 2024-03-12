@@ -2,7 +2,7 @@ ensureInitialized(runtime{{#limitedToFrameContexts}}, FrameContexts.{{frameConte
 if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
 }
-{{#parameters}}
+{{#requiredParameters}}
 {{!string validation}}
 {{#stringType}}
 
@@ -91,4 +91,94 @@ if ({{name}}.length > {{maxLength}}) {
     }
 });
 {{/array}}
-{{/parameters}}
+{{/requiredParameters}}
+{{#optionalParameters}}
+{{!string validation}}
+{{#stringType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{#minLength}}
+
+if ({{name}}{{#optional}}!{{/optional}}.length < {{minLength}}) {
+    throw new Error("{{name}} must be at least {{minLength}} characters");
+}
+{{/minLength}}
+{{#maxLength}}
+
+if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
+    throw new Error("{{name}} must be less than {{maxLength}} characters");
+}
+{{/maxLength}}
+{{/stringType}}
+{{!number validation}}
+{{#numberType}}
+{{#min}}
+
+if ({{name}}{{#optional}}!{{/optional}} < {{min}}) {
+    throw new Error("{{name}} must be at least {{min}}");
+}
+{{/min}}
+{{#max}}
+
+if ({{name}}{{#optional}}!{{/optional}} > {{max}}) {
+    throw new Error("{{name}} must be less than {{max}}");
+}
+{{/max}}
+{{/numberType}}
+{{!URL validation}}
+{{#urlType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{#mustBeHttps}}
+
+if ({{name}}{{#optional}}!{{/optional}}.protocol.toLowerCase() !== 'https') {
+    throw new Error('{{name}} must use https protocol');
+}
+{{/mustBeHttps}}
+{{/urlType}}
+{{!object validation}}
+{{#objectType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+{{/objectType}}
+{{#uuidType}}
+
+if (isNullOrUndefined({{name}})) {
+    throw new Error("{{name}} can't be null or undefined");
+}
+
+if (!{{name}}) {
+    throw new Error('{{name}} must not be empty');
+}
+
+if (validate({{name}}) === false) {
+    throw new Error('id must be a valid UUID');
+}
+{{/uuidType}}
+{{#array}}
+{{#minLength}}
+
+if ({{name}}.length < {{minLength}}) {
+    throw new Error('{{name}} must have at least {{minLength}} entries');
+}
+{{/minLength}}
+{{#maxLength}}
+
+if ({{name}}.length > {{maxLength}}) {
+    throw new Error('{{name}} must have no more than {{maxLength}} entries');
+}
+{{/maxLength}}
+
+{{name}}.forEach(element => {
+    if (isNullOrUndefined(element)) {
+        throw new Error("{{name}} can't contain null or undefined items");
+    }
+});
+{{/array}}
+{{/optionalParameters}}

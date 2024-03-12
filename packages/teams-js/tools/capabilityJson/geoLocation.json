@@ -47,7 +47,7 @@
             "throwsComment": "Error if Jeff ignored you",
             "returnComment": "Whether or not Jeff says hi",
             "limitedToFrameContexts": [{"frameContext":"content"}],
-            "parameters": [
+            "requiredParameters": [
                 {
                     "name": "variousStrings",
                     "stringType": true,
@@ -63,14 +63,20 @@
                         "mustBeHttps": true
                     },
                     "comment": "Message for Jeff"
-                },
+                }
+            ],
+            "optionalParameters": [
                 {
                     "name": "messageId",
                     "uuidType": {},
-                    "comment": "UUID of message for Jeff",
-                    "optional": true
+                    "comment": "UUID of message for Jeff"
+                },
+                {
+                    "name": "isCool",
+                    "booleanType": true,
+                    "comment": "Whether or not you think this function is cool"
                 }
-            ]
+            ] 
         }
     ],
     "exportedFireAndForgetFunctions": [
@@ -78,7 +84,7 @@
             "name": "showLocation",
             "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
             "comment": "Shows the location on map corresponding to the given coordinates",
-            "parameters": [
+            "requiredParameters": [
                 {
                     "name": "location",
                     "objectType": {
@@ -92,7 +98,7 @@
             "name": "trevorIsCool",
             "limitedToFrameContexts": [{"frameContext":"content"}],
             "comment": "Trevor rules",
-            "parameters": [
+            "requiredParameters": [
                 {
                     "name": "location",
                     "objectType": {
