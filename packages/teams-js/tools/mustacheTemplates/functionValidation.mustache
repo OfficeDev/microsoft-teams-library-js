@@ -11,13 +11,13 @@ if (isNullOrUndefined({{name}})) {
 }
 {{#minLength}}
 
-if ({{name}}{{#optional}}!{{/optional}}.length < {{minLength}}) {
+if ({{name}}.length < {{minLength}}) {
     throw new Error("{{name}} must be at least {{minLength}} characters");
 }
 {{/minLength}}
 {{#maxLength}}
 
-if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
+if ({{name}}.length > {{maxLength}}) {
     throw new Error("{{name}} must be less than {{maxLength}} characters");
 }
 {{/maxLength}}
@@ -26,14 +26,14 @@ if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
 {{#numberType}}
 {{#min}}
 
-if ({{name}}{{#optional}}!{{/optional}} < {{min}}) {
+if ({{name}} < {{min}}) {
     throw new Error("{{name}} must be at least {{min}}");
 }
 {{/min}}
 {{#max}}
 
-if ({{name}}{{#optional}}!{{/optional}} > {{max}}) {
-    throw new Error("{{name}} must be less than {{max}}");
+if ({{name}} > {{max}}) {
+    throw new Error("{{name}} must be less than or equal to {{max}}");
 }
 {{/max}}
 {{/numberType}}
@@ -45,7 +45,7 @@ if (isNullOrUndefined({{name}})) {
 }
 {{#mustBeHttps}}
 
-if ({{name}}{{#optional}}!{{/optional}}.protocol.toLowerCase() !== 'https') {
+if ({{name}}.protocol.toLowerCase() !== 'https') {
     throw new Error('{{name}} must use https protocol');
 }
 {{/mustBeHttps}}
@@ -101,13 +101,13 @@ if (isNullOrUndefined({{name}})) {
 }
 {{#minLength}}
 
-if ({{name}}{{#optional}}!{{/optional}}.length < {{minLength}}) {
+if ({{name}} && {{name}}!.length < {{minLength}}) {
     throw new Error("{{name}} must be at least {{minLength}} characters");
 }
 {{/minLength}}
 {{#maxLength}}
 
-if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
+if ({{name}} && {{name}}!.length > {{maxLength}}) {
     throw new Error("{{name}} must be less than {{maxLength}} characters");
 }
 {{/maxLength}}
@@ -116,14 +116,14 @@ if ({{name}}{{#optional}}!{{/optional}}.length > {{maxLength}}) {
 {{#numberType}}
 {{#min}}
 
-if ({{name}}{{#optional}}!{{/optional}} < {{min}}) {
+if ({{name}} && {{name}} < {{min}}) {
     throw new Error("{{name}} must be at least {{min}}");
 }
 {{/min}}
 {{#max}}
 
-if ({{name}}{{#optional}}!{{/optional}} > {{max}}) {
-    throw new Error("{{name}} must be less than {{max}}");
+if ({{name}} && {{name}} > {{max}}) {
+    throw new Error("{{name}} must be less than or equal to {{max}}");
 }
 {{/max}}
 {{/numberType}}
@@ -135,7 +135,7 @@ if (isNullOrUndefined({{name}})) {
 }
 {{#mustBeHttps}}
 
-if ({{name}}{{#optional}}!{{/optional}}.protocol.toLowerCase() !== 'https') {
+if ({{name}} && {{name}}!.protocol.toLowerCase() !== 'https') {
     throw new Error('{{name}} must use https protocol');
 }
 {{/mustBeHttps}}

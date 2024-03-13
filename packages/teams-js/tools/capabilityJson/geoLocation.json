@@ -63,6 +63,14 @@
                         "mustBeHttps": true
                     },
                     "comment": "Message for Jeff"
+                },
+                {
+                    "name": "isCool2",
+                    "numberType": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "comment": "Whether or not you think this function is cool"
                 }
             ],
             "optionalParameters": [
@@ -73,7 +81,10 @@
                 },
                 {
                     "name": "isCool",
-                    "booleanType": true,
+                    "numberType": {
+                        "min": 0,
+                        "max": 10
+                    },
                     "comment": "Whether or not you think this function is cool"
                 }
             ] 
