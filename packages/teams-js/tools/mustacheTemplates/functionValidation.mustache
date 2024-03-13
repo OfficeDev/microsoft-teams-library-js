@@ -9,18 +9,18 @@ if (!isSupported()) {
 if (isNullOrUndefined({{name}})) {
     throw new Error("{{name}} can't be null or undefined");
 }
-{{#minLength}}
+{{#min}}
 
-if ({{name}}.length < {{minLength}}) {
-    throw new Error("{{name}} must be at least {{minLength}} characters");
+if ({{name}}.length < {{min}}) {
+    throw new Error("{{name}} must be at least {{min}} characters");
 }
-{{/minLength}}
-{{#maxLength}}
+{{/min}}
+{{#max}}
 
-if ({{name}}.length > {{maxLength}}) {
-    throw new Error("{{name}} must be less than {{maxLength}} characters");
+if ({{name}}.length > {{max}}) {
+    throw new Error("{{name}} must be less than {{max}} characters");
 }
-{{/maxLength}}
+{{/max}}
 {{/stringType}}
 {{!number validation}}
 {{#numberType}}
@@ -30,10 +30,22 @@ if ({{name}} < {{min}}) {
     throw new Error("{{name}} must be at least {{min}}");
 }
 {{/min}}
+{{^min}}
+
+if ({{name}} < 0) {
+    throw new Error("{{name}} must be at least 0");
+}
+{{/min}}
 {{#max}}
 
 if ({{name}} > {{max}}) {
     throw new Error("{{name}} must be less than or equal to {{max}}");
+}
+{{/max}}
+{{^max}}
+
+if ({{name}} > 0) {
+    throw new Error("{{name}} must be less than or equal to 0");
 }
 {{/max}}
 {{/numberType}}
@@ -72,18 +84,18 @@ if (validate({{name}}) === false) {
 }
 {{/uuidType}}
 {{#array}}
-{{#minLength}}
+{{#min}}
 
-if ({{name}}.length < {{minLength}}) {
-    throw new Error('{{name}} must have at least {{minLength}} entries');
+if ({{name}}.length < {{min}}) {
+    throw new Error('{{name}} must have at least {{min}} entries');
 }
-{{/minLength}}
-{{#maxLength}}
+{{/min}}
+{{#max}}
 
-if ({{name}}.length > {{maxLength}}) {
-    throw new Error('{{name}} must have no more than {{maxLength}} entries');
+if ({{name}}.length > {{max}}) {
+    throw new Error('{{name}} must have no more than {{max}} entries');
 }
-{{/maxLength}}
+{{/max}}
 
 {{name}}.forEach(element => {
     if (isNullOrUndefined(element)) {
@@ -99,18 +111,18 @@ if ({{name}}.length > {{maxLength}}) {
 if (isNullOrUndefined({{name}})) {
     throw new Error("{{name}} can't be null or undefined");
 }
-{{#minLength}}
+{{#min}}
 
-if ({{name}} && {{name}}!.length < {{minLength}}) {
-    throw new Error("{{name}} must be at least {{minLength}} characters");
+if ({{name}} && {{name}}!.length < {{min}}) {
+    throw new Error("{{name}} must be at least {{min}} characters");
 }
-{{/minLength}}
-{{#maxLength}}
+{{/min}}
+{{#max}}
 
-if ({{name}} && {{name}}!.length > {{maxLength}}) {
-    throw new Error("{{name}} must be less than {{maxLength}} characters");
+if ({{name}} && {{name}}!.length > {{max}}) {
+    throw new Error("{{name}} must be less than {{max}} characters");
 }
-{{/maxLength}}
+{{/max}}
 {{/stringType}}
 {{!number validation}}
 {{#numberType}}
@@ -120,10 +132,22 @@ if ({{name}} && {{name}} < {{min}}) {
     throw new Error("{{name}} must be at least {{min}}");
 }
 {{/min}}
+{{^min}}
+
+if ({{name}} && {{name}} < 0) {
+    throw new Error("{{name}} must be at least 0");
+}
+{{/min}}
 {{#max}}
 
 if ({{name}} && {{name}} > {{max}}) {
     throw new Error("{{name}} must be less than or equal to {{max}}");
+}
+{{/max}}
+{{^max}}
+
+if ({{name}} && {{name}} > 0) {
+    throw new Error("{{name}} must be less than or equal to 0");
 }
 {{/max}}
 {{/numberType}}
@@ -162,18 +186,18 @@ if (validate({{name}}) === false) {
 }
 {{/uuidType}}
 {{#array}}
-{{#minLength}}
+{{#min}}
 
-if ({{name}}.length < {{minLength}}) {
-    throw new Error('{{name}} must have at least {{minLength}} entries');
+if ({{name}}.length < {{min}}) {
+    throw new Error('{{name}} must have at least {{min}} entries');
 }
-{{/minLength}}
-{{#maxLength}}
+{{/min}}
+{{#max}}
 
-if ({{name}}.length > {{maxLength}}) {
-    throw new Error('{{name}} must have no more than {{maxLength}} entries');
+if ({{name}}.length > {{max}}) {
+    throw new Error('{{name}} must have no more than {{max}} entries');
 }
-{{/maxLength}}
+{{/max}}
 
 {{name}}.forEach(element => {
     if (isNullOrUndefined(element)) {
