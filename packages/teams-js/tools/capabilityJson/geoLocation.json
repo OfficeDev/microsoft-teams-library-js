@@ -39,103 +39,33 @@
             "name": "getCurrentLocation",
             "returns": "Location",
             "returnComment": "A promise that resolves with the location of the user",
-            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}]
-        },
-        {
-            "name": "getGreetingsFromJeff",
-            "returns": "boolean",
-            "throwsComment": "Error if Jeff ignored you",
-            "returnComment": "Whether or not Jeff says hi",
-            "limitedToFrameContexts": [{"frameContext":"content"}],
+            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
             "requiredParameters": [
                 {
-                    "name": "variousStrings",
-                    "stringType": true,
-                    "array": {
-                        "minLength": 1,
-                        "maxLength": 3
+                    "name": "foo",
+                    "objectType": {
+                        "typeName": "Location"
                     },
-                    "comment": "List of random strings, must be 1 to 3 items long"
-                },
-                {
-                    "name": "sayThisToJeff",
-                    "urlType": {
-                        "mustBeHttps": true
-                    },
-                    "comment": "Message for Jeff"
-                },
-                {
-                    "name": "isCool2",
-                    "numberType": {
-                        "min": 0,
-                        "max": 10
-                    },
-                    "comment": "Whether or not you think this function is cool"
+                    "comment": "Bar!"
                 }
             ],
-            "optionalParameters": [
+            "dataForHost": [{"basic": 1}, {"string": "hello"}, {"basic": "true"}, {"reference": "foo"}],
+            "dataFromHost": [
                 {
-                    "name": "messageId",
-                    "uuidType": {},
-                    "comment": "UUID of message for Jeff"
+                    "name": "wasSuccessful",
+                    "successCheck": true,
+                    "errorMessage": "Call failed on host with generic error, please read our docs for more info"
                 },
                 {
-                    "name": "isCool",
-                    "numberType": {
-                        "min": 0,
-                        "max": 10
-                    },
-                    "comment": "Whether or not you think this function is cool"
-                }
-            ] 
-        }
-    ],
-    "exportedFireAndForgetFunctions": [
-        {
-            "name": "showLocation",
-            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
-            "comment": "Shows the location on map corresponding to the given coordinates",
-            "requiredParameters": [
+                    "name": "err",
+                    "sdkError": true
+                },
                 {
                     "name": "location",
-                    "objectType": {
-                        "typeName": "Location"
-                    },
-                    "comment": "Location to be sent to the host"
-                }
-            ]
-        },
-        {
-            "name": "trevorIsCool",
-            "limitedToFrameContexts": [{"frameContext":"content"}],
-            "comment": "Trevor rules",
-            "requiredParameters": [
-                {
-                    "name": "location",
-                    "objectType": {
-                        "typeName": "Location"
-                    },
-                    "comment": "Location to be sent to the host"
-                }
-            ]
-        }
-    ],
-    "subcapabilities": [
-        {
-            "capabilityName": "trevorsSpecialSubcapability",
-            "comment": "Namespace to interact with the 'trevors special subcapability' module-specific part of the SDK. This is the newer version of location module.",
-            "beta": true,
-            "exportedInterfaces": false,
-            "exportedReturnFunctions": false,
-            "exportedFireAndForgetFunctions": false,
-            "subcapabilities": [
-                {
-                    "capabilityName": "trevorsMORESpecialSubcapability",
-                    "comment": "Namespace to interact with the 'trevors MORE special subcapability module-specific part of the SDK. This is the newer version of location module.",
-                    "beta": true,
-                    "exportedInterfaces": false,
-                    "exportedReturnFunctions": false,
-                    "exportedFireAndForgetFunctions": false
+                    "type": "Location",
+                    "requiredForSuccess": true,
+                    "errorMessage": "No location received from host",
+                    "returnValue": true
                 }
             ]
         }

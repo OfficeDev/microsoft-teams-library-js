@@ -1,0 +1,152 @@
+{
+    "capabilityName": "geoLocation2",
+    "comment": "Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.",
+    "beta": true,
+    "requiresDevicePermissions": true,
+    "exportedInterfaces": [
+        {
+            "name": "Location",
+            "comment": "Data struture to represent the location information",
+            "members": [
+                {
+                    "name": "latitude",
+                    "type": "number",
+                    "comment": "Latitude of the location"
+                },
+                {
+                    "name": "longitude",
+                    "type": "number",
+                    "comment": "Longitude of the location"
+                },
+                {
+                    "name": "accuracy",
+                    "type": "number",
+                    "comment": "Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location",
+                    "optional": true,
+                    "remark": "This property is only in scope for mobile"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "number",
+                    "optional": true,
+                    "comment": "Time stamp when the location was captured"
+                }
+            ]
+        }
+    ],
+    "exportedReturnFunctions": [
+        {
+            "name": "getCurrentLocation",
+            "returns": "Location",
+            "returnComment": "A promise that resolves with the location of the user",
+            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
+            "requiredParameters": [
+                {
+                    "name": "foo",
+                    "booleanType": true,
+                    "comment": "Bar!"
+                }
+            ],
+            "dataForHost": [{"basic": 1}, {"string": "hello"}, {"basic": "true"}, {"reference": "foo"}]
+        },
+        {
+            "name": "getGreetingsFromJeff",
+            "returns": "boolean",
+            "throwsComment": "Error if Jeff ignored you",
+            "returnComment": "Whether or not Jeff says hi",
+            "limitedToFrameContexts": [{"frameContext":"content"}],
+            "requiredParameters": [
+                {
+                    "name": "variousStrings",
+                    "stringType": true,
+                    "array": {
+                        "minLength": 1,
+                        "maxLength": 3
+                    },
+                    "comment": "List of random strings, must be 1 to 3 items long"
+                },
+                {
+                    "name": "sayThisToJeff",
+                    "urlType": {
+                        "mustBeHttps": true
+                    },
+                    "comment": "Message for Jeff"
+                },
+                {
+                    "name": "isCool2",
+                    "numberType": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "comment": "Whether or not you think this function is cool"
+                }
+            ],
+            "optionalParameters": [
+                {
+                    "name": "messageId",
+                    "uuidType": {},
+                    "comment": "UUID of message for Jeff"
+                },
+                {
+                    "name": "isCool",
+                    "numberType": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "comment": "Whether or not you think this function is cool"
+                }
+            ] 
+        }
+    ],
+    "exportedFireAndForgetFunctions": [
+        {
+            "name": "showLocation",
+            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
+            "comment": "Shows the location on map corresponding to the given coordinates",
+            "dataForHost": [{"basic": "false"}, {"string": "test"}, {"reference": "location"}],
+            "requiredParameters": [
+                {
+                    "name": "location",
+                    "objectType": {
+                        "typeName": "Location"
+                    },
+                    "comment": "Location to be sent to the host"
+                }
+            ]
+        },
+        {
+            "name": "trevorIsCool",
+            "limitedToFrameContexts": [{"frameContext":"content"}],
+            "comment": "Trevor rules",
+            "requiredParameters": [
+                {
+                    "name": "location",
+                    "objectType": {
+                        "typeName": "Location"
+                    },
+                    "comment": "Location to be sent to the host"
+                }
+            ]
+        }
+    ],
+    "subcapabilities": [
+        {
+            "capabilityName": "trevorsSpecialSubcapability",
+            "comment": "Namespace to interact with the 'trevors special subcapability' module-specific part of the SDK. This is the newer version of location module.",
+            "beta": true,
+            "exportedInterfaces": false,
+            "exportedReturnFunctions": false,
+            "exportedFireAndForgetFunctions": false,
+            "subcapabilities": [
+                {
+                    "capabilityName": "trevorsMORESpecialSubcapability",
+                    "comment": "Namespace to interact with the 'trevors MORE special subcapability module-specific part of the SDK. This is the newer version of location module.",
+                    "beta": true,
+                    "exportedInterfaces": false,
+                    "exportedReturnFunctions": false,
+                    "exportedFireAndForgetFunctions": false
+                }
+            ]
+        }
+    ]
+}

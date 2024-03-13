@@ -1,0 +1,22 @@
+.then(([{{#dataFromHost}}{{name}}{{^last}}, {{/last}}{{/dataFromHost}}]: [{{#dataFromHost}}{{#successCheck}}boolean{{/successCheck}}{{#sdkError}}SdkError{{/sdkError}}{{#type}}{{type}}{{/type}}{{^last}}, {{/last}}{{/dataFromHost}}]) => {
+    {{#dataFromHost}}
+    {{#successCheck}}
+    if (!{{name}}) {
+        throw new Error('{{errorMessage}}');
+    }
+    {{/successCheck}}
+    {{#sdkError}}
+    if ({{name}}) {
+        throw new Error('Code ' + {{name}}.errorCode + {{name}}.message ? ': ' + {{name}}.message : '');
+    }
+    {{/sdkError}}
+    {{#requiredForSuccess}}
+    if (!{{name}}) {
+        throw new Error('{{errorMessage}}');
+    }
+    {{/requiredForSuccess}}
+    {{#returnValue}}
+    return {{name}};
+    {{/returnValue}}
+    {{/dataFromHost}}
+});

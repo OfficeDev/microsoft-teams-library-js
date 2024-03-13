@@ -6,6 +6,6 @@ export function {{name}}({{> parameterList}}): void {
         // TODO: Replace ApiName.YOUR_TELEMETRY_NAME_HERE with a reference to a new entry you have added to telemetry.ts
         getApiVersionTag({{capabilityName}}TelemetryVersionNumber, ApiName.YOUR_TELEMETRY_NAME_HERE),
         "{{capabilityName}}.{{name}}",
-        [] // TODO: This should contain any data you need to pass to perform this call
+        [{{#dataForHost}}{{>dataForHost}}{{/dataForHost}}] // TODO: Verify this contains all data you need to pass to the host
     );
 }

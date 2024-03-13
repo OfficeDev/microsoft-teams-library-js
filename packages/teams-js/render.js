@@ -18,9 +18,15 @@ var partials = {
     functionValidation: get('./tools/mustacheTemplates/functionValidation.mustache'),
     namespace: get('./tools/mustacheTemplates/namespace.mustache'),
     subcapability: get('./tools/mustacheTemplates/subcapability.mustache'),
+    dataForHost: get('./tools/mustacheTemplates/dataForHost.mustache'),
+    hostReturnHandling: get('./tools/mustacheTemplates/hostReturnHandling.mustache'),
 };
 
 function functionListUpdate(functionList) {
+    if (functionList === undefined) {
+        return;
+    }
+    
     functionList.forEach(entry => {
         // This looks a bit silly, but lets mustache format comma separate lists correctly without requiring
         // json authors to go remember to put `"last": true` on the last item in each parameter list.
@@ -35,11 +41,27 @@ function functionListUpdate(functionList) {
         if (entry.requiredParameters && entry.optionalParameters) {
             entry.needToCombineParameterLists = true;
         }
+
+        if (entry.dataForHost !== undefined) {
+            entry.dataForHost[entry.dataForHost.length - 1].last = true;
+        }
+
+        if (entry.dataFromHost !== undefined) {
+            entry.dataFromHost[entry.dataFromHost.length - 1].last = true;
+        }
     });
+}
+
+function dataForHostUpdate(fullData) {
+    if (fullData.dataForHost !== undefined) {
+        fullData.dataForHost[fullData.dataForHost.length - 1].last = true;
+    }
 }
 
 functionListUpdate(data.exportedReturnFunctions);
 functionListUpdate(data.exportedFireAndForgetFunctions);
+dataForHostUpdate(data);
+
 
 // Build up arrays of each capability higher in the hierarchy that needs to be supported
 // and then add it to the JSON object we are going to process.
