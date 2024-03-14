@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
@@ -193,5 +193,50 @@ export namespace sharing {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
+  }
+
+  /**
+   * Namespace to get the list of content shared in a context
+   */
+  export namespace history {
+    /** Represents IContentResponse parameters. */
+    export interface IContentResponse {
+      /** Id of the app where the content was shared from */
+      appId: string;
+      /** Title of the shared content */
+      title: string;
+      /** Reference of the shared content */
+      contentReference: string;
+      /** Id of the thread where the content was shared */
+      threadId: string;
+      /** Id of the user who shared the content */
+      author: string;
+      /** Type of the shared content */
+      contentType: string;
+    }
+
+    /** getContent callback function type */
+    export type getContentCallbackFunctionType = (
+      error: SdkError | null,
+      contentDetails: IContentResponse[] | null,
+    ) => void;
+
+    /**
+     * Get the list of content shared in a context
+     * @param callback - Callback contains 2 parameters, `error` and `contentDetails`.
+     * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
+     * `contentDetails` will be the list of contents {@link IContentResponse} that was shared in the context, or null when the request fails.
+     */
+    export function getContent(callback: getContentCallbackFunctionType): void {
+      if (!callback) {
+        throw new Error('[get content] Callback cannot be null');
+      }
+      ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      sendMessageToParent(
+        getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_History_GetContent),
+        'getContent',
+        callback,
+      );
+    }
   }
 }
