@@ -1,4 +1,4 @@
-.then(([{{#dataFromHost}}{{errorName}}, {{returnValue.name}}{{/dataFromHost}}]: [{{#dataFromHost}}SdkError, {{returnValue.type}}{{/dataFromHost}}]) => {
+.then(([{{#dataFromHost}}{{errorName}}{{#returnValue}}, {{returnValue.name}}{{/returnValue}}{{/dataFromHost}}]: [{{#dataFromHost}}SdkError{{#returnValue}}, {{returnValue.type}}{{/returnValue}}{{/dataFromHost}}]) => {
     {{#dataFromHost}}
     if ({{errorName}}) {
         throw new Error('Code ' + {{errorName}}.errorCode + {{errorName}}.message ? ': ' + {{errorName}}.message : '');

@@ -105,6 +105,14 @@
           "returnToCaller": true
         }
       }
+    },
+    {
+      "name": "notifyHostAndHearWhenFinished",
+      "returns": "void",
+      "returnComment": "A promise that resolves when the host is finished with the notification",
+      "dataFromHost": {
+        "errorName": "errFromHost"
+      }
     }
   ]
 }
