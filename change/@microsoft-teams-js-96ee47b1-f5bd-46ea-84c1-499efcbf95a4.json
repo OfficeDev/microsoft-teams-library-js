@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Added `sharing.history.getContent` capability that will fetch a list of contents that was shared in a Teams context",
+  "packageName": "@microsoft/teams-js",
+  "email": "shmayura@microsoft.com",
+  "dependentChangeType": "none"
+}
