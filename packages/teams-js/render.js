@@ -21,6 +21,7 @@ var partials = {
     dataForHost: get('./tools/mustacheTemplates/dataForHost.mustache'),
     hostReturnHandling: get('./tools/mustacheTemplates/hostReturnHandling.mustache'),
     placeholders: get('./tools/mustacheTemplates/placeholders.mustache'),
+    serializedFrom: get('./tools/mustacheTemplates/serializedFrom.mustache'),
 };
 
 function functionListUpdate(functionList) {

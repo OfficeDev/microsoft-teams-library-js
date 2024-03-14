@@ -114,5 +114,40 @@
         "errorName": "errFromHost"
       }
     }
+  ],
+  "exportedFireAndForgetFunctions": [
+    {
+      "name": "passInfoToHost",
+      "comment": "Pass info to the host, never hear anything back from them",
+      "requiredParameters": [
+        {
+          "name": "id",
+          "uuidType": true,
+          "comment": "UUID"
+        },
+        {
+          "name": "secureUrl",
+          "urlType": {
+              "mustBeHttps": true
+          },
+          "comment": "Url the host needs to process and store"
+        }
+      ],
+      "dataForHost": [
+        {
+          "name": "id",
+          "uuidType": true,
+          "comment": "UUID",
+          "reference": true
+        },
+        {
+          "name": "serializedUrl",
+          "urlType": true,
+          "comment": "This is the URL that has been serialized into a string",
+          "serializedFrom": "secureUrl",
+          "reference": true
+        }
+      ]
+  }
   ]
 }

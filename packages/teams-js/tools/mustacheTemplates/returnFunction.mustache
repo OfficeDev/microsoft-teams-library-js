@@ -2,6 +2,7 @@
 export function {{name}}({{> parameterList}}): Promise<{{returns}}> {
     {{>functionValidation}}
     {{>placeholders}}
+    {{>serializedFrom}}
 
     return sendMessageToParentAsync(
         // TODO: Replace ApiName.YOUR_TELEMETRY_NAME_HERE with a reference to a new entry you have added to telemetry.ts

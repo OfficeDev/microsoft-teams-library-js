@@ -2,6 +2,7 @@
 export function {{name}}({{> parameterList}}): void {
     {{>functionValidation}}
     {{>placeholders}}
+    {{>serializedFrom}}
 
     return sendMessageToParent(
         // TODO: Replace ApiName.YOUR_TELEMETRY_NAME_HERE with a reference to a new entry you have added to telemetry.ts
