@@ -1,1 +1,1 @@
-{{#basic}}{{basic}}{{/basic}}{{#string}}'{{string}}'{{/string}}{{#reference}}{{reference}} /*TODO: Serialize object if necessary*/{{/reference}}{{^last}}, {{/last}}
+{{#numberType}}{{#value}}{{value}}{{/value}}{{^value}}{{#reference}}{{name}}{{/reference}}{{^reference}}0{{/reference}}{{/value}}{{/numberType}}{{#stringType}}{{#value}}'{{value}}'{{/value}}{{#reference}}{{name}}{{/reference}}{{/stringType}}{{#booleanType}}{{#value}}{{value}}{{/value}}{{#reference}}{{name}}{{/reference}}{{/booleanType}}{{#objectType}}{{name}}{{/objectType}}{{^last}}, {{/last}}

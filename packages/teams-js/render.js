@@ -20,6 +20,7 @@ var partials = {
     subcapability: get('./tools/mustacheTemplates/subcapability.mustache'),
     dataForHost: get('./tools/mustacheTemplates/dataForHost.mustache'),
     hostReturnHandling: get('./tools/mustacheTemplates/hostReturnHandling.mustache'),
+    placeholders: get('./tools/mustacheTemplates/placeholders.mustache'),
 };
 
 function functionListUpdate(functionList) {
@@ -44,10 +45,6 @@ function functionListUpdate(functionList) {
 
         if (entry.dataForHost !== undefined) {
             entry.dataForHost[entry.dataForHost.length - 1].last = true;
-        }
-
-        if (entry.dataFromHost !== undefined) {
-            entry.dataFromHost[entry.dataFromHost.length - 1].last = true;
         }
     });
 }

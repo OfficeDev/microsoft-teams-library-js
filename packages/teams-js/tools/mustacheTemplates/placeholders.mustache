@@ -1,0 +1,18 @@
+{{#dataForHost}}
+{{#placeholder}}
+
+// TODO: Replace placeholder with correct calculated value
+{{#stringType}}
+const {{name}}: string = 'PLACEHOLDER_VALUE';
+{{/stringType}}
+{{#booleanType}}
+const {{name}}: boolean = false;
+{{/booleanType}}
+{{#numberType}}
+const {{name}}: number = -1;
+{{/numberType}}
+{{#objectType}}
+const {{name}}: {{typeName}} = {};
+{{/objectType}}
+{{/placeholder}}
+{{/dataForHost}}

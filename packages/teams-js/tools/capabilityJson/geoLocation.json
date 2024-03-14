@@ -1,73 +1,110 @@
 {
-    "capabilityName": "geoLocation2",
-    "comment": "Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.",
-    "beta": true,
-    "requiresDevicePermissions": true,
-    "exportedInterfaces": [
+  "capabilityName": "foo",
+  "comment": "Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.",
+  "beta": true,
+  "requiresDevicePermissions": true,
+  "exportedInterfaces": [
+    {
+      "name": "Baz",
+      "comment": "Data struture to represent the location information",
+      "members": [
         {
-            "name": "Location",
-            "comment": "Data struture to represent the location information",
-            "members": [
-                {
-                    "name": "latitude",
-                    "type": "number",
-                    "comment": "Latitude of the location"
-                },
-                {
-                    "name": "longitude",
-                    "type": "number",
-                    "comment": "Longitude of the location"
-                },
-                {
-                    "name": "accuracy",
-                    "type": "number",
-                    "comment": "Accuracy describes the maximum distance in meters from the captured coordinates to the possible actual location",
-                    "optional": true,
-                    "remark": "This property is only in scope for mobile"
-                },
-                {
-                    "name": "timestamp",
-                    "type": "number",
-                    "optional": true,
-                    "comment": "Time stamp when the location was captured"
-                }
-            ]
-        }
-    ],
-    "exportedReturnFunctions": [
+          "name": "one",
+          "type": "number",
+          "comment": "First number"
+        },
         {
-            "name": "getCurrentLocation",
-            "returns": "Location",
-            "returnComment": "A promise that resolves with the location of the user",
-            "limitedToFrameContexts": [{"frameContext":"content"}, {"frameContext": "task"}],
-            "requiredParameters": [
-                {
-                    "name": "foo",
-                    "objectType": {
-                        "typeName": "Location"
-                    },
-                    "comment": "Bar!"
-                }
-            ],
-            "dataForHost": [{"basic": 1}, {"string": "hello"}, {"basic": "true"}, {"reference": "foo"}],
-            "dataFromHost": [
-                {
-                    "name": "wasSuccessful",
-                    "successCheck": true,
-                    "errorMessage": "Call failed on host with generic error, please read our docs for more info"
-                },
-                {
-                    "name": "err",
-                    "sdkError": true
-                },
-                {
-                    "name": "location",
-                    "type": "Location",
-                    "requiredForSuccess": true,
-                    "errorMessage": "No location received from host",
-                    "returnValue": true
-                }
-            ]
+          "name": "two",
+          "type": "number",
+          "comment": "Second number"
+        },
+        {
+          "name": "three",
+          "type": "number",
+          "comment": "Third number",
+          "optional": true,
+          "remark": "Sometimes we have this value, but sometimes we do not"
+        },
+        {
+          "name": "four",
+          "type": "number",
+          "optional": true,
+          "comment": "Fourth number"
         }
-    ]
+      ]
+    }
+  ],
+  "exportedReturnFunctions": [
+    {
+      "name": "retrieveUpdatedBaz",
+      "returns": "Baz",
+      "returnComment": "A promise that resolves with the location of the user",
+      "limitedToFrameContexts": [{ "frameContext": "content" }, { "frameContext": "task" }],
+      "requiredParameters": [
+        {
+          "name": "bar",
+          "objectType": {
+            "typeName": "Baz"
+          },
+          "comment": "Bar!"
+        }
+      ],
+      "optionalParameters": [
+        {
+          "name": "isEnthusiastic",
+          "booleanType": true,
+          "comment": "How enthusiastic the user wants to be"
+        }
+      ],
+      "dataForHost": [
+        {
+          "name": "count",
+          "numberType": {
+            "min": 1,
+            "max": 10
+          },
+          "comment": "The count",
+          "value": 1
+        },
+        {
+          "name": "greetingMessage",
+          "stringType": true,
+          "comment": "A greeting message for you",
+          "value": "Hello world!"
+        },
+        {
+          "name": "PLACEHOLDER_HOST_VALUE",
+          "objectType": {
+            "typeName": "Baz"
+          },
+          "comment": "True iff this is an enthusiastic greeting",
+          "reference": true,
+          "placeholder": true
+        },
+        {
+          "name": "isEnthusiastic",
+          "booleanType": true,
+          "comment": "True iff this is an enthusiastic greeting",
+          "reference": true
+        },
+        {
+          "name": "bar",
+          "objectType": {
+            "typeName": "Baz"
+          },
+          "comment": "Bar!"
+        }
+      ],
+      "dataFromHost": {
+        "errorName": "err",
+        "returnValue": {
+          "name": "bar",
+          "type": "Baz",
+          "requiredForSuccess": true,
+          "errorMessage": "No Baz received from host",
+          "returnToCaller": true
+        }
+      }
+    }
+  ]
 }

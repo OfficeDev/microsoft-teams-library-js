@@ -1,20 +1,13 @@
-.then(([{{#dataFromHost}}{{name}}{{^last}}, {{/last}}{{/dataFromHost}}]: [{{#dataFromHost}}{{#successCheck}}boolean{{/successCheck}}{{#sdkError}}SdkError{{/sdkError}}{{#type}}{{type}}{{/type}}{{^last}}, {{/last}}{{/dataFromHost}}]) => {
+.then(([{{#dataFromHost}}{{errorName}}, {{returnValue.name}}{{/dataFromHost}}]: [{{#dataFromHost}}SdkError, {{returnValue.type}}{{/dataFromHost}}]) => {
     {{#dataFromHost}}
-    {{#successCheck}}
+    if ({{errorName}}) {
+        throw new Error('Code ' + {{errorName}}.errorCode + {{errorName}}.message ? ': ' + {{errorName}}.message : '');
+    }
+    {{#returnValue.requiredForSuccess}}
     if (!{{name}}) {
         throw new Error('{{errorMessage}}');
     }
-    {{/successCheck}}
-    {{#sdkError}}
-    if ({{name}}) {
-        throw new Error('Code ' + {{name}}.errorCode + {{name}}.message ? ': ' + {{name}}.message : '');
-    }
-    {{/sdkError}}
-    {{#requiredForSuccess}}
-    if (!{{name}}) {
-        throw new Error('{{errorMessage}}');
-    }
-    {{/requiredForSuccess}}
+    {{/returnValue.requiredForSuccess}}
     {{#returnValue}}
     return {{name}};
     {{/returnValue}}
