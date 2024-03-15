@@ -1,0 +1,70 @@
+{
+  "capabilityName": "fhl",
+  "comment": "This capability can be used to demonstrate how auto-generated code can be added to the SDk when developers are proposing new capabilities.",
+  "beta": true,
+  "exportedInterfaces": [
+    {
+      "name": "MySpecialInterface",
+      "comment": "This is a simple object that we will pass back to the developer as a result of calling one of the functions",
+      "members": [
+        {
+          "name": "hostReturnedNumber",
+          "type": "number",
+          "comment": "This is just any number at all that the host wanted the caller to have"
+        },
+        {
+          "name": "specialHostString",
+          "type": "string",
+          "comment": "A special message the host would like to share with the caller!?"
+        }
+      ]
+    }
+  ],
+  "exportedReturnFunctions": [
+    {
+      "name": "askHostForSpecialInterface",
+      "returns": "MySpecialInterface",
+      "comment": "Retrieve an updated Baz from the host",
+      "returnComment": "A promise that resolves with the location of the user",
+      "limitedToFrameContexts": [{ "frameContext": "content" }, { "frameContext": "task" }],
+      "requiredParameters": [
+        {
+          "name": "appId",
+          "uuidType": true,
+          "comment": "The id that uniquely identifies your application"
+        }
+      ],
+      "optionalParameters": [
+        {
+          "name": "isEnthusiastic",
+          "booleanType": true,
+          "comment": "Does the user want to be enthusiastic?"
+        }
+      ],
+      "dataForHost": [
+        {
+          "name": "appId",
+          "uuidType": true,
+          "comment": "Unique application id",
+          "reference": true
+        },
+        {
+          "name": "isEnthusiastic",
+          "booleanType": true,
+          "comment": "Does the caller want to be enthusiastic?",
+          "reference": true
+        }
+      ],
+      "dataFromHost": {
+        "errorName": "err",
+        "returnValue": {
+          "name": "specialInterfaceForYou",
+          "type": "MySpecialInterface",
+          "requiredForSuccess": true,
+          "errorMessage": "No special interface received from host :(",
+          "returnToCaller": true
+        }
+      }
+    }
+  ]
+}

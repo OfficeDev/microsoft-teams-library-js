@@ -8,7 +8,7 @@ function get(file) {
 var v = new Validator();
 
 var schema = JSON.parse(get('./tools/capabilityJson/schemas/capability.schema.json'));
-var data = JSON.parse(get('./tools/capabilityJson/geoLocation.json'));
+var data = JSON.parse(get('./tools/capabilityJson/fhl.json'));
 
 var exportedInterfaceSchema = JSON.parse(get('./tools/capabilityJson/schemas/exportedInterface.schema.json'));
 v.addSchema(exportedInterfaceSchema, '/ExportedInterface');

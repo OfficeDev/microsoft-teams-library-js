@@ -17,7 +17,7 @@
     "docs:validate": "pnpm typedoc --emit none",
     "generateSchemaDocs": "pnpm jsonschema2md -d ./tools/capabilityJson/schemas -o ./tools/capabilityJson/schemas/docs",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
-    "mustacheCapabilityPOC": "node render.js > src/public/geoLocation2.ts",
+    "mustacheCapabilityPOC": "node render.js > src/public/fhl.ts",
     "prettier": "prettier --write '**/*.{ts,js,css,html}' --end-of-line auto",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false",

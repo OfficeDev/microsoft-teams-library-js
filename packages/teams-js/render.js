@@ -5,7 +5,7 @@ function get(file) {
   return fs.readFileSync(file).toString();
 }
 
-var data = JSON.parse(get('./tools/capabilityJson/geoLocation.json'));
+var data = JSON.parse(get('./tools/capabilityJson/fhl.json'));
 
 var template = get('./tools/mustacheTemplates/capability.mustache');
 
