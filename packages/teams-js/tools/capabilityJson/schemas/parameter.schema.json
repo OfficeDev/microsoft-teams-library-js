@@ -1,0 +1,149 @@
+{
+  "$id": "/Parameter",
+  "type": "object",
+  "title": "Parameter",
+  "properties": {
+    "name": {
+      "$comment": "The name of the interface, this will be visible to external developers",
+      "title": "Name",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 30
+    },
+    "comment": {
+      "$comment": "A brief, descriptive explanation of what this interface represents that will be surfaced to consumers of your capability.",
+      "title": "Comment",
+      "type": "string",
+      "minLength": 15,
+      "maxLength": 1000
+    },
+    "array": {
+      "$comment": "This parameter is an `array` of the type specified. If you set this to an object you can pass in extra parameters to automatically validate the input.",
+      "title": "Array",
+      "type": ["boolean", "object"],
+      "properties": {
+        "min": {
+          "$comment": "The minimum length of the array",
+          "type": "number"
+        },
+        "max": {
+          "$comment": "The maximum length of the array",
+          "type": "number"
+        }
+      },
+      "required": ["min", "max"]
+    },
+    "stringType": {
+      "$comment": "This parameter is of type `string`. If you set this to an object you can pass in extra parameters to automatically validate the input.",
+      "type": ["boolean", "object"],
+      "title": "String Type",
+      "properties": {
+        "min": {
+          "$comment": "The minimum length of the string",
+          "type": "number"
+        },
+        "max": {
+          "$comment": "The maximum length of the string",
+          "type": "number"
+        }
+      },
+      "required": ["min", "max"]
+    },
+    "booleanType": {
+      "$comment": "This parameter is of type `boolean`",
+      "title": "Boolean Type",
+      "type": "boolean"
+    },
+    "numberType": {
+      "$comment": "This parameter is of type `number`.  If you set this to an object you can pass in extra parameters to automatically validate the input.",
+      "title": "Number Type",
+      "type": ["boolean", "object"],
+      "properties": {
+        "min": {
+          "$comment": "The minimum value for the number",
+          "type": "number"
+        },
+        "max": {
+          "$comment": "The maximum value for the number",
+          "type": "number"
+        }
+      },
+      "required": ["min", "max"]
+    },
+    "urlType": {
+      "$comment": "This parameter is of type `url`",
+      "title": "URL Type",
+      "type": ["boolean", "object"],
+      "properties": {
+        "mustBeHttps": {
+          "$comment": "If true, the URL must be an HTTPS URL",
+          "type": "boolean"
+        }
+      }
+    },
+    "enumType": {
+      "$comment": "This parameter is of type `enum`",
+      "title": "Enum Type",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$comment": "The name of the enum type, this will be visible to external developers",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 30
+        }
+      },
+      "required": ["name"]
+    },
+    "objectType": {
+      "$comment": "This parameter is of type `object`",
+      "title": "Object Type",
+      "type": "object",
+      "properties": {
+        "typeName": {
+          "$comment": "The name of the object type, this will be visible to external developers",
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 30
+        }
+      },
+      "required": ["typeName"]
+    },
+    "uuidType": {
+      "$comment": "This parameter is of type `uuid`",
+      "title": "UUID Type",
+      "type": "boolean"
+    }
+  },
+  "oneOf": [
+    {
+      "title": "stringType",
+      "required": ["stringType"]
+    },
+    {
+      "title": "booleanType",
+      "required": ["booleanType"]
+    },
+    {
+      "title": "numberType",
+      "required": ["numberType"]
+    },
+    {
+      "title": "urlType",
+      "required": ["urlType"]
+    },
+    {
+      "title": "enumType",
+      "required": ["enumType"]
+    },
+    {
+      "title": "objectType",
+      "required": ["objectType"]
+    },
+    {
+      "title": "uuidType",
+      "required": ["uuidType"]
+    }
+  ],
+  "required": ["name", "comment"]
+}

@@ -15,19 +15,23 @@
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",
+    "generateSchemaDocs": "pnpm jsonschema2md -d ./tools/capabilityJson/schemas -o ./tools/capabilityJson/schemas/docs",
     "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
-    "prettier": "prettier --write '**/*.{ts,js,css,html}'",
+    "mustacheCapabilityPOC": "node render.js > src/public/geoLocation2.ts",
+    "prettier": "prettier --write '**/*.{ts,js,css,html}' --end-of-line auto",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false",
-    "mustacheCapabilityPOC": "node render.js > src/public/geoLocation2.ts"
+    "validateJson": "node validateCapabilityJson.js"
   },
   "dependencies": {
     "debug": "^4.3.3",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
+    "@adobe/jsonschema2md": "^7.1.5",
     "@types/debug": "^4.1.7",
-    "@types/mustache": "^4.2.5"
+    "@types/mustache": "^4.2.5",
+    "jsonschema": "^1.4.1"
   },
   "license": "MIT",
   "files": [

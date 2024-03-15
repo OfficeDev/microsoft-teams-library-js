@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/Capability",
+  "type": "object",
+  "title": "TeamsJS Capability Schema",
+  "description": "Schema for a TeamsJS capability",
+  "properties": {
+    "capabilityName": {
+      "$comment": "This is the name of the capability. It must be unique and is used to generate the capability's namespace which is referenced by consumers of the TeamsJS Library.",
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 30
+    },
+    "comment": {
+      "$comment": "This should be a brief description of the capability, what developers use it for, and how it works.",
+      "type": "string",
+      "minLength": 15,
+      "maxLength": 1000
+    },
+    "beta": {
+      "$comment": "This is a boolean value that indicates whether the capability is in beta. If true, the capability will be hidden from the public documentation and can be freely changed. If false, the capability can only be changed in non-breaking ways.",
+      "type": "boolean"
+    },
+    "requiresDevicePermissions": {
+      "$comment": "This is a boolean value that indicates whether the capability requires device permissions. If true, the capability will have code generated that allows developers to request and check the permissions associated with this capability.",
+      "type": "boolean"
+    },
+    "exportedInterfaces": {
+      "$comment": "This is an array of objects that represent the interfaces that are exported by this capability. These interfaces are used by the capability's consumers to interact with the capability and can be passed into and returned from the capability's functions",
+      "type": "array",
+      "items": { "$ref": "/ExportedInterface" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "exportedReturnFunctions": {
+      "$comment": "This is an array of objects that represent functions that consumers of your capability can call. These functions will send some data to the host and return a `Promise`. Developers can `await` that `Promise`; when the `Promise` resolves the call has been completed successfully and any data returned as a result of the call can be retrieved.",
+      "type": "array",
+      "items": { "$ref": "/ExportedReturnFunction" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "exportedFireAndForgetFunctions": {
+      "$comment": "This is an array of objects that represent functions that pass data to the host and receive nothing in return",
+      "type": "array",
+      "items": { "$ref": "/ExportedFireAndForgetFunction" },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["capabilityName", "comment", "beta"]
+}

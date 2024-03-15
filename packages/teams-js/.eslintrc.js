@@ -14,10 +14,4 @@ module.exports = {
     'no-inner-declarations': 'off',
     'strict-null-checks/all': 'warn',
   },
-  "prettier/prettier": [
-    "error",
-    {
-      "endOfLine": "auto"
-    }
-  ],
 };

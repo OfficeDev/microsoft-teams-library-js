@@ -11,17 +11,17 @@
         {
           "name": "one",
           "type": "number",
-          "comment": "First number"
+          "comment": "First number is one."
         },
         {
           "name": "two",
           "type": "number",
-          "comment": "Second number"
+          "comment": "Second number is two."
         },
         {
           "name": "three",
           "type": "number",
-          "comment": "Third number",
+          "comment": "Third number is three.",
           "optional": true,
           "remark": "Sometimes we have this value, but sometimes we do not"
         },
@@ -29,7 +29,7 @@
           "name": "four",
           "type": "number",
           "optional": true,
-          "comment": "Fourth number"
+          "comment": "Fourth number is four."
         }
       ]
     }
@@ -38,6 +38,7 @@
     {
       "name": "retrieveUpdatedBaz",
       "returns": "Baz",
+      "comment": "Retrieve an updated Baz from the host",
       "returnComment": "A promise that resolves with the location of the user",
       "limitedToFrameContexts": [{ "frameContext": "content" }, { "frameContext": "task" }],
       "requiredParameters": [
@@ -46,7 +47,7 @@
           "objectType": {
             "typeName": "Baz"
           },
-          "comment": "Bar!"
+          "comment": "You will get back a certified Bar object"
         }
       ],
       "optionalParameters": [
@@ -63,7 +64,7 @@
             "min": 1,
             "max": 10
           },
-          "comment": "The count",
+          "comment": "The count of things we are sending",
           "value": 1
         },
         {
@@ -92,7 +93,8 @@
           "objectType": {
             "typeName": "Baz"
           },
-          "comment": "Bar!"
+          "comment": "This baz, named bar, will be passed along",
+          "reference": true
         }
       ],
       "dataFromHost": {
@@ -108,6 +110,7 @@
     },
     {
       "name": "notifyHostAndHearWhenFinished",
+      "comment": "Notify the host and hear when they are finished",
       "returns": "void",
       "returnComment": "A promise that resolves when the host is finished with the notification",
       "dataFromHost": {
@@ -123,7 +126,7 @@
         {
           "name": "id",
           "uuidType": true,
-          "comment": "UUID"
+          "comment": "UUID that will be passed to host"
         },
         {
           "name": "secureUrl",
@@ -137,7 +140,7 @@
         {
           "name": "id",
           "uuidType": true,
-          "comment": "UUID",
+          "comment": "UUID that will be passed to host",
           "reference": true
         },
         {
