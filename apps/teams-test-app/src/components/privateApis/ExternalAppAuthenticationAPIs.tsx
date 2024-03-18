@@ -64,6 +64,52 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       },
     }),
   });
+  
+const AuthenticateWithOauth2 = (): React.ReactElement =>
+  ApiWithTextInput<{
+    appId: string;
+    oAuthConfigId: string;
+    authenticateParameters: {
+      url: string;
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
+  }>({
+    name: 'authenticateWithOauth2',
+    title: 'Authenticate With Oauth2',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.appId) {
+          throw new Error('appId is required');
+        }
+        if (!input.authenticateParameters) {
+          throw new Error('authenticateParameters is required');
+        }
+        if (!input.oAuthConfigId) {
+          throw new Error('oAuthConfigId is required');
+        }
+      },
+      submit: async (input) => {
+        const result = await externalAppAuthentication.authenticateWithOauth2(
+          input.appId,
+          input.oAuthConfigId,
+          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
+        );
+        return JSON.stringify(result);
+      },
+    },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      oAuthConfigId:'123',
+      authenticateParameters: {
+        url: 'https://www.example.com',
+        width: 100,
+        height: 100,
+        isExternal: true,
+      },
+    }),
+  });
 
 const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
