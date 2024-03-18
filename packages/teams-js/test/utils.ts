@@ -1,7 +1,9 @@
+import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageResponse } from '../src/internal/messageObjects';
+import { NestedAppAuthRequest } from '../src/internal/nestedAppAuth';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -23,11 +25,15 @@ export class Utils {
   // A list of this.messages the library sends to the app.
   public messages: MessageRequest[] = [];
 
+  // A list of this.messages the library sends to the top window.
+  public topMessages: MessageRequest[] = [];
+
   // A list of this.messages the library sends to the auth popup.
   public childMessages: MessageRequest[] = [];
 
   public childWindow;
   public parentWindow: Window;
+  public topWindow: Window;
 
   public constructor() {
     this.messages = [];
@@ -44,12 +50,23 @@ export class Utils {
       },
     } as Window;
 
+    this.topWindow = {
+      postMessage: (message: MessageRequest, targetOrigin: string): void => {
+        if (message.func === 'initialize' && targetOrigin !== '*') {
+          throw new Error('initialize messages to parent window must have a targetOrigin of *');
+        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+          throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
+        }
+        this.topMessages.push(message);
+      },
+    } as Window;
+
     this.mockWindow = {
       outerWidth: 1024,
       outerHeight: 768,
       screenLeft: 0,
       screenTop: 0,
-      addEventListener: (type: string, listener: (ev: MessageEvent) => void): void => {
+      addEventListener: (type: string, listener: (ev: MessageEvent) => Promise<void>): void => {
         if (type === 'message') {
           this.processMessage = listener;
         }
@@ -67,6 +84,7 @@ export class Utils {
         },
       },
       parent: this.parentWindow,
+      top: this.parentWindow,
       opener: undefined,
       nativeInterface: {
         framelessPostMessage: (message: string): void => {
@@ -99,9 +117,18 @@ export class Utils {
       },
       closed: false,
     };
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 200,
+        ok: true,
+        json: async () => {
+          return { validOrigins };
+        },
+      } as Response),
+    );
   }
 
-  public processMessage: null | ((ev: MessageEvent) => void);
+  public processMessage: null | ((ev: MessageEvent) => Promise<void>);
 
   public initializeWithContext = async (
     frameContext: string,
@@ -169,7 +196,18 @@ export class Utils {
     return null;
   };
 
-  public respondToMessage = (message: MessageRequest, ...args: unknown[]): void => {
+  public respondToMessage = async (
+    message: MessageRequest | NestedAppAuthRequest,
+    ...args: unknown[]
+  ): Promise<void> => {
+    return this.respondToMessageWithPorts(message, args);
+  };
+
+  public respondToMessageWithPorts = async (
+    message: MessageRequest | NestedAppAuthRequest,
+    args: unknown[] = [],
+    ports: MessagePort[] = [],
+  ): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -180,28 +218,30 @@ export class Utils {
           id: message.id,
           args: args,
         } as MessageResponse,
+        ports,
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
-      this.processMessage({
+      await this.processMessage({
         origin: this.validOrigin,
         source: this.mockWindow.parent,
         data: {
           id: message.id,
           args: args,
         } as MessageResponse,
-      } as MessageEvent);
+        ports,
+      } as unknown as MessageEvent);
     }
   };
 
-  public respondToMessageAsOpener = (message: MessageRequest, ...args: unknown[]): void => {
+  public respondToMessageAsOpener = async (message: MessageRequest, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
     }
 
-    this.processMessage({
+    await this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.opener,
       data: {
@@ -221,14 +261,30 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = (func: string, ...args: unknown[]): void => {
+  public respondToNativeMessageWithPorts = (
+    message: MessageRequest,
+    isPartialResponse: boolean,
+    args: unknown[],
+    ports: MessagePort[],
+  ): void => {
+    (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
+      data: {
+        id: message.id,
+        args: args,
+        isPartialResponse,
+      } as MessageResponse,
+      ports,
+    } as DOMMessageEvent);
+  };
+
+  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
       );
     }
 
-    this.processMessage({
+    await this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.parent,
       data: {

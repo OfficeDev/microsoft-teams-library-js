@@ -57,6 +57,19 @@ const DialogCardBotAPIs = (): ReactElement => {
           return '';
         },
       },
+      defaultInput: JSON.stringify({
+        card: {
+          type: 'AdaptiveCard',
+          version: '1.0',
+          body: [
+            {
+              type: 'TextBlock',
+              text: 'Hello, Adaptive Card Bot!',
+            },
+          ],
+        },
+        completionBotId: 'completionBotId',
+      }),
     });
   return (
     <ModuleWrapper title="Dialog.Card.Bot">

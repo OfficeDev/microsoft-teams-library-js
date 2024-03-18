@@ -1,8 +1,14 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { runtime } from '../public/runtime';
 import { errorNotSupportedOnPlatform } from './constants';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const menuTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the menu-specific part of the SDK.
@@ -154,9 +160,24 @@ export namespace menus {
    * Limited to Microsoft-internal use.
    */
   export function initialize(): void {
-    registerHandler('navBarMenuItemPress', handleNavBarMenuItemPress, false);
-    registerHandler('actionMenuItemPress', handleActionMenuItemPress, false);
-    registerHandler('setModuleView', handleViewConfigItemPress, false);
+    registerHandler(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterNavBarMenuItemPressHandler),
+      'navBarMenuItemPress',
+      handleNavBarMenuItemPress,
+      false,
+    );
+    registerHandler(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterActionMenuItemPressHandler),
+      'actionMenuItemPress',
+      handleActionMenuItemPress,
+      false,
+    );
+    registerHandler(
+      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterSetModuleViewHandler),
+      'setModuleView',
+      handleViewConfigItemPress,
+      false,
+    );
   }
 
   /**
@@ -173,13 +194,19 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     viewConfigItemPressHandler = handler;
-    sendMessageToParent('setUpViews', [viewConfig]);
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetUpViews), 'setUpViews', [
+      viewConfig,
+    ]);
   }
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('viewConfigItemPress', [id]);
+      sendMessageToParent(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleViewConfigItemPress),
+        'viewConfigItemPress',
+        [id],
+      );
     }
   }
 
@@ -196,13 +223,19 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     navBarMenuItemPressHandler = handler;
-    sendMessageToParent('setNavBarMenu', [items]);
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetNavBarMenu), 'setNavBarMenu', [
+      items,
+    ]);
   }
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleNavBarMenuItemPress', [id]);
+      sendMessageToParent(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleNavBarMenuItemPress),
+        'handleNavBarMenuItemPress',
+        [id],
+      );
     }
   }
 
@@ -233,13 +266,19 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     actionMenuItemPressHandler = handler;
-    sendMessageToParent('showActionMenu', [params]);
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_ShowActionMenu), 'showActionMenu', [
+      params,
+    ]);
   }
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParent('handleActionMenuItemPress', [id]);
+      sendMessageToParent(
+        getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleActionMenuItemPress),
+        'handleActionMenuItemPress',
+        [id],
+      );
     }
   }
 

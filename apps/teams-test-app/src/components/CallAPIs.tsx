@@ -30,6 +30,11 @@ const StartCall = (): React.ReactElement =>
         return 'result: ' + result;
       },
     },
+    defaultInput: JSON.stringify({
+      targets: ['user1', 'user2'],
+      requestedModalities: ['video'],
+      source: 'source',
+    }),
   });
 
 const CallAPIs: React.FC = () => (

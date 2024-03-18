@@ -1,4 +1,4 @@
-import { authentication, externalAppAuthentication } from '@microsoft/teams-js';
+import { externalAppAuthentication } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils/ApiWithoutInput';
@@ -16,7 +16,12 @@ const CheckExternalAppAuthenticationCapability = (): React.ReactElement =>
 const AuthenticateAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authenticateParameters: authentication.AuthenticatePopUpParameters;
+    authenticateParameters: {
+      url: string;
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
     originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateAndResendRequest',
@@ -36,18 +41,34 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateAndResendRequest(
           input.appId,
-          input.authenticateParameters,
+          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
           input.originalRequestInfo,
         );
         return JSON.stringify(result);
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      authenticateParameters: {
+        url: 'https://www.example.com',
+        width: 100,
+        height: 100,
+        isExternal: true,
+      },
+      originalRequestInfo: {
+        requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
+        type: 'Action.Execute',
+        id: 'id1',
+        verb: 'verb1',
+        data: 'data1',
+      },
+    }),
   });
 
 const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authTokenRequest: authentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
   }>({
     name: 'authenticateWithSSO',
     title: 'Authenticate With SSO',
@@ -65,12 +86,19 @@ const AuthenticateWithSSO = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      authTokenRequest: {
+        claims: ['https://graph.microsoft.com'],
+        silent: true,
+      },
+    }),
   });
 
 const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    authTokenRequest: authentication.AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
     originalRequestInfo: externalAppAuthentication.IOriginalRequestInfo;
   }>({
     name: 'authenticateWithSSOAndResendRequest',
@@ -96,6 +124,20 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
         return JSON.stringify(result);
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      authTokenRequest: {
+        claims: ['https://graph.microsoft.com'],
+        silent: true,
+      },
+      originalRequestInfo: {
+        requestType: externalAppAuthentication.OriginalRequestType.ActionExecuteInvokeRequest,
+        type: 'Action.Execute',
+        id: 'id1',
+        verb: 'verb1',
+        data: 'data1',
+      },
+    }),
   });
 
 const ExternalAppAuthenticationAPIs = (): React.ReactElement => (

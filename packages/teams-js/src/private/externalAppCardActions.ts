@@ -1,8 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { validateAppIdIsGuid } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -43,9 +50,9 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export enum ActionOpenUrlErrorCode {
+    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
     INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
     NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
-    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 
   /**
@@ -56,22 +63,7 @@ export namespace externalAppCardActions {
    */
   export interface IAdaptiveCardActionSubmit {
     id: string;
-    data: Record<string, unknown>;
-  }
-
-  /**
-   * @hidden
-   * The configuration for Adaptive Card Action.Submit. This indicates which subtypes of actions are supported by the calling app.
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface ICardActionsConfig {
-    enableImback: boolean;
-    enableInvoke: boolean;
-    enableDialog: boolean;
-    enableStageView: boolean;
-    enableSignIn: boolean;
-    enableO365Submit: boolean;
+    data: string | Record<string, unknown>;
   }
 
   /**
@@ -96,33 +88,35 @@ export namespace externalAppCardActions {
   export enum ActionSubmitErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
+
   /**
    * @beta
    * @hidden
    * Delegates an Adaptive Card Action.Submit request to the host for the application with the provided app ID
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application the request is intended for
+   * @param appId ID of the application the request is intended for. This must be a UUID
    * @param actionSubmitPayload The Adaptive Card Action.Submit payload
    * @param cardActionsConfig The card actions configuration. This indicates which subtypes should be handled by this API
    * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
    */
-  export function processActionSubmit(
-    appId: string,
-    actionSubmitPayload: IAdaptiveCardActionSubmit,
-    cardActionsConfig: ICardActionsConfig,
-  ): Promise<void> {
+  export function processActionSubmit(appId: string, actionSubmitPayload: IAdaptiveCardActionSubmit): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync<[boolean, ActionSubmitError]>('externalAppCardActions.processActionSubmit', [
-      appId,
-      actionSubmitPayload,
-      cardActionsConfig,
-    ]).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
+    validateAppIdIsGuid(appId);
+
+    return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionSubmit,
+      ),
+      'externalAppCardActions.processActionSubmit',
+      [appId, actionSubmitPayload],
+    ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
       }
@@ -135,20 +129,26 @@ export namespace externalAppCardActions {
    * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application the request is intended for
+   * @param appId ID of the application the request is intended for. This must be a UUID
    * @param url The URL to open
    * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
    */
-  export function processActionOpenUrl(appId: string, url: string): Promise<ActionOpenUrlType> {
+  export function processActionOpenUrl(appId: string, url: URL): Promise<ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
+
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
+      ),
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url],
+      [appId, url.href],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;

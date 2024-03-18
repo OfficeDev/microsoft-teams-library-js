@@ -101,8 +101,8 @@ steps:
   - task: CopyFiles@2
     inputs:
       Contents: |
-        packages\teams-js\artifactsForCDN\validDomains.json
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\validDomains\json'
+        packages\teams-js\src\artifactsForCDN\validDomains.json
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\validDomains\json'
       flattenFolders: true
     displayName: 'Copy validDomains for CDN'
 

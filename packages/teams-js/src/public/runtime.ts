@@ -19,9 +19,9 @@ export interface IBaseRuntime {
 /**
  * Latest runtime interface version
  */
-export type Runtime = IRuntimeV3;
+export type Runtime = IRuntimeV4;
 
-export const latestRuntimeApiVersion = 3;
+export const latestRuntimeApiVersion = 4;
 
 function isLatestRuntimeVersion(runtime: IBaseRuntime): runtime is Runtime {
   return runtime.apiVersion === latestRuntimeApiVersion;
@@ -150,9 +150,6 @@ interface IRuntimeV3 extends IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
-    readonly app?: {
-      readonly lifecycle?: {};
-    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -184,6 +181,7 @@ interface IRuntimeV3 extends IBaseRuntime {
     readonly meetingRoom?: {};
     readonly menus?: {};
     readonly monetization?: {};
+    readonly nestedAppAuth?: {};
     readonly notifications?: {};
     readonly pages?: {
       readonly appButton?: {};
@@ -205,6 +203,7 @@ interface IRuntimeV3 extends IBaseRuntime {
         readonly joinedTeams?: {};
       };
     };
+    readonly thirdPartyCloudStorage?: {};
     readonly teamsCore?: {};
     readonly video?: {
       readonly mediaStream?: {};
@@ -217,6 +216,78 @@ interface IRuntimeV3 extends IBaseRuntime {
   };
 }
 
+interface IRuntimeV4 extends IBaseRuntime {
+  readonly apiVersion: 4;
+  readonly hostVersionsInfo?: HostVersionsInfo;
+  readonly isLegacyTeams?: boolean;
+  readonly supports: {
+    readonly appEntity?: {};
+    readonly appInstallDialog?: {};
+    readonly barCode?: {};
+    readonly calendar?: {};
+    readonly call?: {};
+    readonly chat?: {};
+    readonly clipboard?: {};
+    readonly conversations?: {};
+    readonly dialog?: {
+      readonly card?: {
+        readonly bot?: {};
+      };
+      readonly url?: {
+        readonly bot?: {};
+        readonly parentCommunication?: {};
+      };
+      readonly update?: {};
+    };
+    readonly externalAppAuthentication?: {};
+    readonly externalAppCardActions?: {};
+    readonly geoLocation?: {
+      readonly map?: {};
+    };
+    readonly interactive?: {};
+    readonly secondaryBrowser?: {};
+    readonly location?: {};
+    readonly logs?: {};
+    readonly mail?: {};
+    readonly marketplace?: {};
+    readonly meetingRoom?: {};
+    readonly menus?: {};
+    readonly messageChannels?: {};
+    readonly monetization?: {};
+    readonly nestedAppAuth?: {};
+    readonly notifications?: {};
+    readonly pages?: {
+      readonly appButton?: {};
+      readonly backStack?: {};
+      readonly config?: {};
+      readonly currentApp?: {};
+      readonly fullTrust?: {};
+      readonly tabs?: {};
+    };
+    readonly people?: {};
+    readonly permissions?: {};
+    readonly profile?: {};
+    readonly remoteCamera?: {};
+    readonly search?: {};
+    readonly sharing?: {};
+    readonly stageView?: {};
+    readonly teams?: {
+      readonly fullTrust?: {
+        readonly joinedTeams?: {};
+      };
+    };
+    readonly thirdPartyCloudStorage?: {};
+    readonly teamsCore?: {};
+    readonly video?: {
+      readonly mediaStream?: {};
+      readonly sharedFrame?: {};
+    };
+    readonly visualMedia?: {
+      readonly image?: {};
+    };
+    readonly webStorage?: {};
+  };
+}
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
@@ -251,13 +322,10 @@ export function isRuntimeInitialized(runtime: IBaseRuntime): runtime is Runtime 
 export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
-  apiVersion: 3,
+  apiVersion: 4,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
-    app: {
-      lifecycle: {},
-    },
     appInstallDialog: {},
     appEntity: {},
     call: {},
@@ -269,6 +337,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
       },
       url: {
         bot: {},
+        parentCommunication: {},
       },
       update: {},
     },
@@ -393,6 +462,29 @@ export const upgradeChain: IRuntimeUpgrade[] = [
       };
     },
   },
+  {
+    versionToUpgradeFrom: 3,
+    upgradeToNextVersion: (previousVersionRuntime: IRuntimeV3): IRuntimeV4 => {
+      return {
+        apiVersion: 4,
+        hostVersionsInfo: previousVersionRuntime.hostVersionsInfo,
+        isLegacyTeams: previousVersionRuntime.isLegacyTeams,
+        supports: {
+          ...previousVersionRuntime.supports,
+          dialog: previousVersionRuntime.supports.dialog
+            ? {
+                card: previousVersionRuntime.supports.dialog?.card,
+                url: {
+                  bot: previousVersionRuntime.supports.dialog?.url?.bot,
+                  parentCommunication: previousVersionRuntime.supports.dialog?.url ? {} : undefined,
+                },
+                update: previousVersionRuntime.supports.dialog?.update,
+              }
+            : undefined,
+        },
+      };
+    },
+  },
 ];
 
 export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapabilityReqs>> = {
@@ -442,7 +534,13 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   '2.0.5': [
     {
       capability: { webStorage: {} },
-      hostClientTypes: [HostClientType.android, HostClientType.desktop, HostClientType.ios],
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
+    },
+  ],
+  '2.0.8': [
+    {
+      capability: { sharing: {} },
+      hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],
 };

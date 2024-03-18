@@ -386,7 +386,7 @@ describe('sharing_v2', () => {
   const testVersions = ['1.8.0', '1.9.0', '2.0.2'];
   const minDesktopAndWebVersionForSharing = '2.0.0';
   const supportedClientTypes = [HostClientType.web, HostClientType.desktop];
-  describe('Testing sharing.isSupported() on different platforms', () => {
+  describe('Testing sharing.isSupported() on web and desktop platforms', () => {
     Object.values(HostClientType).forEach((clientType) => {
       if (supportedClientTypes.some((supportedClientTypes) => supportedClientTypes == clientType)) {
         Object.values(testVersions).forEach((version) => {
@@ -416,10 +416,42 @@ describe('sharing_v2', () => {
             });
           }
         });
-      } else {
-        it(`sharing.isSupported() should return false for platforms other than desktop and web, regardless version`, async () => {
-          await utils.initializeWithContext(FrameContexts.content, clientType);
-          expect(sharing.isSupported()).toBeFalsy();
+      }
+    });
+  });
+
+  const testVersionsForMobile = ['2.0.2', '2.0.8', '2.0.9'];
+  const minMobileVersionForSharing = '2.0.8';
+  const supportedMobileClientTypes = [HostClientType.ios, HostClientType.android];
+  describe('Testing sharing.isSupported() on mobile platforms', () => {
+    Object.values(HostClientType).forEach((clientType) => {
+      if (supportedMobileClientTypes.some((supportedMobileClientTypes) => supportedMobileClientTypes == clientType)) {
+        Object.values(testVersionsForMobile).forEach((version) => {
+          if (compareSDKVersions(version, minMobileVersionForSharing) >= 0) {
+            it(`sharing.isSupported() should return true for mobile when version is greater than supported version ${minMobileVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
+              expect(sharing.isSupported()).toBeTruthy();
+            });
+          } else {
+            it(`sharing.isSupported() should return false for mobile when version is lower than supported version ${minMobileVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
+              expect(sharing.isSupported()).toBeFalsy();
+            });
+          }
         });
       }
     });

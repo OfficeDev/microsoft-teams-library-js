@@ -41,6 +41,7 @@ import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCard
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
+import MessageChannelAPIs from './components/privateApis/MessageChannelAPIs';
 import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
 import NotificationAPIs from './components/privateApis/NotificationAPIs';
 import PrivateAPIs from './components/privateApis/PrivateAPIs';
@@ -53,6 +54,7 @@ import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
+import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
@@ -156,6 +158,7 @@ const App = (): ReactElement => {
         <MeetingAPIs />
         <MeetingRoomAPIs />
         <MenusAPIs />
+        <MessageChannelAPIs />
         <MonetizationAPIs />
         <NotificationAPIs />
         <PagesAPIs />
@@ -175,6 +178,7 @@ const App = (): ReactElement => {
         <StageViewAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
+        <ThirdPartyCloudStorageAPIs />
         <VideoAPIs />
         <VideoExAPIs />
         <VisualMediaAPIs />

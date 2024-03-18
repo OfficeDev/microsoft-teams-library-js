@@ -5,12 +5,7 @@ import { FrameContexts, LoadContext } from '../public';
 import { ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
-import {
-  Communication,
-  sendMessageEventToChild,
-  sendMessageToParent,
-  sendMessageToParentWithVersion,
-} from './communication';
+import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -104,8 +99,8 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerHandlerWithVersion(
-  getApiVersionTag: string,
+export function registerHandler(
+  apiVersionTag: string,
   name: string,
   handler: Function,
   sendMessage = true,
@@ -113,25 +108,7 @@ export function registerHandlerWithVersion(
 ): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParentWithVersion(getApiVersionTag, 'registerHandler', [name, ...args]);
-  } else {
-    delete HandlersPrivate.handlers[name];
-  }
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
-  if (handler) {
-    HandlersPrivate.handlers[name] = handler;
-    sendMessage &&
-      sendMessageToParentWithVersion(
-        getApiVersionTag(ApiVersionNumber.V_0, ApiName.RegisterHandler),
-        'registerHandler',
-        [name, ...args],
-      );
+    sendMessage && sendMessageToParent(apiVersionTag, 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -160,13 +137,13 @@ export function doesHandlerExist(name: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  *
- * @param apiVersionTag - The tag to indicate API version number with name
+ * @param apiVersionTag - The tag of the api version and name
  * @param name - The name of the handler to register.
  * @param handler - The handler to invoke.
  * @param contexts - The context within which it is valid to register this handler.
  * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
  */
-export function registerHandlerHelperWithVersion(
+export function registerHandlerHelper(
   apiVersionTag: string,
   name: string,
   handler: Function,
@@ -179,34 +156,7 @@ export function registerHandlerHelperWithVersion(
     registrationHelper();
   }
 
-  registerHandler(name, handler);
-}
-
-/**
- * @hidden
- * Undocumented helper function with shared code between deprecated version and current version of register*Handler APIs
- *
- * @internal
- * Limited to Microsoft-internal use
- *
- * @param name - The name of the handler to register.
- * @param handler - The handler to invoke.
- * @param contexts - The context within which it is valid to register this handler.
- * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
- */
-export function registerHandlerHelper(
-  name: string,
-  handler: Function,
-  contexts: FrameContexts[],
-  registrationHelper?: () => void,
-): void {
-  // allow for registration cleanup even when not finished initializing
-  handler && ensureInitialized(runtime, ...contexts);
-  if (registrationHelper) {
-    registrationHelper();
-  }
-
-  registerHandler(name, handler);
+  registerHandler(apiVersionTag, name, handler);
 }
 
 /**
@@ -215,7 +165,7 @@ export function registerHandlerHelper(
  */
 export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParentWithVersion(apiVersionTag, 'registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['themeChange']);
 }
 
 /**
@@ -238,12 +188,9 @@ export function handleThemeChange(theme: string): void {
  *
  * @deprecated
  */
-export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+export function registerOnLoadHandler(apiVersionTag: string, handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
-      'load',
-    ]);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['load']);
 }
 
 /**
@@ -268,12 +215,12 @@ function handleLoad(context: LoadContext): void {
  *
  * @deprecated
  */
-export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+export function registerBeforeUnloadHandler(
+  apiVersionTag: string,
+  handler: (readyToUnload: () => void) => boolean,
+): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  !isNullOrUndefined(handler) &&
-    sendMessageToParentWithVersion(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterHandler), 'registerHandler', [
-      'beforeUnload',
-    ]);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['beforeUnload']);
 }
 
 /**
@@ -282,7 +229,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void)
  */
 function handleBeforeUnload(): void {
   const readyToUnload = (): void => {
-    sendMessageToParent('readyToUnload', []);
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.HandleBeforeUnload), 'readyToUnload', []);
   };
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
@@ -307,7 +254,12 @@ function handleBeforeUnload(): void {
  */
 export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParent(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeSuspendOrTerminateHandler),
+      'registerHandler',
+      ['beforeUnload'],
+    );
 }
 
 /**
@@ -316,5 +268,8 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => void): vo
  */
 export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
-  !isNullOrUndefined(handler) && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) &&
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterOnResumeHandler), 'registerHandler', [
+      'load',
+    ]);
 }

@@ -72,7 +72,7 @@ describe('logs', () => {
           return '';
         });
 
-        utils.sendMessage('log.request');
+        await utils.sendMessage('log.request');
 
         expect(handlerInvoked).toBe(true);
       });
@@ -87,7 +87,7 @@ describe('logs', () => {
           return log;
         });
 
-        utils.sendMessage('log.request');
+        await utils.sendMessage('log.request');
 
         const sendLogMessage = utils.findMessageByFunc('log.receive');
         expect(sendLogMessage).not.toBeNull();
@@ -98,7 +98,7 @@ describe('logs', () => {
       it(`logs.registerGetLogHandler should not send log when no get log handler is registered when initialized with ${context} content`, async () => {
         await utils.initializeWithContext(context);
 
-        utils.sendMessage('log.request');
+        await utils.sendMessage('log.request');
 
         const sendLogMessage = utils.findMessageByFunc('log.receive');
         expect(sendLogMessage).toBeNull();

@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `externalAppAuthentication` and `externalAppCardActions` 1P internal-only capabilities",
-  "packageName": "@microsoft/teams-js",
-  "email": "erinha@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

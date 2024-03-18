@@ -44,7 +44,7 @@ describe('meeting', () => {
             returnedLiveStreamState = liveStreamState;
           });
 
-          utils.sendMessage('meeting.liveStreamChanged', { isStreaming: true });
+          await utils.sendMessage('meeting.liveStreamChanged', { isStreaming: true });
 
           expect(handlerCalled).toBe(true);
           expect(returnedLiveStreamState).not.toBeNull();
@@ -62,6 +62,75 @@ describe('meeting', () => {
           );
         });
       }
+    });
+
+    describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
+      const mockjoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        source: meeting.EventActionSource.Other,
+      };
+
+      it(`FRAMED: should successfully send the joinMeeting message`, async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarFormJoinTeamsMeetingButton,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMED: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+          source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage) {
+          await utils.respondToMessage(joinMeetingMessage);
+
+          expect(joinMeetingMessage?.args?.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.M365CalendarFormRibbonJoinButton,
+          });
+        }
+      });
     });
 
     describe('requestAppAudioHandling', () => {
@@ -94,7 +163,7 @@ describe('meeting', () => {
             const requestAppAudioHandlingMessage = utils.findMessageByFunc('meeting.requestAppAudioHandling');
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
-            utils.respondToMessage(requestAppAudioHandlingMessage, null, requestIsHostAudioless);
+            await utils.respondToMessage(requestAppAudioHandlingMessage, null, requestIsHostAudioless);
 
             // check that the registerHandler for audio device selection was called
             const registerHandlerMessage = utils.findMessageByFunc('registerHandler', 1);
@@ -171,7 +240,7 @@ describe('meeting', () => {
             const toggleIncomingClientAudioMessage = utils.findMessageByFunc('toggleIncomingClientAudio');
             expect(toggleIncomingClientAudioMessage).not.toBeNull();
             const callbackId = toggleIncomingClientAudioMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, true],
@@ -197,7 +266,7 @@ describe('meeting', () => {
             const toggleIncomingClientAudioMessage = utils.findMessageByFunc('toggleIncomingClientAudio');
             expect(toggleIncomingClientAudioMessage).not.toBeNull();
             const callbackId = toggleIncomingClientAudioMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -253,7 +322,7 @@ describe('meeting', () => {
             const getIncomingClientAudioMessage = utils.findMessageByFunc('getIncomingClientAudioState');
             expect(getIncomingClientAudioMessage).not.toBeNull();
             const callbackId = getIncomingClientAudioMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, true],
@@ -279,7 +348,7 @@ describe('meeting', () => {
             const getIncomingClientAudioMessage = utils.findMessageByFunc('getIncomingClientAudioState');
             expect(getIncomingClientAudioMessage).not.toBeNull();
             const callbackId = getIncomingClientAudioMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -355,7 +424,7 @@ describe('meeting', () => {
               conversation,
               organizer,
             };
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, meetingDetails],
@@ -381,7 +450,7 @@ describe('meeting', () => {
             const getMeetingDetailsMessage = utils.findMessageByFunc('meeting.getMeetingDetails');
             expect(getMeetingDetailsMessage).not.toBeNull();
             const callbackId = getMeetingDetailsMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -440,7 +509,7 @@ describe('meeting', () => {
             expect(getAnonymousUserTokenMessage).not.toBeNull();
             const callbackId = getAnonymousUserTokenMessage.id;
             const mockAuthenticationToken = '1234567890oiuytrdeswasdcfvbgnhjmuy6t54ewsxdcvbnu743edfvbnm,o98';
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, mockAuthenticationToken],
@@ -469,7 +538,7 @@ describe('meeting', () => {
             );
             expect(getAnonymousUserTokenMessage).not.toBeNull();
             const callbackId = getAnonymousUserTokenMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -522,7 +591,7 @@ describe('meeting', () => {
             expect(getLiveStreamStateMessage).not.toBeNull();
 
             const callbackId = getLiveStreamStateMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, { isStreaming: true }],
@@ -552,7 +621,7 @@ describe('meeting', () => {
             expect(getLiveStreamStateMessage).not.toBeNull();
 
             const callbackId = getLiveStreamStateMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -612,7 +681,7 @@ describe('meeting', () => {
             expect(requestStartLiveStreamMessage).not.toBeNull();
 
             const callbackId = requestStartLiveStreamMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, { isStreaming: true }],
@@ -642,7 +711,7 @@ describe('meeting', () => {
             expect(requestStartLiveStreamMessage).not.toBeNull();
 
             const callbackId = requestStartLiveStreamMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, { isStreaming: true }],
@@ -698,7 +767,7 @@ describe('meeting', () => {
             expect(requestStopLiveStreamingMessage).not.toBeNull();
 
             const callbackId = requestStopLiveStreamingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -724,7 +793,7 @@ describe('meeting', () => {
             expect(requestStopLiveStreamingMessage).not.toBeNull();
 
             const callbackId = requestStopLiveStreamingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, { isStreaming: false }],
@@ -771,13 +840,16 @@ describe('meeting', () => {
       const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-          it(`should successfully share app content to stage. content: ${context} context`, async () => {
+          it(`should successfully share app content to stage with default shareOptions. content: ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
             let callbackCalled = false;
             let returnedSdkError: SdkError | null;
             let returnedResult: boolean | null;
             const requestUrl = 'validUrl';
+            const shareOptions = {
+              sharingProtocol: meeting.SharingProtocol.Collaborative,
+            };
             meeting.shareAppContentToStage((error: SdkError, result: boolean) => {
               callbackCalled = true;
               returnedResult = result;
@@ -787,7 +859,7 @@ describe('meeting', () => {
             const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
             expect(shareAppContentToStageMessage).not.toBeNull();
             const callbackId = shareAppContentToStageMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, true],
@@ -797,6 +869,42 @@ describe('meeting', () => {
             expect(returnedSdkError).toBeNull();
             expect(returnedResult).toBe(true);
             expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+            expect(shareAppContentToStageMessage.args[1]).toMatchObject(shareOptions);
+          });
+          it(`should successfully share app content to stage. content: ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+
+            let callbackCalled = false;
+            let returnedSdkError: SdkError | null;
+            let returnedResult: boolean | null;
+            const requestUrl = 'validUrl';
+            const shareOptions = {
+              sharingProtocol: meeting.SharingProtocol.ScreenShare,
+            };
+            meeting.shareAppContentToStage(
+              (error: SdkError, result: boolean) => {
+                callbackCalled = true;
+                returnedResult = result;
+                returnedSdkError = error;
+              },
+              requestUrl,
+              shareOptions,
+            );
+
+            const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
+            expect(shareAppContentToStageMessage).not.toBeNull();
+            const callbackId = shareAppContentToStageMessage.id;
+            await utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [null, true],
+              },
+            } as DOMMessageEvent);
+            expect(callbackCalled).toBe(true);
+            expect(returnedSdkError).toBeNull();
+            expect(returnedResult).toBe(true);
+            expect(shareAppContentToStageMessage.args).toContain(requestUrl);
+            expect(shareAppContentToStageMessage.args[1]).toMatchObject(shareOptions);
           });
 
           it('should throw if the shareAppContentToStage message sends and fails', async () => {
@@ -815,7 +923,7 @@ describe('meeting', () => {
             const shareAppContentToStageMessage = utils.findMessageByFunc('meeting.shareAppContentToStage');
             expect(shareAppContentToStageMessage).not.toBeNull();
             const callbackId = shareAppContentToStageMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -877,7 +985,7 @@ describe('meeting', () => {
             );
             expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
             const callbackId = appContentStageSharingCapabilitiesMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, appContentStageSharingCapabilities],
@@ -907,7 +1015,7 @@ describe('meeting', () => {
             );
             expect(appContentStageSharingCapabilitiesMessage).not.toBeNull();
             const callbackId = appContentStageSharingCapabilitiesMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -963,7 +1071,7 @@ describe('meeting', () => {
             const stopSharingAppContentToStageMessage = utils.findMessageByFunc('meeting.stopSharingAppContentToStage');
             expect(stopSharingAppContentToStageMessage).not.toBeNull();
             const callbackId = stopSharingAppContentToStageMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, true],
@@ -989,7 +1097,7 @@ describe('meeting', () => {
             const stopSharingAppContentToStageMessage = utils.findMessageByFunc('meeting.stopSharingAppContentToStage');
             expect(stopSharingAppContentToStageMessage).not.toBeNull();
             const callbackId = stopSharingAppContentToStageMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -1052,7 +1160,7 @@ describe('meeting', () => {
             );
             expect(appContentStageSharingStateMessage).not.toBeNull();
             const callbackId = appContentStageSharingStateMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, appContentStageSharingState],
@@ -1083,7 +1191,7 @@ describe('meeting', () => {
             );
             expect(appContentStageSharingStateMessage).not.toBeNull();
             const callbackId = appContentStageSharingStateMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
@@ -1141,7 +1249,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.speakingStateChanged',
             args: [speakingState],
@@ -1169,7 +1277,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.speakingStateChanged');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.speakingStateChanged',
             args: [speakingState],
@@ -1215,7 +1323,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.raiseHandStateChanged');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.raiseHandStateChanged',
             args: [raiseHandState],
@@ -1245,7 +1353,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.raiseHandStateChanged');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.raiseHandStateChanged',
             args: [raiseHandState],
@@ -1291,7 +1399,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.meetingReactionReceived');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.meetingReactionReceived',
             args: [meetingReaction],
@@ -1321,7 +1429,7 @@ describe('meeting', () => {
         expect(registerHandlerMessage.args.length).toBe(1);
         expect(registerHandlerMessage.args[0]).toBe('meeting.meetingReactionReceived');
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             func: 'meeting.meetingReactionReceived',
             args: [meetingReaction],
@@ -1330,6 +1438,138 @@ describe('meeting', () => {
 
         expect(handlerCalled).toBeTruthy();
         expect(response).toBe(meetingReaction);
+      });
+    });
+
+    describe('joinMeeting', () => {
+      const dataError = 'Something went wrong...';
+
+      const mockjoinMeetingParams: meeting.JoinMeetingParams = {
+        joinWebUrl: new URL('https://example.com'),
+        source: meeting.EventActionSource.Other,
+      };
+
+      it('should reject if mockjoinMeetingParams is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const response = meeting.joinMeeting(null);
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+      });
+
+      it('should reject if joinWebUrl is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const response = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          joinWebUrl: null,
+        });
+        await expect(response).rejects.toThrowError('Invalid joinMeetingParams');
+      });
+
+      it('FRAMELESS: should successfully send the joinMeeting message', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+          source: meeting.EventActionSource.M365CalendarGridContextMenu,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+
+        await expect(promise).resolves.not.toThrow();
+        await expect(promise).resolves.toBe(true);
+        expect(joinMeetingMessage?.args?.length).toEqual(1);
+        expect(joinMeetingMessage?.args?.at(0)).toEqual({
+          joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarGridContextMenu,
+        });
+      });
+
+      it('FRAMELESS: should resolve if source is not provided', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        if (joinMeetingMessage && joinMeetingMessage.args) {
+          const data = {
+            success: true,
+          };
+
+          await utils.respondToFramelessMessage({
+            data: {
+              id: joinMeetingMessage?.id,
+              args: [null, true],
+            },
+          } as DOMMessageEvent);
+
+          await expect(promise).resolves.not.toThrow();
+          await expect(promise).resolves.toBe(true);
+          expect(joinMeetingMessage).not.toBeNull();
+          expect(joinMeetingMessage.args.length).toEqual(1);
+          expect(joinMeetingMessage?.args?.at(0)).toEqual({
+            joinWebUrl: 'https://example.com/',
+            source: meeting.EventActionSource.Other,
+          });
+        }
+      });
+
+      it('FRAMELESS: should resolve if joinWebUrl is correct URL in string format', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          joinWebUrl: new URL('https://example.com/'),
+          source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [null, true],
+          },
+        } as DOMMessageEvent);
+
+        await expect(promise).resolves.not.toThrow();
+        await expect(promise).resolves.toBe(true);
+        expect(joinMeetingMessage?.args?.length).toEqual(1);
+        expect(joinMeetingMessage?.args?.at(0)).toEqual({
+          joinWebUrl: 'https://example.com/',
+          source: meeting.EventActionSource.M365CalendarGridEventCardJoinButton,
+        });
+      });
+
+      it('FRAMELESS: should successfully throw if the joinMeeting message sends and fails', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+
+        const promise = meeting.joinMeeting({
+          ...mockjoinMeetingParams,
+        });
+
+        const joinMeetingMessage = utils.findMessageByFunc('meeting.joinMeeting');
+        expect(joinMeetingMessage).not.toBeNull();
+
+        await utils.respondToFramelessMessage({
+          data: {
+            id: joinMeetingMessage?.id,
+            args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
+          },
+        } as DOMMessageEvent);
+        await expect(promise).rejects.toEqual({ errorCode: ErrorCode.PERMISSION_DENIED });
       });
     });
 
@@ -1444,7 +1684,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1474,7 +1714,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1505,7 +1745,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1519,7 +1759,7 @@ describe('meeting', () => {
             expect(registerHandlerMessage.args[0]).toBe('meeting.micStateChanged');
 
             // respond to the registerHandler
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'meeting.micStateChanged',
                 args: [{ isMicMuted: true }],
@@ -1554,7 +1794,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1570,7 +1810,7 @@ describe('meeting', () => {
             const mockPayload = {};
 
             // respond to the registerHandler
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'meeting.audioDeviceSelectionChanged',
                 args: [mockPayload],
@@ -1600,7 +1840,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1609,7 +1849,7 @@ describe('meeting', () => {
 
             // respond to the registerHandler
             const passedInIsMicMuted = false;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'meeting.micStateChanged',
                 args: [{ isMicMuted: passedInIsMicMuted }],
@@ -1644,7 +1884,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1653,7 +1893,7 @@ describe('meeting', () => {
 
             // respond to the registerHandler
             const passedInIsMicMuted = false;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'meeting.micStateChanged',
                 args: [{ isMicMuted: passedInIsMicMuted }],
@@ -1689,7 +1929,7 @@ describe('meeting', () => {
             expect(requestAppAudioHandlingMessage).not.toBeNull();
 
             const callbackId = requestAppAudioHandlingMessage.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [null, requestIsHostAudioless],
@@ -1698,7 +1938,7 @@ describe('meeting', () => {
 
             // respond to the registerHandler
             const passedInIsMicMuted = false;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'meeting.micStateChanged',
                 args: [{ isMicMuted: passedInIsMicMuted }],

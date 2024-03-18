@@ -16,12 +16,7 @@ const SelectPeople = (): React.ReactElement =>
     name: 'selectPeople',
     title: 'Select People',
     onClick: {
-      validateInput: (input) => {
-        if (!input) {
-          return; //API allows for no input to be provided
-        }
-        return;
-      },
+      validateInput: () => {},
       submit: {
         withPromise: async (input) => {
           const result = input ? await people.selectPeople(input) : people.selectPeople();
@@ -43,6 +38,12 @@ const SelectPeople = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      title: 'Select people',
+      setSelected: ['id1', 'id2', 'id3'],
+      openOrgWideSearchInChatOrChannel: true,
+      singleSelect: true,
+    }),
   });
 
 const PeopleAPIs = (): ReactElement => (

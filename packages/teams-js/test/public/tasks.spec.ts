@@ -173,7 +173,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          utils.respondToMessage(startTaskMessage, null, 'someResult');
+          await utils.respondToMessage(startTaskMessage, null, 'someResult');
           expect(callbackCalled).toBe(true);
         });
 
@@ -190,7 +190,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          utils.respondToMessage(startTaskMessage, 'someError');
+          await utils.respondToMessage(startTaskMessage, 'someError');
           expect(callbackCalled).toBe(true);
         });
       } else {

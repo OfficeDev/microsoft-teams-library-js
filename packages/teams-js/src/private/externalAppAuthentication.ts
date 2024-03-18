@@ -1,8 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { authentication, FrameContexts } from '../public';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { validateAppIdIsGuid } from '../internal/utils';
+import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -22,16 +29,64 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/en-us/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
+   * Parameters for the authentication pop-up. This interface is used exclusively with the externalAppAuthentication APIs
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type AuthenticatePopUpParameters = {
+    /**
+     * The URL for the authentication pop-up.
+     */
+    url: URL;
+    /**
+     * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
+     */
+    width?: number;
+    /**
+     * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
+     */
+    height?: number;
+    /**
+     * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
+     * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page specified in
+     * the {@link url} property to be opened in an external browser.
+     * If this flag is `false`, the page will be opened directly within the current hosting application.
+     *
+     * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
+     * environment without an embedded browser.
+     */
+    isExternal?: boolean;
+  };
+
+  /**
+   * @hidden
+   * Parameters for SSO authentication. This interface is used exclusively with the externalAppAuthentication APIs
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type AuthTokenRequestParameters = {
+    /**
+     * An optional list of claims which to pass to Microsoft Entra when requesting the access token.
+     */
+    claims?: string[];
+    /**
+     * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
+     */
+    silent?: boolean;
+  };
+
+  /**
+   * @hidden
+   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
    * @internal
    * Limited to Microsoft-internal use
    */
   export interface IQueryMessageExtensionRequest {
     requestType: OriginalRequestType.QueryMessageExtensionRequest;
     commandId: string;
-    parameters?: {
-      name?: string;
-      value?: string;
+    parameters: {
+      name: string;
+      value: string;
     }[];
     queryOptions?: {
       count: number;
@@ -120,14 +175,14 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   *
+   * The compose extension response returned for a message extension query request. `suggestedActions` will be present only when the type is is 'config' or 'auth'.
    * @internal
    * Limited to Microsoft-internal use
    */
   export type ComposeExtensionResponse = {
     attachmentLayout: AttachmentLayout;
     type: ComposeResultTypes;
-    attachments: QueryMessageExtensionAttachment[];
+    attachments?: QueryMessageExtensionAttachment[];
     suggestedActions?: QueryMessageExtensionSuggestedActions;
     text?: string;
   };
@@ -139,7 +194,7 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export type QueryMessageExtensionSuggestedActions = {
-    actions?: Action[];
+    actions: Action[];
   };
 
   /**
@@ -222,7 +277,6 @@ export namespace externalAppAuthentication {
    * @hidden
    * @internal
    * Limited to Microsoft-internal use
-   * TODO - Add more validation here as we get more details on the allowed request schemas
    */
   function validateOriginalRequestInfo(originalRequestInfo: IOriginalRequestInfo): void {
     if (originalRequestInfo.requestType === OriginalRequestType.ActionExecuteInvokeRequest) {
@@ -234,6 +288,21 @@ export namespace externalAppAuthentication {
         };
         throw error;
       }
+    } else if (originalRequestInfo.requestType === OriginalRequestType.QueryMessageExtensionRequest) {
+      if (originalRequestInfo.commandId.length > 64) {
+        throw new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters');
+      }
+      if (originalRequestInfo.parameters.length > 5) {
+        throw new Error('originalRequestInfo.parameters exceeds the maximum size of 5');
+      }
+      for (const parameter of originalRequestInfo.parameters) {
+        if (parameter.name.length > 64) {
+          throw new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters');
+        }
+        if (parameter.value.length > 512) {
+          throw new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters');
+        }
+      }
     }
   }
 
@@ -243,14 +312,14 @@ export namespace externalAppAuthentication {
    * Signals to the host to perform authentication using the given authentication parameters and then resend the request to the application specified by the app ID with the authentication result.
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend to which the request and authentication response should be sent
+   * @param appId ID of the application backend to which the request and authentication response should be sent. This must be a UUID
    * @param authenticateParameters Parameters for the authentication pop-up
    * @param originalRequestInfo Information about the original request that should be resent
    * @returns A promise that resolves to the IInvokeResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
   export function authenticateAndResendRequest(
     appId: string,
-    authenticateParameters: authentication.AuthenticatePopUpParameters,
+    authenticateParameters: AuthenticatePopUpParameters,
     originalRequestInfo: IOriginalRequestInfo,
   ): Promise<IInvokeResponse> {
     ensureInitialized(runtime, FrameContexts.content);
@@ -259,22 +328,27 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
+      ),
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
         originalRequestInfo,
-        authenticateParameters.url,
+        authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
-        return response;
+        return response as IInvokeResponse;
       } else {
         const error = response as InvokeError;
         throw error;
@@ -288,26 +362,27 @@ export namespace externalAppAuthentication {
    * Signals to the host to perform SSO authentication for the application specified by the app ID
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend for which the host should attempt SSO authentication
+   * @param appId ID of the application backend for which the host should attempt SSO authentication. This must be a UUID
    * @param authTokenRequest Parameters for SSO authentication
    * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
    */
-  export function authenticateWithSSO(
-    appId: string,
-    authTokenRequest: authentication.AuthTokenRequestParameters,
-  ): Promise<void> {
+  export function authenticateWithSSO(appId: string, authTokenRequest: AuthTokenRequestParameters): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    return sendMessageToParentAsync('externalAppAuthentication.authenticateWithSSO', [
-      appId,
-      authTokenRequest.resources,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
-    ]).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+    validateAppIdIsGuid(appId);
+
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithSSO,
+      ),
+      'externalAppAuthentication.authenticateWithSSO',
+      [appId, authTokenRequest.claims, authTokenRequest.silent],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
         throw error;
       }
@@ -320,14 +395,14 @@ export namespace externalAppAuthentication {
    * Signals to the host to perform SSO authentication for the application specified by the app ID and then resend the request to the application backend with the authentication result
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend for which the host should attempt SSO authentication and resend the request and authentication response
+   * @param appId ID of the application backend for which the host should attempt SSO authentication and resend the request and authentication response. This must be a UUID.
    * @param authTokenRequest Parameters for SSO authentication
    * @param originalRequestInfo Information about the original request that should be resent
    * @returns A promise that resolves to the IInvokeResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
   export function authenticateWithSSOAndResendRequest(
     appId: string,
-    authTokenRequest: authentication.AuthTokenRequestParameters,
+    authTokenRequest: AuthTokenRequestParameters,
     originalRequestInfo: IOriginalRequestInfo,
   ): Promise<IInvokeResponse> {
     ensureInitialized(runtime, FrameContexts.content);
@@ -336,14 +411,19 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
-    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeError]>(
+    return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
+      ),
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, originalRequestInfo, authTokenRequest.resources, authTokenRequest.claims, authTokenRequest.silent],
+      [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
-        return response;
+        return response as IInvokeResponse;
       } else {
         const error = response as InvokeError;
         throw error;

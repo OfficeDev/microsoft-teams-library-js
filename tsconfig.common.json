@@ -8,7 +8,7 @@
     "noImplicitReturns": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "target": "es5"
+    "target": "ES2015"
   },
   "exclude": ["node_modules"]
 }

@@ -123,6 +123,7 @@ const RequestStartLiveStreaming = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ streamUrl: 'this is not a URL', streamKey: 'this is my stream key' }),
   });
 
 const RequestStopLiveStreaming = (): React.ReactElement =>
@@ -241,6 +242,10 @@ const ShareAppContentToStage = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      appContentUrl: 'https://www.bing.com',
+      shareOptions: { sharingProtocol: meeting.SharingProtocol.ScreenShare },
+    }),
   });
 
 const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
@@ -325,6 +330,10 @@ const SetOptions = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      isVisible: true,
+      contentUrl: 'https://www.example.com',
+    }),
   });
 
 const RequestAppAudioHandling = (): React.ReactElement =>
@@ -359,6 +368,7 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ isMicMuted: true }),
   });
 
 const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
@@ -398,9 +408,32 @@ const UpdateMicState = (): React.ReactElement =>
       submit: async (input, setResult) => {
         meeting.updateMicState(input);
         setResult('updateMicState() succeeded');
-        return `updateMicState called with micState: isMicMuted:${input}`;
+        return `updateMicState called with micState: isMicMuted:${input.isMicMuted}`;
       },
     },
+    defaultInput: JSON.stringify({ isMicMuted: true }),
+  });
+
+const JoinMeeting = (): React.ReactElement =>
+  ApiWithTextInput<meeting.ISerializedJoinMeetingParams>({
+    name: 'joinMeeting',
+    title: 'Join a meeting',
+    onClick: {
+      validateInput: (input) => {
+        if (!input?.joinWebUrl) {
+          throw new Error('joinWebUrl not passed');
+        }
+      },
+      submit: async (input, setResult) => {
+        meeting.joinMeeting({ joinWebUrl: new URL(input.joinWebUrl), source: input.source });
+        setResult('joinMeeting() succeeded');
+        return `joinMeeting called with joinWebUrl: ${input.joinWebUrl}`;
+      },
+    },
+    defaultInput: JSON.stringify({
+      joinWebUrl: new URL('https://www.example.com/'),
+      source: 'Other',
+    }),
   });
 
 const MeetingAPIs = (): ReactElement => (
@@ -424,6 +457,7 @@ const MeetingAPIs = (): ReactElement => (
     <RequestAppAudioHandling />
     <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
+    <JoinMeeting />
   </ModuleWrapper>
 );
 

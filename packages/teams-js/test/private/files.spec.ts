@@ -81,7 +81,7 @@ describe('files', () => {
 
       const getCloudStorageFoldersMessage = utils.findMessageByFunc('files.getCloudStorageFolders');
       expect(getCloudStorageFoldersMessage).not.toBeNull();
-      utils.respondToMessage(getCloudStorageFoldersMessage, false, mockCloudStorageFolders);
+      await utils.respondToMessage(getCloudStorageFoldersMessage, false, mockCloudStorageFolders);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -133,7 +133,7 @@ describe('files', () => {
 
       const addCloudStorageFolderMessage = utils.findMessageByFunc('files.addCloudStorageFolder');
       expect(addCloudStorageFolderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageFolderMessage, false, true, mockCloudStorageFolders);
+      await utils.respondToMessage(addCloudStorageFolderMessage, false, true, mockCloudStorageFolders);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -188,7 +188,7 @@ describe('files', () => {
 
       const deleteCloudStorageFolderMessage = utils.findMessageByFunc('files.deleteCloudStorageFolder');
       expect(deleteCloudStorageFolderMessage).not.toBeNull();
-      utils.respondToMessage(deleteCloudStorageFolderMessage, false, true);
+      await utils.respondToMessage(deleteCloudStorageFolderMessage, false, true);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -276,7 +276,7 @@ describe('files', () => {
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
-      utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
+      await utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
       expect(callback).toHaveBeenCalled();
     });
 
@@ -301,7 +301,7 @@ describe('files', () => {
 
       const getCloudStorageFolderContentsMessage = utils.findMessageByFunc('files.getCloudStorageFolderContents');
       expect(getCloudStorageFolderContentsMessage).not.toBeNull();
-      utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
+      await utils.respondToMessage(getCloudStorageFolderContentsMessage, false, mockCloudStorageFolderItems);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -399,7 +399,7 @@ describe('files', () => {
 
       const getExternalProviders = utils.findMessageByFunc('files.getExternalProviders');
       expect(getExternalProviders).not.toBeNull();
-      utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
+      await utils.respondToMessage(getExternalProviders, false, mockExternalProviders);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -460,7 +460,7 @@ describe('files', () => {
       );
       const copyMoveFilesMessage = utils.findMessageByFunc('files.copyMoveFiles');
       expect(copyMoveFilesMessage).not.toBeNull();
-      utils.respondToMessage(copyMoveFilesMessage, false);
+      await utils.respondToMessage(copyMoveFilesMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -501,7 +501,7 @@ describe('files', () => {
 
       const getFileDownloadsMessage = utils.findMessageByFunc('files.getFileDownloads');
       expect(getFileDownloadsMessage).not.toBeNull();
-      utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
+      await utils.respondToMessage(getFileDownloadsMessage, false, mockFileDownloads);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -535,7 +535,7 @@ describe('files', () => {
 
       const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
       expect(openDownloadFolderMessage).not.toBeNull();
-      utils.respondToMessage(openDownloadFolderMessage, false);
+      await utils.respondToMessage(openDownloadFolderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
 
@@ -551,7 +551,7 @@ describe('files', () => {
 
       const openDownloadFolderMessage = utils.findMessageByFunc('files.openDownloadFolder');
       expect(openDownloadFolderMessage).not.toBeNull();
-      utils.respondToMessage(openDownloadFolderMessage, false);
+      await utils.respondToMessage(openDownloadFolderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -585,7 +585,7 @@ describe('files', () => {
 
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderMessage, false, files.CloudStorageProvider.Dropbox);
+      await utils.respondToMessage(addCloudStorageProviderMessage, false, files.CloudStorageProvider.Dropbox);
       expect(callback).toHaveBeenCalled();
     });
 
@@ -605,7 +605,7 @@ describe('files', () => {
 
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderMessage, sdkError);
+      await utils.respondToMessage(addCloudStorageProviderMessage, sdkError);
       expect(callback).toHaveBeenCalled();
     });
 
@@ -626,7 +626,7 @@ describe('files', () => {
 
       const addCloudStorageProviderMessage = utils.findMessageByFunc('files.addCloudStorageProvider');
       expect(addCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderMessage, sdkError, undefined);
+      await utils.respondToMessage(addCloudStorageProviderMessage, sdkError, undefined);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -667,7 +667,7 @@ describe('files', () => {
 
       const removeCloudStorageProviderMessage = utils.findMessageByFunc('files.removeCloudStorageProvider');
       expect(removeCloudStorageProviderMessage).not.toBeNull();
-      utils.respondToMessage(removeCloudStorageProviderMessage, false);
+      await utils.respondToMessage(removeCloudStorageProviderMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -720,7 +720,7 @@ describe('files', () => {
 
       const addCloudStorageProviderFileMessage = utils.findMessageByFunc('files.addCloudStorageProviderFile');
       expect(addCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(addCloudStorageProviderFileMessage, false);
+      await utils.respondToMessage(addCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -781,7 +781,7 @@ describe('files', () => {
 
       const renameCloudStorageProviderFileMessage = utils.findMessageByFunc('files.renameCloudStorageProviderFile');
       expect(renameCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(renameCloudStorageProviderFileMessage, false);
+      await utils.respondToMessage(renameCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -884,7 +884,7 @@ describe('files', () => {
 
       const deleteCloudStorageProviderFileMessage = utils.findMessageByFunc('files.deleteCloudStorageProviderFile');
       expect(deleteCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(deleteCloudStorageProviderFileMessage, false);
+      await utils.respondToMessage(deleteCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -971,7 +971,7 @@ describe('files', () => {
 
       const downloadCloudStorageProviderFileMessage = utils.findMessageByFunc('files.downloadCloudStorageProviderFile');
       expect(downloadCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(downloadCloudStorageProviderFileMessage, false);
+      await utils.respondToMessage(downloadCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -1092,7 +1092,7 @@ describe('files', () => {
 
       const uploadCloudStorageProviderFileMessage = utils.findMessageByFunc('files.uploadCloudStorageProviderFile');
       expect(uploadCloudStorageProviderFileMessage).not.toBeNull();
-      utils.respondToMessage(uploadCloudStorageProviderFileMessage, false);
+      await utils.respondToMessage(uploadCloudStorageProviderFileMessage, false);
       expect(callback).toHaveBeenCalled();
     });
   });
