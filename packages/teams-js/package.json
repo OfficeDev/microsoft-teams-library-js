@@ -10,6 +10,7 @@
   },
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/MicrosoftTeams.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "pnpm lint && webpack && pnpm docs:validate",
     "clean": "rimraf ./dist",
