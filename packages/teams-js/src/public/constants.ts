@@ -199,5 +199,5 @@ export const errorInvalidCount = new Error('Invalid input count: Must supply a v
  * @beta
  */
 export const errorInvalidResponse = new Error(
-  'Invalid response: Received more images than the specified max limit in the response.',
+  'Invalid response: Received more images than the specified max limit in the response!!!!!!!!!!!!!!!!',
 );
