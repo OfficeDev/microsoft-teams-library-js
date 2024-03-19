@@ -60,6 +60,8 @@ import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
 import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
+import CookieAccessComponent from './test_cookies';
+import './setCookie';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -126,7 +128,17 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 const App = (): ReactElement => {
   return (
     <div>
+      {/* <div className="embedded-webpage">
+        <iframe
+          src="https://storage-access-api-demo-site-b.glitch.me/" // The URL of the webpage you want to embed
+          title="Embedded Webpage"
+          width="100%"
+          height="600px" // Adjust the size as needed
+          style={{ border: 'none' }} // Optional: Removes the border around the iframe
+        ></iframe>
+      </div> */}
       <div className="App-container">
+        <CookieAccessComponent />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
