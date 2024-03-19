@@ -6,6 +6,16 @@ import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { ErrorCode } from '../public';
 import { runtime } from '../public/runtime';
 
+/**
+ * @hidden
+ * @internal
+ * @beta
+ * Limited to Microsoft-internal use
+ *
+ * This capability contains the APIs for handling events that happen to other applications on the host
+ * *while* the developer's application is running. For example, if the developer wants to be notified
+ * when another application has been installed.
+ */
 export namespace otherAppStateChange {
   /**
    * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -17,8 +27,12 @@ export namespace otherAppStateChange {
    * @beta
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * Represent an event that has happened with other number of applications installed on this host.
+   * (e.g. a new app has been installed)
    */
   export interface OtherAppStateChangeEvent {
+    /** An array of app ids that this event applies to */
     appIds: string[];
   }
 
@@ -27,6 +41,8 @@ export namespace otherAppStateChange {
    * @beta
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * A function handler that will be called whenever an event happens with some number of applications installed on this host.
    */
   export type OtherAppStateChangeEventHandler = (event: OtherAppStateChangeEvent) => void;
 
@@ -36,8 +52,22 @@ export namespace otherAppStateChange {
    * @internal
    * Limited to Microsoft-internal use
    *
+   * This function allows an app to register a handler that will receive whenever other applications are installed
+   * on the host while the developer's application is running.
+   *
+   * @param appInstallHandler - This handler will be called whenever apps are installed on the host.
+   *
    * @throws Error if {@link app.initialize} has not successfully completed, if the platform
    * does not support the otherAppStateChange capability, or if a valid handler is not passed to the function.
+   *
+   * @example
+   * ``` ts
+   * if (otherAppStateChange.isSupported()) {
+   *  otherAppStateChange.registerAppInstallationHandler((event: otherAppStateChange.OtherAppStateChangeEvent) => {
+   *    // code to handle the event goes here
+   *  });
+   * }
+   * ```
    */
   export function registerAppInstallationHandler(appInstallHandler: OtherAppStateChangeEventHandler): void {
     if (!isSupported()) {
@@ -60,6 +90,9 @@ export namespace otherAppStateChange {
    * @beta
    * @internal
    * Limited to Microsoft-internal use
+   *
+   * This function can be called so that the handler passed to {@link registerAppInstallationHandler}
+   * will no longer receive app installation events
    *
    * @throws Error if {@link app.initialize} has not successfully completed or if the platform
    * does not support the otherAppStateChange capability.
