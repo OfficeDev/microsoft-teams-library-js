@@ -102,7 +102,7 @@ describe('otherAppStateChange', () => {
     describe('registerAppInstallationHandler', () => {
       it('should not allow calls before initialization', () => {
         expect.assertions(1);
-        expect(() => otherAppStateChange.registerAppInstallationHandler((event) => {})).toThrowError();
+        expect(() => otherAppStateChange.registerAppInstallationHandler((_) => {})).toThrowError();
       });
 
       Object.values(FrameContexts).forEach((frameContext) => {
@@ -111,7 +111,7 @@ describe('otherAppStateChange', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
-          expect(() => otherAppStateChange.registerAppInstallationHandler((event) => {})).toThrowError(
+          expect(() => otherAppStateChange.registerAppInstallationHandler((_) => {})).toThrowError(
             ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString(),
           );
         });
@@ -120,7 +120,7 @@ describe('otherAppStateChange', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-          expect(() => otherAppStateChange.registerAppInstallationHandler((event) => {})).not.toThrowError();
+          expect(() => otherAppStateChange.registerAppInstallationHandler((_) => {})).not.toThrowError();
         });
       });
 
@@ -129,7 +129,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message).not.toBeNull();
       });
@@ -139,7 +139,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message?.args).not.toBeUndefined();
         expect(message?.args?.length).toBe(1);
@@ -151,7 +151,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = <MessageRequestWithRequiredProperties>utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message?.apiVersionTag).toEqual(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.OtherAppStateChange_Install),
@@ -236,7 +236,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message).not.toBeNull();
       });
@@ -246,7 +246,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message?.args).not.toBeUndefined();
         expect(message?.args?.length).toBe(1);
@@ -258,7 +258,7 @@ describe('otherAppStateChange', () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
 
-        otherAppStateChange.registerAppInstallationHandler((event) => {});
+        otherAppStateChange.registerAppInstallationHandler((_) => {});
         const message = <MessageRequestWithRequiredProperties>utils.findMessageByFunc(ApiName.RegisterHandler);
         expect(message?.apiVersionTag).toEqual(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.OtherAppStateChange_Install),
