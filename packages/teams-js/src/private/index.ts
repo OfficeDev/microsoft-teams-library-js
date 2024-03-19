@@ -21,6 +21,7 @@ export {
 export { conversations } from './conversations';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
+export { externalAppCommands } from './externalAppCommands';
 export { files } from './files';
 export { meetingRoom } from './meetingRoom';
 export { messageChannels } from './messageChannels';
