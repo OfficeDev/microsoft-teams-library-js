@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -52,7 +52,7 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_GetCurrentLocation),
       'location.getLocation',
       {
@@ -79,7 +79,7 @@ export namespace geoLocation {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_HasPermission),
           'permissions.has',
           permissions,
@@ -106,7 +106,7 @@ export namespace geoLocation {
 
     return new Promise<boolean>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_RequestPermission),
           'permissions.request',
           permissions,
@@ -145,7 +145,7 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkErrorWithVersion(
+      return sendAndHandleSdkError(
         getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_Map_ChooseLocation),
         'location.getLocation',
         {
@@ -171,7 +171,7 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkErrorWithVersion(
+      return sendAndHandleSdkError(
         getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_ShowLocation),
         'location.showLocation',
         location,

@@ -53,7 +53,7 @@
       "title": "closeSearch API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_search_closeSearch",
-      "expectedAlertValue": "called"
+      "expectedAlertValue": "closeSearch called"
     }
   ]
 }

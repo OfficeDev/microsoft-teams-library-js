@@ -118,7 +118,7 @@ export class prCommentsUtils {
     await gitApi.updateThread(thread, this.repoId, this.pullRequestId, existingThread.id);
   }
 
-  private async getThreadByType(threadType: string): Promise<GitPullRequestCommentThread> {
+  private async getThreadByType(threadType: string): Promise<GitPullRequestCommentThread | undefined> {
     const gitApi = await this.gitApi;
     const threads = await gitApi.getThreads(this.repoId, this.pullRequestId);
 

@@ -12,6 +12,7 @@ const path = require('path');
 const { DefinePlugin } = require('webpack');
 const packageVersion = require('./package.json').version;
 const FileManagerPlugin = require('filemanager-webpack-plugin');
+const { ProvidePlugin } = require('webpack');
 
 module.exports = {
   entry: {
@@ -34,6 +35,9 @@ module.exports = {
   devtool: 'source-map',
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    fallback: {
+      buffer: require.resolve('buffer/'),
+    },
   },
   module: {
     rules: [
@@ -79,6 +83,10 @@ module.exports = {
 
     // https://www.npmjs.com/package/webpack-subresource-integrity
     new SubresourceIntegrityPlugin({ enabled: true }),
+
+    new ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
 
     // Webpackmanifest produces the json file containing asset(JS file) and its corresponding hash values(Example: https://github.com/waysact/webpack-subresource-integrity/blob/main/examples/webpack-assets-manifest/webpack.config.js)
     new WebpackAssetsManifest({

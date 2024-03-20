@@ -35,6 +35,14 @@ const ComposeMail = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      type: mail.ComposeMailType.New,
+      subject: 'Test Mail',
+      toRecipients: ['sam@example.com'],
+      ccRecipients: ['sam2@example.com'],
+      bccRecipients: ['sam3@example.com'],
+      message: 'This mail has been sent from the Teams Test App',
+    }),
   });
 
 const OpenMailItem = (): React.ReactElement =>
@@ -52,6 +60,7 @@ const OpenMailItem = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({ itemId: '12345' }),
   });
 
 const MailAPIs = (): ReactElement => (

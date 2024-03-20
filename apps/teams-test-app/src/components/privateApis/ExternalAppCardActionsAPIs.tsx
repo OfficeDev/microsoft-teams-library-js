@@ -33,6 +33,13 @@ const ProcessActionSubmit = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      actionSubmitPayload: {
+        id: 'submitId',
+        data: 'data1',
+      },
+    }),
   });
 
 const ProcessActionOpenUrl = (): React.ReactElement =>
@@ -56,6 +63,10 @@ const ProcessActionOpenUrl = (): React.ReactElement =>
         return JSON.stringify(result);
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      url: 'https://www.example.com',
+    }),
   });
 
 const ExternalAppCardActionsAPIs = (): React.ReactElement => (

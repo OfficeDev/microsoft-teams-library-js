@@ -1,8 +1,14 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorInvalidCount, errorInvalidResponse, errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const visualMediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -133,7 +139,11 @@ export namespace visualMedia {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
-    return sendAndHandleSdkError('permissions.has', permissions);
+    return sendAndHandleSdkError(
+      getApiVersionTag(visualMediaTelemetryVersionNumber, ApiName.VisualMedia_HasPermission),
+      'permissions.has',
+      permissions,
+    );
   }
 
   /**
@@ -151,7 +161,11 @@ export namespace visualMedia {
       throw errorNotSupportedOnPlatform;
     }
     const permissions: DevicePermission = DevicePermission.Media;
-    return sendAndHandleSdkError('permissions.request', permissions);
+    return sendAndHandleSdkError(
+      getApiVersionTag(visualMediaTelemetryVersionNumber, ApiName.VisualMedia_RequestPermission),
+      'permissions.request',
+      permissions,
+    );
   }
 
   /**
@@ -203,6 +217,7 @@ export namespace visualMedia {
       ensureSupported();
       ensureImageInputValid(cameraImageInputs);
       const files = await sendAndHandleSdkError<VisualMediaFile[]>(
+        getApiVersionTag(visualMediaTelemetryVersionNumber, ApiName.VisualMedia_Image_CaptureImages),
         'visualMedia.image.captureImages',
         cameraImageInputs,
       );
@@ -224,6 +239,7 @@ export namespace visualMedia {
       ensureSupported();
       ensureImageInputValid(galleryImageInputs);
       const files = await sendAndHandleSdkError<VisualMediaFile[]>(
+        getApiVersionTag(visualMediaTelemetryVersionNumber, ApiName.VisualMedia_Image_RetrieveImages),
         'visualMedia.image.retrieveImages',
         galleryImageInputs,
       );

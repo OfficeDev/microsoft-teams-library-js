@@ -8,7 +8,7 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
-import { ssrSafeWindow } from '../internal/utils';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
@@ -17,6 +17,13 @@ import { runtime } from './runtime';
  *
  * This object is used for starting or completing authentication flows.
  */
+
+/**
+ * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
+ */
+const authenticationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const authenticationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
   let authWindowMonitor: number | undefined;
@@ -27,8 +34,24 @@ export namespace authentication {
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
   export function initialize(): void {
-    registerHandler('authentication.authenticate.success', handleSuccess, false);
-    registerHandler('authentication.authenticate.failure', handleFailure, false);
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateSuccessHandler,
+      ),
+      'authentication.authenticate.success',
+      handleSuccess,
+      false,
+    );
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateFailureHandler,
+      ),
+      'authentication.authenticate.failure',
+      handleFailure,
+      false,
+    );
   }
 
   let authParams: AuthenticateParameters | undefined;
@@ -63,10 +86,10 @@ export namespace authentication {
    * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
    * @returns `Promise` that will be fulfilled with the result from the authentication pop-up, if successful. The string in this result is provided in the parameter
-   * passed by your app when it calls {@link notifySuccess} in the pop-up window after returning from the identity provider redirect.
+   * passed by your app when it calls {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} in the pop-up window after returning from the identity provider redirect.
    *
    * @throws `Error` if the authentication request fails or is canceled by the user. This error is provided in the parameter passed by your app when it calls
-   * {@link notifyFailure} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
+   * {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
    * the infrastructure depending on the failure (e.g., a user cancelation)
    *
    */
@@ -102,7 +125,11 @@ export namespace authentication {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    return authenticateHelper(authenticateParams)
+    const apiVersionTag =
+      authenticateParams.successCallback || authenticateParams.failureCallback
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_Authenticate)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_Authenticate);
+    return authenticateHelper(apiVersionTag, authenticateParams)
       .then((value: string) => {
         try {
           if (authenticateParams && authenticateParams.successCallback) {
@@ -131,7 +158,7 @@ export namespace authentication {
       });
   }
 
-  function authenticateHelper(authenticateParameters: AuthenticateParameters): Promise<string> {
+  function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       if (
         GlobalVars.hostClientType === HostClientType.desktop ||
@@ -151,7 +178,7 @@ export namespace authentication {
         link.href = authenticateParameters.url;
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
-          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
+          sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
             link.href,
             authenticateParameters.width,
             authenticateParameters.height,
@@ -203,7 +230,11 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
     ensureInitializeCalled();
-    return getAuthTokenHelper(authTokenRequest)
+    const apiVersionTag =
+      authTokenRequest && (authTokenRequest.successCallback || authTokenRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetAuthToken)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetAuthToken);
+    return getAuthTokenHelper(apiVersionTag, authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
           authTokenRequest.successCallback(value);
@@ -220,13 +251,14 @@ export namespace authentication {
       });
   }
 
-  function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
+  function getAuthTokenHelper(apiVersionTag: string, authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>((resolve) => {
       resolve(
-        sendMessageToParentAsync('authentication.getAuthToken', [
+        sendMessageToParentAsync(apiVersionTag, 'authentication.getAuthToken', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
+          authTokenRequest?.tenantId,
         ]),
       );
     }).then(([success, result]: [boolean, string]) => {
@@ -262,7 +294,11 @@ export namespace authentication {
   export function getUser(userRequest: UserRequest): void;
   export function getUser(userRequest?: UserRequest): Promise<UserProfile | null> {
     ensureInitializeCalled();
-    return getUserHelper()
+    const apiVersionTag =
+      userRequest && (userRequest.successCallback || userRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetUser)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetUser);
+    return getUserHelper(apiVersionTag)
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {
           userRequest.successCallback(value);
@@ -279,9 +315,9 @@ export namespace authentication {
       });
   }
 
-  function getUserHelper(): Promise<UserProfile> {
+  function getUserHelper(apiVersionTag: string): Promise<UserProfile> {
     return new Promise<[boolean, UserProfile | string]>((resolve) => {
-      resolve(sendMessageToParentAsync('authentication.getUser'));
+      resolve(sendMessageToParentAsync(apiVersionTag, 'authentication.getUser'));
     }).then(([success, result]: [boolean, UserProfile | string]) => {
       if (success) {
         return result as UserProfile;
@@ -381,16 +417,30 @@ export namespace authentication {
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    registerHandler('initialize', () => {
-      return [FrameContexts.authentication, GlobalVars.hostClientType];
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterInitializeHandler,
+      ),
+      'initialize',
+      () => {
+        return [FrameContexts.authentication, GlobalVars.hostClientType];
+      },
+    );
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    registerHandler('navigateCrossDomain', () => {
-      return false;
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterNavigateCrossDomainHandler,
+      ),
+      'navigateCrossDomain',
+      () => {
+        return false;
+      },
+    );
   }
 
   /**
@@ -405,12 +455,19 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-  export function notifySuccess(result?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'result', result);
+  export function notifySuccess(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} instead.
+   */
+  export function notifySuccess(result?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.success', [result]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifySuccess)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifySuccess);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -428,12 +485,20 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
+   * @param _callbackUrl - This parameter is deprecated and unused
    */
-  export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'reason', reason);
+  export function notifyFailure(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} instead.
+   */
+  export function notifyFailure(reason?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.failure', [reason]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifyFailure)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifyFailure);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -458,52 +523,6 @@ export namespace authentication {
       authHandlers = undefined;
       closeAuthenticationWindow();
     }
-  }
-
-  /**
-   * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
-   * @param callbackUrl - the connectors url to redirect to
-   * @param key - "result" in case of success and "reason" in case of failure
-   * @param value - the value of the passed result/reason parameter
-   */
-  function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
-    if (callbackUrl) {
-      const link = document.createElement('a');
-      link.href = decodeURIComponent(callbackUrl);
-      if (
-        link.host &&
-        link.host !== ssrSafeWindow().location.host &&
-        link.host === 'outlook.office.com' &&
-        link.search.indexOf('client_type=Win32_Outlook') > -1
-      ) {
-        if (key && key === 'result') {
-          if (value) {
-            link.href = updateUrlParameter(link.href, 'result', value);
-          }
-          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authSuccess', ''));
-        }
-        if (key && key === 'reason') {
-          if (value) {
-            link.href = updateUrlParameter(link.href, 'reason', value);
-          }
-          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authFailure', ''));
-        }
-      }
-    }
-  }
-
-  /**
-   * Appends either result or reason as a fragment to the 'callbackUrl'
-   * @param uri - the url to modify
-   * @param key - the fragment key
-   * @param value - the fragment value
-   */
-  function updateUrlParameter(uri: string, key: string, value: string): string {
-    const i = uri.indexOf('#');
-    let hash = i === -1 ? '#' : uri.substr(i);
-    hash = hash + '&' + key + (value !== '' ? '=' + value : '');
-    uri = i === -1 ? uri : uri.substr(0, i);
-    return uri + hash;
   }
 
   /**
@@ -584,6 +603,10 @@ export namespace authentication {
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
+    /**
+     * An optional identifier of the home tenant for which to acquire the access token for (used in cross-tenant shared channels).
+     */
+    tenantId?: string;
   }
 
   /**

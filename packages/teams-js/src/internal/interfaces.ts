@@ -11,6 +11,7 @@ export interface DOMMessageEvent {
   origin?: any;
   source?: any;
   data?: any;
+  ports?: any;
   // Needed for Chrome1964
   originalEvent: DOMMessageEvent;
 }

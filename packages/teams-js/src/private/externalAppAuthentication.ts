@@ -1,9 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateAppIdIsGuid } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -71,7 +77,7 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
-   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/en-us/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
+   * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -327,6 +333,10 @@ export namespace externalAppAuthentication {
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
+      ),
       'externalAppAuthentication.authenticateAndResendRequest',
       [
         appId,
@@ -365,11 +375,14 @@ export namespace externalAppAuthentication {
 
     validateAppIdIsGuid(appId);
 
-    return sendMessageToParentAsync('externalAppAuthentication.authenticateWithSSO', [
-      appId,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
-    ]).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithSSO,
+      ),
+      'externalAppAuthentication.authenticateWithSSO',
+      [appId, authTokenRequest.claims, authTokenRequest.silent],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
         throw error;
       }
@@ -402,6 +415,10 @@ export namespace externalAppAuthentication {
     validateOriginalRequestInfo(originalRequestInfo);
 
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
+      ),
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
       [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {

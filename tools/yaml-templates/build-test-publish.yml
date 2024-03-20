@@ -102,7 +102,7 @@ steps:
     inputs:
       Contents: |
         packages\teams-js\src\artifactsForCDN\validDomains.json
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\validDomains\json'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\validDomains\json'
       flattenFolders: true
     displayName: 'Copy validDomains for CDN'
 

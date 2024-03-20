@@ -1,7 +1,7 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { createFile, decodeAttachment } from '../internal/mediaUtil';
-import { getLogger } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -9,17 +9,43 @@ import { runtime } from './runtime';
 const Files3PLogger = getLogger('thirdPartyCloudStorage');
 
 /**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const thirdPartyCloudStorageTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+/**
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
  * @beta
  */
 export namespace thirdPartyCloudStorage {
-  /** Get context callback function type */
+  /**
+   * Interface to assemble file chunks
+   * @beta
+   */
+  export interface AssembleAttachment {
+    /** A number representing the sequence of the attachment in the file chunks. */
+    sequence: number;
+    /** A Blob object representing the data of the file chunks. */
+    file: Blob;
+  }
+  /**
+   * Class to assemble files
+   * @beta
+   */
+  class AttachmentListHelper {
+    /** A string representing the MIME type of the file */
+    public fileType: string;
+    /** An array of {@link AssembleAttachment | AssembleAttachment} objects representing files to be sent as attachment */
+    public assembleAttachment: AssembleAttachment[];
+
+    public constructor(fileType: string, assembleAttachment: AssembleAttachment[]) {
+      this.fileType = fileType;
+      this.assembleAttachment = assembleAttachment;
+    }
+  }
   let files: FilesFor3PStorage[] = [];
-  let helper: AttachmentListHelper = {
-    fileType: '',
-    assembleAttachment: [],
-  };
+  let helper: AttachmentListHelper | null = null;
   let lastChunkVal = true; // setting it to true so that the very first file and first chunk does not fail
 
   /**
@@ -97,28 +123,6 @@ export namespace thirdPartyCloudStorage {
   }
 
   /**
-   * Interface to assemble file chunks
-   * @beta
-   */
-  export interface AssembleAttachment {
-    /** A number representing the sequence of the attachment in the file chunks. */
-    sequence: number;
-    /** A Blob object representing the data of the file chunks. */
-    file: Blob;
-  }
-
-  /**
-   * Interface to assemble files
-   * @beta
-   */
-  export interface AttachmentListHelper {
-    /** A string representing the MIME type of the file */
-    fileType: string;
-    /** An array of {@link AssembleAttachment | AssembleAttachment} objects representing files to be sent as attachment */
-    assembleAttachment: AssembleAttachment[];
-  }
-
-  /**
    * Defines the callback function received from Third Party App
    * @beta
    */
@@ -164,6 +168,10 @@ export namespace thirdPartyCloudStorage {
     lastChunkVal = true;
 
     sendMessageToParent(
+      getApiVersionTag(
+        thirdPartyCloudStorageTelemetryVersionNumber,
+        ApiName.ThirdPartyCloudStorage_GetDragAndDropFiles,
+      ),
       'thirdPartyCloudStorage.getDragAndDropFiles',
       [dragAndDropInput],
       handleGetDragAndDropFilesCallbackRequest,
@@ -192,6 +200,10 @@ export namespace thirdPartyCloudStorage {
             }
             const assemble: AssembleAttachment | null = decodeAttachment(fileResult.fileChunk, fileResult.fileType);
             if (assemble) {
+              if (!helper) {
+                // creating helper object for received file chunk
+                helper = new AttachmentListHelper(fileResult.fileType, []);
+              }
               helper.assembleAttachment.push(assemble);
             } else {
               Files3PLogger(
@@ -207,7 +219,7 @@ export namespace thirdPartyCloudStorage {
 
             // we will store this value to determine whether we received the last chunk of the previous file
             lastChunkVal = fileResult.fileChunk.endOfFile;
-            if (fileResult.fileChunk.endOfFile) {
+            if (fileResult.fileChunk.endOfFile && helper) {
               const fileBlob = createFile(helper.assembleAttachment, helper.fileType);
 
               if (fileBlob) {
@@ -225,10 +237,7 @@ export namespace thirdPartyCloudStorage {
                 lastChunkVal = true;
               }
 
-              helper = {
-                fileType: '',
-                assembleAttachment: [],
-              };
+              helper = null;
             }
           } catch (e) {
             if (callback) {

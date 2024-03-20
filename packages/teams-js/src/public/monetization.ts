@@ -1,5 +1,6 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { SdkError } from './interfaces';
@@ -11,6 +12,13 @@ import { runtime } from './runtime';
  * @internal
  * Limited to Microsoft-internal use
  */
+
+/**
+ * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
+ */
+const monetizationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const monetizationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace monetization {
   /**
    * @hidden
@@ -74,11 +82,21 @@ export namespace monetization {
   ): Promise<void> {
     let callback: ((error: SdkError | null) => void) | undefined;
     let planInfo: PlanInfo | undefined;
+    let apiVersionTag = '';
+
     if (typeof param1 === 'function') {
       callback = param1;
       planInfo = param2;
+      apiVersionTag = getApiVersionTag(
+        monetizationTelemetryVersionNumber_v1,
+        ApiName.Monetization_OpenPurchaseExperience,
+      );
     } else {
       planInfo = param1;
+      apiVersionTag = getApiVersionTag(
+        monetizationTelemetryVersionNumber_v2,
+        ApiName.Monetization_OpenPurchaseExperience,
+      );
     }
     const wrappedFunction: InputFunction<void> = () => {
       return new Promise<void>((resolve) => {
@@ -86,7 +104,7 @@ export namespace monetization {
           throw errorNotSupportedOnPlatform;
         }
         /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndHandleSdkError('monetization.openPurchaseExperience', planInfo));
+        resolve(sendAndHandleSdkError(apiVersionTag, 'monetization.openPurchaseExperience', planInfo));
       });
     };
 

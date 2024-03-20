@@ -1,9 +1,13 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+const sharingTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to open a share dialog for web content.
@@ -108,15 +112,26 @@ export namespace sharing {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(shareWebContentHelper, callback, shareWebContentRequest);
+    const apiVersionTag = callback
+      ? getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_ShareWebContent)
+      : getApiVersionTag(sharingTelemetryVersionNumber_v2, ApiName.Sharing_ShareWebContent);
+    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(
+      shareWebContentHelper,
+      callback,
+      apiVersionTag,
+      shareWebContentRequest,
+    );
   }
 
-  function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+  function shareWebContentHelper(
+    apiVersionTag: string,
+    shareWebContentRequest: IShareRequest<IShareRequestContentType>,
+  ): Promise<void> {
     return new Promise<void>((resolve) => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
+      resolve(sendAndHandleSdkError(apiVersionTag, SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
   }
 

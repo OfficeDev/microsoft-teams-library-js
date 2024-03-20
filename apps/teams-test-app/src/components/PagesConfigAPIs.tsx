@@ -46,6 +46,7 @@ const SetConfig = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({ contentUrl: 'https://localhost:4000' }),
   });
 
 const RegisterOnSaveHandler = (): React.ReactElement =>
