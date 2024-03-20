@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new API `meeting.getMeetingDetailsVerbose` and modified existing endpoint  `getMeetingDetails` to take in a new optional parameter `shouldGetVerboseDetails`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "johnsle@microsoft.com",
+  "dependentChangeType": "patch"
+}
