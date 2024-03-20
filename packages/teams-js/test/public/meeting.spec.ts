@@ -4,6 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
+import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
 import { Utils } from '../utils';
@@ -397,6 +398,143 @@ describe('meeting', () => {
             await utils.initializeWithContext(context);
 
             expect(() => meeting.getMeetingDetails(emptyCallBack)).toThrowError(
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedContexts,
+              )}. Current context: "${context}".`,
+            );
+          });
+        }
+      });
+    });
+
+    describe('getMeetingDetailsVerbose', () => {
+      const allowedContexts = [
+        FrameContexts.sidePanel,
+        FrameContexts.meetingStage,
+        FrameContexts.settings,
+        FrameContexts.content,
+      ];
+
+      Object.values(FrameContexts).forEach((context) => {
+        if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+          it(`should successfully get the verbose meeting details. context: ${context}`, async () => {
+            await utils.initializeWithContext(context);
+
+            const promise = meeting.getMeetingDetailsVerbose();
+
+            const message = utils.findMessageByFunc('meeting.getMeetingDetails');
+            expect(message).not.toBeNull();
+            expect(message?.args?.length).toBe(1);
+
+            const shouldGetVerboseDetails = true;
+            expect(message?.args?.[0]).toEqual(shouldGetVerboseDetails);
+
+            const callbackId = message?.id;
+            const details: meeting.IMeetingDetails | meeting.ICallDetails = {
+              scheduledStartTime: '2020-12-21T21:30:00+00:00',
+              joinUrl:
+                'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
+              type: meeting.CallType.OneOnOneCall,
+              // Verbose details
+              originalCaller: 'testCallerId',
+              dialedEntity: 'testDnis',
+              trackingId: 'testTrackingId',
+            };
+            const organizer: meeting.IOrganizer = {
+              id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
+              tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
+            };
+            const conversation: meeting.IConversation = {
+              id: 'convId',
+            };
+            const meetingDetails: meeting.IMeetingDetailsResponse = {
+              details,
+              conversation,
+              organizer,
+            };
+            await utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [null, meetingDetails],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).resolves.toBe(meetingDetails);
+          });
+
+          it(`should throw if the getMeetingDetailsVerbose message sends and fails. context: ${context} `, async () => {
+            await utils.initializeWithContext(context);
+
+            const promise = meeting.getMeetingDetailsVerbose();
+
+            const message = utils.findMessageByFunc('meeting.getMeetingDetails');
+            expect(message).not.toBeNull();
+            expect(message?.args?.length).toBe(1);
+
+            const shouldGetVerboseDetails = true;
+            expect(message?.args?.[0]).toEqual(shouldGetVerboseDetails);
+
+            const callbackId = message?.id;
+
+            await utils.respondToFramelessMessage({
+              data: {
+                id: callbackId,
+                args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+          });
+
+          it(`should throw if host doesn't return verbose details. context: ${context} `, async () => {
+            await utils.initializeWithContext(context);
+
+            try {
+              const promise = meeting.getMeetingDetailsVerbose();
+
+              const message = utils.findMessageByFunc('meeting.getMeetingDetails');
+              expect(message).not.toBeNull();
+              expect(message?.args?.length).toBe(1);
+
+              const shouldGetVerboseDetails = true;
+              expect(message?.args?.[0]).toEqual(shouldGetVerboseDetails);
+
+              const callbackId = message?.id;
+              const nonVerboseDetails: meeting.IMeetingDetails | meeting.ICallDetails = {
+                scheduledStartTime: '2020-12-21T21:30:00+00:00',
+                joinUrl:
+                  'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
+                type: meeting.CallType.OneOnOneCall,
+              };
+              const organizer: meeting.IOrganizer = {
+                id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
+                tenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47',
+              };
+              const conversation: meeting.IConversation = {
+                id: 'convId',
+              };
+              const meetingDetails: meeting.IMeetingDetailsResponse = {
+                details: nonVerboseDetails,
+                conversation,
+                organizer,
+              };
+              await utils.respondToFramelessMessage({
+                data: {
+                  id: callbackId,
+                  args: [null, meetingDetails],
+                },
+              } as DOMMessageEvent);
+
+              await promise;
+            } catch (e) {
+              expect(e).toEqual(errorNotSupportedOnPlatform);
+            }
+          });
+        } else {
+          it(`should not allow meeting.getMeetingDetailsVerbose calls from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+
+            expect(() => meeting.getMeetingDetailsVerbose()).rejects.toThrowError(
               `This call is only allowed in following contexts: ${JSON.stringify(
                 allowedContexts,
               )}. Current context: "${context}".`,
