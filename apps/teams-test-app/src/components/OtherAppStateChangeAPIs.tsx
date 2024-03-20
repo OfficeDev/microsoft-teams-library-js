@@ -34,8 +34,7 @@ const UnregisterAppInstallHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'otherAppStateChange_unregisterInstallHandler',
     title: 'Unregister App Install Handler',
-    onClick: async (setResult) => {
-      setResult('unregister install handler');
+    onClick: async () => {
       otherAppStateChange.unregisterAppInstallationHandler();
       return 'received';
     },
