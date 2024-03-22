@@ -20,7 +20,7 @@ resources:
     - repository: AppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk
-      ref: refs/heads/kx/set_tjs_version_to_highest
+      ref: refs/heads/main
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
