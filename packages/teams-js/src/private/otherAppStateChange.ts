@@ -92,7 +92,8 @@ export namespace otherAppStateChange {
    * Limited to Microsoft-internal use
    *
    * This function can be called so that the handler passed to {@link registerAppInstallationHandler}
-   * will no longer receive app installation events
+   * will no longer receive app installation events. If this is called before registering a handler
+   * it will have no effect.
    *
    * @throws Error if {@link app.initialize} has not successfully completed or if the platform
    * does not support the otherAppStateChange capability.
