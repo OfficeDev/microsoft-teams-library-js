@@ -10,7 +10,6 @@ trigger:
     include:
       - 'main'
       - 'release/*'
-      - 'kx/*'
 
 resources:
   repositories:
