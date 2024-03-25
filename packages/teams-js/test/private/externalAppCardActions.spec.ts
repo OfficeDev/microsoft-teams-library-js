@@ -11,7 +11,6 @@ describe('externalAppCardActions', () => {
 
   // This ID was randomly generated for the purpose of these tests
   const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
-  const invalidAppId = 'invalid-app-id';
 
   beforeEach(() => {
     utils = new Utils();

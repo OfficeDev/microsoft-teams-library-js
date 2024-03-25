@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Removed all of GUID checks on app Id",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
