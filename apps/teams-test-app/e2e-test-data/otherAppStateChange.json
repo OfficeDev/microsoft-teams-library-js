@@ -1,6 +1,9 @@
 {
   "name": "OtherAppStateChange",
   "platforms": "Web",
+  "hostSdkVersion": {
+    "web": ">2.13.1"
+  },
   "testCases": [
     {
       "version": ">2.21.0",
