@@ -78,16 +78,6 @@ describe('externalAppCardActions', () => {
           }
           return expect(promise).rejects.toEqual(testError);
         });
-        it(`should throw error when appId is invalid with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          try {
-            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
-        });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
           expect.assertions(1);
@@ -157,16 +147,6 @@ describe('externalAppCardActions', () => {
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);
-        });
-        it(`should throw error when appId is invalid with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          try {
-            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {

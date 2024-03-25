@@ -402,16 +402,3 @@ export function inServerSideRenderingEnvironment(): boolean {
 }
 
 const appIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * @param appID The app ID to validate against the GUID format
- * @throws Error if appID is not a valid GUID
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function validateAppIdIsGuid(appId: string): void {
-  if (!appIdRegex.test(appId)) {
-    throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
-  }
-}
