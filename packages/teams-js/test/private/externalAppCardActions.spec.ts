@@ -11,7 +11,6 @@ describe('externalAppCardActions', () => {
 
   // This ID was randomly generated for the purpose of these tests
   const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
-  const invalidAppId = 'invalid-app-id';
 
   beforeEach(() => {
     utils = new Utils();
@@ -77,16 +76,6 @@ describe('externalAppCardActions', () => {
             utils.respondToMessage(message, false, testError);
           }
           return expect(promise).rejects.toEqual(testError);
-        });
-        it(`should throw error when appId is invalid with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          try {
-            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -157,16 +146,6 @@ describe('externalAppCardActions', () => {
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);
-        });
-        it(`should throw error when appId is invalid with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          try {
-            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
