@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Made ApiName enum const to reduce package size",
+  "comment": "Made enum const to reduce package size",
   "packageName": "@microsoft/teams-js",
   "email": "noahdarveau@microsoft.com",
   "dependentChangeType": "patch"
