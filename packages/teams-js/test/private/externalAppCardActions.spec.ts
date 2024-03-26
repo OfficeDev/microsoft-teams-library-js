@@ -124,11 +124,13 @@ describe('externalAppCardActions', () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          const promise = externalAppCardActions.processActionOpenUrl(testAppId, testUrl);
+          const promise = externalAppCardActions.processActionOpenUrl(testAppId, testUrl, {
+            name: 'composeExtensions',
+          });
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl.href]);
+            expect(message.args).toEqual([testAppId, testUrl.href, { name: 'composeExtensions' }]);
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, null, testResponse);
           }
