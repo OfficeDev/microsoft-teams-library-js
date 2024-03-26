@@ -100,9 +100,9 @@ export namespace messageChannels {
    */
   export async function getCentralDataLayerPort(): Promise<MessagePort> {
     // If the port has already been initialized, return it.
-    if (telemetryPort) {
+    if (centralDataLayerPort) {
       logger('Returning datalayer port from cache');
-      return telemetryPort;
+      return centralDataLayerPort;
     }
 
     if (!isSupported()) {
@@ -111,9 +111,22 @@ export namespace messageChannels {
 
     // Send request for dataLayer port, will throw if the request is rejected
     centralDataLayerPort = await requestPortFromParentWithVersion(
-      getApiVersionTag(messageChannelsCentralDataLayerVersionNumber, ApiName.MessageChannels_GetTelemetryPort),
+      getApiVersionTag(messageChannelsCentralDataLayerVersionNumber, ApiName.MessageChannels_GetCentralDataLayerPort),
       'messageChannels.getCentralDataLayerPort',
     );
     return centralDataLayerPort;
+  }
+
+  /**
+   * @hidden
+   * Undocumented function used to clear state between unit tests
+   *
+   * @beta
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function _clearCentralDataLayerPort(): void {
+    centralDataLayerPort = undefined;
   }
 }
