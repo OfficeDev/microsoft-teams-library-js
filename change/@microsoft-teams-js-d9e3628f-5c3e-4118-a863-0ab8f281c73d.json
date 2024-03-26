@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Updated documentation for `{namespace}` capability.",
+  "comment": "Updated documentation for StageView capability.",
   "packageName": "@microsoft/teams-js",
   "email": "astripa@microsoft.com",
   "dependentChangeType": "none"
