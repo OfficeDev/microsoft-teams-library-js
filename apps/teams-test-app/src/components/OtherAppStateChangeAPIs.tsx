@@ -17,7 +17,6 @@ const RegisterAppInstallHandler = (): React.ReactElement =>
     title: 'Register App Install Handler',
     onClick: async (setResult) => {
       const handler = (event: otherAppStateChange.OtherAppStateChangeEvent): void => {
-        console.log(event);
         setResult(
           `App Install Event Received for ${event.appIds.length} apps that have ids: ${Object.keys(event.appIds)
             .map((key) => event.appIds[key])
