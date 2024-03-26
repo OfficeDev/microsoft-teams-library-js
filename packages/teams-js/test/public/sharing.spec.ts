@@ -1,8 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
-import { ErrorCode } from '../../src/public/interfaces';
+import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import {
   generateVersionBasedTeamsRuntimeConfig,
   mapTeamsVersionToSupportedCapabilities,
@@ -693,5 +695,107 @@ describe('sharing_v2', () => {
           });
         }
       });
+  });
+
+  describe('Testing getContent', () => {
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
+    const emptyCallBack = (): void => {
+      return;
+    };
+
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
+    });
+    it('should not allow calls before initialization', () => {
+      expect(() => sharing.history.getContent(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should not allow get incoming client audio calls with null callback', () => {
+      expect(() => sharing.history.getContent(null)).toThrowError('[get content] Callback cannot be null');
+    });
+
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`should successfully get the content. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          let callbackCalled = false;
+          let returnedSdkError: SdkError | null;
+          let returnedResult: sharing.history.IContentResponse[] | null;
+          sharing.history.getContent((error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
+            callbackCalled = true;
+            returnedResult = contentDetails;
+            returnedSdkError = error;
+          });
+
+          const getContentMessage = utils.findMessageByFunc('getContent');
+          expect(getContentMessage).not.toBeNull();
+          const callbackId = getContentMessage.id;
+          const contentDetails = [
+            {
+              appId: 'appId',
+              title: 'title',
+              contentReference: 'contentReference',
+              threadId: 'threadId',
+              author: 'author',
+              contentType: 'contentType',
+            },
+          ];
+          await utils.respondToFramelessMessage({
+            data: {
+              id: callbackId,
+              args: [null, contentDetails],
+            },
+          } as DOMMessageEvent);
+          expect(callbackCalled).toBe(true);
+          expect(returnedSdkError).toBeNull();
+          expect(returnedResult).toBe(contentDetails);
+        });
+
+        it(`should throw if the getContent message sends and fails ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          let callbackCalled = false;
+          let returnedSdkError: SdkError | null;
+          let returnedResult: sharing.history.IContentResponse[] | null;
+          sharing.history.getContent((error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
+            callbackCalled = true;
+            returnedResult = contentDetails;
+            returnedSdkError = error;
+          });
+
+          const getContentMessage = utils.findMessageByFunc('getContent');
+          expect(getContentMessage).not.toBeNull();
+          const callbackId = getContentMessage.id;
+          await utils.respondToFramelessMessage({
+            data: {
+              id: callbackId,
+              args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+            },
+          } as DOMMessageEvent);
+          expect(callbackCalled).toBe(true);
+          expect(returnedSdkError).not.toBeNull();
+          expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+          expect(returnedResult).toBe(null);
+        });
+      } else {
+        it(`should not allow sharing.history.getContent calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          expect(() => sharing.history.getContent(emptyCallBack)).toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
   });
 });
