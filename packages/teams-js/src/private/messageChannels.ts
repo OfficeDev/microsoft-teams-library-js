@@ -19,7 +19,7 @@ export namespace messageChannels {
 
   const messageChannelsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
   const messageChannelsCentralDataLayerVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-  
+
   const logger = getLogger('messageChannels');
   /**
    * @hidden
@@ -115,5 +115,5 @@ export namespace messageChannels {
       'messageChannels.getCentralDataLayerPort',
     );
     return centralDataLayerPort;
-  }  
+  }
 }
