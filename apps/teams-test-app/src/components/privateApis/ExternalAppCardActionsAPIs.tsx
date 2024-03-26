@@ -46,6 +46,7 @@ const ProcessActionOpenUrl = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     url: string;
+    fromElement?: { name: 'composeExtensions' | 'plugins' };
   }>({
     name: 'processActionOpenUrl',
     title: 'Process Action Open Url',
