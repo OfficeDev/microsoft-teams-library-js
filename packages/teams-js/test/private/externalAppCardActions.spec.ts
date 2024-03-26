@@ -144,7 +144,7 @@ describe('externalAppCardActions', () => {
           const message = utils.findMessageByFunc('externalAppCardActions.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl.href]);
+            expect(message.args).toEqual([testAppId, testUrl.href, null]);
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);
