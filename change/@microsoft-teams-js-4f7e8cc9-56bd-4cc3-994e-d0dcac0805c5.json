@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Clarified documentation around action interfaces",
+  "packageName": "@microsoft/teams-js",
+  "email": "irenewangms@gmail.com",
+  "dependentChangeType": "none"
+}
