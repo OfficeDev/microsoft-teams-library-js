@@ -122,7 +122,8 @@ export namespace externalAppCardActions {
   /**
    * @beta
    * @hidden
-   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID
+   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID.
+   * Currently `processActionOpenUrl` is supported only for composeExtensions and not for plugins
    * @internal
    * Limited to Microsoft-internal use
    * @param appId ID of the application the request is intended for. This must be a UUID
