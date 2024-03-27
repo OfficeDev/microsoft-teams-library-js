@@ -50,7 +50,7 @@ export enum ApiVersionNumber {
   V_3 = 'v3',
 }
 
-export enum ApiName {
+export const enum ApiName {
   App_GetContext = 'app.getContext',
   App_Initialize = 'app.initialize',
   App_NotifyAppLoaded = 'app.notifyAppLoaded',
