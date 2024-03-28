@@ -18,7 +18,7 @@ import {
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuth';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow } from './utils';
+import { generateGUID, ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
@@ -47,15 +47,18 @@ class CommunicationPrivate {
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: {
-    [id: number]: Function; // (arg1, arg2, ...etc) => void
+    [id: number | string]: Function; // (arg1, arg2, ...etc) => void
   } = {};
   public static promiseCallbacks: {
-    [id: number]: Function; // (args[]) => void
+    [id: number | string]: Function; // (args[]) => void
   } = {};
   public static portCallbacks: {
-    [id: number]: (port?: MessagePort, args?: unknown[]) => void;
+    [id: number | string]: (port?: MessagePort, args?: unknown[]) => void;
   } = {};
   public static messageListener: Function;
+  public static legacyMessageIdsToUuidMap: {
+    [legacyId: number]: string;
+  } = {};
 }
 
 /**
@@ -147,6 +150,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.callbacks = {};
   CommunicationPrivate.promiseCallbacks = {};
   CommunicationPrivate.portCallbacks = {};
+  CommunicationPrivate.legacyMessageIdsToUuidMap = {};
 }
 
 /**
@@ -242,7 +246,7 @@ export function sendMessageToParentAsync<T>(
 
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-    resolve(waitForResponse<T>(request.id));
+    resolve(waitForResponse<T>(request.uuid));
   });
 }
 
@@ -263,14 +267,14 @@ export function requestPortFromParentWithVersion(
     );
   }
   const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-  return waitForPort(request.id);
+  return waitForPort(request.uuid);
 }
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForPort(requestId: number): Promise<MessagePort> {
+function waitForPort(requestId: number | string): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
     CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
       if (port instanceof MessagePort) {
@@ -287,7 +291,7 @@ function waitForPort(requestId: number): Promise<MessagePort> {
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForResponse<T>(requestId: number): Promise<T> {
+function waitForResponse<T>(requestId: number | string): Promise<T> {
   return new Promise<T>((resolve) => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
@@ -343,7 +347,7 @@ export function sendMessageToParent(
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    CommunicationPrivate.callbacks[request.id] = callback;
+    CommunicationPrivate.callbacks[request.uuid] = callback;
   }
 }
 
@@ -359,7 +363,7 @@ export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuth
   const targetWindow = Communication.topWindow;
   const request = createNestedAppAuthRequest(message);
 
-  logger('Message %i information: %o', request.id, { actionName: request.func });
+  logger('Message %i information: %o', request.uuid, { actionName: request.func });
 
   return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
@@ -379,7 +383,7 @@ function sendRequestToTargetWindowHelper(
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.id);
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuid);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -388,10 +392,10 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.id);
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuid);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger(`Adding message %i to ${targetWindowName} message queue`, request.id);
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuid);
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
@@ -415,7 +419,7 @@ function sendMessageToParentHelper(
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  logger('Message %i information: %o', request.id, { actionName, args });
+  logger('Message %i information: %o', request.uuid, { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
 }
@@ -611,42 +615,49 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
 function handleParentMessage(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
 
-  if ('id' in evt.data && typeof evt.data.id === 'number') {
+  if ('id' in evt.data && (typeof evt.data.id === 'number' || typeof evt.data.id === 'string')) {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
-    const callback = CommunicationPrivate.callbacks[message.id];
-    logger('Received a response from parent for message %i', message.id);
+    const callbackId =
+      typeof message.id === 'string' ? message.id : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+    const callback = CommunicationPrivate.callbacks[callbackId];
+    logger('Received a response from parent for message %i', callbackId);
     if (callback) {
-      logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
+      logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       callback.apply(null, [...message.args, message.isPartialResponse]);
 
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
-        logger('Removing registered callback for message %i', message.id);
-        delete CommunicationPrivate.callbacks[message.id];
+        logger('Removing registered callback for message %i', callbackId);
+        if (typeof message.id === 'number') {
+          delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+        } else {
+          CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+        }
+        delete CommunicationPrivate.callbacks[callbackId];
       }
     }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
+    const promiseCallback = CommunicationPrivate.promiseCallbacks[callbackId];
     if (promiseCallback) {
-      logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
+      logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
       promiseCallback(message.args);
 
-      logger('Removing registered promise callback for message %i', message.id);
-      delete CommunicationPrivate.promiseCallbacks[message.id];
+      logger('Removing registered promise callback for message %i', callbackId);
+      delete CommunicationPrivate.promiseCallbacks[callbackId];
     }
-    const portCallback = CommunicationPrivate.portCallbacks[message.id];
+    const portCallback = CommunicationPrivate.portCallbacks[callbackId];
     if (portCallback) {
-      logger('Invoking the registered port callback for message %i with arguments %o', message.id, message.args);
+      logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
       let port: MessagePort | undefined;
       if (evt.ports && evt.ports[0] instanceof MessagePort) {
         port = evt.ports[0];
       }
       portCallback(port, message.args);
 
-      logger('Removing registered port callback for message %i', message.id);
-      delete CommunicationPrivate.portCallbacks[message.id];
+      logger('Removing registered port callback for message %i', callbackId);
+      delete CommunicationPrivate.portCallbacks[callbackId];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -800,7 +811,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
+function sendMessageResponseToChild(id: number | string, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
@@ -841,8 +852,12 @@ function createMessageRequest(
   func: string,
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
+  const messageId = CommunicationPrivate.nextMessageId++;
+  const messageUuid = generateGUID();
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
-    id: CommunicationPrivate.nextMessageId++,
+    id: messageId,
+    uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
     args: args || [],
@@ -862,8 +877,12 @@ function createMessageRequest(
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+  const messageId = CommunicationPrivate.nextMessageId++;
+  const messageUuid = generateGUID();
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
-    id: CommunicationPrivate.nextMessageId++,
+    id: messageId,
+    uuid: messageUuid,
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
     // Since this is a nested app auth request, we don't need to send any args.
@@ -877,7 +896,11 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: number, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
+function createMessageResponse(
+  id: number | string,
+  args: any[] | undefined,
+  isPartialResponse?: boolean,
+): MessageResponse {
   return {
     id: id,
     args: args || [],
