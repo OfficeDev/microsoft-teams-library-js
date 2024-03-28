@@ -1,5 +1,5 @@
 /** HostClientType represents the different client platforms on which host can be run. */
-export const enum HostClientType {
+export enum HostClientType {
   /** Represents the desktop client of host, which is installed on a user's computer and runs as a standalone application. */
   desktop = 'desktop',
   /** Represents the web-based client of host, which runs in a web browser. */
@@ -78,7 +78,7 @@ export const enum HostName {
  * If the app is running in the content context, the developer may want to display information relevant to
  * the content the user is currently viewing.
  */
-export const enum FrameContexts {
+export enum FrameContexts {
   /**
    * App's frame context from where settings page can be accessed.
    * See [how to create a configuration page.]( https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/create-tab-pages/configuration-page?tabs=teamsjs-v2)

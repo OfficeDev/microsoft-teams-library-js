@@ -101,7 +101,7 @@ export namespace videoEffects {
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
-  export const enum EffectFailureReason {
+  export enum EffectFailureReason {
     /**
      * A wrong effect id is provide.
      * Use this reason when the effect id is not found or empty, this may indicate a mismatch between the app and its manifest or a bug of the host.

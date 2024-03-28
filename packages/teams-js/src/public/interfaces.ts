@@ -1077,7 +1077,7 @@ export interface AdaptiveCardVersion {
 /**
  * Currently supported Mime type
  */
-export const enum ClipboardSupportedMimeType {
+export enum ClipboardSupportedMimeType {
   TextPlain = 'text/plain',
   TextHtml = 'text/html',
   ImagePNG = 'image/png',

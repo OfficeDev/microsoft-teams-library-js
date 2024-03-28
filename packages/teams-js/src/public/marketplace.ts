@@ -226,7 +226,7 @@ export namespace marketplace {
    * Represents the status of the cart.
    * @beta
    */
-  export const enum CartStatus {
+  export enum CartStatus {
     /**
      * @hidden
      * Cart is created but not checked out yet.
