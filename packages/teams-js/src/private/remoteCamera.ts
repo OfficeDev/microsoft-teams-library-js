@@ -58,7 +58,7 @@ export namespace remoteCamera {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum ControlCommand {
+  export enum ControlCommand {
     Reset = 'Reset',
     ZoomIn = 'ZoomIn',
     ZoomOut = 'ZoomOut',

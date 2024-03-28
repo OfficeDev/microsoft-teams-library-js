@@ -79,7 +79,7 @@ export namespace mail {
   }
 
   /** Defines compose mail types. */
-  export const enum ComposeMailType {
+  export enum ComposeMailType {
     /** Compose a new mail message. */
     New = 'new',
     /** Compose a reply to the sender of an existing mail message. */
