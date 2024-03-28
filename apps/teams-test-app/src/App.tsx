@@ -127,6 +127,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <ExternalAppAuthenticationAPIs />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
@@ -144,7 +145,6 @@ const App = (): ReactElement => {
         <DialogUpdateAPIs />
         <DialogUrlAPIs />
         <DialogUrlBotAPIs />
-        <ExternalAppAuthenticationAPIs />
         <ExternalAppCardActionsAPIs />
         <FilesAPIs />
         <FullTrustAPIs />

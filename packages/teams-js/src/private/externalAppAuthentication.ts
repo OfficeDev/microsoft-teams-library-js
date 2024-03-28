@@ -424,6 +424,55 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Signals to the host to perform Oauth2 authentication for the application specified by the title ID
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param titleId ID of the acquisition
+   * @param authenticateParameters Parameters for the signIn window
+   * @param referenceId referenceId for type B plugin
+   * @param runTimeId Id of the plugin runtime array
+   * @param pluginId pluginId of the title
+   * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
+   */
+  export function authenticateWithOauth2(
+    titleId: string,
+    authenticateParameters: AuthenticatePopUpParameters,
+    referenceId?: string,
+    runtimeId?: string,
+    pluginId?: string,
+  ): Promise<void> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithOauth2,
+      ),
+      'externalAppAuthentication.authenticateWithOauth2',
+      [
+        titleId,
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+        referenceId,
+        runtimeId,
+        pluginId,
+      ],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+      if (!wasSuccessful) {
+        throw error;
+      }
+    });
+  }
+
+  /**
    * @hidden
    * Checks if the externalAppAuthentication capability is supported by the host
    * @returns boolean to represent whether externalAppAuthentication capability is supported
