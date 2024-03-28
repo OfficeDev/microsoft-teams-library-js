@@ -114,12 +114,13 @@ export namespace externalAppCardActions {
    * @beta
    * @hidden
    * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID.
-   * Currently `processActionOpenUrl` is supported only for composeExtensions and not for plugins
+   * If `fromElement` is not provided, the information from the manifest is used to determine whether the URL can
+   * be processed by the host. Deep link URLs for plugins are not supported and will result in an error.
    * @internal
    * Limited to Microsoft-internal use
    * @param appId ID of the application the request is intended for. This must be a UUID
    * @param url The URL to open
-   * @param fromElement The element on behalf of which the M365 app is making the request
+   * @param fromElement The element on behalf of which the M365 app is making the request.
    * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
    */
   export function processActionOpenUrl(
