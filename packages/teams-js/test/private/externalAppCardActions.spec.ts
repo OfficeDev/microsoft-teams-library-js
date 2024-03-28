@@ -1,5 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { ExternalAppErrorCode } from '../../src/private/constants';
 import { externalAppCardActions } from '../../src/private/externalAppCardActions';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
@@ -31,7 +32,7 @@ describe('externalAppCardActions', () => {
       data: {},
     };
     const testError = {
-      errorCode: externalAppCardActions.ActionSubmitErrorCode.INTERNAL_ERROR,
+      errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
     it('should not allow calls before initialization', async () => {

@@ -701,6 +701,14 @@ export namespace app {
      * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
+
+    /**
+     * When `processActionCommand` activates a dialog, this dialog should automatically fill in some fields with information. This information comes from M365 and is given to `processActionCommand` as `extractedParameters`.
+     * App developers need to use these `extractedParameters` in their dialog.
+     * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
+     * If there's no key/value pairs passed, the object will be empty in the case
+     */
+    dialogParameters: Record<string, string>;
   }
 
   /**
@@ -1038,6 +1046,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
             mySiteDomain: legacyContext.mySiteDomain,
           }
         : undefined,
+    dialogParameters: legacyContext.dialogParameters || {},
   };
 
   return context;

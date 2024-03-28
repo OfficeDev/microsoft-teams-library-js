@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `externalAppCommands` 1P internal-only capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "maggiegong@microsoft.com",
+  "dependentChangeType": "patch"
+}

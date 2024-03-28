@@ -739,6 +739,16 @@ export interface Context {
    * The SharePoint relative path to the current users mysite
    */
   mySitePath?: string;
+
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.dialogParameters} instead
+   *
+   * When `processActionCommand` activates a dialog, this dialog should automatically fill in some fields with information. This information comes from M365 and is given to `processActionCommand` as `extractedParameters`.
+   * App developers need to use these `extractedParameters` in their dialog.
+   * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
+   */
+  dialogParameters?: Record<string, string>;
 }
 
 /** Represents the parameters used to share a deep link. */

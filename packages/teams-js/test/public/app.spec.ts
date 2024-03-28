@@ -631,6 +631,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           //insert expected time comparison here?
@@ -1490,6 +1491,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           await utils.respondToFramelessMessage({
