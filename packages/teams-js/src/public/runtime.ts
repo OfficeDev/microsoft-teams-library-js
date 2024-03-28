@@ -256,6 +256,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly monetization?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
+    readonly otherAppStateChange?: {};
     readonly pages?: {
       readonly appButton?: {};
       readonly backStack?: {};
