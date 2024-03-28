@@ -227,7 +227,7 @@ export namespace app {
   /**
    * Describes errors that caused app initialization to fail
    */
-  export enum FailedReason {
+  export const enum FailedReason {
     /**
      * Authentication failed
      */
@@ -246,7 +246,7 @@ export namespace app {
    * Describes expected errors that occurred during an otherwise successful
    * app initialization
    */
-  export enum ExpectedFailureReason {
+  export const enum ExpectedFailureReason {
     /**
      * There was a permission error
      */

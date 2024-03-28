@@ -66,7 +66,7 @@ export namespace videoEffects {
    * Video frame format enum, currently only support NV12
    * @beta
    */
-  export enum VideoFrameFormat {
+  export const enum VideoFrameFormat {
     /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
     NV12 = 'NV12',
   }
@@ -86,7 +86,7 @@ export namespace videoEffects {
    * Video effect change type enum
    * @beta
    */
-  export enum EffectChangeType {
+  export const enum EffectChangeType {
     /**
      * Current video effect changed
      */
@@ -101,7 +101,7 @@ export namespace videoEffects {
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
-  export enum EffectFailureReason {
+  export const enum EffectFailureReason {
     /**
      * A wrong effect id is provide.
      * Use this reason when the effect id is not found or empty, this may indicate a mismatch between the app and its manifest or a bug of the host.

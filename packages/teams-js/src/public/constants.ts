@@ -1,5 +1,5 @@
 /** HostClientType represents the different client platforms on which host can be run. */
-export enum HostClientType {
+export const enum HostClientType {
   /** Represents the desktop client of host, which is installed on a user's computer and runs as a standalone application. */
   desktop = 'desktop',
   /** Represents the web-based client of host, which runs in a web browser. */
@@ -30,7 +30,7 @@ export enum HostClientType {
 }
 
 /** HostName indicates the possible hosts for your application. */
-export enum HostName {
+export const enum HostName {
   /**
    * Office.com and Office Windows App
    */
@@ -78,7 +78,7 @@ export enum HostName {
  * If the app is running in the content context, the developer may want to display information relevant to
  * the content the user is currently viewing.
  */
-export enum FrameContexts {
+export const enum FrameContexts {
   /**
    * App's frame context from where settings page can be accessed.
    * See [how to create a configuration page.]( https://learn.microsoft.com/microsoftteams/platform/tabs/how-to/create-tab-pages/configuration-page?tabs=teamsjs-v2)
@@ -132,7 +132,7 @@ export enum UserTeamRole {
 /**
  * Dialog module dimension enum
  */
-export enum DialogDimension {
+export const enum DialogDimension {
   /** Represents a large-sized dialog box, which is typically used for displaying large amounts of content or complex workflows that require more space. */
   Large = 'large',
   /** Represents a medium-sized dialog box, which is typically used for displaying moderate amounts of content or workflows that require less space. */
@@ -153,7 +153,7 @@ import { HostVersionsInfo } from './interfaces';
 /**
  * The type of the channel with which the content is associated.
  */
-export enum ChannelType {
+export const enum ChannelType {
   /** The default channel type. Type of channel is used for general collaboration and communication within a team. */
   Regular = 'Regular',
   /** Type of channel is used for sensitive or confidential communication within a team and is only accessible to members of the channel. */

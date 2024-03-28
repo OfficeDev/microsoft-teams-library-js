@@ -767,7 +767,7 @@ export namespace authentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum DataResidency {
+  export const enum DataResidency {
     /**
      * Public
      */
