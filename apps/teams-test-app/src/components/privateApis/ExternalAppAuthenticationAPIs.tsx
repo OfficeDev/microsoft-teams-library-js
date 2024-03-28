@@ -64,17 +64,19 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       },
     }),
   });
-  
+
 const AuthenticateWithOauth2 = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    oAuthConfigId: string;
     authenticateParameters: {
       url: string;
       width?: number;
       height?: number;
       isExternal?: boolean;
     };
+    referenceId?: string;
+    runtimeId?: string;
+    pluginId?: string;
   }>({
     name: 'authenticateWithOauth2',
     title: 'Authenticate With Oauth2',
@@ -86,28 +88,28 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
         if (!input.authenticateParameters) {
           throw new Error('authenticateParameters is required');
         }
-        if (!input.oAuthConfigId) {
-          throw new Error('oAuthConfigId is required');
-        }
       },
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateWithOauth2(
           input.appId,
-          input.oAuthConfigId,
-          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
+          {
+            ...input.authenticateParameters,
+            url: new URL(input.authenticateParameters.url),
+          },
+          input.referenceId,
         );
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
       appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
-      oAuthConfigId:'123',
       authenticateParameters: {
-        url: 'https://www.example.com',
+        url: 'https://accounts.google.com/o/oauth2/auth?client_id=776504672194-pjesukkm76dj91hcu3oghs2gam038kfa.apps.googleusercontent.com&redirect_uri=https://helloworld-noauth-4pfndzcy2q-uc.a.run.app/callback&scope=profile+openid&response_type=code',
         width: 100,
         height: 100,
         isExternal: true,
       },
+      referenceId: '123',
     }),
   });
 
@@ -189,6 +191,7 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
 const ExternalAppAuthenticationAPIs = (): React.ReactElement => (
   <ModuleWrapper title="External App Authentication">
     <CheckExternalAppAuthenticationCapability />
+    <AuthenticateWithOauth2 />
     <AuthenticateAndResendRequest />
     <AuthenticateWithSSO />
     <AuthenticateWithSSOAndResendRequest />

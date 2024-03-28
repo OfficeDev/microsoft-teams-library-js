@@ -434,26 +434,28 @@ export namespace externalAppAuthentication {
   /**
    * @beta
    * @hidden
-   * Signals to the host to perform Oauth2 authentication for the application specified by the app ID
+   * Signals to the host to perform Oauth2 authentication for the application specified by the title ID
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend for which the host should attempt SSO authentication. This must be a UUID
-   * @param oAuthConfigId config key to for developer entered token store data
-   * @param authenticateParameters Parameters the
+   * @param titleId ID of the acquisition
+   * @param authenticateParameters Parameters for the signIn window
+   * @param referenceId referenceId for type B plugin
+   * @param runTimeId Id of the plugin runtime array
+   * @param pluginId pluginId of the title
    * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
    */
   export function authenticateWithOauth2(
-    appId: string,
-    oAuthConfigId: string,
+    titleId: string,
     authenticateParameters: AuthenticatePopUpParameters,
+    referenceId?: string,
+    runtimeId?: string,
+    pluginId?: string,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateAppIdIsGuid(appId);
 
     return sendMessageToParentAsync(
       getApiVersionTag(
@@ -462,12 +464,14 @@ export namespace externalAppAuthentication {
       ),
       'externalAppAuthentication.authenticateWithOauth2',
       [
-        appId,
-        oAuthConfigId,
+        titleId,
         authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
+        referenceId,
+        runtimeId,
+        pluginId,
       ],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
