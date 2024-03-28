@@ -15,10 +15,8 @@ import { runtime } from '../public/runtime';
  */
 export namespace messageChannels {
   let telemetryPort: MessagePort | undefined;
-  let centralDataLayerPort: MessagePort | undefined;
 
   const messageChannelsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-  const messageChannelsCentralDataLayerVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
   const logger = getLogger('messageChannels');
   /**
@@ -82,51 +80,5 @@ export namespace messageChannels {
    */
   export function _clearTelemetryPort(): void {
     telemetryPort = undefined;
-  }
-
-  /**
-   * @hidden
-   * @beta
-   *
-   * Fetches a MessagePort to let Apps leverage data layer in Host.
-   * The port is cached once received, so subsequent calls return the same port.
-   * @returns MessagePort.
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed,
-   * if the host does not support the feature, or if the port request is rejected.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export async function getCentralDataLayerPort(): Promise<MessagePort> {
-    // If the port has already been initialized, return it.
-    if (centralDataLayerPort) {
-      logger('Returning datalayer port from cache');
-      return centralDataLayerPort;
-    }
-
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
-
-    // Send request for dataLayer port, will throw if the request is rejected
-    centralDataLayerPort = await requestPortFromParentWithVersion(
-      getApiVersionTag(messageChannelsCentralDataLayerVersionNumber, ApiName.MessageChannels_GetCentralDataLayerPort),
-      'messageChannels.getCentralDataLayerPort',
-    );
-    return centralDataLayerPort;
-  }
-
-  /**
-   * @hidden
-   * Undocumented function used to clear state between unit tests
-   *
-   * @beta
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function _clearCentralDataLayerPort(): void {
-    centralDataLayerPort = undefined;
   }
 }

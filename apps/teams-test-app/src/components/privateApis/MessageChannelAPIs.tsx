@@ -16,22 +16,9 @@ const GetTelemetryPort = (): React.ReactElement =>
     },
   });
 
-const GetCentralDataLayerPort = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'checkCentralDataLayerPort',
-    title: 'Check CentralDataLayer Port Capability',
-    onClick: async () => {
-      // TODO this is test app, need to look at how this should be tested
-      const port = await messageChannels.getCentralDataLayerPort();
-      port.postMessage('test message through CentralDataLayerPort');
-      return `CentralDataLayer port: ${port}`;
-    },
-  });
-
 const MessageChannelAPIs = (): React.ReactElement => (
   <ModuleWrapper title="Message Channels">
     <GetTelemetryPort />
-    <GetCentralDataLayerPort />
   </ModuleWrapper>
 );
 

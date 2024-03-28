@@ -1,4 +1,5 @@
 import {
+  centralDataLayer,
   FileOpenPreference,
   FilePreviewParameters,
   openFilePreview,
@@ -123,12 +124,24 @@ const PrivateAPIs = (): ReactElement => {
       }),
     });
 
+  const GetCentralDataLayerPort = (): React.ReactElement =>
+    ApiWithoutInput({
+      name: 'checkCentralDataLayerPort',
+      title: 'Check CentralDataLayer Port Capability',
+      onClick: async () => {
+        const port = await centralDataLayer.getCentralDataLayerPort();
+        port.postMessage('test message through CentralDataLayerPort');
+        return `CentralDataLayer port: ${port}`;
+      },
+    });
+
   return (
     <ModuleWrapper title="PrivateAPIs">
       <RegisterUserSettingsChangeHandler />
       <UploadCustomApp />
       <OpenFilePreview />
       <input id="fileid" type="file" onChange={(e) => acceptFile(e.target.files)} hidden />
+      <GetCentralDataLayerPort />
     </ModuleWrapper>
   );
 };

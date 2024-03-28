@@ -19,6 +19,7 @@ export {
   openFilePreview,
 } from './privateAPIs';
 export { conversations } from './conversations';
+export { centralDataLayer } from './centralDataLayer';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
 export { files } from './files';
