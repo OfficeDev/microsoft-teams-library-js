@@ -76,8 +76,6 @@ export namespace stageView {
   }
 
   /**
-   * @hidden
-   * Feature is under development
    *
    * Opens a stage view to display a Teams application
    * @beta
