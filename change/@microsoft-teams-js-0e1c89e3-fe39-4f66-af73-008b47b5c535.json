@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add Loop domains to the list of valid origins",
+  "packageName": "@microsoft/teams-js",
+  "email": "kinhln@microsoft.com",
+  "dependentChangeType": "patch"
+}
