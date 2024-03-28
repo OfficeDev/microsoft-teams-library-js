@@ -111,6 +111,7 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',
   Files_AddCloudStorageProviderFile = 'files.addCloudStorageProviderFile',
