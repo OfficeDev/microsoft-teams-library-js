@@ -4,6 +4,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ExternalAppErrorCode } from './constants';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -74,18 +75,8 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export interface ActionSubmitError {
-    errorCode: ActionSubmitErrorCode;
+    errorCode: ExternalAppErrorCode;
     message?: string;
-  }
-
-  /**
-   * @hidden
-   * Error codes that can be thrown from IExternalAppCardActionService.handleActionSubmit
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export enum ActionSubmitErrorCode {
-    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 
   /**
