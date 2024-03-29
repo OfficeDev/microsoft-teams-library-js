@@ -44,7 +44,7 @@ export function isFollowingApiVersionTagFormat(apiVersionTag: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum ApiVersionNumber {
+export const enum ApiVersionNumber {
   V_1 = 'v1',
   V_2 = 'v2',
   V_3 = 'v3',
