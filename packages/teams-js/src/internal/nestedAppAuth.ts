@@ -17,7 +17,7 @@ const tryPolyfillWithNestedAppAuthBridgeLogger = nestedAppAuthLogger.extend('try
  * @property {string} Request - Event name for a nested app authentication request.
  * @property {string} Response - Event name for a nested app authentication response.
  */
-export enum NestedAppAuthMessageEventNames {
+export const enum NestedAppAuthMessageEventNames {
   Request = 'NestedAppAuthRequest',
   Response = 'NestedAppAuthResponse',
 }

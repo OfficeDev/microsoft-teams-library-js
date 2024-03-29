@@ -4,6 +4,6 @@
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum ExternalAppErrorCode {
+export const enum ExternalAppErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
 }
