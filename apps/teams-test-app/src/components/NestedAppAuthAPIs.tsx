@@ -9,13 +9,7 @@ const NestedAppAuthAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'checkisNAAChannelRecommended',
       title: 'Check NAA Channel Recommended',
-      onClick: async () => {
-        if (nestedAppAuth.isChannelRecommended()) {
-          return 'NAA Channel Recommended';
-        } else {
-          return 'NAA Channel not Recommended';
-        }
-      },
+      onClick: async () => `NAA channel ${nestedAppAuth.isChannelRecommended() ? 'is' : 'is not'} recommended`,
     });
 
   return (
