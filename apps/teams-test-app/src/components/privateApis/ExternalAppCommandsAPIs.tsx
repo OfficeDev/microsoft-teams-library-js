@@ -44,7 +44,7 @@ const ProcessActionCommand = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
       commandId: 'testCommandId',
-      extractedParameters: { key: 'value-string' },
+      extractedParameters: { testParamName1: 'testValue1' },
     }),
   });
 
