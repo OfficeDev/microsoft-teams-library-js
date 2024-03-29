@@ -203,7 +203,7 @@ export namespace marketplace {
    * Represents the persona creating the cart.
    * @beta
    */
-  export enum Intent {
+  export const enum Intent {
     /**
      * @hidden
      * The cart is created by admin of an organization in Teams Admin Center.

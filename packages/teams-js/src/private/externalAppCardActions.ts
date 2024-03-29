@@ -24,7 +24,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum ActionOpenUrlType {
+  export const enum ActionOpenUrlType {
     DeepLinkDialog = 'DeepLinkDialog',
     DeepLinkOther = 'DeepLinkOther',
     DeepLinkStageView = 'DeepLinkStageView',
@@ -49,7 +49,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum ActionOpenUrlErrorCode {
+  export const enum ActionOpenUrlErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
     INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
     NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
