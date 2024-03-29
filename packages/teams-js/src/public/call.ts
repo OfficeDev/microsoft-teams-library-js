@@ -16,7 +16,7 @@ const callTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  */
 export namespace call {
   /** Modalities that can be associated with a call. */
-  export enum CallModalities {
+  export const enum CallModalities {
     /** Indicates that the modality is unknown or undefined. */
     Unknown = 'unknown',
     /** Indicates that the call includes audio. */

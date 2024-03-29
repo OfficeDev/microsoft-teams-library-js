@@ -174,7 +174,7 @@ function pipeVideoSourceToGenerator(
  * @hidden
  * Error messages during video frame transformation.
  */
-enum VideoFrameTransformErrors {
+const enum VideoFrameTransformErrors {
   TimestampIsNull = 'timestamp of the original video frame is null',
   UnsupportedVideoFramePixelFormat = 'Unsupported video frame pixel format',
 }
