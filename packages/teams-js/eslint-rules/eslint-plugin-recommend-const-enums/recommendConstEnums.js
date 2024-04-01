@@ -21,9 +21,6 @@ module.exports = {
             node: node,
             message: `Please consider if you can use a const enum for ${enumName} to minimize bundle size. If not, add "/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */" to the line above to disable this warning.`,
             severity: 2,
-            //fix(fixer) {
-            //  return fixer.insertTextBefore(node, 'const ');
-            //},
           });
         }
       },
