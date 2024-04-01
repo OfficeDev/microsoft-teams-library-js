@@ -3,7 +3,7 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.eslint.json',
   },
-  plugins: ['strict-null-checks'],
+  plugins: ['strict-null-checks', 'recommend-const-enums'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/no-namespace': 'off',
@@ -13,5 +13,6 @@ module.exports = {
     ],
     'no-inner-declarations': 'off',
     'strict-null-checks/all': 'warn',
+    'recommend-const-enums/recommend-const-enums': 'warn',
   },
 };

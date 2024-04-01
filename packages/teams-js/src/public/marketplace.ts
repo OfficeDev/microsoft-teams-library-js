@@ -226,6 +226,7 @@ export namespace marketplace {
    * Represents the status of the cart.
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum CartStatus {
     /**
      * @hidden

@@ -1,4 +1,5 @@
 /** HostClientType represents the different client platforms on which host can be run. */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum HostClientType {
   /** Represents the desktop client of host, which is installed on a user's computer and runs as a standalone application. */
   desktop = 'desktop',
@@ -78,6 +79,7 @@ export const enum HostName {
  * If the app is running in the content context, the developer may want to display information relevant to
  * the content the user is currently viewing.
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum FrameContexts {
   /**
    * App's frame context from where settings page can be accessed.
@@ -104,6 +106,7 @@ export enum FrameContexts {
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum TeamType {
   /** Represents a standard or classic team in host that is designed for ongoing collaboration and communication among a group of people. */
   Standard = 0,
@@ -120,6 +123,7 @@ export enum TeamType {
 /**
  * Indicates the various types of roles of a user in a team.
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum UserTeamRole {
   /** Represents that the user is an owner or administrator of the team. */
   Admin = 0,

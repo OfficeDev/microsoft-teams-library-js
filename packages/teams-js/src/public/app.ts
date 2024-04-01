@@ -227,6 +227,7 @@ export namespace app {
   /**
    * Describes errors that caused app initialization to fail
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum FailedReason {
     /**
      * Authentication failed
@@ -246,6 +247,7 @@ export namespace app {
    * Describes expected errors that occurred during an otherwise successful
    * app initialization
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ExpectedFailureReason {
     /**
      * There was a permission error
@@ -272,6 +274,7 @@ export namespace app {
   /**
    * Represents the failed request sent during a failed app initialization.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export interface IFailedRequest {
     /**
      * The reason for the failure
@@ -286,6 +289,7 @@ export namespace app {
   /**
    * Represents the failure request sent during an erroneous app initialization.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export interface IExpectedFailureRequest {
     /**
      * The reason for the failure

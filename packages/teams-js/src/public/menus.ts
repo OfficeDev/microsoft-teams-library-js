@@ -52,6 +52,7 @@ export namespace menus {
   /**
    * Defines how a menu item should appear in the NavBar.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum DisplayMode {
     /**
      * Only place this item in the NavBar if there's room for it.

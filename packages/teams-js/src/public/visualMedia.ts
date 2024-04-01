@@ -71,6 +71,7 @@ export namespace visualMedia {
    *
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum CameraRestriction {
     /** User can move between front and back camera */
     FrontOrRear = 1,
@@ -85,6 +86,7 @@ export namespace visualMedia {
    *
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum Source {
     /** The camera is the source of visual media. */
     Camera = 1,

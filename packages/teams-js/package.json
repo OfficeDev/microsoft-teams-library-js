@@ -24,7 +24,8 @@
     "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7"
+    "@types/debug": "^4.1.7",
+    "eslint-plugin-recommend-const-enums": "file:./eslint-rules/eslint-plugin-recommend-const-enums"
   },
   "license": "MIT",
   "files": [

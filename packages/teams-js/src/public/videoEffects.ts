@@ -101,6 +101,7 @@ export namespace videoEffects {
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum EffectFailureReason {
     /**
      * A wrong effect id is provide.

@@ -1,0 +1,16 @@
+{
+  "name": "eslint-plugin-recommend-const-enums",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "Noah",
+  "description": "Recommend using const enums",
+  "type": "commonjs",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin"
+  ],
+  "peerDependencies": {
+    "eslint": ">=5.0.0"
+  }
+}

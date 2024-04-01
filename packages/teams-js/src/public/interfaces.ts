@@ -990,6 +990,7 @@ export function isSdkError(err: unknown): err is SdkError {
 }
 
 /** Error codes used to identify different types of errors that can occur while developing apps. */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ErrorCode {
   /**
    * API not supported in the current platform.
@@ -1077,6 +1078,7 @@ export interface AdaptiveCardVersion {
 /**
  * Currently supported Mime type
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ClipboardSupportedMimeType {
   TextPlain = 'text/plain',
   TextHtml = 'text/html',

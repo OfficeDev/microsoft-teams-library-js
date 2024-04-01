@@ -79,6 +79,7 @@ export namespace mail {
   }
 
   /** Defines compose mail types. */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ComposeMailType {
     /** Compose a new mail message. */
     New = 'new',

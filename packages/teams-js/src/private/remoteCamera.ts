@@ -58,6 +58,7 @@ export namespace remoteCamera {
    * @internal
    * Limited to Microsoft-internal use
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ControlCommand {
     Reset = 'Reset',
     ZoomIn = 'ZoomIn',

@@ -1,3 +1,4 @@
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum PromiseState {
   Pending = 'pending',
   Resolved = 'resolved',

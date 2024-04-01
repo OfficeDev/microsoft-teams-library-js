@@ -319,6 +319,7 @@ export namespace meeting {
   /**
    * Reasons for the app's microphone state to change
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   enum MicStateChangeReason {
     HostInitiated,
     AppInitiated,

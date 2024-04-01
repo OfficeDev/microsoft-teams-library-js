@@ -610,6 +610,7 @@ export namespace media {
    * @beta
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MediaControllerEvent {
     /** Start recording. */
     StartRecording = 1,
@@ -638,6 +639,7 @@ export namespace media {
   /**
    * The modes in which camera can be launched in select Media API
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum CameraStartMode {
     /** Photo mode. */
     Photo = 1,
@@ -652,6 +654,7 @@ export namespace media {
   /**
    * Specifies the image source
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum Source {
     /** Image source is camera. */
     Camera = 1,
@@ -662,6 +665,7 @@ export namespace media {
   /**
    * Specifies the type of Media
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MediaType {
     /** Media type photo or image */
     Image = 1,
@@ -686,6 +690,7 @@ export namespace media {
   /**
    * ID contains a mapping for content uri on platform's side, URL is generic
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ImageUriType {
     /** Image Id. */
     ID = 1,
@@ -696,6 +701,7 @@ export namespace media {
   /**
    * Specifies the image output formats.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ImageOutputFormats {
     /** Outputs image.  */
     IMAGE = 1,
