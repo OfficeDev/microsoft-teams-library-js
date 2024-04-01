@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added an eslint plugin to recommend the use of const enums when possible",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
