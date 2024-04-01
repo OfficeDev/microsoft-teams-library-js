@@ -19,6 +19,7 @@
     },
     {
       "title": "getMeetingDetails API Call - Success",
+      "version": ">2.21.0",
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: undefined",
@@ -26,6 +27,7 @@
     },
     {
       "title": "getMeetingDetailsVerbose API Call - Success",
+      "version": ">2.21.0",
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetailsVerbose",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
