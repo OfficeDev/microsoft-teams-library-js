@@ -60,7 +60,7 @@ export namespace stageView {
   /**
    * The open mode for stage content.
    */
-  export enum StageViewOpenMode {
+  export const enum StageViewOpenMode {
     /**
      * Open the content in a modal.
      */
@@ -76,8 +76,6 @@ export namespace stageView {
   }
 
   /**
-   * @hidden
-   * Feature is under development
    *
    * Opens a stage view to display a Teams application
    * @beta

@@ -432,7 +432,7 @@ export namespace meeting {
    *
    * @beta
    */
-  export enum MeetingReactionType {
+  export const enum MeetingReactionType {
     like = 'like',
     heart = 'heart',
     laugh = 'laugh',
@@ -449,7 +449,7 @@ export namespace meeting {
    * @remarks
    * Teams has several types of meetings to account for different user scenarios and requirements.
    */
-  export enum MeetingType {
+  export const enum MeetingType {
     /**
      * Used when the meeting type is not known.
      *
@@ -504,7 +504,7 @@ export namespace meeting {
    * @hidden
    * Hide from docs.
    */
-  export enum CallType {
+  export const enum CallType {
     /**
      * Represents a call between two people.
      *
@@ -525,7 +525,7 @@ export namespace meeting {
   /**
    * Represents the protocol option for sharing app content to the meeting stage.
    */
-  export enum SharingProtocol {
+  export const enum SharingProtocol {
     /**
      * The default protocol for sharing app content to stage. To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
      */
@@ -1033,7 +1033,7 @@ export namespace meeting {
   }
 
   /** The source of the join button click. */
-  export enum EventActionSource {
+  export const enum EventActionSource {
     /**
      * Source is calendar grid context menu.
      */

@@ -1,7 +1,6 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateAppIdIsGuid } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -122,7 +121,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum OriginalRequestType {
+  export const enum OriginalRequestType {
     ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
     QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',
   }
@@ -143,7 +142,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum InvokeResponseType {
+  export const enum InvokeResponseType {
     ActionExecuteInvokeResponse = 'ActionExecuteInvokeResponse',
     QueryMessageExtensionResponse = 'QueryMessageExtensionResponse',
   }
@@ -260,7 +259,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum InvokeErrorCode {
+  export const enum InvokeErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 
@@ -327,8 +326,6 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -372,9 +369,6 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateAppIdIsGuid(appId);
-
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -410,8 +404,6 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateAppIdIsGuid(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
