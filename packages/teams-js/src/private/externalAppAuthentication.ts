@@ -29,6 +29,32 @@ export namespace externalAppAuthentication {
 
   /**
    * @hidden
+   * Parameters OauthWindow
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+    export type OauthWindowProperties = {
+      /**
+       * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
+       */
+      width?: number;
+      /**
+       * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
+       */
+      height?: number;
+      /**
+       * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
+       * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page specified in
+       * the {@link url} property to be opened in an external browser.
+       * If this flag is `false`, the page will be opened directly within the current hosting application.
+       *
+       * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
+       * environment without an embedded browser.
+       */
+      isExternal?: boolean;
+    };
+  /**
+   * @hidden
    * Parameters for the authentication pop-up. This interface is used exclusively with the externalAppAuthentication APIs
    * @internal
    * Limited to Microsoft-internal use
@@ -439,17 +465,13 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    * @param titleId ID of the acquisition
    * @param authenticateParameters Parameters for the signIn window
-   * @param referenceId referenceId for type B plugin
-   * @param runTimeId Id of the plugin runtime array
-   * @param pluginId pluginId of the title
+   * @param oAuthConfigID lookup ID in TGS
    * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
    */
   export function authenticateWithOauth2(
     titleId: string,
-    authenticateParameters: AuthenticatePopUpParameters,
-    referenceId?: string,
-    runtimeId?: string,
-    pluginId?: string,
+    oAuthConfigID: string,
+    oauthWindow: OauthWindowProperties,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -465,13 +487,10 @@ export namespace externalAppAuthentication {
       'externalAppAuthentication.authenticateWithOauth2',
       [
         titleId,
-        authenticateParameters.url.href,
-        authenticateParameters.width,
-        authenticateParameters.height,
-        authenticateParameters.isExternal,
-        referenceId,
-        runtimeId,
-        pluginId,
+        oAuthConfigID,
+        oauthWindow.width,
+        oauthWindow.height,
+        oauthWindow.isExternal
       ],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {

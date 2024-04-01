@@ -67,49 +67,42 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
 
 const AuthenticateWithOauth2 = (): React.ReactElement =>
   ApiWithTextInput<{
-    appId: string;
-    authenticateParameters: {
-      url: string;
+    titleId: string;
+    oAuthConfigID: string;
+    oauthWindow: {
       width?: number;
       height?: number;
       isExternal?: boolean;
     };
-    referenceId?: string;
-    runtimeId?: string;
-    pluginId?: string;
   }>({
     name: 'authenticateWithOauth2',
     title: 'Authenticate With Oauth2',
     onClick: {
       validateInput: (input) => {
-        if (!input.appId) {
-          throw new Error('appId is required');
+        if (!input.titleId) {
+          throw new Error('titleId is required');
         }
-        if (!input.authenticateParameters) {
-          throw new Error('authenticateParameters is required');
+        if (!input.oAuthConfigID) {
+          throw new Error('oAuthConfigID is required is required');
         }
       },
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateWithOauth2(
-          input.appId,
-          {
-            ...input.authenticateParameters,
-            url: new URL(input.authenticateParameters.url),
-          },
-          input.referenceId,
+          input.titleId,
+          input.oAuthConfigID,
+          input.oauthWindow
         );
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
-      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
-      authenticateParameters: {
-        url: 'https://accounts.google.com/o/oauth2/auth?client_id=776504672194-pjesukkm76dj91hcu3oghs2gam038kfa.apps.googleusercontent.com&redirect_uri=https://helloworld-noauth-4pfndzcy2q-uc.a.run.app/callback&scope=profile+openid&response_type=code',
-        width: 100,
-        height: 100,
-        isExternal: true,
-      },
+      appId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
       referenceId: '123',
+      oauthWindow: {
+        width: 400,
+        height: 400,
+        isExternal: false,
+      }
     }),
   });
 
