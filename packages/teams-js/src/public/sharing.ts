@@ -197,9 +197,15 @@ export namespace sharing {
 
   /**
    * Namespace to get the list of content shared in a context
+   *
+   * @beta
    */
   export namespace history {
-    /** Represents IContentResponse parameters. */
+    /**
+     * Represents IContentResponse parameters.
+     *
+     * @beta
+     */
     export interface IContentResponse {
       /** Id of the app where the content was shared from */
       appId: string;
@@ -215,7 +221,11 @@ export namespace sharing {
       contentType: string;
     }
 
-    /** getContent callback function type */
+    /**
+     * getContent callback function type
+     *
+     * @beta
+     */
     export type getContentCallbackFunctionType = (
       error: SdkError | null,
       contentDetails: IContentResponse[] | null,
@@ -226,17 +236,38 @@ export namespace sharing {
      * @param callback - Callback contains 2 parameters, `error` and `contentDetails`.
      * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
      * `contentDetails` will be the list of contents {@link IContentResponse} that was shared in the context, or null when the request fails.
+     *
+     * @beta
      */
     export function getContent(callback: getContentCallbackFunctionType): void {
       if (!callback) {
         throw new Error('[get content] Callback cannot be null');
       }
       ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
       sendMessageToParent(
         getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_History_GetContent),
         'getContent',
         callback,
       );
+    }
+
+    /**
+     * Checks if sharing.history capability is supported by the host
+     * @returns boolean to represent whether the sharing.history capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.sharing
+        ? runtime.supports.sharing.history
+          ? true
+          : false
+        : false;
     }
   }
 }

@@ -724,8 +724,27 @@ describe('sharing_v2', () => {
 
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
-        it(`should successfully get the content. context: ${context}`, async () => {
+        it(`sharing.history.getContent should throw error when sharing.history is not supported. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          let callbackCalled = false;
+          let returnedSdkError: SdkError | null;
+          let returnedResult: sharing.history.IContentResponse[] | null;
+          let callback = (error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
+            callbackCalled = true;
+            returnedResult = contentDetails;
+            returnedSdkError = error;
+          };
+          try {
+            sharing.history.getContent(callback);
+          } catch(e) {
+            expect(e).toEqual(errorNotSupportedOnPlatform);
+          }
+        });
+
+        it(`sharing.history.getContent should successfully get the content. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
           let callbackCalled = false;
           let returnedSdkError: SdkError | null;
           let returnedResult: sharing.history.IContentResponse[] | null;
@@ -761,7 +780,7 @@ describe('sharing_v2', () => {
 
         it(`should throw if the getContent message sends and fails ${context} context`, async () => {
           await utils.initializeWithContext(context);
-
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
           let callbackCalled = false;
           let returnedSdkError: SdkError | null;
           let returnedResult: sharing.history.IContentResponse[] | null;
@@ -796,6 +815,26 @@ describe('sharing_v2', () => {
           );
         });
       }
+    });
+
+    describe('Testing sharing.history.isSupported function', () => {
+      const utils = new Utils();
+      it('sharing.history.isSupported should return false if the runtime says sharing.history is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
+        expect(sharing.history.isSupported()).not.toBeTruthy();
+      });
+  
+      it('sharing.history.isSupported should return true if the runtime says sharing.history is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
+        expect(sharing.history.isSupported()).toBeTruthy();
+      });
+  
+      it('sharing.isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => sharing.history.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
     });
   });
 });
