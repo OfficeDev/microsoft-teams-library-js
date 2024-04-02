@@ -75,29 +75,35 @@ const DialogUrlAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
+          let resultMessage = '';
           if (isTestBackCompat()) {
             if (childWindowRef.current && childWindowRef.current !== null) {
               const childWindow = childWindowRef.current;
               const onComplete = (status: boolean, reason?: string): void => {
                 if (!status) {
                   if (reason) {
+                    resultMessage = reason;
                     setResult(JSON.stringify(reason));
                   } else {
-                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                    resultMessage = "Status is false but there's no reason?! This shouldn't happen.";
+                    setResult(resultMessage);
                   }
                 } else {
-                  setResult('Message sent to child');
+                  resultMessage = 'Message sent to child';
+                  setResult(resultMessage);
                 }
               };
               childWindow.postMessage(message, onComplete);
             } else {
-              setResult("childWindow doesn't exist");
+              resultMessage = "childWindow doesn't exist";
+              setResult(resultMessage);
             }
-            return '';
+            return resultMessage;
           } else {
-            setResult('Message sent to child');
+            resultMessage = 'Message sent to child';
+            setResult(resultMessage);
             dialog.url.parentCommunication.sendMessageToDialog(message);
-            return '';
+            return resultMessage;
           }
         },
       },
@@ -112,29 +118,35 @@ const DialogUrlAPIs = (): ReactElement => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         validateInput: () => {},
         submit: async (message, setResult) => {
+          let resultMessage = '';
           if (isTestBackCompat()) {
             const parentWindow = ParentAppWindow.Instance;
             if (parentWindow) {
               const onComplete = (status: boolean, reason?: string): void => {
                 if (!status) {
                   if (reason) {
+                    resultMessage = reason;
                     setResult(JSON.stringify(reason));
                   } else {
-                    setResult("Status is false but there's no reason?! This shouldn't happen.");
+                    resultMessage = "Status is false but there's no reason?! This shouldn't happen.";
+                    setResult(resultMessage);
                   }
                 } else {
-                  setResult('Message sent to parent');
+                  resultMessage = 'Message sent to parent';
+                  setResult(resultMessage);
                 }
               };
               parentWindow.postMessage(message, onComplete);
             } else {
-              setResult("parentWindow doesn't exist");
+              resultMessage = "parentWindow doesn't exist";
+              setResult(resultMessage);
             }
           } else {
-            setResult('Message sent to parent');
+            resultMessage = 'Message sent to parent';
+            setResult(resultMessage);
             dialog.url.parentCommunication.sendMessageToParentFromDialog(message);
           }
-          return '';
+          return resultMessage;
         },
       },
       defaultInput: '"Hello from child"',
