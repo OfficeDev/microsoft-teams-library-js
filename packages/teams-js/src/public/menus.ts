@@ -1,5 +1,5 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { runtime } from '../public/runtime';
@@ -144,7 +144,7 @@ export namespace menus {
    * @hidden
    * Represents information about type of list to display in Navigation Bar Menu.
    */
-  export enum MenuListType {
+  export const enum MenuListType {
     dropDown = 'dropDown',
     popOver = 'popOver',
   }
@@ -160,19 +160,19 @@ export namespace menus {
    * Limited to Microsoft-internal use.
    */
   export function initialize(): void {
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterNavBarMenuItemPressHandler),
       'navBarMenuItemPress',
       handleNavBarMenuItemPress,
       false,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterActionMenuItemPressHandler),
       'actionMenuItemPress',
       handleActionMenuItemPress,
       false,
     );
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_RegisterSetModuleViewHandler),
       'setModuleView',
       handleViewConfigItemPress,
@@ -194,17 +194,15 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     viewConfigItemPressHandler = handler;
-    sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetUpViews),
-      'setUpViews',
-      [viewConfig],
-    );
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetUpViews), 'setUpViews', [
+      viewConfig,
+    ]);
   }
 
   function handleViewConfigItemPress(id: string): void {
     if (!viewConfigItemPressHandler || !viewConfigItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleViewConfigItemPress),
         'viewConfigItemPress',
         [id],
@@ -225,17 +223,15 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     navBarMenuItemPressHandler = handler;
-    sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetNavBarMenu),
-      'setNavBarMenu',
-      [items],
-    );
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_SetNavBarMenu), 'setNavBarMenu', [
+      items,
+    ]);
   }
 
   function handleNavBarMenuItemPress(id: string): void {
     if (!navBarMenuItemPressHandler || !navBarMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleNavBarMenuItemPress),
         'handleNavBarMenuItemPress',
         [id],
@@ -270,17 +266,15 @@ export namespace menus {
       throw errorNotSupportedOnPlatform;
     }
     actionMenuItemPressHandler = handler;
-    sendMessageToParentWithVersion(
-      getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_ShowActionMenu),
-      'showActionMenu',
-      [params],
-    );
+    sendMessageToParent(getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_ShowActionMenu), 'showActionMenu', [
+      params,
+    ]);
   }
 
   function handleActionMenuItemPress(id: string): void {
     if (!actionMenuItemPressHandler || !actionMenuItemPressHandler(id)) {
       ensureInitialized(runtime);
-      sendMessageToParentWithVersion(
+      sendMessageToParent(
         getApiVersionTag(menuTelemetryVersionNumber, ApiName.Menus_HandleActionMenuItemPress),
         'handleActionMenuItemPress',
         [id],

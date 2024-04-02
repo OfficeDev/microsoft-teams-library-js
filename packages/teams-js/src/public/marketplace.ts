@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   deserializeCart,
@@ -203,7 +203,7 @@ export namespace marketplace {
    * Represents the persona creating the cart.
    * @beta
    */
-  export enum Intent {
+  export const enum Intent {
     /**
      * @hidden
      * The cart is created by admin of an organization in Teams Admin Center.
@@ -328,7 +328,7 @@ export namespace marketplace {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(marketplaceTelemetryVersionNumber, ApiName.Marketplace_GetCart),
       'marketplace.getCart',
       cartVersion,
@@ -351,7 +351,7 @@ export namespace marketplace {
     }
     validateUuid(addOrUpdateCartItemsParams?.cartId);
     validateCartItems(addOrUpdateCartItemsParams?.cartItems);
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(marketplaceTelemetryVersionNumber, ApiName.Marketplace_AddOrUpdateCartItems),
       'marketplace.addOrUpdateCartItems',
       {
@@ -381,7 +381,7 @@ export namespace marketplace {
     if (!Array.isArray(removeCartItemsParams?.cartItemIds) || removeCartItemsParams?.cartItemIds.length === 0) {
       throw new Error('cartItemIds must be a non-empty array');
     }
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(marketplaceTelemetryVersionNumber, ApiName.Marketplace_RemoveCardItems),
       'marketplace.removeCartItems',
       {
@@ -407,7 +407,7 @@ export namespace marketplace {
     }
     validateUuid(updateCartStatusParams?.cartId);
     validateCartStatus(updateCartStatusParams?.cartStatus);
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(marketplaceTelemetryVersionNumber, ApiName.Marketplace_UpdateCartStatus),
       'marketplace.updateCartStatus',
       {

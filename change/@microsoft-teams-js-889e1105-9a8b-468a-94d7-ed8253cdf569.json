@@ -1,7 +1,7 @@
 {
   "type": "patch",
-  "comment": "Added windows.msn.com to validOrigins list",
+  "comment": "Made enum const to reduce package size",
   "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
+  "email": "noahdarveau@microsoft.com",
   "dependentChangeType": "patch"
 }

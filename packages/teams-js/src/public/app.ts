@@ -5,9 +5,9 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReasonWithVersion,
-  sendAndUnwrapWithVersion,
-  sendMessageToParentWithVersion,
+  sendAndHandleStatusAndReason,
+  sendAndUnwrap,
+  sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -64,28 +64,28 @@ export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?:
 }
 
 export function notifyAppLoadedHelper(apiVersionTag: string): void {
-  sendMessageToParentWithVersion(apiVersionTag, app.Messages.AppLoaded, [version]);
+  sendMessageToParent(apiVersionTag, app.Messages.AppLoaded, [version]);
 }
 
 export function notifyExpectedFailureHelper(
   apiVersionTag: string,
   expectedFailureRequest: app.IExpectedFailureRequest,
 ): void {
-  sendMessageToParentWithVersion(apiVersionTag, app.Messages.ExpectedFailure, [
+  sendMessageToParent(apiVersionTag, app.Messages.ExpectedFailure, [
     expectedFailureRequest.reason,
     expectedFailureRequest.message,
   ]);
 }
 
 export function notifyFailureHelper(apiVersiontag: string, appInitializationFailedRequest: app.IFailedRequest): void {
-  sendMessageToParentWithVersion(apiVersiontag, app.Messages.Failure, [
+  sendMessageToParent(apiVersiontag, app.Messages.Failure, [
     appInitializationFailedRequest.reason,
     appInitializationFailedRequest.message,
   ]);
 }
 
 export function notifySuccessHelper(apiVersionTag: string): void {
-  sendMessageToParentWithVersion(apiVersionTag, app.Messages.Success, [version]);
+  sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
@@ -200,7 +200,7 @@ export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', deepLink));
+    resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', deepLink));
   });
 }
 
@@ -701,6 +701,14 @@ export namespace app {
      * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
+
+    /**
+     * When `processActionCommand` activates a dialog, this dialog should automatically fill in some fields with information. This information comes from M365 and is given to `processActionCommand` as `extractedParameters`.
+     * App developers need to use these `extractedParameters` in their dialog.
+     * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
+     * If there's no key/value pairs passed, the object will be empty in the case
+     */
+    dialogParameters: Record<string, string>;
   }
 
   /**
@@ -806,9 +814,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(
-        sendAndUnwrapWithVersion(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'),
-      );
+      resolve(sendAndUnwrap(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -1040,6 +1046,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
             mySiteDomain: legacyContext.mySiteDomain,
           }
         : undefined,
+    dialogParameters: legacyContext.dialogParameters || {},
   };
 
   return context;

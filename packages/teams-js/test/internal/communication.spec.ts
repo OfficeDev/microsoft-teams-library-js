@@ -6,7 +6,7 @@ import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { MessageRequest, Utils } from '../utils';
 
-const testApiVersion = getApiVersionTag(ApiVersionNumber.V_0, 'mockedApiName' as ApiName);
+const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
 
 describe('Testing communication', () => {
   describe('initializeCommunication', () => {
@@ -425,8 +425,8 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = false;
       communication.Communication.parentWindow = utils.mockWindow.parent;
       communication.Communication.parentOrigin = utils.validOrigin;
-      communication.sendMessageToParent('testAction');
-      communication.sendMessageToParent('testAction2');
+      communication.sendMessageToParent(testApiVersion, 'testAction');
+      communication.sendMessageToParent(testApiVersion, 'testAction2');
       const message = utils.findMessageByFunc('testAction2');
 
       if (message) {
@@ -437,7 +437,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = false;
       communication.Communication.parentWindow = utils.mockWindow.parent;
       communication.Communication.parentOrigin = utils.validOrigin;
-      communication.sendMessageToParent('testAction3');
+      communication.sendMessageToParent(testApiVersion, 'testAction3');
 
       const messageAfterUninitialize = utils.findMessageByFunc('testAction3');
       if (messageAfterUninitialize) {
@@ -452,7 +452,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendMessageToParent('testAction', () => {
+      communication.sendMessageToParent(testApiVersion, 'testAction', () => {
         callbackWasCalled = true;
       });
       const tempProcessMessage = utils.processMessage;
@@ -468,7 +468,7 @@ describe('Testing communication', () => {
       app._initialize(utils.mockWindow);
       communication.initializeCommunication(undefined, testApiVersion);
 
-      const messageParent = communication.sendMessageToParentAsync('testAction');
+      const messageParent = communication.sendMessageToParentAsync(testApiVersion, 'testAction');
 
       const tempProcessMessage = utils.processMessage;
       communication.uninitializeCommunication();
@@ -511,7 +511,7 @@ describe('Testing communication', () => {
     it('should send framelessPostMessage to window when running in a frameless window and Communication.currentWindow is set and has a nativeInterface', () => {
       GlobalVars.isFramelessWindow = true;
 
-      communication.sendMessageToParentAsync(actionName);
+      communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -521,7 +521,7 @@ describe('Testing communication', () => {
       utils.mockWindow.parent = undefined;
       communication.initializeCommunication(undefined, testApiVersion);
 
-      const messagePromise = communication.sendMessageToParentAsync(actionName);
+      const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -535,7 +535,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow = undefined;
 
-      communication.sendMessageToParentAsync(actionName);
+      communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -546,7 +546,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow = undefined;
 
-      const messagePromise = communication.sendMessageToParentAsync(actionName);
+      const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
 
@@ -559,7 +559,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      communication.sendMessageToParentAsync(actionName);
+      communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -571,7 +571,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      const messagePromise = communication.sendMessageToParentAsync(actionName);
+      const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
 
@@ -583,7 +583,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
 
       const arg1 = 'testArg1';
-      communication.sendMessageToParentAsync(actionName, [arg1]);
+      communication.sendMessageToParentAsync(testApiVersion, actionName, [arg1]);
 
       expect(utils.messages.length).toBe(1);
       if (utils.messages[0].args === undefined) {
@@ -597,7 +597,7 @@ describe('Testing communication', () => {
       communication.Communication.parentWindow = utils.mockWindow.parent;
       communication.Communication.parentOrigin = utils.validOrigin;
 
-      communication.sendMessageToParentAsync(actionName);
+      communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -608,7 +608,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendMessageToParentAsync(actionName);
+      const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -624,7 +624,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const arg1 = 'testArg1';
-      communication.sendMessageToParentAsync(actionName, [arg1]);
+      communication.sendMessageToParentAsync(testApiVersion, actionName, [arg1]);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -641,7 +641,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
 
-      communication.sendMessageToParentAsync(actionName);
+      communication.sendMessageToParentAsync(testApiVersion, actionName);
 
       let sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage !== null) {
@@ -864,7 +864,7 @@ describe('Testing communication', () => {
       expect.assertions(5);
       GlobalVars.isFramelessWindow = true;
 
-      communication.sendMessageToParent(actionName, ['zero', 'one']);
+      communication.sendMessageToParent(testApiVersion, actionName, ['zero', 'one']);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -880,7 +880,7 @@ describe('Testing communication', () => {
       utils.mockWindow.parent = undefined;
       communication.initializeCommunication(undefined, testApiVersion);
 
-      communication.sendMessageToParent(actionName, () => {
+      communication.sendMessageToParent(testApiVersion, actionName, () => {
         expect(true).toBeTruthy();
       });
       const sentMessage = utils.findMessageByFunc(actionName);
@@ -894,7 +894,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow = undefined;
 
-      communication.sendMessageToParent(actionName);
+      communication.sendMessageToParent(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -906,7 +906,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow = undefined;
 
-      communication.sendMessageToParent(actionName, () => {
+      communication.sendMessageToParent(testApiVersion, actionName, () => {
         expect(true).toBeTruthy();
       });
 
@@ -920,7 +920,7 @@ describe('Testing communication', () => {
       GlobalVars.isFramelessWindow = true;
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      communication.sendMessageToParent(actionName);
+      communication.sendMessageToParent(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(0);
     });
@@ -932,7 +932,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       communication.Communication.currentWindow.nativeInterface = undefined;
 
-      communication.sendMessageToParent(actionName, () => expect(true).toBeTruthy());
+      communication.sendMessageToParent(testApiVersion, actionName, () => expect(true).toBeTruthy());
 
       await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
     });
@@ -941,7 +941,7 @@ describe('Testing communication', () => {
       communication.Communication.parentWindow = utils.mockWindow.parent;
       communication.Communication.parentOrigin = utils.validOrigin;
 
-      communication.sendMessageToParent(actionName);
+      communication.sendMessageToParent(testApiVersion, actionName);
 
       expect(utils.messages.length).toBe(1);
       expect(utils.messages[0].id).toBe(0);
@@ -953,7 +953,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendMessageToParent(actionName, () => expect(true).toBeTruthy());
+      communication.sendMessageToParent(testApiVersion, actionName, () => expect(true).toBeTruthy());
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -967,7 +967,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const arg1 = 'testArg1';
-      communication.sendMessageToParent(actionName, [arg1]);
+      communication.sendMessageToParent(testApiVersion, actionName, [arg1]);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -984,7 +984,7 @@ describe('Testing communication', () => {
       communication.initializeCommunication(undefined, testApiVersion);
       const initializeMessage = utils.findInitializeMessageOrThrow();
 
-      communication.sendMessageToParent(actionName);
+      communication.sendMessageToParent(testApiVersion, actionName);
 
       let sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage !== null) {
@@ -1061,7 +1061,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndUnwrap(actionName);
+      const messagePromise = communication.sendAndUnwrap(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1072,7 +1072,7 @@ describe('Testing communication', () => {
       const response = await messagePromise;
       expect(response).toBe(actionName);
 
-      const messagePromise2 = communication.sendMessageToParentAsync(actionName2);
+      const messagePromise2 = communication.sendMessageToParentAsync(testApiVersion, actionName2);
 
       const sentMessage2 = utils.findMessageByFunc(actionName2);
       if (sentMessage2 === null) {
@@ -1102,7 +1102,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleStatusAndReason(actionName);
+      const messagePromise = communication.sendAndHandleStatusAndReason(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1120,7 +1120,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleStatusAndReason(actionName);
+      const messagePromise = communication.sendAndHandleStatusAndReason(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1138,7 +1138,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleStatusAndReason(actionName, 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleStatusAndReason(testApiVersion, actionName, 'arg1', 'arg2', 'arg3');
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');
@@ -1167,6 +1167,7 @@ describe('Testing communication', () => {
 
       const defaultErrorMessage = 'This is the default error message';
       const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        testApiVersion,
         actionName,
         defaultErrorMessage,
       );
@@ -1189,6 +1190,7 @@ describe('Testing communication', () => {
 
       const defaultErrorMessage = 'This is the default error message';
       const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        testApiVersion,
         actionName,
         defaultErrorMessage,
       );
@@ -1207,7 +1209,11 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(actionName, 'default error');
+      const messagePromise = communication.sendAndHandleStatusAndReasonWithDefaultError(
+        testApiVersion,
+        actionName,
+        'default error',
+      );
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1225,7 +1231,14 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleStatusAndReasonWithDefaultError(actionName, 'default error', 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleStatusAndReasonWithDefaultError(
+        testApiVersion,
+        actionName,
+        'default error',
+        'arg1',
+        'arg2',
+        'arg3',
+      );
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');
@@ -1253,7 +1266,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleSdkError(actionName);
+      const messagePromise = communication.sendAndHandleSdkError(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1272,7 +1285,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleSdkError(actionName);
+      const messagePromise = communication.sendAndHandleSdkError(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1290,7 +1303,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleSdkError(actionName);
+      const messagePromise = communication.sendAndHandleSdkError(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1310,7 +1323,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const messagePromise = communication.sendAndHandleSdkError(actionName);
+      const messagePromise = communication.sendAndHandleSdkError(testApiVersion, actionName);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage === null) {
@@ -1328,7 +1341,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.sendAndHandleSdkError(actionName, 'arg1', 'arg2', 'arg3');
+      communication.sendAndHandleSdkError(testApiVersion, actionName, 'arg1', 'arg2', 'arg3');
       const sentMessage = utils.findMessageByFunc(actionName);
       if (sentMessage?.args) {
         expect(sentMessage?.args[0]).toStrictEqual('arg1');

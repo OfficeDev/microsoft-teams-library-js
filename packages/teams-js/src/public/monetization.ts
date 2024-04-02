@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { callCallbackWithErrorOrResultOrNullFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
@@ -104,7 +104,7 @@ export namespace monetization {
           throw errorNotSupportedOnPlatform;
         }
         /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        resolve(sendAndHandleSdkErrorWithVersion(apiVersionTag, 'monetization.openPurchaseExperience', planInfo));
+        resolve(sendAndHandleSdkError(apiVersionTag, 'monetization.openPurchaseExperience', planInfo));
       });
     };
 

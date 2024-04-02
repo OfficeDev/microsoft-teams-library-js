@@ -1,9 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { validateAppIdIsGuid } from '../internal/utils';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ExternalAppErrorCode } from './constants';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -18,7 +24,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum ActionOpenUrlType {
+  export const enum ActionOpenUrlType {
     DeepLinkDialog = 'DeepLinkDialog',
     DeepLinkOther = 'DeepLinkOther',
     DeepLinkStageView = 'DeepLinkStageView',
@@ -43,7 +49,7 @@ export namespace externalAppCardActions {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum ActionOpenUrlErrorCode {
+  export const enum ActionOpenUrlErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
     INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
     NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
@@ -69,18 +75,8 @@ export namespace externalAppCardActions {
    * Limited to Microsoft-internal use
    */
   export interface ActionSubmitError {
-    errorCode: ActionSubmitErrorCode;
+    errorCode: ExternalAppErrorCode;
     message?: string;
-  }
-
-  /**
-   * @hidden
-   * Error codes that can be thrown from IExternalAppCardActionService.handleActionSubmit
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export enum ActionSubmitErrorCode {
-    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 
   /**
@@ -100,13 +96,14 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateAppIdIsGuid(appId);
-
-    return sendMessageToParentAsync<[boolean, ActionSubmitError]>('externalAppCardActions.processActionSubmit', [
-      appId,
-      actionSubmitPayload,
-    ]).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
+    return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionSubmit,
+      ),
+      'externalAppCardActions.processActionSubmit',
+      [appId, actionSubmitPayload],
+    ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
       }
@@ -116,25 +113,34 @@ export namespace externalAppCardActions {
   /**
    * @beta
    * @hidden
-   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID
+   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID.
+   * If `fromElement` is not provided, the information from the manifest is used to determine whether the URL can
+   * be processed by the host. Deep link URLs for plugins are not supported and will result in an error.
    * @internal
    * Limited to Microsoft-internal use
    * @param appId ID of the application the request is intended for. This must be a UUID
    * @param url The URL to open
+   * @param fromElement The element on behalf of which the M365 app is making the request.
    * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
    */
-  export function processActionOpenUrl(appId: string, url: URL): Promise<ActionOpenUrlType> {
+  export function processActionOpenUrl(
+    appId: string,
+    url: URL,
+    fromElement?: { name: 'composeExtensions' | 'plugins' },
+  ): Promise<ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
-    validateAppIdIsGuid(appId);
-
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+      getApiVersionTag(
+        externalAppCardActionsTelemetryVersionNumber,
+        ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
+      ),
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url.href],
+      [appId, url.href, fromElement],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;

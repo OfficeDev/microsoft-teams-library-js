@@ -1,4 +1,4 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -92,7 +92,7 @@ export namespace location {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(locationTelemetryVersionNumber, ApiName.Location_GetLocation),
       'location.getLocation',
       [props],
@@ -124,7 +124,7 @@ export namespace location {
       throw errorNotSupportedOnPlatform;
     }
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(locationTelemetryVersionNumber, ApiName.Location_ShowLocation),
       'location.showLocation',
       [location],

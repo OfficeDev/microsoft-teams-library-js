@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -60,7 +60,7 @@ export namespace stageView {
   /**
    * The open mode for stage content.
    */
-  export enum StageViewOpenMode {
+  export const enum StageViewOpenMode {
     /**
      * Open the content in a modal.
      */
@@ -76,8 +76,6 @@ export namespace stageView {
   }
 
   /**
-   * @hidden
-   * Feature is under development
    *
    * Opens a stage view to display a Teams application
    * @beta
@@ -97,7 +95,7 @@ export namespace stageView {
       }
 
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Open),
           'stageView.open',
           stageViewParams,

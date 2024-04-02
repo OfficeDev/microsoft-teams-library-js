@@ -1,9 +1,8 @@
-import { sendAndHandleSdkError, sendAndHandleSdkErrorWithVersion } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
-import { ensureInitialized, isHostClientMobile } from '../internal/internalAPIs';
+import { sendAndHandleSdkError } from '../internal/communication';
+import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import * as utils from '../internal/utils';
-import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ClipboardParams, ClipboardSupportedMimeType } from './interfaces';
 import { runtime } from './runtime';
 
@@ -54,7 +53,7 @@ export namespace clipboard {
       mimeType: blob.type as ClipboardSupportedMimeType,
       content: base64StringContent,
     };
-    return sendAndHandleSdkErrorWithVersion(
+    return sendAndHandleSdkError(
       getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Write),
       'clipboard.writeToClipboard',
       writeParams,
@@ -78,17 +77,16 @@ export namespace clipboard {
       FrameContexts.stage,
       FrameContexts.sidePanel,
     );
+    const apiVersionTag = getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    if (isHostClientMobile() || GlobalVars.hostClientType === HostClientType.macos) {
-      const response = JSON.parse(await sendAndHandleSdkError('clipboard.readFromClipboard')) as ClipboardParams;
-      return utils.base64ToBlob(response.mimeType, response.content);
+    const response = await sendAndHandleSdkError(apiVersionTag, 'clipboard.readFromClipboard');
+    if (typeof response === 'string') {
+      const data = JSON.parse(response) as ClipboardParams;
+      return utils.base64ToBlob(data.mimeType, data.content);
     } else {
-      return sendAndHandleSdkErrorWithVersion(
-        getApiVersionTag(clipboardTelemetryVersionNumber, ApiName.Clipboard_Read),
-        'clipboard.readFromClipboard',
-      );
+      return response as Blob;
     }
   }
 

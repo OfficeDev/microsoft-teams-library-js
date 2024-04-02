@@ -1,5 +1,5 @@
-import { sendMessageToParentWithVersion } from '../internal/communication';
-import { registerHandlerWithVersion } from '../internal/handlers';
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from '../internal/utils';
@@ -20,7 +20,7 @@ const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_
 export namespace videoEffects {
   const videoPerformanceMonitor = inServerSideRenderingEnvironment()
     ? undefined
-    : new VideoPerformanceMonitor(sendMessageToParentWithVersion);
+    : new VideoPerformanceMonitor(sendMessageToParent);
 
   /** Notify video frame processed function type */
   export type notifyVideoFrameProcessedFunctionType = () => void;
@@ -66,7 +66,7 @@ export namespace videoEffects {
    * Video frame format enum, currently only support NV12
    * @beta
    */
-  export enum VideoFrameFormat {
+  export const enum VideoFrameFormat {
     /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
     NV12 = 'NV12',
   }
@@ -86,7 +86,7 @@ export namespace videoEffects {
    * Video effect change type enum
    * @beta
    */
-  export enum EffectChangeType {
+  export const enum EffectChangeType {
     /**
      * Current video effect changed
      */
@@ -228,7 +228,7 @@ export namespace videoEffects {
     if (!parameters.videoFrameHandler || !parameters.videoBufferHandler) {
       throw new Error('Both videoFrameHandler and videoBufferHandler must be provided');
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsTelemetryVersionNumber,
         ApiName.VideoEffects_RegisterSetFrameProcessTimeLimitHandler,
@@ -265,7 +265,7 @@ export namespace videoEffects {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifySelectedVideoEffectChanged),
       'video.videoEffectChanged',
       [effectChangeType, effectId],
@@ -282,13 +282,13 @@ export namespace videoEffects {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterEffectParameterChangeHandler),
       'video.effectParameterChange',
       createEffectParameterChangeCallback(callback, videoPerformanceMonitor),
       false,
     );
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoEffect),
       'video.registerForVideoEffect',
     );
@@ -300,7 +300,7 @@ export namespace videoEffects {
    * @beta
    */
   function notifyVideoFrameProcessed(timestamp?: number): void {
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifyVideoFrameProcessed),
       'video.videoFrameProcessed',
       [timestamp],
@@ -313,7 +313,7 @@ export namespace videoEffects {
    * @param errorMessage - The error message that will be sent to the host
    */
   function notifyError(errorMessage: string): void {
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_NotifyError),
       'video.notifyError',
       [errorMessage],
@@ -343,7 +343,7 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsTelemetryVersionNumber,
         ApiName.VideoEffects_RegisterStartVideoExtensibilityVideoStreamHandler,
@@ -358,7 +358,7 @@ export namespace videoEffects {
       false,
     );
 
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_MediaStream_RegisterForVideoFrame),
       'video.mediaStream.registerForVideoFrame',
       [config],
@@ -396,7 +396,7 @@ export namespace videoEffects {
       throw errorNotSupportedOnPlatform;
     }
 
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoBufferHandler),
       'video.newVideoFrame',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -416,7 +416,7 @@ export namespace videoEffects {
       },
       false,
     );
-    sendMessageToParentWithVersion(
+    sendMessageToParent(
       getApiVersionTag(videoEffectsTelemetryVersionNumber, ApiName.VideoEffects_RegisterForVideoFrame),
       'video.registerForVideoFrame',
       [config],

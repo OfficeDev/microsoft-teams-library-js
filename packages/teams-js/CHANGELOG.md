@@ -1,8 +1,49 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 10 Jan 2024 19:55:18 GMT and should not be manually modified.
+This log was last generated on Wed, 06 Mar 2024 22:44:18 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.21.0
+
+Wed, 06 Mar 2024 22:44:18 GMT
+
+### Minor changes
+
+- Added `meeting.joinMeeting` function
+- Removed Beta/Preview tag on `chat` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+
+### Patches
+
+- Updated all capabilities to include versions to enable hosts to identify exact function being used
+- Updated documentation on `OpenSingleChatRequest` interface and updated all URLs to remove locale-specific portions.
+- Updated `base64ToBlob` function to accept special characters
+- Removed one default valid origin
+- Fixed bug where `authentication.getUser` telemetry was being incorrectly recorded
+- Fixed bug in API Version telemetry
+
+## 2.20.0
+
+Wed, 07 Feb 2024 18:02:49 GMT
+
+### Minor changes
+
+- Added communication for nested app auth
+- Added private `messageChannels` capability
+- Enabled acquiring of access token for cross-tenant resources
+- Added new subcapability `dialog.url.parentCommunication` for dialog-parent communication related APIs. The isSupported function in this subcapability will return `false` if it is invoked from a parentless scenario.
+
+### Patches
+
+- Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.
+- Added apiVersionTag for telemetry in `profile`, `search`, `secondaryBrowser`, `settings`, `sharing`, `stageView`, `videoEffects` and `visualMedia` capabilites
+- Fixed bug where `thirdPartyCloudStorage.getDragAndDropFiles` failed deterministically
+- Updated eslint package and fixed subsequent linting errors
+- Removed unused `callbackUrl` parameter from `authentication.notifySuccess` and `authentication.notifyFailure` (in an API-compatible way)
+- Added telemetry to `chat`, `interactive`, `meeting`, `menus`,`monetization` and `people` capabilities
+- Added apiVersionTags for telemetry in `conversations`, `files`, `logs`, `meetingRoom` and `notifications` capabilities
+- Added windows.msn.com to validOrigins list
+- Added apiVersionTag for telemetry in `privateAPIs` and `remoteCamera`, `teams`, `videoEffectsEx` capabilities
 
 ## 2.19.0
 

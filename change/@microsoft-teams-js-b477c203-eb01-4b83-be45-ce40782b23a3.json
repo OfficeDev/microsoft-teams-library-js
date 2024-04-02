@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Added `glass` as a theme that can be passed down by some hosts",
-  "packageName": "@microsoft/teams-js",
-  "email": "abhishek.webyog@gmail.com",
-  "dependentChangeType": "none"
-}

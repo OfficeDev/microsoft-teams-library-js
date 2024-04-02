@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateShowProfileRequest } from '../internal/profileUtil';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -47,7 +47,7 @@ export namespace profile {
       };
 
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(profileTelemetryVersionNumber, ApiName.Profile_ShowProfile),
           'profile.showProfile',
           requestInternal,

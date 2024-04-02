@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Buffer } from 'buffer';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
@@ -331,7 +332,6 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
     if (!base64String) {
       reject('Base64 string cannot be null or empty.');
     }
-    const byteCharacters = atob(base64String);
     /**
      * For images we need to convert binary data to image to achieve that:
      *   1. A new Uint8Array is created with a length equal to the length of byteCharacters.
@@ -342,12 +342,14 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
      *      constructor expects binary data.
      */
     if (mimeType.startsWith('image/')) {
+      const byteCharacters = atob(base64String);
       const byteArray = new Uint8Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteArray[i] = byteCharacters.charCodeAt(i);
       }
       resolve(new Blob([byteArray], { type: mimeType }));
     }
+    const byteCharacters = Buffer.from(base64String, 'base64').toString();
     resolve(new Blob([byteCharacters], { type: mimeType }));
   });
 }
@@ -397,19 +399,4 @@ export function ssrSafeWindow(): Window {
  */
 export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
-}
-
-const appIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * @param appID The app ID to validate against the GUID format
- * @throws Error if appID is not a valid GUID
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function validateAppIdIsGuid(appId: string): void {
-  if (!appIdRegex.test(appId)) {
-    throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
-  }
 }

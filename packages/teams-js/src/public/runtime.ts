@@ -241,6 +241,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly externalAppAuthentication?: {};
     readonly externalAppCardActions?: {};
+    readonly externalAppCommands?: {};
     readonly geoLocation?: {
       readonly map?: {};
     };
@@ -256,6 +257,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly monetization?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
+    readonly otherAppStateChange?: {};
     readonly pages?: {
       readonly appButton?: {};
       readonly backStack?: {};

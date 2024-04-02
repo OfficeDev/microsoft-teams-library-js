@@ -1,4 +1,4 @@
-import { sendAndHandleSdkErrorWithVersion } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
@@ -22,7 +22,7 @@ export namespace liveShare {
    * Used in Live Share for its role verification feature.
    * For more information, visit https://learn.microsoft.com/microsoftteams/platform/apps-in-teams-meetings/teams-live-share-capabilities?tabs=javascript#role-verification-for-live-data-structures
    */
-  export enum UserMeetingRole {
+  export const enum UserMeetingRole {
     /**
      * Guest role.
      */
@@ -46,7 +46,7 @@ export namespace liveShare {
    * State of the current Live Share session's Fluid container.
    * This is used internally by the `LiveShareClient` when joining a Live Share session.
    */
-  export enum ContainerState {
+  export const enum ContainerState {
     /**
      * The call to `LiveShareHost.setContainerId()` successfully created the container mapping
      * for the current Live Share session.
@@ -190,7 +190,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidTenantInfo),
           'interactive.getFluidTenantInfo',
         ),
@@ -209,7 +209,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<string>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidToken),
           'interactive.getFluidToken',
           // eslint-disable-next-line strict-null-checks/all
@@ -227,7 +227,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidContainerId),
           'interactive.getFluidContainerId',
         ),
@@ -249,7 +249,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_SetFluidContainerId),
           'interactive.setFluidContainerId',
           containerId,
@@ -266,7 +266,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.INtpTimeInfo>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetNtpTime),
           'interactive.getNtpTime',
         ),
@@ -285,7 +285,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.UserMeetingRole[]>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_RegisterClientId),
           'interactive.registerClientId',
           clientId,
@@ -305,7 +305,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.UserMeetingRole[] | undefined>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetClientRoles),
           'interactive.getClientRoles',
           clientId,
@@ -325,7 +325,7 @@ export class LiveShareHost {
     ensureSupported();
     return new Promise<liveShare.IClientInfo | undefined>((resolve) => {
       resolve(
-        sendAndHandleSdkErrorWithVersion(
+        sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetClientInfo),
           'interactive.getClientInfo',
           clientId,

@@ -1,8 +1,8 @@
 import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { videoEffects } from '../public/videoEffects';
-import { sendMessageToParentWithVersion } from './communication';
-import { registerHandlerWithVersion } from './handlers';
+import { sendMessageToParent } from './communication';
+import { registerHandler } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { inServerSideRenderingEnvironment, ssrSafeWindow } from './utils';
 import {
@@ -174,7 +174,7 @@ function pipeVideoSourceToGenerator(
  * @hidden
  * Error messages during video frame transformation.
  */
-enum VideoFrameTransformErrors {
+const enum VideoFrameTransformErrors {
   TimestampIsNull = 'timestamp of the original video frame is null',
   UnsupportedVideoFramePixelFormat = 'Unsupported video frame pixel format',
 }
@@ -306,7 +306,7 @@ class TransformerWithMetadata {
     private notifyError: (string) => void,
     private videoFrameHandler: videoEffectsEx.VideoFrameHandler,
   ) {
-    registerHandlerWithVersion(
+    registerHandler(
       getApiVersionTag(
         videoEffectsUtilTelemetryVersionNumber,
         ApiName.VideoEffectsUtils_TransformerWithMetadata_Constructor,
@@ -383,7 +383,7 @@ class TransformerWithMetadata {
     // The rectangle of pixels to copy from the texture. The first two rows are the header.
     const headerRect = { x: 0, y: 0, width: texture.codedWidth, height: 2 };
     // allocate buffer for the header
-    // The texture is in NV12 format (https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12).
+    // The texture is in NV12 format (https://learn.microsoft.com/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12).
     // NV12 has one luma "luminance" plane Y and one UV plane with U and V values interleaved.
     // In NV12, chroma planes (blue and red) are subsampled in both the horizontal and vertical dimensions by a factor of 2.
     // So for a 2×2 group of pixels, you have 4 Y samples and 1 U and 1 V sample, each sample being 1 byte.
@@ -453,7 +453,7 @@ export function createEffectParameterChangeCallback(
     callback(effectId, effectParam)
       .then(() => {
         videoPerformanceMonitor?.reportVideoEffectChanged(effectId || '', effectParam);
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_ReportVideoEffectChanged),
           'video.videoEffectReadiness',
           [true, effectId, undefined, effectParam],
@@ -462,7 +462,7 @@ export function createEffectParameterChangeCallback(
       .catch((reason) => {
         const validReason =
           reason in videoEffects.EffectFailureReason ? reason : videoEffects.EffectFailureReason.InitializationFailure;
-        sendMessageToParentWithVersion(
+        sendMessageToParent(
           getApiVersionTag(videoEffectsUtilTelemetryVersionNumber, ApiName.VideoEffectsUtils_EffectFailure),
           'video.videoEffectReadiness',
           [false, effectId, validReason, effectParam],
