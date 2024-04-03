@@ -414,12 +414,12 @@ export function validateAppId(appId: string): void {
   }
 }
 
-function hasScriptTags(appId: string) {
+function hasScriptTags(appId: string): boolean {
   const scriptRegex = /<script[^>]*>[\s\S]*?<\/script\s*>/gi;
   return scriptRegex.test(appId);
 }
 
-function containsInvalidChars(appId: string) {
+function containsInvalidChars(appId: string): boolean {
   const invalidChars = /[^a-zA-Z0-9-_.]/;
   return invalidChars.test(appId);
 }
