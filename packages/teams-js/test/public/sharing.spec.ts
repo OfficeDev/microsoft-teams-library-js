@@ -4,7 +4,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
-import { ErrorCode, SdkError } from '../../src/public/interfaces';
+import { ErrorCode } from '../../src/public/interfaces';
 import {
   generateVersionBasedTeamsRuntimeConfig,
   mapTeamsVersionToSupportedCapabilities,
@@ -715,11 +715,7 @@ describe('sharing_v2', () => {
       GlobalVars.isFramelessWindow = false;
     });
     it('should not allow calls before initialization', () => {
-      expect(() => sharing.history.getContent(emptyCallBack)).toThrowError(new Error(errorLibraryNotInitialized));
-    });
-
-    it('should not allow get incoming client audio calls with null callback', () => {
-      expect(() => sharing.history.getContent(null)).toThrowError('[get content] Callback cannot be null');
+      expect(() => sharing.history.getContent()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
     Object.values(FrameContexts).forEach((context) => {
@@ -727,16 +723,8 @@ describe('sharing_v2', () => {
         it(`sharing.history.getContent should throw error when sharing.history is not supported. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-          let callbackCalled = false;
-          let returnedSdkError: SdkError | null;
-          let returnedResult: sharing.history.IContentResponse[] | null;
-          let callback = (error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
-            callbackCalled = true;
-            returnedResult = contentDetails;
-            returnedSdkError = error;
-          };
           try {
-            sharing.history.getContent(callback);
+            sharing.history.getContent();
           } catch(e) {
             expect(e).toEqual(errorNotSupportedOnPlatform);
           }
@@ -745,70 +733,41 @@ describe('sharing_v2', () => {
         it(`sharing.history.getContent should successfully get the content. context: ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
-          let callbackCalled = false;
-          let returnedSdkError: SdkError | null;
-          let returnedResult: sharing.history.IContentResponse[] | null;
-          sharing.history.getContent((error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
-            callbackCalled = true;
-            returnedResult = contentDetails;
-            returnedSdkError = error;
-          });
-
-          const getContentMessage = utils.findMessageByFunc('getContent');
-          expect(getContentMessage).not.toBeNull();
-          const callbackId = getContentMessage.id;
+          const promise = sharing.history.getContent();
           const contentDetails = [
             {
               appId: 'appId',
               title: 'title',
               contentReference: 'contentReference',
-              threadId: 'threadId',
-              author: 'author',
+              threadId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+              author: 'da5b7aeb-2a31-6151-5e51-d4eab4abe577',
               contentType: 'contentType',
             },
           ];
           await utils.respondToFramelessMessage({
             data: {
-              id: callbackId,
               args: [null, contentDetails],
             },
           } as DOMMessageEvent);
-          expect(callbackCalled).toBe(true);
-          expect(returnedSdkError).toBeNull();
-          expect(returnedResult).toBe(contentDetails);
+          expect(promise).resolves.toBe(contentDetails);
         });
 
         it(`should throw if the getContent message sends and fails ${context} context`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
-          let callbackCalled = false;
-          let returnedSdkError: SdkError | null;
-          let returnedResult: sharing.history.IContentResponse[] | null;
-          sharing.history.getContent((error: SdkError, contentDetails: sharing.history.IContentResponse[]) => {
-            callbackCalled = true;
-            returnedResult = contentDetails;
-            returnedSdkError = error;
-          });
-
-          const getContentMessage = utils.findMessageByFunc('getContent');
-          expect(getContentMessage).not.toBeNull();
-          const callbackId = getContentMessage.id;
+          const promise = sharing.history.getContent();
           await utils.respondToFramelessMessage({
             data: {
-              id: callbackId,
               args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
             },
           } as DOMMessageEvent);
-          expect(callbackCalled).toBe(true);
-          expect(returnedSdkError).not.toBeNull();
-          expect(returnedSdkError).toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
-          expect(returnedResult).toBe(null);
+           expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
         });
       } else {
         it(`should not allow sharing.history.getContent calls from ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
-          expect(() => sharing.history.getContent(emptyCallBack)).toThrowError(
+          expect(() => sharing.history.getContent()).toThrowError(
             `This call is only allowed in following contexts: ${JSON.stringify(
               allowedContexts,
             )}. Current context: "${context}".`,

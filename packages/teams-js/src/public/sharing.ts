@@ -1,7 +1,12 @@
-import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
+import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
+import {
+  callCallbackWithSdkErrorFromPromiseAndReturnPromise,
+  InputFunction,
+  validateAppIdIsGuid,
+  validateUuid,
+} from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -202,7 +207,7 @@ export namespace sharing {
    */
   export namespace history {
     /**
-     * Represents IContentResponse parameters.
+     * Represents the data returned when calling {@link sharing.history.getContent}
      *
      * @beta
      */
@@ -213,45 +218,38 @@ export namespace sharing {
       title: string;
       /** Reference of the shared content */
       contentReference: string;
-      /** Id of the thread where the content was shared */
+      /** Id of the thread where the content was shared. This is a UUID */
       threadId: string;
-      /** Id of the user who shared the content */
+      /** Id of the user who shared the content. This is a UUID */
       author: string;
-      /** Type of the shared content */
+      /** Type of the shared content.
+       * For sharing to Teams stage scenarios, this value would be ShareToStage
+       */
       contentType: string;
     }
 
     /**
-     * getContent callback function type
+     * Get the list of content shared in a Teams meeting
      *
      * @beta
      */
-    export type getContentCallbackFunctionType = (
-      error: SdkError | null,
-      contentDetails: IContentResponse[] | null,
-    ) => void;
-
-    /**
-     * Get the list of content shared in a context
-     * @param callback - Callback contains 2 parameters, `error` and `contentDetails`.
-     * `error` can either contain an error of type `SdkError`, in case of an error, or null when fetch is successful.
-     * `contentDetails` will be the list of contents {@link IContentResponse} that was shared in the context, or null when the request fails.
-     *
-     * @beta
-     */
-    export function getContent(callback: getContentCallbackFunctionType): void {
-      if (!callback) {
-        throw new Error('[get content] Callback cannot be null');
-      }
+    export function getContent(): Promise<IContentResponse[]> {
       ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      sendMessageToParent(
+
+      return sendAndHandleSdkError(
         getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_History_GetContent),
-        'getContent',
-        callback,
-      );
+        'sharing.history.getContent',
+      ).then((contentDetails: IContentResponse[]) => {
+        contentDetails.map((contentDetails) => {
+          validateAppIdIsGuid(contentDetails.appId);
+          validateUuid(contentDetails.author);
+          validateUuid(contentDetails.threadId);
+        });
+        return contentDetails;
+      });
     }
 
     /**
@@ -263,11 +261,7 @@ export namespace sharing {
      * @beta
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.sharing
-        ? runtime.supports.sharing.history
-          ? true
-          : false
-        : false;
+      return ensureInitialized(runtime) && runtime.supports.sharing?.history !== undefined;
     }
   }
 }

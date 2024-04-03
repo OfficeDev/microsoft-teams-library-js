@@ -415,3 +415,22 @@ export function validateAppIdIsGuid(appId: string): void {
     throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
   }
 }
+
+/**
+ * @param appID The app ID to validate against the GUID format
+ * @throws Error if appID is not a valid GUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateUuid(id: string | undefined | null): void {
+  if (id === undefined || id === null) {
+    return;
+  }
+  if (!id) {
+    throw new Error('id must not be empty');
+  }
+  if (uuid.validate(id) === false) {
+    throw new Error('id must be a valid UUID');
+  }
+}

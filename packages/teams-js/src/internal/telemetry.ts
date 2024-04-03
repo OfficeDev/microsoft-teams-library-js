@@ -287,7 +287,7 @@ export enum ApiName {
   Settings_Save_Success = 'settings.save.success',
   Settings_SetSettings = 'settings.setSettings',
   Settings_SetValidityState = 'settings.setValidityState',
-  Sharing_History_GetContent = 'sharing.getContent',
+  Sharing_History_GetContent = 'sharing.history.getContent',
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   Tasks_StartTask = 'tasks.startTask',

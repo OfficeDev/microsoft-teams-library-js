@@ -4,6 +4,7 @@ import {
   createTeamsAppLink,
   getBase64StringFromBlob,
   validateAppIdIsGuid,
+  validateUuid
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -207,6 +208,24 @@ describe('utils', () => {
       expect.assertions(1);
       const appId = '11111111-1111-1111-1111-111111111111';
       return expect(() => validateAppIdIsGuid(appId)).not.toThrow();
+    });
+  });
+
+  describe('validateUuid', () => {
+    it('should throw error when id is not a valid UUID', async () => {
+      expect.assertions(1);
+      const id = 'invalid-id';
+      try {
+        await validateUuid(id);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must be a valid UUID'));
+      }
+    });
+    it('should not throw error when appId is a valid GUID', async () => {
+      expect.assertions(1);
+      // ID randomly generated for this test
+      const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+      return expect(() => validateUuid(id)).not.toThrow();
     });
   });
 });
