@@ -118,7 +118,7 @@ describe('externalAppCommands', () => {
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
             externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
