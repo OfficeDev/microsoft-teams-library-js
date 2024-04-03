@@ -72,7 +72,6 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
     oauthWindowParameters: {
       width?: number;
       height?: number;
-      isExternal?: boolean;
     };
   }>({
     name: 'authenticateWithOauth2',
