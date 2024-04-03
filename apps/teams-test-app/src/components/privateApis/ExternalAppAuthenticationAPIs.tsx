@@ -68,8 +68,8 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
 const AuthenticateWithOauth2 = (): React.ReactElement =>
   ApiWithTextInput<{
     titleId: string;
-    oAuthConfigID: string;
-    oauthWindow: {
+    oauthConfigId: string;
+    oauthWindowParameters: {
       width?: number;
       height?: number;
       isExternal?: boolean;
@@ -82,27 +82,27 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
         if (!input.titleId) {
           throw new Error('titleId is required');
         }
-        if (!input.oAuthConfigID) {
-          throw new Error('oAuthConfigID is required is required');
+        if (!input.oauthConfigId) {
+          throw new Error('oAuthConfigId is required is required');
         }
       },
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateWithOauth2(
           input.titleId,
-          input.oAuthConfigID,
-          input.oauthWindow
+          input.oauthConfigId,
+          input.oauthWindowParameters,
         );
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
-      appId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
-      referenceId: '123',
-      oauthWindow: {
+      titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      oauthConfigId: '123',
+      oauthWindowParameters: {
         width: 400,
         height: 400,
         isExternal: false,
-      }
+      },
     }),
   });
 
