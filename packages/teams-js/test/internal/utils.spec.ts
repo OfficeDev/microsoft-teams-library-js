@@ -3,6 +3,7 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
+  validateAppId,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -183,6 +184,41 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('Blob cannot be empty.'));
       }
+    });
+  });
+
+  describe('validateAppId', () => {
+    it('should throw error on invalid app ID if it contains script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
+      try {
+        validateAppId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if it contains non printabe ASCII characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'appId\u0000';
+      try {
+        validateAppId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if its size exceeds 256 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateAppId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid.'));
+      }
+    });
+    it('should not throw error when appId is a valid app ID', () => {
+      expect.assertions(1);
+      const appId = '11111111-1111-1111-1111-111111111111';
+      return expect(() => validateAppId(appId)).not.toThrow();
     });
   });
 });
