@@ -400,3 +400,26 @@ export function ssrSafeWindow(): Window {
 export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
 }
+
+/**
+ * @param appID The app ID to validate
+ * @throws Error if appID is not a valid GUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateAppId(appId: string): void {
+  if (hasScriptTags(appId) || containsInvalidChars(appId)) {
+    throw new Error('App ID is not valid.');
+  }
+}
+
+function hasScriptTags(appId: string) {
+  const scriptRegex = /<script[^>]*>(?:.|\s)*?<\/script>/gi;
+  return scriptRegex.test(appId);
+}
+
+function containsInvalidChars(appId: string) {
+  const invalidChars = /[^a-zA-Z0-9-_.]/;
+  return invalidChars.test(appId);
+}
