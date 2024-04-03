@@ -415,7 +415,7 @@ export function validateAppId(appId: string): void {
 }
 
 function hasScriptTags(appId: string) {
-  const scriptRegex = /<script[^>]*>(?:.|\s)*?<\/script>/gi;
+  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script\s*>/gi;
   return scriptRegex.test(appId);
 }
 
