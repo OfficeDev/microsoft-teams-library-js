@@ -409,7 +409,7 @@ export function inServerSideRenderingEnvironment(): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateAppId(appId: string): void {
-  if (hasScriptTags(appId) || containsInvalidChars(appId)) {
+  if (hasScriptTags(appId) || isAppIdLengthExceeded(appId) || !isOpaque(appId)) {
     throw new Error('App ID is not valid.');
   }
 }
@@ -419,7 +419,16 @@ function hasScriptTags(appId: string): boolean {
   return scriptRegex.test(appId);
 }
 
-function containsInvalidChars(appId: string): boolean {
-  const invalidChars = /[^a-zA-Z0-9-_.]/;
-  return invalidChars.test(appId);
+function isAppIdLengthExceeded(appId: string): boolean {
+  return appId.length >= 256;
+}
+
+function isOpaque(appId: string): boolean {
+  for (let i = 0; i < appId.length; i++) {
+    const charCode = appId.charCodeAt(i);
+    if (charCode < 32 || charCode > 126) {
+      return false;
+    }
+  }
+  return true;
 }
