@@ -143,17 +143,6 @@ describe('externalAppAuthentication', () => {
           }
           return expect(promise).rejects.toEqual(testError);
         });
-        it(`should throw error on invalid app ID with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidAppId = 'invalidAppId';
-          try {
-            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
-        });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
@@ -397,21 +386,6 @@ describe('externalAppAuthentication', () => {
             utils.respondToMessage(message, true, testResponse);
           }
           await expect(promise).resolves.toEqual(testResponse);
-        });
-        it(`should throw error on invalid app ID with context - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidAppId = 'invalidAppId';
-          try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(
-              invalidAppId,
-              testAuthRequest,
-              testOriginalRequest,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
-          }
         });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
           expect.assertions(1);

@@ -4,7 +4,6 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import {
   callCallbackWithSdkErrorFromPromiseAndReturnPromise,
   InputFunction,
-  validateAppIdIsGuid,
   validateUuid,
 } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
@@ -244,7 +243,6 @@ export namespace sharing {
         'sharing.history.getContent',
       ).then((contentDetails: IContentResponse[]) => {
         contentDetails.map((contentDetails) => {
-          validateAppIdIsGuid(contentDetails.appId);
           validateUuid(contentDetails.author);
           validateUuid(contentDetails.threadId);
         });

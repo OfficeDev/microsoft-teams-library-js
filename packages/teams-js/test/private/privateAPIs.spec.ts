@@ -255,6 +255,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId1',
       },
+      dialogParameters: {},
     };
 
     const contextBridge2: Context = {
@@ -284,6 +285,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId2',
       },
+      dialogParameters: {},
     };
 
     const contextBridge3: Context = {
@@ -313,6 +315,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId3',
       },
+      dialogParameters: {},
     };
 
     // respond in the wrong order
