@@ -99,7 +99,7 @@ describe('externalAppCommands', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
-            externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
+            await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -110,7 +110,7 @@ describe('externalAppCommands', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'appId\u0000';
           try {
-            externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
+            await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -121,7 +121,7 @@ describe('externalAppCommands', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
-            externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
+            await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
