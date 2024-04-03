@@ -2,8 +2,8 @@ import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communic
 import { doesHandlerExist, registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { SdkError } from './interfaces';
+import { FrameContexts } from './constants';
+import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -649,18 +649,23 @@ export namespace meeting {
       FrameContexts.content,
     );
 
-    const shouldGetVerboseDetails = true;
-    const response = (await sendAndHandleSdkError(
-      getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_GetMeetingDetailsVerbose),
-      'meeting.getMeetingDetails',
-      shouldGetVerboseDetails,
-    )) as IMeetingDetailsResponse;
+    let response: IMeetingDetailsResponse;
+    try {
+      const shouldGetVerboseDetails = true;
+      response = (await sendAndHandleSdkError(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_GetMeetingDetailsVerbose),
+        'meeting.getMeetingDetails',
+        shouldGetVerboseDetails,
+      )) as IMeetingDetailsResponse;
+    } catch(error) {
+      throw new Error(error?.errorCode?.toString());
+    }
 
     if (
       (response.details?.type == CallType.GroupCall || response.details?.type == CallType.OneOnOneCall) &&
       !response.details.originalCaller
     ) {
-      throw errorNotSupportedOnPlatform;
+      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
     }
 
     return response;

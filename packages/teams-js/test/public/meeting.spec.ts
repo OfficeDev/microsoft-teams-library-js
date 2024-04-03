@@ -673,7 +673,7 @@ describe('meeting', () => {
               },
             } as DOMMessageEvent);
 
-            await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+            await expect(promise).rejects.toEqual(new Error(ErrorCode.INTERNAL_ERROR.toString()));
           });
 
           it(`FRAMELESS: should throw if host doesn't return verbose details. context: ${context} `, async () => {
@@ -717,7 +717,7 @@ describe('meeting', () => {
 
               await promise;
             } catch (e) {
-              expect(e).toEqual(errorNotSupportedOnPlatform);
+              expect(e).toEqual(new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString()));
             }
           });
         } else {
