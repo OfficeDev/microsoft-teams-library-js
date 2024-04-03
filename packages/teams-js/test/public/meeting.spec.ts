@@ -4,7 +4,6 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
-import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
 import { Utils } from '../utils';

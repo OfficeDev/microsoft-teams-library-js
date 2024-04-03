@@ -593,7 +593,7 @@ export namespace meeting {
   /**
    * @throws error if your app manifest does not include the `OnlineMeeting.ReadBasic.Chat` RSC permission.
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
-   * 
+   *
    * @hidden
    * Allows an app to get the meeting details for the meeting
    *
@@ -628,16 +628,16 @@ export namespace meeting {
    * @throws error if your app manifest does not include both the `OnlineMeeting.ReadBasic.Chat` RSC permission
    * and the `OnlineMeetingParticipant.Read.Chat` RSC permission.
    * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
-   * 
+   *
    * @throws `not supported on platform` error if your app is run on a host that does not support returning additional meeting details.
-   * 
+   *
    * @hidden
    * Allows an app to get the additional meeting details for the meeting.
    * Some additional details are returned on a best-effort basis. They may not be present for every meeting.
    *
    * @internal
    * Limited to Microsoft-internal use
-   * 
+   *
    * @beta
    */
   export async function getMeetingDetailsVerbose(): Promise<IMeetingDetailsResponse> {
@@ -657,7 +657,7 @@ export namespace meeting {
         'meeting.getMeetingDetails',
         shouldGetVerboseDetails,
       )) as IMeetingDetailsResponse;
-    } catch(error) {
+    } catch (error) {
       throw new Error(error?.errorCode?.toString());
     }
 
