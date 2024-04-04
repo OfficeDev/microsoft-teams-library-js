@@ -97,7 +97,7 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId);
+    validateId(appId, new Error('App id is not valid.'));
 
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
       getApiVersionTag(
@@ -136,7 +136,7 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId);
+    validateId(appId, new Error('App id is not valid.'));
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,

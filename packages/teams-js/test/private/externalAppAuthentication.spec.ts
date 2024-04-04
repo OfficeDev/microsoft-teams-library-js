@@ -155,7 +155,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
@@ -170,7 +170,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
@@ -185,7 +185,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
@@ -448,7 +448,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
@@ -463,7 +463,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if if its size exceeds 256 characters with context - ${frameContext}`, async () => {
@@ -478,7 +478,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
 
@@ -598,6 +598,7 @@ describe('externalAppAuthentication', () => {
     const testOauthWindowParameters = {
       width: 100,
       height: 100,
+      isExternal: true,
     };
     const allowedFrameContexts = [FrameContexts.content];
     const titleId = 'testTitleId';
@@ -638,6 +639,7 @@ describe('externalAppAuthentication', () => {
               testOauthConfigId,
               testOauthWindowParameters.width,
               testOauthWindowParameters.height,
+              testOauthWindowParameters.isExternal,
             ]);
             utils.respondToMessage(message, true);
           }
@@ -663,6 +665,7 @@ describe('externalAppAuthentication', () => {
               testOauthConfigId,
               testOauthWindowParameters.width,
               testOauthWindowParameters.height,
+              testOauthWindowParameters.isExternal,
             ]);
             utils.respondToMessage(message, false, testError);
           }

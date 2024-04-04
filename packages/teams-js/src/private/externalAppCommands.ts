@@ -136,7 +136,7 @@ export namespace externalAppCommands {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId);
+    validateId(appId, new Error('App id is not valid.'));
 
     const [error, response] = await sendMessageToParentAsync<[ActionCommandError, IActionCommandResponse]>(
       getApiVersionTag(externalAppCommandsTelemetryVersionNumber, ApiName.ExternalAppCommands_ProcessActionCommands),

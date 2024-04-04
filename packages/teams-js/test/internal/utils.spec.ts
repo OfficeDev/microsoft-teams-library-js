@@ -194,7 +194,7 @@ describe('utils', () => {
       try {
         validateId(invalidAppId);
       } catch (error) {
-        expect(error).toEqual(new Error('App ID is not valid.'));
+        expect(error).toEqual(new Error('id is not valid.'));
       }
     });
     it('should throw error on invalid app ID if it contains non printabe ASCII characters', () => {
@@ -203,7 +203,7 @@ describe('utils', () => {
       try {
         validateId(invalidAppId);
       } catch (error) {
-        expect(error).toEqual(new Error('App ID is not valid.'));
+        expect(error).toEqual(new Error('id is not valid.'));
       }
     });
     it('should throw error on invalid app ID if its size exceeds 256 characters', () => {
@@ -212,7 +212,7 @@ describe('utils', () => {
       try {
         validateId(invalidAppId);
       } catch (error) {
-        expect(error).toEqual(new Error('App ID is not valid.'));
+        expect(error).toEqual(new Error('id is not valid.'));
       }
     });
     it('should throw error on invalid app ID if its size is less than 5 characters', () => {
@@ -221,7 +221,7 @@ describe('utils', () => {
       try {
         validateId(invalidAppId);
       } catch (error) {
-        expect(error).toEqual(new Error('App ID is not valid.'));
+        expect(error).toEqual(new Error('id is not valid.'));
       }
     });
 

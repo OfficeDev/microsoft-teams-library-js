@@ -101,7 +101,7 @@ describe('externalAppCommands', () => {
           try {
             await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
@@ -112,7 +112,7 @@ describe('externalAppCommands', () => {
           try {
             await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
@@ -123,7 +123,7 @@ describe('externalAppCommands', () => {
           try {
             await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam);
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
       } else {

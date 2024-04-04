@@ -82,7 +82,7 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
           throw new Error('titleId is required');
         }
         if (!input.oauthConfigId) {
-          throw new Error('oAuthConfigId is required is required');
+          throw new Error('oauthConfigId is required');
         }
       },
       submit: async (input) => {
@@ -183,8 +183,8 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
 const ExternalAppAuthenticationAPIs = (): React.ReactElement => (
   <ModuleWrapper title="External App Authentication">
     <CheckExternalAppAuthenticationCapability />
-    <AuthenticateWithOauth2 />
     <AuthenticateAndResendRequest />
+    <AuthenticateWithOauth2 />
     <AuthenticateWithSSO />
     <AuthenticateWithSSOAndResendRequest />
   </ModuleWrapper>
