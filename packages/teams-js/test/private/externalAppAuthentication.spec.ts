@@ -645,6 +645,26 @@ describe('externalAppAuthentication', () => {
           }
           return expect(promise).resolves.toBeUndefined();
         });
+        it(`should resolve on success if OauthWindowProperties are not defined with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const testOauthWindowParameters = {
+            height: 100,
+          };
+          const promise = externalAppAuthentication.authenticateWithOauth2(
+            titleId,
+            testOauthConfigId,
+            testOauthWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithOauth2');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([titleId, testOauthConfigId, null, testOauthWindowParameters.height, null]);
+            utils.respondToMessage(message, true);
+          }
+          return expect(promise).resolves.toBeUndefined();
+        });
         it('should throw error from host', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
