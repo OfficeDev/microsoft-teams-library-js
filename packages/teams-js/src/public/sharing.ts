@@ -1,11 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import {
-  callCallbackWithSdkErrorFromPromiseAndReturnPromise,
-  InputFunction,
-  validateUuid,
-} from '../internal/utils';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction, validateUuid } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -200,7 +196,7 @@ export namespace sharing {
   }
 
   /**
-   * Namespace to get the list of content shared in a context
+   * Namespace to get the list of content shared in a Teams meeting
    *
    * @beta
    */
@@ -222,7 +218,8 @@ export namespace sharing {
       /** Id of the user who shared the content. This is a UUID */
       author: string;
       /** Type of the shared content.
-       * For sharing to Teams stage scenarios, this value would be ShareToStage
+       * For sharing to Teams stage scenarios, this value would be `ShareToStage`
+       * Other `contentType` values will be added and documented here over time
        */
       contentType: string;
     }
@@ -230,24 +227,28 @@ export namespace sharing {
     /**
      * Get the list of content shared in a Teams meeting
      *
+     * @throws Error if call capability is not supported
+     * @throws Error if returned content details are invalid
+     * @returns Promise that will resolve with the {@link IContentResponse} objects array
+     *
      * @beta
      */
-    export function getContent(): Promise<IContentResponse[]> {
+    export async function getContent(): Promise<IContentResponse[]> {
       ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
 
-      return sendAndHandleSdkError(
+      const contentDetails: IContentResponse[] = await sendAndHandleSdkError(
         getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_History_GetContent),
         'sharing.history.getContent',
-      ).then((contentDetails: IContentResponse[]) => {
-        contentDetails.map((contentDetails) => {
-          validateUuid(contentDetails.author);
-          validateUuid(contentDetails.threadId);
-        });
-        return contentDetails;
+      );
+      contentDetails.map((contentDetails) => {
+        validateUuid(contentDetails.author);
+        validateUuid(contentDetails.threadId);
       });
+
+      return contentDetails;
     }
 
     /**

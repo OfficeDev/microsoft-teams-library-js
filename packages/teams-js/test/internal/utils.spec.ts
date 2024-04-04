@@ -3,7 +3,7 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
-  validateUuid
+  validateUuid,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -188,6 +188,24 @@ describe('utils', () => {
   });
 
   describe('validateUuid', () => {
+    it('should throw error when id is undefined', async () => {
+      expect.assertions(1);
+      try {
+        await validateUuid(undefined);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must not be empty'));
+      }
+    });
+
+    it('should throw error when id is undefined', async () => {
+      expect.assertions(1);
+      try {
+        await validateUuid(null);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must not be empty'));
+      }
+    });
+
     it('should throw error when id is not a valid UUID', async () => {
       expect.assertions(1);
       const id = 'invalid-id';
@@ -197,6 +215,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('id must be a valid UUID'));
       }
     });
+
     it('should not throw error when appId is a valid GUID', async () => {
       expect.assertions(1);
       // ID randomly generated for this test

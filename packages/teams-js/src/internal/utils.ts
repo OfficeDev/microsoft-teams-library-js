@@ -410,9 +410,6 @@ export function inServerSideRenderingEnvironment(): boolean {
  */
 export function validateUuid(id: string | undefined | null): void {
   if (id === undefined || id === null) {
-    return;
-  }
-  if (!id) {
     throw new Error('id must not be empty');
   }
   if (uuid.validate(id) === false) {
