@@ -78,6 +78,39 @@ describe('externalAppCardActions', () => {
           }
           return expect(promise).rejects.toEqual(testError);
         });
+        it(`should throw error on invalid app ID if it contains script tag. context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if it contains non printabe ASCII characters. context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'appId\u0000';
+          try {
+            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if it its size exceeds 256 characters. context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'a'.repeat(257);
+          try {
+            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
           expect.assertions(1);
@@ -149,6 +182,39 @@ describe('externalAppCardActions', () => {
             utils.respondToMessage(message, testError, null);
           }
           return expect(promise).rejects.toEqual(testError);
+        });
+        it(`should throw error on invalid app ID if it contains script tag with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'appId\u0000';
+          try {
+            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
+          const invalidAppId = 'a'.repeat(257);
+          try {
+            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
