@@ -186,7 +186,7 @@ export interface LocaleInfo {
 /**
  * Allowed user file open preferences
  */
-export enum FileOpenPreference {
+export const enum FileOpenPreference {
   /** Indicates that the user should be prompted to open the file in inline. */
   Inline = 'inline',
   /** Indicates that the user should be prompted to open the file in the native desktop application associated with the file type. */
@@ -200,7 +200,7 @@ export enum FileOpenPreference {
  *
  * @beta
  */
-export enum ActionObjectType {
+export const enum ActionObjectType {
   /** Represents content within a Microsoft 365 application. */
   M365Content = 'm365content',
 }
@@ -250,7 +250,7 @@ export interface SecondaryId {
  * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta
  */
-export enum SecondaryM365ContentIdName {
+export const enum SecondaryM365ContentIdName {
   /** OneDrive ID */
   DriveId = 'driveId',
   /** Teams Group ID */
@@ -739,6 +739,16 @@ export interface Context {
    * The SharePoint relative path to the current users mysite
    */
   mySitePath?: string;
+
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link app.Context.dialogParameters} instead
+   *
+   * When `processActionCommand` activates a dialog, this dialog should automatically fill in some fields with information. This information comes from M365 and is given to `processActionCommand` as `extractedParameters`.
+   * App developers need to use these `extractedParameters` in their dialog.
+   * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
+   */
+  dialogParameters?: Record<string, string>;
 }
 
 /** Represents the parameters used to share a deep link. */
@@ -1044,7 +1054,7 @@ export enum ErrorCode {
 }
 
 /** @hidden */
-export enum DevicePermission {
+export const enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
 }

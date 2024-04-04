@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Made more enums const to reduce package size",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}

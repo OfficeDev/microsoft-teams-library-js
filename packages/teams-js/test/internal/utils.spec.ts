@@ -3,7 +3,7 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
-  validateAppIdIsGuid,
+  validateAppId,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -187,26 +187,38 @@ describe('utils', () => {
     });
   });
 
-  describe('validateAppIdIsGuid', () => {
-    it('should throw error when appId is not a valid GUID', async () => {
+  describe('validateAppId', () => {
+    it('should throw error on invalid app ID if it contains script tag', async () => {
       expect.assertions(1);
-      const appId = 'invalid-app-id';
+      const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
       try {
-        await validateAppIdIsGuid(appId);
+        validateAppId(invalidAppId);
       } catch (error) {
-        expect(error).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + appId));
+        expect(error).toEqual(new Error('App ID is not valid.'));
       }
     });
-    it('should not throw error when appId is a valid GUID', async () => {
+    it('should throw error on invalid app ID if it contains non printabe ASCII characters', () => {
       expect.assertions(1);
-      // App ID randomly generated for this test
-      const appId = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
-      return expect(() => validateAppIdIsGuid(appId)).not.toThrow();
+      const invalidAppId = 'appId\u0000';
+      try {
+        validateAppId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid.'));
+      }
     });
-    it('should not throw error when appId is a valid app ID but not valid v4 UUID', async () => {
+    it('should throw error on invalid app ID if its size exceeds 256 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateAppId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('App ID is not valid.'));
+      }
+    });
+    it('should not throw error when appId is a valid app ID', () => {
       expect.assertions(1);
       const appId = '11111111-1111-1111-1111-111111111111';
-      return expect(() => validateAppIdIsGuid(appId)).not.toThrow();
+      return expect(() => validateAppId(appId)).not.toThrow();
     });
   });
 });

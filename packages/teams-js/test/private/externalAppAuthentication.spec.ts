@@ -143,15 +143,37 @@ describe('externalAppAuthentication', () => {
           }
           return expect(promise).rejects.toEqual(testError);
         });
-        it(`should throw error on invalid app ID with context - ${frameContext}`, async () => {
+        it(`should throw error on invalid app ID if it contains script tag with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidAppId = 'invalidAppId';
+          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
             externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidAppId = 'appId\u0000';
+          try {
+            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidAppId = 'a'.repeat(257);
+          try {
+            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
           }
         });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
@@ -398,11 +420,11 @@ describe('externalAppAuthentication', () => {
           }
           await expect(promise).resolves.toEqual(testResponse);
         });
-        it(`should throw error on invalid app ID with context - ${frameContext}`, async () => {
+        it(`should throw error on invalid app ID if it contains script tag with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidAppId = 'invalidAppId';
+          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
             externalAppAuthentication.authenticateWithSSOAndResendRequest(
               invalidAppId,
@@ -410,9 +432,40 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid. Must be GUID format. App ID: ' + invalidAppId));
+            expect(e).toEqual(new Error('App ID is not valid.'));
           }
         });
+        it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidAppId = 'appId\u0000';
+          try {
+            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              invalidAppId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+        it(`should throw error on invalid app ID if if its size exceeds 256 characters with context - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidAppId = 'a'.repeat(257);
+          try {
+            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              invalidAppId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('App ID is not valid.'));
+          }
+        });
+
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);

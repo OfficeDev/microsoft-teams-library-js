@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Fixed `clipboard` issue for desktop client to resolve 'DOMExecption: Document not focused' error",
+  "packageName": "@microsoft/teams-js",
+  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

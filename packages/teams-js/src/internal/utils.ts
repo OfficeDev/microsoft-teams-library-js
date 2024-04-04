@@ -401,17 +401,34 @@ export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
 }
 
-const appIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /**
- * @param appID The app ID to validate against the GUID format
+ * @param appID The app ID to validate
  * @throws Error if appID is not a valid GUID
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateAppIdIsGuid(appId: string): void {
-  if (!appIdRegex.test(appId)) {
-    throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
+export function validateAppId(appId: string): void {
+  if (hasScriptTags(appId) || isAppIdLengthExceeded(appId) || !isOpaque(appId)) {
+    throw new Error('App ID is not valid.');
   }
+}
+
+function hasScriptTags(appId: string): boolean {
+  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
+  return scriptRegex.test(appId);
+}
+
+function isAppIdLengthExceeded(appId: string): boolean {
+  return appId.length >= 256;
+}
+
+function isOpaque(appId: string): boolean {
+  for (let i = 0; i < appId.length; i++) {
+    const charCode = appId.charCodeAt(i);
+    if (charCode < 32 || charCode > 126) {
+      return false;
+    }
+  }
+  return true;
 }
