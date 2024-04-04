@@ -69,7 +69,7 @@ describe('externalAppAuthentication', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, testOriginalRequest);
+        await externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, testOriginalRequest);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -107,7 +107,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           try {
-            externalAppAuthentication.authenticateAndResendRequest(
+            await externalAppAuthentication.authenticateAndResendRequest(
               testAppId,
               testAuthRequest,
               testOriginalRequestWithInvalidType,
@@ -149,7 +149,11 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
-            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(
+              invalidAppId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -160,7 +164,11 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'appId\u0000';
           try {
-            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(
+              invalidAppId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -171,7 +179,11 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
-            externalAppAuthentication.authenticateAndResendRequest(invalidAppId, testAuthRequest, testOriginalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(
+              invalidAppId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -187,7 +199,7 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
           } catch (e) {
             expect(e).toEqual(new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters'));
           }
@@ -210,7 +222,7 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
           } catch (e) {
             expect(e).toEqual(new Error('originalRequestInfo.parameters exceeds the maximum size of 5'));
           }
@@ -226,7 +238,7 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
           } catch (e) {
             expect(e).toEqual(
               new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters'),
@@ -244,7 +256,7 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateAndResendRequest(testAppId, testAuthRequest, originalRequest);
           } catch (e) {
             expect(e).toEqual(
               new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters'),
@@ -283,7 +295,7 @@ describe('externalAppAuthentication', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        externalAppAuthentication.authenticateWithSSO(testAppId, {});
+        await externalAppAuthentication.authenticateWithSSO(testAppId, {});
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -336,7 +348,11 @@ describe('externalAppAuthentication', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       try {
-        externalAppAuthentication.authenticateWithSSOAndResendRequest(testAppId, testAuthRequest, testOriginalRequest);
+        await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+          testAppId,
+          testAuthRequest,
+          testOriginalRequest,
+        );
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -377,7 +393,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
               testAppId,
               testAuthRequest,
               testOriginalRequestWithInvalidType,
@@ -426,7 +442,7 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
               invalidAppId,
               testAuthRequest,
               testOriginalRequest,
@@ -441,7 +457,7 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'appId\u0000';
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
               invalidAppId,
               testAuthRequest,
               testOriginalRequest,
@@ -456,7 +472,7 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
               invalidAppId,
               testAuthRequest,
               testOriginalRequest,
@@ -477,7 +493,11 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              originalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters'));
           }
@@ -500,7 +520,11 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              originalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(new Error('originalRequestInfo.parameters exceeds the maximum size of 5'));
           }
@@ -516,7 +540,11 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              originalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(
               new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters'),
@@ -534,7 +562,11 @@ describe('externalAppAuthentication', () => {
           };
 
           try {
-            externalAppAuthentication.authenticateWithSSOAndResendRequest(testAppId, testAuthRequest, originalRequest);
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              originalRequest,
+            );
           } catch (e) {
             expect(e).toEqual(
               new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters'),
