@@ -3,7 +3,7 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
-  validateAppId,
+  validateId,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -187,12 +187,12 @@ describe('utils', () => {
     });
   });
 
-  describe('validateAppId', () => {
+  describe('validateId', () => {
     it('should throw error on invalid app ID if it contains script tag', async () => {
       expect.assertions(1);
       const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
       try {
-        validateAppId(invalidAppId);
+        validateId(invalidAppId);
       } catch (error) {
         expect(error).toEqual(new Error('App ID is not valid.'));
       }
@@ -201,7 +201,7 @@ describe('utils', () => {
       expect.assertions(1);
       const invalidAppId = 'appId\u0000';
       try {
-        validateAppId(invalidAppId);
+        validateId(invalidAppId);
       } catch (error) {
         expect(error).toEqual(new Error('App ID is not valid.'));
       }
@@ -210,7 +210,7 @@ describe('utils', () => {
       expect.assertions(1);
       const invalidAppId = 'a'.repeat(257);
       try {
-        validateAppId(invalidAppId);
+        validateId(invalidAppId);
       } catch (error) {
         expect(error).toEqual(new Error('App ID is not valid.'));
       }
@@ -219,7 +219,7 @@ describe('utils', () => {
       expect.assertions(1);
       const invalidAppId = 'a'.repeat(4);
       try {
-        validateAppId(invalidAppId);
+        validateId(invalidAppId);
       } catch (error) {
         expect(error).toEqual(new Error('App ID is not valid.'));
       }
@@ -228,7 +228,17 @@ describe('utils', () => {
     it('should not throw error when appId is a valid app ID', () => {
       expect.assertions(1);
       const appId = '11111111-1111-1111-1111-111111111111';
-      return expect(() => validateAppId(appId)).not.toThrow();
+      return expect(() => validateId(appId)).not.toThrow();
+    });
+
+    it('should not throw defined error in the second parameter', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateId(invalidAppId, new Error('Error message'));
+      } catch (error) {
+        expect(error).toEqual(new Error('Error message'));
+      }
     });
   });
 });

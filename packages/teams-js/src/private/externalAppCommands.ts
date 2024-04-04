@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateAppId } from '../internal/utils';
+import { validateId } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -136,7 +136,7 @@ export namespace externalAppCommands {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateAppId(appId);
+    validateId(appId);
 
     const [error, response] = await sendMessageToParentAsync<[ActionCommandError, IActionCommandResponse]>(
       getApiVersionTag(externalAppCommandsTelemetryVersionNumber, ApiName.ExternalAppCommands_ProcessActionCommands),

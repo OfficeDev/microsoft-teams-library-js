@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateAppId } from '../internal/utils';
+import { validateId } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -343,7 +343,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateAppId(appId);
+    validateId(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -387,7 +387,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateAppId(appId);
+    validateId(appId);
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -423,7 +423,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateAppId(appId);
+    validateId(appId);
 
     validateOriginalRequestInfo(originalRequestInfo);
 
@@ -451,9 +451,9 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    * @param titleId ID of the acquisition
-   * @param oauthConfigId lookup ID in TGS
+   * @param oauthConfigId lookup ID in token store
    * @param oauthWindowParameters parameters for the signIn window
-   * @returns A promise that resolves when authentication and succeeds and rejects with InvokeError on failure
+   * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
    */
   export function authenticateWithOauth2(
     titleId: string,
@@ -466,18 +466,16 @@ export namespace externalAppAuthentication {
       throw errorNotSupportedOnPlatform;
     }
 
+    validateId(titleId, new Error('titleId is Invalid.'));
+    validateId(oauthConfigId, new Error('oauthConfigId is Invalid.'));
+
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithOauth2,
       ),
       'externalAppAuthentication.authenticateWithOauth2',
-      [
-        titleId,
-        oauthConfigId,
-        oauthWindowParameters.width,
-        oauthWindowParameters.height
-      ],
+      [titleId, oauthConfigId, oauthWindowParameters.width, oauthWindowParameters.height],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
         throw error;
