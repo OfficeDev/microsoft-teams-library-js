@@ -45,7 +45,7 @@ describe('externalAppCardActions', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       try {
-        externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload);
+        await externalAppCardActions.processActionSubmit(testAppId, testActionSubmitPayload);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -84,7 +84,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
-            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -95,7 +95,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'appId\u0000';
           try {
-            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -106,7 +106,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
-            externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
+            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -147,7 +147,7 @@ describe('externalAppCardActions', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       try {
-        externalAppCardActions.processActionOpenUrl(testAppId, testUrl);
+        await externalAppCardActions.processActionOpenUrl(testAppId, testUrl);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -189,7 +189,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
           try {
-            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -200,7 +200,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'appId\u0000';
           try {
-            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
@@ -211,7 +211,7 @@ describe('externalAppCardActions', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'a'.repeat(257);
           try {
-            externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
+            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
           } catch (e) {
             expect(e).toEqual(new Error('App ID is not valid.'));
           }
