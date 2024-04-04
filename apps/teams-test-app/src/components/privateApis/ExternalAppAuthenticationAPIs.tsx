@@ -97,7 +97,7 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
     },
     defaultInput: JSON.stringify({
       titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
-      oauthConfigId: '123',
+      oauthConfigId: 'testOauthConfigId',
       oauthWindowParameters: {
         width: 400,
         height: 400,
