@@ -409,7 +409,7 @@ export function inServerSideRenderingEnvironment(): boolean {
  * Limited to Microsoft-internal use
  */
 export function validateAppId(appId: string): void {
-  if (hasScriptTags(appId) || isAppIdLengthExceeded(appId) || !isOpaque(appId)) {
+  if (hasScriptTags(appId) || !isAppIdLengthValid(appId) || !isOpaque(appId)) {
     throw new Error('App ID is not valid.');
   }
 }
@@ -419,8 +419,8 @@ function hasScriptTags(appId: string): boolean {
   return scriptRegex.test(appId);
 }
 
-function isAppIdLengthExceeded(appId: string): boolean {
-  return appId.length >= 256;
+function isAppIdLengthValid(appId: string): boolean {
+  return appId.length < 256 && appId.length > 4;
 }
 
 function isOpaque(appId: string): boolean {
