@@ -14,7 +14,7 @@ export namespace nestedAppAuth {
    *
    * @beta
    */
-  export function isChannelRecommended(): boolean {
+  export function isNAAChannelRecommended(): boolean {
     return (ensureInitialized(runtime) && runtime.isNAAChannelRecommended) ?? false;
   }
 }

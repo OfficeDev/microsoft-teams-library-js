@@ -6,7 +6,7 @@
     {
       "title": "nestedAppAuth isNAAChannelRecommended API Call - Success",
       "type": "callResponse",
-      "boxSelector": "#box_checkisNAAChannelRecommended",
+      "boxSelector": "#box_checkIsNAAChannelRecommended",
       "expectedTestAppValue": "NAA channel is recommended"
     }
   ]

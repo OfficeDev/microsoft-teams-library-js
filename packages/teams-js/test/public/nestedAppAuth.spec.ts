@@ -29,7 +29,7 @@ describe('nestedAppAuth', () => {
 
   it('should throw if called before initialization', () => {
     utils.uninitializeRuntimeConfig();
-    expect(() => nestedAppAuth.isChannelRecommended()).toThrowError(new Error(errorLibraryNotInitialized));
+    expect(() => nestedAppAuth.isNAAChannelRecommended()).toThrowError(new Error(errorLibraryNotInitialized));
   });
 
   it('should return true if isNAAChannelRecommended set to true in runtime object', async () => {
@@ -40,7 +40,7 @@ describe('nestedAppAuth', () => {
       isNAAChannelRecommended: true,
     };
     utils.setRuntimeConfig(runtimeConfig);
-    expect(nestedAppAuth.isChannelRecommended()).toBeTruthy();
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
   });
 
   it('should return false if isNAAChannelRecommended set to false in runtime object ', async () => {
@@ -51,7 +51,7 @@ describe('nestedAppAuth', () => {
       isNAAChannelRecommended: false,
     };
     utils.setRuntimeConfig(runtimeConfig);
-    expect(nestedAppAuth.isChannelRecommended()).toBeFalsy();
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
   });
 
   it('should return false if isNAAChannelRecommended not present in runtime object ', async () => {
@@ -61,6 +61,6 @@ describe('nestedAppAuth', () => {
       supports: {},
     };
     utils.setRuntimeConfig(runtimeConfig);
-    expect(nestedAppAuth.isChannelRecommended()).toBeFalsy();
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
   });
 });
