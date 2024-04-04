@@ -240,7 +240,7 @@ export namespace sharing {
       }
 
       const contentDetails: IContentResponse[] = await sendAndHandleSdkError(
-        getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_History_GetContent),
+        getApiVersionTag(sharingTelemetryVersionNumber_v2, ApiName.Sharing_History_GetContent),
         'sharing.history.getContent',
       );
       contentDetails.map((contentDetails) => {
