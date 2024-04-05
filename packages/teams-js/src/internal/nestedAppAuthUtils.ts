@@ -2,7 +2,7 @@ import { GlobalVars } from './globalVars';
 import { MessageRequestWithRequiredProperties } from './messageObjects';
 import { getLogger } from './telemetry';
 
-const nestedAppAuthLogger = getLogger('nestedAppAuth');
+const nestedAppAuthLogger = getLogger('nestedAppAuthUtils');
 const tryPolyfillWithNestedAppAuthBridgeLogger = nestedAppAuthLogger.extend('tryPolyfillWithNestedAppAuthBridge');
 
 /**
