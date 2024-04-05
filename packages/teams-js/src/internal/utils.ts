@@ -434,3 +434,19 @@ function isOpaque(id: string): boolean {
   }
   return true;
 }
+
+/**
+ * @param id The ID to validate against the UUID format
+ * @throws Error if ID is not a valid UUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateUuid(id: string | undefined | null): void {
+  if (!id) {
+    throw new Error('id must not be empty');
+  }
+  if (uuid.validate(id) === false) {
+    throw new Error('id must be a valid UUID');
+  }
+}
