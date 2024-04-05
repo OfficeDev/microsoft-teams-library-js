@@ -273,7 +273,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
-    readonly sharing?: {};
+    readonly sharing?: {
+      readonly history?: {};
+    };
     readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
