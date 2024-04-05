@@ -48,7 +48,7 @@ const CheckCookieAccess = (): React.ReactElement => {
 };
 
 const hasCookieAccess = async (): Promise<boolean> => {
-  if (!document.requestStorageAccess) {
+  if (!document.hasStorageAccess) {
     console.log(
       'Storage Access API not supported. Assume it is an older browser that doesn not block 3P cookies and we have access.',
     );

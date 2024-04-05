@@ -138,6 +138,7 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <ClipboardAPIs />
+        <CookieAccessComponent />
         <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
@@ -183,7 +184,6 @@ const App = (): ReactElement => {
         <VideoAPIs />
         <VideoExAPIs />
         <VisualMediaAPIs />
-        <CookieAccessComponent />
       </div>
       <Version />
     </div>
