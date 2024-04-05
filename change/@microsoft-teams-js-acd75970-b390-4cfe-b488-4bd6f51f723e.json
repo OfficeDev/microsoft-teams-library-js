@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added uuid parameter to MessageRequest interface and enabled MessageResponse ids to also be uuids",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
