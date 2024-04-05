@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Backed out some potential bug causing changes",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
