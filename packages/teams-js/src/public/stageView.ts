@@ -60,7 +60,7 @@ export namespace stageView {
   /**
    * The open mode for stage content.
    */
-  export enum StageViewOpenMode {
+  export const enum StageViewOpenMode {
     /**
      * Open the content in a modal.
      */

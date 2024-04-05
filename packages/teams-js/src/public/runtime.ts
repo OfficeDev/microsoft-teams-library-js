@@ -257,6 +257,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly monetization?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
+    readonly otherAppStateChange?: {};
     readonly pages?: {
       readonly appButton?: {};
       readonly backStack?: {};
@@ -270,7 +271,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
-    readonly sharing?: {};
+    readonly sharing?: {
+      readonly history?: {};
+    };
     readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {

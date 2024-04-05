@@ -37,7 +37,7 @@ export interface ThreadMember {
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum NotificationTypes {
+export const enum NotificationTypes {
   fileDownloadStart = 'fileDownloadStart',
   fileDownloadComplete = 'fileDownloadComplete',
 }
@@ -59,7 +59,7 @@ export interface ShowNotificationParameters {
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum ViewerActionTypes {
+export const enum ViewerActionTypes {
   view = 'view',
   edit = 'edit',
   editNew = 'editNew',
@@ -70,7 +70,7 @@ export enum ViewerActionTypes {
  *
  * User setting changes that can be subscribed to
  */
-export enum UserSettingTypes {
+export const enum UserSettingTypes {
   /**
    * @hidden
    * Use this key to subscribe to changes in user's file open preference

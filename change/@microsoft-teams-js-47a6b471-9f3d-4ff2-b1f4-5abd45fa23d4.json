@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Validate appId in all APIs in `externalAppAuthentication`, `externalAppCardActions` and `externalAppCommands`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
