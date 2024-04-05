@@ -26,6 +26,7 @@ export { files } from './files';
 export { meetingRoom } from './meetingRoom';
 export { messageChannels } from './messageChannels';
 export { notifications } from './notifications';
+export { otherAppStateChange } from './otherAppStateChange';
 export { remoteCamera } from './remoteCamera';
 export { appEntity } from './appEntity';
 export { teams } from './teams';
