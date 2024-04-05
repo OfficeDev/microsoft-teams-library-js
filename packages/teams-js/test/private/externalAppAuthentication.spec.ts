@@ -155,7 +155,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
@@ -170,7 +170,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
@@ -185,7 +185,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
@@ -448,7 +448,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
@@ -463,7 +463,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
         it(`should throw error on invalid app ID if if its size exceeds 256 characters with context - ${frameContext}`, async () => {
@@ -478,7 +478,7 @@ describe('externalAppAuthentication', () => {
               testOriginalRequest,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('App ID is not valid.'));
+            expect(e).toEqual(new Error('App id is not valid.'));
           }
         });
 
@@ -583,6 +583,151 @@ describe('externalAppAuthentication', () => {
               testAuthRequest,
               testOriginalRequest,
             ),
+          ).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
+                `Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      }
+    });
+  });
+
+  describe('authenticateWithOauth2', () => {
+    const testOauthWindowParameters = {
+      width: 100,
+      height: 100,
+      isExternal: true,
+    };
+    const allowedFrameContexts = [FrameContexts.content];
+    const titleId = 'testTitleId';
+    const testOauthConfigId = 'testOauthConfigId';
+    it('should not allow calls before initialization', () => {
+      return expect(() =>
+        externalAppAuthentication.authenticateWithOauth2(titleId, testOauthConfigId, testOauthWindowParameters),
+      ).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should throw error when externalAppAuthentication is not supported in runtime config.', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+      expect.assertions(1);
+      try {
+        externalAppAuthentication.authenticateWithOauth2(titleId, testOauthConfigId, testOauthWindowParameters);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedFrameContexts.includes(frameContext)) {
+        it(`should resolve on success with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const promise = externalAppAuthentication.authenticateWithOauth2(
+            titleId,
+            testOauthConfigId,
+            testOauthWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithOauth2');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              titleId,
+              testOauthConfigId,
+              testOauthWindowParameters.width,
+              testOauthWindowParameters.height,
+              testOauthWindowParameters.isExternal,
+            ]);
+            utils.respondToMessage(message, true);
+          }
+          return expect(promise).resolves.toBeUndefined();
+        });
+        it(`should resolve on success if OauthWindowProperties are not defined with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const testOauthWindowParameters = {
+            height: 100,
+          };
+          const promise = externalAppAuthentication.authenticateWithOauth2(
+            titleId,
+            testOauthConfigId,
+            testOauthWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithOauth2');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([titleId, testOauthConfigId, null, testOauthWindowParameters.height, null]);
+            utils.respondToMessage(message, true);
+          }
+          return expect(promise).resolves.toBeUndefined();
+        });
+        it('should throw error from host', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const testError = {
+            errorCode: 'INTERNAL_ERROR',
+            message: 'test error message',
+          };
+          const promise = externalAppAuthentication.authenticateWithOauth2(
+            titleId,
+            testOauthConfigId,
+            testOauthWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithOauth2');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              titleId,
+              testOauthConfigId,
+              testOauthWindowParameters.width,
+              testOauthWindowParameters.height,
+              testOauthWindowParameters.isExternal,
+            ]);
+            utils.respondToMessage(message, false, testError);
+          }
+          await expect(promise).rejects.toEqual(testError);
+        });
+
+        it(`should throw error on invalid titleId - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidTitleId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            await externalAppAuthentication.authenticateWithOauth2(
+              invalidTitleId,
+              testOauthConfigId,
+              testOauthWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('titleId is Invalid.'));
+          }
+        });
+        it(`should throw error on invalid testOauthConfigId  - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const InvalidtestOauthConfigId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            await externalAppAuthentication.authenticateWithOauth2(
+              titleId,
+              InvalidtestOauthConfigId,
+              testOauthWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('oauthConfigId is Invalid.'));
+          }
+        });
+      } else {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          return expect(() =>
+            externalAppAuthentication.authenticateWithOauth2(titleId, testOauthConfigId, testOauthWindowParameters),
           ).toThrowError(
             new Error(
               `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
