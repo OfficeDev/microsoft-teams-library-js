@@ -402,30 +402,32 @@ export function inServerSideRenderingEnvironment(): boolean {
 }
 
 /**
- * @param appID The app ID to validate
- * @throws Error if appID is not a valid GUID
+ * @param id The id to validate
+ * @param errorToThrow Customized error to throw if the id is not valid
+ *
+ * @throws Error if id is not valid
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateAppId(appId: string): void {
-  if (hasScriptTags(appId) || !isAppIdLengthValid(appId) || !isOpaque(appId)) {
-    throw new Error('App ID is not valid.');
+export function validateId(id: string, errorToThrow?: Error): void {
+  if (hasScriptTags(id) || !isIdLengthValid(id) || !isOpaque(id)) {
+    throw errorToThrow || new Error('id is not valid.');
   }
 }
 
-function hasScriptTags(appId: string): boolean {
+function hasScriptTags(id: string): boolean {
   const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
-  return scriptRegex.test(appId);
+  return scriptRegex.test(id);
 }
 
-function isAppIdLengthValid(appId: string): boolean {
-  return appId.length < 256 && appId.length > 4;
+function isIdLengthValid(id: string): boolean {
+  return id.length < 256 && id.length > 4;
 }
 
-function isOpaque(appId: string): boolean {
-  for (let i = 0; i < appId.length; i++) {
-    const charCode = appId.charCodeAt(i);
+function isOpaque(id: string): boolean {
+  for (let i = 0; i < id.length; i++) {
+    const charCode = id.charCodeAt(i);
     if (charCode < 32 || charCode > 126) {
       return false;
     }
