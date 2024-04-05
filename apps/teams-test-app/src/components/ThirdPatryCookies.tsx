@@ -54,8 +54,8 @@ const hasCookieAccess = async (): Promise<boolean> => {
     );
     return true;
   }
-  const accessGranted = await document.hasStorageAccess();
-  return accessGranted;
+  const accessState = await document.hasStorageAccess();
+  return accessState;
 };
 
 const requestCookieAccess = async (): Promise<boolean> => {
