@@ -3,6 +3,8 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
+  validateId,
+  validateUuid,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
@@ -183,6 +185,107 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('Blob cannot be empty.'));
       }
+    });
+  });
+
+  describe('validateId', () => {
+    it('should throw error on invalid app ID if it contains script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if it contains non printabe ASCII characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'appId\u0000';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if its size exceeds 256 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if its size is less than 5 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(4);
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+
+    it('should not throw error when appId is a valid app ID', () => {
+      expect.assertions(1);
+      const appId = '11111111-1111-1111-1111-111111111111';
+      return expect(() => validateId(appId)).not.toThrow();
+    });
+
+    it('should not throw defined error in the second parameter', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateId(invalidAppId, new Error('Error message'));
+      } catch (error) {
+        expect(error).toEqual(new Error('Error message'));
+      }
+    });
+  });
+
+  describe('validateUuid', () => {
+    it('should throw error when id is undefined', async () => {
+      expect.assertions(1);
+      try {
+        await validateUuid(undefined);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must not be empty'));
+      }
+    });
+
+    it('should throw error when id is null', async () => {
+      expect.assertions(1);
+      try {
+        await validateUuid(null);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must not be empty'));
+      }
+    });
+
+    it('should throw error when id is empty', async () => {
+      expect.assertions(1);
+      try {
+        await validateUuid('');
+      } catch (error) {
+        expect(error).toEqual(new Error('id must not be empty'));
+      }
+    });
+
+    it('should throw error when id is not a valid UUID', async () => {
+      expect.assertions(1);
+      const id = 'invalid-id';
+      try {
+        await validateUuid(id);
+      } catch (error) {
+        expect(error).toEqual(new Error('id must be a valid UUID'));
+      }
+    });
+
+    it('should not throw error when appId is a valid GUID', async () => {
+      expect.assertions(1);
+      // ID randomly generated for this test
+      const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+      return expect(() => validateUuid(id)).not.toThrow();
     });
   });
 });
