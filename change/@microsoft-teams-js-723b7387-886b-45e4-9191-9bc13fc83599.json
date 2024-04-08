@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Made a skeletonized version of the buffer npm package to reduce bundle size",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
