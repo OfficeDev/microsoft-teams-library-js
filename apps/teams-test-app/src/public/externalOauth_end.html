@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <h2 style="font-size: 40px">Starting mock external oauth2</h2>
+  </head>
+  <body>
+    <script>
+      const failureMessage = {
+        type: 'authenticationFailed',
+        data: 'error',
+      };
+      const successMessage = {
+        type: 'authenticationSuccess',
+        data: 'success',
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const titleId = params.get('titleId');
+
+      if (window.opener) {
+        if (titleId === 'testOauthFailureTitleId') {
+          window.opener.postMessage(failureMessage, '*');
+        } else {
+          window.opener.postMessage(successMessage, '*');
+        }
+        console.log('Notification sent to the parent window. Closing the window in 2 sec');
+        setTimeout(() => {
+          window.close();
+        }, 2000);
+      } else {
+        console.log('COOP header not set to unsafe. No notification can be sent to parent window.');
+      }
+    </script>
+  </body>
+</html>
