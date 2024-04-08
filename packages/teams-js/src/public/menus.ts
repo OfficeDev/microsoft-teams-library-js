@@ -144,7 +144,7 @@ export namespace menus {
    * @hidden
    * Represents information about type of list to display in Navigation Bar Menu.
    */
-  export const enum MenuListType {
+  export enum MenuListType {
     dropDown = 'dropDown',
     popOver = 'popOver',
   }
