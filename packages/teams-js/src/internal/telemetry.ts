@@ -44,13 +44,13 @@ export function isFollowingApiVersionTagFormat(apiVersionTag: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum ApiVersionNumber {
+export const enum ApiVersionNumber {
   V_1 = 'v1',
   V_2 = 'v2',
   V_3 = 'v3',
 }
 
-export enum ApiName {
+export const enum ApiName {
   App_GetContext = 'app.getContext',
   App_Initialize = 'app.initialize',
   App_NotifyAppLoaded = 'app.notifyAppLoaded',
@@ -83,6 +83,7 @@ export enum ApiName {
   BarCode_ScanBarCode = 'barCode.scanBarCode',
   Calendar_ComposeMeeting = 'calendar.composeMeeting',
   Calendar_OpenCalendarItem = 'calendar.openCalendarItem',
+  Meeting_JoinMeeting = 'meeting.joinMeeting',
   Call_StartCall = 'call.startCall',
   Chat_OpenChat = 'chat.openChat',
   Chat_OpenGroupChat = 'chat.openGroupChat',
@@ -108,8 +109,10 @@ export enum ApiName {
   ExternalAppAuthentication_AuthenticateAndResendRequest = 'externalAppAuthentication.authenticateAndResendRequest',
   ExternalAppAuthentication_AuthenticateWithSSO = 'externalAppAuthentication.authenticateWithSSO',
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
+  ExternalAppAuthentication_AuthenticateWithOauth2 = 'externalAppAuthentication.authenticateWithOauth2',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',
   Files_AddCloudStorageProviderFile = 'files.addCloudStorageProviderFile',
@@ -201,6 +204,8 @@ export enum ApiName {
   Navigation_NavigateToTab = 'navigation.navigateToTab',
   Navigation_ReturnFocus = 'navigation.returnFocus',
   Notifications_ShowNotification = 'notifications.showNotification',
+  OtherAppStateChange_Install = 'otherApp.install',
+  OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
   Pages_AppButton_OnHoverLeave = 'pages.appButton.onHoverLeave',
@@ -286,6 +291,7 @@ export enum ApiName {
   Settings_Save_Success = 'settings.save.success',
   Settings_SetSettings = 'settings.setSettings',
   Settings_SetValidityState = 'settings.setValidityState',
+  Sharing_History_GetContent = 'sharing.history.getContent',
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   Tasks_StartTask = 'tasks.startTask',

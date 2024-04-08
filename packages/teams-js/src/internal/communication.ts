@@ -16,7 +16,7 @@ import {
   NestedAppAuthRequest,
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
-} from './nestedAppAuth';
+} from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
@@ -846,7 +846,7 @@ function createMessageRequest(
     func: func,
     timestamp: Date.now(),
     args: args || [],
-    apiversiontag: apiVersionTag,
+    apiVersionTag: apiVersionTag,
   };
 }
 

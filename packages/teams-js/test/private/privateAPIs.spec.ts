@@ -97,7 +97,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://int.teams.microsoft.com',
     'https://teams.live.com',
     'https://devspaces.skype.com',
-    'https://ssauth.skype.com',
     'https://local.teams.live.com',
     'https://local.teams.live.com:8080',
     'https://local.teams.office.com',
@@ -108,7 +107,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://outlook.live.com',
     'https://outlook.office365.com',
     'https://outlook-sdf.office365.com',
-    'https://retailservices.teams.microsoft.com',
     'https://test.www.office.com',
     'https://www.office.com',
     'https://word.office.com',
@@ -257,6 +255,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId1',
       },
+      dialogParameters: {},
     };
 
     const contextBridge2: Context = {
@@ -286,6 +285,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId2',
       },
+      dialogParameters: {},
     };
 
     const contextBridge3: Context = {
@@ -315,6 +315,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId3',
       },
+      dialogParameters: {},
     };
 
     // respond in the wrong order

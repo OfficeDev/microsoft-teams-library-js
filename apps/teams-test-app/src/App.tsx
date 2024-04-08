@@ -28,6 +28,8 @@ import MarketplaceAPIs from './components/MarketplaceAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import MenusAPIs from './components/MenusAPIs';
+import NestedAppAuthAPIs from './components/NestedAppAuthAPIs';
+import OtherAppStateChangedAPIs from './components/OtherAppStateChangeAPIs';
 import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
 import PagesBackStackAPIs from './components/PagesBackStackAPIs';
@@ -38,6 +40,7 @@ import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
 import ExternalAppAuthenticationAPIs from './components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCardActionsAPIs';
+import ExternalAppCommandsAPIs from './components/privateApis/ExternalAppCommandsAPIs';
 import FilesAPIs from './components/privateApis/FilesAPIs';
 import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
 import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
@@ -148,6 +151,7 @@ const App = (): ReactElement => {
         <DialogUrlBotAPIs />
         <ExternalAppAuthenticationAPIs />
         <ExternalAppCardActionsAPIs />
+        <ExternalAppCommandsAPIs />
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />
@@ -162,7 +166,9 @@ const App = (): ReactElement => {
         <MenusAPIs />
         <MessageChannelAPIs />
         <MonetizationAPIs />
+        <NestedAppAuthAPIs />
         <NotificationAPIs />
+        <OtherAppStateChangedAPIs />
         <PagesAPIs />
         <PagesAppButtonAPIs />
         <PagesBackStackAPIs />

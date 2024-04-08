@@ -1,0 +1,13 @@
+{
+  "name": "ExternalAppCommands",
+  "version": ">2.21.0",
+  "platform": "Web",
+  "testCases": [
+    {
+      "title": "checkExternalAppCommandsCapability API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_checkExternalAppCommandsCapability",
+      "expectedTestAppValue": "External App Commands module is supported"
+    }
+  ]
+}

@@ -1,8 +1,26 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 07 Feb 2024 18:02:49 GMT and should not be manually modified.
+This log was last generated on Wed, 06 Mar 2024 22:44:18 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.21.0
+
+Wed, 06 Mar 2024 22:44:18 GMT
+
+### Minor changes
+
+- Added `meeting.joinMeeting` function
+- Removed Beta/Preview tag on `chat` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+
+### Patches
+
+- Updated all capabilities to include versions to enable hosts to identify exact function being used
+- Updated documentation on `OpenSingleChatRequest` interface and updated all URLs to remove locale-specific portions.
+- Updated `base64ToBlob` function to accept special characters
+- Removed one default valid origin
+- Fixed bug where `authentication.getUser` telemetry was being incorrectly recorded
+- Fixed bug in API Version telemetry
 
 ## 2.20.0
 

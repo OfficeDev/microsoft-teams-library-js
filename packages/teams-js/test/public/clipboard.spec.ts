@@ -308,6 +308,7 @@ describe('clipboard', () => {
       Object.values(FrameContexts).forEach((context) => {
         Object.values([
           HostClientType.android,
+          HostClientType.desktop,
           HostClientType.ios,
           HostClientType.ipados,
           HostClientType.macos,
