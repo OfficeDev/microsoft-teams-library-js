@@ -13,12 +13,12 @@ import { runtime } from '../public/runtime';
  * @internal
  * Limited to Microsoft-internal use
  */
-export namespace centralDataLayer {
-  let centralDataLayerPort: MessagePort | undefined;
+export namespace dataLayer {
+  let dataLayerPort: MessagePort | undefined;
 
-  const centralDataLayerVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+  const dataLayerVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-  const logger = getLogger('cantralDataLayer');
+  const logger = getLogger('dataLayer');
 
   /**
    * @hidden
@@ -34,7 +34,7 @@ export namespace centralDataLayer {
    * Limited to Microsoft-internal use
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.centralDataLayer ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.dataLayer ? true : false;
   }
 
   /**
@@ -51,11 +51,11 @@ export namespace centralDataLayer {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export async function getCentralDataLayerPort(): Promise<MessagePort> {
+  export async function getDataLayerPort(): Promise<MessagePort> {
     // If the port has already been initialized, return it.
-    if (centralDataLayerPort) {
+    if (dataLayerPort) {
       logger('Returning datalayer port from cache');
-      return centralDataLayerPort;
+      return dataLayerPort;
     }
 
     if (!isSupported()) {
@@ -63,11 +63,11 @@ export namespace centralDataLayer {
     }
 
     // Send request for dataLayer port, will throw if the request is rejected
-    centralDataLayerPort = await requestPortFromParentWithVersion(
-      getApiVersionTag(centralDataLayerVersionNumber, ApiName.PrivateAPIs_GetCentralDataLayerPort),
-      'getCentralDataLayerPort',
+    dataLayerPort = await requestPortFromParentWithVersion(
+      getApiVersionTag(dataLayerVersionNumber, ApiName.PrivateAPIs_DataLayer_GetDataLayerPort),
+      'dataLayer.getDataLayerPort',
     );
-    return centralDataLayerPort;
+    return dataLayerPort;
   }
 
   /**
@@ -79,7 +79,7 @@ export namespace centralDataLayer {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function _clearCentralDataLayerPort(): void {
-    centralDataLayerPort = undefined;
+  export function _clearDataLayerPort(): void {
+    dataLayerPort = undefined;
   }
 }

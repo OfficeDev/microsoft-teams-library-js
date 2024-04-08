@@ -226,10 +226,10 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly barCode?: {};
     readonly calendar?: {};
     readonly call?: {};
-    readonly centralDataLayer?: {};
     readonly chat?: {};
     readonly clipboard?: {};
     readonly conversations?: {};
+    readonly dataLayer?: {};
     readonly dialog?: {
       readonly card?: {
         readonly bot?: {};

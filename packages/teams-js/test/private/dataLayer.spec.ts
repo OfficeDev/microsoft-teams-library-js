@@ -1,13 +1,13 @@
 import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { centralDataLayer } from '../../src/private/centralDataLayer';
+import { dataLayer } from '../../src/private/dataLayer';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
-describe('centralDataLayer', () => {
+describe('dataLayer', () => {
   // Use to send a mock message from the app.
   const utils = new Utils();
 
@@ -31,21 +31,19 @@ describe('centralDataLayer', () => {
     }
     // Clear the cached telemetry port
     // Adding to _unititialize breaks the global state initialization so leaving it here
-    centralDataLayer._clearCentralDataLayerPort();
+    dataLayer._clearDataLayerPort();
   });
 
-  describe('Testing centralDataLayer APIs before initialization', () => {
+  describe('Testing dataLayer APIs before initialization', () => {
     it('isSupported should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
-      expect(() => centralDataLayer.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => dataLayer.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    it('getCentralDataLayerPort should throw if called before initialization', async () => {
+    it('getdataLayerPort should throw if called before initialization', async () => {
       expect.assertions(1);
       utils.uninitializeRuntimeConfig();
-      await expect(centralDataLayer.getCentralDataLayerPort()).rejects.toThrowError(
-        new Error(errorLibraryNotInitialized),
-      );
+      await expect(dataLayer.getDataLayerPort()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
     });
   });
 
@@ -53,17 +51,17 @@ describe('centralDataLayer', () => {
     describe('Testing isSupported', () => {
       it('should return true if the capability is supported', async () => {
         await utils.initializeWithContext(context);
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { centralDataLayer: {} } });
-        expect(centralDataLayer.isSupported()).toBe(true);
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { dataLayer: {} } });
+        expect(dataLayer.isSupported()).toBe(true);
       });
 
       it('should return false if the capability is not supported', async () => {
         await utils.initializeWithContext(context);
         utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
-        expect(centralDataLayer.isSupported()).toBe(false);
+        expect(dataLayer.isSupported()).toBe(false);
       });
     });
-    describe('Testing getCentralDataLayerPort', () => {
+    describe('Testing getdataLayerPort', () => {
       beforeEach(async () => {
         await utils.initializeWithContext(context);
       });
@@ -72,7 +70,7 @@ describe('centralDataLayer', () => {
         expect.assertions(1);
         utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
         try {
-          await centralDataLayer.getCentralDataLayerPort();
+          await dataLayer.getDataLayerPort();
         } catch (e) {
           expect(e).toEqual(errorNotSupportedOnPlatform);
         }
@@ -82,18 +80,18 @@ describe('centralDataLayer', () => {
         expect.assertions(2);
 
         // API should be supported
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { centralDataLayer: {} } });
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { dataLayer: {} } });
 
-        const messagePromise = centralDataLayer.getCentralDataLayerPort();
+        const messagePromise = dataLayer.getDataLayerPort();
 
         const port = new MessagePort();
-        await utils.respondToMessageWithPorts({ id: 1, func: 'centralDataLayerPort' }, [], [port]);
+        await utils.respondToMessageWithPorts({ id: 1, func: 'dataLayerPort' }, [], [port]);
 
         const receivedPort = await messagePromise;
 
         expect(receivedPort).toBe(port);
 
-        const port2 = await centralDataLayer.getCentralDataLayerPort();
+        const port2 = await dataLayer.getDataLayerPort();
 
         expect(port2).toBe(port);
       });
@@ -102,13 +100,13 @@ describe('centralDataLayer', () => {
         expect.assertions(1);
 
         // API should be supported
-        utils.setRuntimeConfig({ apiVersion: 2, supports: { centralDataLayer: {} } });
+        utils.setRuntimeConfig({ apiVersion: 2, supports: { dataLayer: {} } });
 
         // Create a spy on requestPortFromParent that rejects with an error
         const spy = jest.spyOn(communication, 'requestPortFromParentWithVersion');
         spy.mockImplementation(() => Promise.reject(new Error('some error')));
 
-        await expect(centralDataLayer.getCentralDataLayerPort()).rejects.toThrow('some error');
+        await expect(dataLayer.getDataLayerPort()).rejects.toThrow('some error');
 
         // Restore the original function after the test
         spy.mockRestore();

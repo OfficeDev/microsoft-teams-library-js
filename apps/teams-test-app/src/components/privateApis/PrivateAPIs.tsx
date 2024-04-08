@@ -1,5 +1,5 @@
 import {
-  centralDataLayer,
+  dataLayer,
   FileOpenPreference,
   FilePreviewParameters,
   openFilePreview,
@@ -124,14 +124,14 @@ const PrivateAPIs = (): ReactElement => {
       }),
     });
 
-  const GetCentralDataLayerPort = (): React.ReactElement =>
+  const GetDataLayerPort = (): React.ReactElement =>
     ApiWithoutInput({
-      name: 'checkCentralDataLayerPort',
-      title: 'Check CentralDataLayer Port Capability',
+      name: 'checkDataLayerPort',
+      title: 'Check DataLayer Port Capability',
       onClick: async () => {
-        const port = await centralDataLayer.getCentralDataLayerPort();
-        port.postMessage('test message through CentralDataLayerPort');
-        return `CentralDataLayer port: ${port}`;
+        const port = await dataLayer.getDataLayerPort();
+        port.postMessage('test message through DataLayerPort');
+        return `DataLayer port: ${port}`;
       },
     });
 
@@ -141,7 +141,7 @@ const PrivateAPIs = (): ReactElement => {
       <UploadCustomApp />
       <OpenFilePreview />
       <input id="fileid" type="file" onChange={(e) => acceptFile(e.target.files)} hidden />
-      <GetCentralDataLayerPort />
+      <GetDataLayerPort />
     </ModuleWrapper>
   );
 };

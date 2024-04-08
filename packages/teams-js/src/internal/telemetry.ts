@@ -236,7 +236,7 @@ export enum ApiName {
   Pages_Tabs_GetTabInstances = 'pages.tabs.getTabInstances',
   Pages_Tabs_NavigateToTab = 'pages.tabs.navigateToTab',
   People_SelectPeople = 'people.selectPeople',
-  PrivateAPIs_GetCentralDataLayerPort = 'getCentralDataLayerPort',
+  PrivateAPIs_DataLayer_GetDataLayerPort = 'dataLayer.getDataLayerPort',
   PrivateAPIs_OpenFilePreview = 'openFilePreview',
   PrivateAPIs_RegisterCustomHandler = 'registerCustomHandler',
   PrivateAPIs_RegisterUserSettingsChangeHandler = 'registerUserSettingsChangeHandler',
