@@ -23,12 +23,9 @@
         } else {
           window.opener.postMessage(successMessage, '*');
         }
-        console.log('Notification sent to the parent window. Closing the window in 2 sec');
         setTimeout(() => {
           window.close();
         }, 2000);
-      } else {
-        console.log('COOP header not set to unsafe. No notification can be sent to parent window.');
       }
     </script>
   </body>
