@@ -1,5 +1,4 @@
 import {
-  dataLayer,
   FileOpenPreference,
   FilePreviewParameters,
   openFilePreview,
@@ -124,24 +123,12 @@ const PrivateAPIs = (): ReactElement => {
       }),
     });
 
-  const GetDataLayerPort = (): React.ReactElement =>
-    ApiWithoutInput({
-      name: 'checkDataLayerPort',
-      title: 'Check DataLayer Port Capability',
-      onClick: async () => {
-        const port = await dataLayer.getDataLayerPort();
-        port.postMessage('test message through DataLayerPort');
-        return `DataLayer port: ${port}`;
-      },
-    });
-
   return (
     <ModuleWrapper title="PrivateAPIs">
       <RegisterUserSettingsChangeHandler />
       <UploadCustomApp />
       <OpenFilePreview />
       <input id="fileid" type="file" onChange={(e) => acceptFile(e.target.files)} hidden />
-      <GetDataLayerPort />
     </ModuleWrapper>
   );
 };
