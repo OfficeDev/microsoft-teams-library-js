@@ -80,7 +80,7 @@ export namespace media {
   /**
    * Enum for file formats supported
    */
-  export const enum FileFormat {
+  export enum FileFormat {
     /** Base64 encoding */
     Base64 = 'base64',
     /** File id */

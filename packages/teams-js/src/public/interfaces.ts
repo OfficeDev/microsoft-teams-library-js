@@ -186,7 +186,7 @@ export interface LocaleInfo {
 /**
  * Allowed user file open preferences
  */
-export const enum FileOpenPreference {
+export enum FileOpenPreference {
   /** Indicates that the user should be prompted to open the file in inline. */
   Inline = 'inline',
   /** Indicates that the user should be prompted to open the file in the native desktop application associated with the file type. */
@@ -200,7 +200,7 @@ export const enum FileOpenPreference {
  *
  * @beta
  */
-export const enum ActionObjectType {
+export enum ActionObjectType {
   /** Represents content within a Microsoft 365 application. */
   M365Content = 'm365content',
 }
@@ -250,7 +250,7 @@ export interface SecondaryId {
  * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta
  */
-export const enum SecondaryM365ContentIdName {
+export enum SecondaryM365ContentIdName {
   /** OneDrive ID */
   DriveId = 'driveId',
   /** Teams Group ID */
@@ -1055,7 +1055,7 @@ export enum ErrorCode {
 }
 
 /** @hidden */
-export const enum DevicePermission {
+export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',
 }

@@ -66,7 +66,7 @@ export namespace videoEffects {
    * Video frame format enum, currently only support NV12
    * @beta
    */
-  export const enum VideoFrameFormat {
+  export enum VideoFrameFormat {
     /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
     NV12 = 'NV12',
   }
@@ -86,7 +86,7 @@ export namespace videoEffects {
    * Video effect change type enum
    * @beta
    */
-  export const enum EffectChangeType {
+  export enum EffectChangeType {
     /**
      * Current video effect changed
      */
