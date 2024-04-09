@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added `{namespace}` capability that will {explain capability}. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Added DataLayer capability that will allow Apps to leverage data layer in the Host. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
   "packageName": "@microsoft/teams-js",
   "email": "sunatara@microsoft.com",
   "dependentChangeType": "patch"
