@@ -1,4 +1,4 @@
-const base64 = require('base64-js');
+import base64 from 'base64-js';
 
 const _Buffer = Buffer;
 export { _Buffer as Buffer };
