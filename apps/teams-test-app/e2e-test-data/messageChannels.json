@@ -1,16 +1,11 @@
 {
   "name": "Message Channels",
-  "checkIsSupported": {
-    "capabilityName": "MessageChannels",
-    "expectedOutput": "MessageChannels is not supported",
-    "testUrlParams": []
-  },
   "platforms": "Web",
   "testCases": [
     {
       "title": "getTelemetryPort API Call - Success",
       "type": "callResponse",
-      "version": ">2.20.0",
+      "version": ">=2.20.0",
       "hostSdkVersion": {
         "web": ">=2.12.0"
       },
@@ -20,7 +15,7 @@
     {
       "title": "getTelemetryPort API Call - Failure (Not MS Owned)",
       "type": "callResponse",
-      "version": ">2.20.0",
+      "version": ">=2.20.0",
       "hostSdkVersion": {
         "web": ">=2.12.0"
       },
