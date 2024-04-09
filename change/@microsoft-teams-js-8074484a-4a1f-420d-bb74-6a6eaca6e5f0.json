@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Fixed unit tests and added additional input validation for external app APIs.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "none"
+}

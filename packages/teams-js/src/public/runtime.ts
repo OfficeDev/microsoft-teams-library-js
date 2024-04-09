@@ -148,6 +148,7 @@ interface IRuntimeV2 extends IBaseRuntime {
 interface IRuntimeV3 extends IBaseRuntime {
   readonly apiVersion: 3;
   readonly hostVersionsInfo?: HostVersionsInfo;
+  readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
@@ -219,6 +220,7 @@ interface IRuntimeV3 extends IBaseRuntime {
 interface IRuntimeV4 extends IBaseRuntime {
   readonly apiVersion: 4;
   readonly hostVersionsInfo?: HostVersionsInfo;
+  readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly appEntity?: {};
@@ -242,6 +244,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly externalAppAuthentication?: {};
     readonly externalAppCardActions?: {};
+    readonly externalAppCommands?: {};
     readonly geoLocation?: {
       readonly map?: {};
     };
@@ -257,6 +260,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly monetization?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
+    readonly otherAppStateChange?: {};
     readonly pages?: {
       readonly appButton?: {};
       readonly backStack?: {};
@@ -270,7 +274,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly profile?: {};
     readonly remoteCamera?: {};
     readonly search?: {};
-    readonly sharing?: {};
+    readonly sharing?: {
+      readonly history?: {};
+    };
     readonly stageView?: {};
     readonly teams?: {
       readonly fullTrust?: {
@@ -324,6 +330,7 @@ export let runtime: Runtime | UninitializedRuntime = _uninitializedRuntime;
 
 export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   apiVersion: 4,
+  isNAAChannelRecommended: false,
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
@@ -469,6 +476,7 @@ export const upgradeChain: IRuntimeUpgrade[] = [
       return {
         apiVersion: 4,
         hostVersionsInfo: previousVersionRuntime.hostVersionsInfo,
+        isNAAChannelRecommended: previousVersionRuntime.isNAAChannelRecommended,
         isLegacyTeams: previousVersionRuntime.isLegacyTeams,
         supports: {
           ...previousVersionRuntime.supports,
