@@ -58,6 +58,7 @@ import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
+import CookieAccessComponent from './components/ThirdPatryCookies';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
@@ -140,6 +141,7 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <ClipboardAPIs />
+        <CookieAccessComponent />
         <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
