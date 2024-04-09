@@ -1,0 +1,26 @@
+{
+  "name": "Message Channels",
+  "checkIsSupported": {
+    "capabilityName": "MessageChannels",
+    "expectedOutput": "MessageChannels is not supported",
+    "testUrlParams": []
+  },
+  "platforms": "Web",
+  "testCases": [
+    {
+      "title": "getTelemetryPort API Call - Success",
+      "type": "callResponse",
+      "version": ">2.10.0",
+      "boxSelector": "#box_checkTelemetryPort",
+      "expectedTestAppValue": "Telemetry port: [object MessagePort]"
+    },
+    {
+      "title": "getTelemetryPort API Call - Failure (Not MS Owned)",
+      "type": "callResponse",
+      "version": ">2.10.0",
+      "boxSelector": "#box_checkTelemetryPort",
+      "testUrlParams": [["appDefOverrides", "{\"isMicrosoftOwned\": false}"]],
+      "expectedTestAppValue": "Error: {\"errorCode\":500,\"message\":\"App does not have the required permissions for this operation\"}"
+    }
+  ]
+}
