@@ -28,6 +28,7 @@ import MarketplaceAPIs from './components/MarketplaceAPIs';
 import MediaAPIs from './components/MediaAPIs';
 import MeetingAPIs from './components/MeetingAPIs';
 import MenusAPIs from './components/MenusAPIs';
+import NestedAppAuthAPIs from './components/NestedAppAuthAPIs';
 import OtherAppStateChangedAPIs from './components/OtherAppStateChangeAPIs';
 import PagesAPIs from './components/PagesAPIs';
 import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
@@ -57,6 +58,7 @@ import SharingAPIs from './components/SharingAPIs';
 import StageViewAPIs from './components/StageViewAPIs';
 import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
+import CookieAccessComponent from './components/ThirdPatryCookies';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
@@ -139,6 +141,7 @@ const App = (): ReactElement => {
         <CallAPIs />
         <ChatAPIs />
         <ClipboardAPIs />
+        <CookieAccessComponent />
         <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
@@ -163,6 +166,7 @@ const App = (): ReactElement => {
         <MenusAPIs />
         <MessageChannelAPIs />
         <MonetizationAPIs />
+        <NestedAppAuthAPIs />
         <NotificationAPIs />
         <OtherAppStateChangedAPIs />
         <PagesAPIs />

@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Backed out some potential bug-causing changes related to `const` enums.",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}

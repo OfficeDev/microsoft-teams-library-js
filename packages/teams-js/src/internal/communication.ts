@@ -16,7 +16,7 @@ import {
   NestedAppAuthRequest,
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
-} from './nestedAppAuth';
+} from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { generateGUID, ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
