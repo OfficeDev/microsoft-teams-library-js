@@ -56,6 +56,14 @@ export class Buffer extends Uint8Array {
    */
   static from(arrayBuffer: ArrayBuffer, byteOffset?: number, length?: number): Buffer;
   /**
+   * Creates a new Buffer containing the given JavaScript string {str}.
+   * If provided, the {encoding} parameter identifies the character encoding.
+   * If not provided, {encoding} defaults to 'utf8'.
+   *
+   * @param str
+   */
+  static from(str: string, encoding?: string): Buffer;
+  /**
    * Returns true if {obj} is a Buffer
    *
    * @param obj object to test.
