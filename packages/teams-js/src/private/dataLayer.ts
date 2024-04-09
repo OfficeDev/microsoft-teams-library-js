@@ -65,7 +65,7 @@ export namespace dataLayer {
     // Send request for dataLayer port, will throw if the request is rejected
     dataLayerPort = await requestPortFromParentWithVersion(
       getApiVersionTag(dataLayerVersionNumber, ApiName.PrivateAPIs_DataLayer_GetDataLayerPort),
-      'dataLayer.getDataLayerPort',
+      ApiName.PrivateAPIs_DataLayer_GetDataLayerPort,
     );
     return dataLayerPort;
   }
