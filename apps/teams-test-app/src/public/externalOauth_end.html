@@ -1,10 +1,11 @@
 <html>
   <head>
-    <script defer="defer" src="https://res.cdn.office.net/teams-js/2.21.0/js/MicrosoftTeams.min.js"></script>
-  </head>
-  <h2 style="font-size: 40px">Starting mock external oauth2</h2>
-  <body>
-    <div id="log"></div>
+    <script
+      type="text/javascript"
+      src="
+    https://res.cdn.office.net/teams-js/2.21.0/js/MicrosoftTeams.min.js"
+    ></script>
+    <h2 style="font-size: 40px">Starting mock external oauth2</h2>
     <script>
       function appendLog(msg) {
         document.getElementById('log').innerHTML = msg;
@@ -14,27 +15,26 @@
       const titleId = params.get('titleId');
 
       async function callteamsJS() {
-        try {
-          await microsoftTeams.app.initialize();
-          if (titleId === 'testOauthFailureTitleId') {
-            microsoftTeams.authentication.notifyFailure('Failed');
-            appendLog('notifyFailure sent');
-          } else {
-            microsoftTeams.authentication.notifySuccess('Success');
-            appendLog('notifySuccess sent');
+        if (microsoftTeams) {
+          appendLog('succesfuuly loaded microsoftTeams');
+          try {
+            await microsoftTeams.app.initialize();
+            if (titleId === 'testOauthFailureTitleId') {
+              microsoftTeams.authentication.notifyFailure('Failed');
+              appendLog('notifyFailure sent');
+            } else {
+              microsoftTeams.authentication.notifySuccess('Success');
+              appendLog('notifySuccess sent');
+            }
+          } catch (e) {
+            appendLog('Error calling teams js: ' + e);
           }
-        } catch (e) {
-          appendLog('Error calling teams js: ' + e);
+        } else {
+          appendLog('no microsoftTeams');
         }
       }
-      setTimeout(() => {
-        if (microsoftTeams) {
-          appendLog('microsoftTeams loaded, calling initilizae and notifysuccess.....');
-          callteamsJS();
-        } else {
-          appendLog('microsoftTeams is not loaded');
-        }
-      }, 5000);
     </script>
-  </body>
+  </head>
+  <div id="log"></div>
+  <body onload="callteamsJS()"></body>
 </html>
