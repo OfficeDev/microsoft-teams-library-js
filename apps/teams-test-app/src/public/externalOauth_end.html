@@ -8,7 +8,9 @@
     <h2 style="font-size: 40px">Starting mock external oauth2</h2>
     <script>
       function appendLog(msg) {
-        document.getElementById('log').innerHTML = msg;
+        const element = document.createElement('p');
+        element.textContent = msg;
+        document.getElementById('log').appendChild(element);
       }
 
       const params = new URLSearchParams(window.location.search);
