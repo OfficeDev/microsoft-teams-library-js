@@ -1,10 +1,6 @@
 <html>
   <head>
-    <script
-      defer="defer"
-      src="https://res.cdn.office.net/teams-js/2.21.0/js/MicrosoftTeams.min.js"
-      asp-append-version="true"
-    ></script>
+    <script defer="defer" src="https://res.cdn.office.net/teams-js/2.21.0/js/MicrosoftTeams.min.js"></script>
   </head>
   <h2 style="font-size: 40px">Starting mock external oauth2</h2>
   <body>
@@ -16,8 +12,6 @@
 
       const params = new URLSearchParams(window.location.search);
       const titleId = params.get('titleId');
-
-      appendLog(titleId);
 
       async function callteamsJS() {
         try {
