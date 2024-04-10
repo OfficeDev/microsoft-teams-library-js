@@ -1,29 +1,48 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <h2 style="font-size: 40px">Starting mock external oauth2</h2>
+    <script
+      defer="defer"
+      src="https://res.cdn.office.net/teams-js/2.21.0/js/MicrosoftTeams.min.js"
+      asp-append-version="true"
+    ></script>
   </head>
+  <h2 style="font-size: 40px">Starting mock external oauth2</h2>
   <body>
+    <div id="log"></div>
     <script>
-      const failureMessage = {
-        type: 'authenticationFailed',
-        data: 'error',
-      };
-      const successMessage = {
-        type: 'authenticationSuccess',
-        data: 'success',
-      };
+      function appendLog(msg) {
+        document.getElementById('log').innerHTML = msg;
+      }
 
       const params = new URLSearchParams(window.location.search);
       const titleId = params.get('titleId');
 
-      if (window.opener) {
-        if (titleId === 'testOauthFailureTitleId') {
-          window.opener.postMessage(failureMessage, '*');
-        } else {
-          window.opener.postMessage(successMessage, '*');
+      appendLog(titleId);
+
+      async function callteamsJS() {
+        try {
+          await microsoftTeams.app.initialize();
+          if (titleId === 'testOauthFailureTitleId') {
+            microsoftTeams.authentication.notifyFailure('Failed');
+            appendLog('notifyFailure sent');
+          } else {
+            microsoftTeams.authentication.notifySuccess('Success');
+            appendLog('notifySuccess sent');
+          }
+        } catch (e) {
+          appendLog('Error calling teams js: ' + e);
         }
       }
+      setTimeout(() => {
+        if (microsoftTeams) {
+          appendLog('microsoftTeams loaded, calling initilizae and notifysuccess.....');
+          callteamsJS();
+        } else {
+          appendLog('microsoftTeams is not loaded');
+        }
+      }, 30000);
+
+      callteamsJS();
     </script>
   </body>
 </html>
