@@ -767,6 +767,7 @@ export namespace authentication {
    * @internal
    * Limited to Microsoft-internal use
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum DataResidency {
     /**
      * Public

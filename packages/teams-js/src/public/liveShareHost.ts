@@ -22,6 +22,7 @@ export namespace liveShare {
    * Used in Live Share for its role verification feature.
    * For more information, visit https://learn.microsoft.com/microsoftteams/platform/apps-in-teams-meetings/teams-live-share-capabilities?tabs=javascript#role-verification-for-live-data-structures
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum UserMeetingRole {
     /**
      * Guest role.
@@ -46,6 +47,7 @@ export namespace liveShare {
    * State of the current Live Share session's Fluid container.
    * This is used internally by the `LiveShareClient` when joining a Live Share session.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ContainerState {
     /**
      * The call to `LiveShareHost.setContainerId()` successfully created the container mapping

@@ -145,6 +145,7 @@ export namespace menus {
    * @hidden
    * Represents information about type of list to display in Navigation Bar Menu.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MenuListType {
     dropDown = 'dropDown',
     popOver = 'popOver',

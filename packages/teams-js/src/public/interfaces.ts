@@ -186,6 +186,7 @@ export interface LocaleInfo {
 /**
  * Allowed user file open preferences
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum FileOpenPreference {
   /** Indicates that the user should be prompted to open the file in inline. */
   Inline = 'inline',
@@ -200,6 +201,7 @@ export enum FileOpenPreference {
  *
  * @beta
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ActionObjectType {
   /** Represents content within a Microsoft 365 application. */
   M365Content = 'm365content',
@@ -250,6 +252,7 @@ export interface SecondaryId {
  * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum SecondaryM365ContentIdName {
   /** OneDrive ID */
   DriveId = 'driveId',
@@ -1055,6 +1058,7 @@ export enum ErrorCode {
 }
 
 /** @hidden */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum DevicePermission {
   GeoLocation = 'geolocation',
   Media = 'media',

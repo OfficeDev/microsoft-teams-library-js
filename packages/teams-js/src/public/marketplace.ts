@@ -203,6 +203,7 @@ export namespace marketplace {
    * Represents the persona creating the cart.
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum Intent {
     /**
      * @hidden

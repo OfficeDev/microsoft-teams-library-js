@@ -410,6 +410,7 @@ export namespace meeting {
    *
    * @beta
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MeetingReactionType {
     like = 'like',
     heart = 'heart',
@@ -427,6 +428,7 @@ export namespace meeting {
    * @remarks
    * Teams has several types of meetings to account for different user scenarios and requirements.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MeetingType {
     /**
      * Used when the meeting type is not known.
@@ -482,6 +484,7 @@ export namespace meeting {
    * @hidden
    * Hide from docs.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum CallType {
     /**
      * Represents a call between two people.
@@ -503,6 +506,7 @@ export namespace meeting {
   /**
    * Represents the protocol option for sharing app content to the meeting stage.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum SharingProtocol {
     /**
      * The default protocol for sharing app content to stage. To learn more, visit https://aka.ms/teamsjs/shareAppContentToStage
@@ -978,6 +982,7 @@ export namespace meeting {
   }
 
   /** The source of the join button click. */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum EventActionSource {
     /**
      * Source is calendar grid context menu.

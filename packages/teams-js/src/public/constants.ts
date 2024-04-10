@@ -31,6 +31,7 @@ export enum HostClientType {
 }
 
 /** HostName indicates the possible hosts for your application. */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum HostName {
   /**
    * Office.com and Office Windows App
@@ -136,6 +137,7 @@ export enum UserTeamRole {
 /**
  * Dialog module dimension enum
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum DialogDimension {
   /** Represents a large-sized dialog box, which is typically used for displaying large amounts of content or complex workflows that require more space. */
   Large = 'large',
@@ -157,6 +159,7 @@ import { HostVersionsInfo } from './interfaces';
 /**
  * The type of the channel with which the content is associated.
  */
+/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ChannelType {
   /** The default channel type. Type of channel is used for general collaboration and communication within a team. */
   Regular = 'Regular',

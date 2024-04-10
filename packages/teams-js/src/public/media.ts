@@ -80,6 +80,7 @@ export namespace media {
   /**
    * Enum for file formats supported
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum FileFormat {
     /** Base64 encoding */
     Base64 = 'base64',

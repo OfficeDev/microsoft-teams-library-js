@@ -60,6 +60,7 @@ export namespace stageView {
   /**
    * The open mode for stage content.
    */
+  /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum StageViewOpenMode {
     /**
      * Open the content in a modal.
