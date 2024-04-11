@@ -1,8 +1,30 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 06 Mar 2024 22:44:18 GMT and should not be manually modified.
+This log was last generated on Thu, 11 Apr 2024 05:06:48 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.22.0
+
+Thu, 11 Apr 2024 05:06:48 GMT
+
+### Minor changes
+
+- Added `OtherAppStateChange` capability that will allow limited 1P apps to receive events when other apps are installed on the host. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added an optional parameter `fromElement` to `processActionOpenUrl` in `externalAppCardActions`
+- Validate appId in all APIs in `externalAppAuthentication`, `externalAppCardActions` and `externalAppCommands`.
+- Added nested app auth support check api for app developers
+- Added a new API `externalAppAuthentication.authenticateWithOauth2`. It can be used to signal to the host to perform Oauth2 authentication for the app specified by title id.
+- Added `externalAppCommands` 1P internal-only capability
+
+### Patches
+
+- Backed out some potential bug-causing changes related to `const` enums.
+- Made more enums const to reduce package size
+- Fixed `clipboard` issue for desktop client to resolve 'DOMExecption: Document not focused' error
+- Made enum const to reduce package size
+- Removed one default valid origin
+- Removed validation that appIds are UUIDs since some very old published apps have IDs that are not UUIDs (they were published before the manifest schema specified they had to be UUIDs)
 
 ## 2.21.0
 
