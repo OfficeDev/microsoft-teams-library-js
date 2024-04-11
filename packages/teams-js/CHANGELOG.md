@@ -19,10 +19,8 @@ Thu, 11 Apr 2024 05:06:48 GMT
 
 ### Patches
 
-- Backed out some potential bug-causing changes related to `const` enums.
-- Made more enums const to reduce package size
+- Made some enums `const` to reduce package size
 - Fixed `clipboard` issue for desktop client to resolve 'DOMExecption: Document not focused' error
-- Made enum const to reduce package size
 - Removed one default valid origin
 - Removed validation that appIds are UUIDs since some very old published apps have IDs that are not UUIDs (they were published before the manifest schema specified they had to be UUIDs)
 
