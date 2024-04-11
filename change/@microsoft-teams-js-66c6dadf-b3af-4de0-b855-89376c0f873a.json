@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Removed validation that appIds are UUIDs since some very old published apps have IDs that are not UUIDs (they were published before the manifest schema specified they had to be UUIDs)",
-  "packageName": "@microsoft/teams-js",
-  "email": "kangxuanye@microsoft.com",
-  "dependentChangeType": "patch"
-}
