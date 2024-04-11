@@ -1,7 +1,6 @@
 import { MessageRequest } from './utils';
 
-/* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
-export enum MatcherType {
+export const enum MatcherType {
   ToBe,
   ToStrictEqual,
 }
