@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added nested app auth support check api for app developers",
-  "packageName": "@microsoft/teams-js",
-  "email": "baljesingh@microsoft.com",
-  "dependentChangeType": "patch"
-}
