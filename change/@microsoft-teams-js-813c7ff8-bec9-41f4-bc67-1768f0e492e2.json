@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added an optional parameter `fromElement` to `processActionOpenUrl` in `externalAppCardActions`",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}

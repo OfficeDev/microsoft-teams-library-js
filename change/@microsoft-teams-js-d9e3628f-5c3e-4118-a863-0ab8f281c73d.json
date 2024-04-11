@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Updated `stageView.open` function to be publicly documented.",
-  "packageName": "@microsoft/teams-js",
-  "email": "astripa@microsoft.com",
-  "dependentChangeType": "none"
-}
