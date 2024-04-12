@@ -4,12 +4,18 @@ import React from 'react';
 import { ApiWithoutInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
+const CheckMessageChannelsCapability = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'checkMessageChannelsCapability',
+    title: 'Check Message Channels Capability',
+    onClick: async () => `MessageChannels ${messageChannels.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
 const GetTelemetryPort = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkTelemetryPort',
-    title: 'Check Telemetry Port Capability',
+    title: 'Check Telemetry Port API',
     onClick: async () => {
-      // TODO this is test app, need to look at how this should be tested
       const port = await messageChannels.getTelemetryPort();
       port.postMessage('test message through telemetry port');
       return `Telemetry port: ${port}`;
@@ -19,6 +25,7 @@ const GetTelemetryPort = (): React.ReactElement =>
 const MessageChannelAPIs = (): React.ReactElement => (
   <ModuleWrapper title="Message Channels">
     <GetTelemetryPort />
+    <CheckMessageChannelsCapability />
   </ModuleWrapper>
 );
 
