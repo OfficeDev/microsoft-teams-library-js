@@ -10,7 +10,13 @@ import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
-import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
+import {
+  MessageID,
+  MessageRequest,
+  MessageRequestWithRequiredProperties,
+  MessageResponse,
+  MessageUUID,
+} from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
   NestedAppAuthRequest,
@@ -47,17 +53,17 @@ class CommunicationPrivate {
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: {
-    [id: number | string]: Function; // (arg1, arg2, ...etc) => void
+    [id: MessageID]: Function; // (arg1, arg2, ...etc) => void
   } = {};
   public static promiseCallbacks: {
-    [id: number | string]: Function; // (args[]) => void
+    [id: MessageID]: Function; // (args[]) => void
   } = {};
   public static portCallbacks: {
-    [id: number | string]: (port?: MessagePort, args?: unknown[]) => void;
+    [id: MessageID]: (port?: MessagePort, args?: unknown[]) => void;
   } = {};
   public static messageListener: Function;
   public static legacyMessageIdsToUuidMap: {
-    [legacyId: number]: string;
+    [legacyId: number]: MessageUUID;
   } = {};
 }
 
@@ -852,8 +858,8 @@ function createMessageRequest(
   func: string,
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
-  const messageId = CommunicationPrivate.nextMessageId++;
-  const messageUuid = generateGUID();
+  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
+  const messageUuid: MessageUUID = generateGUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
     id: messageId,
@@ -877,8 +883,8 @@ function createMessageRequest(
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
-  const messageId = CommunicationPrivate.nextMessageId++;
-  const messageUuid = generateGUID();
+  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
+  const messageUuid: MessageUUID = generateGUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
     id: messageId,
@@ -896,11 +902,7 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(
-  id: number | string,
-  args: any[] | undefined,
-  isPartialResponse?: boolean,
-): MessageResponse {
+function createMessageResponse(id: MessageID, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
   return {
     id: id,
     args: args || [],

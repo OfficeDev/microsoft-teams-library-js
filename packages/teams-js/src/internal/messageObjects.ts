@@ -2,9 +2,21 @@
  * @internal
  * Limited to Microsoft-internal use
  */
+export type MessageID = number | string;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type MessageUUID = string;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface MessageRequest {
-  id?: number | string;
-  uuid?: string;
+  id?: MessageID;
+  uuid?: MessageUUID;
   func: string;
   timestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,7 +29,7 @@ export interface MessageRequest {
  * Limited to Microsoft-internal use
  */
 export interface MessageResponse {
-  id: number | string;
+  id: MessageID;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
@@ -35,7 +47,7 @@ export interface MessageResponse {
  * merged. However, it's a journey.
  */
 export interface MessageRequestWithRequiredProperties extends MessageRequest {
-  id: number | string;
-  uuid: string;
+  id: MessageID;
+  uuid: MessageUUID;
   timestamp: number;
 }

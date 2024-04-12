@@ -2,14 +2,15 @@ import { validOriginsFallback as validOrigins } from '../src/internal/constants'
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
-import { MessageResponse } from '../src/internal/messageObjects';
+import { MessageID, MessageResponse, MessageUUID } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 export interface MessageRequest {
-  id: number;
+  id: MessageID;
   func: string;
+  uuid?: MessageUUID;
   args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
@@ -215,7 +216,7 @@ export class Utils {
     } else if (this.processMessage === undefined) {
       const domEvent = {
         data: {
-          id: message.id,
+          id: message.uuid ? message.uuid : message.id,
           args: args,
         } as MessageResponse,
         ports,
@@ -226,7 +227,7 @@ export class Utils {
         origin: this.validOrigin,
         source: this.mockWindow.parent,
         data: {
-          id: message.id,
+          id: message.uuid ? message.uuid : message.id,
           args: args,
         } as MessageResponse,
         ports,
@@ -245,7 +246,7 @@ export class Utils {
       origin: this.validOrigin,
       source: this.mockWindow.opener,
       data: {
-        id: message.id,
+        id: message.uuid? message.uuid : message.id,
         args: args,
       } as MessageResponse,
     } as MessageEvent);
@@ -254,7 +255,7 @@ export class Utils {
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.id,
+        id: message.uuid? message.uuid : message.id,
         args: args,
         isPartialResponse,
       } as MessageResponse,
@@ -269,7 +270,7 @@ export class Utils {
   ): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.id,
+        id: message.uuid ? message.uuid: message.id,
         args: args,
         isPartialResponse,
       } as MessageResponse,
