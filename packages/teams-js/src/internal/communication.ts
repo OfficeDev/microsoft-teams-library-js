@@ -280,7 +280,7 @@ export function requestPortFromParentWithVersion(
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForPort(requestId: number | string): Promise<MessagePort> {
+function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
     CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
       if (port instanceof MessagePort) {
@@ -817,7 +817,7 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(id: number | string, args?: any[], isPartialResponse?: boolean): void {
+function sendMessageResponseToChild(id: MessageID, args?: any[], isPartialResponse?: boolean): void {
   const targetWindow = Communication.childWindow;
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
