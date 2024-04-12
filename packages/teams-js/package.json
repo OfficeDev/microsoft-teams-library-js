@@ -1,7 +1,7 @@
 {
   "name": "@microsoft/teams-js",
   "author": "Microsoft Teams",
-  "version": "2.21.0",
+  "version": "2.22.0",
   "description": "Microsoft Client SDK for building app for Microsoft hosts",
   "repository": {
     "directory": "packages/teams-js",

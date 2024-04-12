@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added a new API `externalAppAuthentication.authenticateWithOauth2`. It can be used to signal to the host to perform Oauth2 authentication for the app specified by title id.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
