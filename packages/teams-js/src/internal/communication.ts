@@ -297,7 +297,7 @@ function waitForPort(requestId: number | string): Promise<MessagePort> {
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForResponse<T>(requestId: number | string): Promise<T> {
+function waitForResponse<T>(requestId: MessageUUID): Promise<T> {
   return new Promise<T>((resolve) => {
     CommunicationPrivate.promiseCallbacks[requestId] = resolve;
   });
