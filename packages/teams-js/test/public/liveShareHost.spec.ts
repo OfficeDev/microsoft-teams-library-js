@@ -40,7 +40,7 @@ describe('LiveShareHost', () => {
       await utils.initializeWithContext('settings');
       const result = new Promise((resolve) => resolve(LiveShareHost.create()));
       await expect(result).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
       );
     });
 
@@ -68,7 +68,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -106,7 +106,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -141,7 +141,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -181,7 +181,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -222,7 +222,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -260,7 +260,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -295,7 +295,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -330,7 +330,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
