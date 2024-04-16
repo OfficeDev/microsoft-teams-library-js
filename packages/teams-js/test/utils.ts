@@ -246,7 +246,7 @@ export class Utils {
       origin: this.validOrigin,
       source: this.mockWindow.opener,
       data: {
-        id: message.uuid? message.uuid : message.id,
+        id: message.uuid ? message.uuid : message.id,
         args: args,
       } as MessageResponse,
     } as MessageEvent);
@@ -255,7 +255,7 @@ export class Utils {
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.uuid? message.uuid : message.id,
+        id: message.uuid ? message.uuid : message.id,
         args: args,
         isPartialResponse,
       } as MessageResponse,
@@ -270,7 +270,7 @@ export class Utils {
   ): void => {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.uuid ? message.uuid: message.id,
+        id: message.uuid ? message.uuid : message.id,
         args: args,
         isPartialResponse,
       } as MessageResponse,
