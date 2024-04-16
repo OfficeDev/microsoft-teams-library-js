@@ -2,13 +2,19 @@
  * @internal
  * Limited to Microsoft-internal use
  */
-export type MessageID = number | string;
+export type BaseUUID = string;
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export type MessageUUID = string;
+export type MessageUUID = BaseUUID;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type MessageID = number | MessageUUID;
 
 /**
  * @internal
