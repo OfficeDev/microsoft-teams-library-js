@@ -80,6 +80,8 @@ export namespace media {
   /**
    * Enum for file formats supported
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum FileFormat {
     /** Base64 encoding */
@@ -611,6 +613,8 @@ export namespace media {
    * @beta
    * Events which are used to communicate between the app and the host client during the media recording flow
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MediaControllerEvent {
     /** Start recording. */
@@ -640,6 +644,8 @@ export namespace media {
   /**
    * The modes in which camera can be launched in select Media API
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum CameraStartMode {
     /** Photo mode. */
@@ -655,6 +661,8 @@ export namespace media {
   /**
    * Specifies the image source
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum Source {
     /** Image source is camera. */
@@ -666,6 +674,8 @@ export namespace media {
   /**
    * Specifies the type of Media
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum MediaType {
     /** Media type photo or image */
@@ -691,6 +701,8 @@ export namespace media {
   /**
    * ID contains a mapping for content uri on platform's side, URL is generic
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ImageUriType {
     /** Image Id. */
@@ -702,6 +714,8 @@ export namespace media {
   /**
    * Specifies the image output formats.
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ImageOutputFormats {
     /** Outputs image.  */

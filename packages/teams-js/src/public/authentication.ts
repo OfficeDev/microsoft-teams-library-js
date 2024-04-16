@@ -767,6 +767,8 @@ export namespace authentication {
    * @internal
    * Limited to Microsoft-internal use
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum DataResidency {
     /**

@@ -186,6 +186,8 @@ export interface LocaleInfo {
 /**
  * Allowed user file open preferences
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum FileOpenPreference {
   /** Indicates that the user should be prompted to open the file in inline. */
@@ -201,6 +203,8 @@ export enum FileOpenPreference {
  *
  * @beta
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ActionObjectType {
   /** Represents content within a Microsoft 365 application. */
@@ -252,6 +256,8 @@ export interface SecondaryId {
  * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum SecondaryM365ContentIdName {
   /** OneDrive ID */
@@ -993,6 +999,8 @@ export function isSdkError(err: unknown): err is SdkError {
 }
 
 /** Error codes used to identify different types of errors that can occur while developing apps. */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ErrorCode {
   /**
@@ -1058,6 +1066,8 @@ export enum ErrorCode {
 }
 
 /** @hidden */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum DevicePermission {
   GeoLocation = 'geolocation',
@@ -1082,6 +1092,8 @@ export interface AdaptiveCardVersion {
 /**
  * Currently supported Mime type
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ClipboardSupportedMimeType {
   TextPlain = 'text/plain',

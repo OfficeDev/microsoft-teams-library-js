@@ -66,6 +66,8 @@ export namespace videoEffects {
    * Video frame format enum, currently only support NV12
    * @beta
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum VideoFrameFormat {
     /** Video format used for encoding and decoding YUV color data in video streaming and storage applications. */
@@ -87,6 +89,8 @@ export namespace videoEffects {
    * Video effect change type enum
    * @beta
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum EffectChangeType {
     /**
@@ -103,6 +107,8 @@ export namespace videoEffects {
    * Predefined failure reasons for preparing the selected video effect
    * @beta
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum EffectFailureReason {
     /**

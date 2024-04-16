@@ -58,6 +58,7 @@ export namespace remoteCamera {
    * @internal
    * Limited to Microsoft-internal use
    */
+  //This enum is not const and the eslint rule is being surpressed because in the teams-test-app, the ControlCommand enum object is being accessed at runtime through the Object.values method.
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ControlCommand {
     Reset = 'Reset',

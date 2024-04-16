@@ -1,4 +1,6 @@
 /** HostClientType represents the different client platforms on which host can be run. */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum HostClientType {
   /** Represents the desktop client of host, which is installed on a user's computer and runs as a standalone application. */
@@ -31,6 +33,8 @@ export enum HostClientType {
 }
 
 /** HostName indicates the possible hosts for your application. */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum HostName {
   /**
@@ -80,6 +84,8 @@ export enum HostName {
  * If the app is running in the content context, the developer may want to display information relevant to
  * the content the user is currently viewing.
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum FrameContexts {
   /**
@@ -107,6 +113,8 @@ export enum FrameContexts {
  * Indicates the team type, currently used to distinguish between different team
  * types in Office 365 for Education (team types 1, 2, 3, and 4).
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum TeamType {
   /** Represents a standard or classic team in host that is designed for ongoing collaboration and communication among a group of people. */
@@ -124,6 +132,8 @@ export enum TeamType {
 /**
  * Indicates the various types of roles of a user in a team.
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum UserTeamRole {
   /** Represents that the user is an owner or administrator of the team. */
@@ -137,6 +147,8 @@ export enum UserTeamRole {
 /**
  * Dialog module dimension enum
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum DialogDimension {
   /** Represents a large-sized dialog box, which is typically used for displaying large amounts of content or complex workflows that require more space. */
@@ -159,6 +171,8 @@ import { HostVersionsInfo } from './interfaces';
 /**
  * The type of the channel with which the content is associated.
  */
+/* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
 /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
 export enum ChannelType {
   /** The default channel type. Type of channel is used for general collaboration and communication within a team. */

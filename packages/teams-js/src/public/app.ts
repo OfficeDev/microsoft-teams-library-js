@@ -227,6 +227,8 @@ export namespace app {
   /**
    * Describes errors that caused app initialization to fail
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum FailedReason {
     /**
@@ -247,6 +249,8 @@ export namespace app {
    * Describes expected errors that occurred during an otherwise successful
    * app initialization
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export enum ExpectedFailureReason {
     /**
@@ -274,6 +278,8 @@ export namespace app {
   /**
    * Represents the failed request sent during a failed app initialization.
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export interface IFailedRequest {
     /**
@@ -289,6 +295,8 @@ export namespace app {
   /**
    * Represents the failure request sent during an erroneous app initialization.
    */
+  /* This enum is not const and the eslint rule is being surpressed because it existed before the PR to make all enums const and is public. 
+  Since it is public, we can not know how clients are using the enum, so if we make it const, it could potentially break their code. */
   /* eslint-disable-next-line recommend-const-enums/recommend-const-enums */
   export interface IExpectedFailureRequest {
     /**
