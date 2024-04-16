@@ -39,7 +39,7 @@ module.exports = {
     },
     compress: true,
     port: 4000,
-    https: true,
+    server: 'https',
     allowedHosts: 'all',
   },
   performance: { hints: false },
