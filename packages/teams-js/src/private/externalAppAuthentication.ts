@@ -1,6 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { validateId } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -26,6 +27,31 @@ export namespace externalAppAuthentication {
    */
   export type IOriginalRequestInfo = IQueryMessageExtensionRequest | IActionExecuteInvokeRequest;
 
+  /**
+   * @hidden
+   * Parameters OauthWindow
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export type OauthWindowProperties = {
+    /**
+     * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
+     */
+    width?: number;
+    /**
+     * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
+     */
+    height?: number;
+    /**
+     * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
+     * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page
+     * to be opened in an external browser. If this flag is `false`, the page will be opened directly within the current hosting application.
+     *
+     * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
+     * environment without an embedded browser.
+     */
+    isExternal?: boolean;
+  };
   /**
    * @hidden
    * Parameters for the authentication pop-up. This interface is used exclusively with the externalAppAuthentication APIs
@@ -326,6 +352,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+    validateId(appId, new Error('App id is not valid.'));
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -369,6 +396,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+    validateId(appId, new Error('App id is not valid.'));
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -404,6 +432,8 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
+    validateId(appId, new Error('App id is not valid.'));
+
     validateOriginalRequestInfo(originalRequestInfo);
 
     return sendMessageToParentAsync<[boolean, IInvokeResponse | InvokeErrorWrapper]>(
@@ -418,6 +448,51 @@ export namespace externalAppAuthentication {
         return response as IInvokeResponse;
       } else {
         const error = response as InvokeError;
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * @beta
+   * @hidden
+   * Signals to the host to perform Oauth2 authentication for the application specified by the title ID
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param titleId ID of the acquisition
+   * @param oauthConfigId lookup ID in token store
+   * @param oauthWindowParameters parameters for the signIn window
+   * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
+   */
+  export function authenticateWithOauth2(
+    titleId: string,
+    oauthConfigId: string,
+    oauthWindowParameters: OauthWindowProperties,
+  ): Promise<void> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    validateId(titleId, new Error('titleId is Invalid.'));
+    validateId(oauthConfigId, new Error('oauthConfigId is Invalid.'));
+
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithOauth2,
+      ),
+      'externalAppAuthentication.authenticateWithOauth2',
+      [
+        titleId,
+        oauthConfigId,
+        oauthWindowParameters.width,
+        oauthWindowParameters.height,
+        oauthWindowParameters.isExternal,
+      ],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+      if (!wasSuccessful) {
         throw error;
       }
     });

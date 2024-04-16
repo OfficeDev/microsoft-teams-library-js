@@ -400,3 +400,53 @@ export function ssrSafeWindow(): Window {
 export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
 }
+
+/**
+ * @param id The id to validate
+ * @param errorToThrow Customized error to throw if the id is not valid
+ *
+ * @throws Error if id is not valid
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateId(id: string, errorToThrow?: Error): void {
+  if (hasScriptTags(id) || !isIdLengthValid(id) || !isOpaque(id)) {
+    throw errorToThrow || new Error('id is not valid.');
+  }
+}
+
+function hasScriptTags(id: string): boolean {
+  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
+  return scriptRegex.test(id);
+}
+
+function isIdLengthValid(id: string): boolean {
+  return id.length < 256 && id.length > 4;
+}
+
+function isOpaque(id: string): boolean {
+  for (let i = 0; i < id.length; i++) {
+    const charCode = id.charCodeAt(i);
+    if (charCode < 32 || charCode > 126) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * @param id The ID to validate against the UUID format
+ * @throws Error if ID is not a valid UUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateUuid(id: string | undefined | null): void {
+  if (!id) {
+    throw new Error('id must not be empty');
+  }
+  if (uuid.validate(id) === false) {
+    throw new Error('id must be a valid UUID');
+  }
+}
