@@ -110,13 +110,13 @@ export namespace meeting {
      * @hidden
      * Phone number of a PSTN callee or email of a VoIP callee
      */
-    dialedEntity?: string;
+    dialedEntity?: never;
 
     /**
      * @hidden
      * Tracking identifier for grouping related calls
      */
-    trackingId?: string;
+    trackingId?: never;
   }
 
   /**
@@ -592,7 +592,8 @@ export namespace meeting {
 
   /**
    * @throws error if your app manifest does not include the `OnlineMeeting.ReadBasic.Chat` RSC permission.
-   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
+   * Find the app manifest reference at https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema.
+   * Find the RSC reference at https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent.
    *
    * @hidden
    * Allows an app to get the meeting details for the meeting
@@ -627,7 +628,8 @@ export namespace meeting {
   /**
    * @throws error if your app manifest does not include both the `OnlineMeeting.ReadBasic.Chat` RSC permission
    * and the `OnlineMeetingParticipant.Read.Chat` RSC permission.
-   * Find the app manifest reference at https://aka.ms/teamsAppManifest/authorization.
+   * Find the app manifest reference at https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema.
+   * Find the RSC reference at https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent.
    *
    * @throws `not supported on platform` error if your app is run on a host that does not support returning additional meeting details.
    *
