@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Removed Beta/Preview tag on `chat` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}

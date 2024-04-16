@@ -46,6 +46,7 @@ const ProcessActionOpenUrl = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     url: string;
+    fromElement?: { name: 'composeExtensions' | 'plugins' };
   }>({
     name: 'processActionOpenUrl',
     title: 'Process Action Open Url',
@@ -59,7 +60,11 @@ const ProcessActionOpenUrl = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await externalAppCardActions.processActionOpenUrl(input.appId, new URL(input.url));
+        const result = await externalAppCardActions.processActionOpenUrl(
+          input.appId,
+          new URL(input.url),
+          input.fromElement,
+        );
         return JSON.stringify(result);
       },
     },
