@@ -106,6 +106,50 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
     }),
   });
 
+const AuthenticateWithPPC = (): React.ReactElement =>
+  ApiWithTextInput<{
+    titleId: string;
+    pluginId: string;
+    signInUrl?: string;
+    oauthWindowParameters: {
+      width?: number;
+      height?: number;
+      isExternal?: boolean;
+    };
+  }>({
+    name: 'authenticateWithPowerPlatformConnectorPlugins',
+    title: 'Authenticate With Power Platform Connector Plugins',
+    onClick: {
+      validateInput: (input) => {
+        if (!input.titleId) {
+          throw new Error('titleId is required');
+        }
+        if (!input.pluginId) {
+          throw new Error('pluginId is required');
+        }
+      },
+      submit: async (input) => {
+        const result = await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+          input.titleId,
+          input.pluginId,
+          input.signInUrl,
+          input.oauthWindowParameters,
+        );
+        return JSON.stringify(result);
+      },
+    },
+    defaultInput: JSON.stringify({
+      titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
+      pluginId: 'testPluginId',
+      signInUrl: 'signInUrl',
+      oauthWindowParameters: {
+        width: 400,
+        height: 400,
+        isExternal: false,
+      },
+    }),
+  });
+
 const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
@@ -186,6 +230,7 @@ const ExternalAppAuthenticationAPIs = (): React.ReactElement => (
     <CheckExternalAppAuthenticationCapability />
     <AuthenticateAndResendRequest />
     <AuthenticateWithOauth2 />
+    <AuthenticateWithPPC />
     <AuthenticateWithSSO />
     <AuthenticateWithSSOAndResendRequest />
   </ModuleWrapper>

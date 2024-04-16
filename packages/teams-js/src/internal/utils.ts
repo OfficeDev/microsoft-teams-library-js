@@ -416,6 +416,12 @@ export function validateId(id: string, errorToThrow?: Error): void {
   }
 }
 
+export function validateUrl(url: string, errorToThrow?: Error): void {
+  if (hasScriptTags(url) || url.length > 2048) {
+    throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
+  }
+}
+
 function hasScriptTags(id: string): boolean {
   const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
   return scriptRegex.test(id);

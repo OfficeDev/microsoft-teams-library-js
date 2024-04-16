@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
+import { validateId, validateUrl } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -490,6 +490,57 @@ export namespace externalAppAuthentication {
         oauthWindowParameters.width,
         oauthWindowParameters.height,
         oauthWindowParameters.isExternal,
+      ],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+      if (!wasSuccessful) {
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * @beta
+   * @hidden
+   * API to authenticate power platform connector plugins
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param titleId ID of the acquisition
+   * @param pluginId pluginId of the connector plugin
+   * @param signInUrl signInUrl for the connctor page listing the connector. This is optional
+   * @param oauthWindowParameters parameters for the signIn window
+   * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
+   */
+  export function authenticateWithPowerPlatformConnectorPlugins(
+    titleId: string,
+    pluginId: string,
+    signInUrl?: string,
+    oauthWindowParameters?: OauthWindowProperties,
+  ): Promise<void> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    validateId(titleId, new Error('titleId is Invalid.'));
+    validateId(pluginId, new Error('pluginId is Invalid.'));
+    if (signInUrl) {
+      validateUrl(signInUrl);
+    }
+
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithOauth2,
+      ),
+      'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+      [
+        titleId,
+        pluginId,
+        signInUrl,
+        oauthWindowParameters?.width,
+        oauthWindowParameters?.height,
+        oauthWindowParameters?.isExternal,
       ],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
