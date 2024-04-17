@@ -9,7 +9,9 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { isValidHttpsURL } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
+import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -160,22 +162,13 @@ export namespace authentication {
 
   function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.android ||
-        GlobalVars.hostClientType === HostClientType.ios ||
-        GlobalVars.hostClientType === HostClientType.ipados ||
-        GlobalVars.hostClientType === HostClientType.macos ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
-        GlobalVars.hostClientType === HostClientType.surfaceHub
-      ) {
+      if (GlobalVars.hostClientType !== HostClientType.web) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         const link = document.createElement('a');
         link.href = authenticateParameters.url;
+
+        throwIfStringNotValidHttpsUrl(link.href);
+
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
           sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
@@ -200,6 +193,12 @@ export namespace authentication {
         openAuthenticationWindow(authenticateParameters);
       }
     });
+  }
+
+  function throwIfStringNotValidHttpsUrl(link: string): void {
+    if (!isValidHttpsURL(new URL(link))) {
+      throw new Error(`${ErrorCode.INVALID_ARGUMENTS}: url must be https`);
+    }
   }
 
   /**
@@ -353,6 +352,9 @@ export namespace authentication {
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
     link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
+
+    throwIfStringNotValidHttpsUrl(link.href);
+
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'

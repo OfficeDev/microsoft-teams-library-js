@@ -293,8 +293,8 @@ describe('location', () => {
     });
 
     it('Frameless - getLocation should throw error when not supported in the runtime config', () => {
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       utils.initializeWithContext(FrameContexts.task).then(() => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
 
         try {
@@ -306,8 +306,8 @@ describe('location', () => {
     });
 
     it('Frameless - showLocation should throw error when location is not supported', () => {
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       utils.initializeWithContext(FrameContexts.task).then(() => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
 
         try {
@@ -394,8 +394,8 @@ describe('location', () => {
     });
 
     it('getLocation should throw error when not supported in the runtime config', () => {
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       utils.initializeWithContext(FrameContexts.task).then(() => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
 
         try {
@@ -407,8 +407,8 @@ describe('location', () => {
     });
 
     it('showLocation should throw error when location is not supported', () => {
-      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
       utils.initializeWithContext(FrameContexts.task).then(() => {
+        utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
         expect.assertions(1);
 
         try {
