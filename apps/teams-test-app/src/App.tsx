@@ -38,7 +38,6 @@ import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from './components/PagesTabsAPIs';
 import PeopleAPIs from './components/PeopleAPIs';
 import ChatAPIs from './components/privateApis/ChatAPIs';
-import DataLayerAPIs from './components/privateApis/DataLayerAPIs';
 import ExternalAppAuthenticationAPIs from './components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppCardActionsAPIs from './components/privateApis/ExternalAppCardActionsAPIs';
 import ExternalAppCommandsAPIs from './components/privateApis/ExternalAppCommandsAPIs';
@@ -144,7 +143,6 @@ const App = (): ReactElement => {
         <ClipboardAPIs />
         <CookieAccessComponent />
         <CustomAPIs />
-        <DataLayerAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
         <DialogCardBotAPIs />

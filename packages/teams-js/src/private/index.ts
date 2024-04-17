@@ -19,7 +19,6 @@ export {
   openFilePreview,
 } from './privateAPIs';
 export { conversations } from './conversations';
-export { dataLayer } from './dataLayer';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
 export { externalAppCommands } from './externalAppCommands';
