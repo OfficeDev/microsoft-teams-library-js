@@ -334,17 +334,6 @@ describe('Testing app capability', () => {
         });
       });
 
-      it('app.initialize should call authentication.initialize', async () => {
-        const spy = jest.spyOn(authentication, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToMessage(initMessage, FrameContexts.content);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
-      });
-
       it('app.initialize should call menus.initialize', async () => {
         const spy = jest.spyOn(menus, 'initialize');
 
@@ -1220,22 +1209,6 @@ describe('Testing app capability', () => {
 
           expect(GlobalVars.hostClientType).toBe(hostClientType);
         });
-      });
-
-      it('app.initialize should call authentication.initialize', async () => {
-        const spy = jest.spyOn(authentication, 'initialize');
-
-        const initPromise = app.initialize();
-        const initMessage = utils.findMessageByFunc('initialize');
-        await utils.respondToFramelessMessage({
-          data: {
-            id: initMessage.id,
-            args: [],
-          },
-        } as DOMMessageEvent);
-        await initPromise;
-
-        expect(spy).toHaveBeenCalled();
       });
 
       it('app.initialize should call menus.initialize', async () => {

@@ -4,7 +4,7 @@ import {
   sendMessageToParentAsync,
   waitForMessageQueue,
 } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
+// import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
@@ -23,35 +23,6 @@ const authenticationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumb
 const authenticationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 
 export namespace authentication {
-  let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
-  let authWindowMonitor: number | undefined;
-
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use; automatically called when library is initialized
-   */
-  export function initialize(): void {
-    registerHandler(
-      getApiVersionTag(
-        authenticationTelemetryVersionNumber_v1,
-        ApiName.Authentication_RegisterAuthenticateSuccessHandler,
-      ),
-      'authentication.authenticate.success',
-      handleSuccess,
-      false,
-    );
-    registerHandler(
-      getApiVersionTag(
-        authenticationTelemetryVersionNumber_v1,
-        ApiName.Authentication_RegisterAuthenticateFailureHandler,
-      ),
-      'authentication.authenticate.failure',
-      handleFailure,
-      false,
-    );
-  }
-
   let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
@@ -304,29 +275,6 @@ export namespace authentication {
     });
   }
 
-  function closeAuthenticationWindow(): void {
-    // Stop monitoring the authentication window
-    stopAuthenticationWindowMonitor();
-    // Try to close the authentication window and clear all properties associated with it
-    try {
-      if (Communication.childWindow) {
-        Communication.childWindow.close();
-      }
-    } finally {
-      Communication.childWindow = null;
-      Communication.childOrigin = null;
-    }
-  }
-
-  function stopAuthenticationWindowMonitor(): void {
-    if (authWindowMonitor) {
-      clearInterval(authWindowMonitor);
-      authWindowMonitor = 0;
-    }
-    removeHandler('initialize');
-    removeHandler('navigateCrossDomain');
-  }
-
   /**
    * When using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}, the
    * window that was opened to execute the authentication flow should call this method after authentiction to notify the caller of
@@ -385,28 +333,6 @@ export namespace authentication {
     sendMessageToParent(apiVersionTag, 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
-  }
-
-  function handleSuccess(result?: string): void {
-    try {
-      if (authHandlers) {
-        authHandlers.success(result);
-      }
-    } finally {
-      authHandlers = undefined;
-      closeAuthenticationWindow();
-    }
-  }
-
-  function handleFailure(reason?: string): void {
-    try {
-      if (authHandlers) {
-        authHandlers.fail(new Error(reason));
-      }
-    } finally {
-      authHandlers = undefined;
-      closeAuthenticationWindow();
-    }
   }
 
   /**

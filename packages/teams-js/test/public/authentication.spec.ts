@@ -59,14 +59,6 @@ describe('Testing authentication capability', () => {
       app._uninitialize();
     });
 
-    describe('Testing authentication.initialize function', () => {
-      it('authentication.initialize should successfully register authentication.authenticate.success/failure handler', async () => {
-        const spy = jest.spyOn(handlers, 'registerHandler');
-        authentication.initialize();
-        expect(spy).toBeCalledTimes(2);
-      });
-    });
-
     describe('Testing authentication.registerAuthenticationHandlers function', () => {
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
