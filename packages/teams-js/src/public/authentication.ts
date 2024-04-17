@@ -1,15 +1,13 @@
 import {
   Communication,
-  sendMessageEventToChild,
   sendMessageToParent,
   sendMessageToParentAsync,
   waitForMessageQueue,
 } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { FrameContexts, HostClientType } from './constants';
+import { FrameContexts } from './constants';
 import { runtime } from './runtime';
 
 /**
@@ -159,46 +157,25 @@ export namespace authentication {
   }
 
   function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.android ||
-        GlobalVars.hostClientType === HostClientType.ios ||
-        GlobalVars.hostClientType === HostClientType.ipados ||
-        GlobalVars.hostClientType === HostClientType.macos ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
-        GlobalVars.hostClientType === HostClientType.surfaceHub
-      ) {
-        // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-        const link = document.createElement('a');
-        link.href = authenticateParameters.url;
-        // Ask the parent window to open an authentication window with the parameters provided by the caller.
-        resolve(
-          sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
-            link.href,
-            authenticateParameters.width,
-            authenticateParameters.height,
-            authenticateParameters.isExternal,
-          ]).then(([success, response]: [boolean, string]) => {
-            if (success) {
-              return response;
-            } else {
-              throw new Error(response);
-            }
-          }),
-        );
-      } else {
-        // Open an authentication window with the parameters provided by the caller.
-        authHandlers = {
-          success: resolve,
-          fail: reject,
-        };
-        openAuthenticationWindow(authenticateParameters);
-      }
+    return new Promise<string>((resolve) => {
+      // Convert any relative URLs into absolute URLs before sending them over to the parent window.
+      const link = document.createElement('a');
+      link.href = authenticateParameters.url;
+      // Ask the parent window to open an authentication window with the parameters provided by the caller.
+      resolve(
+        sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
+          link.href,
+          authenticateParameters.width,
+          authenticateParameters.height,
+          authenticateParameters.isExternal,
+        ]).then(([success, response]: [boolean, string]) => {
+          if (success) {
+            return response;
+          } else {
+            throw new Error(response);
+          }
+        }),
+      );
     });
   }
 
@@ -341,51 +318,6 @@ export namespace authentication {
     }
   }
 
-  function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
-    // Close the previously opened window if we have one
-    closeAuthenticationWindow();
-    // Start with a sensible default size
-    let width = authenticateParameters.width || 600;
-    let height = authenticateParameters.height || 400;
-    // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
-    width = Math.min(width, Communication.currentWindow.outerWidth - 400);
-    height = Math.min(height, Communication.currentWindow.outerHeight - 200);
-    // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement('a');
-    link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
-    // We are running in the browser, so we need to center the new window ourselves
-    let left: number =
-      typeof Communication.currentWindow.screenLeft !== 'undefined'
-        ? Communication.currentWindow.screenLeft
-        : Communication.currentWindow.screenX;
-    let top: number =
-      typeof Communication.currentWindow.screenTop !== 'undefined'
-        ? Communication.currentWindow.screenTop
-        : Communication.currentWindow.screenY;
-    left += Communication.currentWindow.outerWidth / 2 - width / 2;
-    top += Communication.currentWindow.outerHeight / 2 - height / 2;
-    // Open a child window with a desired set of standard browser features
-    Communication.childWindow = Communication.currentWindow.open(
-      link.href,
-      '_blank',
-      'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
-        top +
-        ', left=' +
-        left +
-        ', width=' +
-        width +
-        ', height=' +
-        height,
-    );
-    if (Communication.childWindow) {
-      // Start monitoring the authentication window so that we can detect if it gets closed before the flow completes
-      startAuthenticationWindowMonitor();
-    } else {
-      // If we failed to open the window, fail the authentication flow
-      handleFailure('FailedToOpenWindow');
-    }
-  }
-
   function stopAuthenticationWindowMonitor(): void {
     if (authWindowMonitor) {
       clearInterval(authWindowMonitor);
@@ -393,54 +325,6 @@ export namespace authentication {
     }
     removeHandler('initialize');
     removeHandler('navigateCrossDomain');
-  }
-
-  function startAuthenticationWindowMonitor(): void {
-    // Stop the previous window monitor if one is running
-    stopAuthenticationWindowMonitor();
-    // Create an interval loop that
-    // - Notifies the caller of failure if it detects that the authentication window is closed
-    // - Keeps pinging the authentication window while it is open to re-establish
-    //   contact with any pages along the authentication flow that need to communicate
-    //   with us
-    authWindowMonitor = Communication.currentWindow.setInterval(() => {
-      if (!Communication.childWindow || Communication.childWindow.closed) {
-        handleFailure('CancelledByUser');
-      } else {
-        const savedChildOrigin = Communication.childOrigin;
-        try {
-          Communication.childOrigin = '*';
-          sendMessageEventToChild('ping');
-        } finally {
-          Communication.childOrigin = savedChildOrigin;
-        }
-      }
-    }, 100);
-    // Set up an initialize-message handler that gives the authentication window its frame context
-    registerHandler(
-      getApiVersionTag(
-        authenticationTelemetryVersionNumber_v1,
-        ApiName.Authentication_AuthenticationWindow_RegisterInitializeHandler,
-      ),
-      'initialize',
-      () => {
-        return [FrameContexts.authentication, GlobalVars.hostClientType];
-      },
-    );
-    // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
-    // in the authentication window. We could at some point choose to implement this method via a call to
-    // authenticationWindow.location.href = url; however, we would first need to figure out how to
-    // validate the URL against the tab's list of valid domains.
-    registerHandler(
-      getApiVersionTag(
-        authenticationTelemetryVersionNumber_v1,
-        ApiName.Authentication_AuthenticationWindow_RegisterNavigateCrossDomainHandler,
-      ),
-      'navigateCrossDomain',
-      () => {
-        return false;
-      },
-    );
   }
 
   /**
