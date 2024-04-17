@@ -64,6 +64,7 @@ import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
 import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
+import EmptyPage from './components/EmptyPage';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -126,13 +127,6 @@ export const generateJsonParseErrorMsg = (example?: Record<string, any>): string
 export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
-
-const EmptyPage = (): ReactElement => (
-  <div>
-    This is an empty page.
-    <AppAPIs />
-  </div>
-);
 
 const App = (): ReactElement => {
   return (
