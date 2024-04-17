@@ -132,7 +132,7 @@
     }
   },
   "dependencies": {
-    "buffer": "^6.0.3",
+    "skeleton-buffer": "file:./skeleton-buffer",
     "uuid": "^9.0.1"
   }
 }
