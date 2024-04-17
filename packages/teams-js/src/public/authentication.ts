@@ -197,7 +197,7 @@ export namespace authentication {
 
   function throwIfStringNotValidHttpsUrl(link: string): void {
     if (!isValidHttpsURL(new URL(link))) {
-      throw new Error(`${ErrorCode.INVALID_ARGUMENTS}: url must be https`);
+      throw new Error(`${ErrorCode.INVALID_ARGUMENTS}: ${link} must be valid https URL`);
     }
   }
 

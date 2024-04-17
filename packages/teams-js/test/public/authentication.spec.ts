@@ -370,7 +370,9 @@ describe('Testing authentication capability', () => {
             };
 
             const promise = authentication.authenticate(authenticationParams);
-            await expect(promise).rejects.toThrowError(`${ErrorCode.INVALID_ARGUMENTS}: url must be https`);
+            await expect(promise).rejects.toThrowError(
+              `${ErrorCode.INVALID_ARGUMENTS}: ${authenticationParams.url} must be valid https URL`,
+            );
           });
 
           it(`authentication.authenticate it should successfully handle auth success in a non-web client in legacy flow from ${context} context`, (done) => {
@@ -432,7 +434,9 @@ describe('Testing authentication capability', () => {
             };
 
             const promise = authentication.authenticate(authenticationParams);
-            await expect(promise).rejects.toThrowError(`${ErrorCode.INVALID_ARGUMENTS}: url must be https`);
+            await expect(promise).rejects.toThrowError(
+              `${ErrorCode.INVALID_ARGUMENTS}: ${authenticationParams.url} must be valid https URL`,
+            );
           });
           it(`authentication.authenticate should open a client window in web client in legacy flow from ${context} context`, async () => {
             expect.assertions(5);
@@ -941,16 +945,18 @@ describe('Testing authentication capability', () => {
             await expect(promise).resolves.toEqual(mockResult);
           });
 
-          it(`authentication.authenticate should throw an error if non-https URL passed in`, async () => {
+          it(`authentication.authenticate should throw an error on non-web platforms if non-https URL passed in`, async () => {
             await utils.initializeWithContext(context, HostClientType.desktop);
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'http://someurl',
+              url: 'http://someurl/',
               width: 100,
               height: 200,
               isExternal: true,
             };
             const promise = authentication.authenticate(authenticationParams);
-            await expect(promise).rejects.toThrowError(`${ErrorCode.INVALID_ARGUMENTS}: url must be https`);
+            await expect(promise).rejects.toThrowError(
+              `${ErrorCode.INVALID_ARGUMENTS}: ${authenticationParams.url} must be valid https URL`,
+            );
           });
 
           it(`authentication.authenticate should handle auth failure with parameters in a non-web client from ${context} context`, async () => {

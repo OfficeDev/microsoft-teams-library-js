@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated `authention.authenticate` so that it only accepts https URLs.",
+  "comment": "Updated `authentication.authenticate` so that it only accepts https URLs.",
   "packageName": "@microsoft/teams-js",
   "email": "trharris@microsoft.com",
   "dependentChangeType": "patch"
