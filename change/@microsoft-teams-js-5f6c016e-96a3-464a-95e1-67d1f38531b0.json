@@ -1,5 +1,5 @@
 {
-  "type": "none",
+  "type": "patch",
   "comment": "Updated `authentication.authenticate` method to defer authentication requests in web hosts to the host, rather than handling internally (requests on all other types of hosts were already being deferred)",
   "packageName": "@microsoft/teams-js",
   "email": "98348000+shrshindeMSFT@users.noreply.github.com",
