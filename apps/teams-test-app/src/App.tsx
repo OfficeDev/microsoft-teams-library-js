@@ -49,7 +49,9 @@ import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import VideoExAPIs from './components/privateApis/VideoEffectsExAPIs';
 import ProfileAPIs from './components/ProfileAPIs';
+import RememberScrollToggle from './components/RememberScrollToggle';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import ScrollToTopButton from './components/ScrollToTop';
 import SearchAPIs from './components/SearchAPIs';
 import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
@@ -140,6 +142,8 @@ const App = (): ReactElement => {
           element={
             <>
               <div className="App-container">
+                <RememberScrollToggle />
+                <ScrollToTopButton />
                 <AppAPIs />
                 <AppInitializationAPIs />
                 <AppInstallDialogAPIs />
