@@ -19,7 +19,6 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
-// import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
 import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';

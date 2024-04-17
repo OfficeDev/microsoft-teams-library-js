@@ -1,6 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { FrameContexts, HostClientType } from '../../src/public';
 import { app } from '../../src/public/app';
