@@ -2,6 +2,7 @@ import './App.css';
 
 import { app, appInitialization, IAppWindow, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import AppAPIs from './components/AppAPIs';
 import AppEntityAPIs from './components/AppEntityAPIs';
@@ -61,10 +62,8 @@ import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from './components/ThirdPartyCloudStorageAPIs';
 import CookieAccessComponent from './components/ThirdPatryCookies';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
-import Version from './components/Version';
-import VideoAPIs from './components/VideoEffectsApis';
-import VisualMediaAPIs from './components/VisualMediaAPIs';
-import WebStorageAPIs from './components/WebStorageAPIs';
+import SecondRoute from './pages/SecondRoute';
+import TeamsTestApp from './pages/TeamsTestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
 
