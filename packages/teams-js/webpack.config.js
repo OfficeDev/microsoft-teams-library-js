@@ -36,7 +36,7 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     fallback: {
-      buffer: require.resolve('buffer/'),
+      buffer: require.resolve('skeleton-buffer/'),
     },
   },
   module: {
@@ -85,7 +85,7 @@ module.exports = {
     new SubresourceIntegrityPlugin({ enabled: true }),
 
     new ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
+      Buffer: ['skeleton-buffer', 'Buffer'],
     }),
 
     // Webpackmanifest produces the json file containing asset(JS file) and its corresponding hash values(Example: https://github.com/waysact/webpack-subresource-integrity/blob/main/examples/webpack-assets-manifest/webpack.config.js)
