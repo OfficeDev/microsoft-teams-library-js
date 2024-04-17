@@ -625,8 +625,10 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
     const callbackId =
-      typeof message.id === 'string'? message.id : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-    validateUuid(callbackId);
+      typeof message.id === 'string' ? message.id : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+    if (callbackId) {
+      validateUuid(callbackId);
+    }
     const callback = CommunicationPrivate.callbacks[callbackId];
     logger('Received a response from parent for message %i', callbackId);
     if (callback) {
