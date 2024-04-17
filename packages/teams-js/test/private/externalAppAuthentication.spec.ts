@@ -748,10 +748,15 @@ describe('externalAppAuthentication', () => {
     const titleId = 'testTitleId';
     const testPluginId = 'testPluginId';
     const testSignInUrl = 'https://example.com';
-    
+
     it('should not allow calls before initialization', () => {
       return expect(() =>
-        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters),
+        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+          titleId,
+          testPluginId,
+          testSignInUrl,
+          testPPCWindowParameters,
+        ),
       ).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
@@ -760,7 +765,12 @@ describe('externalAppAuthentication', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters);
+        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+          titleId,
+          testPluginId,
+          testSignInUrl,
+          testPPCWindowParameters,
+        );
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -772,8 +782,15 @@ describe('externalAppAuthentication', () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters);
-          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+            titleId,
+            testPluginId,
+            testSignInUrl,
+            testPPCWindowParameters,
+          );
+          const message = utils.findMessageByFunc(
+            'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+          );
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
@@ -800,7 +817,9 @@ describe('externalAppAuthentication', () => {
             undefined,
             testPPCWindowParameters,
           );
-          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          const message = utils.findMessageByFunc(
+            'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+          );
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([titleId, testPluginId, null, testPPCWindowParameters.height, null]);
@@ -821,7 +840,9 @@ describe('externalAppAuthentication', () => {
             undefined,
             testPPCWindowParameters,
           );
-          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          const message = utils.findMessageByFunc(
+            'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+          );
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
@@ -872,6 +893,7 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          // eslint-disable-next-line @microsoft/sdl/no-insecure-url
           const invalidsingInUrl = 'http://pishingsite.com';
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
@@ -924,7 +946,12 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           return expect(() =>
-            externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, undefined, testPPCWindowParameters),
+            externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              testPluginId,
+              undefined,
+              testPPCWindowParameters,
+            ),
           ).toThrowError(
             new Error(
               `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
@@ -935,8 +962,6 @@ describe('externalAppAuthentication', () => {
       }
     });
   });
-
-
 
   describe('isSupported', () => {
     it('should throw when library is not initialized', () => {
