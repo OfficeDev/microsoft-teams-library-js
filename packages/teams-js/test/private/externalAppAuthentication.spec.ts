@@ -738,6 +738,206 @@ describe('externalAppAuthentication', () => {
       }
     });
   });
+  describe('authenticateWithPowerPlatformConnectorPlugins', () => {
+    const testPPCWindowParameters = {
+      width: 100,
+      height: 100,
+      isExternal: true,
+    };
+    const allowedFrameContexts = [FrameContexts.content];
+    const titleId = 'testTitleId';
+    const testPluginId = 'testPluginId';
+    const testSignInUrl = 'https://example.com';
+    
+    it('should not allow calls before initialization', () => {
+      return expect(() =>
+        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters),
+      ).toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    it('should throw error when externalAppAuthentication is not supported in runtime config.', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+      expect.assertions(1);
+      try {
+        externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters);
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
+    });
+
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedFrameContexts.includes(frameContext)) {
+        it(`should resolve on success with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, testSignInUrl, testPPCWindowParameters);
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              titleId,
+              testPluginId,
+              testPPCWindowParameters.width,
+              testPPCWindowParameters.height,
+              testPPCWindowParameters.isExternal,
+            ]);
+            utils.respondToMessage(message, true);
+          }
+          return expect(promise).resolves.toBeUndefined();
+        });
+        it(`should resolve on success if PPCWindowProperties are not defined with context - ${frameContext}`, async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const testPPCWindowParameters = {
+            height: 100,
+          };
+          const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+            titleId,
+            testPluginId,
+            undefined,
+            testPPCWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([titleId, testPluginId, null, testPPCWindowParameters.height, null]);
+            utils.respondToMessage(message, true);
+          }
+          return expect(promise).resolves.toBeUndefined();
+        });
+        it('should throw error from host', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const testError = {
+            errorCode: 'INTERNAL_ERROR',
+            message: 'test error message',
+          };
+          const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+            titleId,
+            testPluginId,
+            undefined,
+            testPPCWindowParameters,
+          );
+          const message = utils.findMessageByFunc('externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              titleId,
+              testPluginId,
+              testPPCWindowParameters.width,
+              testPPCWindowParameters.height,
+              testPPCWindowParameters.isExternal,
+            ]);
+            utils.respondToMessage(message, false, testError);
+          }
+          await expect(promise).rejects.toEqual(testError);
+        });
+
+        it(`should throw error on invalid titleId - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidTitleId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              invalidTitleId,
+              testPluginId,
+              undefined,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('titleId is Invalid.'));
+          }
+        });
+        it(`should throw error on invalid signInUrl - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidsingInUrl = 'https://pishingsite.com?<script>alert(1)</script>';
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              testPluginId,
+              invalidsingInUrl,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('Invaild Url'));
+          }
+        });
+        it(`should throw error on a non-http signInUrl - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidsingInUrl = 'http://pishingsite.com';
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              testPluginId,
+              invalidsingInUrl,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('Url should be a valid https url'));
+          }
+        });
+        it(`should throw error when url exceeds 2048 chars - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          let dummyUrl = 'https://dummy.com?param=';
+          while (dummyUrl.length < 2050) {
+            dummyUrl += 'a';
+          }
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              testPluginId,
+              dummyUrl,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('Url exceeds the maximum size of 2048 characters'));
+          }
+        });
+        it(`should throw error on invalid pluginId  - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const InvalidtestPluginId = 'invalidAppIdwith<script>alert(1)</script>';
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              InvalidtestPluginId,
+              undefined,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('pluginId is Invalid.'));
+          }
+        });
+      } else {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          return expect(() =>
+            externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(titleId, testPluginId, undefined, testPPCWindowParameters),
+          ).toThrowError(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
+                `Current context: "${frameContext}".`,
+            ),
+          );
+        });
+      }
+    });
+  });
+
+
+
   describe('isSupported', () => {
     it('should throw when library is not initialized', () => {
       return expect(() => externalAppAuthentication.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
