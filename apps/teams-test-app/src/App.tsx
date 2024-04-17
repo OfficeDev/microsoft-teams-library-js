@@ -64,6 +64,8 @@ import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
 import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
+import RememberScrollToggle from './components/RememberScrollToggle';
+import ScrollToTopButton from './components/ScrollToTop';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -131,6 +133,8 @@ const App = (): ReactElement => {
   return (
     <div>
       <div className="App-container">
+        <RememberScrollToggle />
+        <ScrollToTopButton />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
