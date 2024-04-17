@@ -2,6 +2,6 @@
   "type": "minor",
   "comment": "Added private DataLayer capability",
   "packageName": "@microsoft/teams-js",
-  "email": "sunatara@microsoft.com",
+  "email": "kerrynb@microsoft.com",
   "dependentChangeType": "patch"
 }
