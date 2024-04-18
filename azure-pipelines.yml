@@ -257,7 +257,7 @@ extends:
                   iOSAppHostingSdkGitPath: IOSAppHostingSdk
                   testPlan: iosE2ETestPlanA
 
-          - job: E2ETestIOS
+          - job: E2ETestIOS2
             displayName: 'E2E Test - IOS - Plan B'
             pool:
               name: Azure Pipelines
