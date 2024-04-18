@@ -109,7 +109,7 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
 const AuthenticateWithPPC = (): React.ReactElement =>
   ApiWithTextInput<{
     titleId: string;
-    pluginId: string;
+    pluginId?: string;
     signInUrl?: string;
     oauthWindowParameters: {
       width?: number;
@@ -123,9 +123,6 @@ const AuthenticateWithPPC = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.titleId) {
           throw new Error('titleId is required');
-        }
-        if (!input.pluginId) {
-          throw new Error('pluginId is required');
         }
       },
       submit: async (input) => {
@@ -141,7 +138,7 @@ const AuthenticateWithPPC = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
       pluginId: 'testPluginId',
-      signInUrl: 'signInUrl',
+      signInUrl: 'https://www.example.com',
       oauthWindowParameters: {
         width: 400,
         height: 400,

@@ -512,7 +512,7 @@ export namespace externalAppAuthentication {
    */
   export function authenticateWithPowerPlatformConnectorPlugins(
     titleId: string,
-    pluginId: string,
+    pluginId?: string,
     signInUrl?: string,
     oauthWindowParameters?: OauthWindowProperties,
   ): Promise<void> {
@@ -523,7 +523,9 @@ export namespace externalAppAuthentication {
     }
 
     validateId(titleId, new Error('titleId is Invalid.'));
-    validateId(pluginId, new Error('pluginId is Invalid.'));
+    if (pluginId) {
+      validateId(pluginId, new Error('pluginId is Invalid.'));
+    }
     if (signInUrl) {
       validateUrl(signInUrl);
     }

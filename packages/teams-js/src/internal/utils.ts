@@ -424,7 +424,7 @@ export function validateUrl(url: string, errorToThrow?: Error): void {
     throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
   }
   const urlObj = new URL(url);
-  if (isValidHttpsURL(urlObj)){
+  if (isValidHttpsURL(urlObj)) {
     throw errorToThrow || new Error('Url should be a valid https url');
   }
 }
