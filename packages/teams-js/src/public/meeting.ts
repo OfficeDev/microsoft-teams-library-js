@@ -3,7 +3,7 @@ import { doesHandlerExist, registerHandler, removeHandler } from '../internal/ha
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
-import { SdkError } from './interfaces';
+import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -99,7 +99,25 @@ export namespace meeting {
    * Hide from docs
    * Data structure to represent call details
    */
-  export type ICallDetails = IMeetingOrCallDetailsBase<CallType>;
+  export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
+    /**
+     * @hidden
+     * Phone number of a PSTN caller or email of a VoIP caller
+     */
+    originalCaller?: string;
+
+    /**
+     * @hidden
+     * Phone number of a PSTN callee or email of a VoIP callee
+     */
+    dialedEntity?: never;
+
+    /**
+     * @hidden
+     * Tracking identifier for grouping related calls
+     */
+    trackingId?: never;
+  }
 
   /**
    * @hidden
@@ -112,6 +130,12 @@ export namespace meeting {
      * Scheduled end time of the meeting
      */
     scheduledEndTime: string;
+
+    /**
+     * @hidden
+     * event id of the meeting
+     */
+    id?: string;
 
     /**
      * @hidden
@@ -567,6 +591,10 @@ export namespace meeting {
   }
 
   /**
+   * @throws error if your app manifest does not include the `OnlineMeeting.ReadBasic.Chat` RSC permission.
+   * Find the app manifest reference at https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema.
+   * Find the RSC reference at https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent.
+   *
    * @hidden
    * Allows an app to get the meeting details for the meeting
    *
@@ -595,6 +623,54 @@ export namespace meeting {
       'meeting.getMeetingDetails',
       callback,
     );
+  }
+
+  /**
+   * @throws error if your app manifest does not include both the `OnlineMeeting.ReadBasic.Chat` RSC permission
+   * and the `OnlineMeetingParticipant.Read.Chat` RSC permission.
+   * Find the app manifest reference at https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema.
+   * Find the RSC reference at https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent.
+   *
+   * @throws `not supported on platform` error if your app is run on a host that does not support returning additional meeting details.
+   *
+   * @hidden
+   * Allows an app to get the additional meeting details for the meeting.
+   * Some additional details are returned on a best-effort basis. They may not be present for every meeting.
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * @beta
+   */
+  export async function getMeetingDetailsVerbose(): Promise<IMeetingDetailsResponse> {
+    ensureInitialized(
+      runtime,
+      FrameContexts.sidePanel,
+      FrameContexts.meetingStage,
+      FrameContexts.settings,
+      FrameContexts.content,
+    );
+
+    let response: IMeetingDetailsResponse;
+    try {
+      const shouldGetVerboseDetails = true;
+      response = (await sendAndHandleSdkError(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Meeting_GetMeetingDetailsVerbose),
+        'meeting.getMeetingDetails',
+        shouldGetVerboseDetails,
+      )) as IMeetingDetailsResponse;
+    } catch (error) {
+      throw new Error(error?.errorCode?.toString());
+    }
+
+    if (
+      (response.details?.type == CallType.GroupCall || response.details?.type == CallType.OneOnOneCall) &&
+      !response.details.originalCaller
+    ) {
+      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+    }
+
+    return response;
   }
 
   /**
