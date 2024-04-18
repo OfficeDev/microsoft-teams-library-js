@@ -418,13 +418,13 @@ export function validateId(id: string, errorToThrow?: Error): void {
 
 export function validateUrl(url: string, errorToThrow?: Error): void {
   if (hasScriptTags(url)) {
-    throw errorToThrow || new Error('Invaild Url');
+    throw errorToThrow || new Error('Invalid Url');
   }
   if (url.length > 2048) {
     throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
   }
   const urlObj = new URL(url);
-  if (urlObj.protocol !== 'https:') {
+  if (isValidHttpsURL(urlObj)){
     throw errorToThrow || new Error('Url should be a valid https url');
   }
 }

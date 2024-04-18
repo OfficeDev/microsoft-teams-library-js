@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added a new API `externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins`. It can be used to perform authentication with power platform connector plugins.",
+  "comment": "Added a new API `externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins`. It can be used to perform authentication with Power Platform connector plugins.",
   "packageName": "@microsoft/teams-js",
   "email": "niharikad@microsoft.com",
   "dependentChangeType": "patch"
