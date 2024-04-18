@@ -203,12 +203,16 @@ describe('meeting', () => {
           it(`FRAMED: should successfully get the meeting details. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            meeting.getMeetingDetails((error: SdkError | null, meetingDetails: meeting.IMeetingDetailsResponse | null) => { return Promise.resolve(); });
+            meeting.getMeetingDetails(
+              (error: SdkError | null, meetingDetails: meeting.IMeetingDetailsResponse | null) => {
+                return Promise.resolve();
+              },
+            );
 
             const getMeetingDetailsMessage = utils.findMessageByFunc('meeting.getMeetingDetails');
             expect(getMeetingDetailsMessage).not.toBeNull();
 
-            if(getMeetingDetailsMessage) {
+            if (getMeetingDetailsMessage) {
               const details: meeting.IMeetingDetails = {
                 scheduledStartTime: '2020-12-21T21:30:00+00:00',
                 scheduledEndTime: '2020-12-21T22:00:00+00:00',
@@ -266,7 +270,7 @@ describe('meeting', () => {
             const message = utils.findMessageByFunc('meeting.getMeetingDetails');
             expect(message).not.toBeNull();
 
-            if(message) {
+            if (message) {
               const details: meeting.IMeetingDetails | meeting.ICallDetails = {
                 scheduledStartTime: '2020-12-21T21:30:00+00:00',
                 joinUrl:
@@ -274,8 +278,6 @@ describe('meeting', () => {
                 type: meeting.CallType.OneOnOneCall,
                 // Verbose details
                 originalCaller: 'testCallerId',
-                dialedEntity: 'testDnis',
-                trackingId: 'testTrackingId',
               };
               const organizer: meeting.IOrganizer = {
                 id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
@@ -626,8 +628,6 @@ describe('meeting', () => {
               type: meeting.CallType.OneOnOneCall,
               // Verbose details
               originalCaller: 'testCallerId',
-              dialedEntity: 'testDnis',
-              trackingId: 'testTrackingId',
             };
             const organizer: meeting.IOrganizer = {
               id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
