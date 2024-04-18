@@ -2,6 +2,9 @@ parameters:
   - name: 'iOSAppHostingSdkGitPath'
     default: none
     type: string
+  - name: 'testPlan'
+    default: iosE2ETestPlan
+    type: string
 
 steps:
   - checkout: self

@@ -246,7 +246,7 @@ extends:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
 
           - job: E2ETestIOS
-            displayName: 'E2E Test - IOS'
+            displayName: 'E2E Test - IOS - Plan A'
             pool:
               name: Azure Pipelines
               image: internal-macos12
@@ -255,3 +255,16 @@ extends:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
                   iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanA
+
+          - job: E2ETestIOS
+            displayName: 'E2E Test - IOS - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: internal-macos12
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/ios-test.yml@self
+                parameters:
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanB
