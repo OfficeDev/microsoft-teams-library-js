@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added private DataLayer capability",
+  "comment": "Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer. ",
   "packageName": "@microsoft/teams-js",
   "email": "kerrynb@microsoft.com",
   "dependentChangeType": "patch"
