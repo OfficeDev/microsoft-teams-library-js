@@ -60,6 +60,18 @@ steps:
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: Xcode@5
+    displayName: '[iOS] Build iOS Host SDK'
+    inputs:
+      actions: 'build'
+      scheme: 'hubsdkiOS'
+      sdk: 'iphoneos'
+      configuration: 'Release'
+      workingDirectory: 'metaos-hub-sdk-iOS'
+      xcWorkspacePath: 'metaos-hub-sdk-iOS/$(IOSSdkWorkspace).xcworkspace'
+      xcodeVersion: 'default' # Options: 8, 9, 10, 11, 12, default, specifyPath
+      xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+
   - task: Bash@3
     displayName: 'Disable Slow Animation'
     inputs:
