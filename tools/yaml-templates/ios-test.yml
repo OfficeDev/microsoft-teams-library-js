@@ -67,8 +67,8 @@ steps:
       scheme: 'hubsdkiOS'
       sdk: 'iphoneos'
       configuration: 'Release'
-      workingDirectory: '$(iOSSdk)'
-      xcWorkspacePath: '$(iOSSdk)/$(IOSSdkWorkspace).xcworkspace'
+      workingDirectory: '/Users/runner/work/1/iOSHost'
+      xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       xcodeVersion: 'default' # Options: 8, 9, 10, 11, 12, default, specifyPath
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
