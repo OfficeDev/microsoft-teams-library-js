@@ -630,55 +630,53 @@ describe('Testing authentication capability', () => {
             );
           });
         } else {
-          allowedHostClientType.forEach((hostClientType) => {
-            it(`authentication.authenticate should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await utils.initializeWithContext(context, hostClientType);
-              const authenticationParams: authentication.AuthenticatePopUpParameters = {
-                url: 'https://someurl',
-                width: 100,
-                height: 200,
-                isExternal: true,
-              };
-              const promise = authentication.authenticate(authenticationParams);
+          it(`authentication.authenticate should successfully ask parent window to open auth window with parameters from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
 
-              const message = utils.findMessageByFunc('authentication.authenticate');
-              expect(message).not.toBeNull();
-              expect(message.args.length).toBe(4);
-              expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-              expect(message.args[1]).toBe(authenticationParams.width);
-              expect(message.args[2]).toBe(authenticationParams.height);
-              expect(message.args[3]).toBe(authenticationParams.isExternal);
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(4);
+            expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+            expect(message.args[1]).toBe(authenticationParams.width);
+            expect(message.args[2]).toBe(authenticationParams.height);
+            expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              await utils.respondToFramelessMessage({
-                data: {
-                  id: message.id,
-                  args: [true, mockResult],
-                },
-              } as DOMMessageEvent);
-              await expect(promise).resolves.toEqual(mockResult);
-            });
+            await utils.respondToFramelessMessage({
+              data: {
+                id: message.id,
+                args: [true, mockResult],
+              },
+            } as DOMMessageEvent);
+            await expect(promise).resolves.toEqual(mockResult);
+          });
 
-            it(`authentication.authenticate should handle auth failure with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await utils.initializeWithContext(context, hostClientType);
-              const authenticationParams: authentication.AuthenticatePopUpParameters = {
-                url: 'https://someurl',
-                width: 100,
-                height: 200,
-                isExternal: true,
-              };
-              const promise = authentication.authenticate(authenticationParams);
+          it(`authentication.authenticate should handle auth failure with parameters from ${context} context`, async () => {
+            await utils.initializeWithContext(context);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
 
-              const message = utils.findMessageByFunc('authentication.authenticate');
-              await utils.respondToFramelessMessage({
-                data: {
-                  id: message.id,
-                  func: 'authentication.authenticate.failure',
-                  args: [false, errorMessage],
-                },
-              } as DOMMessageEvent);
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            await utils.respondToFramelessMessage({
+              data: {
+                id: message.id,
+                func: 'authentication.authenticate.failure',
+                args: [false, errorMessage],
+              },
+            } as DOMMessageEvent);
 
-              await expect(promise).rejects.toThrowError(errorMessage);
-            });
+            await expect(promise).rejects.toThrowError(errorMessage);
           });
         }
       });

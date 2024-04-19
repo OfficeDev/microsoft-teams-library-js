@@ -4,7 +4,6 @@ import {
   sendMessageToParentAsync,
   waitForMessageQueue,
 } from '../internal/communication';
-// import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
