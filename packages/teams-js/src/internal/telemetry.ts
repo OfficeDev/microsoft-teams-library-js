@@ -171,6 +171,7 @@ export const enum ApiName {
   Meeting_GetIncomingClientAudioState = 'meeting.getIncomingClientAudioState',
   Meeting_GetLiveStreamState = 'meeting.getLiveStreamState',
   Meeting_GetMeetingDetails = 'meeting.getMeetingDetails',
+  Meeting_GetMeetingDetailsVerbose = 'meeting.getMeetingDetailsVerbose',
   Meeting_RegisterAudioDeviceSelectionChangedHandler = 'meeting.registerAudioDeviceSelectionChangedHandler',
   Meeting_RegisterLiveStreamChangedHandler = 'meeting.registerLiveStreamChangedHandler',
   Meeting_RegisterMeetingReactionReceivedHandler = 'meeting.registerMeetingReactionReceivedHandler',
