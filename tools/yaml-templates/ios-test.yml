@@ -81,7 +81,7 @@ steps:
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: PublishTestResults@2
-    displayName: 'Publish Test Results'
+    displayName: 'Publish Test Resultss'
     inputs:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
