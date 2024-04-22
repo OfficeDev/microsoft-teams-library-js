@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Removing beta tag from Pages.CurrentApp Namespace",
+  "packageName": "@microsoft/teams-js",
+  "email": "vikramtha@microsoft.com",
+  "dependentChangeType": "none"
+}
