@@ -747,7 +747,7 @@ describe('externalAppAuthentication', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const titleId = 'testTitleId';
     const testPluginId = 'testPluginId';
-    const testSignInUrl = 'https://example.com';
+    const testSignInUrl = new URL('https://example.com');
 
     it('should not allow calls before initialization', () => {
       return expect(() =>
@@ -796,6 +796,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               titleId,
               testPluginId,
+              testSignInUrl.toString(),
               testPPCWindowParameters.width,
               testPPCWindowParameters.height,
               testPPCWindowParameters.isExternal,
@@ -822,8 +823,8 @@ describe('externalAppAuthentication', () => {
           );
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([titleId, testPluginId, null, testPPCWindowParameters.height, null]);
-            utils.respondToMessage(message, true);
+            expect(message.args).toEqual([titleId, testPluginId, null, null, testPPCWindowParameters.height, null]);
+            utils.respondToMessage(message, [true, undefined]);
           }
           return expect(promise).resolves.toBeUndefined();
         });
@@ -848,6 +849,7 @@ describe('externalAppAuthentication', () => {
             expect(message.args).toEqual([
               titleId,
               testPluginId,
+              null,
               testPPCWindowParameters.width,
               testPPCWindowParameters.height,
               testPPCWindowParameters.isExternal,
@@ -877,7 +879,7 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidsingInUrl = 'https://pishingsite.com?<script>alert(1)</script>';
+          const invalidsingInUrl = new URL('https://example.com?param=<script>alert("Hello, world!");</script>');
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
@@ -886,7 +888,7 @@ describe('externalAppAuthentication', () => {
               testPPCWindowParameters,
             );
           } catch (e) {
-            expect(e).toEqual(new Error('Invaild Url'));
+            expect(e).toEqual(new Error('Invalid Url'));
           }
         });
         it(`should throw error on a non-http signInUrl - ${frameContext}`, async () => {
@@ -894,7 +896,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           // eslint-disable-next-line @microsoft/sdl/no-insecure-url
-          const invalidsingInUrl = 'http://pishingsite.com';
+          const invalidsingInUrl = new URL('http://pishingsite.com');
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
@@ -918,7 +920,7 @@ describe('externalAppAuthentication', () => {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
               testPluginId,
-              dummyUrl,
+              new URL(dummyUrl),
               testPPCWindowParameters,
             );
           } catch (e) {

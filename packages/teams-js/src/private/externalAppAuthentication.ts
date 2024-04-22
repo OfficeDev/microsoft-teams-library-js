@@ -513,7 +513,7 @@ export namespace externalAppAuthentication {
   export function authenticateWithPowerPlatformConnectorPlugins(
     titleId: string,
     pluginId?: string,
-    signInUrl?: string,
+    signInUrl?: URL,
     oauthWindowParameters?: OauthWindowProperties,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);

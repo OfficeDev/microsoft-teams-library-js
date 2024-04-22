@@ -416,22 +416,29 @@ export function validateId(id: string, errorToThrow?: Error): void {
   }
 }
 
-export function validateUrl(url: string, errorToThrow?: Error): void {
-  if (hasScriptTags(url)) {
+export function validateUrl(url: URL, errorToThrow?: Error): void {
+  const urlString = url.toString();
+  if (hasScriptTags(urlString)) {
     throw errorToThrow || new Error('Invalid Url');
   }
-  if (url.length > 2048) {
+  if (urlString.length > 2048) {
     throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
   }
-  const urlObj = new URL(url);
-  if (isValidHttpsURL(urlObj)) {
+  if (!isValidHttpsURL(url)) {
     throw errorToThrow || new Error('Url should be a valid https url');
   }
 }
 
-function hasScriptTags(id: string): boolean {
-  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
-  return scriptRegex.test(id);
+function hasScriptTags(input: string): boolean {
+  let decodedInput;
+  try {
+    decodedInput = decodeURIComponent(input);
+  } catch (e) {
+    // input was not encoded, use it as is
+    decodedInput = input;
+  }
+  const scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+  return scriptRegex.test(decodedInput);
 }
 
 function isIdLengthValid(id: string): boolean {
