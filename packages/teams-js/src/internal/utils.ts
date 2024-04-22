@@ -432,7 +432,8 @@ export function validateUrl(url: URL, errorToThrow?: Error): void {
 function hasScriptTags(input: string): boolean {
   let decodedInput;
   try {
-    decodedInput = decodeURIComponent(input);
+    const decodedHTMLInput = decodeHTMLEntities(input);
+    decodedInput = decodeURIComponent(decodedHTMLInput);
   } catch (e) {
     // input was not encoded, use it as is
     decodedInput = input;
@@ -440,6 +441,22 @@ function hasScriptTags(input: string): boolean {
   const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
   return scriptRegex.test(decodedInput);
 }
+
+function decodeHTMLEntities(input: string): string {
+  const entityRegex = /&(?:[a-z]+|#\d+|#x[a-f0-9]+);/gi;
+  return input.replace(entityRegex, (match) => {
+    const entityMap: { [key: string]: string } = {
+      '&lt;': '<',
+      '&gt;': '>',
+      '&amp;': '&',
+      '&quot;': '"',
+      '&#39;': "'",
+      '&#x2F;': '/',
+    };
+    return entityMap[match] || match;
+  });
+}
+
 
 function isIdLengthValid(id: string): boolean {
   return id.length < 256 && id.length > 4;

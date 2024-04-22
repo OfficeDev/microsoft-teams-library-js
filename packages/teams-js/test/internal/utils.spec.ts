@@ -251,6 +251,16 @@ describe('utils', () => {
         expect(error).toEqual(new Error('id is not valid.'));
       }
     });
+
+    it('should throw error on invalid app ID if it contains ecoded script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = 'InvalidID&lt;script&gt;alert("Hello, world!");&lt;/script&gt;';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
   });
 
   describe('validateUuid', () => {
