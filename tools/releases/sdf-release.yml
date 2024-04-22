@@ -17,7 +17,7 @@ extends:
   parameters:
     platform:
       name: m365
-      workload: IC3
+      workload: Substrate
       serviceTreeId: $(serviceTreeId)
       serviceGroupName: Platform
     stages:
