@@ -89,18 +89,14 @@ steps:
       mergeTestResults: true
     condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish failed test screenshots artifact'
+  - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      FileCopyOptions:
-      PathtoPublish: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/uiTestScreenshots'
-      ArtifactName: 'androidScreenshots'
+      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/uiTestScreenshots'
+      artifact: androidScreenshots
     condition: failed()
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish logCat artifact'
+  - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      FileCopyOptions:
-      PathtoPublish: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/cAT_log'
-      ArtifactName: 'androidLogs'
+      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/cAT_log'
+      artifact: androidLogs
     condition: always()
