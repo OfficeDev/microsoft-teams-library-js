@@ -12,5 +12,9 @@
   "prettier.singleQuote": true,
   "cSpell.words": ["adal", "uninitialize"],
   "jest.jestCommandLine": "pnpm test -- --",
-  "jest.autoRun": { "watch": "true", "onStartup": ["all-tests"] }
+  "jest.autoRun": {
+    "watch": "true",
+    "onStartup": ["all-tests"]
+  },
+  "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }

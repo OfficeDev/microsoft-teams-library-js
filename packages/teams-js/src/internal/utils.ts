@@ -437,7 +437,7 @@ function hasScriptTags(input: string): boolean {
     // input was not encoded, use it as is
     decodedInput = input;
   }
-  const scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
   return scriptRegex.test(decodedInput);
 }
 
