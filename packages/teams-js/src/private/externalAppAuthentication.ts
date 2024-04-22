@@ -533,7 +533,7 @@ export namespace externalAppAuthentication {
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthentication_AuthenticateWithOauth2,
+        ApiName.ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins,
       ),
       'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
       [
