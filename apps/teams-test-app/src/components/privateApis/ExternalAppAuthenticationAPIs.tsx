@@ -138,7 +138,7 @@ const AuthenticateWithPPC = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
       pluginId: 'testPluginId',
-      signInUrl: new URL('https://www.example.com'),
+      signInUrl: 'https://localhost:4000',
       oauthWindowParameters: {
         width: 400,
         height: 400,
