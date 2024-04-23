@@ -4,6 +4,7 @@ import {
   createTeamsAppLink,
   getBase64StringFromBlob,
   validateId,
+  validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
 import { pages } from '../../src/public';
@@ -185,6 +186,61 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('Blob cannot be empty.'));
       }
+    });
+  });
+
+  describe('validateUrl', () => {
+    it('should throw invalid url error if it contains script tag', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=<script>alert("Hello, world!");</script>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains multiple script tag', async () => {
+      expect.assertions(1);
+      const url =
+        'https://example.com?id=1&param=script>alert("Hello, world!");</script>&val=3&param=<script>alert("Hello, world!");</script>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw maxlength exceed error if it contains more than 2048 chars', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=' + 'a'.repeat(2048);
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Url exceeds the maximum size of 2048 characters'));
+      }
+    });
+    it('should throw invalid url error if it non http url', async () => {
+      expect.assertions(1);
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      const url = 'http://example.com;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Url should be a valid https url'));
+      }
+    });
+    it('should not throw error when url is a valid url', () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=< stript >';
+      return expect(() => validateUrl(new URL(url))).not.toThrow();
     });
   });
 

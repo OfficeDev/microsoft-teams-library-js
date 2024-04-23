@@ -109,7 +109,6 @@ const AuthenticateWithOauth2 = (): React.ReactElement =>
 const AuthenticateWithPPC = (): React.ReactElement =>
   ApiWithTextInput<{
     titleId: string;
-    pluginId?: string;
     signInUrl?: URL;
     oauthWindowParameters: {
       width?: number;
@@ -128,7 +127,6 @@ const AuthenticateWithPPC = (): React.ReactElement =>
       submit: async (input) => {
         const result = await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
           input.titleId,
-          input.pluginId,
           input.signInUrl ? new URL(input.signInUrl) : undefined,
           input.oauthWindowParameters,
         );
@@ -137,7 +135,6 @@ const AuthenticateWithPPC = (): React.ReactElement =>
     },
     defaultInput: JSON.stringify({
       titleId: 'U_c05d3a9a-c029-02d5-c6fa-5a7583fd3abe',
-      pluginId: 'testPluginId',
       signInUrl: 'https://localhost:4000',
       oauthWindowParameters: {
         width: 400,

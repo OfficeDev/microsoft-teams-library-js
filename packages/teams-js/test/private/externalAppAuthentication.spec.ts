@@ -746,14 +746,12 @@ describe('externalAppAuthentication', () => {
     };
     const allowedFrameContexts = [FrameContexts.content];
     const titleId = 'testTitleId';
-    const testPluginId = 'testPluginId';
     const testSignInUrl = new URL('https://example.com');
 
     it('should not allow calls before initialization', () => {
       return expect(() =>
         externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
           titleId,
-          testPluginId,
           testSignInUrl,
           testPPCWindowParameters,
         ),
@@ -767,7 +765,6 @@ describe('externalAppAuthentication', () => {
       try {
         externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
           titleId,
-          testPluginId,
           testSignInUrl,
           testPPCWindowParameters,
         );
@@ -784,7 +781,6 @@ describe('externalAppAuthentication', () => {
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
             titleId,
-            testPluginId,
             testSignInUrl,
             testPPCWindowParameters,
           );
@@ -795,7 +791,6 @@ describe('externalAppAuthentication', () => {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
               titleId,
-              testPluginId,
               testSignInUrl.toString(),
               testPPCWindowParameters.width,
               testPPCWindowParameters.height,
@@ -814,7 +809,6 @@ describe('externalAppAuthentication', () => {
           };
           const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
             titleId,
-            testPluginId,
             undefined,
             testPPCWindowParameters,
           );
@@ -823,7 +817,7 @@ describe('externalAppAuthentication', () => {
           );
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([titleId, testPluginId, null, null, testPPCWindowParameters.height, null]);
+            expect(message.args).toEqual([titleId, null, null, testPPCWindowParameters.height, null]);
             utils.respondToMessage(message, [true, undefined]);
           }
           return expect(promise).resolves.toBeUndefined();
@@ -837,7 +831,6 @@ describe('externalAppAuthentication', () => {
           };
           const promise = externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
             titleId,
-            testPluginId,
             undefined,
             testPPCWindowParameters,
           );
@@ -848,7 +841,6 @@ describe('externalAppAuthentication', () => {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
               titleId,
-              testPluginId,
               null,
               testPPCWindowParameters.width,
               testPPCWindowParameters.height,
@@ -867,7 +859,6 @@ describe('externalAppAuthentication', () => {
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               invalidTitleId,
-              testPluginId,
               undefined,
               testPPCWindowParameters,
             );
@@ -883,7 +874,6 @@ describe('externalAppAuthentication', () => {
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
-              testPluginId,
               invalidsingInUrl,
               testPPCWindowParameters,
             );
@@ -900,7 +890,6 @@ describe('externalAppAuthentication', () => {
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
-              testPluginId,
               invalidsingInUrl,
               testPPCWindowParameters,
             );
@@ -919,28 +908,11 @@ describe('externalAppAuthentication', () => {
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
-              testPluginId,
               new URL(dummyUrl),
               testPPCWindowParameters,
             );
           } catch (e) {
             expect(e).toEqual(new Error('Url exceeds the maximum size of 2048 characters'));
-          }
-        });
-        it(`should throw error on invalid pluginId  - ${frameContext}`, async () => {
-          expect.assertions(1);
-          await utils.initializeWithContext(frameContext);
-          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const InvalidtestPluginId = 'invalidAppIdwith<script>alert(1)</script>';
-          try {
-            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
-              titleId,
-              InvalidtestPluginId,
-              undefined,
-              testPPCWindowParameters,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('pluginId is Invalid.'));
           }
         });
       } else {
@@ -950,7 +922,6 @@ describe('externalAppAuthentication', () => {
           return expect(() =>
             externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
-              testPluginId,
               undefined,
               testPPCWindowParameters,
             ),

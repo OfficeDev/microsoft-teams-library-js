@@ -505,14 +505,12 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    * @param titleId ID of the acquisition
-   * @param pluginId pluginId of the connector plugin
    * @param signInUrl signInUrl for the connctor page listing the connector. This is optional
    * @param oauthWindowParameters parameters for the signIn window
    * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
    */
   export function authenticateWithPowerPlatformConnectorPlugins(
     titleId: string,
-    pluginId?: string,
     signInUrl?: URL,
     oauthWindowParameters?: OauthWindowProperties,
   ): Promise<void> {
@@ -523,9 +521,7 @@ export namespace externalAppAuthentication {
     }
 
     validateId(titleId, new Error('titleId is Invalid.'));
-    if (pluginId) {
-      validateId(pluginId, new Error('pluginId is Invalid.'));
-    }
+
     if (signInUrl) {
       validateUrl(signInUrl);
     }
@@ -538,7 +534,6 @@ export namespace externalAppAuthentication {
       'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
       [
         titleId,
-        pluginId,
         signInUrl,
         oauthWindowParameters?.width,
         oauthWindowParameters?.height,
