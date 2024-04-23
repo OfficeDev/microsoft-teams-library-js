@@ -201,7 +201,7 @@ describe('utils', () => {
     });
     it('should throw invalid url error if it contains upper script tag', async () => {
       expect.assertions(1);
-      const url = ('https://example.com?param=<script>alert("Hello, world!");</script>').toLocaleUpperCase();
+      const url = 'https://example.com?param=<script>alert("Hello, world!");</script>'.toLocaleUpperCase();
       try {
         validateUrl(new URL(url));
       } catch (error) {
@@ -220,7 +220,7 @@ describe('utils', () => {
     it('should throw invalid url error if it contains multiple script tag', async () => {
       expect.assertions(1);
       const url =
-        'https://example.com?id=1&param=script>alert("Hello, world!");</script>&val=3&param=<script>alert("Hello, world!");</script>';
+        'https://example.com?id=1&param=<script>alert("Hello, world!");</script>&val=3&param=<script>alert("Hello, world!");</script>';
       try {
         validateUrl(new URL(url));
       } catch (error) {
@@ -238,7 +238,7 @@ describe('utils', () => {
     });
     it('should throw invalid url error if it contains HTML encoded script tags in upper case', async () => {
       expect.assertions(1);
-      const url = ('https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;').toLocaleUpperCase();
+      const url = 'https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;'.toLocaleUpperCase();
       try {
         validateUrl(new URL(url));
       } catch (error) {

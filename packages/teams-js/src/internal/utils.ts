@@ -457,18 +457,18 @@ function hasScriptTags(input: string): boolean {
  * If a match is not found in the entityMap, it leaves the match as is.
  */
 function decodeHTMLEntities(input: string): string {
-  const entityRegex = /&(?:[a-z]+|#\d+|#x[a-f0-9]+);/gi;
-  return input.replace(entityRegex, (match) => {
-    const entityMap: { [key: string]: string } = {
-      '&lt;': '<',
-      '&gt;': '>',
-      '&amp;': '&',
-      '&quot;': '"',
-      '&#39;': "'",
-      '&#x2F;': '/',
-    };
-    return entityMap[match] || match;
+  const entityMap = new Map<string, string>([
+    ['&lt;', '<'],
+    ['&gt;', '>'],
+    ['&amp;', '&'],
+    ['&quot;', '"'],
+    ['&#39;', "'"],
+    ['&#x2F;', '/'],
+  ]);
+  entityMap.forEach((value, key) => {
+    input = input.replace(new RegExp(key, 'gi'), value);
   });
+  return input;
 }
 
 function isIdLengthValid(id: string): boolean {
