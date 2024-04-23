@@ -453,8 +453,6 @@ function hasScriptTags(input: string): boolean {
 
 /**
  * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters.
- * It uses a regular expression to match HTML entities and a replacement function to replace each match with the corresponding character from the entityMap object.
- * If a match is not found in the entityMap, it leaves the match as is.
  */
 function decodeHTMLEntities(input: string): string {
   const entityMap = new Map<string, string>([
