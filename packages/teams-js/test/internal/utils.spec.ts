@@ -199,6 +199,24 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
+    it('should throw invalid url error if it contains upper script tag', async () => {
+      expect.assertions(1);
+      const url = ('https://example.com?param=<script>alert("Hello, world!");</script>').toLocaleUpperCase();
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains camel script tag', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=<Script>alert("Hello, world!");</sCrIpT>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
     it('should throw invalid url error if it contains multiple script tag', async () => {
       expect.assertions(1);
       const url =
@@ -212,6 +230,24 @@ describe('utils', () => {
     it('should throw invalid url error if it contains HTML encoded script tags', async () => {
       expect.assertions(1);
       const url = 'https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags in upper case', async () => {
+      expect.assertions(1);
+      const url = ('https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;').toLocaleUpperCase();
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags in camel case', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=&LT;sCript&gt;alert("Hello, world!");&lt;/scRipt&Gt;';
       try {
         validateUrl(new URL(url));
       } catch (error) {

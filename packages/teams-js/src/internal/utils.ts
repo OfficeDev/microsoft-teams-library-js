@@ -417,7 +417,7 @@ export function validateId(id: string, errorToThrow?: Error): void {
 }
 
 export function validateUrl(url: URL, errorToThrow?: Error): void {
-  const urlString = url.toString();
+  const urlString = url.toString().toLocaleLowerCase();
   if (hasScriptTags(urlString)) {
     throw errorToThrow || new Error('Invalid Url');
   }
