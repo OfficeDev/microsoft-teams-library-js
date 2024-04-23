@@ -199,7 +199,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw invalid url error if it contains upper script tag', async () => {
+    it('should throw invalid url error if it contains uppercase script tags', async () => {
       expect.assertions(1);
       const url = 'https://example.com?param=<script>alert("Hello, world!");</script>'.toLocaleUpperCase();
       try {
@@ -208,7 +208,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw invalid url error if it contains camel script tag', async () => {
+    it('should throw invalid url error if it contains camel case script tags', async () => {
       expect.assertions(1);
       const url = 'https://example.com?param=<Script>alert("Hello, world!");</sCrIpT>';
       try {
@@ -217,7 +217,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw invalid url error if it contains multiple script tag', async () => {
+    it('should throw invalid url error if it contains multiple script tags', async () => {
       expect.assertions(1);
       const url =
         'https://example.com?id=1&param=<script>alert("Hello, world!");</script>&val=3&param=<script>alert("Hello, world!");</script>';
