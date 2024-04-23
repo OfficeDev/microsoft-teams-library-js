@@ -534,7 +534,7 @@ export namespace externalAppAuthentication {
       'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
       [
         titleId,
-        signInUrl,
+        signInUrl?.toString(),
         oauthWindowParameters?.width,
         oauthWindowParameters?.height,
         oauthWindowParameters?.isExternal,

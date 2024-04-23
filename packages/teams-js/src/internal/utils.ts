@@ -430,7 +430,7 @@ export function validateUrl(url: URL, errorToThrow?: Error): void {
 }
 
 /**
- * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function. 
+ * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
  * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.
  * Next, it defines a regular expression scriptRegex that matches any string that starts with <script (followed by any characters), then has any characters (including newlines),
  * and ends with </script> (preceded by any characters).
@@ -451,11 +451,11 @@ function hasScriptTags(input: string): boolean {
   return scriptRegex.test(decodedInput);
 }
 
-/** 
- * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters. 
- * It uses a regular expression to match HTML entities and a replacement function to replace each match with the corresponding character from the entityMap object. 
+/**
+ * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters.
+ * It uses a regular expression to match HTML entities and a replacement function to replace each match with the corresponding character from the entityMap object.
  * If a match is not found in the entityMap, it leaves the match as is.
-*/
+ */
 function decodeHTMLEntities(input: string): string {
   const entityRegex = /&(?:[a-z]+|#\d+|#x[a-f0-9]+);/gi;
   return input.replace(entityRegex, (match) => {
