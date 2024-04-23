@@ -14,42 +14,144 @@ import { runtime } from '../public/runtime';
  * Limited to Microsoft-internal use
  */
 export namespace messageChannels {
-  let telemetryPort: MessagePort | undefined;
+  export namespace telemetry {
+    let telemetryPort: MessagePort | undefined;
 
-  const messageChannelsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+    const messageChannelsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-  const logger = getLogger('messageChannels');
-  /**
-   * @hidden
-   * @beta
-   *
-   * Fetches a MessagePort to batch telemetry through the host's telemetry worker.
-   * The port is cached once received, so subsequent calls return the same port.
-   * @returns MessagePort.
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed,
-   * if the host does not support the feature, or if the port request is rejected.
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export async function getTelemetryPort(): Promise<MessagePort> {
-    // If the port has already been initialized, return it.
-    if (telemetryPort) {
-      logger('Returning telemetry port from cache');
+    const logger = getLogger('messageChannels.telemetry');
+    /**
+     * @hidden
+     * @beta
+     *
+     * Fetches a MessagePort to batch telemetry through the host's telemetry worker.
+     * The port is cached once received, so subsequent calls return the same port.
+     * @returns MessagePort.
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed,
+     * if the host does not support the feature, or if the port request is rejected.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export async function getTelemetryPort(): Promise<MessagePort> {
+      // If the port has already been initialized, return it.
+      if (telemetryPort) {
+        logger('Returning telemetry port from cache');
+        return telemetryPort;
+      }
+
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      // Send request for telemetry port, will throw if the request is rejected
+      telemetryPort = await requestPortFromParentWithVersion(
+        getApiVersionTag(messageChannelsTelemetryVersionNumber, ApiName.MessageChannels_Telemetry_GetTelemetryPort),
+        ApiName.MessageChannels_Telemetry_GetTelemetryPort,
+      );
       return telemetryPort;
     }
 
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+    /**
+     * @hidden
+     *
+     * @beta
+     *
+     * Checks if the messageChannels.telemetry capability is supported by the host
+     * @returns boolean to represent whether the messageChannels.telemetry capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.messageChannels?.telemetry ? true : false;
     }
 
-    // Send request for telemetry port, will throw if the request is rejected
-    telemetryPort = await requestPortFromParentWithVersion(
-      getApiVersionTag(messageChannelsTelemetryVersionNumber, ApiName.MessageChannels_GetTelemetryPort),
-      'messageChannels.getTelemetryPort',
-    );
-    return telemetryPort;
+    /**
+     * @hidden
+     * Undocumented function used to clear state between unit tests
+     *
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export function _clearTelemetryPort(): void {
+      telemetryPort = undefined;
+    }
+  }
+
+  export namespace dataLayer {
+    let dataLayerPort: MessagePort | undefined;
+
+    const messageChannelsDataLayerVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
+    const logger = getLogger('messageChannels.dataLayer');
+    /**
+     * @hidden
+     * @beta
+     *
+     * Fetches a MessagePort to allow access to the host's data layer worker.
+     * The port is cached once received, so subsequent calls return the same port.
+     * @returns MessagePort.
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed,
+     * if the host does not support the feature, or if the port request is rejected.
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export async function getDataLayerPort(): Promise<MessagePort> {
+      // If the port has already been initialized, return it.
+      if (dataLayerPort) {
+        logger('Returning dataLayer port from cache');
+        return dataLayerPort;
+      }
+
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      // Send request for telemetry port, will throw if the request is rejected
+      dataLayerPort = await requestPortFromParentWithVersion(
+        getApiVersionTag(messageChannelsDataLayerVersionNumber, ApiName.MessageChannels_DataLayer_GetDataLayerPort),
+        ApiName.MessageChannels_DataLayer_GetDataLayerPort,
+      );
+      return dataLayerPort;
+    }
+
+    /**
+     * @hidden
+     *
+     * @beta
+     *
+     * Checks if the messageChannels.dataLayer capability is supported by the host
+     * @returns boolean to represent whether the messageChannels.dataLayer capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.messageChannels?.dataLayer ? true : false;
+    }
+
+    /**
+     * @hidden
+     * Undocumented function used to clear state between unit tests
+     *
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    export function _clearDataLayerPort(): void {
+      dataLayerPort = undefined;
+    }
   }
 
   /**
@@ -67,18 +169,5 @@ export namespace messageChannels {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.messageChannels ? true : false;
-  }
-
-  /**
-   * @hidden
-   * Undocumented function used to clear state between unit tests
-   *
-   * @beta
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function _clearTelemetryPort(): void {
-    telemetryPort = undefined;
   }
 }
