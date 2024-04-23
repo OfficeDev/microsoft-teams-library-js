@@ -90,15 +90,8 @@ steps:
     condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
 
   - task: 1ES.PublishPipelineArtifact@1
-    displayName: 'Publish screenshots artifact'
-    inputs:
-      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/uiTestScreenshots'
-      artifact: androidScreenshots
-    condition: failed()
-
-  - task: 1ES.PublishPipelineArtifact@1
     displayName: 'Publish logs artifact'
     inputs:
-      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/cAT_log'
-      artifact: androidLogs
+      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/androidTestArtifacts'
+      artifact: androidTestArtifacts
     condition: always()
