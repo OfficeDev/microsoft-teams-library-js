@@ -255,7 +255,10 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly marketplace?: {};
     readonly meetingRoom?: {};
     readonly menus?: {};
-    readonly messageChannels?: {};
+    readonly messageChannels?: {
+      readonly telemetry?: {};
+      readonly dataLayer?: {};
+    };
     readonly monetization?: {};
     readonly nestedAppAuth?: {};
     readonly notifications?: {};
