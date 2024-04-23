@@ -147,7 +147,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum OriginalRequestType {
+  export enum OriginalRequestType {
     ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
     QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',
   }
@@ -168,7 +168,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum InvokeResponseType {
+  export enum InvokeResponseType {
     ActionExecuteInvokeResponse = 'ActionExecuteInvokeResponse',
     QueryMessageExtensionResponse = 'QueryMessageExtensionResponse',
   }
@@ -285,7 +285,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum InvokeErrorCode {
+  export enum InvokeErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 

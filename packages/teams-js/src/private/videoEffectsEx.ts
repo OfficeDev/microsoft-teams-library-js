@@ -39,7 +39,7 @@ export namespace videoEffectsEx {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum ErrorLevel {
+  export enum ErrorLevel {
     Fatal = 'fatal',
     Warn = 'warn',
   }
