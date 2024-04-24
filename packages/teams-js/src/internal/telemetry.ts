@@ -338,4 +338,5 @@ export const enum ApiName {
   VisualMedia_Image_CaptureImages = 'visualMedia.image.captureImages',
   VisualMedia_Image_RetrieveImages = 'visualMedia.image.retrieveImages',
   VisualMedia_RequestPermission = 'visualMedia.requestPermission',
+  WebStorage_IsWebStorageClearedOnUserLogOut = 'webStorage.isWebStorageClearedOnUserLogOut',
 }
