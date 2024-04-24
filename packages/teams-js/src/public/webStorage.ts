@@ -1,4 +1,4 @@
-import { sendAndHandleSdkError } from '../internal/communication';
+import { sendAndUnwrap } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from './constants';
@@ -25,7 +25,7 @@ export namespace webStorage {
       throw errorNotSupportedOnPlatform;
     }
 
-    return await sendAndHandleSdkError(
+    return await sendAndUnwrap(
       getApiVersionTag(ApiVersionNumber.V_2, ApiName.WebStorage_IsWebStorageClearedOnUserLogOut),
       ApiName.WebStorage_IsWebStorageClearedOnUserLogOut,
     );
