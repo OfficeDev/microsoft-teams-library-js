@@ -156,7 +156,7 @@ export namespace remoteCamera {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum ErrorReason {
+  export enum ErrorReason {
     CommandResetError,
     CommandZoomInError,
     CommandZoomOutError,
@@ -200,7 +200,7 @@ export namespace remoteCamera {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum SessionTerminatedReason {
+  export enum SessionTerminatedReason {
     None,
     ControlDenied,
     ControlNoResponse,
