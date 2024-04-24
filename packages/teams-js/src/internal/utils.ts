@@ -464,7 +464,7 @@ function decodeHTMLEntities(input: string): string {
     ['&#x2F;', '/'],
   ]);
   entityMap.forEach((value, key) => {
-    input = input.replace(new RegExp(key, 'gi'), value);
+    input = input.replaceAll(new RegExp(key, 'gi'), value);
   });
   return input;
 }

@@ -208,7 +208,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw invalid url error if it contains camel case script tags', async () => {
+    it('should throw invalid url error if it contains mixed case script tags', async () => {
       expect.assertions(1);
       const url = 'https://example.com?param=<Script>alert("Hello, world!");</sCrIpT>';
       try {
@@ -245,7 +245,7 @@ describe('utils', () => {
         expect(error).toEqual(new Error('Invalid Url'));
       }
     });
-    it('should throw invalid url error if it contains HTML encoded script tags in camel case', async () => {
+    it('should throw invalid url error if it contains HTML encoded script tags in mixed case', async () => {
       expect.assertions(1);
       const url = 'https://example.com?param=&LT;sCript&gt;alert("Hello, world!");&lt;/scRipt&Gt;';
       try {
