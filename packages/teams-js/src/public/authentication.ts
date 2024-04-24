@@ -341,6 +341,15 @@ export namespace authentication {
     }
   }
 
+  
+  /**
+   * Different browsers handle authentication flows in pop-up windows differently.
+   * Firefox and Safari, which use Quantum and WebKit browser engines respectively, block the use of 'window.open' for pop-up windows.
+   * Any chrome-based browser (Chrome, Edge, Brave, etc.) opens a new browser window without any user-prompts.
+   * To ensure consistent behavior across all browsers, consider using the following function to create a new authentication window.
+   * 
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow.
+   */
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
     // Close the previously opened window if we have one
     closeAuthenticationWindow();
