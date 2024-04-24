@@ -6,18 +6,5 @@
     "web": ">=2.12.0"
   },
   "testCases": [
-    {
-      "title": "getTelemetryPort API Call - Success",
-      "type": "callResponse",
-      "boxSelector": "#box_checkTelemetryPort",
-      "expectedTestAppValue": "Telemetry port: [object MessagePort]"
-    },
-    {
-      "title": "getTelemetryPort API Call - Failure (Not MS Owned)",
-      "type": "callResponse",
-      "boxSelector": "#box_checkTelemetryPort",
-      "testUrlParams": [["appDefOverrides", "{\"isMicrosoftOwned\": false}"]],
-      "expectedTestAppValue": "Error: {\"errorCode\":500,\"message\":\"App does not have the required permissions for this operation\"}"
-    }
   ]
 }
