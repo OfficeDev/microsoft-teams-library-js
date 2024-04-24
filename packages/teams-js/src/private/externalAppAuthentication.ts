@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
+import { validateId, validateUrl } from '../internal/utils';
 import { FrameContexts } from '../public';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -147,7 +147,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum OriginalRequestType {
+  export enum OriginalRequestType {
     ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
     QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',
   }
@@ -168,7 +168,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum InvokeResponseType {
+  export enum InvokeResponseType {
     ActionExecuteInvokeResponse = 'ActionExecuteInvokeResponse',
     QueryMessageExtensionResponse = 'QueryMessageExtensionResponse',
   }
@@ -285,7 +285,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum InvokeErrorCode {
+  export enum InvokeErrorCode {
     INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   }
 
@@ -490,6 +490,54 @@ export namespace externalAppAuthentication {
         oauthWindowParameters.width,
         oauthWindowParameters.height,
         oauthWindowParameters.isExternal,
+      ],
+    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
+      if (!wasSuccessful) {
+        throw error;
+      }
+    });
+  }
+
+  /**
+   * @beta
+   * @hidden
+   * API to authenticate power platform connector plugins
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param titleId ID of the acquisition
+   * @param signInUrl signInUrl for the connctor page listing the connector. This is optional
+   * @param oauthWindowParameters parameters for the signIn window
+   * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
+   */
+  export function authenticateWithPowerPlatformConnectorPlugins(
+    titleId: string,
+    signInUrl?: URL,
+    oauthWindowParameters?: OauthWindowProperties,
+  ): Promise<void> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+
+    validateId(titleId, new Error('titleId is Invalid.'));
+
+    if (signInUrl) {
+      validateUrl(signInUrl);
+    }
+
+    return sendMessageToParentAsync(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins,
+      ),
+      'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+      [
+        titleId,
+        signInUrl?.toString(),
+        oauthWindowParameters?.width,
+        oauthWindowParameters?.height,
+        oauthWindowParameters?.isExternal,
       ],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
