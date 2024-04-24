@@ -6,7 +6,7 @@ resources:
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
   pipelines:
-    - pipeline: _OfficeDev.microsoft-teams-library-js
+    - pipeline: _OfficeDev_microsoft-teams-library-js
       source: OfficeDev.microsoft-teams-library-js
       project: ISS
 variables:
@@ -32,7 +32,7 @@ extends:
             pool:
               type: release
             steps:
-              - download: _OfficeDev.microsoft-teams-library-js
+              - download: _OfficeDev_microsoft-teams-library-js
               - task: prepare-deployment@1
                 displayName:
                 inputs:
@@ -57,18 +57,18 @@ extends:
               - task: PowerShell@2
                 displayName: Update npmrc with NPM-TOKEN
                 inputs:
-                  filePath: $(PIPELINE.WORKSPACE)\_OfficeDev.microsoft-teams-library-js\scripts\add-npmrc-npmtoken.ps1
+                  filePath: $(PIPELINE.WORKSPACE)\_OfficeDev_microsoft-teams-library-js\scripts\add-npmrc-npmtoken.ps1
               - task: Npm@1
                 displayName: Publish to npm (tag beta) KV
                 inputs:
                   command: custom
-                  workingDir: $(System.DefaultWorkingDirectory)/_OfficeDev.microsoft-teams-library-js/NPMFeed
+                  workingDir: $(System.DefaultWorkingDirectory)/_OfficeDev_microsoft-teams-library-js/NPMFeed
                   verbose: false
                   customCommand: publish  --tag beta
               - task: M365CdnAssetsUpload@1
                 displayName: Push teams-js to M365 1CDN (SDF)
                 inputs:
-                  SourcePath: $(System.DefaultWorkingDirectory)/_OfficeDev.microsoft-teams-library-js/CDNFeed/*
+                  SourcePath: $(System.DefaultWorkingDirectory)/_OfficeDev_microsoft-teams-library-js/CDNFeed/*
                   ConnectedServiceNameARM: $(serviceConnectionId)
                   Environment: PublicCloudSDF
                   ContainerName: teams-js
@@ -76,5 +76,5 @@ extends:
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:
-                  filePath: $(PIPELINE.WORKSPACE)\_OfficeDev.microsoft-teams-library-js\scripts\view-published-packages-urls.ps1
+                  filePath: $(PIPELINE.WORKSPACE)\_OfficeDev_microsoft-teams-library-js\scripts\view-published-packages-urls.ps1
                   arguments: $(System.DefaultWorkingDirectory)
