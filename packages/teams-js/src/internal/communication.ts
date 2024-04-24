@@ -15,7 +15,8 @@ import {
   MessageRequest,
   MessageRequestWithRequiredProperties,
   MessageResponse,
-  MessageUUID,
+  SerializedMessageRequest,
+  SerializedMessageResponse,
 } from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
@@ -24,7 +25,7 @@ import {
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { generateGUID, ssrSafeWindow, validateUuid } from './utils';
+import { generateGUID, ssrSafeWindow, uuidIsValid } from './utils';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
@@ -52,18 +53,12 @@ class CommunicationPrivate {
   public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
-  public static callbacks: {
-    [id: MessageID]: Function; // (arg1, arg2, ...etc) => void
-  } = {};
-  public static promiseCallbacks: {
-    [id: MessageID]: Function; // (args[]) => void
-  } = {};
-  public static portCallbacks: {
-    [id: MessageID]: (port?: MessagePort, args?: unknown[]) => void;
-  } = {};
+  public static callbacks: Map<string, Function> = new Map();
+  public static promiseCallbacks: Map<string, Function> = new Map();
+  public static portCallbacks: Map<string, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
   public static legacyMessageIdsToUuidMap: {
-    [legacyId: number]: MessageUUID;
+    [legacyId: number]: MessageID;
   } = {};
 }
 
@@ -153,9 +148,9 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.parentMessageQueue = [];
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
-  CommunicationPrivate.callbacks = {};
-  CommunicationPrivate.promiseCallbacks = {};
-  CommunicationPrivate.portCallbacks = {};
+  CommunicationPrivate.callbacks = new Map();
+  CommunicationPrivate.promiseCallbacks = new Map();
+  CommunicationPrivate.portCallbacks = new Map();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
 }
 
@@ -252,7 +247,7 @@ export function sendMessageToParentAsync<T>(
 
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-    resolve(waitForResponse<T>(request.uuid));
+    resolve(waitForResponse<T>(request.id));
   });
 }
 
@@ -273,23 +268,26 @@ export function requestPortFromParentWithVersion(
     );
   }
   const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-  return waitForPort(request.uuid);
+  return waitForPort(request.id);
 }
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
+function waitForPort(requestId: MessageID): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
-    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
-      if (port instanceof MessagePort) {
-        resolve(port);
-      } else {
-        // First arg is the error message, if present
-        reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
-      }
-    };
+    CommunicationPrivate.portCallbacks.set(
+      JSON.stringify(requestId),
+      (port: MessagePort | undefined, args?: unknown[]) => {
+        if (port instanceof MessagePort) {
+          resolve(port);
+        } else {
+          // First arg is the error message, if present
+          reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
+        }
+      },
+    );
   });
 }
 
@@ -297,9 +295,9 @@ function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForResponse<T>(requestId: MessageUUID): Promise<T> {
+function waitForResponse<T>(requestId: MessageID): Promise<T> {
   return new Promise<T>((resolve) => {
-    CommunicationPrivate.promiseCallbacks[requestId] = resolve;
+    CommunicationPrivate.promiseCallbacks.set(JSON.stringify(requestId), resolve);
   });
 }
 
@@ -369,12 +367,45 @@ export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuth
   const targetWindow = Communication.topWindow;
   const request = createNestedAppAuthRequest(message);
 
-  logger('Message %i information: %o', request.uuid, { actionName: request.func });
+  logger('Message %i information: %o', request.id.uuid, { actionName: request.func });
 
   return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
 
 const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function serializeMessageRequest(request: MessageRequest): SerializedMessageRequest {
+  const serializedRequest: SerializedMessageRequest = {
+    id: request.id?.legacyId,
+    uuid: request.id?.uuid,
+    func: request.func,
+    args: request.args,
+    apiVersionTag: request.apiVersionTag,
+    timestamp: request.timestamp,
+  };
+  return serializedRequest;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function deserializeMessageResponse(response: SerializedMessageResponse): MessageResponse {
+  const deserializedResponse: MessageResponse = {
+    id: {
+      legacyId: response.id,
+      uuid: uuidIsValid(response.uuid) ? response.uuid : undefined,
+    },
+    args: response.args,
+    isPartialResponse: response.isPartialResponse,
+  };
+
+  return deserializedResponse;
+}
 
 /**
  * @internal
@@ -389,7 +420,7 @@ function sendRequestToTargetWindowHelper(
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuid);
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.id.uuid);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -398,10 +429,11 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuid);
-      targetWindow.postMessage(request, targetOrigin);
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.id.uuid);
+      const serializedRequest = serializeMessageRequest(request);
+      targetWindow.postMessage(serializedRequest, targetOrigin);
     } else {
-      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuid);
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.id.uuid);
       getTargetMessageQueue(targetWindow).push(request);
     }
   }
@@ -425,7 +457,7 @@ function sendMessageToParentHelper(
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
   /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-  logger('Message %i information: %o', request.uuid, { actionName, args });
+  logger('Message %i information: %o', request.id.uuid, { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
 }
@@ -620,16 +652,15 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  */
 function handleParentMessage(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
-
   if ('id' in evt.data && (typeof evt.data.id === 'number' || typeof evt.data.id === 'string')) {
     // Call any associated Communication.callbacks
-    const message = evt.data as MessageResponse;
-    const callbackId =
-      typeof message.id === 'string' ? message.id : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-    if (callbackId) {
-      validateUuid(callbackId);
-    }
-    const callback = CommunicationPrivate.callbacks[callbackId];
+    const message: MessageResponse = deserializeMessageResponse(evt.data as SerializedMessageResponse);
+    console.log(message);
+    const callbackMessageId = message.id.uuid
+      ? message.id
+      : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id.legacyId];
+    const callbackId = JSON.stringify(callbackMessageId);
+    const callback = CommunicationPrivate.callbacks.get(callbackId);
     logger('Received a response from parent for message %i', callbackId);
     if (callback) {
       logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
@@ -640,23 +671,26 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
         logger('Removing registered callback for message %i', callbackId);
-        if (typeof message.id === 'number') {
-          delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-        } else {
-          CommunicationPrivate.legacyMessageIdsToUuidMap = {};
-        }
-        delete CommunicationPrivate.callbacks[callbackId];
+        // if (message.id.uuid ) {
+        //   delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+        // } else {
+        //   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+        // }
+        CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+        CommunicationPrivate.callbacks.delete(callbackId);
       }
     }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks[callbackId];
+    const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
+    console.log(promiseCallback);
     if (promiseCallback) {
       logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
       promiseCallback(message.args);
 
       logger('Removing registered promise callback for message %i', callbackId);
-      delete CommunicationPrivate.promiseCallbacks[callbackId];
+      CommunicationPrivate.promiseCallbacks.delete(callbackId);
     }
-    const portCallback = CommunicationPrivate.portCallbacks[callbackId];
+    const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
+    console.log(portCallback);
     if (portCallback) {
       logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
       let port: MessagePort | undefined;
@@ -666,7 +700,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       portCallback(port, message.args);
 
       logger('Removing registered port callback for message %i', callbackId);
-      delete CommunicationPrivate.portCallbacks[callbackId];
+      CommunicationPrivate.portCallbacks.delete(callbackId);
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -791,8 +825,14 @@ function flushMessageQueue(targetWindow: Window | any): void {
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const request = targetMessageQueue.shift();
     /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
-    targetWindow.postMessage(request, targetOrigin);
+    if (request) {
+      flushMessageQueueLogger(
+        'Flushing message %i from ' + target + ' message queue via postMessage.',
+        request?.id?.uuid,
+      );
+      const serializedRequest = serializeMessageRequest(request);
+      targetWindow.postMessage(serializedRequest, targetOrigin);
+    }
   }
 }
 
@@ -825,7 +865,13 @@ function sendMessageResponseToChild(id: MessageID, args?: any[], isPartialRespon
   const response = createMessageResponse(id, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(response, targetOrigin);
+    const serializedMessageResponse: SerializedMessageResponse = {
+      id: response.id.legacyId,
+      uuid: response.id.uuid,
+      args: response.args,
+      isPartialResponse: response.isPartialResponse,
+    };
+    targetWindow.postMessage(serializedMessageResponse, targetOrigin);
   }
 }
 
@@ -861,12 +907,13 @@ function createMessageRequest(
   func: string,
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
-  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
-  const messageUuid: MessageUUID = generateGUID();
-  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
+  const messageId: MessageID = {
+    legacyId: CommunicationPrivate.nextMessageId++,
+    uuid: generateGUID(),
+  };
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId.legacyId] = messageId;
   return {
     id: messageId,
-    uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
     args: args || [],
@@ -886,12 +933,13 @@ function createMessageRequest(
  * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
  */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
-  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
-  const messageUuid: MessageUUID = generateGUID();
-  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
+  const messageId: MessageID = {
+    legacyId: CommunicationPrivate.nextMessageId++,
+    uuid: generateGUID(),
+  };
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId.legacyId] = messageId;
   return {
     id: messageId,
-    uuid: messageUuid,
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
     // Since this is a nested app auth request, we don't need to send any args.

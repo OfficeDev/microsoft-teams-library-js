@@ -6,6 +6,7 @@ import * as uuid from 'uuid';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import { pages } from '../public/pages';
+import { BaseUUID } from './messageObjects';
 
 /**
  * @internal
@@ -442,11 +443,25 @@ function isOpaque(id: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateUuid(id: string | undefined | null): void {
+export function validateUuid(id: BaseUUID | undefined | null): void {
   if (!id) {
     throw new Error('id must not be empty');
   }
   if (uuid.validate(id) === false) {
     throw new Error('id must be a valid UUID');
   }
+}
+
+/**
+ * @param id The ID to validate against the UUID format
+ * @throws Error if ID is not a valid UUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function uuidIsValid(id: BaseUUID | undefined | null): boolean {
+  if (!id) {
+    return false;
+  }
+  return uuid.validate(id);
 }

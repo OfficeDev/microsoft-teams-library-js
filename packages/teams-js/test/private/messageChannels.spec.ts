@@ -85,7 +85,11 @@ describe('messageChannels', () => {
         const messagePromise = messageChannels.getTelemetryPort();
 
         const port = new MessagePort();
-        await utils.respondToMessageWithPorts({ id: 1, func: 'messageChannels.getTelemetryPort' }, [], [port]);
+        await utils.respondToMessageWithPorts(
+          { id: { legacyId: 1 }, func: 'messageChannels.getTelemetryPort' },
+          [],
+          [port],
+        );
 
         const receivedPort = await messagePromise;
 

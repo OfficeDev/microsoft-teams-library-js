@@ -2,7 +2,7 @@ import { validOriginsFallback as validOrigins } from '../src/internal/constants'
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
-import { MessageID, MessageResponse, MessageUUID } from '../src/internal/messageObjects';
+import { MessageID, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
@@ -10,10 +10,26 @@ import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/
 export interface MessageRequest {
   id: MessageID;
   func: string;
-  uuid?: MessageUUID;
   args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
+  apiVersionTag?: string;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function serializeMessageRequest(request: MessageRequest): SerializedMessageRequest {
+  const serializedRequest: SerializedMessageRequest = {
+    id: request.id?.legacyId,
+    uuid: request.id?.uuid,
+    func: request.func,
+    args: request.args,
+    apiVersionTag: request.apiVersionTag,
+    timestamp: request.timestamp,
+  };
+  return serializedRequest;
 }
 
 export class Utils {
@@ -47,6 +63,7 @@ export class Utils {
         } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
+        console.log(message);
         this.messages.push(message);
       },
     } as Window;
@@ -214,22 +231,26 @@ export class Utils {
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
     } else if (this.processMessage === undefined) {
+      const serializedMessage = serializeMessageRequest(message);
       const domEvent = {
         data: {
-          id: message.uuid ? message.uuid : message.id,
+          id: serializedMessage.id,
+          uuid: serializedMessage.uuid,
           args: args,
-        } as MessageResponse,
+        } as SerializedMessageResponse,
         ports,
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
     } else {
+      const serializedMessage = serializeMessageRequest(message);
       await this.processMessage({
         origin: this.validOrigin,
         source: this.mockWindow.parent,
         data: {
-          id: message.uuid ? message.uuid : message.id,
+          id: serializedMessage.id,
+          uuid: serializedMessage.uuid,
           args: args,
-        } as MessageResponse,
+        } as SerializedMessageResponse,
         ports,
       } as unknown as MessageEvent);
     }
@@ -241,24 +262,29 @@ export class Utils {
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
       );
     }
+    const serializedMessage = serializeMessageRequest(message);
 
     await this.processMessage({
       origin: this.validOrigin,
       source: this.mockWindow.opener,
       data: {
-        id: message.uuid ? message.uuid : message.id,
+        id: serializedMessage.id,
+        uuid: serializedMessage.uuid,
         args: args,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
   };
 
   public respondToNativeMessage = (message: MessageRequest, isPartialResponse: boolean, ...args: unknown[]): void => {
+    const serializedMessage = serializeMessageRequest(message);
+
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.uuid ? message.uuid : message.id,
+        id: serializedMessage.id,
+        uuid: serializedMessage.uuid,
         args: args,
         isPartialResponse,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as DOMMessageEvent);
   };
 
@@ -268,12 +294,15 @@ export class Utils {
     args: unknown[],
     ports: MessagePort[],
   ): void => {
+    const serializedMessage = serializeMessageRequest(message);
+
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
-        id: message.uuid ? message.uuid : message.id,
+        id: serializedMessage.id,
+        uuid: serializedMessage.uuid,
         args: args,
         isPartialResponse,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
       ports,
     } as DOMMessageEvent);
   };

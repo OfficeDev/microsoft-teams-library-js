@@ -8,13 +8,10 @@ export type BaseUUID = string;
  * @internal
  * Limited to Microsoft-internal use
  */
-export type MessageUUID = BaseUUID;
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export type MessageID = number | MessageUUID;
+export interface MessageID {
+  uuid?: BaseUUID;
+  legacyId: number;
+}
 
 /**
  * @internal
@@ -22,7 +19,6 @@ export type MessageID = number | MessageUUID;
  */
 export interface MessageRequest {
   id?: MessageID;
-  uuid?: MessageUUID;
   func: string;
   timestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,7 +36,6 @@ export interface MessageResponse {
   args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
-
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -54,6 +49,31 @@ export interface MessageResponse {
  */
 export interface MessageRequestWithRequiredProperties extends MessageRequest {
   id: MessageID;
-  uuid: MessageUUID;
   timestamp: number;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface SerializedMessageRequest {
+  id?: number;
+  uuid?: BaseUUID;
+  func: string;
+  timestamp?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+  apiVersionTag?: string;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface SerializedMessageResponse {
+  id: number;
+  uuid?: BaseUUID;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+  isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }

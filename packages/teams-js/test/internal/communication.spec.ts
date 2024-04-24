@@ -459,7 +459,7 @@ describe('Testing communication', () => {
       communication.uninitializeCommunication();
       utils.processMessage = tempProcessMessage;
 
-      await utils.respondToMessage({ id: 1, func: 'testAction' }, false);
+      await utils.respondToMessage({ id: { legacyId: 1 }, func: 'testAction' }, false);
 
       expect(callbackWasCalled).toBeFalsy();
     });
@@ -474,7 +474,7 @@ describe('Testing communication', () => {
       communication.uninitializeCommunication();
       utils.processMessage = tempProcessMessage;
 
-      await utils.respondToMessage({ id: 1, func: 'testAction' }, false);
+      await utils.respondToMessage({ id: { legacyId: 1 }, func: 'testAction' }, false);
 
       messageParent.then(() => expect(false).toBeTruthy());
       expect(true).toBeTruthy();
@@ -548,7 +548,7 @@ describe('Testing communication', () => {
 
       const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
-      await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
+      await utils.respondToNativeMessage({ id: { legacyId: 1 }, func: actionName }, false, []);
 
       await messagePromise;
       const sentMessage = utils.findMessageByFunc(actionName);
@@ -573,7 +573,7 @@ describe('Testing communication', () => {
 
       const messagePromise = communication.sendMessageToParentAsync(testApiVersion, actionName);
 
-      await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
+      await utils.respondToNativeMessage({ id: { legacyId: 1 }, func: actionName }, false, []);
 
       messagePromise.then(() => {
         expect(true).toBeTruthy();
@@ -713,7 +713,7 @@ describe('Testing communication', () => {
       const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const port = new MessagePort();
-      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], [port]);
+      await utils.respondToNativeMessageWithPorts({ id: { legacyId: 1 }, func: actionName }, false, [], [port]);
 
       const receivedPort = await messagePromise;
       const sentMessage = utils.findMessageByFunc(actionName);
@@ -729,7 +729,7 @@ describe('Testing communication', () => {
 
       const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
-      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], []);
+      await utils.respondToNativeMessageWithPorts({ id: { legacyId: 1 }, func: actionName }, false, [], []);
 
       await expect(messagePromise).rejects.toThrowError('Host responded without port or error details.');
     });
@@ -741,7 +741,7 @@ describe('Testing communication', () => {
 
       const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
       const error = { errorCode: 500, message: 'Unknown error' };
-      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [error], []);
+      await utils.respondToNativeMessageWithPorts({ id: { legacyId: 1 }, func: actionName }, false, [error], []);
 
       await expect(messagePromise).rejects.toMatchObject(error);
     });
@@ -765,7 +765,7 @@ describe('Testing communication', () => {
       const messagePromise = communication.requestPortFromParentWithVersion(testApiVersion, actionName);
 
       const port = new MessagePort();
-      await utils.respondToNativeMessageWithPorts({ id: 1, func: actionName }, false, [], [port]);
+      await utils.respondToNativeMessageWithPorts({ id: { legacyId: 1 }, func: actionName }, false, [], [port]);
 
       const receivedPort = await messagePromise;
       expect(receivedPort).toBe(port);
@@ -910,7 +910,7 @@ describe('Testing communication', () => {
         expect(true).toBeTruthy();
       });
 
-      await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
+      await utils.respondToNativeMessage({ id: { legacyId: 1 }, func: actionName }, false, []);
 
       const sentMessage = utils.findMessageByFunc(actionName);
       // eslint-disable-next-line strict-null-checks/all
@@ -934,7 +934,7 @@ describe('Testing communication', () => {
 
       communication.sendMessageToParent(testApiVersion, actionName, () => expect(true).toBeTruthy());
 
-      await utils.respondToNativeMessage({ id: 1, func: actionName }, false, []);
+      await utils.respondToNativeMessage({ id: { legacyId: 1 }, func: actionName }, false, []);
     });
     it('should send a message to window when running in a framed window and Communication.parentWindow and Communication.parentOrigin are set', () => {
       GlobalVars.isFramelessWindow = false;
@@ -1558,7 +1558,7 @@ describe('Testing communication', () => {
 
         utils.respondToMessage(
           {
-            id: 0,
+            id: { legacyId: 0 },
             data: validMessage,
             func: 'nestedAppAuth.execute',
           },
@@ -1578,7 +1578,7 @@ describe('Testing communication', () => {
 
         utils.respondToMessage(
           {
-            id: 0,
+            id: { legacyId: 0 },
             data: validMessage,
             func: 'nestedAppAuth.execute',
           },
@@ -1599,7 +1599,7 @@ describe('Testing communication', () => {
         utils.respondToMessage(
           {
             func: 'initialize',
-            id: 0,
+            id: { legacyId: 0 },
           } as MessageRequest,
           false,
           'initializeResponse',

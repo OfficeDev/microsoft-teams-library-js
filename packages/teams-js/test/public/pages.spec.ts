@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { MessageResponse } from '../../src/internal/messageObjects';
+import { SerializedMessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -1272,7 +1272,7 @@ describe('Testing pages module', () => {
                   id: 100,
                   func: 'settings.save',
                   args: [],
-                } as MessageResponse,
+                } as SerializedMessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
               const childMessage = utils.findMessageInChildByFunc('settings.save');
@@ -1294,7 +1294,7 @@ describe('Testing pages module', () => {
                   id: 100,
                   func: 'settings.save',
                   args: [],
-                } as MessageResponse,
+                } as SerializedMessageResponse,
               } as MessageEvent);
               expect(handlerCalled).toBe(true);
               expect(utils.childMessages.length).toBe(0);
@@ -1372,7 +1372,7 @@ describe('Testing pages module', () => {
                   id: 100,
                   func: 'settings.remove',
                   args: [],
-                } as MessageResponse,
+                } as SerializedMessageResponse,
               } as MessageEvent);
               expect(utils.childMessages.length).toBe(1);
               const childMessage = utils.findMessageInChildByFunc('settings.remove');
@@ -1393,7 +1393,7 @@ describe('Testing pages module', () => {
                   id: 100,
                   func: 'settings.remove',
                   args: [],
-                } as MessageResponse,
+                } as SerializedMessageResponse,
               } as MessageEvent);
               expect(handlerCalled).toBe(true);
               expect(utils.childMessages.length).toBe(0);

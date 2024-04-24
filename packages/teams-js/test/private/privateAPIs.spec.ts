@@ -1,4 +1,4 @@
-import { MessageResponse } from '../../src/internal/messageObjects';
+import { SerializedMessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
   openFilePreview,
@@ -75,13 +75,14 @@ describe('AppSDK-privateAPIs', () => {
         origin: unSupportedDomain,
         source: utils.mockWindow.parent,
         data: {
-          id: getContextMessage.id,
+          id: getContextMessage.id.legacyId,
+          uuid: getContextMessage?.id.uuid,
           args: [
             {
               groupId: 'someMaliciousValue',
             },
           ],
-        } as MessageResponse,
+        } as SerializedMessageResponse,
       } as MessageEvent);
       await utils.flushPromises();
 
@@ -131,13 +132,14 @@ describe('AppSDK-privateAPIs', () => {
         origin: supportedDomain,
         source: utils.mockWindow.parent,
         data: {
-          id: getContextMessage.id,
+          id: getContextMessage.id.legacyId,
+          uuid: getContextMessage?.id.uuid,
           args: [
             {
               groupId: 'someMaliciousValue',
             },
           ],
-        } as MessageResponse,
+        } as SerializedMessageResponse,
       } as MessageEvent);
       await contextPromise;
 
@@ -155,9 +157,10 @@ describe('AppSDK-privateAPIs', () => {
       origin: 'https://some-malicious-site.com',
       source: utils.mockWindow.parent,
       data: {
-        id: initMessage.id,
+        id: initMessage.id.legacyId,
+        uuid: initMessage?.id.uuid,
         args: ['content'],
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
 
     // Try to make a call
@@ -171,9 +174,10 @@ describe('AppSDK-privateAPIs', () => {
       origin: 'http://some-invalid-origin.com',
       source: utils.mockWindow.parent,
       data: {
-        id: initMessage.id,
+        id: initMessage.id.legacyId,
+        uuid: initMessage?.id.uuid,
         args: ['content'],
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
 
     // Try to make a call
@@ -395,7 +399,7 @@ describe('AppSDK-privateAPIs', () => {
         id: 0,
         func: 'themeChange',
         args: ['testTheme'],
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
 
     // The frameless window should send a response back to the child window
@@ -413,7 +417,7 @@ describe('AppSDK-privateAPIs', () => {
         id: 100,
         func: 'testPartialFunc1',
         args: ['testArgs'],
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
 
     // Send a partial response back
@@ -445,7 +449,7 @@ describe('AppSDK-privateAPIs', () => {
         id: 100,
         func: 'backButtonClick',
         args: [],
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
 
     const message = utils.findMessageByFunc('backButtonClick');
