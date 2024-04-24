@@ -26,7 +26,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum CloudStorageProvider {
+  export enum CloudStorageProvider {
     Dropbox = 'DROPBOX',
     Box = 'BOX',
     Sharefile = 'SHAREFILE',
@@ -66,7 +66,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum CloudStorageProviderType {
+  export enum CloudStorageProviderType {
     Sharepoint = 0,
     WopiIntegration,
     Google,
@@ -289,7 +289,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum SpecialDocumentLibraryType {
+  export enum SpecialDocumentLibraryType {
     ClassMaterials = 'classMaterials',
   }
 
@@ -301,7 +301,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum DocumentLibraryAccessType {
+  export enum DocumentLibraryAccessType {
     Readonly = 'readonly',
   }
 
@@ -345,7 +345,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum FileDownloadStatus {
+  export enum FileDownloadStatus {
     Downloaded = 'Downloaded',
     Downloading = 'Downloading',
     Failed = 'Failed',
@@ -450,7 +450,7 @@ export namespace files {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const enum CloudStorageProviderFileAction {
+  export enum CloudStorageProviderFileAction {
     Download = 'DOWNLOAD',
     Upload = 'UPLOAD',
     Delete = 'DELETE',
