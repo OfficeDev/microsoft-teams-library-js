@@ -7,13 +7,14 @@
   },
   "checkIsSupported": {
     "domElementName": "checkWebStorageCapability",
-    "expectedOutput": "webStorage is supported"
+    "expectedOutput": "webStorage is not supported"
   },
   "testCases": [
     {
       "title": "isWebStorageClearedOnUserLogOut function Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_isWebStorageClearedOnUserLogOut",
+      "expectedAlertValue": "isWebStorageClearedOnUserLogOut called",
       "expectedTestAppValue": "webStorage is cleared on user log out"
     }
   ]

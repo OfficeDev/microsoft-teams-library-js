@@ -44,6 +44,23 @@ describe('webStorage', () => {
     });
   });
 
+    it('webStorage.isSupported should return false if webStorage not supported in runtime', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(webStorage.isSupported()).not.toBeTruthy();
+    });
+
+    it('webStorage.isSupported should return true if webStorage supported in runtime', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
+      expect(webStorage.isSupported()).toBeTruthy();
+    });
+  });
+
   describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
