@@ -178,6 +178,24 @@ export class Utils {
     return null;
   };
 
+  /**
+   * This function is used to find a message by the action name provided to the send* functions. Usually the action name is the
+   * name of the function being called..
+   * @param actionName - The action name used in the sent message
+   * @param k - In the case where you expect there are multiple messages sent with the same action name,
+   * use this as a zero-based index to return the kth one. Default is 0 (will return the first match).
+   * @returns {MessageRequest} The found message
+   * @throws {Error} If the message is not found
+   */
+  public findMessageByActionName(actionName: string, k: number = 0): MessageRequest {
+    const message = this.findMessageByFunc(actionName, k);
+    if (!message) {
+      throw new Error(`Message with action name ${actionName} not found`);
+    }
+
+    return message;
+  }
+
   public findInitializeMessageOrThrow = (): MessageRequest => {
     const initMessage = this.findMessageByFunc('initialize');
     if (!initMessage) {
