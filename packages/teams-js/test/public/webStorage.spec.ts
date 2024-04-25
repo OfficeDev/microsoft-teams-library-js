@@ -27,7 +27,7 @@ describe('webStorage', () => {
         .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
-    it('should return true if host returns true', async () => {
+    async function testForReturnValue(returnValueToTest: boolean): Promise<void> {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
@@ -35,11 +35,19 @@ describe('webStorage', () => {
       const apiCallPromise = webStorage.isWebStorageClearedOnUserLogOut();
       const apiCallMessage = utils.findMessageByActionName(ApiName.WebStorage_IsWebStorageClearedOnUserLogOut);
 
-      const messageResponseData = true;
+      const messageResponseData = returnValueToTest;
       await utils.respondToMessage(apiCallMessage, messageResponseData);
 
       const result = await apiCallPromise;
-      expect(result).toStrictEqual(true);
+      expect(result).toStrictEqual(returnValueToTest);
+    }
+
+    it('should return true if host returns true', async () => {
+      await testForReturnValue(true);
+    });
+
+    it('should return false if host returns false', async () => {
+      await testForReturnValue(false);
     });
   });
 });
