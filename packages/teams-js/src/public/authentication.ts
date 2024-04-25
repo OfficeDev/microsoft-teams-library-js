@@ -9,7 +9,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { isValidHttpsURL } from '../internal/utils';
+import { isValidHttpsURL, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
@@ -165,9 +165,9 @@ export namespace authentication {
       if (GlobalVars.hostClientType !== HostClientType.web) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
         const link = document.createElement('a');
-        link.href = authenticateParameters.url;
+        link.href = decodeURIComponent(authenticateParameters.url);
 
-        throwIfStringNotValidHttpsUrl(link.href);
+        validateUrl(new URL(link.href));
 
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
@@ -193,12 +193,6 @@ export namespace authentication {
         openAuthenticationWindow(authenticateParameters);
       }
     });
-  }
-
-  function throwIfStringNotValidHttpsUrl(link: string): void {
-    if (!isValidHttpsURL(new URL(link))) {
-      throw new Error(`${ErrorCode.INVALID_ARGUMENTS}: ${link} must be valid https URL`);
-    }
   }
 
   /**
@@ -359,9 +353,9 @@ export namespace authentication {
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
     const link = document.createElement('a');
-    link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
+    link.href = decodeURIComponent(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
 
-    throwIfStringNotValidHttpsUrl(link.href);
+    validateUrl(new URL(link.href));
 
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
