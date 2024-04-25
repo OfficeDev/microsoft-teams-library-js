@@ -24,7 +24,7 @@ import {
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { generateGUID, ssrSafeWindow, validateUuid } from './utils';
+import { ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
@@ -52,15 +52,9 @@ class CommunicationPrivate {
   public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
-  public static callbacks: {
-    [id: MessageID]: Function; // (arg1, arg2, ...etc) => void
-  } = {};
-  public static promiseCallbacks: {
-    [id: MessageID]: Function; // (args[]) => void
-  } = {};
-  public static portCallbacks: {
-    [id: MessageID]: (port?: MessagePort, args?: unknown[]) => void;
-  } = {};
+  public static callbacks: Map<MessageUUID, Function> = new Map();
+  public static promiseCallbacks: Map<MessageUUID, Function> = new Map();
+  public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
   public static legacyMessageIdsToUuidMap: {
     [legacyId: number]: MessageUUID;
@@ -153,9 +147,9 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.parentMessageQueue = [];
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
-  CommunicationPrivate.callbacks = {};
-  CommunicationPrivate.promiseCallbacks = {};
-  CommunicationPrivate.portCallbacks = {};
+  CommunicationPrivate.callbacks.clear();
+  CommunicationPrivate.promiseCallbacks.clear();
+  CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
 }
 
@@ -282,14 +276,14 @@ export function requestPortFromParentWithVersion(
  */
 function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
-    CommunicationPrivate.portCallbacks[requestId] = (port: MessagePort | undefined, args?: unknown[]) => {
+    CommunicationPrivate.portCallbacks.set(requestId, (port: MessagePort | undefined, args?: unknown[]) => {
       if (port instanceof MessagePort) {
         resolve(port);
       } else {
         // First arg is the error message, if present
         reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
       }
-    };
+    });
   });
 }
 
@@ -299,7 +293,7 @@ function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
  */
 function waitForResponse<T>(requestId: MessageUUID): Promise<T> {
   return new Promise<T>((resolve) => {
-    CommunicationPrivate.promiseCallbacks[requestId] = resolve;
+    CommunicationPrivate.promiseCallbacks.set(requestId, resolve);
   });
 }
 
@@ -353,7 +347,7 @@ export function sendMessageToParent(
   if (callback) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    CommunicationPrivate.callbacks[request.uuid] = callback;
+    CommunicationPrivate.callbacks.set(request.uuid, callback);
   }
 }
 
@@ -614,6 +608,23 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
 
 const handleParentMessageLogger = communicationLogger.extend('handleParentMessage');
 
+// /**
+//  * @internal
+//  * Limited to Microsoft-internal use
+//  */
+// function retrieveCallbackByMessageUUID(
+//   map: Map<MessageUUID, Function>,
+//   responseUUID: MessageUUID,
+// ): Function | undefined {
+//   const callback = [...map].find(([key, value]) => {
+//     return key.getUuidValue === responseUUID.getUuidValue;
+//   });
+
+//   if (callback) {
+//     return callback[1];
+//   }
+//   return undefined;
+// }
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -621,15 +632,13 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
 function handleParentMessage(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
 
-  if ('id' in evt.data && (typeof evt.data.id === 'number' || typeof evt.data.id === 'string')) {
+  if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
-    const callbackId =
-      typeof message.id === 'string' ? message.id : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-    if (callbackId) {
-      validateUuid(callbackId);
-    }
-    const callback = CommunicationPrivate.callbacks[callbackId];
+    const callbackId = message.uuid
+      ? new MessageUUID(message.uuid)
+      : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+    const callback = CommunicationPrivate.callbacks.get(callbackId);
     logger('Received a response from parent for message %i', callbackId);
     if (callback) {
       logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
@@ -640,23 +649,20 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
         logger('Removing registered callback for message %i', callbackId);
-        if (typeof message.id === 'number') {
-          delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-        } else {
-          CommunicationPrivate.legacyMessageIdsToUuidMap = {};
-        }
-        delete CommunicationPrivate.callbacks[callbackId];
+        CommunicationPrivate.callbacks.delete(callbackId);
+        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
       }
     }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks[callbackId];
+    const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
     if (promiseCallback) {
       logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
       promiseCallback(message.args);
 
       logger('Removing registered promise callback for message %i', callbackId);
-      delete CommunicationPrivate.promiseCallbacks[callbackId];
+      CommunicationPrivate.promiseCallbacks.delete(callbackId);
+      delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
     }
-    const portCallback = CommunicationPrivate.portCallbacks[callbackId];
+    const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
     if (portCallback) {
       logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
       let port: MessagePort | undefined;
@@ -666,7 +672,8 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       portCallback(port, message.args);
 
       logger('Removing registered port callback for message %i', callbackId);
-      delete CommunicationPrivate.portCallbacks[callbackId];
+      CommunicationPrivate.portCallbacks.delete(callbackId);
+      delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -862,7 +869,7 @@ function createMessageRequest(
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
-  const messageUuid: MessageUUID = generateGUID();
+  const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
     id: messageId,
@@ -887,7 +894,7 @@ function createMessageRequest(
  */
 function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
   const messageId: MessageID = CommunicationPrivate.nextMessageId++;
-  const messageUuid: MessageUUID = generateGUID();
+  const messageUuid: MessageUUID = new MessageUUID();
   CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
     id: messageId,

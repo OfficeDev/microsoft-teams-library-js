@@ -1,20 +1,33 @@
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export type BaseUUID = string;
+import { generateGUID, validateUuid } from './utils';
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export type MessageUUID = BaseUUID;
+export class BaseUUID {
+  private uuid: string;
+
+  public constructor(uuid?: string) {
+    if (uuid) {
+      validateUuid(uuid);
+      this.uuid = uuid;
+    } else {
+      this.uuid = generateGUID();
+    }
+  }
+
+  public getUuidValue(): string {
+    return this.uuid;
+  }
+}
+
+export class MessageUUID extends BaseUUID {}
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export type MessageID = number | MessageUUID;
+export type MessageID = number;
 
 /**
  * @internal
@@ -36,6 +49,7 @@ export interface MessageRequest {
  */
 export interface MessageResponse {
   id: MessageID;
+  uuid?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
