@@ -608,23 +608,46 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
 
 const handleParentMessageLogger = communicationLogger.extend('handleParentMessage');
 
-// /**
-//  * @internal
-//  * Limited to Microsoft-internal use
-//  */
-// function retrieveCallbackByMessageUUID(
-//   map: Map<MessageUUID, Function>,
-//   responseUUID: MessageUUID,
-// ): Function | undefined {
-//   const callback = [...map].find(([key, value]) => {
-//     return key.getUuidValue === responseUUID.getUuidValue;
-//   });
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID {
+  if (response.uuid) {
+    const responseUUID = new MessageUUID(response.uuid);
+    const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
+    if (callbackUUID) {
+      return callbackUUID;
+    }
+    const promiseCallbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.promiseCallbacks, responseUUID);
+    if (promiseCallbackUUID) {
+      return promiseCallbackUUID;
+    }
+    const portCallbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.portCallbacks, responseUUID);
+    if (portCallbackUUID) {
+      return portCallbackUUID;
+    }
+  }
+  return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
+}
 
-//   if (callback) {
-//     return callback[1];
-//   }
-//   return undefined;
-// }
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function retrieveMessageUUIDFromCallback(
+  map: Map<MessageUUID, Function>,
+  responseUUID: MessageUUID,
+): MessageUUID | undefined {
+  const callback = [...map].find(([key, _value]) => {
+    return key.getUuidValue() === responseUUID.getUuidValue();
+  });
+
+  if (callback) {
+    return callback[0];
+  }
+  return undefined;
+}
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -635,9 +658,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
     const message = evt.data as MessageResponse;
-    const callbackId = message.uuid
-      ? new MessageUUID(message.uuid)
-      : CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+    const callbackId = retrieveMessageUUIDFromResponse(message);
     const callback = CommunicationPrivate.callbacks.get(callbackId);
     logger('Received a response from parent for message %i', callbackId);
     if (callback) {
@@ -650,7 +671,9 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       if (!isPartialResponse(evt)) {
         logger('Removing registered callback for message %i', callbackId);
         CommunicationPrivate.callbacks.delete(callbackId);
-        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+        if (!message.uuid) {
+          delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+        }
       }
     }
     const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
@@ -660,7 +683,9 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
       logger('Removing registered promise callback for message %i', callbackId);
       CommunicationPrivate.promiseCallbacks.delete(callbackId);
-      delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+      if (!message.uuid) {
+        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+      }
     }
     const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
     if (portCallback) {
@@ -673,7 +698,12 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
       logger('Removing registered port callback for message %i', callbackId);
       CommunicationPrivate.portCallbacks.delete(callbackId);
-      delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+      if (!message.uuid) {
+        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+      }
+    }
+    if (message.uuid) {
+      CommunicationPrivate.legacyMessageIdsToUuidMap = {};
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -705,7 +735,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
     if (called && typeof result !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
+      sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
       sendMessageToParent(
@@ -717,7 +747,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
             const isPartialResponse = args.pop();
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            sendMessageResponseToChild(message.id, args, isPartialResponse);
+            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
           }
         },
       );
@@ -827,9 +857,14 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(id: MessageID, args?: any[], isPartialResponse?: boolean): void {
+function sendMessageResponseToChild(
+  id: MessageID,
+  uuid?: MessageUUID,
+  args?: any[],
+  isPartialResponse?: boolean,
+): void {
   const targetWindow = Communication.childWindow;
-  const response = createMessageResponse(id, args, isPartialResponse);
+  const response = createMessageResponse(id, uuid, args, isPartialResponse);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
     targetWindow.postMessage(response, targetOrigin);
@@ -912,9 +947,15 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: MessageID, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
+function createMessageResponse(
+  id: MessageID,
+  uuid?: MessageUUID,
+  args?: any[] | undefined,
+  isPartialResponse?: boolean,
+): MessageResponse {
   return {
     id: id,
+    uuid: uuid?.uuid,
     args: args || [],
     isPartialResponse,
   };

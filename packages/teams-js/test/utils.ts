@@ -217,6 +217,7 @@ export class Utils {
       const domEvent = {
         data: {
           id: message.id,
+          uuid: message.uuid ? message.uuid.uuid : undefined,
           args: args,
         } as MessageResponse,
         ports,
@@ -228,6 +229,7 @@ export class Utils {
         source: this.mockWindow.parent,
         data: {
           id: message.id,
+          uuid: message.uuid ? message.uuid.uuid : undefined,
           args: args,
         } as MessageResponse,
         ports,
@@ -247,6 +249,7 @@ export class Utils {
       source: this.mockWindow.opener,
       data: {
         id: message.id,
+        uuid: message.uuid ? message.uuid.uuid : undefined,
         args: args,
       } as MessageResponse,
     } as MessageEvent);
@@ -256,6 +259,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
+        uuid: message.uuid ? message.uuid.uuid : undefined,
         args: args,
         isPartialResponse,
       } as MessageResponse,
@@ -271,6 +275,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
+        uuid: message.uuid ? message.uuid.uuid : undefined,
         args: args,
         isPartialResponse,
       } as MessageResponse,

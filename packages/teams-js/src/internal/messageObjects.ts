@@ -5,7 +5,7 @@ import { generateGUID, validateUuid } from './utils';
  * Limited to Microsoft-internal use
  */
 export class BaseUUID {
-  private uuid: string;
+  public uuid: string;
 
   public constructor(uuid?: string) {
     if (uuid) {
