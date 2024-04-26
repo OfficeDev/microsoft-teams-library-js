@@ -88,3 +88,10 @@ steps:
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
       mergeTestResults: true
     condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
+
+  - task: 1ES.PublishPipelineArtifact@1
+    displayName: 'Publish logs artifact'
+    inputs:
+      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/androidTestArtifacts'
+      artifact: androidTestArtifacts-$(System.JobAttempt)
+    condition: always()
