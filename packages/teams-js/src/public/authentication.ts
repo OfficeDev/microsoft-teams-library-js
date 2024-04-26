@@ -350,8 +350,8 @@ export namespace authentication {
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
 
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const qualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
-    validateUrl(qualifiedURL);
+    const fullyQualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
+    validateUrl(fullyQualifiedURL);
 
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
@@ -366,7 +366,7 @@ export namespace authentication {
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
-      qualifiedURL.href,
+      fullyQualifiedURL.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
         top +
