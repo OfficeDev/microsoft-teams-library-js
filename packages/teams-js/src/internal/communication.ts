@@ -16,6 +16,7 @@ import {
   MessageRequestWithRequiredProperties,
   MessageResponse,
   MessageUUID,
+  SerializedMessageRequest,
 } from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
@@ -376,10 +377,14 @@ const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRe
  */
 function sendRequestToTargetWindowHelper(
   targetWindow: Window,
-  request: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
+  messageRequest: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
 ): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
   const logger = sendRequestToTargetWindowHelperLogger;
   const targetWindowName = getTargetName(targetWindow);
+  const request: SerializedMessageRequest = {
+    ...messageRequest,
+    uuid: messageRequest.uuid.getUuidValue(),
+  };
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
@@ -396,10 +401,10 @@ function sendRequestToTargetWindowHelper(
       targetWindow.postMessage(request, targetOrigin);
     } else {
       logger(`Adding message %i to ${targetWindowName} message queue`, request.uuid);
-      getTargetMessageQueue(targetWindow).push(request);
+      getTargetMessageQueue(targetWindow).push(messageRequest);
     }
   }
-  return request;
+  return messageRequest;
 }
 
 const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
@@ -826,10 +831,18 @@ function flushMessageQueue(targetWindow: Window | any): void {
   const target = getTargetName(targetWindow);
 
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    const request = targetMessageQueue.shift();
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
-    targetWindow.postMessage(request, targetOrigin);
+    const messageRequest = targetMessageQueue.shift();
+    if (messageRequest) {
+      const request: SerializedMessageRequest | undefined = {
+        ...messageRequest,
+        uuid: messageRequest.uuid?.getUuidValue(),
+      };
+
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
+
+      targetWindow.postMessage(request, targetOrigin);
+    }
   }
 }
 
@@ -955,7 +968,7 @@ function createMessageResponse(
 ): MessageResponse {
   return {
     id: id,
-    uuid: uuid?.uuid,
+    uuid: uuid?.getUuidValue(),
     args: args || [],
     isPartialResponse,
   };

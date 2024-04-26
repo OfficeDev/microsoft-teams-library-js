@@ -2,18 +2,26 @@ import { validOriginsFallback as validOrigins } from '../src/internal/constants'
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
-import { MessageID, MessageResponse, MessageUUID } from '../src/internal/messageObjects';
+import { MessageID, MessageResponse, MessageUUID, SerializedMessageRequest } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 export interface MessageRequest {
-  id: MessageID;
+  id?: MessageID;
   func: string;
   uuid?: MessageUUID;
   args?: unknown[];
   timestamp?: number;
   isPartialResponse?: boolean;
+}
+
+function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
+  const message = {
+    ...serializedMessage,
+    uuid: serializedMessage.uuid ? new MessageUUID(serializedMessage.uuid) : undefined,
+  };
+  return message;
 }
 
 export class Utils {
@@ -41,23 +49,26 @@ export class Utils {
     this.childMessages = [];
 
     this.parentWindow = {
-      postMessage: (message: MessageRequest, targetOrigin: string): void => {
-        if (message.func === 'initialize' && targetOrigin !== '*') {
+      postMessage: (serializedMessage: SerializedMessageRequest, targetOrigin: string): void => {
+        if (serializedMessage.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
-        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+        } else if (serializedMessage.func !== 'initialize' && targetOrigin !== this.validOrigin) {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
+        const message: MessageRequest = deserializeMessageRequest(serializedMessage);
+
         this.messages.push(message);
       },
     } as Window;
 
     this.topWindow = {
-      postMessage: (message: MessageRequest, targetOrigin: string): void => {
-        if (message.func === 'initialize' && targetOrigin !== '*') {
+      postMessage: (serializedMessage: SerializedMessageRequest, targetOrigin: string): void => {
+        if (serializedMessage.func === 'initialize' && targetOrigin !== '*') {
           throw new Error('initialize messages to parent window must have a targetOrigin of *');
-        } else if (message.func !== 'initialize' && targetOrigin !== this.validOrigin) {
+        } else if (serializedMessage.func !== 'initialize' && targetOrigin !== this.validOrigin) {
           throw new Error(`messages to parent window must have a targetOrigin of ${this.validOrigin}`);
         }
+        const message: MessageRequest = deserializeMessageRequest(serializedMessage);
         this.topMessages.push(message);
       },
     } as Window;
@@ -88,8 +99,10 @@ export class Utils {
       top: this.parentWindow,
       opener: undefined,
       nativeInterface: {
-        framelessPostMessage: (message: string): void => {
-          this.messages.push(JSON.parse(message));
+        framelessPostMessage: (serializedMessage: string): void => {
+          const parsedMessage: SerializedMessageRequest = JSON.parse(serializedMessage);
+          const message: MessageRequest = deserializeMessageRequest(parsedMessage);
+          this.messages.push(message);
         },
       },
       self: null as unknown as Window,
@@ -110,7 +123,8 @@ export class Utils {
     this.mockWindow.self = this.mockWindow as Window;
 
     this.childWindow = {
-      postMessage: (message: MessageRequest): void => {
+      postMessage: (serializedMessage: SerializedMessageRequest): void => {
+        const message: MessageRequest = deserializeMessageRequest(serializedMessage);
         this.childMessages.push(message);
       },
       close: function (): void {
@@ -217,7 +231,7 @@ export class Utils {
       const domEvent = {
         data: {
           id: message.id,
-          uuid: message.uuid ? message.uuid.uuid : undefined,
+          uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
           args: args,
         } as MessageResponse,
         ports,
@@ -229,7 +243,7 @@ export class Utils {
         source: this.mockWindow.parent,
         data: {
           id: message.id,
-          uuid: message.uuid ? message.uuid.uuid : undefined,
+          uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
           args: args,
         } as MessageResponse,
         ports,
@@ -249,7 +263,7 @@ export class Utils {
       source: this.mockWindow.opener,
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.uuid : undefined,
+        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
         args: args,
       } as MessageResponse,
     } as MessageEvent);
@@ -259,7 +273,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.uuid : undefined,
+        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
         args: args,
         isPartialResponse,
       } as MessageResponse,
@@ -275,7 +289,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.uuid : undefined,
+        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
         args: args,
         isPartialResponse,
       } as MessageResponse,

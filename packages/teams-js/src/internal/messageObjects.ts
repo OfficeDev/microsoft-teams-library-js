@@ -5,7 +5,7 @@ import { generateGUID, validateUuid } from './utils';
  * Limited to Microsoft-internal use
  */
 export class BaseUUID {
-  public uuid: string;
+  private uuid: string;
 
   public constructor(uuid?: string) {
     if (uuid) {
@@ -36,6 +36,20 @@ export type MessageID = number;
 export interface MessageRequest {
   id?: MessageID;
   uuid?: MessageUUID;
+  func: string;
+  timestamp?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+  apiVersionTag?: string;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface SerializedMessageRequest {
+  id?: MessageID;
+  uuid?: string;
   func: string;
   timestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
