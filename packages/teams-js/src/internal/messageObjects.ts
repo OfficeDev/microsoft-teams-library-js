@@ -4,7 +4,7 @@ import { generateGUID, validateUuid } from './utils';
  * @internal
  * Limited to Microsoft-internal use
  */
-export class BaseUUID {
+export class MessageUUID {
   private uuid: string;
 
   public constructor(uuid?: string) {
@@ -20,8 +20,6 @@ export class BaseUUID {
     return this.uuid;
   }
 }
-
-export class MessageUUID extends BaseUUID {}
 
 /**
  * @internal

@@ -58,7 +58,7 @@ class CommunicationPrivate {
   public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
   public static legacyMessageIdsToUuidMap: {
-    [legacyId: number]: MessageUUID;
+    [legacyId: MessageID]: MessageUUID;
   } = {};
 }
 
@@ -276,9 +276,9 @@ export function requestPortFromParentWithVersion(
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
+function waitForPort(requestUuid: MessageUUID): Promise<MessagePort> {
   return new Promise<MessagePort>((resolve, reject) => {
-    CommunicationPrivate.portCallbacks.set(requestId, (port: MessagePort | undefined, args?: unknown[]) => {
+    CommunicationPrivate.portCallbacks.set(requestUuid, (port: MessagePort | undefined, args?: unknown[]) => {
       if (port instanceof MessagePort) {
         resolve(port);
       } else {
@@ -293,9 +293,9 @@ function waitForPort(requestId: MessageUUID): Promise<MessagePort> {
  * @internal
  * Limited to Microsoft-internal use
  */
-function waitForResponse<T>(requestId: MessageUUID): Promise<T> {
+function waitForResponse<T>(requestUuid: MessageUUID): Promise<T> {
   return new Promise<T>((resolve) => {
-    CommunicationPrivate.promiseCallbacks.set(requestId, resolve);
+    CommunicationPrivate.promiseCallbacks.set(requestUuid, resolve);
   });
 }
 
@@ -640,6 +640,10 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * This function is used to compare a new MessageUUID object value to the key values in the specified callback and retrieving that key
+ * We use this because two objects with the same value are not considered equivalent therefore we can't use the new MessageUUID object
+ * as a key to retrieve the value assosciated with it and should use this function instead.
  */
 function retrieveMessageUUIDFromCallback(
   map: Map<MessageUUID, Function>,
@@ -654,6 +658,21 @@ function retrieveMessageUUIDFromCallback(
   }
   return undefined;
 }
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function removeMessageHandlers(
+  message: MessageResponse,
+  callbackId: MessageUUID,
+  map: Map<MessageUUID, unknown>,
+): void {
+  map.delete(callbackId); // need to make sure delete works since this might have by-value problems
+  if (!message.uuid) {
+    delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+  }
+}
+
 /**
  * @internal
  * Limited to Microsoft-internal use
@@ -676,10 +695,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
         logger('Removing registered callback for message %i', callbackId);
-        CommunicationPrivate.callbacks.delete(callbackId);
-        if (!message.uuid) {
-          delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-        }
+        removeMessageHandlers(message, callbackId, CommunicationPrivate.callbacks);
       }
     }
     const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
@@ -688,10 +704,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       promiseCallback(message.args);
 
       logger('Removing registered promise callback for message %i', callbackId);
-      CommunicationPrivate.promiseCallbacks.delete(callbackId);
-      if (!message.uuid) {
-        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-      }
+      removeMessageHandlers(message, callbackId, CommunicationPrivate.promiseCallbacks);
     }
     const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
     if (portCallback) {
@@ -703,10 +716,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       portCallback(port, message.args);
 
       logger('Removing registered port callback for message %i', callbackId);
-      CommunicationPrivate.portCallbacks.delete(callbackId);
-      if (!message.uuid) {
-        delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
-      }
+      removeMessageHandlers(message, callbackId, CommunicationPrivate.portCallbacks);
     }
     if (message.uuid) {
       CommunicationPrivate.legacyMessageIdsToUuidMap = {};
