@@ -429,6 +429,12 @@ export function validateUrl(url: URL, errorToThrow?: Error): void {
   }
 }
 
+export function fullyQualifyUrlString(urlString: string): URL {
+  const link = document.createElement('a');
+  link.href = urlString;
+  return new URL(link.href);
+}
+
 /**
  * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
  * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.

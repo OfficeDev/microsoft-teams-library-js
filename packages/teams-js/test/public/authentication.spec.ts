@@ -3,10 +3,11 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { ErrorCode, FrameContexts, HostClientType } from '../../src/public';
+import { FrameContexts, HostClientType } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
+import * as internalUtils from '../../src/internal/utils';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
@@ -292,8 +293,12 @@ describe('Testing authentication capability', () => {
           it(`authentication.authenticate should successfully handle auth success from ${context} context when passed a valid encoded URL`, async () => {
             await utils.initializeWithContext(context);
 
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
+            });
+
             const authenticationParams = {
-              url: 'https%3A%2F%2Fsomeurl%2F',
+              url: 'hello%20world',
               width: 100,
               height: 200,
             };
@@ -544,14 +549,19 @@ describe('Testing authentication capability', () => {
             authentication.authenticate(authenticationParams);
             expect(windowOpenCalled).toBe(true);
           });
+
           it(`authentication.authenticate should open a client window using an encoded URL in web client in legacy flow from ${context} context`, async () => {
             expect.assertions(5);
             await utils.initializeWithContext(context, HostClientType.web);
 
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
+            });
+
             let windowOpenCalled = false;
             jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
               const specs: string = specsInput as string;
-              expect(url).toEqual('https://someurl/');
+              expect(url).toEqual('https://localhost/hello%20world');
               expect(name).toEqual('_blank');
               expect(specs.indexOf('width=100')).not.toBe(-1);
               expect(specs.indexOf('height=200')).not.toBe(-1);
@@ -560,7 +570,7 @@ describe('Testing authentication capability', () => {
             });
 
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https%3A%2F%2Fsomeurl%2F',
+              url: 'hello%20world',
               width: 100,
               height: 200,
             };
@@ -572,7 +582,7 @@ describe('Testing authentication capability', () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https://someurl/',
+              url: 'https://localhost/hello%20world',
               width: 100,
               height: 200,
             };
@@ -1053,8 +1063,13 @@ describe('Testing authentication capability', () => {
 
           it(`authentication.authenticate should successfully ask parent window to open auth window with parameters including encoded url in a non-web client from ${context} context`, async () => {
             await utils.initializeWithContext(context, HostClientType.desktop);
+
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
+            });
+
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https%3A%2F%2Fsomeurl%2F',
+              url: 'hello%20world',
               width: 100,
               height: 200,
               isExternal: true,
@@ -1064,7 +1079,7 @@ describe('Testing authentication capability', () => {
             const message = utils.findMessageByFunc('authentication.authenticate');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(4);
-            expect(message.args[0]).toBe(decodeURIComponent(authenticationParams.url).toLowerCase());
+            expect(message.args[0]).toBe('https://localhost/hello%20world');
             expect(message.args[1]).toBe(authenticationParams.width);
             expect(message.args[2]).toBe(authenticationParams.height);
             expect(message.args[3]).toBe(authenticationParams.isExternal);

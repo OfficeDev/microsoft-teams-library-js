@@ -9,9 +9,8 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { isValidHttpsURL, validateUrl } from '../internal/utils';
+import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
-import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -164,15 +163,13 @@ export namespace authentication {
     return new Promise<string>((resolve, reject) => {
       if (GlobalVars.hostClientType !== HostClientType.web) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-        const link = document.createElement('a');
-        link.href = decodeURIComponent(authenticateParameters.url);
-
-        validateUrl(new URL(link.href));
+        const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
+        validateUrl(fullyQualifiedURL);
 
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
           sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
-            link.href,
+            fullyQualifiedURL.href,
             authenticateParameters.width,
             authenticateParameters.height,
             authenticateParameters.isExternal,
@@ -351,11 +348,10 @@ export namespace authentication {
     // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
-    // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement('a');
-    link.href = decodeURIComponent(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
 
-    validateUrl(new URL(link.href));
+    // Convert any relative URLs into absolute URLs before sending them over to the parent window
+    const qualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
+    validateUrl(qualifiedURL);
 
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
@@ -370,7 +366,7 @@ export namespace authentication {
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
-      link.href,
+      qualifiedURL.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
         top +
