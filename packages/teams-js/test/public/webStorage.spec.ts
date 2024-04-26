@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
 import { app } from '../../src/public';
-import { FrameContexts, errorNotSupportedOnPlatform } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
