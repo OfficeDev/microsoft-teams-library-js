@@ -201,6 +201,7 @@ describe('Testing pages module', () => {
               MatcherType.ToBe,
               version,
               latestRuntimeApiVersion,
+              undefined,
             );
             expect(initMessage.id).toBe(0);
             const message = utils.findMessageByFunc('setFrameContext');
@@ -2192,7 +2193,7 @@ describe('Testing pages module', () => {
             expect(initMessage).not.toBeNull();
             expect(initMessage.id).toBe(0);
             expect(initMessage.func).toBe('initialize');
-            expect(initMessage.args.length).toEqual(2);
+            expect(initMessage.args.length).toEqual(3);
             expect(initMessage.args[0]).toEqual(version);
             expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
             const message = utils.findMessageByFunc('setFrameContext');
