@@ -3,11 +3,11 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import * as internalUtils from '../../src/internal/utils';
 import { FrameContexts, HostClientType } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
-import * as internalUtils from '../../src/internal/utils';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
