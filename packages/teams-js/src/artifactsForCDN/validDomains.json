@@ -33,6 +33,10 @@
     "outlook.cloud.microsoft",
     "m365.cloud.microsoft",
     "copilot.microsoft.com",
-    "windows.msn.com"
+    "windows.msn.com",
+    "fa000000125.resources.office.net",
+    "fa000000129.resources.office.net",
+    "fa000000124.resources.office.net",
+    "fa000000128.resources.office.net"
   ]
 }
