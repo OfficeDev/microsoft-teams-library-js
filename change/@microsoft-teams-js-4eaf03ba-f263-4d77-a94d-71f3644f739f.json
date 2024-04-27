@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added in 4 new domains for copilot chat to the validOrigins list",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
