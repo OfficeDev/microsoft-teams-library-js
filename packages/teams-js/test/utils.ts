@@ -4,6 +4,7 @@ import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
+import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -132,7 +133,7 @@ export class Utils {
 
   public initializeWithContext = async (
     frameContext: string,
-    hostClientType?: string,
+    hostClientType: string = HostClientType.web,
     validMessageOrigins?: string[],
   ): Promise<void> => {
     app._initialize(this.mockWindow);
