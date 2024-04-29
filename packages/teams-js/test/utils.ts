@@ -25,6 +25,11 @@ function deserializeMessageRequest(serializedMessage: SerializedMessageRequest):
   return message;
 }
 
+function getMessageUUIDString(message: MessageRequest): string | undefined {
+  const messageUuid = message.uuid ? message.uuid.getUuidValue() : undefined;
+  return messageUuid;
+}
+
 export class Utils {
   public tabOrigin = 'https://example.com';
 
@@ -250,7 +255,7 @@ export class Utils {
       const domEvent = {
         data: {
           id: message.id,
-          uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
+          uuid: getMessageUUIDString(message),
           args: args,
         } as MessageResponse,
         ports,
@@ -262,7 +267,7 @@ export class Utils {
         source: this.mockWindow.parent,
         data: {
           id: message.id,
-          uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
+          uuid: getMessageUUIDString(message),
           args: args,
         } as MessageResponse,
         ports,
@@ -282,7 +287,7 @@ export class Utils {
       source: this.mockWindow.opener,
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
+        uuid: getMessageUUIDString(message),
         args: args,
       } as MessageResponse,
     } as MessageEvent);
@@ -292,7 +297,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
+        uuid: getMessageUUIDString(message),
         args: args,
         isPartialResponse,
       } as MessageResponse,
@@ -308,7 +313,7 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: message.uuid ? message.uuid.getUuidValue() : undefined,
+        uuid: getMessageUUIDString(message),
         args: args,
         isPartialResponse,
       } as MessageResponse,
