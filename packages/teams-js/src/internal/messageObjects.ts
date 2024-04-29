@@ -3,6 +3,8 @@ import { generateGUID, validateUuid } from './utils';
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * MessageUUID object that holds the uuid used for processing MessageRequests and MessageResponses
  */
 export class MessageUUID {
   private uuid: string;
@@ -24,6 +26,8 @@ export class MessageUUID {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * MessageIDs represent the legacy number id used for processing MessageRequests and MessageResponses
  */
 export type MessageID = number;
 
