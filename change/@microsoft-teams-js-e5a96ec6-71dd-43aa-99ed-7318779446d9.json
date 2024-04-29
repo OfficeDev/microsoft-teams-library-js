@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Exported enums are no longer const due to a bug",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}

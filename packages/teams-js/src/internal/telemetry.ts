@@ -110,6 +110,7 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithSSO = 'externalAppAuthentication.authenticateWithSSO',
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
   ExternalAppAuthentication_AuthenticateWithOauth2 = 'externalAppAuthentication.authenticateWithOauth2',
+  ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins = 'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
   ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
@@ -198,7 +199,8 @@ export const enum ApiName {
   Menus_SetNavBarMenu = 'menus.setNavBarMenu',
   Menus_SetUpViews = 'menus.setUpViews',
   Menus_ShowActionMenu = 'menus.showActionMenu',
-  MessageChannels_GetTelemetryPort = 'messageChannels.getTelemetryPort',
+  MessageChannels_Telemetry_GetTelemetryPort = 'messageChannels.telemetry.getTelemetryPort',
+  MessageChannels_DataLayer_GetDataLayerPort = 'messageChannels.dataLayer.getDataLayerPort',
   Monetization_OpenPurchaseExperience = 'monetization.openPurchaseExperience',
   Navigation_NavigateBack = 'navigation.navigateBack',
   Navigation_NavigateCrossDomain = 'navigation.navigateCrossDomain',
@@ -337,4 +339,5 @@ export const enum ApiName {
   VisualMedia_Image_CaptureImages = 'visualMedia.image.captureImages',
   VisualMedia_Image_RetrieveImages = 'visualMedia.image.retrieveImages',
   VisualMedia_RequestPermission = 'visualMedia.requestPermission',
+  WebStorage_IsWebStorageClearedOnUserLogOut = 'webStorage.isWebStorageClearedOnUserLogOut',
 }

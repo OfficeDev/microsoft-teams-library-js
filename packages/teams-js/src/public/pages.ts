@@ -314,7 +314,7 @@ export namespace pages {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      const apiVersionTag: string = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateCrossDomain);
+      const apiVersionTag: string = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateToApp);
       if (runtime.isLegacyTeams) {
         resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
       } else {
@@ -1008,14 +1008,10 @@ export namespace pages {
 
   /**
    * Provides functions for navigating without needing to specify your application ID.
-   *
-   * @beta
    */
   export namespace currentApp {
     /**
      * Parameters for the NavigateWithinApp
-     *
-     * @beta
      */
     export interface NavigateWithinAppParams {
       /**
@@ -1036,8 +1032,6 @@ export namespace pages {
      * specific content within the page).
      * @param params - Parameters for the navigation
      * @returns a promise that will resolve if the navigation was successful
-     *
-     * @beta
      */
     export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
@@ -1066,7 +1060,6 @@ export namespace pages {
     /**
      * Navigate to the currently running application's first static page defined in the application
      * manifest.
-     * @beta
      */
     export function navigateToDefaultPage(): Promise<void> {
       return new Promise<void>((resolve) => {
@@ -1096,8 +1089,6 @@ export namespace pages {
      * @returns boolean to represent whether the pages.currentApp capability is supported
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
-     *
-     * @beta
      */
     export function isSupported(): boolean {
       return ensureInitialized(runtime) && runtime.supports.pages

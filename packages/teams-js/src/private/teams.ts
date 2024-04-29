@@ -20,7 +20,7 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from './interfaces
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 export namespace teams {
-  export const enum ChannelType {
+  export enum ChannelType {
     Regular = 0,
     Private = 1,
     Shared = 2,
