@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Fixed API telemetry tag for Pages.NavigateToApp API",
+  "comment": "Fixed API telemetry tag for `pages.navigateToApp` function",
   "packageName": "@microsoft/teams-js",
   "email": "kangxuanye@microsoft.com",
   "dependentChangeType": "patch"
