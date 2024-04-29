@@ -430,6 +430,30 @@ export function validateUrl(url: URL, errorToThrow?: Error): void {
 }
 
 /**
+ * This function takes in a string that represents a full or relative path and returns a
+ * fully qualified URL object.
+ *
+ * Currently this is accomplished by assigning the input string to an a tag and then retrieving
+ * the a tag's href value. A side effect of doing this is that the string becomes a fully qualified
+ * URL. This is probably not how I would choose to do this, but in order to not unintentionally
+ * break something I've preseved the functionality here and just isolated the code to make it
+ * easier to mock.
+ *
+ * @example
+ *    `fullyQualifyUrlString('https://example.com')` returns `new URL('https://example.com')`
+ *    `fullyQualifyUrlString('helloWorld')` returns `new URL('https://example.com/helloWorld')`
+ *    `fullyQualifyUrlString('hello%20World')` returns `new URL('https://example.com/hello%20World')`
+ *
+ * @param fullOrRelativePath A string representing a full or relative URL.
+ * @returns A fully qualified URL representing the input string.
+ */
+export function fullyQualifyUrlString(fullOrRelativePath: string): URL {
+  const link = document.createElement('a');
+  link.href = fullOrRelativePath;
+  return new URL(link.href);
+}
+
+/**
  * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
  * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.
  * Next, it defines a regular expression scriptRegex that matches any string that starts with <script (followed by any characters), then has any characters (including newlines),
