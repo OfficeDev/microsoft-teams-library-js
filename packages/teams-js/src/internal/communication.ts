@@ -667,7 +667,7 @@ function removeMessageHandlers(
   callbackId: MessageUUID,
   map: Map<MessageUUID, unknown>,
 ): void {
-  map.delete(callbackId); // need to make sure delete works since this might have by-value problems
+  map.delete(callbackId);
   if (!message.uuid) {
     delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
   }
