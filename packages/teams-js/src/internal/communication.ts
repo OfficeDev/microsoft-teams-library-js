@@ -16,7 +16,7 @@ import {
   NestedAppAuthRequest,
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
-} from './nestedAppAuth';
+} from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { validateOrigin } from './validOrigins';
@@ -113,6 +113,7 @@ export function initializeCommunication(
     return sendMessageToParentAsync<[FrameContexts, string, string, string]>(apiVersionTag, 'initialize', [
       version,
       latestRuntimeApiVersion,
+      validMessageOrigins,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
         tryPolyfillWithNestedAppAuthBridge(clientSupportedSDKVersion, Communication.currentWindow, {

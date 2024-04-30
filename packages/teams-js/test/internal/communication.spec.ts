@@ -1,6 +1,6 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuth';
+import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';

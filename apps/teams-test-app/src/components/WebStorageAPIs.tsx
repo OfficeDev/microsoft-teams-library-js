@@ -4,16 +4,25 @@ import React, { ReactElement } from 'react';
 import { ApiWithoutInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
-const WebStorageCapability = (): React.ReactElement =>
+const CheckWebStorageCapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'webStorageCapability',
-    title: 'Web Storage Capability',
-    onClick: async () => `webStorage ${webStorage.isWebStorageClearedOnUserLogOut() ? 'is' : 'is not'} supported`,
+    name: 'checkWebStorageCapability',
+    title: 'Check Web Storage Capability',
+    onClick: async () => `webStorage ${webStorage.isSupported() ? 'is' : 'is not'} supported`,
+  });
+
+const IsWebStorageClearedOnLogOut = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'isWebStorageClearedOnUserLogOut',
+    title: 'Is Web Storage Cleared on Log Out',
+    onClick: async () =>
+      `webStorage ${(await webStorage.isWebStorageClearedOnUserLogOut()) ? 'is' : 'is not'} cleared on user log out`,
   });
 
 const WebStorageAPIs = (): ReactElement => (
   <ModuleWrapper title="WebStorage">
-    <WebStorageCapability />
+    <CheckWebStorageCapability />
+    <IsWebStorageClearedOnLogOut />
   </ModuleWrapper>
 );
 

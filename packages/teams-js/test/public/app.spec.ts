@@ -106,7 +106,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -631,6 +631,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           //insert expected time comparison here?
@@ -989,7 +990,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -1490,6 +1491,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           await utils.respondToFramelessMessage({

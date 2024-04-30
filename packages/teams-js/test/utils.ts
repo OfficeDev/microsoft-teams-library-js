@@ -3,7 +3,8 @@ import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageResponse } from '../src/internal/messageObjects';
-import { NestedAppAuthRequest } from '../src/internal/nestedAppAuth';
+import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
+import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
@@ -132,7 +133,7 @@ export class Utils {
 
   public initializeWithContext = async (
     frameContext: string,
-    hostClientType?: string,
+    hostClientType: string = HostClientType.web,
     validMessageOrigins?: string[],
   ): Promise<void> => {
     app._initialize(this.mockWindow);
@@ -176,6 +177,24 @@ export class Utils {
     }
     return null;
   };
+
+  /**
+   * This function is used to find a message by the action name provided to the send* functions. Usually the action name is the
+   * name of the function being called..
+   * @param actionName - The action name used in the sent message
+   * @param k - In the case where you expect there are multiple messages sent with the same action name,
+   * use this as a zero-based index to return the kth one. Default is 0 (will return the first match).
+   * @returns {MessageRequest} The found message
+   * @throws {Error} If the message is not found
+   */
+  public findMessageByActionName(actionName: string, k: number = 0): MessageRequest {
+    const message = this.findMessageByFunc(actionName, k);
+    if (!message) {
+      throw new Error(`Message with action name ${actionName} not found`);
+    }
+
+    return message;
+  }
 
   public findInitializeMessageOrThrow = (): MessageRequest => {
     const initMessage = this.findMessageByFunc('initialize');

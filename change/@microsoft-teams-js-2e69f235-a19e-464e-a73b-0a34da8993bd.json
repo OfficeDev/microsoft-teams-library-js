@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated documentation on `OpenSingleChatRequest` interface and updated all URLs to remove locale-specific portions.",
+  "comment": "Updated `webStorage` capability to query host for capability support, rather than using a hardcoded answer.",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"
