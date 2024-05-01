@@ -52,8 +52,8 @@ class CommunicationPrivate {
   public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
-  public static callbacks: Map<MessageUUID, Function> = new Map();
-  public static promiseCallbacks: Map<MessageUUID, Function> = new Map();
+  public static callbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
+  public static promiseCallbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
   public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
   public static legacyMessageIdsToUuidMap: {
