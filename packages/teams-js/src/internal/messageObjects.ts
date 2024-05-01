@@ -1,27 +1,4 @@
-import { generateGUID, validateUuid } from './utils';
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- *
- * MessageUUID object that holds the uuid used for processing MessageRequests and MessageResponses
- */
-export class MessageUUID {
-  private uuid: string;
-
-  public constructor(uuid?: string) {
-    if (uuid) {
-      validateUuid(uuid);
-      this.uuid = uuid;
-    } else {
-      this.uuid = generateGUID();
-    }
-  }
-
-  public getUuidValue(): string {
-    return this.uuid;
-  }
-}
+import { UUID as MessageUUID } from './interfaces';
 
 /**
  * @internal

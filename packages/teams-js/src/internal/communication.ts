@@ -9,13 +9,12 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { DOMMessageEvent, ExtendedWindow } from './interfaces';
+import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from './interfaces';
 import {
   MessageID,
   MessageRequest,
   MessageRequestWithRequiredProperties,
   MessageResponse,
-  MessageUUID,
   SerializedMessageRequest,
 } from './messageObjects';
 import {
@@ -384,7 +383,7 @@ function sendRequestToTargetWindowHelper(
   const targetWindowName = getTargetName(targetWindow);
   const request: SerializedMessageRequest = {
     ...messageRequest,
-    uuid: messageRequest.uuid.getUuidValue(),
+    uuid: messageRequest.uuid.toString(),
   };
 
   if (GlobalVars.isFramelessWindow) {
@@ -650,7 +649,7 @@ function retrieveMessageUUIDFromCallback(
   responseUUID: MessageUUID,
 ): MessageUUID | undefined {
   const callback = [...map].find(([key, _value]) => {
-    return key.getUuidValue() === responseUUID.getUuidValue();
+    return key.toString() === responseUUID.toString();
   });
 
   if (callback) {
@@ -846,7 +845,7 @@ function flushMessageQueue(targetWindow: Window | any): void {
     if (messageRequest) {
       const request: SerializedMessageRequest | undefined = {
         ...messageRequest,
-        uuid: messageRequest.uuid?.getUuidValue(),
+        uuid: messageRequest.uuid?.toString(),
       };
 
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
@@ -979,7 +978,7 @@ function createMessageResponse(
 ): MessageResponse {
   return {
     id: id,
-    uuid: uuid?.getUuidValue(),
+    uuid: uuid?.toString(),
     args: args || [],
     isPartialResponse,
   };

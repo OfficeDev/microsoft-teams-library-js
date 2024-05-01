@@ -1,8 +1,8 @@
 import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
-import { MessageID, MessageResponse, MessageUUID, SerializedMessageRequest } from '../src/internal/messageObjects';
+import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from '../src/internal/interfaces';
+import { MessageID, MessageResponse, SerializedMessageRequest } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
@@ -26,7 +26,7 @@ function deserializeMessageRequest(serializedMessage: SerializedMessageRequest):
 }
 
 function getMessageUUIDString(message: MessageRequest): string | undefined {
-  const messageUuid = message.uuid ? message.uuid.getUuidValue() : undefined;
+  const messageUuid = message.uuid ? message.uuid.toString() : undefined;
   return messageUuid;
 }
 
