@@ -4,12 +4,24 @@ import React from 'react';
 import { ApiWithoutInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
-const CustomApi = (): React.ReactElement =>
+const CustomApiWithEvent = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'customAPI',
-    title: 'Call Custom API',
+    name: 'customApiEvent',
+    title: 'Call Custom API (Event)',
     onClick: async () => {
-      await sendCustomMessage('custom-service-test');
+      await sendCustomMessage('custom-service-event');
+      return '';
+    },
+  });
+
+const CustomApiReturnData = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'customApiResponse',
+    title: 'Call Custom API (Response)',
+    onClick: async (setResult) => {
+      await sendCustomMessage('custom-service-test', undefined, (args) => {
+        setResult(args);
+      });
       return '';
     },
   });
@@ -19,7 +31,7 @@ const RegisterCustomHandler = (): React.ReactElement =>
     name: 'registerCustomHandler',
     title: 'Register Custom Handler',
     onClick: async (setResult) => {
-      registerCustomHandler('custom-service-test', (result: string) => {
+      registerCustomHandler('custom-service-event', (result: string) => {
         setResult(result);
         return [];
       });
@@ -30,7 +42,8 @@ const RegisterCustomHandler = (): React.ReactElement =>
 
 const CustomAPIs: React.FC = () => (
   <ModuleWrapper title="Custom">
-    <CustomApi />
+    <CustomApiReturnData />
+    <CustomApiWithEvent />
     <RegisterCustomHandler />
   </ModuleWrapper>
 );
