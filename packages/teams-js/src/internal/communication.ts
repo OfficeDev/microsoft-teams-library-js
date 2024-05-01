@@ -11,11 +11,15 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from './interfaces';
 import {
+  deserializeMessageResponse,
   MessageID,
   MessageRequest,
   MessageRequestWithRequiredProperties,
   MessageResponse,
   SerializedMessageRequest,
+  SerializedMessageResponse,
+  serializeMessageRequest,
+  serializeMessageResponse,
 } from './messageObjects';
 import {
   NestedAppAuthMessageEventNames,
@@ -381,14 +385,11 @@ function sendRequestToTargetWindowHelper(
 ): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
   const logger = sendRequestToTargetWindowHelperLogger;
   const targetWindowName = getTargetName(targetWindow);
-  const request: SerializedMessageRequest = {
-    ...messageRequest,
-    uuid: messageRequest.uuid.toString(),
-  };
+  const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuid);
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuidAsString);
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -397,10 +398,10 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuid);
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuidAsString);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuid);
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuidAsString);
       getTargetMessageQueue(targetWindow).push(messageRequest);
     }
   }
@@ -481,7 +482,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  const { args } = evt.data as MessageResponse;
+  const { args } = evt.data as SerializedMessageResponse;
   const [, message] = args ?? [];
   const parsedData: ParsedNestedAppAuthMessageData = (() => {
     try {
@@ -619,7 +620,7 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  */
 function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID {
   if (response.uuid) {
-    const responseUUID = new MessageUUID(response.uuid);
+    const responseUUID = response.uuid;
     const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
     if (callbackUUID) {
       return callbackUUID;
@@ -681,7 +682,8 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
-    const message = evt.data as MessageResponse;
+    const serializedResponse = evt.data as SerializedMessageResponse;
+    const message: MessageResponse = deserializeMessageResponse(serializedResponse);
     const callbackId = retrieveMessageUUIDFromResponse(message);
     const callback = CommunicationPrivate.callbacks.get(callbackId);
     logger('Received a response from parent for message %i', callbackId);
@@ -843,13 +845,13 @@ function flushMessageQueue(targetWindow: Window | any): void {
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
     const messageRequest = targetMessageQueue.shift();
     if (messageRequest) {
-      const request: SerializedMessageRequest | undefined = {
-        ...messageRequest,
-        uuid: messageRequest.uuid?.toString(),
-      };
+      const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
 
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
+      flushMessageQueueLogger(
+        'Flushing message %i from ' + target + ' message queue via postMessage.',
+        request?.uuidAsString,
+      );
 
       targetWindow.postMessage(request, targetOrigin);
     }
@@ -888,9 +890,10 @@ function sendMessageResponseToChild(
 ): void {
   const targetWindow = Communication.childWindow;
   const response = createMessageResponse(id, uuid, args, isPartialResponse);
+  const serializedResponse = serializeMessageResponse(response);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(response, targetOrigin);
+    targetWindow.postMessage(serializedResponse, targetOrigin);
   }
 }
 
@@ -978,7 +981,7 @@ function createMessageResponse(
 ): MessageResponse {
   return {
     id: id,
-    uuid: uuid?.toString(),
+    uuid: uuid,
     args: args || [],
     isPartialResponse,
   };

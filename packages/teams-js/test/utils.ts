@@ -2,25 +2,16 @@ import { validOriginsFallback as validOrigins } from '../src/internal/constants'
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
 import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from '../src/internal/interfaces';
-import { MessageID, MessageResponse, SerializedMessageRequest } from '../src/internal/messageObjects';
+import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
-export interface MessageRequest {
-  id?: MessageID;
-  func: string;
-  uuid?: MessageUUID;
-  args?: unknown[];
-  timestamp?: number;
-  isPartialResponse?: boolean;
-}
-
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
   const message = {
     ...serializedMessage,
-    uuid: serializedMessage.uuid ? new MessageUUID(serializedMessage.uuid) : undefined,
+    uuid: serializedMessage.uuidAsString ? new MessageUUID(serializedMessage.uuidAsString) : undefined,
   };
   return message;
 }
@@ -255,9 +246,9 @@ export class Utils {
       const domEvent = {
         data: {
           id: message.id,
-          uuid: getMessageUUIDString(message),
+          uuidAsString: getMessageUUIDString(message),
           args: args,
-        } as MessageResponse,
+        } as SerializedMessageResponse,
         ports,
       } as DOMMessageEvent;
       (this.mockWindow as unknown as ExtendedWindow).onNativeMessage(domEvent);
@@ -267,9 +258,9 @@ export class Utils {
         source: this.mockWindow.parent,
         data: {
           id: message.id,
-          uuid: getMessageUUIDString(message),
+          uuidAsString: getMessageUUIDString(message),
           args: args,
-        } as MessageResponse,
+        } as SerializedMessageResponse,
         ports,
       } as unknown as MessageEvent);
     }
@@ -287,9 +278,9 @@ export class Utils {
       source: this.mockWindow.opener,
       data: {
         id: message.id,
-        uuid: getMessageUUIDString(message),
+        uuidAsString: getMessageUUIDString(message),
         args: args,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as MessageEvent);
   };
 
@@ -297,10 +288,10 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: getMessageUUIDString(message),
+        uuidAsString: getMessageUUIDString(message),
         args: args,
         isPartialResponse,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
     } as DOMMessageEvent);
   };
 
@@ -313,10 +304,10 @@ export class Utils {
     (this.mockWindow as unknown as ExtendedWindow).onNativeMessage({
       data: {
         id: message.id,
-        uuid: getMessageUUIDString(message),
+        uuidAsString: getMessageUUIDString(message),
         args: args,
         isPartialResponse,
-      } as MessageResponse,
+      } as SerializedMessageResponse,
       ports,
     } as DOMMessageEvent);
   };

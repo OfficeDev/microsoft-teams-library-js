@@ -1,10 +1,11 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
-import { MessageRequest, Utils } from '../utils';
+import { Utils } from '../utils';
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
 
