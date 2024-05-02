@@ -25,7 +25,7 @@ steps:
     inputs:
       script: |
         corepack enable
-        corepack prepare pnpm --activate
+        corepack prepare pnpm@9.0.6 --activate
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2
