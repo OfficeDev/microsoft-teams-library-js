@@ -106,6 +106,7 @@
       "express": "^4.19.2",
       "follow-redirects": "^1.15.6",
       "glob-parent": "^5.1.2",
+      "jsdom": "^24.0.0",
       "ip": ">=1.1.9",
       "lodash": "^4.17.21",
       "merge": "^2.1.1",
