@@ -20,7 +20,7 @@ The following guide references steps to build the entire project including Teams
 
 Please look through our [Contributing Guide](CONTRIBUTING.md) for important details on how to submit a pull request and contribute to this repository.
 
-NOTE: Make sure `pnpm@7.30.1` or greater is installed as a global tool, by running `npm install -g pnpm`.
+NOTE: Make sure `pnpm@9.0.6` or greater is installed as a global tool, by running `npm install -g pnpm@9.0.6`.
 
 TIP: whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the `packages/teams-js` directory.
 
