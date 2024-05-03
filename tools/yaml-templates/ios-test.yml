@@ -106,3 +106,45 @@ steps:
       searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
     condition: always()
+
+  - bash: |
+      brew install xctesthtmlreport
+    displayName: 'Install XCTestHtmlReport for publishing result'
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+    condition: succeededOrFailed()
+
+  - bash: |
+      ls -a ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*
+      ls -a ~/Library/Developer/Xcode/DerivedData/$(parameters.iOSAppHostingSdkProjectDirectory)
+      xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.xcresult -j
+    displayName: Generate E2E test report
+    condition: succeededOrFailed()
+
+  - bash: |
+      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.junit /Users/runner/work/1/s/metaos-hub-sdk-iOS
+    displayName: Copy Junit File
+    condition: succeededOrFailed()
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: '**/*.junit'
+      failTaskOnFailedTests: false
+      testRunTitle: 'E2E Tests - $(agent.JobName)'
+      searchFolder: 'metaos-hub-sdk-iOS'
+      mergeTestResults: true
+    condition: succeededOrFailed()
+
+  - bash: |
+      output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
+      rm -rf "${output}" > /dev/null
+
+      mkdir -p "${output}"
+
+      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/index.html "${output}/index.html"
+      cp -r ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.xcresult "${output}/output.xcresult"
+
+      echo "ls -lR ${output}"
+      ls -lR "${output}"
+    displayName: Preparations for publishing results
+    condition: failed()
