@@ -57,7 +57,7 @@ extends:
               - task: PowerShell@2
                 displayName: Update npmrc with NPM-TOKEN
                 inputs:
-                  filePath: $(PIPELINE.WORKSPACE)\microsoft-teams-library-js-pipeline\scripts\add-npmrc-npmtoken.ps1
+                  filePath: $(PIPELINE.WORKSPACE)\microsoft-teams-library-js-pipeline\scripts\add-npmrc-npmtoken-onebranch.ps1
               - task: Npm@1
                 displayName: Publish to npm (tag beta) KV
                 inputs:
@@ -76,5 +76,5 @@ extends:
               - task: PowerShell@2
                 displayName: View Published Package URLs
                 inputs:
-                  filePath: $(PIPELINE.WORKSPACE)\microsoft-teams-library-js-pipeline\scripts\view-published-packages-urls.ps1
+                  filePath: $(PIPELINE.WORKSPACE)\microsoft-teams-library-js-pipeline\scripts\view-published-packages-urls-onebranch.ps1
                   arguments: $(System.DefaultWorkingDirectory)
