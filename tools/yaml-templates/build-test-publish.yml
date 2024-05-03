@@ -106,7 +106,7 @@ steps:
       flattenFolders: true
     displayName: 'Copy validDomains for CDN'
 
-  #The`*7dttl*` folder allows us to set everyfile underneath it with a 7 day cache-control instead of the default of 7300 days
+  #The`*7dttl*` folder allows us to set every file underneath it with a 7 day cache-control instead of the default of 7300 days
   - task: CopyFiles@2
     inputs:
       Contents: |
