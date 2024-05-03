@@ -115,7 +115,7 @@ steps:
 
   - bash: |
       ls -a ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*
-      ls -a ~/Library/Developer/Xcode/DerivedData/$(parameters.iOSAppHostingSdkProjectDirectory)
+      ls -a ~/Library/Developer/Xcode/DerivedData/$(iOSAppHostingSdkProjectDirectory)
       xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.xcresult -j
     displayName: Generate E2E test report
     condition: succeededOrFailed()
