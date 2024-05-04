@@ -412,6 +412,7 @@ describe('utils', () => {
         expect.assertions(1);
         try {
           const uuid = new UUID('');
+          uuid.toString();
         } catch (error) {
           expect(error).toEqual(new Error('id must not be empty'));
         }
@@ -422,6 +423,7 @@ describe('utils', () => {
         const id = 'invalid-id';
         try {
           const uuid = new UUID(id);
+          uuid.toString();
         } catch (error) {
           expect(error).toEqual(new Error('id must be a valid UUID'));
         }
