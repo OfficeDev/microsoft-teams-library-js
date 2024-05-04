@@ -56,7 +56,7 @@ class CommunicationPrivate {
   public static childMessageQueue: MessageRequest[] = [];
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
-  public static callbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
+  public static callbacks: Map<MessageUUID, Function> = new Map();
   public static promiseCallbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
   public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
@@ -350,8 +350,6 @@ export function sendMessageToParent(
 
   const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
   if (callback) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     CommunicationPrivate.callbacks.set(request.uuid, callback);
   }
 }
@@ -424,7 +422,6 @@ function sendMessageToParentHelper(
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   logger('Message %i information: %o', request.uuid, { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
@@ -647,14 +644,16 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
  */
 function retrieveMessageUUIDFromCallback(
   map: Map<MessageUUID, Function>,
-  responseUUID: MessageUUID,
+  responseUUID?: MessageUUID,
 ): MessageUUID | undefined {
-  const callback = [...map].find(([key, _value]) => {
-    return key.toString() === responseUUID.toString();
-  });
+  if (responseUUID) {
+    const callback = [...map].find(([key, _value]) => {
+      return key.toString() === responseUUID.toString();
+    });
 
-  if (callback) {
-    return callback[0];
+    if (callback) {
+      return callback[0];
+    }
   }
   return undefined;
 }
@@ -662,12 +661,11 @@ function retrieveMessageUUIDFromCallback(
  * @internal
  * Limited to Microsoft-internal use
  */
-function removeMessageHandlers(
-  message: MessageResponse,
-  callbackId: MessageUUID,
-  map: Map<MessageUUID, unknown>,
-): void {
-  map.delete(callbackId);
+function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, Function>): void {
+  const callbackId = retrieveMessageUUIDFromCallback(map, message.uuid);
+  if (callbackId) {
+    map.delete(callbackId);
+  }
   if (!message.uuid) {
     delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
   }
@@ -696,7 +694,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
       if (!isPartialResponse(evt)) {
         logger('Removing registered callback for message %i', callbackId);
-        removeMessageHandlers(message, callbackId, CommunicationPrivate.callbacks);
+        removeMessageHandlers(message, CommunicationPrivate.callbacks);
       }
     }
     const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
@@ -705,7 +703,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       promiseCallback(message.args);
 
       logger('Removing registered promise callback for message %i', callbackId);
-      removeMessageHandlers(message, callbackId, CommunicationPrivate.promiseCallbacks);
+      removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
     }
     const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
     if (portCallback) {
@@ -717,7 +715,7 @@ function handleParentMessage(evt: DOMMessageEvent): void {
       portCallback(port, message.args);
 
       logger('Removing registered port callback for message %i', callbackId);
-      removeMessageHandlers(message, callbackId, CommunicationPrivate.portCallbacks);
+      removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
     }
     if (message.uuid) {
       CommunicationPrivate.legacyMessageIdsToUuidMap = {};

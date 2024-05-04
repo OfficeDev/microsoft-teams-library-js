@@ -1,3 +1,4 @@
+import { UUID } from '../../src/internal/interfaces';
 import {
   base64ToBlob,
   compareSDKVersions,
@@ -355,49 +356,85 @@ describe('utils', () => {
     });
   });
 
-  describe('validateUuid', () => {
-    it('should throw error when id is undefined', async () => {
-      expect.assertions(1);
-      try {
-        await validateUuid(undefined);
-      } catch (error) {
-        expect(error).toEqual(new Error('id must not be empty'));
-      }
-    });
+  describe('UUID class tests', () => {
+    describe('validateUuid', () => {
+      it('should throw error when id is undefined', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid(undefined);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
 
-    it('should throw error when id is null', async () => {
-      expect.assertions(1);
-      try {
-        await validateUuid(null);
-      } catch (error) {
-        expect(error).toEqual(new Error('id must not be empty'));
-      }
-    });
+      it('should throw error when id is null', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid(null);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
 
-    it('should throw error when id is empty', async () => {
-      expect.assertions(1);
-      try {
-        await validateUuid('');
-      } catch (error) {
-        expect(error).toEqual(new Error('id must not be empty'));
-      }
-    });
+      it('should throw error when id is empty', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid('');
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
 
-    it('should throw error when id is not a valid UUID', async () => {
-      expect.assertions(1);
-      const id = 'invalid-id';
-      try {
-        await validateUuid(id);
-      } catch (error) {
-        expect(error).toEqual(new Error('id must be a valid UUID'));
-      }
-    });
+      it('should throw error when id is not a valid UUID', async () => {
+        expect.assertions(1);
+        const id = 'invalid-id';
+        try {
+          await validateUuid(id);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must be a valid UUID'));
+        }
+      });
 
-    it('should not throw error when appId is a valid GUID', async () => {
-      expect.assertions(1);
-      // ID randomly generated for this test
-      const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
-      return expect(() => validateUuid(id)).not.toThrow();
+      it('should not throw error when appId is a valid GUID', async () => {
+        expect.assertions(1);
+        // ID randomly generated for this test
+        const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+        return expect(() => validateUuid(id)).not.toThrow();
+      });
+    });
+    describe('UUID class', () => {
+      it('should create new uuid when input is undefined', async () => {
+        expect.assertions(1);
+        const uuid = new UUID(undefined);
+        return expect(() => validateUuid(uuid.toString())).not.toThrow();
+      });
+      it('should throw error when id is empty', async () => {
+        expect.assertions(1);
+        try {
+          const uuid = new UUID('');
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
+
+      it('should throw error when id is not a valid UUID', async () => {
+        expect.assertions(1);
+        const id = 'invalid-id';
+        try {
+          const uuid = new UUID(id);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must be a valid UUID'));
+        }
+      });
+
+      it('should not throw error when appId is a valid GUID', async () => {
+        expect.assertions(1);
+        // ID randomly generated for this test
+        const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+        const uuid = new UUID(id);
+        expect(() => validateUuid(uuid.toString())).not.toThrow();
+        return expect(() => uuid.toString() === id);
+      });
     });
   });
 });

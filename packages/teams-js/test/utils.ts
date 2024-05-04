@@ -16,10 +16,7 @@ function deserializeMessageRequest(serializedMessage: SerializedMessageRequest):
   return message;
 }
 
-function getMessageUUIDString(message: MessageRequest): string | undefined {
-  const messageUuid = message.uuid ? message.uuid.toString() : undefined;
-  return messageUuid;
-}
+const getMessageUUIDString = (message: MessageRequest): string | undefined => message.uuid?.toString();
 
 export class Utils {
   public tabOrigin = 'https://example.com';
