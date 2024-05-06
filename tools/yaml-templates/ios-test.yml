@@ -144,6 +144,6 @@ steps:
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
-      pathToPublish: '$(agent.buildDirectory)/Logs'
-      artifactName: iOSDebugLogs
+      path: '$(agent.buildDirectory)/Logs'
+      artifact: iOSDebugLogs
     condition: always()
