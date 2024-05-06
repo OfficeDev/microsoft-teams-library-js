@@ -142,7 +142,7 @@ steps:
     displayName: Preparations for publishing results
     condition: always() #failed()
 
-  - task: PublishBuildArtifacts@1
+  - task: 1ES.PublishPipelineArtifact@1
     inputs:
       pathToPublish: '$(agent.buildDirectory)/Logs'
       artifactName: iOSDebugLogs
