@@ -141,3 +141,9 @@ steps:
       ls -lR "${output}"
     displayName: Preparations for publishing results
     condition: always() #failed()
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(agent.buildDirectory)/Logs'
+      artifactName: DebugLogs-${{parameters.version}}
+    condition: always()
