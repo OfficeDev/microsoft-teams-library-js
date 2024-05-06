@@ -18,7 +18,8 @@ steps:
       targetType: inline
       script: |
         brew install xctesthtmlreport
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      condition: succeededOrFailed()
 
   - task: NodeTool@0
     inputs:
@@ -88,14 +89,14 @@ steps:
       script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  # - task: Bash@3
-  #   displayName: 'Generate E2E test report'
-  #   condition: succeededOrFailed()
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
-  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  - task: Bash@3
+    displayName: 'Generate E2E test report'
+    condition: succeededOrFailed()
+    inputs:
+      targetType: inline
+      script: |
+        xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # - task: PublishTestResults@2
   #   displayName: 'Publish Test Results'
@@ -107,19 +108,13 @@ steps:
   #     mergeTestResults: true
   #   condition: always()
 
-  - bash: |
-      brew install xctesthtmlreport
-    displayName: 'Install XCTestHtmlReport for publishing result'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-    condition: succeededOrFailed()
+  # - bash: |
+  #     xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult -j
+  #   displayName: Generate E2E test report
+  #   condition: succeededOrFailed()
 
   - bash: |
-      xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult -j
-    displayName: Generate E2E test report
-    condition: succeededOrFailed()
-
-  - bash: |
-      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.junit /Users/runner/work/1/s/metaos-hub-sdk-iOS
+      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
     displayName: Copy Junit File
     condition: succeededOrFailed()
 
@@ -129,7 +124,7 @@ steps:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
       testRunTitle: 'E2E Tests - $(agent.JobName)'
-      searchFolder: 'metaos-hub-sdk-iOS'
+      searchFolder: iOSHost
       mergeTestResults: true
     condition: succeededOrFailed()
 
@@ -145,4 +140,4 @@ steps:
       echo "ls -lR ${output}"
       ls -lR "${output}"
     displayName: Preparations for publishing results
-    condition: failed()
+    condition: always() #failed()
