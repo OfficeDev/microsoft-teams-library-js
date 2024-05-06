@@ -50,7 +50,6 @@ extends:
                   azureSubscription: '$(serviceConnectionId)'
                   KeyVaultName: '$(keyVaultName)'
                   SecretsFilter: '$(keyVaultSecretsFilter)'
-                  RunAsPreJob: true
               - task: NodeTool@0
                 displayName: Use Node 18.x
                 inputs:
