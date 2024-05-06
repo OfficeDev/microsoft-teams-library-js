@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Updated the `.npmrc` location for the release pipeline",
+  "packageName": "@microsoft/teams-js",
+  "email": "jeklouda@microsoft.com",
+  "dependentChangeType": "none"
+}
