@@ -51,7 +51,9 @@ import PrivateAPIs from './components/privateApis/PrivateAPIs';
 import TeamsAPIs from './components/privateApis/TeamsAPIs';
 import VideoExAPIs from './components/privateApis/VideoEffectsExAPIs';
 import ProfileAPIs from './components/ProfileAPIs';
+import RememberScrollToggle from './components/RememberScrollToggle';
 import RemoteCameraAPIs from './components/RemoteCameraAPIs';
+import ScrollToTopButton from './components/ScrollToTop';
 import SearchAPIs from './components/SearchAPIs';
 import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
 import SharingAPIs from './components/SharingAPIs';
@@ -64,8 +66,6 @@ import Version from './components/Version';
 import VideoAPIs from './components/VideoEffectsApis';
 import VisualMediaAPIs from './components/VisualMediaAPIs';
 import WebStorageAPIs from './components/WebStorageAPIs';
-import RememberScrollToggle from './components/RememberScrollToggle';
-import ScrollToTopButton from './components/ScrollToTop';
 
 const urlParams = new URLSearchParams(window.location.search);
 

@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
-const ScrollToTopButton = () => {
+const ScrollToTopButton = (): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Function to check scroll position and set visibility
-  const toggleVisibility = () => {
+  const toggleVisibility = (): void => {
     if (window.scrollY > 500) {
-      // Adjust 500 to the scroll position you deem appropriate
       setIsVisible(true);
     } else {
       setIsVisible(false);
     }
   };
 
-  // Function to scroll to the top
-  const scrollToTop = () => {
+  const scrollToTop = (): void => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth', // Smooth scroll
+      behavior: 'smooth',
     });
   };
 

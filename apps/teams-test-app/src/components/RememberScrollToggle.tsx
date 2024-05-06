@@ -1,17 +1,15 @@
 import throttle from 'lodash.throttle';
 import React, { useEffect, useState } from 'react';
 
-const RememberScrollToggle = () => {
-  // Initialize the toggle state from sessionStorage
+const THROTTLE_TIME = 2000;
+
+const RememberScrollToggle = (): JSX.Element => {
   const [isScrollFeatureActive, setIsScrollFeatureActive] = useState(
     () => JSON.parse(sessionStorage.getItem('isScrollFeatureActive') || '{}') ?? true,
   );
 
   useEffect(() => {
-    // Save the toggle state to sessionStorage whenever it changes
     sessionStorage.setItem('isScrollFeatureActive', JSON.stringify(isScrollFeatureActive));
-
-    console.log('scrolling');
 
     if (!isScrollFeatureActive) {
       return;
@@ -20,8 +18,7 @@ const RememberScrollToggle = () => {
     const handleScroll = throttle(() => {
       const scrollPosition = window.scrollY;
       sessionStorage.setItem('iframeScrollPosition', JSON.stringify(scrollPosition));
-      console.log('scrolling');
-    }, 2000);
+    }, THROTTLE_TIME);
 
     window.addEventListener('scroll', handleScroll);
 
