@@ -145,5 +145,5 @@ steps:
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
       path: '$(agent.buildDirectory)/Logs'
-      artifact: iOSDebugLogs
+      artifact: iOSDebugLogs - ${{ parameters.testPlan }}
     condition: always()
