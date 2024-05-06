@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Cleaned up import structure in the Private folder",
+  "comment": "Cleaned up import structure in the `private` folder",
   "packageName": "@microsoft/teams-js",
   "email": "noahdarveau@microsoft.com",
   "dependentChangeType": "patch"
