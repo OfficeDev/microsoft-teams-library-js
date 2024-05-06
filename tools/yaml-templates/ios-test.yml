@@ -145,5 +145,5 @@ steps:
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(agent.buildDirectory)/Logs'
-      artifactName: DebugLogs-${{parameters.version}}
+      artifactName: iOSDebugLogs
     condition: always()
