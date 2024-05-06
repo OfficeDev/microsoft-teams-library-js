@@ -58,7 +58,7 @@ extends:
                 displayName: Update npmrc with NPM-TOKEN
                 inputs:
                   targetType: 'inline'
-                  script: Set-Content -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$Env:NPM-TOKEN"
+                  script: Set-Content -Path $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc -Value "//registry.npmjs.org/:_authToken=$Env:NPM-TOKEN";type $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/NPMFeed/.npmrc
               - task: Npm@1
                 displayName: Publish to npm (tag beta) KV
                 inputs:
