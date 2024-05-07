@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added `meeting.getMeetingDetailsVerbose` to allow retrieving additional meeting details from supported hosts.",
-  "packageName": "@microsoft/teams-js",
-  "email": "johnsle@microsoft.com",
-  "dependentChangeType": "patch"
-}
