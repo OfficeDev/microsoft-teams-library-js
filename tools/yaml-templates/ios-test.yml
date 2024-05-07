@@ -91,27 +91,12 @@ steps:
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
-    condition: succeededOrFailed()
     inputs:
       targetType: inline
       script: |
         xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  # - task: PublishTestResults@2
-  #   displayName: 'Publish Test Results'
-  #   inputs:
-  #     testResultsFiles: '**/*.junit'
-  #     failTaskOnFailedTests: false
-  #     testRunTitle: 'E2E Tests - iOS'
-  #     searchFolder: '$(Agent.BuildDirectory)/iOSHost'
-  #     mergeTestResults: true
-  #   condition: always()
-
-  # - bash: |
-  #     xchtmlreport -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult -j
-  #   displayName: Generate E2E test report
-  #   condition: succeededOrFailed()
+    condition: always()
 
   - bash: |
       cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
@@ -140,7 +125,7 @@ steps:
       echo "ls -lR ${output}"
       ls -lR "${output}"
     displayName: Preparations for publishing results
-    condition: always() #failed()
+    condition: always()
 
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
