@@ -411,8 +411,7 @@ describe('utils', () => {
       it('should throw error when id is empty', async () => {
         expect.assertions(1);
         try {
-          const uuid = new UUID('');
-          uuid.toString();
+          const _uuid = new UUID('');
         } catch (error) {
           expect(error).toEqual(new Error('id must not be empty'));
         }
@@ -422,8 +421,7 @@ describe('utils', () => {
         expect.assertions(1);
         const id = 'invalid-id';
         try {
-          const uuid = new UUID(id);
-          uuid.toString();
+          const _uuid = new UUID(id);
         } catch (error) {
           expect(error).toEqual(new Error('id must be a valid UUID'));
         }
