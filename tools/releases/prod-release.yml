@@ -26,6 +26,7 @@ extends:
         azure_subscription_ids: $(subscriptionId)
       jobs:
       - job: Agent_job
+        condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
         pool:
           type: release
         steps:
