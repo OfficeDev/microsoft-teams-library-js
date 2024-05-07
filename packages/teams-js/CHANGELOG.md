@@ -11,7 +11,7 @@ Tue, 07 May 2024 20:54:35 GMT
 ### Minor changes
 
 - Added a new API `externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins`. It can be used to perform authentication with Power Platform connector plugins.
-- Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer. 
+- Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer.
 - Added `meeting.getMeetingDetailsVerbose` to allow retrieving additional meeting details from supported hosts.
 - Added support for `content` frame context to `liveShare` capability. Live Share SDK works now in Chat/Channel Tab and Collab Stage view contexts with this change.
 
@@ -20,10 +20,9 @@ Tue, 07 May 2024 20:54:35 GMT
 - Cleaned up import structure in the `private` folder
 - Fixed API telemetry tag for `pages.navigateToApp` function
 - Updated `authentication.authenticate` so that it only accepts https URLs.
-- Added in 4 new domains for copilot chat to the validOrigins list
 - Added `validMessageOrigins` to be passed to `parentWindow`.
 - Updated `webStorage` capability to query host for capability support, rather than using a hardcoded answer.
-- Exported enums are no longer const due to a bug
+- Fixed a bug with exported `const enums`
 - Made a skeletonized version of the buffer npm package as a temporary measure to reduce bundle size
 
 ## 2.22.0
