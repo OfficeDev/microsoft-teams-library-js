@@ -99,7 +99,7 @@ steps:
     condition: always()
 
   - bash: |
-      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
+      cp ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
     displayName: Copy Junit File
     condition: succeededOrFailed()
 
@@ -109,7 +109,7 @@ steps:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
       testRunTitle: 'E2E Tests - $(agent.JobName)'
-      searchFolder: iOSHost
+      searchFolder: /Users/runner/work/1/s/iOSHost
       mergeTestResults: true
     condition: succeededOrFailed()
 
@@ -119,8 +119,8 @@ steps:
 
       mkdir -p "${output}"
 
-      cp ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/index.html "${output}/index.html"
-      cp -r ~/Library/Developer/Xcode/DerivedData/metaos-hub-sdk*/Logs/Test/*.xcresult "${output}/output.xcresult"
+      cp ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/index.html "${output}/index.html"
+      cp -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult "${output}/output.xcresult"
 
       echo "ls -lR ${output}"
       ls -lR "${output}"
@@ -130,5 +130,5 @@ steps:
   - task: 1ES.PublishPipelineArtifact@1
     inputs:
       path: '$(agent.buildDirectory)/Logs'
-      artifact: iOSDebugLogs - ${{ parameters.testPlan }} -$(System.JobAttempt)
+      artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()
