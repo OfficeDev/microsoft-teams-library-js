@@ -3,7 +3,6 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
-import { generateGUID } from '../../src/internal/utils';
 import { UUID } from '../../src/internal/uuidObject';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
