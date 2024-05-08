@@ -617,6 +617,7 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  * Limited to Microsoft-internal use
  */
 function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID | undefined {
+  const logger = handleParentMessageLogger;
   if (response.uuid) {
     const responseUUID = response.uuid;
     const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
@@ -634,6 +635,10 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
   } else {
     return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
   }
+  logger(
+    `Received a message with uuid: ${response.uuid?.toString()} and legacyId: %i that failed to produce a callbackId`,
+    response.id,
+  );
   return undefined;
 }
 
