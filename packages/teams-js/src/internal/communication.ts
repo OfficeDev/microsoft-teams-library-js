@@ -616,7 +616,7 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  * @internal
  * Limited to Microsoft-internal use
  */
-function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID {
+function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID | undefined {
   if (response.uuid) {
     const responseUUID = response.uuid;
     const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
@@ -631,8 +631,10 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
     if (portCallbackUUID) {
       return portCallbackUUID;
     }
+  } else {
+    return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
   }
-  return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
+  return undefined;
 }
 
 /**
@@ -684,42 +686,44 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const serializedResponse = evt.data as SerializedMessageResponse;
     const message: MessageResponse = deserializeMessageResponse(serializedResponse);
     const callbackId = retrieveMessageUUIDFromResponse(message);
-    const callback = CommunicationPrivate.callbacks.get(callbackId);
-    logger('Received a response from parent for message %i', callbackId);
-    if (callback) {
-      logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      callback.apply(null, [...message.args, message.isPartialResponse]);
+    if (callbackId) {
+      const callback = CommunicationPrivate.callbacks.get(callbackId);
+      logger('Received a response from parent for message %i', callbackId);
+      if (callback) {
+        logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        callback.apply(null, [...message.args, message.isPartialResponse]);
 
-      // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
-      if (!isPartialResponse(evt)) {
-        logger('Removing registered callback for message %i', callbackId);
-        removeMessageHandlers(message, CommunicationPrivate.callbacks);
+        // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
+        if (!isPartialResponse(evt)) {
+          logger('Removing registered callback for message %i', callbackId);
+          removeMessageHandlers(message, CommunicationPrivate.callbacks);
+        }
       }
-    }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
-    if (promiseCallback) {
-      logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
-      promiseCallback(message.args);
+      const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
+      if (promiseCallback) {
+        logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
+        promiseCallback(message.args);
 
-      logger('Removing registered promise callback for message %i', callbackId);
-      removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
-    }
-    const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
-    if (portCallback) {
-      logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
-      let port: MessagePort | undefined;
-      if (evt.ports && evt.ports[0] instanceof MessagePort) {
-        port = evt.ports[0];
+        logger('Removing registered promise callback for message %i', callbackId);
+        removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
       }
-      portCallback(port, message.args);
+      const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
+      if (portCallback) {
+        logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
+        let port: MessagePort | undefined;
+        if (evt.ports && evt.ports[0] instanceof MessagePort) {
+          port = evt.ports[0];
+        }
+        portCallback(port, message.args);
 
-      logger('Removing registered port callback for message %i', callbackId);
-      removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
-    }
-    if (message.uuid) {
-      CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+        logger('Removing registered port callback for message %i', callbackId);
+        removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
+      }
+      if (message.uuid) {
+        CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
