@@ -1,4 +1,3 @@
-import { UUID } from '../../src/internal/interfaces';
 import {
   base64ToBlob,
   compareSDKVersions,
@@ -8,6 +7,7 @@ import {
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
+import { UUID } from '../../src/internal/uuidObject';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 

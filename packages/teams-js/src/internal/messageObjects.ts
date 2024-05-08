@@ -1,4 +1,4 @@
-import { UUID as MessageUUID } from './interfaces';
+import { UUID as MessageUUID } from './uuidObject';
 
 /**
  * @internal

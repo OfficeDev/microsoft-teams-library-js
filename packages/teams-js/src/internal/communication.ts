@@ -9,7 +9,7 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
-import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from './interfaces';
+import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
   deserializeMessageResponse,
   MessageID,
@@ -29,6 +29,7 @@ import {
 } from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
+import { UUID as MessageUUID } from './uuidObject';
 import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');

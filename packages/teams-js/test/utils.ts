@@ -1,9 +1,10 @@
 import { validOriginsFallback as validOrigins } from '../src/internal/constants';
 import { defaultSDKVersionForCompatCheck } from '../src/internal/constants';
 import { GlobalVars } from '../src/internal/globalVars';
-import { DOMMessageEvent, ExtendedWindow, UUID as MessageUUID } from '../src/internal/interfaces';
+import { DOMMessageEvent, ExtendedWindow } from '../src/internal/interfaces';
 import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } from '../src/internal/messageObjects';
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
+import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
