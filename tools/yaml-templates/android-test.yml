@@ -5,7 +5,7 @@ parameters:
 
 steps:
   - checkout: self
-  - checkout: ${{ parameters.androidAppHostingSdkGitPath }}#refs/heads/testFixes
+  - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
     path: androidHost
 
     persistCredentials: true
