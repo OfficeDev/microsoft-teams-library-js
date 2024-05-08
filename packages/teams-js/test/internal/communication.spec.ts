@@ -1731,7 +1731,7 @@ describe('Testing communication', () => {
           callbackWasCalled++;
         });
 
-        let message = utils.findMessageByFunc('testAction');
+        const message = utils.findMessageByFunc('testAction');
 
         if (message) {
           expect(message.id).toBe(1);
