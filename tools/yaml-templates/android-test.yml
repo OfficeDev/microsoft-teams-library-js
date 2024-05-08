@@ -5,8 +5,9 @@ parameters:
 
 steps:
   - checkout: self
-  - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
+  - checkout: ${{ parameters.androidAppHostingSdkGitPath }}#refs/heads/testFixes
     path: androidHost
+
     persistCredentials: true
 
   - task: NodeTool@0
