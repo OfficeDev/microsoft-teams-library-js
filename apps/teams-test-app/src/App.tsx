@@ -1,6 +1,6 @@
 import './App.css';
 
-import { app, appInitialization, initialize } from '@microsoft/teams-js';
+import { app, appInitialization, IAppWindow, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import AppAPIs from './components/AppAPIs';
@@ -19,6 +19,7 @@ import DialogCardBotAPIs from './components/DialogCardBotAPIs';
 import DialogUpdateAPIs from './components/DialogUpdateAPIs';
 import DialogUrlAPIs from './components/DialogUrlAPIs';
 import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
+import DialogUrlParentCommunicationAPIs from './components/DialogUrlParentCommunicationAPIs';
 import GeoLocationAPIs from './components/GeoLocationAPIs';
 import Links from './components/Links';
 import LocationAPIs from './components/LocationAPIs';
@@ -128,6 +129,7 @@ export const generateRegistrationMsg = (changeCause: string): string => {
 };
 
 const App = (): ReactElement => {
+  const dialogWindowRef = React.useRef<IAppWindow | null>(null);
   return (
     <div>
       <div className="App-container">
@@ -147,8 +149,9 @@ const App = (): ReactElement => {
         <DialogCardAPIs />
         <DialogCardBotAPIs />
         <DialogUpdateAPIs />
-        <DialogUrlAPIs />
+        <DialogUrlAPIs childWindowRef={dialogWindowRef} />
         <DialogUrlBotAPIs />
+        <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />
         <ExternalAppAuthenticationAPIs />
         <ExternalAppCardActionsAPIs />
         <ExternalAppCommandsAPIs />
