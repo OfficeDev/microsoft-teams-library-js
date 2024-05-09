@@ -98,18 +98,13 @@ steps:
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
     condition: always()
 
-  - bash: |
-      cp ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
-    displayName: Copy Junit File
-    condition: succeededOrFailed()
-
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
     inputs:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
       testRunTitle: 'E2E Tests - $(agent.JobName)'
-      searchFolder: /Users/runner/work/1/s/iOSHost
+      searchFolder: ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test
       mergeTestResults: true
     condition: succeededOrFailed()
 
