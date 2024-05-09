@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
+// The minimum scroll position to show the button
+const MIN_SCROLL_POSITION = 500;
+
 const ScrollToTopButton = (): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleVisibility = (): void => {
-    if (window.scrollY > 500) {
+    if (window.scrollY > MIN_SCROLL_POSITION) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
