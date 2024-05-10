@@ -79,25 +79,30 @@ export interface MessageRequestWithRequiredProperties extends MessageRequest {
 }
 
 export const serializeMessageRequest = (message: MessageRequest): SerializedMessageRequest => {
+  const { uuid, ...restOfMessage } = message;
+  const uuidAsString = uuid?.toString();
   const request: SerializedMessageRequest = {
-    ...message,
-    uuidAsString: message.uuid?.toString(),
+    ...restOfMessage,
+    uuidAsString: uuidAsString,
   };
   return request;
 };
 
 export const deserializeMessageResponse = (serializedResponse: SerializedMessageResponse): MessageResponse => {
+  const { uuidAsString, ...restOfResponse } = serializedResponse;
   const messageResponse: MessageResponse = {
-    ...serializedResponse,
-    uuid: serializedResponse.uuidAsString ? new MessageUUID(serializedResponse.uuidAsString) : undefined,
+    ...restOfResponse,
+    uuid: uuidAsString ? new MessageUUID(uuidAsString) : undefined,
   };
   return messageResponse;
 };
 
 export const serializeMessageResponse = (response: MessageResponse): SerializedMessageResponse => {
+  const { uuid, ...restOfResponse } = response;
+  const uuidAsString = uuid?.toString();
   const messageResponse: SerializedMessageResponse = {
-    ...response,
-    uuidAsString: response.uuid?.toString(),
+    ...restOfResponse,
+    uuidAsString: uuidAsString,
   };
   return messageResponse;
 };

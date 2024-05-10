@@ -7,11 +7,11 @@ import { generateGUID, validateUuid } from './utils';
  * UUID object
  */
 export class UUID {
-  public constructor(private readonly uuid: string = generateGUID()) {
+  public constructor(public readonly uuid: string = generateGUID()) {
     validateUuid(uuid);
   }
 
-  public toString(): string {
+  public toString = (): string => {
     return this.uuid;
-  }
+  };
 }
