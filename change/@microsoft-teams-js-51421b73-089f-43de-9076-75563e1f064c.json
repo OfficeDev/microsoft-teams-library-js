@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Removed beta tag from `pages.currentApp` namespace",
-  "packageName": "@microsoft/teams-js",
-  "email": "vikramtha@microsoft.com",
-  "dependentChangeType": "none"
-}
