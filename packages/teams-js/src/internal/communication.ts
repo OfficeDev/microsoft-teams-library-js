@@ -727,9 +727,6 @@ function handleParentMessage(evt: DOMMessageEvent): void {
         logger('Removing registered port callback for message %i', callbackId);
         removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
       }
-      if (message.uuid) {
-        CommunicationPrivate.legacyMessageIdsToUuidMap = {};
-      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
