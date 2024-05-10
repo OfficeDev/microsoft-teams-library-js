@@ -1,7 +1,0 @@
-{
-  "name": "Dialog Update",
-  "platforms": "Web",
-  "checkIsSupported": {
-    "domElementName": "checkCapabilityResizeDialog"
-  }
-}

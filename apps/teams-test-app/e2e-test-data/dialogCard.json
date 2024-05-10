@@ -1,7 +1,0 @@
-{
-  "name": "Dialog Card",
-  "platforms": "Web",
-  "checkIsSupported": {
-    "domElementName": "checkCapabilityDialogAdaptiveCard"
-  }
-}

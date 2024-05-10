@@ -1,7 +1,0 @@
-{
-  "name": "Dialog Url ParentCommunicaiton",
-  "platforms": "Web",
-  "checkIsSupported": {
-    "domElementName": "checkCapabilityDialogParentCommunication"
-  }
-}
