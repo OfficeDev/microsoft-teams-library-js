@@ -677,6 +677,9 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
   }
   if (!message.uuid) {
     delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+  } else {
+    //If we are here, then the parent is capable of sending UUIDs, therefore free up memory
+    CommunicationPrivate.legacyMessageIdsToUuidMap = {};
   }
 }
 
@@ -726,6 +729,9 @@ function handleParentMessage(evt: DOMMessageEvent): void {
 
         logger('Removing registered port callback for message %i', callbackId);
         removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
+      }
+      if (message.uuid) {
+        CommunicationPrivate.legacyMessageIdsToUuidMap = {};
       }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
