@@ -11,7 +11,7 @@ export class UUID {
     validateUuid(uuid);
   }
 
-  public toString = (): string => {
+  public toString(): string {
     return this.uuid;
-  };
+  }
 }

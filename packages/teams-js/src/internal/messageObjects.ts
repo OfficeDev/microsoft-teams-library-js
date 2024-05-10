@@ -88,6 +88,15 @@ export const serializeMessageRequest = (message: MessageRequest): SerializedMess
   return request;
 };
 
+export const deserializeMessageRequest = (message: SerializedMessageRequest): MessageRequest => {
+  const { uuidAsString, ...restOfMessage } = message;
+  const request: MessageRequest = {
+    ...restOfMessage,
+    uuid: uuidAsString ? new MessageUUID(uuidAsString) : undefined,
+  };
+  return request;
+};
+
 export const deserializeMessageResponse = (serializedResponse: SerializedMessageResponse): MessageResponse => {
   const { uuidAsString, ...restOfResponse } = serializedResponse;
   const messageResponse: MessageResponse = {

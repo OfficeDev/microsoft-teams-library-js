@@ -11,6 +11,7 @@ import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
+  deserializeMessageRequest,
   deserializeMessageResponse,
   MessageID,
   MessageRequest,
@@ -755,7 +756,7 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
 function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
-    const message = evt.data as MessageRequest;
+    const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
