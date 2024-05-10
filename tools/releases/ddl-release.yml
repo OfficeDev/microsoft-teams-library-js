@@ -7,7 +7,7 @@ resources:
     ref: refs/heads/main
   pipelines:
   - pipeline: microsoft-teams-library-js-pipeline
-    source: OfficeDev.microsoft-teams-library-js
+    source: 'M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
     project: ISS
 extends:
   template: v2/Microsoft.Official.yml@GovernedTemplates
