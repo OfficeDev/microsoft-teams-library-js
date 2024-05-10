@@ -24,7 +24,7 @@ resources:
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
-      ref: refs/heads/testFixes
+      ref: refs/heads/jeklouda/systemDialogs
     - repository: IOSAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-ios
