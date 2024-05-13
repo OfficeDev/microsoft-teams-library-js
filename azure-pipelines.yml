@@ -236,7 +236,7 @@ extends:
                 condition: succeededOrFailed()
 
           - job: E2ETestAndroid
-            displayName: 'E2E Test - Android - 1'
+            displayName: 'E2E Test - Android - Shard 0'
             pool:
               name: Azure Pipelines
               image: internal-macos12
@@ -249,7 +249,7 @@ extends:
                   shardIndex: 0
 
           - job: E2ETestAndroid2
-            displayName: 'E2E Test - Android - 2'
+            displayName: 'E2E Test - Android - Shard 1'
             pool:
               name: Azure Pipelines
               image: internal-macos12
