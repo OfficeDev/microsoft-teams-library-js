@@ -2,6 +2,14 @@ parameters:
   - name: 'androidAppHostingSdkGitPath'
     default: none
     type: string
+  - name: 'shardNum'
+    displayName: 'Number of Test Shards'
+    default: 1
+    type: number
+  - name: 'shardIndex'
+    displayName: 'Test Shard Index'
+    default: 0
+    type: number
 
 steps:
   - checkout: self
@@ -77,7 +85,7 @@ steps:
     displayName: 'Run Android E2E Tests'
     inputs:
       targetType: inline
-      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh 3 0'
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh ${{ parameters.shardNum }} ${{ parameters.shardIndex }}'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
 
   - task: PublishTestResults@2
