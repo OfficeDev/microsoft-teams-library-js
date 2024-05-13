@@ -7,7 +7,7 @@ import { generateGUID, validateUuid } from './utils';
  * UUID object
  */
 export class UUID {
-  public constructor(public readonly uuid: string = generateGUID()) {
+  public constructor(private readonly uuid: string = generateGUID()) {
     validateUuid(uuid);
   }
 
