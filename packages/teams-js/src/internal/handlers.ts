@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { FrameContexts, LoadContext } from '../public';
-import { ResumeContext } from '../public/interfaces';
+import { FrameContexts } from '../public/constants';
+import { LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
