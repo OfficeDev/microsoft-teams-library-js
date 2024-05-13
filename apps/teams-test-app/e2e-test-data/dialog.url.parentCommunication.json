@@ -1,0 +1,10 @@
+{
+  "name": "Dialog Url ParentCommunicaiton",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityDialogParentCommunication",
+    "toggleId": "dialogParentCommunicationToggle",
+    "expectedOutput": "Dialog parent communication module is not supported"
+  },
+  "testCases": []
+}
