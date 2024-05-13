@@ -19,6 +19,7 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
+import { messageChannels } from '../private';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -802,6 +803,9 @@ export namespace app {
     GlobalVars.frameContext = undefined;
     GlobalVars.hostClientType = undefined;
     GlobalVars.isFramelessWindow = false;
+
+    messageChannels.telemetry._clearTelemetryPort();
+    messageChannels.dataLayer._clearDataLayerPort();
 
     uninitializeCommunication();
   }
