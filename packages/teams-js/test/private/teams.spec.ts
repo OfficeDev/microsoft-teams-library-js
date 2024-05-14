@@ -250,7 +250,6 @@ describe('Testing teams capabillity', () => {
     });
 
     describe('joinedTeams.isSupported function', () => {
-      const utils = new Utils();
       it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -281,7 +280,6 @@ describe('Testing teams capabillity', () => {
     });
 
     describe('teams.fullTrust.isSupported function', () => {
-      const utils = new Utils();
       it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
