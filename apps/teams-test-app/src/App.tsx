@@ -73,6 +73,10 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize();
   } else {
+    app.getHostName().then((hostName) => {
+      console.log('%cHost Name: ', 'background-color: blue', hostName);
+    });
+
     app.initialize();
   }
 }

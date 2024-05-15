@@ -52,6 +52,7 @@ export const enum ApiVersionNumber {
 
 export const enum ApiName {
   App_GetContext = 'app.getContext',
+  App_GetHostName = 'app.getHostName',
   App_Initialize = 'app.initialize',
   App_NotifyAppLoaded = 'app.notifyAppLoaded',
   App_NotifyExpectedFailure = 'app.notifyExpectedFailure',

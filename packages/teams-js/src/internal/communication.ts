@@ -70,13 +70,9 @@ interface InitializeResponse {
 }
 
 /**
- * @internal
- * Limited to Microsoft-internal use
+ * set windows for communication
  */
-export function initializeCommunication(
-  validMessageOrigins: string[] | undefined,
-  apiVersionTag: string,
-): Promise<InitializeResponse> {
+function setWindows(validMessageOrigins: string[] | undefined): void {
   // Listen for messages post to our window
   CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> => await processMessage(evt);
 
@@ -102,10 +98,20 @@ export function initializeCommunication(
       extendedWindow.onNativeMessage = handleParentMessage;
     } else {
       // at this point we weren't able to find a parent to talk to, no way initialization will succeed
-      return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
+      throw new Error('Initialization Failed. No Parent window found.');
     }
   }
+}
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function initializeCommunication(
+  validMessageOrigins: string[] | undefined,
+  apiVersionTag: string,
+): Promise<InitializeResponse> {
+  setWindows(validMessageOrigins);
   try {
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
@@ -365,6 +371,33 @@ export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuth
   return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
 
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendAndGetHostName<T>(apiVersionTag: string): Promise<string | T> {
+  const request = [
+    {
+      id: CommunicationPrivate.nextMessageId++,
+      timestamp: Date.now(),
+      func: 'getHostName',
+    },
+  ];
+  try {
+    setWindows(undefined);
+    Communication.parentOrigin = '*';
+    return sendMessageToParentAsync(apiVersionTag, 'getHostName', request);
+  } catch (error) {
+    if (error.message === 'Initialization Failed. No Parent window found.') {
+      return Promise.resolve('App is not running inside iframe.');
+    } else {
+      return Promise.reject(error);
+    }
+  } finally {
+    Communication.parentOrigin = null;
+  }
+}
+
 const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
 
 /**
@@ -385,7 +418,6 @@ function sendRequestToTargetWindowHelper(
     }
   } else {
     const targetOrigin = getTargetOrigin(targetWindow);
-
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
