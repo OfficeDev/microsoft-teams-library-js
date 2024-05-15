@@ -9,6 +9,7 @@ import {
   sendAndHandleStatusAndReason,
   sendAndUnwrap,
   sendMessageToParent,
+  sendMessageToParentAsync,
   uninitializeCommunication,
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -732,7 +733,14 @@ export namespace app {
    * @returns A promise that resolves to the host name.
    */
   export async function getHostName(): Promise<string> {
-    return await sendAndGetHostName(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetHostName));
+    if (GlobalVars.initializeCompleted) {
+      return await sendMessageToParentAsync(
+        getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetHostName),
+        'getHostName',
+      );
+    } else {
+      return await sendAndGetHostName(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetHostName));
+    }
   }
 
   /**
