@@ -9,6 +9,7 @@ import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { runtime } from './runtime';
 
@@ -160,26 +161,15 @@ export namespace authentication {
 
   function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.android ||
-        GlobalVars.hostClientType === HostClientType.ios ||
-        GlobalVars.hostClientType === HostClientType.ipados ||
-        GlobalVars.hostClientType === HostClientType.macos ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
-        GlobalVars.hostClientType === HostClientType.surfaceHub
-      ) {
+      if (GlobalVars.hostClientType !== HostClientType.web) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-        const link = document.createElement('a');
-        link.href = authenticateParameters.url;
+        const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
+        validateUrl(fullyQualifiedURL);
+
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
           sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
-            link.href,
+            fullyQualifiedURL.href,
             authenticateParameters.width,
             authenticateParameters.height,
             authenticateParameters.isExternal,
@@ -341,13 +331,12 @@ export namespace authentication {
     }
   }
 
-  
   /**
    * Different browsers handle authentication flows in pop-up windows differently.
    * Firefox and Safari, which use Quantum and WebKit browser engines respectively, block the use of 'window.open' for pop-up windows.
    * Any chrome-based browser (Chrome, Edge, Brave, etc.) opens a new browser window without any user-prompts.
    * To ensure consistent behavior across all browsers, consider using the following function to create a new authentication window.
-   * 
+   *
    * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow.
    */
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
@@ -359,9 +348,11 @@ export namespace authentication {
     // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
+
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement('a');
-    link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
+    const fullyQualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
+    validateUrl(fullyQualifiedURL);
+
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
@@ -375,7 +366,7 @@ export namespace authentication {
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
-      link.href,
+      fullyQualifiedURL.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
         top +

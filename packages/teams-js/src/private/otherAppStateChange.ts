@@ -3,7 +3,7 @@ import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
-import { ErrorCode } from '../public';
+import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**

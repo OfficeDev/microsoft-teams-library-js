@@ -29,10 +29,6 @@ describe('messageChannels', () => {
 
       app._uninitialize();
     }
-    // Clear the cached telemetry/datalayer ports
-    // Adding to _uninitialize breaks the global state initialization so leaving it here
-    messageChannels.telemetry._clearTelemetryPort();
-    messageChannels.dataLayer._clearDataLayerPort();
   });
 
   describe('Testing messageChannels APIs before initialization', () => {
