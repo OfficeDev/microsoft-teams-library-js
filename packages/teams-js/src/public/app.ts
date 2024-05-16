@@ -21,7 +21,7 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
-import { messageChannels } from '../private';
+import { messageChannels } from '../private/messageChannels';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';

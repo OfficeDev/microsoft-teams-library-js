@@ -1,6 +1,7 @@
 {
-  "name": "Dialog Url ParentCommunicaiton",
+  "name": "Dialog Url ParentCommunication",
   "platforms": "Web",
+  "version": ">2.23.0",
   "checkIsSupported": {
     "domElementName": "checkCapabilityDialogParentCommunication",
     "toggleId": "dialogParentCommunicationToggle",
