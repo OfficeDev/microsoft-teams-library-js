@@ -76,6 +76,7 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
     app.getHostName().then((hostName) => {
       console.log('%cHost Name: ', 'background-color: blue', hostName);
     });
+    console.log('App Initialization');
 
     app.initialize();
   }
