@@ -297,6 +297,10 @@ export namespace pages {
    * and sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
    * a deep link with the above data, but does not require the application to build a URL or worry about different
    * deep link formats for different hosts.
+   *
+   * Note that this function should only be used for navigating to other apps besides your own. For navigating within
+   * your own app. For that, you should prefer {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
+   *
    * @param params - Parameters for the navigation
    * @returns a promise that will resolve if the navigation was successful
    */

@@ -343,8 +343,11 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
  * functions depending on the type of link:
  *
  * Use {@link pages.currentApp.navigateToDefaultPage} to navigate to the default page of your own app
+ *
  * Use {@link pages.currentApp.navigateTo} to navigate to a section of your own app
+ *
  * Use {@link pages.navigateToApp} to navigate to other apps besides your own
+ *
  * Use {@link app.openLink} for opening general-purpose links (e.g., to external websites)
  * or deep links to other parts of the host (e.g., to chats or channels).
  *
