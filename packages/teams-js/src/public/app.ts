@@ -475,6 +475,12 @@ export namespace app {
     isMultiWindow?: boolean;
 
     /**
+     * Indicates whether the page is being loaded in the background as
+     * part of an opt-in performance enhancement.
+     */
+    isBackgroundLoad?: boolean;
+
+    /**
      * Source origin from where the page is opened
      */
     sourceOrigin?: string;
@@ -1003,6 +1009,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       subPageId: legacyContext.subEntityId,
       isFullScreen: legacyContext.isFullScreen,
       isMultiWindow: legacyContext.isMultiWindow,
+      isBackgroundLoad: legacyContext.isBackgroundLoad,
       sourceOrigin: legacyContext.sourceOrigin,
     },
     user: {

@@ -553,6 +553,7 @@ describe('Testing app capability', () => {
             userClickTime: 2222,
             userFileOpenPreference: FileOpenPreference.Inline,
             isMultiWindow: true,
+            isBackgroundLoad: true,
             frameContext: context,
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
@@ -585,6 +586,7 @@ describe('Testing app capability', () => {
               sourceOrigin: 'www.origin.com',
               frameContext: context,
               isMultiWindow: true,
+              isBackgroundLoad: true,
             },
             user: {
               id: 'someUserObjectId',
