@@ -292,17 +292,12 @@ export namespace pages {
   }
 
   /**
-   * Navigate to the given application ID and page ID, with optional parameters for a WebURL (if the application
-   * cannot be navigated to, such as if it is not installed), Channel ID (for applications installed as a channel tab),
-   * and sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
-   * a deep link with the above data, but does not require the application to build a URL or worry about different
-   * deep link formats for different hosts.
+   * Used to navigate to apps other than your own.
    *
-   * Note that this function should only be used for navigating to other apps besides your own. For navigating within
-   * your own app. For that, you should prefer {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
+   * If you are looking to navigate within your own app you should prefer {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
    *
-   * @param params - Parameters for the navigation
-   * @returns a promise that will resolve if the navigation was successful
+   * @param params Parameters for the navigation
+   * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
    */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -376,28 +371,28 @@ export namespace pages {
    */
   export interface NavigateToAppParams {
     /**
-     * ID of the application to navigate to
+     * ID of the app to navigate to
      */
     appId: string;
 
     /**
-     * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+     * Developer-defined ID of the page to navigate to within the app (formerly called `entityId`)
      */
     pageId: string;
 
     /**
-     * Optional URL to open if the navigation cannot be completed within the host
+     * Fallback URL to open if the navigation cannot be completed within the host (e.g. if the target app is not installed)
      */
     webUrl?: string;
 
     /**
-     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
-     * back to the application via the Context object.
+     * Developer-defined ID describing the content to navigate to within the page. This will be passed to the application
+     * via the {@link app.context.page.subPageId} property on the {@link app.Context} object (retrieved from calling {@link app.getContext})
      */
     subPageId?: string;
 
     /**
-     * Optional ID of the Teams Channel where the application should be opened
+     * For apps installed as a channel tab, this id can be supplied to indicate in which Teams channel the app should be opened
      */
     channelId?: string;
   }
