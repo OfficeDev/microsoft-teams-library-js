@@ -387,7 +387,7 @@ export namespace pages {
 
     /**
      * Developer-defined ID describing the content to navigate to within the page. This will be passed to the application
-     * via the {@link app.context.page.subPageId} property on the {@link app.Context} object (retrieved from calling {@link app.getContext})
+     * via the {@link app.PageInfo.subPageId} property on the {@link app.Context} object (retrieved from calling {@link app.getContext})
      */
     subPageId?: string;
 
@@ -1029,13 +1029,12 @@ export namespace pages {
     }
 
     /**
-     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
-     * specific content within the page).
+     * Navigate within the currently running app
      *
      * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
      *
-     * @param params - Parameters for the navigation
-     * @returns a promise that will resolve if the navigation was successful
+     * @param params Parameters for the navigation
+     * @returns `Promise` that will resolve if the navigation was successful and reject if not
      */
     export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
@@ -1062,8 +1061,10 @@ export namespace pages {
     }
 
     /**
-     * Navigate to the currently running application's first static page defined in the application
+     * Navigate to the currently running app's first static page defined in the application
      * manifest.
+     *
+     * @returns `Promise` that will resolve if the navigation was successful and reject if not
      */
     export function navigateToDefaultPage(): Promise<void> {
       return new Promise<void>((resolve) => {
