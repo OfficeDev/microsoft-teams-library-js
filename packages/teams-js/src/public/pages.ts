@@ -1007,7 +1007,9 @@ export namespace pages {
   }
 
   /**
-   * Provides functions for navigating without needing to specify your application ID.
+   * Provides functions for navigating within your own app
+   *
+   * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
    */
   export namespace currentApp {
     /**
@@ -1030,6 +1032,9 @@ export namespace pages {
     /**
      * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
      * specific content within the page).
+     *
+     * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
+     *
      * @param params - Parameters for the navigation
      * @returns a promise that will resolve if the navigation was successful
      */

@@ -339,11 +339,18 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.openLink app.openLink(deepLink: string): Promise\<void\>} instead.
+ * This function was previously used for opening various types of links. As of 2.0.0, it has been replaced with multiple different
+ * functions depending on the type of link:
+ *
+ * Use {@link pages.currentApp.navigateToDefaultPage} to navigate to the default page of your own app
+ * Use {@link pages.currentApp.navigateTo} to navigate to a section of your own app
+ * Use {@link pages.navigateToApp} to navigate to other apps besides your own
+ * Use {@link app.openLink} for opening general-purpose links (e.g., to external websites)
+ * or deep links to other parts of the host (e.g., to chats or channels).
  *
  * Execute deep link API.
  *
- * @param deepLink - deep link.
+ * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOnCompleteFunctionType): void {
   ensureInitialized(

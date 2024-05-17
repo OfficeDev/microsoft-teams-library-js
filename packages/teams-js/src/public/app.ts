@@ -887,10 +887,17 @@ export namespace app {
   }
 
   /**
-   * open link API.
+   * This function should be used for opening general-purpose links (e.g., to external websites) or deep links to
+   * other parts of the host (e.g., to chats or channels).
    *
-   * @param deepLink - deep link.
-   * @returns Promise that will be fulfilled when the operation has completed
+   * It should NOT be used for navigate to your own or other apps. For those tasks, you should prefer:
+   * {@link pages.currentApp.navigateToDefaultPage} for navigating to the default page of your own app
+   * {@link pages.currentApp.navigateTo} for navigating to a section of your own app
+   * {@link pages.navigateToApp} for navigating to other apps besides your own
+   *
+   * @param deepLink The external web URL or host deep link to which to navigate
+   * @returns Promise that will be fulfilled when the navigation has initiated. The return value does not
+   * necessarily indicate whether the target loaded successfully.
    */
   export function openLink(deepLink: string): Promise<void> {
     return openLinkHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_OpenLink), deepLink);
