@@ -911,7 +911,7 @@ export namespace app {
    *
    * For more information on crafting deep links to the host, see [Configure deep links](https://learn.microsoft.com/en-us/microsoftteams/platform/concepts/build-and-test/deep-links)
    *
-   * @param deepLink The external web URL or host deep link to which to navigate
+   * @param deepLink The host deep link or external web URL to which to navigate
    * @returns `Promise` that will be fulfilled when the navigation has initiated. A successful `Promise` resolution
    * does not necessarily indicate whether the target loaded successfully.
    */

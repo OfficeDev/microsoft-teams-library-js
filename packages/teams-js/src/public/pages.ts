@@ -1012,7 +1012,7 @@ export namespace pages {
    */
   export namespace currentApp {
     /**
-     * Parameters for the NavigateWithinApp
+     * Parameters provided to the {@link pages.currentApp.navigateTo} function
      */
     export interface NavigateWithinAppParams {
       /**
