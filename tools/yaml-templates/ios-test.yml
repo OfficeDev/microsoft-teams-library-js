@@ -94,7 +94,7 @@ steps:
     inputs:
       targetType: inline
       script: "ls -a"
-      workdingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+    workdingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
@@ -104,11 +104,6 @@ steps:
         xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
     condition: always()
-
-  - bash: |
-      cp ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.junit /Users/runner/work/1/s/iOSHost
-    displayName: Copy Junit File
-    condition: succeededOrFailed()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
@@ -126,8 +121,7 @@ steps:
 
       mkdir -p "${output}"
 
-      cp ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/index.html "${output}/index.html"
-      cp -r ~/Library/Developer/Xcode/DerivedData/$(AppHostingSdkProjectDirectory)*/Logs/Test/*.xcresult "${output}/output.xcresult"
+      cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
 
       echo "ls -lR ${output}"
       ls -lR "${output}"
