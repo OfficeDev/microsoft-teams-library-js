@@ -294,7 +294,7 @@ export namespace pages {
   /**
    * Used to navigate to apps other than your own.
    *
-   * If you are looking to navigate within your own app you should prefer {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
+   * If you are looking to navigate within your own app, use {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
    *
    * @param params Parameters for the navigation
    * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
@@ -386,13 +386,13 @@ export namespace pages {
     webUrl?: string;
 
     /**
-     * Developer-defined ID describing the content to navigate to within the page. This will be passed to the application
-     * via the {@link app.PageInfo.subPageId} property on the {@link app.Context} object (retrieved from calling {@link app.getContext})
+     * Developer-defined ID describing the content to navigate to within the page. This ID is passed to the application
+     * via the {@link app.PageInfo.subPageId} property on the {@link app.Context} object (retrieved by calling {@link app.getContext})
      */
     subPageId?: string;
 
     /**
-     * For apps installed as a channel tab, this id can be supplied to indicate in which Teams channel the app should be opened
+     * For apps installed as a channel tab, this ID can be supplied to indicate in which Teams channel the app should be opened
      */
     channelId?: string;
   }
@@ -1008,6 +1008,7 @@ export namespace pages {
   /**
    * Provides functions for navigating within your own app
    *
+   * @remarks
    * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
    */
   export namespace currentApp {
@@ -1031,6 +1032,7 @@ export namespace pages {
     /**
      * Navigate within the currently running app
      *
+     * @remarks
      * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
      *
      * @param params Parameters for the navigation

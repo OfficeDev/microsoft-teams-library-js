@@ -339,7 +339,7 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * This function was previously used for opening various types of links. As of 2.0.0, it has been replaced with multiple different
+ * This function was previously used for opening various types of links. As of TeamsJS v2.0.0, it has been replaced with multiple different
  * functions depending on the type of link:
  *
  * - Use {@link pages.currentApp.navigateToDefaultPage} to navigate to the default page of your own app
