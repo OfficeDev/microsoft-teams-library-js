@@ -19,7 +19,7 @@ steps:
       script: |
         brew install xctesthtmlreport
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-      condition: succeededOrFailed()
+      condition: always()
 
   - task: NodeTool@0
     inputs:
