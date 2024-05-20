@@ -94,7 +94,7 @@ steps:
     inputs:
       targetType: inline
       script: "ls -a"
-    workdingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      workdingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
