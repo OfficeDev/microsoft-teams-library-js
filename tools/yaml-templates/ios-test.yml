@@ -90,13 +90,6 @@ steps:
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
-    displayName: 'List all of files under iOSHost'
-    inputs:
-      targetType: inline
-      script: "ls -a"
-      workdingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  - task: Bash@3
     displayName: 'Generate E2E test report'
     inputs:
       targetType: inline
