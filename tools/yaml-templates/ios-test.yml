@@ -122,6 +122,8 @@ steps:
       mkdir -p "${output}"
 
       cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
+      xchtmlreport -r ${output}/output.xcresult -j
+
 
       echo "ls -lR ${output}"
       ls -lR "${output}"
