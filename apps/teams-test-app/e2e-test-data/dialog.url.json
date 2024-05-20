@@ -1,0 +1,10 @@
+{
+  "name": "Dialog Url",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityDialogUrl",
+    "toggleId": "dialogUrlToggle",
+    "expectedOutput": "Dialog Url module is not supported"
+  },
+  "testCases": []
+}

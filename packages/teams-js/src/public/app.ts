@@ -19,6 +19,7 @@ import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
+import { messageChannels } from '../private/messageChannels';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -472,6 +473,12 @@ export namespace app {
     isMultiWindow?: boolean;
 
     /**
+     * Indicates whether the page is being loaded in the background as
+     * part of an opt-in performance enhancement.
+     */
+    isBackgroundLoad?: boolean;
+
+    /**
      * Source origin from where the page is opened
      */
     sourceOrigin?: string;
@@ -803,6 +810,9 @@ export namespace app {
     GlobalVars.hostClientType = undefined;
     GlobalVars.isFramelessWindow = false;
 
+    messageChannels.telemetry._clearTelemetryPort();
+    messageChannels.dataLayer._clearDataLayerPort();
+
     uninitializeCommunication();
   }
 
@@ -981,6 +991,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       subPageId: legacyContext.subEntityId,
       isFullScreen: legacyContext.isFullScreen,
       isMultiWindow: legacyContext.isMultiWindow,
+      isBackgroundLoad: legacyContext.isBackgroundLoad,
       sourceOrigin: legacyContext.sourceOrigin,
     },
     user: {

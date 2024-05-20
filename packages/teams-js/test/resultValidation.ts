@@ -1,4 +1,4 @@
-import { MessageRequest } from './utils';
+import { MessageRequest } from '../src/internal/messageObjects';
 
 export enum MatcherType {
   ToBe,

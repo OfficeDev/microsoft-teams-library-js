@@ -670,6 +670,14 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of 2.0.0, please use {@link app.PageInfo.isBackgroundLoad | app.Context.page.isBackgroundLoad} instead
+   *
+   * Indication whether the tab is being loaded in the background
+   */
+  isBackgroundLoad?: boolean;
+
+  /**
+   * @deprecated
    * As of 2.0.0, please use {@link app.AppInfo.iconPositionVertical | app.Context.app.iconPositionVertical} instead
    *
    * Personal app icon y coordinate position
