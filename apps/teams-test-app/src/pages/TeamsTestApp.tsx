@@ -1,3 +1,4 @@
+import { IAppWindow } from '@microsoft/teams-js';
 import React from 'react';
 
 import AppAPIs from '../components/AppAPIs';
@@ -16,6 +17,7 @@ import DialogCardBotAPIs from '../components/DialogCardBotAPIs';
 import DialogUpdateAPIs from '../components/DialogUpdateAPIs';
 import DialogUrlAPIs from '../components/DialogUrlAPIs';
 import DialogUrlBotAPIs from '../components/DialogUrlBotAPIs';
+import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommunicationAPIs';
 import GeoLocationAPIs from '../components/GeoLocationAPIs';
 import Links from '../components/Links';
 import LocationAPIs from '../components/LocationAPIs';
@@ -60,8 +62,6 @@ import Version from '../components/Version';
 import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
-import { IAppWindow } from '@microsoft/teams-js';
-import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommunicationAPIs';
 
 const TeamsTestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
