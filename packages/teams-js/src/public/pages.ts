@@ -1018,7 +1018,7 @@ export namespace pages {
     export interface NavigateWithinAppParams {
       /**
        * The developer-defined unique ID for the page defined in the manifest or when first configuring
-       * the page. (Known as {@linkcode Context.entityId} prior to TeamsJS v.2.0.0)
+       * the page. (Known as {@linkcode Context.entityId} prior to TeamsJS v2.0.0)
        */
       pageId: string;
 
