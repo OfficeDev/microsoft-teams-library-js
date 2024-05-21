@@ -85,8 +85,16 @@ steps:
     displayName: 'Run Android E2E Tests'
     inputs:
       targetType: inline
-      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh ${{ parameters.shardNum }} ${{ parameters.shardIndex }}'
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+
+  - task: Bash@3
+    displayName: 'Pull Test Artifacts'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x e2eTestCopyArtifacts.sh && ./e2eTestCopyArtifacts.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+    condition: always()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
