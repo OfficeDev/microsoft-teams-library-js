@@ -68,25 +68,18 @@ import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
-// For InsecureOrigins tests we need to pass insecure origins to app.initialize function.
-if (urlParams.has('doesInsecureUrlHasAppIdException') && urlParams.get('doesInsecureUrlHasAppIdException') === 'true') {
-  isTestBackCompat() ? initialize(undefined, ['https://*.example.com']) : app.initialize(['https://*.example.com']);
-} else if (
-  urlParams.has('doesInsecureUrlHasAppIdException') &&
-  urlParams.get('doesInsecureUrlHasAppIdException') === 'false'
-) {
-  // should block the app from loading and throw InValid_Domain error
-  isTestBackCompat()
-    ? initialize(undefined, ['https://https://*.example.com'])
-    : app.initialize(['https://*.example.com']);
-}
+const getOriginParam =
+  urlParams.has('doesInsecureUrlHasAppIdException') && urlParams.get('doesInsecureUrlHasAppIdException')
+    ? urlParams.get('doesInsecureUrlHasAppIdException')
+    : '';
+const validMessageOrigins: string[] = getOriginParam ? [getOriginParam] : [];
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize();
   } else {
-    app.initialize();
+    app.initialize(validMessageOrigins);
   }
 }
 
