@@ -77,7 +77,7 @@ const validMessageOrigins: string[] = getOriginParam ? [getOriginParam] : [];
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
-    initialize();
+    initialize(undefined, validMessageOrigins);
   } else {
     app.initialize(validMessageOrigins);
   }
