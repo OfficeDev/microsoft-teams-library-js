@@ -68,8 +68,8 @@ import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
-const getOriginParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
-const validMessageOrigins: string[] = getOriginParam ? [getOriginParam] : [];
+const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
+const validMessageOrigins: string[] = getOriginsParam ? [getOriginsParam] : [];
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
