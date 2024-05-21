@@ -76,7 +76,7 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(['https://*.example.com']);
+    app.initialize(validMessageOrigins);
   }
 }
 
