@@ -68,10 +68,7 @@ import WebStorageAPIs from './components/WebStorageAPIs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
-const getOriginParam =
-  urlParams.has('doesInsecureUrlHasAppIdException') && urlParams.get('doesInsecureUrlHasAppIdException')
-    ? urlParams.get('doesInsecureUrlHasAppIdException')
-    : '';
+const getOriginParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
 const validMessageOrigins: string[] = getOriginParam ? [getOriginParam] : [];
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
@@ -79,7 +76,7 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(validMessageOrigins);
+    app.initialize(['https://*.example.com']);
   }
 }
 
