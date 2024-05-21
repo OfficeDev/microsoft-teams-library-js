@@ -905,10 +905,35 @@ export namespace app {
   }
 
   /**
-   * open link API.
+   * This function opens deep links to other modules in the host such as chats or channels or
+   * general-purpose links (to external websites). It should not be used for navigating to your
+   * own or other apps.
    *
-   * @param deepLink - deep link.
-   * @returns Promise that will be fulfilled when the operation has completed
+   * @remarks
+   * If you need to navigate to your own or other apps, use:
+   *
+   * - {@link pages.currentApp.navigateToDefaultPage} for navigating to the default page of your own app
+   * - {@link pages.currentApp.navigateTo} for navigating to a section of your own app
+   * - {@link pages.navigateToApp} for navigating to other apps besides your own
+   *
+   * Many areas of functionality previously provided by deep links are now handled by strongly-typed functions in capabilities.
+   * If your app is using a deep link to trigger these specific components, use the strongly-typed alternatives.
+   * For example (this list is not exhaustive):
+   * - To open an app installation dialog, use the {@link appInstallDialog} capability
+   * - To start a call, use the {@link call} capability
+   * - To open a chat, use the {@link chat} capability
+   * - To open a dialog, use the {@link dialog} capability
+   * - To create a new meeting, use the {@link calendar.composeMeeting} function
+   * - To open a Stage View, use the {@link stageView} capability
+   *
+   * In each of these capabilities, you can use the `isSupported()` function to determine if the host supports that capability.
+   * When using a deep link to trigger these components, there's no way to determine whether the host supports it.
+   *
+   * For more information on crafting deep links to the host, see [Configure deep links](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/deep-links)
+   *
+   * @param deepLink The host deep link or external web URL to which to navigate
+   * @returns `Promise` that will be fulfilled when the navigation has initiated. A successful `Promise` resolution
+   * does not necessarily indicate whether the target loaded successfully.
    */
   export function openLink(deepLink: string): Promise<void> {
     return openLinkHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_OpenLink), deepLink);

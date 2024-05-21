@@ -24,7 +24,7 @@ import { teamsCore } from './teamsAPIs';
  */
 const publicAPIsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-/** Execute deep link on complete function type */
+/** Type of callback used to indicate when {@link executeDeepLink} completes */
 export type executeDeepLinkOnCompleteFunctionType = (status: boolean, reason?: string) => void;
 /** Callback function type */
 export type callbackFunctionType = () => void;
@@ -339,11 +339,16 @@ export function shareDeepLink(deepLinkParameters: DeepLinkParameters): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link app.openLink app.openLink(deepLink: string): Promise\<void\>} instead.
+ * This function was previously used for opening various types of links. As of TeamsJS v2.0.0, it has been replaced with multiple different
+ * functions depending on the type of link:
  *
- * Execute deep link API.
+ * - Use {@link pages.currentApp.navigateToDefaultPage} to navigate to the default page of your own app
+ * - Use {@link pages.currentApp.navigateTo} to navigate to a section of your own app
+ * - Use {@link pages.navigateToApp} to navigate to other apps besides your own
+ * - Use {@link app.openLink} for opening deep links to other parts of the host (e.g., to chats or channels) or
+ * general-purpose links (e.g., to external websites).
  *
- * @param deepLink - deep link.
+ * @param deepLink deep link.
  */
 export function executeDeepLink(deepLink: string, onComplete?: executeDeepLinkOnCompleteFunctionType): void {
   ensureInitialized(
