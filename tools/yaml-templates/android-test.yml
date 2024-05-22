@@ -82,7 +82,7 @@ steps:
           
         # Bind the socket to the server address and port
         echo "Waiting for the server to connect..."
-        nc -l -p $SERVER_PORT > $SOCKET &
+        nc -p $SERVER_PORT > $SOCKET &
           
         # Wait for the server to connect
         while ! nc -z $SERVER_ADDRESS $SERVER_PORT; do
