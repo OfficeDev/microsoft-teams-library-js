@@ -59,16 +59,6 @@ steps:
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: Bash@3
-    displayName: 'Install Emulator'
-    inputs:
-      targetType: inline
-      script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
-      workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
-      # This task is flaky, but when it works it almost always completes in under 5 minutes.
-      # Setting the timeout to 10 minutes so we can fail faster when it fails.
-      timeoutInMinutes: 10
-
-  - task: Bash@3
     displayName: 'Wait for sample test app to connect'
     inputs:
       targetType: inline
@@ -91,6 +81,16 @@ steps:
         done
          
         echo "Server connected!"
+
+  - task: Bash@3
+    displayName: 'Install Emulator'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+      # This task is flaky, but when it works it almost always completes in under 5 minutes.
+      # Setting the timeout to 10 minutes so we can fail faster when it fails.
+      timeoutInMinutes: 10
 
   - task: JavaToolInstaller@0
     inputs:
