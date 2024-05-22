@@ -104,7 +104,7 @@ steps:
       testRunTitle: 'E2E Tests - Android'
       searchFolder: '$(Agent.BuildDirectory)/androidHost'
       mergeTestResults: true
-    condition: or(succeededOrFailed(), eq(variables['Agent.JobStatus'], 'Canceled'))
+    condition: always()
 
   - task: 1ES.PublishPipelineArtifact@1
     displayName: 'Publish logs artifact'
