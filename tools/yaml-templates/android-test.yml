@@ -68,6 +68,30 @@ steps:
       # Setting the timeout to 10 minutes so we can fail faster when it fails.
       timeoutInMinutes: 10
 
+  - task: Bash@3
+    displayName: 'Wait for sample test app to connect'
+    inputs:
+      targetType: inline
+      script: |
+        # Define the server address and port
+        SERVER_ADDRESS="localhost"
+        SERVER_PORT=4000
+          
+        # Create a socket
+        SOCKET=$(mktemp /tmp/server.sock)
+          
+        # Bind the socket to the server address and port
+        echo "Waiting for the server to connect..."
+        nc -l -p $SERVER_PORT > $SOCKET &
+          
+        # Wait for the server to connect
+        while ! nc -z $SERVER_ADDRESS $SERVER_PORT; do
+          echo "Server not connected yet..."
+          sleep 1
+        done
+         
+        echo "Server connected!"
+
   - task: JavaToolInstaller@0
     inputs:
       versionSpec: '17'
