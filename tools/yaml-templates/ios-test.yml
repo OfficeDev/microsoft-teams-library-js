@@ -18,7 +18,8 @@ steps:
       targetType: inline
       script: |
         brew install xctesthtmlreport
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      condition: always()
 
   - task: NodeTool@0
     inputs:
@@ -90,19 +91,40 @@ steps:
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
-    condition: succeededOrFailed()
     inputs:
       targetType: inline
       script: |
         xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+    condition: always()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
     inputs:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
-      testRunTitle: 'E2E Tests - iOS'
+      testRunTitle: 'E2E Tests - $(agent.JobName)'
       searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
+    condition: succeededOrFailed()
+
+  - bash: |
+      output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
+      rm -rf "${output}" > /dev/null
+
+      mkdir -p "${output}"
+
+      cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
+      xchtmlreport -r ${output}/output.xcresult -j
+
+
+      echo "ls -lR ${output}"
+      ls -lR "${output}"
+    displayName: Preparations for publishing results
+    condition: always()
+
+  - task: 1ES.PublishPipelineArtifact@1
+    inputs:
+      path: '$(agent.buildDirectory)/Logs'
+      artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()
