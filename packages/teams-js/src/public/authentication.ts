@@ -58,7 +58,7 @@ export namespace authentication {
   let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
-   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * As of TeamsJS v2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *
    * Registers handlers to be called with the result of an authentication flow triggered using {@link authentication.authenticate authentication.authenticate(authenticateParameters?: AuthenticateParameters): void}
    *
@@ -97,7 +97,7 @@ export namespace authentication {
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
    * The documentation for {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} applies
    * to this function.
@@ -208,7 +208,7 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequestParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
    *
    * The documentation {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} applies to this
    * function as well. The one difference when using this function is that the result is provided in the callbacks in the `authTokenRequest` parameter
@@ -272,7 +272,7 @@ export namespace authentication {
   export function getUser(): Promise<UserProfile>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
    * Requests the decoded Microsoft Entra user identity on behalf of the app.
@@ -527,21 +527,21 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * As of TeamsJS v2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *-------------------------
    * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
   export interface LegacyCallBacks {
     /**
      * @deprecated
-     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      *
      * A function that is called if the request succeeds.
      */
     successCallback?: (result: string) => void;
     /**
      * @deprecated
-     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      *
      * A function that is called if the request fails, with the reason for the failure.
      */
@@ -578,7 +578,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
+   * As of TeamsJS v2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
    * the associated {@link AuthenticatePopUpParameters} instead.
    *
    * @see {@link LegacyCallBacks}
@@ -611,7 +611,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link AuthTokenRequestParameters} instead.
+   * As of TeamsJS v2.0.0, please use {@link AuthTokenRequestParameters} instead.
    */
   export type AuthTokenRequest = AuthTokenRequestParameters & LegacyCallBacks;
 
@@ -786,7 +786,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+   * As of TeamsJS v2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
    * @hidden
    * Describes the UserRequest. Success callback describes how a successful request is handled.
    * Failure callback describes how a failed request is handled.
