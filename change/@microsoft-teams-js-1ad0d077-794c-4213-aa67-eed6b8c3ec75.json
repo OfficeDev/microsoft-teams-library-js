@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added a small capability which returns the host name where the app is hosted.",
+  "packageName": "@microsoft/teams-js",
+  "email": "shrshinde@microsoft.com",
+  "dependentChangeType": "patch"
+}
