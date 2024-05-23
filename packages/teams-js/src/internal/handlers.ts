@@ -29,7 +29,7 @@ class HandlersPrivate {
    * @deprecated
    */
   public static beforeUnloadHandler: null | ((readyToUnload: () => void) => boolean) = null;
-  public static beforeSuspendOrTerminateHandler: null | (() => void) = null;
+  public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
   public static resumeHandler: null | ((context: ResumeContext) => void) = null;
 
   /**
@@ -227,13 +227,13 @@ export function registerBeforeUnloadHandler(
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleBeforeUnload(): void {
+async function handleBeforeUnload(): Promise<void> {
   const readyToUnload = (): void => {
     sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.HandleBeforeUnload), 'readyToUnload', []);
   };
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
-    HandlersPrivate.beforeSuspendOrTerminateHandler();
+    await HandlersPrivate.beforeSuspendOrTerminateHandler();
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
@@ -252,7 +252,7 @@ function handleBeforeUnload(): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerBeforeSuspendOrTerminateHandler(handler: () => void): void {
+export function registerBeforeSuspendOrTerminateHandler(handler: () => Promise<void>): void {
   HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
   !isNullOrUndefined(handler) &&
     sendMessageToParent(
