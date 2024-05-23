@@ -10,12 +10,18 @@ import TeamsTestApp from './pages/TeamsTestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
 
+// The search url parameter 'origins' is used to get the valid message origins which will be passed to
+// the initialize function and based on the hosts it will allow the origins or not.
+// The valid message origins are separated by comma. For example: https://relecloud.com/?origins=https://relecoud.com,https://*.relecloud.com
+const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
+const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
+
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
-    initialize();
+    initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize();
+    app.initialize(validMessageOrigins);
   }
 }
 
