@@ -5,7 +5,7 @@ import React, { ReactElement } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
-import SecondRoute from './pages/SecondRoute';
+import { SecondRoute } from './pages/SecondRoute';
 import { TestApp } from './pages/TestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
