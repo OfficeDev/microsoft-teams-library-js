@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import SecondRoute from './pages/SecondRoute';
-import TeamsTestApp from './pages/TeamsTestApp';
+import { TestApp } from './pages/TestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -88,7 +88,7 @@ const App = (): ReactElement => {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<TeamsTestApp />} />
+          <Route path="/" element={<TestApp />} />
           <Route path="/second-route" element={<SecondRoute />} />
         </Routes>
       </BrowserRouter>

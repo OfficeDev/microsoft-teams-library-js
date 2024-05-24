@@ -63,7 +63,7 @@ import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
 
-const TeamsTestApp: React.FC = () => {
+export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
 
   return (
@@ -134,5 +134,3 @@ const TeamsTestApp: React.FC = () => {
     </>
   );
 };
-
-export default TeamsTestApp;
