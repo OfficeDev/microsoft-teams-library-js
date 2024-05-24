@@ -94,23 +94,29 @@ const RegisterOnResumeHandler = (): React.ReactElement =>
   });
 
 const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
-  ApiWithoutInput({
+  ApiWithTextInput<number>({
     name: 'RegisterBeforeSuspendOrTerminateHandler',
     title: 'Register Before Suspend/Terminate Handler',
-    onClick: async (setResult) => {
-      app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
-        return new Promise<void>((resolve) => {
-          setTimeout(() => {
-            setResult('beforeSuspendOrTerminate received');
-            resolve();
-          }, 3000); // Adjust this value to change the delay
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input !== 'number') {
+          throw new Error('input should be a number');
+        }
+      },
+      submit: async (delay: number, setResult: (result: string) => void) => {
+        app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+          return new Promise<void>((resolve) => {
+            setTimeout(() => {
+              setResult('beforeSuspendOrTerminate received');
+              resolve();
+            }, delay);
+          });
         });
-      });
-
-      return 'registered';
+        return 'registered';
+      },
     },
+    defaultInput: '3000',
   });
-
 const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
