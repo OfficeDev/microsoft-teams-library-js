@@ -23,9 +23,9 @@
           "width": 0,
           "height": 0
         },
-        "triggerType": "MouseClick"
+        "triggerType": "MouseHover"
       },
-      "expectedAlertValue": "showProfile called with {\"modality\":\"Card\",\"persona\":{\"identifiers\":{\"Smtp\":\"test@microsoft.com\"}},\"targetElementBoundingRect\":{\"x\":243,\"y\":0,\"width\":0,\"height\":0,\"top\":0,\"right\":243,\"bottom\":0,\"left\":243},\"triggerType\":\"MouseClick\"}"
+      "expectedAlertValue": "showProfile called with {\"modality\":\"Card\",\"persona\":{\"identifiers\":{\"Smtp\":\"test@microsoft.com\"}},\"targetElementBoundingRect\":{\"x\":243,\"y\":0,\"width\":0,\"height\":0,\"top\":0,\"right\":243,\"bottom\":0,\"left\":243},\"triggerType\":\"MouseHover\"}"
     }
   ]
 }
