@@ -1,14 +1,14 @@
 trigger: none
 resources:
   repositories:
-  - repository: GovernedTemplates
-    type: git
-    name: OneBranch.Pipelines/GovernedTemplates
-    ref: refs/heads/main
+    - repository: GovernedTemplates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
   pipelines:
-  - pipeline: microsoft-teams-library-js-pipeline
-    source: 'M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
-    project: ISS
+    - pipeline: microsoft-teams-library-js-pipeline
+      source: 'M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
+      project: ISS
 extends:
   template: v2/Microsoft.Official.yml@GovernedTemplates
   parameters:
@@ -18,38 +18,38 @@ extends:
       serviceTreeId: $(serviceTreeId)
       serviceGroupName: Platform
     stages:
-    - stage: Prod_Lockbox_Approval_Deployment
-      displayName: Lockbox Approval/Deployment
-      dependsOn: []
-      variables:
-        stage_type: deployment
-        azure_subscription_ids: $(subscriptionId)
-      jobs:
-      - job: Agent_job
-        condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
-        pool:
-          type: release
-        steps:
-        - download: microsoft-teams-library-js-pipeline
-        - task: prepare-deployment@1
-          displayName: 
-          inputs:
-            taskType: credentialFetchTaskAzureRM
-            armserviceconnection: $(serviceConnectionId)
-            subscriptionid: $(subscriptionId)
-        - task: NodeTool@0
-          displayName: Use Node 18.x
-          inputs:
-            versionSpec: 18.x
-        - task: M365CdnAssetsUpload@3
-          displayName: Push valid domains to M365 1CDN (Prod)
-          inputs:
-            SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/validDomains
-            ConnectedServiceNameARM: $(serviceConnectionId)
-            ContainerName: teams-js
-            AdditionalArgumentsForBlobCopy: --log-level=INFO --recursive --overwrite=true
-        - task: AssetRetention@3
-          displayName: ARtifact Retention Orchestrator Workflow (ARROW)
-          inputs:
-            ArrowServiceConnection: $(arrowServiceConnectionId)
-            IsShipped: true
+      - stage: Prod_Lockbox_Approval_Deployment
+        displayName: Lockbox Approval/Deployment
+        dependsOn: []
+        variables:
+          stage_type: deployment
+          azure_subscription_ids: $(subscriptionId)
+        jobs:
+          - job: Agent_job
+            condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+            pool:
+              type: release
+            steps:
+              - download: microsoft-teams-library-js-pipeline
+              - task: prepare-deployment@1
+                displayName:
+                inputs:
+                  taskType: credentialFetchTaskAzureRM
+                  armserviceconnection: $(serviceConnectionId)
+                  subscriptionid: $(subscriptionId)
+              - task: NodeTool@0
+                displayName: Use Node 18.x
+                inputs:
+                  versionSpec: 18.x
+              - task: M365CdnAssetsUpload@3
+                displayName: Push valid domains to M365 1CDN (Prod)
+                inputs:
+                  SourcePath: $(PIPELINE.WORKSPACE)/microsoft-teams-library-js-pipeline/validDomains
+                  ConnectedServiceNameARM: $(serviceConnectionId)
+                  ContainerName: teams-js
+                  AdditionalArgumentsForBlobCopy: --log-level=INFO --recursive --overwrite=true
+              - task: AssetRetention@3
+                displayName: ARtifact Retention Orchestrator Workflow (ARROW)
+                inputs:
+                  ArrowServiceConnection: $(arrowServiceConnectionId)
+                  IsShipped: true
