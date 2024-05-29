@@ -16,7 +16,7 @@ const ShowProfile = (): React.ReactElement =>
     name: 'showProfile',
     title: 'Show Profile',
     defaultInput:
-      '{"modality":"Card","persona":{"identifiers":{"Smtp":"test@microsoft.com"}},"targetElementBoundingRect":{"x":0,"y":0,"width":0,"height":0},"triggerType":"MouseClick"}',
+      '{"modality":"Card","persona":{"identifiers":{"Smtp":"test@microsoft.com"}},"targetElementBoundingRect":{"x":0,"y":0,"width":0,"height":0},"triggerType":"MouseHover"}',
     onClick: {
       validateInput: (input) => {
         if (!input) {
