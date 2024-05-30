@@ -890,7 +890,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -899,7 +899,7 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
 
             await utils.sendMessage('beforeUnload');
 
@@ -911,7 +911,7 @@ describe('Testing app capability', () => {
       describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
         it('should not allow calls before initialization', () => {
           expect(() =>
-            app.lifecycle.registerOnResumeHandler(() => {
+            app.lifecycle.registerOnResumeHandler(async () => {
               return false;
             }),
           ).toThrowError(new Error(errorLibraryNotInitialized));
@@ -1692,7 +1692,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -1701,7 +1701,7 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
             await utils.respondToFramelessMessage({
               data: {
                 func: 'beforeUnload',
