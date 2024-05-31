@@ -89,7 +89,7 @@ const RegisterOnResumeHandler = (): React.ReactElement => {
       app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
         setResult('successfully called with context:' + JSON.stringify(context));
         // get the route from the context
-        const route = new URL(context.contentUrl);
+        const route = context.contentUrl;
         // navigate to the correct path based on URL
         navigate(route.pathname);
         app.notifySuccess();

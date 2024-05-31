@@ -197,16 +197,30 @@ export function registerOnLoadHandler(apiVersionTag: string, handler: (context: 
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleLoad(context: LoadContext): void {
+function handleLoad(loadContext: LoadContext): void {
+  const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
-    HandlersPrivate.resumeHandler(context);
+    HandlersPrivate.resumeHandler(resumeContext);
+    if (Communication.childWindow) {
+      sendMessageEventToChild('load', [resumeContext]);
+    }
   } else if (HandlersPrivate.loadHandler) {
-    HandlersPrivate.loadHandler(context);
+    HandlersPrivate.loadHandler(loadContext);
+    if (Communication.childWindow) {
+      sendMessageEventToChild('load', [loadContext]);
+    }
   }
+}
 
-  if (Communication.childWindow) {
-    sendMessageEventToChild('load', [context]);
-  }
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function convertToResumeContext(context: LoadContext): ResumeContext {
+  return {
+    entityId: context.entityId,
+    contentUrl: new URL(context.contentUrl),
+  };
 }
 
 /**
@@ -266,7 +280,7 @@ export function registerBeforeSuspendOrTerminateHandler(handler: () => Promise<v
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnResumeHandler(handler: (context: LoadContext) => void): void {
+export function registerOnResumeHandler(handler: (context: ResumeContext) => void): void {
   HandlersPrivate.resumeHandler = handler;
   !isNullOrUndefined(handler) &&
     sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterOnResumeHandler), 'registerHandler', [

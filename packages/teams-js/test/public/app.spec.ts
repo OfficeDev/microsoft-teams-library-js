@@ -15,6 +15,7 @@ import {
   ActionObjectType,
   Context,
   FileOpenPreference,
+  LoadContext,
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
@@ -43,6 +44,10 @@ function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
+  const loadContext: LoadContext = {
+    entityId: 'testEntityId',
+    contentUrl: 'https://localhost:4000',
+  };
   describe('Framed - Testing app capability', () => {
     // Use to send a mock message from the app.
     const utils = new Utils();
@@ -925,8 +930,7 @@ describe('Testing app capability', () => {
             app.lifecycle.registerOnResumeHandler(() => {
               handlerInvoked = true;
             });
-
-            await utils.sendMessage('load');
+            await utils.sendMessage('load', loadContext);
             expect(handlerInvoked).toBe(true);
           });
         });
@@ -1733,6 +1737,7 @@ describe('Testing app capability', () => {
             await utils.respondToFramelessMessage({
               data: {
                 func: 'load',
+                args: [loadContext],
               },
             } as DOMMessageEvent);
             expect(handlerInvoked).toBe(true);
