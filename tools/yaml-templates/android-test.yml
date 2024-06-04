@@ -73,10 +73,17 @@ steps:
       artifactsFeeds: 'LensSDKAndroidIA20'
 
   - task: Bash@3
+    displayName: 'Set up Android E2E Tests'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh &&'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+
+  - task: Bash@3
     displayName: 'Run Android E2E Tests'
     inputs:
       targetType: inline
-      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+      script: 'for i in {1..5}; do ./e2eTest.sh; done'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
 
   - task: Bash@3
