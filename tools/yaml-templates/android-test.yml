@@ -76,7 +76,7 @@ steps:
     displayName: 'Set up Android E2E Tests'
     inputs:
       targetType: inline
-      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh &&'
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh'
       workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
 
   - task: Bash@3
