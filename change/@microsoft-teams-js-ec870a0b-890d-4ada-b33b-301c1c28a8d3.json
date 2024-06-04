@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `app.lifecycle.registerBeforeSuspendOrTerminateHandler` to be asynchronous, and updated `app.lifecycle.registerOnResumeHandler` to accept a new Handler type, changing `contentUrl` from `string` to `URL` object.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}

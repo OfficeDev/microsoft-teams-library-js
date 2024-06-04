@@ -3,7 +3,7 @@ import * as utilFunc from '../../src/internal/utils';
 import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
-import { Context, FrameContext, TabInstanceParameters } from '../../src/public/interfaces';
+import { Context, FrameContext, LoadContext, TabInstanceParameters } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {
   enablePrintCapability,
@@ -849,7 +849,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
         return false;
       });
 
-      await utils.sendMessage('load');
+      const loadContext: LoadContext = {
+        entityId: 'testEntityId',
+        contentUrl: 'https://localhost:4000',
+      };
+
+      await utils.sendMessage('load', loadContext);
 
       expect(handlerInvoked).toBe(true);
     });
