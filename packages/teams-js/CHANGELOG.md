@@ -12,11 +12,7 @@ Wed, 05 Jun 2024 20:49:06 GMT
 
 - Updated `app.lifecycle.registerBeforeSuspendOrTerminateHandler` to be asynchronous, and updated `app.lifecycle.registerOnResumeHandler` to accept a new Handler type, changing `contentUrl` from `string` to `URL` object.
 - Added `uuid` parameter to `MessageRequest` and `MessageResponse` interfaces
-- Added a new page property (isBackgroundLoad) for app context. This will be an indicator that the app is being loaded in the background.
-
-### Patches
-
-- Made fix to function only used for testing
+- Added a new page property (`isBackgroundLoad`) for app context. This will be an indicator that the app is being loaded in the background.
 
 ## 2.23.0
 
