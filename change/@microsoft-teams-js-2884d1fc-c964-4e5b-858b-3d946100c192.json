@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added a new page property (isBackgroundLoad) for app context. This will be an indicator that the app is being loaded in the background.",
-  "packageName": "@microsoft/teams-js",
-  "email": "helentsang@microsoft.com",
-  "dependentChangeType": "patch"
-}
