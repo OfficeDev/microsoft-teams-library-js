@@ -1,18 +1,8 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 05 Jun 2024 20:49:06 GMT and should not be manually modified.
+This log was last generated on Tue, 07 May 2024 20:54:35 GMT and should not be manually modified.
 
 <!-- Start content -->
-
-## 2.24.0
-
-Wed, 05 Jun 2024 20:49:06 GMT
-
-### Minor changes
-
-- Updated `app.lifecycle.registerBeforeSuspendOrTerminateHandler` to be asynchronous, and updated `app.lifecycle.registerOnResumeHandler` to accept a new Handler type, changing `contentUrl` from `string` to `URL` object.
-- Added `uuid` parameter to `MessageRequest` and `MessageResponse` interfaces
-- Added a new page property (`isBackgroundLoad`) for app context. This will be an indicator that the app is being loaded in the background.
 
 ## 2.23.0
 
