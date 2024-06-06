@@ -402,7 +402,8 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(1);
   });
 
-  it('should properly pass partial responses to nested child frames ', async () => {
+  it('should properly pass partial responses to nested child frames if message proxy-ing is allowed', async () => {
+    app.setAllowMessageProxy(true);
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
@@ -434,9 +435,11 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(3);
     const thirdChildMessage = utils.childMessages[2];
     expect(thirdChildMessage.isPartialResponse).toBeFalsy();
+    app.setAllowMessageProxy(false);
   });
 
-  it('Proxy messages to child window', async () => {
+  it('Proxy messages to child window if message proxy-ing is allowed', async () => {
+    app.setAllowMessageProxy(true);
     await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
     await utils.processMessage({
       origin: 'https://outlook.office.com',
@@ -453,7 +456,33 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(1);
     const childMessage = utils.findMessageInChildByFunc('backButtonClick');
     expect(childMessage).not.toBeNull();
+    app.setAllowMessageProxy(false);
   });
+
+  it('Prevent proxy-ing of messages to child window by default', async () => {
+    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
+    await utils.processMessage({
+      origin: 'https://outlook.office.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'backButtonClick',
+        args: [],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    const message = utils.findMessageByFunc('backButtonClick');
+    expect(message).toBeNull();
+    expect(utils.childMessages.length).toBe(0);
+  });
+
+  // Make a second test here
+  // look into graham change: should I / can I just pull this out and not test it?
+  // there seems to be a circle in handleChildMessage / callHandler when proxy-ing is turned on:
+  // if the parent has no handler for a message it receives in callHandler it will just pass that to its child,
+  // which is the origin of the event in the first place. Yuck.
+  // Also look at other uses of handleChildMessage in the codebase to make sure no other proxying going on
+  // verify authentication of messages in handleChildMessage
 
   describe('sendCustomMessage', () => {
     it('should successfully pass message and provided arguments', async () => {

@@ -6,6 +6,7 @@ import { LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { GlobalVars } from './globalVars';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -86,11 +87,11 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
-  } else if (Communication.childWindow) {
+  } else if (Communication.childWindow && GlobalVars.allowMessageProxy) {
     sendMessageEventToChild(name, args);
     return [false, undefined];
   } else {
-    callHandlerLogger('Handler for action message %s not found.', name);
+    callHandlerLogger('Handler for action message %s not found or message proxy-ing disabled.', name);
     return [false, undefined];
   }
 }

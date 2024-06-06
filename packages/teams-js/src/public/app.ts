@@ -922,6 +922,16 @@ export namespace app {
   }
 
   /**
+   * @hidden
+   * Undocumented function used to re-enable message proxy-ing for applications that request one.
+   *
+   * By default, message proxy-ing is disabled for all applications.
+   */
+  export function setAllowMessageProxy(value: boolean = false): void {
+    GlobalVars.allowMessageProxy = value;
+  }
+
+  /**
    * A namespace for enabling the suspension or delayed termination of an app when the user navigates away.
    * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
    * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .

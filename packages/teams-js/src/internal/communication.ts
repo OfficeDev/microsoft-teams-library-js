@@ -5,7 +5,7 @@
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { SdkError } from '../public/interfaces';
-import { latestRuntimeApiVersion } from '../public/runtime';
+import { latestRuntimeApiVersion, runtime } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -752,11 +752,15 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
   return evt.data.isPartialResponse === true;
 }
 
+const handleChildMessageLogger = communicationLogger.extend('handleChildMessage');
+
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
 function handleChildMessage(evt: DOMMessageEvent): void {
+  const logger = handleChildMessageLogger;
+
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
@@ -766,20 +770,25 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // @ts-ignore
       sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
     } else {
-      // No handler, proxy to parent
-      sendMessageToParent(
-        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
-        message.func,
-        message.args,
-        (...args: any[]): void => {
-          if (Communication.childWindow) {
-            const isPartialResponse = args.pop();
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
-          }
-        },
-      );
+      if (GlobalVars.allowMessageProxy) {
+        // No handler, proxy to parent
+        sendMessageToParent(
+          getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+          message.func,
+          message.args,
+          (...args: any[]): void => {
+            if (Communication.childWindow) {
+              const isPartialResponse = args.pop();
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+              runtime;
+            }
+          },
+        );
+      } else {
+        logger('Message from child not allowed to proxy: %o', message);
+      }
     }
   }
 }
