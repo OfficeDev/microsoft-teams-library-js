@@ -24,7 +24,6 @@ Tue, 07 May 2024 20:54:35 GMT
 - Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer.
 - Added `meeting.getMeetingDetailsVerbose` to allow retrieving additional meeting details from supported hosts.
 - Added support for `content` frame context to `liveShare` capability. Live Share SDK works now in Chat/Channel Tab and Collab Stage view contexts with this change.
-  s
 
 ### Patches
 
