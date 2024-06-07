@@ -1,22 +1,18 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 06 Jun 2024 17:06:18 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Jun 2024 20:49:06 GMT and should not be manually modified.
 
 <!-- Start content -->
 
 ## 2.24.0
 
-Thu, 06 Jun 2024 17:06:18 GMT
+Wed, 05 Jun 2024 20:49:06 GMT
 
 ### Minor changes
 
-- Added a new page property (isBackgroundLoad) for app context. This will be an indicator that the app is being loaded in the background.
-- Added `uuid` parameter to `MessageRequest` and `MessageResponse` interfaces
 - Updated `app.lifecycle.registerBeforeSuspendOrTerminateHandler` to be asynchronous, and updated `app.lifecycle.registerOnResumeHandler` to accept a new Handler type, changing `contentUrl` from `string` to `URL` object.
-
-### Patches
-
-- Made fix to function only used for testing
+- Added `uuid` parameter to `MessageRequest` and `MessageResponse` interfaces
+- Added a new page property (`isBackgroundLoad`) for app context. This will be an indicator that the app is being loaded in the background.
 
 ## 2.23.0
 
@@ -28,6 +24,7 @@ Tue, 07 May 2024 20:54:35 GMT
 - Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer.
 - Added `meeting.getMeetingDetailsVerbose` to allow retrieving additional meeting details from supported hosts.
 - Added support for `content` frame context to `liveShare` capability. Live Share SDK works now in Chat/Channel Tab and Collab Stage view contexts with this change.
+  s
 
 ### Patches
 
