@@ -358,7 +358,7 @@ export namespace app {
     /**
      * Internal app id that is used by Hubs to distinguish between different apps sideloaded or in store
      */
-    intAppId?: string;
+    internalAppId?: string;
   }
 
   /**
@@ -1012,7 +1012,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
         ringId: legacyContext.ringId,
       },
       appLaunchId: legacyContext.appLaunchId,
-      intAppId: legacyContext.intAppId,
+      internalAppId: legacyContext.internalAppId,
     },
     page: {
       id: legacyContext.entityId,
