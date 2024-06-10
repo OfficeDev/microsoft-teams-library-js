@@ -948,7 +948,7 @@ export namespace app {
      *
      * @returns void
      */
-    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => Promise<void>;
 
     /**
      * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,

@@ -959,14 +959,24 @@ export interface ResumeContext {
   /**
    * The content URL that is requested to be loaded
    */
-  contentUrl: string;
+  contentUrl: URL;
 }
 
 /**
  * @deprecated
  * As of 2.14.1, please use {@link ResumeContext} instead.
  */
-export type LoadContext = ResumeContext;
+export interface LoadContext {
+  /**
+   * The entity that is requested to be loaded
+   */
+  entityId: string;
+
+  /**
+   * The content URL that is requested to be loaded
+   */
+  contentUrl: string;
+}
 
 /** Represents information about a frame within a tab or dialog module. */
 export interface FrameInfo {
