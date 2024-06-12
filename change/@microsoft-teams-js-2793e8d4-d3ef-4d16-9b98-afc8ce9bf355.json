@@ -1,7 +1,7 @@
 {
   "type": "none",
-  "comment": "Cleaned up import structure",
+  "comment": "Released 2.24.0",
   "packageName": "@microsoft/teams-js",
-  "email": "noahdarveau@microsoft.com",
+  "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
 }

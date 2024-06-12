@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Made fix to function only used for testing",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}
