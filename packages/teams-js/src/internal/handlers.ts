@@ -245,17 +245,9 @@ async function handleBeforeUnload(): Promise<void> {
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
     await HandlersPrivate.beforeSuspendOrTerminateHandler();
-    if (Communication.childWindow) {
-      sendMessageEventToChild('beforeUnload');
-    } else {
-      readyToUnload();
-    }
+    readyToUnload();
   } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    if (Communication.childWindow) {
-      sendMessageEventToChild('beforeUnload');
-    } else {
-      readyToUnload();
-    }
+    readyToUnload();
   }
 }
 

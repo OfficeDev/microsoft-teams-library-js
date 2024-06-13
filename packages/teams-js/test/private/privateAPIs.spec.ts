@@ -474,7 +474,6 @@ describe('AppSDK-privateAPIs', () => {
     app.setAllowMessageProxy(false);
   });
 
-  // look into graham change: should I / can I just pull this out and not test it?
   // Also look at other uses of handleChildMessage in the codebase to make sure no other proxying going on
   // verify authentication of messages in handleChildMessage
 

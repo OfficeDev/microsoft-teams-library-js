@@ -1,7 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -1262,44 +1261,6 @@ describe('Testing pages module', () => {
               const message = utils.findMessageByFunc('settings.save.success');
               validateRequestWithoutArguments(message, 'settings.save.success');
             });
-
-            it('pages.config.registerOnSaveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              pages.config.registerOnSaveHandler(undefined);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.save',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(utils.childMessages.length).toBe(1);
-              const childMessage = utils.findMessageInChildByFunc('settings.save');
-              expect(childMessage).not.toBeNull();
-            });
-
-            it('pages.config.registerOnSaveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              let handlerCalled = false;
-              pages.config.registerOnSaveHandler((saveEvent) => {
-                saveEvent.notifySuccess();
-                handlerCalled = true;
-              });
-              expect(handlerCalled).toBe(false);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.save',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(handlerCalled).toBe(true);
-              expect(utils.childMessages.length).toBe(0);
-            });
           } else {
             it(`pages.config.registerOnSaveHandler does not allow calls from ${context} context`, async () => {
               await utils.initializeWithContext(context);
@@ -1361,43 +1322,6 @@ describe('Testing pages module', () => {
               await utils.sendMessage('settings.remove');
 
               expect(handlerCalled).toBeTruthy();
-            });
-
-            it('pages.config.registerOnRemoveHandler should proxy to childWindow if no handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              pages.config.registerOnRemoveHandler(undefined);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.remove',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(utils.childMessages.length).toBe(1);
-              const childMessage = utils.findMessageInChildByFunc('settings.remove');
-              expect(childMessage).not.toBeNull();
-            });
-
-            it('pages.config.registerOnRemoveHandler should not proxy to childWindow if handler in top window', async () => {
-              await utils.initializeWithContext(context, null, ['https://teams.microsoft.com']);
-              let handlerCalled = false;
-              pages.config.registerOnRemoveHandler(() => {
-                handlerCalled = true;
-              });
-              expect(handlerCalled).toBe(false);
-              await utils.processMessage({
-                origin: 'https://outlook.office365.com',
-                source: utils.childWindow,
-                data: {
-                  id: 100,
-                  func: 'settings.remove',
-                  args: [],
-                } as MessageResponse,
-              } as MessageEvent);
-              expect(handlerCalled).toBe(true);
-              expect(utils.childMessages.length).toBe(0);
             });
 
             it(`pages.config.registerOnRemoveHandler should successfully notify success from the registered remove handler when initialized with ${context} context`, async () => {
