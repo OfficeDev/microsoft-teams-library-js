@@ -402,11 +402,48 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(1);
   });
 
+  it('Proxy messages from child window to parent if message proxy-ing is allowed', async () => {
+    app.setAllowMessageProxy(true);
+    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
+    await utils.processMessage({
+      origin: 'https://outlook.office.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'backButtonClick',
+        args: [],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    const message = utils.findMessageByFunc('backButtonClick');
+    expect(message).not.toBeNull();
+    expect(utils.messages.length).toBe(2);
+    expect(message).not.toBeNull();
+    app.setAllowMessageProxy(false);
+  });
+
+  it('Do not proxy messages from child window to parent by default', async () => {
+    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
+    await utils.processMessage({
+      origin: 'https://outlook.office.com',
+      source: utils.childWindow,
+      data: {
+        id: 100,
+        func: 'backButtonClick',
+        args: [],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    const message = utils.findMessageByFunc('backButtonClick');
+    expect(message).toBeNull();
+    expect(utils.messages.length).toBe(1);
+  });
+
   it('should properly pass partial responses to nested child frames if message proxy-ing is allowed', async () => {
     app.setAllowMessageProxy(true);
     utils.initializeAsFrameless(['https://www.example.com']);
 
-    // Simulate recieving a child message as a frameless window
+    // Simulate receiving a child message as a frameless window
     await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
@@ -423,64 +460,21 @@ describe('AppSDK-privateAPIs', () => {
 
     // The child window should properly receive the partial response plus
     // the original event
-    expect(utils.childMessages.length).toBe(2);
-    const secondChildMessage = utils.childMessages[1];
-    expect(utils.childMessages[0].func).toBe('testPartialFunc1');
-    expect(secondChildMessage.isPartialResponse).toBeTruthy();
+    expect(utils.childMessages.length).toBe(1);
+    const firstChildMessage = utils.childMessages[0];
+    expect(firstChildMessage.isPartialResponse).toBeTruthy();
 
     // Pass the final response (non partial)
     await utils.respondToNativeMessage(parentMessage, false, {});
 
     // The child window should properly receive the non-partial response
-    expect(utils.childMessages.length).toBe(3);
-    const thirdChildMessage = utils.childMessages[2];
-    expect(thirdChildMessage.isPartialResponse).toBeFalsy();
+    expect(utils.childMessages.length).toBe(2);
+    const secondChildMessage = utils.childMessages[1];
+    expect(secondChildMessage.isPartialResponse).toBeFalsy();
     app.setAllowMessageProxy(false);
   });
 
-  it('Proxy messages to child window if message proxy-ing is allowed', async () => {
-    app.setAllowMessageProxy(true);
-    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
-    await utils.processMessage({
-      origin: 'https://outlook.office.com',
-      source: utils.childWindow,
-      data: {
-        id: 100,
-        func: 'backButtonClick',
-        args: [],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    const message = utils.findMessageByFunc('backButtonClick');
-    expect(message).not.toBeNull();
-    expect(utils.childMessages.length).toBe(1);
-    const childMessage = utils.findMessageInChildByFunc('backButtonClick');
-    expect(childMessage).not.toBeNull();
-    app.setAllowMessageProxy(false);
-  });
-
-  it('Prevent proxy-ing of messages to child window by default', async () => {
-    await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
-    await utils.processMessage({
-      origin: 'https://outlook.office.com',
-      source: utils.childWindow,
-      data: {
-        id: 100,
-        func: 'backButtonClick',
-        args: [],
-      } as MessageResponse,
-    } as MessageEvent);
-
-    const message = utils.findMessageByFunc('backButtonClick');
-    expect(message).toBeNull();
-    expect(utils.childMessages.length).toBe(0);
-  });
-
-  // Make a second test here
   // look into graham change: should I / can I just pull this out and not test it?
-  // there seems to be a circle in handleChildMessage / callHandler when proxy-ing is turned on:
-  // if the parent has no handler for a message it receives in callHandler it will just pass that to its child,
-  // which is the origin of the event in the first place. Yuck.
   // Also look at other uses of handleChildMessage in the codebase to make sure no other proxying going on
   // verify authentication of messages in handleChildMessage
 
