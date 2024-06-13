@@ -74,7 +74,7 @@ export const TestApp: React.FC = () => {
         <AppInstallDialogAPIs />
         <AuthenticationAPIs />
         <AppEntityAPIs />
-        <BarCodeAPIs />
+        {/* <BarCodeAPIs />
         <CalendarAPIs />
         <CallAPIs />
         <ChatAPIs />
@@ -106,7 +106,7 @@ export const TestApp: React.FC = () => {
         <MessageChannelAPIs />
         <MonetizationAPIs />
         <NestedAppAuthAPIs />
-        <NotificationAPIs />
+        <NotificationAPIs /> */}
         <OtherAppStateChangedAPIs />
         <PagesAPIs />
         <PagesAppButtonAPIs />
