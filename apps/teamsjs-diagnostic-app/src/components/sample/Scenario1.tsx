@@ -80,7 +80,7 @@ export function Scenario1(props: {
   };
 
   useEffect(() => {
-    // Load log statements from localStorage on component mount
+    // Load log statements from localStorage
     const storedLogs = localStorage.getItem("logStatements");
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
