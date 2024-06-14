@@ -114,10 +114,12 @@ describe('Testing authentication capability', () => {
       beforeEach(() => {
         // For *almost* all of these tests we want setInterval to be a no-op, so we set it to immediately return 0
         utils.mockWindow.setInterval = (handler: Function, timeout: number): number => 0;
+        GlobalVars.webAuthWindowOpen = false;
       });
       afterEach(() => {
         // After each test we reset setInterval to its normal value
         utils.mockWindow.setInterval = (handler: Function, timeout: number): number => setInterval(handler, timeout);
+        GlobalVars.webAuthWindowOpen = false;
       });
       it('authentication.authenticate should not allow calls before initialization', () => {
         const authenticationParams: authentication.AuthenticatePopUpParameters = {
@@ -178,7 +180,41 @@ describe('Testing authentication capability', () => {
             authentication.authenticate(authenticationParams);
             expect(windowOpenCalled).toBe(true);
           });
+          //-------------------
+          it(`authentication.authenticate proxy-ing`, async () => {
+            expect.assertions(3);
+            await utils.initializeWithContext(context);
 
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
+              const specs: string = specsInput as string;
+              return utils.childWindow as Window;
+            });
+
+            jest.spyOn(utils.mockWindow, 'close').mockImplementation((): void => {});
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl/',
+              width: 100,
+              height: 200,
+            };
+            expect(GlobalVars.webAuthWindowOpen).toBe(false);
+            const authenticatePromise = authentication.authenticate(authenticationParams);
+            expect(GlobalVars.webAuthWindowOpen).toBe(true);
+
+            utils.processMessage({
+              origin: utils.tabOrigin,
+              source: utils.childWindow,
+              data: {
+                id: 10000000,
+                func: 'authentication.authenticate.success',
+                args: [mockResult],
+              },
+            } as MessageEvent);
+
+            await authenticatePromise;
+            expect(GlobalVars.webAuthWindowOpen).toBe(false);
+          });
+          //-------------------
           it(`authentication.authenticate should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called in legacy flow from ${context} context`, async () => {
             expect.assertions(5);
             await utils.initializeWithContext(context);
