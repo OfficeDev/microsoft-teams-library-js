@@ -175,7 +175,7 @@ export function handleThemeChange(theme: string): void {
     HandlersPrivate.themeChangeHandler(theme);
   }
 
-  if (Communication.childWindow && GlobalVars.allowMessageProxy) {
+  if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
     sendMessageEventToChild('themeChange', [theme]);
   }
 }
@@ -199,12 +199,12 @@ function handleLoad(loadContext: LoadContext): void {
   const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
     HandlersPrivate.resumeHandler(resumeContext);
-    if (Communication.childWindow && GlobalVars.allowMessageProxy) {
+    if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
       sendMessageEventToChild('load', [resumeContext]);
     }
   } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(loadContext);
-    if (Communication.childWindow && GlobalVars.allowMessageProxy) {
+    if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
       sendMessageEventToChild('load', [loadContext]);
     }
   }

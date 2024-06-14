@@ -328,6 +328,7 @@ export namespace authentication {
     } finally {
       Communication.childWindow = null;
       Communication.childOrigin = null;
+      GlobalVars.webAuthWindowOpen = false;
     }
   }
 
@@ -342,6 +343,7 @@ export namespace authentication {
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
     // Close the previously opened window if we have one
     closeAuthenticationWindow();
+
     // Start with a sensible default size
     let width = authenticateParameters.width || 600;
     let height = authenticateParameters.height || 400;
@@ -364,6 +366,8 @@ export namespace authentication {
         : Communication.currentWindow.screenY;
     left += Communication.currentWindow.outerWidth / 2 - width / 2;
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
+
+    GlobalVars.webAuthWindowOpen = true;
     // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
       fullyQualifiedURL.href,

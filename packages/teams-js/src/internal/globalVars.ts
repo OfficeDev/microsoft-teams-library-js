@@ -10,4 +10,5 @@ export class GlobalVars {
   public static clientSupportedSDKVersion: string;
   public static printCapabilityEnabled = false;
   public static allowMessageProxy = false;
+  public static webAuthWindowOpen = false;
 }

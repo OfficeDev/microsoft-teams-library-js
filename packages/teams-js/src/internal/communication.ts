@@ -770,7 +770,7 @@ function handleChildMessage(evt: DOMMessageEvent): void {
       // @ts-ignore
       sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
     } else {
-      if (GlobalVars.allowMessageProxy) {
+      if (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen) {
         // No handler, proxy to parent
         sendMessageToParent(
           getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
