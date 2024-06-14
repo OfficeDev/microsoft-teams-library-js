@@ -6,6 +6,7 @@ import { LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { GlobalVars } from './globalVars';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -174,7 +175,7 @@ export function handleThemeChange(theme: string): void {
     HandlersPrivate.themeChangeHandler(theme);
   }
 
-  if (Communication.childWindow) {
+  if (Communication.childWindow && GlobalVars.allowMessageProxy) {
     sendMessageEventToChild('themeChange', [theme]);
   }
 }
@@ -198,12 +199,12 @@ function handleLoad(loadContext: LoadContext): void {
   const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
     HandlersPrivate.resumeHandler(resumeContext);
-    if (Communication.childWindow) {
+    if (Communication.childWindow && GlobalVars.allowMessageProxy) {
       sendMessageEventToChild('load', [resumeContext]);
     }
   } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(loadContext);
-    if (Communication.childWindow) {
+    if (Communication.childWindow && GlobalVars.allowMessageProxy) {
       sendMessageEventToChild('load', [loadContext]);
     }
   }

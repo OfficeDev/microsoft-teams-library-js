@@ -1,3 +1,4 @@
+import { GlobalVars } from '../../src/internal/globalVars';
 import { MessageRequest, MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
@@ -385,9 +386,10 @@ describe('AppSDK-privateAPIs', () => {
   });
 
   it('should treat messages to frameless windows as coming from the child', async () => {
+    GlobalVars.allowMessageProxy = true;
     utils.initializeAsFrameless(['https://www.example.com']);
 
-    // Simulate recieving a child message as a frameless window
+    // Simulate receiving a child message as a frameless window
     await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
@@ -400,6 +402,25 @@ describe('AppSDK-privateAPIs', () => {
 
     // The frameless window should send a response back to the child window
     expect(utils.childMessages.length).toBe(1);
+    GlobalVars.allowMessageProxy = false;
+  });
+
+  it('post messages to frameless windows should be ignored if message proxy-ing is disabled', async () => {
+    utils.initializeAsFrameless(['https://www.example.com']);
+
+    // Simulate receiving a child message as a frameless window
+    await utils.processMessage({
+      origin: 'https://www.example.com',
+      source: utils.childWindow,
+      data: {
+        id: 0,
+        func: 'themeChange',
+        args: ['testTheme'],
+      } as MessageResponse,
+    } as MessageEvent);
+
+    // The message should have been ignored because message proxy-ing is disabled
+    expect(utils.childMessages.length).toBe(0);
   });
 
   it('Proxy messages from child window to parent if message proxy-ing is allowed', async () => {
@@ -474,8 +495,7 @@ describe('AppSDK-privateAPIs', () => {
     app.setAllowMessageProxy(false);
   });
 
-  // Also look at other uses of handleChildMessage in the codebase to make sure no other proxying going on
-  // verify authentication of messages in handleChildMessage
+  // Also look at other uses of handleChildMessage in the codebase to make sure no other proxy-ing going on
 
   describe('sendCustomMessage', () => {
     it('should successfully pass message and provided arguments', async () => {
