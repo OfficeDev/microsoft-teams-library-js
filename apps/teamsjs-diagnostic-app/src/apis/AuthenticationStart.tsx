@@ -31,7 +31,7 @@ export async function authenticateUser(): Promise<boolean> {
       response_type: 'id_token token',
       response_mode: 'fragment',
       scope: 'https://graph.microsoft.com/User.Read openid',
-      redirect_uri: window.location.origin + '/auth-end',  // Change to your auth end URL
+      redirect_uri: window.location.origin + '/auth-end',
       nonce: _guid(),
       state: state,
       login_hint: context.user.loginHint,

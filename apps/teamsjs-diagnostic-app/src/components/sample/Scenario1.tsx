@@ -44,7 +44,6 @@ export function Scenario1(props: {
       console.log("Attempting to authenticate user...");
       const authSuccess = await authenticateUser();
       if (authSuccess) {
-        console.log("User authenticated")
         console.log("App Initialization Scenario successfully completed");
       } else {
         console.log("User not authenticated");
@@ -81,7 +80,7 @@ export function Scenario1(props: {
   };
 
   useEffect(() => {
-    // Load log statements from localStorage
+    // Load log statements from localStorage on component mount
     const storedLogs = localStorage.getItem("logStatements");
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
