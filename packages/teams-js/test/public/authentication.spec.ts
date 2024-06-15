@@ -180,9 +180,9 @@ describe('Testing authentication capability', () => {
             authentication.authenticate(authenticationParams);
             expect(windowOpenCalled).toBe(true);
           });
-          //-------------------
-          it(`authentication.authenticate proxy-ing`, async () => {
-            expect.assertions(3);
+
+          it(`Message proxy-ing works while the auth window is open`, async () => {
+            expect.assertions(6);
             await utils.initializeWithContext(context);
 
             jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
@@ -201,11 +201,26 @@ describe('Testing authentication capability', () => {
             const authenticatePromise = authentication.authenticate(authenticationParams);
             expect(GlobalVars.webAuthWindowOpen).toBe(true);
 
+            expect(utils.messages.length).toBe(3);
+            utils
+              .processMessage({
+                origin: utils.tabOrigin,
+                source: utils.childWindow,
+                data: {
+                  id: 10000000,
+                  func: 'getContext',
+                },
+              } as MessageEvent)
+              .then(() => {
+                expect(utils.messages.length).toBe(4);
+                expect(utils.findMessageByFunc('getContext')).not.toBeNull();
+              });
+
             utils.processMessage({
               origin: utils.tabOrigin,
               source: utils.childWindow,
               data: {
-                id: 10000000,
+                id: 10000001,
                 func: 'authentication.authenticate.success',
                 args: [mockResult],
               },
@@ -214,7 +229,30 @@ describe('Testing authentication capability', () => {
             await authenticatePromise;
             expect(GlobalVars.webAuthWindowOpen).toBe(false);
           });
-          //-------------------
+
+          it(`Message proxy-ing does not work if the auth window is not open`, async () => {
+            expect.assertions(5);
+            await utils.initializeWithContext(context);
+
+            expect(GlobalVars.webAuthWindowOpen).toBe(false);
+            expect(GlobalVars.allowMessageProxy).toBe(false);
+
+            expect(utils.messages.length).toBe(1);
+            utils
+              .processMessage({
+                origin: utils.tabOrigin,
+                source: utils.childWindow,
+                data: {
+                  id: 10000000,
+                  func: 'getContext',
+                },
+              } as MessageEvent)
+              .then(() => {
+                expect(utils.messages.length).toBe(1);
+                expect(utils.findMessageByFunc('getContext')).toBeNull();
+              });
+          });
+
           it(`authentication.authenticate should cancel the flow when the auth window gets closed before notifySuccess/notifyFailure are called in legacy flow from ${context} context`, async () => {
             expect.assertions(5);
             await utils.initializeWithContext(context);
