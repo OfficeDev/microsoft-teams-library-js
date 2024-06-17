@@ -1,29 +1,26 @@
 import { useState, useEffect } from "react";
-import config from "./lib/config";
 import "./Scenario1.css";
 import { captureConsoleLogs } from "./LoggerUtility";
 import { app } from "@microsoft/teams-js";
 import { registerOnResume } from '../../apis/AppApi';
 import { authenticateUser } from "../../apis/AuthenticationStart";
 
-const functionName = config.apiName || "myFunc";
 type Log = string;
 
 interface Scenario1Props {
   showFunction?: boolean;
 }
 
-export function Scenario1({ }: Scenario1Props) {
+export function Scenario1({ showFunction }: Scenario1Props) {
   const [logStatements, setLogStatements] = useState<Log[]>([]);
 
   useEffect(() => {
     const filteredLogs: Log[] = [];
     captureConsoleLogs((log: string) => {
-      // Filter out logs not needed
       if (!log.includes("Get basic user info from SSO token")) {
         filteredLogs.push(log);
         setLogStatements([...filteredLogs]);
-        localStorage.setItem("logStatements", JSON.stringify(filteredLogs)); // Store in localStorage
+        localStorage.setItem("logStatements", JSON.stringify(filteredLogs));
       }
     });
 
@@ -74,7 +71,6 @@ export function Scenario1({ }: Scenario1Props) {
   };
 
   useEffect(() => {
-    // Load log statements from localStorage
     const storedLogs = localStorage.getItem("logStatements");
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
