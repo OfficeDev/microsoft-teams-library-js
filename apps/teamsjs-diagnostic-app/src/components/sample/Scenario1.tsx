@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import "./Scenario1.css";
-import { captureConsoleLogs } from "./LoggerUtility";
-import { app } from "@microsoft/teams-js";
+import { useState, useEffect } from 'react';
+import './Scenario1.css';
+import { captureConsoleLogs } from './LoggerUtility';
+import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';
-import { authenticateUser } from "../../apis/AuthenticationStart";
+import { authenticateUser } from '../../apis/AuthenticationStart';
 
 type Log = string;
 
@@ -17,10 +17,10 @@ export function Scenario1({ showFunction }: Scenario1Props) {
   useEffect(() => {
     const filteredLogs: Log[] = [];
     captureConsoleLogs((log: string) => {
-      if (!log.includes("Get basic user info from SSO token")) {
+      if (!log.includes('Get basic user info from SSO token')) {
         filteredLogs.push(log);
         setLogStatements([...filteredLogs]);
-        localStorage.setItem("logStatements", JSON.stringify(filteredLogs));
+        localStorage.setItem('logStatements', JSON.stringify(filteredLogs));
       }
     });
 
@@ -29,15 +29,15 @@ export function Scenario1({ showFunction }: Scenario1Props) {
 
   const runAppInitializationScenario = async () => {
     try {
-      console.log("Running App Initialization Scenario...");
-      console.log("Attempting to register on resume handler...");
+      console.log('Running App Initialization Scenario...');
+      console.log('Attempting to register on resume handler...');
       await registerOnResume();
-      console.log("Attempting to authenticate user...");
+      console.log('Attempting to authenticate user...');
       const authSuccess = await authenticateUser();
       if (authSuccess) {
-        console.log("App Initialization Scenario successfully completed");
+        console.log('App Initialization Scenario successfully completed');
       } else {
-        console.log("User not authenticated");
+        console.log('User not authenticated');
         showSignInPopup();
       }
     } catch (error: any) {
@@ -46,17 +46,21 @@ export function Scenario1({ showFunction }: Scenario1Props) {
   };
 
   const showSignInPopup = () => {
-    console.log("Showing sign-in popup...");
+    console.log('Showing sign-in popup...');
   };
 
   const generateVerticalBoxes = (count: number) => {
-    const options = ["Option 1", "Option 2", "Option 3"];
+    const options = ['Option 1', 'Option 2', 'Option 3'];
     const verticalBoxes = [];
     for (let i = 1; i <= count; i++) {
       verticalBoxes.push(
         <div key={i} className="vertical-box">
-          <span className="box-title">{i}. API {i}</span>
-          <label htmlFor={`select-${i}`} className="sr-only">Select an option for API {i}</label>
+          <span className="box-title">
+            {i}. API {i}
+          </span>
+          <label htmlFor={`select-${i}`} className="sr-only">
+            Select an option for API {i}
+          </label>
           <select id={`select-${i}`} className="box-dropdown">
             {options.map((option, index) => (
               <option key={index} value={option}>
@@ -64,14 +68,14 @@ export function Scenario1({ showFunction }: Scenario1Props) {
               </option>
             ))}
           </select>
-        </div>
+        </div>,
       );
     }
     return verticalBoxes;
   };
 
   useEffect(() => {
-    const storedLogs = localStorage.getItem("logStatements");
+    const storedLogs = localStorage.getItem('logStatements');
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
     }
@@ -87,6 +91,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
             className="scenario1-button"
             onClick={runAppInitializationScenario}
             type="button"
+            data-testid="run-scenario-button"
           >
             Run Scenario
           </button>
@@ -118,9 +123,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
         </div>
 
         <div className="all-api-container">
-          <div className="all-api-box">
-            {generateVerticalBoxes(12)}
-          </div>
+          <div className="all-api-box">{generateVerticalBoxes(12)}</div>
         </div>
       </div>
 

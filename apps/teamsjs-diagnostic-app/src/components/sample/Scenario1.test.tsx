@@ -1,3 +1,4 @@
+import './Scenario1.css';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Scenario1 } from './Scenario1';
 
@@ -21,7 +22,7 @@ describe('Scenario1 Component', () => {
     render(<Scenario1 />);
 
     // Simulate clicking on the "Run Scenario" button
-    fireEvent.click(screen.getByText(/Run Scenario/i));
+    fireEvent.click(screen.getByTestId('run-scenario-button'));
 
     await waitFor(() => {
       const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
@@ -29,6 +30,5 @@ describe('Scenario1 Component', () => {
     });
   });
 
-  // Add more test cases here as needed
-
+  // Add more test cases later
 });
