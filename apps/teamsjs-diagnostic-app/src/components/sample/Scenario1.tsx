@@ -9,17 +9,11 @@ import { authenticateUser } from "../../apis/AuthenticationStart";
 const functionName = config.apiName || "myFunc";
 type Log = string;
 
-export function Scenario1(props: {
+interface Scenario1Props {
   showFunction?: boolean;
-  tabCodeEntry?: string;
-  functionCodePath?: string;
-}) {
-  const { showFunction, functionCodePath } = {
-    showFunction: true,
-    functionCodePath: `api/src/functions/${functionName}.ts`,
-    ...props,
-  };
+}
 
+export function Scenario1({ }: Scenario1Props) {
   const [logStatements, setLogStatements] = useState<Log[]>([]);
 
   useEffect(() => {

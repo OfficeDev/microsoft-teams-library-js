@@ -1,12 +1,7 @@
-import React from "react";
 import "./WebHub.css";
 //import { Image } from "@fluentui/react-components";
 
 export function WebHub(props: { docsUrl?: string }) {
-  const { docsUrl } = {
-    docsUrl: "https://aka.ms/teamsfx-docs",
-    ...props,
-  };
   return (
     <div className="web hub sdk logging">
       <h2>Web Hub SDK Logging</h2>
