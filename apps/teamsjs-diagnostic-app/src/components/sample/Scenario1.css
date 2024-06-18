@@ -11,28 +11,8 @@
 
 .scenario-container {
   display: flex;
-  flex-direction: row;
   gap: 20px;
   margin-bottom: 20px;
-}
-
-.scenario2-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  align-items: flex-start;
-}
-
-.all-api-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  align-items: flex-start;
-}
-
-.scenario2-header {
-  margin-top: -90px;
-  gap: 20px;
 }
 
 .scenario1-box,
@@ -44,8 +24,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
+  padding: 20px;
   position: relative;
+  overflow: hidden;
 }
 
 .scenario1-button {
@@ -69,6 +50,7 @@
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  flex: 1;
 }
 
 .api-header {
@@ -80,23 +62,23 @@
 .vertical-box-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: calc(100% - 40px);
 }
 
 .vertical-box {
-  width: 250px;
-  height: 20px;
-  margin: 5px 0;
+  width: 100%;
   background-color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
   border: 1px solid #ccc;
-  justify-content: space-between;
   padding: 10px;
   border-radius: 4px;
+}
+
+.box-dropdown {
+  margin-left: auto;
 }
 
 .horizontal-box {
@@ -129,4 +111,38 @@
 
 .box-dropdown {
   margin-left: 10px;
+}
+
+.all-api-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: flex-start;
+  overflow-y: auto;
+  max-height: 600px;
+  background-color: lightgray;
+  padding: 20px;
+  height: 400px;
+}
+
+.all-api-box {
+  width: 400px;
+  height: 400px;
+  overflow: auto;
+}
+
+.scenario2-header {
+  margin-top: -90px;
+  gap: 20px;
+}
+
+.custom-scenario-box {
+  width: 400px;
+  height: 400px;
+  background-color: lightgray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
 }

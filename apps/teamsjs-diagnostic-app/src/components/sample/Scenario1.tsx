@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Scenario1.css';
 import { captureConsoleLogs } from './LoggerUtility';
 import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
+import apiComponents from './ApiComponents';
 
 type Log = string;
 
@@ -49,37 +50,37 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     console.log('Showing sign-in popup...');
   };
 
-  const generateVerticalBoxes = (count: number) => {
-    const options = ['Option 1', 'Option 2', 'Option 3'];
-    const verticalBoxes = [];
-    for (let i = 1; i <= count; i++) {
-      verticalBoxes.push(
-        <div key={i} className="vertical-box">
-          <span className="box-title">
-            {i}. API {i}
-          </span>
-          <label htmlFor={`select-${i}`} className="sr-only">
-            Select an option for API {i}
-          </label>
-          <select id={`select-${i}`} className="box-dropdown">
-            {options.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>,
-      );
-    }
-    return verticalBoxes;
-  };
-
   useEffect(() => {
     const storedLogs = localStorage.getItem('logStatements');
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
     }
   }, []);
+
+  
+  const generateVerticalBoxes = () => {
+    const options = ['Option 1', 'Option 2', 'Option 3'];
+    return apiComponents.map((api, index) => (
+      <div key={index} className="vertical-box">
+        <div className="api-container">
+          <div className="api-header">{api.title}</div>
+          <div className="dropdown-menu">
+            <label htmlFor={`select-${index}`} className="sr-only">
+              Select an option for API {index}
+            </label>
+            <select id={`select-${index}`} className="box-dropdown">
+              {options.map((option, optionIndex) => (
+                <option key={optionIndex} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+        </div>
+      </div>
+    ));
+  };
 
   return (
     <div>
@@ -118,12 +119,13 @@ export function Scenario1({ showFunction }: Scenario1Props) {
             <button className="set-scenario-button">+</button>
             <div className="api-section">
               <div className="api-header">APIs Being Run:</div>
+              {/* Placeholder for APIs chosen in custom scenario */}
             </div>
           </div>
         </div>
 
         <div className="all-api-container">
-          <div className="all-api-box">{generateVerticalBoxes(12)}</div>
+          <div className="all-api-box">{generateVerticalBoxes()}</div>
         </div>
       </div>
 
