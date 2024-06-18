@@ -1,7 +1,7 @@
 //import { AppAPIs } from './../../apis/AppApi';
 import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
 //import { AuthenticationAPIs } from '../../apis/AuthenticationApi';
-import AppEntityAPIs from './../../apis/AppEntityApi';
+//import AppEntityAPIs from './../../apis/AppEntityApi';
 import BarCodeAPIs from './../../apis/BarCodeApi';
 import CalendarAPIs from './../../apis/CalendarApi';
 import CallAPIs from './../../apis/CallApi';
@@ -61,7 +61,7 @@ import { VisualMediaAPIs } from '../../apis/VisualMediaApi';*/
 
 const apiComponents = [
   { component: AppInstallDialogAPIs, title: 'AppInstallDialogAPIs' },
-  { component: AppEntityAPIs, title: 'AppEntityAPIs' },
+  //{ component: AppEntityAPIs, title: 'AppEntityAPIs' },
   { component: BarCodeAPIs, title: 'BarCodeAPIs' },
   { component: CalendarAPIs, title: 'CalendarAPIs' },
   { component: CallAPIs, title: 'CallAPIs' },
