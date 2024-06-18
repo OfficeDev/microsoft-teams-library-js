@@ -14,6 +14,7 @@ interface Scenario1Props {
 
 export function Scenario1({ showFunction }: Scenario1Props) {
   const [logStatements, setLogStatements] = useState<Log[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const filteredLogs: Log[] = [];
@@ -57,10 +58,13 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     }
   }, []);
 
-  
   const generateVerticalBoxes = () => {
+    const filteredApis = apiComponents.filter(api =>
+      api.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     const options = ['Option 1', 'Option 2', 'Option 3'];
-    return apiComponents.map((api, index) => (
+    return filteredApis.map((api, index) => (
       <div key={index} className="vertical-box">
         <div className="api-container">
           <div className="api-header">{api.title}</div>
@@ -76,7 +80,6 @@ export function Scenario1({ showFunction }: Scenario1Props) {
               ))}
             </select>
           </div>
-          
         </div>
       </div>
     ));
@@ -119,12 +122,18 @@ export function Scenario1({ showFunction }: Scenario1Props) {
             <button className="set-scenario-button">+</button>
             <div className="api-section">
               <div className="api-header">APIs Being Run:</div>
-              {/* Placeholder for APIs chosen in custom scenario */}
             </div>
           </div>
         </div>
 
         <div className="all-api-container">
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search APIs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <div className="all-api-box">{generateVerticalBoxes()}</div>
         </div>
       </div>
