@@ -1,8 +1,9 @@
 import React from 'react';
-import { clipboard } from '@microsoft/teams-js';
-import { captureConsoleLogs } from '../components/sample/LoggerUtility';
+//import { clipboard } from '@microsoft/teams-js';
+//import { captureConsoleLogs } from '../components/sample/LoggerUtility';
 
 const ClipboardAPIs: React.FC = () => {
+  /*
   const checkClipboardCapability = async () => {
     captureConsoleLogs((log) => console.log(log));
     console.log('Checking if Clipboard module is supported...');
@@ -35,7 +36,7 @@ const ClipboardAPIs: React.FC = () => {
     await clipboard.write(blob);
     console.log('Image copied to clipboard');
     return 'Image copied to clipboard';
-  };
+  };*/
 
   return (
       <div className="api-header">API: Clipboard</div>

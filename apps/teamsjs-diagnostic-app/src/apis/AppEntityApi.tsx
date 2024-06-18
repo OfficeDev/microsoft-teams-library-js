@@ -1,4 +1,3 @@
-import React from 'react';
 import { appEntity } from '@microsoft/teams-js';
 import { captureConsoleLogs } from './../components/sample/LoggerUtility';
 

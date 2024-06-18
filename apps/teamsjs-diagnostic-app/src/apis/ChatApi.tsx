@@ -1,8 +1,9 @@
 import React from 'react';
-import { chat, conversations } from '@microsoft/teams-js';
-import { captureConsoleLogs } from './../components/sample/LoggerUtility';
+//import { chat, conversations } from '@microsoft/teams-js';
+//import { captureConsoleLogs } from './../components/sample/LoggerUtility';
 
 const ChatAPIs: React.FC = () => {
+  /*
   const checkChatCapability = async () => {
     captureConsoleLogs((log) => console.log(log));
     console.log('Checking if Chat module is supported...');
@@ -38,7 +39,7 @@ const ChatAPIs: React.FC = () => {
   const getChatMembers = async () => {
     const result = await conversations.getChatMembers();
     return JSON.stringify(result);
-  };
+  };*/
 
   return (
     <div>

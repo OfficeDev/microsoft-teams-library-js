@@ -1,7 +1,8 @@
 import React from 'react';
-import { sendCustomMessage } from '@microsoft/teams-js';
+//import { sendCustomMessage } from '@microsoft/teams-js';
 
 const CustomAPIs: React.FC = () => {
+    /*
   const callCustomApiEvent = async () => {
     console.log('Calling Custom API (Event)...');
     await sendCustomMessage('custom-service-event');
@@ -14,7 +15,7 @@ const CustomAPIs: React.FC = () => {
       console.log('Custom API (Response) received:', args);
     });
     console.log('Custom API (Response) called');
-  };
+  };*/
 
   return (
       <div className="api-header">API: Custom</div>
