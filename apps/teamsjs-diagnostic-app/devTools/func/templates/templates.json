@@ -1,0 +1,3623 @@
+[
+  {
+    "id": "BlobTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# BlobTrigger - C<span>#</span>\r\n\r\nThe `BlobTrigger` makes it incredibly easy to react to new Blobs inside of Azure Blob Storage. This sample demonstrates a simple use case of processing data from a given Blob using C#.\r\n\r\n## How it works\r\n\r\nFor a `BlobTrigger` to work, you provide a path which dictates where the blobs are located inside your container, and can also help restrict the types of blobs you wish to return. For instance, you can set the path to `samples/{name}.png` to restrict the trigger to only the samples path and only blobs with \".png\" at the end of their name.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "run.csx": "public static void Run(Stream myBlob, string name, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Blob trigger function Processed blob\\n Name:{name} \\n Size: {myBlob.Length} Bytes\");\r\n}\r\n",
+      "sample.dat": "samples-workitems/workitem.txt"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myBlob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "BlobTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "myBlob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "BlobTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, myBlob) {\r\n    context.log(\"JavaScript blob trigger function processed blob \\n Blob:\", context.bindingData.blobTrigger, \"\\n Blob Size:\", myBlob.length, \"Bytes\");\r\n};",
+      "readme.md": "# BlobTrigger - JavaScript\r\n\r\nThe `BlobTrigger` makes it incredibly easy to react to new Blobs inside of Azure Blob Storage. This sample demonstrates a simple use case of processing data from a given Blob using JavaScript.\r\n\r\n## How it works\r\n\r\nFor a `BlobTrigger` to work, you provide a path which dictates where the blobs are located inside your container, and can also help restrict the types of blobs you wish to return. For instance, you can set the path to `samples/{name}.png` to restrict the trigger to only the samples path and only blobs with \".png\" at the end of their name.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": "samples-workitems/workitem.txt"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myBlob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "BlobTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# BlobTrigger - PowerShell\r\n\r\nThe `BlobTrigger` makes it incredibly easy to react to new Blobs inside of [Azure Blob Storage](https://azure.microsoft.com/en-us/services/storage/blobs/).\r\nThis sample demonstrates a simple use case of processing data from a given Blob using PowerShell.\r\n\r\n## How it works\r\n\r\nFor a `BlobTrigger` to work, you provide a path which dictates where the blobs are located inside your container, and can also help restrict the types of blobs you wish to return. For instance, you can set the path to `samples/{name}.png` to restrict the trigger to only the samples path and only blobs with \".png\" at the end of their name.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation\r\n",
+      "run.ps1": "# Input bindings are passed in via param block.\r\nparam([byte[]] $InputBlob, $TriggerMetadata)\r\n\r\n# Write out the blob name and size to the information log.\r\nWrite-Host \"PowerShell Blob trigger function Processed blob! Name: $($TriggerMetadata.Name) Size: $($InputBlob.Length) bytes\"\r\n",
+      "sample.dat": "samples-workitems/workitem.txt"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "InputBlob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "BlobTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# BlobTrigger - Python\r\n\r\nThe `BlobTrigger` makes it incredibly easy to react to new Blobs inside of Azure Blob Storage. This sample demonstrates a simple use case of processing data from a given Blob using Python.\r\n\r\n## How it works\r\n\r\nFor a `BlobTrigger` to work, you provide a path which dictates where the blobs are located inside your container, and can also help restrict the types of blobs you wish to return. For instance, you can set the path to `samples/{name}.png` to restrict the trigger to only the samples path and only blobs with \".png\" at the end of their name.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": "samples-workitems/workitem.txt",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(myblob: func.InputStream):\r\n    logging.info(f\"Python blob trigger function processed blob \\n\"\r\n                 f\"Name: {myblob.name}\\n\"\r\n                 f\"Blob Size: {myblob.length} bytes\")\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "name": "myblob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "filters": [
+        "Python3"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "BlobTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst blobTrigger: AzureFunction = async function (context: Context, myBlob: any): Promise<void> {\r\n    context.log(\"Blob trigger function processed blob \\n Name:\", context.bindingData.name, \"\\n Blob Size:\", myBlob.length, \"Bytes\");\r\n};\r\n\r\nexport default blobTrigger;\r\n",
+      "readme.md": "# BlobTrigger - TypeScript\r\n\r\nThe `BlobTrigger` makes it incredibly easy to react to new Blobs inside of Azure Blob Storage. This sample demonstrates a simple use case of processing data from a given Blob using TypeScript.\r\n\r\n## How it works\r\n\r\nFor a `BlobTrigger` to work, you provide a path which dictates where the blobs are located inside your container, and can also help restrict the types of blobs you wish to return. For instance, you can set the path to `samples/{name}.png` to restrict the trigger to only the samples path and only blobs with \".png\" at the end of their name.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": "samples-workitems/workitem.txt"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myBlob",
+          "type": "blobTrigger",
+          "direction": "in",
+          "path": "samples-workitems/{name}",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "BlobTrigger",
+      "description": "$BlobTrigger_description",
+      "name": "Azure Blob Storage trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "blob",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "path"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "#r \"Microsoft.Azure.DocumentDB.Core\"\r\nusing System;\r\nusing System.Collections.Generic;\r\nusing Microsoft.Azure.Documents;\r\n\r\npublic static void Run(IReadOnlyList<Document> input, ILogger log)\r\n{\r\n    if (input != null && input.Count > 0)\r\n    {\r\n        log.LogInformation(\"Documents modified \" + input.Count);\r\n        log.LogInformation(\"First document Id \" + input[0].Id);\r\n    }\r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "input",
+          "direction": "in",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "leaseCollectionName": "leases",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "documents",
+          "direction": "in",
+          "leaseCollectionName": "leases",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, documents) {\r\n    if (!!documents && documents.length > 0) {\r\n        context.log('Document Id: ', documents[0].id);\r\n    }\r\n}\r\n",
+      "sample.dat": "[\r\n\t{\r\n\t\t\"id\": \"sample\"\r\n\t}\r\n]"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "documents",
+          "direction": "in",
+          "leaseCollectionName": "leases",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "# Input bindings are passed in via param block.\r\nparam($Documents, $TriggerMetadata)\r\n\r\nif ($Documents.Count -gt 0) {\r\n    Write-Host \"Document Id: $($Documents[0].id)\"\r\n}\r\n",
+      "sample.dat": "[\r\n\t{\r\n\t\t\"id\": \"sample\"\r\n\t}\r\n]\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "Documents",
+          "direction": "in",
+          "leaseCollectionName": "leases",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "[\r\n\t{\r\n\t\t\"id\": \"sample\"\r\n\t}\r\n]",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(documents: func.DocumentList) -> str:\r\n    if documents:\r\n        logging.info('Document id: %s', documents[0]['id'])\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "documents",
+          "direction": "in",
+          "leaseCollectionName": "leases",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ],
+      "filters": [
+        "Python3"
+      ]
+    }
+  },
+  {
+    "id": "CosmosDBTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst cosmosDBTrigger: AzureFunction = async function (context: Context, documents: any[]): Promise<void> {\r\n    if (!!documents && documents.length > 0) {\r\n        context.log('Document Id: ', documents[0].id);\r\n    }\r\n}\r\n\r\nexport default cosmosDBTrigger;\r\n",
+      "sample.dat": "[\r\n\t{\r\n\t\t\"id\": \"sample\"\r\n\t}\r\n]"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "cosmosDBTrigger",
+          "name": "documents",
+          "direction": "in",
+          "leaseCollectionName": "leases",
+          "connectionStringSetting": "",
+          "databaseName": "",
+          "collectionName": "",
+          "createLeaseCollectionIfNotExists": true
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "CosmosTrigger",
+      "description": "$CosmosDBTrigger_description",
+      "name": "Azure Cosmos DB trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "cosmosDB",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connectionStringSetting",
+        "databaseName",
+        "collectionName",
+        "leaseCollectionName",
+        "createLeaseCollectionIfNotExists"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.CosmosDB",
+          "version": "3.0.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsActivity-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an orchestrator function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable orchestration function\r\n * - create a Durable HTTP starter function\r\n */\r\n\r\n#r \"Microsoft.Azure.WebJobs.Extensions.DurableTask\"\r\n\r\nusing Microsoft.Azure.WebJobs.Extensions.DurableTask;\r\n\r\npublic static string Run(string name)\r\n{\r\n    return $\"Hello {name}!\";\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "name",
+          "type": "activityTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "Hello",
+      "description": "$DurableFunctionsActivity_description",
+      "name": "Durable Functions activity",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "2.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsActivity-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "﻿/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an orchestrator function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable orchestration function\r\n * - create a Durable HTTP starter function\r\n * - run 'npm install durable-functions' from the wwwroot folder of your\r\n *   function app in Kudu\r\n */\r\n\r\nmodule.exports = async function (context) {\r\n    return `Hello ${context.bindings.name}!`;\r\n};"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "name",
+          "type": "activityTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "Hello",
+      "description": "$DurableFunctionsActivity_description",
+      "name": "Durable Functions activity",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsActivity-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "﻿/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an orchestrator function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable orchestration function\r\n * - create a Durable HTTP starter function\r\n * - run 'npm install durable-functions' from the wwwroot folder of your\r\n *   function app in Kudu\r\n */\r\n\r\nimport { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst activityFunction: AzureFunction = async function (context: Context): Promise<string> {\r\n    return `Hello ${context.bindings.name}!`;\r\n};\r\n\r\nexport default activityFunction;\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "name",
+          "type": "activityTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "Hello",
+      "description": "$DurableFunctionsActivity_description",
+      "name": "Durable Functions activity",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsHttpStart-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "#r \"Microsoft.Azure.WebJobs.Extensions.DurableTask\"\r\n#r \"Newtonsoft.Json\"\r\n\r\nusing System.Net;\r\nusing Microsoft.Azure.WebJobs.Extensions.DurableTask;\r\n\r\npublic static async Task<HttpResponseMessage> Run(\r\n    HttpRequestMessage req,\r\n    IDurableOrchestrationClient starter,\r\n    string functionName,\r\n    ILogger log)\r\n{\r\n    // Function input comes from the request content.\r\n    dynamic eventData = await req.Content.ReadAsAsync<object>();\r\n\r\n    // Pass the function name as part of the route \r\n    string instanceId = await starter.StartNewAsync(functionName, eventData);\r\n\r\n    log.LogInformation($\"Started orchestration with ID = '{instanceId}'.\");\r\n\r\n    return starter.CreateCheckStatusResponse(req, instanceId);\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "route": "orchestrators/{functionName}",
+          "methods": [
+            "post",
+            "get"
+          ]
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "starter",
+          "type": "durableClient",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsHttpStart",
+      "description": "$DurableFunctionsHttpStart_description",
+      "name": "Durable Functions HTTP starter",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "2.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsHttpStart-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "﻿const df = require(\"durable-functions\");\r\n\r\nmodule.exports = async function (context, req) {\r\n    const client = df.getClient(context);\r\n    const instanceId = await client.startNew(req.params.functionName, undefined, req.body);\r\n\r\n    context.log(`Started orchestration with ID = '${instanceId}'.`);\r\n\r\n    return client.createCheckStatusResponse(context.bindingData.req, instanceId);\r\n};"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "route": "orchestrators/{functionName}",
+          "methods": [
+            "post",
+            "get"
+          ]
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "starter",
+          "type": "orchestrationClient",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsHttpStart",
+      "description": "$DurableFunctionsHttpStart_description",
+      "name": "Durable Functions HTTP starter",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "authLevel"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsHttpStart-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "﻿import * as df from \"durable-functions\"\r\nimport { AzureFunction, Context, HttpRequest } from \"@azure/functions\"\r\n\r\nconst httpStart: AzureFunction = async function (context: Context, req: HttpRequest): Promise<any> {\r\n    const client = df.getClient(context);\r\n    const instanceId = await client.startNew(req.params.functionName, undefined, req.body);\r\n\r\n    context.log(`Started orchestration with ID = '${instanceId}'.`);\r\n\r\n    return client.createCheckStatusResponse(context.bindingData.req, instanceId);\r\n};\r\n\r\nexport default httpStart;\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "route": "orchestrators/{functionName}",
+          "methods": [
+            "post",
+            "get"
+          ]
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        },
+        {
+          "name": "starter",
+          "type": "orchestrationClient",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsHttpStart",
+      "description": "$DurableFunctionsHttpStart_description",
+      "name": "Durable Functions HTTP starter",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "authLevel"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsOrchestrator-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an HTTP starter function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable activity function (default name is \"Hello\")\r\n * - create a Durable HTTP starter function\r\n */\r\n\r\n#r \"Microsoft.Azure.WebJobs.Extensions.DurableTask\"\r\n\r\nusing Microsoft.Azure.WebJobs.Extensions.DurableTask;\r\n\r\npublic static async Task<List<string>> Run(IDurableOrchestrationContext context)\r\n{\r\n    var outputs = new List<string>();\r\n\r\n    // Replace \"Hello\" with the name of your Durable Activity Function.\r\n    outputs.Add(await context.CallActivityAsync<string>(\"Hello\", \"Tokyo\"));\r\n    outputs.Add(await context.CallActivityAsync<string>(\"Hello\", \"Seattle\"));\r\n    outputs.Add(await context.CallActivityAsync<string>(\"Hello\", \"London\"));\r\n\r\n    // returns [\"Hello Tokyo!\", \"Hello Seattle!\", \"Hello London!\"]\r\n    return outputs;\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "context",
+          "type": "orchestrationTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsOrchestrator",
+      "description": "$DurableFunctionsOrchestrator_description",
+      "name": "Durable Functions orchestrator",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "2.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsOrchestrator-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "﻿/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an HTTP starter function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable activity function (default name is \"Hello\")\r\n * - create a Durable HTTP starter function\r\n * - run 'npm install durable-functions' from the wwwroot folder of your \r\n *    function app in Kudu\r\n */\r\n\r\nconst df = require(\"durable-functions\");\r\n\r\nmodule.exports = df.orchestrator(function* (context) {\r\n    const outputs = [];\r\n\r\n    // Replace \"Hello\" with the name of your Durable Activity Function.\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"Tokyo\"));\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"Seattle\"));\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"London\"));\r\n\r\n    // returns [\"Hello Tokyo!\", \"Hello Seattle!\", \"Hello London!\"]\r\n    return outputs;\r\n});"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "context",
+          "type": "orchestrationTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsOrchestratorJS",
+      "description": "$DurableFunctionsOrchestrator_description",
+      "name": "Durable Functions orchestrator",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "DurableFunctionsOrchestrator-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "﻿/*\r\n * This function is not intended to be invoked directly. Instead it will be\r\n * triggered by an HTTP starter function.\r\n * \r\n * Before running this sample, please:\r\n * - create a Durable activity function (default name is \"Hello\")\r\n * - create a Durable HTTP starter function\r\n * - run 'npm install durable-functions' from the wwwroot folder of your \r\n *    function app in Kudu\r\n */\r\n\r\nimport * as df from \"durable-functions\"\r\n\r\nconst orchestrator = df.orchestrator(function* (context) {\r\n    const outputs = [];\r\n\r\n    // Replace \"Hello\" with the name of your Durable Activity Function.\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"Tokyo\"));\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"Seattle\"));\r\n    outputs.push(yield context.df.callActivity(\"Hello\", \"London\"));\r\n\r\n    // returns [\"Hello Tokyo!\", \"Hello Seattle!\", \"Hello London!\"]\r\n    return outputs;\r\n});\r\n\r\nexport default orchestrator;\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "context",
+          "type": "orchestrationTrigger",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "DurableFunctionsOrchestratorJS",
+      "description": "$DurableFunctionsOrchestrator_description",
+      "name": "Durable Functions orchestrator",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_durableFunctions"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.DurableTask",
+          "version": "1.8.5"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "#r \"Microsoft.Azure.EventGrid\"\r\nusing Microsoft.Azure.EventGrid.Models;\r\n\r\npublic static void Run(EventGridEvent eventGridEvent, ILogger log)\r\n{\r\n    log.LogInformation(eventGridEvent.Data.ToString());\r\n}\r\n",
+      "sample.dat": "{\r\n  \"topic\": \"/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/test/providers/Microsoft.EventHub/namespaces/test\",\r\n  \"subject\": \"eventhubs/test\",\r\n  \"eventType\": \"captureFileCreated\",\r\n  \"eventTime\": \"2017-07-14T23:10:27.7689666Z\",\r\n  \"id\": \"7b11c4ce-1c34-4416-848b-1730e766f126\",\r\n  \"data\": {\r\n    \"fileUrl\": \"https://test.blob.core.windows.net/debugging/testblob.txt\",\r\n    \"fileType\": \"AzureBlockBlob\",\r\n    \"partitionId\": \"1\",\r\n    \"sizeInBytes\": 0,\r\n    \"eventCount\": 0,\r\n    \"firstSequenceNumber\": -1,\r\n    \"lastSequenceNumber\": -1,\r\n    \"firstEnqueueTime\": \"0001-01-01T00:00:00\",\r\n    \"lastEnqueueTime\": \"0001-01-01T00:00:00\"\r\n  },\r\n  \"dataVersion\": \"\",\r\n  \"metadataVersion\": \"1\" \r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "eventGridEvent",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "eventGridEvent",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, eventGridEvent) {\r\n    context.log(typeof eventGridEvent);\r\n    context.log(eventGridEvent);\r\n};",
+      "sample.dat": "{\r\n  \"topic\": \"/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/test/providers/Microsoft.EventHub/namespaces/test\",\r\n  \"subject\": \"eventhubs/test\",\r\n  \"eventType\": \"captureFileCreated\",\r\n  \"eventTime\": \"2017-07-14T23:10:27.7689666Z\",\r\n  \"id\": \"7b11c4ce-1c34-4416-848b-1730e766f126\",\r\n  \"data\": {\r\n    \"fileUrl\": \"https://test.blob.core.windows.net/debugging/testblob.txt\",\r\n    \"fileType\": \"AzureBlockBlob\",\r\n    \"partitionId\": \"1\",\r\n    \"sizeInBytes\": 0,\r\n    \"eventCount\": 0,\r\n    \"firstSequenceNumber\": -1,\r\n    \"lastSequenceNumber\": -1,\r\n    \"firstEnqueueTime\": \"0001-01-01T00:00:00\",\r\n    \"lastEnqueueTime\": \"0001-01-01T00:00:00\"\r\n  },\r\n  \"dataVersion\": \"\", \r\n  \"metadataVersion\": \"1\" \r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "eventGridEvent",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "param($eventGridEvent, $TriggerMetadata)\r\n\r\n# Make sure to pass hashtables to Out-String so they're logged correctly\r\n$eventGridEvent | Out-String | Write-Host\r\n",
+      "sample.dat": "{\r\n  \"topic\": \"/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/test/providers/Microsoft.EventHub/namespaces/test\",\r\n  \"subject\": \"eventhubs/test\",\r\n  \"eventType\": \"captureFileCreated\",\r\n  \"eventTime\": \"2017-07-14T23:10:27.7689666Z\",\r\n  \"id\": \"7b11c4ce-1c34-4416-848b-1730e766f126\",\r\n  \"data\": {\r\n    \"fileUrl\": \"https://test.blob.core.windows.net/debugging/testblob.txt\",\r\n    \"fileType\": \"AzureBlockBlob\",\r\n    \"partitionId\": \"1\",\r\n    \"sizeInBytes\": 0,\r\n    \"eventCount\": 0,\r\n    \"firstSequenceNumber\": -1,\r\n    \"lastSequenceNumber\": -1,\r\n    \"firstEnqueueTime\": \"0001-01-01T00:00:00\",\r\n    \"lastEnqueueTime\": \"0001-01-01T00:00:00\"\r\n  },\r\n  \"dataVersion\": \"\", \r\n  \"metadataVersion\": \"1\" \r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "eventGridEvent",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "{\r\n  'topic': '/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/test/providers/Microsoft.EventHub/namespaces/test',\r\n  'subject': 'eventhubs/test',\r\n  'eventType': 'captureFileCreated',\r\n  'eventTime': '2017-07-14T23:10:27.7689666Z',\r\n  'id': '7b11c4ce-1c34-4416-848b-1730e766f126',\r\n  'data': {\r\n    'fileUrl': 'https://test.blob.core.windows.net/debugging/testblob.txt',\r\n    'fileType': 'AzureBlockBlob',\r\n    'partitionId': '1',\r\n    'sizeInBytes': 0,\r\n    'eventCount': 0,\r\n    'firstSequenceNumber': -1,\r\n    'lastSequenceNumber': -1,\r\n    'firstEnqueueTime': '0001-01-01T00:00:00',\r\n    'lastEnqueueTime': '0001-01-01T00:00:00'\r\n  },\r\n  \"dataVersion\": \"\", \r\n  \"metadataVersion\": \"1\" \r\n}\r\n",
+      "__init__.py": "import json\r\nimport logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(event: func.EventGridEvent):\r\n    result = json.dumps({\r\n        'id': event.id,\r\n        'data': event.get_json(),\r\n        'topic': event.topic,\r\n        'subject': event.subject,\r\n        'event_type': event.event_type,\r\n    })\r\n\r\n    logging.info('Python EventGrid trigger processed an event: %s', result)\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "event",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventGridTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst eventGridTrigger: AzureFunction = async function (context: Context, eventGridEvent: any): Promise<void> {\r\n    context.log(typeof eventGridEvent);\r\n    context.log(eventGridEvent);\r\n};\r\n\r\nexport default eventGridTrigger;\r\n",
+      "sample.dat": "{\r\n  \"topic\": \"/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/test/providers/Microsoft.EventHub/namespaces/test\",\r\n  \"subject\": \"eventhubs/test\",\r\n  \"eventType\": \"captureFileCreated\",\r\n  \"eventTime\": \"2017-07-14T23:10:27.7689666Z\",\r\n  \"id\": \"7b11c4ce-1c34-4416-848b-1730e766f126\",\r\n  \"data\": {\r\n    \"fileUrl\": \"https://test.blob.core.windows.net/debugging/testblob.txt\",\r\n    \"fileType\": \"AzureBlockBlob\",\r\n    \"partitionId\": \"1\",\r\n    \"sizeInBytes\": 0,\r\n    \"eventCount\": 0,\r\n    \"firstSequenceNumber\": -1,\r\n    \"lastSequenceNumber\": -1,\r\n    \"firstEnqueueTime\": \"0001-01-01T00:00:00\",\r\n    \"lastEnqueueTime\": \"0001-01-01T00:00:00\"\r\n  },\r\n  \"dataVersion\": \"\", \r\n  \"metadataVersion\": \"1\" \r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventGridTrigger",
+          "name": "eventGridEvent",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventGridTrigger",
+      "description": "$EventGridTrigger_description",
+      "name": "Azure Event Grid trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventGrid",
+      "enabledInTryMode": false,
+      "userPrompt": [],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventGrid",
+          "version": "2.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "#r \"Microsoft.Azure.EventHubs\"\r\n\r\n\r\nusing System;\r\nusing System.Text;\r\nusing Microsoft.Azure.EventHubs;\r\n\r\npublic static async Task Run(EventData[] events, ILogger log)\r\n{\r\n    var exceptions = new List<Exception>();\r\n\r\n    foreach (EventData eventData in events)\r\n    {\r\n        try\r\n        {\r\n            string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);\r\n\r\n            // Replace these two lines with your processing logic.\r\n            log.LogInformation($\"C# Event Hub trigger function processed a message: {messageBody}\");\r\n            await Task.Yield();\r\n        }\r\n        catch (Exception e)\r\n        {\r\n            // We need to keep processing the rest of the batch - capture this exception and continue.\r\n            // Also, consider capturing details of the message that failed processing so it can be processed again later.\r\n            exceptions.Add(e);\r\n        }\r\n    }\r\n\r\n    // Once processing of the batch is complete, if any messages in the batch failed processing throw an exception so that there is a record of the failure.\r\n\r\n    if (exceptions.Count > 1)\r\n        throw new AggregateException(exceptions);\r\n\r\n    if (exceptions.Count == 1)\r\n        throw exceptions.Single();\r\n}\r\n",
+      "sample.dat": "Test Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "events",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "cardinality": "many",
+          "connection": "",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "eventHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, eventHubMessages) {\r\n    context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);\r\n    \r\n    eventHubMessages.forEach((message, index) => {\r\n        context.log(`Processed message ${message}`);\r\n    });\r\n};",
+      "sample.dat": "\"Test Message\""
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "eventHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default",
+          "dataType": "string"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "param($eventHubMessages, $TriggerMetadata)\r\n\r\nWrite-Host \"PowerShell eventhub trigger function called for message array: $eventHubMessages\"\r\n\r\n$eventHubMessages | ForEach-Object { Write-Host \"Processed message: $_\" }\r\n",
+      "sample.dat": "\"Test Message\""
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "eventHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "Test Message",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(event: func.EventHubEvent):\r\n    logging.info('Python EventHub trigger processed an event: %s',\r\n                 event.get_body().decode('utf-8'))\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "event",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "EventHubTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst eventHubTrigger: AzureFunction = async function (context: Context, eventHubMessages: any[]): Promise<void> {\r\n    context.log(`Eventhub trigger function called for message array ${eventHubMessages}`);\r\n    \r\n    eventHubMessages.forEach((message, index) => {\r\n        context.log(`Processed message ${message}`);\r\n    });\r\n};\r\n\r\nexport default eventHubTrigger;\r\n",
+      "sample.dat": "\"Test Message\""
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "eventHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default",
+          "dataType": "string"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "EventHubTrigger",
+      "description": "$EventHubTrigger_description",
+      "name": "Azure Event Hub trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "eventHub",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "eventHubName",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# HttpTrigger - C<span>#</span>\r\n\r\nThe `HttpTrigger` makes it incredibly easy to have your functions executed via an HTTP call to your function.\r\n\r\n## How it works\r\n\r\nWhen you call the function, be sure you checkout which security rules you apply. If you're using an apikey, you'll need to include that in your request.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "run.csx": "#r \"Newtonsoft.Json\"\r\n\r\nusing System.Net;\r\nusing Microsoft.AspNetCore.Mvc;\r\nusing Microsoft.Extensions.Primitives;\r\nusing Newtonsoft.Json;\r\n\r\npublic static async Task<IActionResult> Run(HttpRequest req, ILogger log)\r\n{\r\n    log.LogInformation(\"C# HTTP trigger function processed a request.\");\r\n\r\n    string name = req.Query[\"name\"];\r\n\r\n    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();\r\n    dynamic data = JsonConvert.DeserializeObject(requestBody);\r\n    name = name ?? data?.name;\r\n\r\n    string responseMessage = string.IsNullOrEmpty(name)\r\n        ? \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\"\r\n                : $\"Hello, {name}. This HTTP triggered function executed successfully.\";\r\n\r\n            return new OkObjectResult(responseMessage);\r\n}\r\n",
+      "sample.dat": "{\r\n    \"name\": \"Azure\"\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "name": "req",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "name": "$return",
+          "type": "http",
+          "direction": "out"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "authLevel"
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "type": "httpTrigger",
+          "direction": "in",
+          "name": "req",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "trigger": "HttpTrigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "authLevel"
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, req) {\r\n    context.log('JavaScript HTTP trigger function processed a request.');\r\n\r\n    const name = (req.query.name || (req.body && req.body.name));\r\n    const responseMessage = name\r\n        ? \"Hello, \" + name + \". This HTTP triggered function executed successfully.\"\r\n        : \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\";\r\n\r\n    context.res = {\r\n        // status: 200, /* Defaults to 200 */\r\n        body: responseMessage\r\n    };\r\n}",
+      "sample.dat": "{\r\n    \"name\": \"Azure\"\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "type": "httpTrigger",
+          "direction": "in",
+          "name": "req",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "language": "JavaScript",
+      "trigger": "HttpTrigger",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "authLevel"
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "using namespace System.Net\r\n\r\n# Input bindings are passed in via param block.\r\nparam($Request, $TriggerMetadata)\r\n\r\n# Write to the Azure Functions log stream.\r\nWrite-Host \"PowerShell HTTP trigger function processed a request.\"\r\n\r\n# Interact with query parameters or the body of the request.\r\n$name = $Request.Query.Name\r\nif (-not $name) {\r\n    $name = $Request.Body.Name\r\n}\r\n\r\n$body = \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\"\r\n\r\nif ($name) {\r\n    $body = \"Hello, $name. This HTTP triggered function executed successfully.\"\r\n}\r\n\r\n# Associate values to output bindings by calling 'Push-OutputBinding'.\r\nPush-OutputBinding -Name Response -Value ([HttpResponseContext]@{\r\n    StatusCode = [HttpStatusCode]::OK\r\n    Body = $body\r\n})\r\n",
+      "sample.dat": "{\r\n    \"name\": \"Azure\"\r\n}\r\n"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "type": "httpTrigger",
+          "direction": "in",
+          "name": "Request",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "Response"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "language": "PowerShell",
+      "trigger": "HttpTrigger",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "authLevel"
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "{\r\n    \"name\": \"Azure\"\r\n}",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(req: func.HttpRequest) -> func.HttpResponse:\r\n    logging.info('Python HTTP trigger function processed a request.')\r\n\r\n    name = req.params.get('name')\r\n    if not name:\r\n        try:\r\n            req_body = req.get_json()\r\n        except ValueError:\r\n            pass\r\n        else:\r\n            name = req_body.get('name')\r\n\r\n    if name:\r\n        return func.HttpResponse(f\"Hello, {name}. This HTTP triggered function executed successfully.\")\r\n    else:\r\n        return func.HttpResponse(\r\n             \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\",\r\n             status_code=200\r\n        )\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "authLevel": "function",
+          "type": "httpTrigger",
+          "direction": "in",
+          "name": "req",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "$return"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "language": "Python",
+      "trigger": "HttpTrigger",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "authLevel"
+      ],
+      "filters": [
+        "Python3"
+      ]
+    }
+  },
+  {
+    "id": "HttpTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context, HttpRequest } from \"@azure/functions\"\r\n\r\nconst httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {\r\n    context.log('HTTP trigger function processed a request.');\r\n    const name = (req.query.name || (req.body && req.body.name));\r\n    const responseMessage = name\r\n        ? \"Hello, \" + name + \". This HTTP triggered function executed successfully.\"\r\n        : \"This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.\";\r\n\r\n    context.res = {\r\n        // status: 200, /* Defaults to 200 */\r\n        body: responseMessage\r\n    };\r\n\r\n};\r\n\r\nexport default httpTrigger;",
+      "sample.dat": "{\r\n    \"name\": \"Azure\"\r\n}"
+    },
+    "function": {
+      "bindings": [
+        {
+          "authLevel": "function",
+          "type": "httpTrigger",
+          "direction": "in",
+          "name": "req",
+          "methods": [
+            "get",
+            "post"
+          ]
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "HttpTrigger",
+      "description": "$HttpTrigger_description",
+      "name": "HTTP trigger",
+      "language": "TypeScript",
+      "trigger": "HttpTrigger",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "http",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "authLevel"
+      ]
+    }
+  },
+  {
+    "id": "IoTHubTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "using System;\r\n\r\npublic static void Run(string myIoTHubMessage, ILogger log)\r\n{\r\n    log.LogInformation($\"C# IoT Hub trigger function processed a message: {myIoTHubMessage}\");\r\n}",
+      "sample.dat": "Test Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "myIoTHubMessage",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "IoTHub_EventHub",
+      "description": "$IoTHubTrigger_description",
+      "name": "IoT Hub (Event Hub)",
+      "language": "C#",
+      "category": [
+        "$temp_category_IoTHub"
+      ],
+      "categoryStyle": "iot",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "path",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "IoTHubTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "IoTHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "IoTHub_EventHub",
+      "description": "$IoTHubTrigger_description",
+      "name": "IoT Hub (Event Hub)",
+      "language": "Custom",
+      "category": [
+        "$temp_category_IoTHub"
+      ],
+      "categoryStyle": "iot",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "path",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "IoTHubTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = function (context, IoTHubMessages) {\r\n    context.log(`JavaScript eventhub trigger function called for message array: ${IoTHubMessages}`);\r\n    \r\n    IoTHubMessages.forEach(message => {\r\n        context.log(`Processed message: ${message}`);\r\n    });\r\n\r\n    context.done();\r\n};",
+      "sample.dat": "Test Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "IoTHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default",
+          "dataType": "string"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "IoTHub_EventHub",
+      "description": "$IoTHubTrigger_description",
+      "name": "IoT Hub (Event Hub)",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_IoTHub"
+      ],
+      "categoryStyle": "iot",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "path",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "IoTHubTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "param($IoTHubMessages, $TriggerMetadata)\r\n\r\nWrite-Host \"PowerShell eventhub trigger function called for message array: $IoTHubMessages\"\r\n\r\n$IoTHubMessages | ForEach-Object { Write-Host \"Processed message: $_\" }\r\n",
+      "sample.dat": "Test Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "IoTHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "IoTHub_EventHub",
+      "description": "$IoTHubTrigger_description",
+      "name": "IoT Hub (Event Hub)",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_IoTHub"
+      ],
+      "categoryStyle": "iot",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "path",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "IoTHubTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst IoTHubTrigger: AzureFunction = async function (context: Context, IoTHubMessages: any[]): Promise<void> {\r\n    context.log(`Eventhub trigger function called for message array: ${IoTHubMessages}`);\r\n    \r\n    IoTHubMessages.forEach(message => {\r\n        context.log(`Processed message: ${message}`);\r\n    });\r\n};\r\n\r\nexport default IoTHubTrigger;\r\n",
+      "sample.dat": "Test Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "eventHubTrigger",
+          "name": "IoTHubMessages",
+          "direction": "in",
+          "eventHubName": "samples-workitems",
+          "connection": "",
+          "cardinality": "many",
+          "consumerGroup": "$Default",
+          "dataType": "string"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "IoTHub_EventHub",
+      "description": "$IoTHubTrigger_description",
+      "name": "IoT Hub (Event Hub)",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_IoTHub"
+      ],
+      "categoryStyle": "iot",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "path",
+        "consumerGroup"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.EventHubs",
+          "version": "4.1.1"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# QueueTrigger - C<span>#</span>\r\n\r\nThe `QueueTrigger` makes it incredibly easy to react to new Queues inside of Azure Queue Storage. This sample demonstrates a simple use case of processing data from a given Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `QueueTrigger` to work, you must provide a queue name that defines the queue messages will be read from.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "run.csx": "using System;\r\n\r\npublic static void Run(string myQueueItem, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Queue trigger function processed: {myQueueItem}\");\r\n}\r\n",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "myqueue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "js-queue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, myQueueItem) {\r\n    context.log('JavaScript queue trigger function processed work item', myQueueItem);\r\n};",
+      "readme.md": "# QueueTrigger - JavaScript\r\n\r\nThe `QueueTrigger` makes it incredibly easy to react to new Queues inside of Azure Queue Storage. This sample demonstrates a simple use case of processing data from a given Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `QueueTrigger` to work, you provide a path which dictates where the queue messages are located inside your container.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "js-queue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# QueueTrigger - PowerShell\r\n\r\nThe `QueueTrigger` makes it incredibly easy to react to new Queues inside of [Azure Queue Storage](https://azure.microsoft.com/en-us/services/storage/queues/).\r\nThis sample demonstrates a simple use case of processing data from a given Queue using PowerShell.\r\n\r\n## How it works\r\n\r\nFor a `QueueTrigger` to work, you provide a path which dictates where the queue messages are located inside your container.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation\r\n",
+      "run.ps1": "# Input bindings are passed in via param block.\r\nparam([string] $QueueItem, $TriggerMetadata)\r\n\r\n# Write out the queue message and insertion time to the information log.\r\nWrite-Host \"PowerShell queue trigger function processed work item: $QueueItem\"\r\nWrite-Host \"Queue item insertion time: $($TriggerMetadata.InsertionTime)\"\r\n",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "QueueItem",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "ps-queue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# QueueTrigger - Python\r\n\r\nThe `QueueTrigger` makes it incredibly easy to react to new Queues inside of Azure Queue Storage. This sample demonstrates a simple use case of processing data from a given Queue.\r\n\r\n## How it works\r\n\r\nFor a `QueueTrigger` to work, you provide a path which dictates where the queue messages are located inside your container.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation\r\n",
+      "sample.dat": "sample queue data",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(msg: func.QueueMessage) -> None:\r\n    logging.info('Python queue trigger function processed a queue item: %s',\r\n                 msg.get_body().decode('utf-8'))\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "name": "msg",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "python-queue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "filters": [
+        "Python3"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "QueueTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst queueTrigger: AzureFunction = async function (context: Context, myQueueItem: string): Promise<void> {\r\n    context.log('Queue trigger function processed work item', myQueueItem);\r\n};\r\n\r\nexport default queueTrigger;\r\n",
+      "readme.md": "# QueueTrigger - TypeScript\r\n\r\nThe `QueueTrigger` makes it incredibly easy to react to new Queues inside of Azure Queue Storage. This sample demonstrates a simple use case of processing data from a given Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `QueueTrigger` to work, you provide a path which dictates where the queue messages are located inside your container.\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "queueTrigger",
+          "direction": "in",
+          "queueName": "js-queue-items",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "QueueTrigger",
+      "description": "$QueueTrigger_description",
+      "name": "Azure Queue Storage trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "queue",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# RabbitMQTrigger - C<span>#</span>\r\n\r\nThe `RabbitMQTrigger` makes it incredibly easy to react to new events from a RabbitMQ queue. This sample demonstrates a simple use case of processing data from a given RabbitMQ Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `RabbitMQTrigger` to work, you must provide a queue name which dictates where the queue messages should be read from.",
+      "run.csx": "using System;\r\n\r\npublic static void Run(string myQueueItem, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Queue trigger function processed: {myQueueItem}\");\r\n}\r\n",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMQTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMqTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, myQueueItem) {\r\n    context.log('JavaScript rabbitmq trigger function processed work item', myQueueItem);\r\n};",
+      "readme.md": "# RabbitMQTrigger - C<span>#</span>\r\n\r\nThe `RabbitMQTrigger` makes it incredibly easy to react to new events from a RabbitMQ queue. This sample demonstrates a simple use case of processing data from a given RabbitMQ Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `RabbitMQTrigger` to work, you must provide a queue name which dictates where the queue messages should be read from.",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMqTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# RabbitMQTrigger - C<span>#</span>\r\n\r\nThe `RabbitMQTrigger` makes it incredibly easy to react to new events from a RabbitMQ queue. This sample demonstrates a simple use case of processing data from a given RabbitMQ Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `RabbitMQTrigger` to work, you must provide a queue name which dictates where the queue messages should be read from.",
+      "run.ps1": "# Input bindings are passed in via param block.\r\nparam([string] $MyQueueItem, $TriggerMetadata)\r\n\r\n# Write out the queue message and insertion time to the information log.\r\nWrite-Host \"PowerShell rabbitmq trigger function processed work item: $MyQueueItem\"\r\nWrite-Host \"Queue item insertion time: $($TriggerMetadata.InsertionTime)\"\r\n",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMqTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "Powershell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# RabbitMQTrigger - C<span>#</span>\r\n\r\nThe `RabbitMQTrigger` makes it incredibly easy to react to new events from a RabbitMQ queue. This sample demonstrates a simple use case of processing data from a given RabbitMQ Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `RabbitMQTrigger` to work, you must provide a queue name which dictates where the queue messages should be read from.",
+      "sample.dat": "sample queue data",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(myQueueItem) -> None:\r\n    logging.info('Python rabbitmq trigger function processed a queue item: %s', myQueueItem)\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMqTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "RabbitMQTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst rabbitmqTrigger: AzureFunction = async function (context: Context, myQueueItem: string): Promise<void> {\r\n    context.log('RabbitMQ trigger function processed work item', myQueueItem);\r\n};\r\n\r\nexport default rabbitmqTrigger;\r\n",
+      "readme.md": "# RabbitMQTrigger - C<span>#</span>\r\n\r\nThe `RabbitMQTrigger` makes it incredibly easy to react to new events from a RabbitMQ queue. This sample demonstrates a simple use case of processing data from a given RabbitMQ Queue using C#.\r\n\r\n## How it works\r\n\r\nFor a `RabbitMQTrigger` to work, you must provide a queue name which dictates where the queue messages should be read from.",
+      "sample.dat": "sample queue data"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "rabbitMqTrigger",
+          "direction": "in",
+          "queueName": "",
+          "connectionStringSetting": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "RabbitMQTrigger",
+      "description": "$RabbitMQTrigger_description",
+      "name": "RabbitMQ trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "RabbitMQ",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "connectionStringSetting",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.RabbitMQ",
+          "version": "1.0.0-beta"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SendGrid-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "// The 'From' and 'To' fields are automatically populated with the values specified by the binding settings.\r\n//\r\n// You can also optionally configure the default From/To addresses globally via host.config, e.g.:\r\n//\r\n// {\r\n//   \"sendGrid\": {\r\n//      \"to\": \"user@host.com\",\r\n//      \"from\": \"Azure Functions <samples@functions.com>\"\r\n//   }\r\n// }\r\n#r \"SendGrid\"\r\n\r\nusing System;\r\nusing SendGrid.Helpers.Mail;\r\nusing Microsoft.Azure.WebJobs.Host;\r\n\r\npublic static SendGridMessage Run(Order order, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Queue trigger function processed order: {order.OrderId}\");\r\n\r\n    SendGridMessage message = new SendGridMessage()\r\n    {\r\n        Subject = $\"Thanks for your order (#{order.OrderId})!\"\r\n    };\r\n\r\n    message.AddContent(\"text/plain\", $\"{order.CustomerName}, your order ({order.OrderId}) is being processed!\");\r\n    return message;\r\n}\r\npublic class Order\r\n{\r\n    public string OrderId { get; set; }\r\n    public string CustomerName { get; set; }\r\n    public string CustomerEmail { get; set; }\r\n}\r\n",
+      "sample.dat": "{ \"OrderId\": 12345, \"CustomerName\": \"Joe Schmoe\", \"CustomerEmail\": \"joeschmoe@foo.com\" }"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "queueTrigger",
+          "name": "order",
+          "direction": "in",
+          "queueName": "samples-orders"
+        },
+        {
+          "type": "sendGrid",
+          "name": "$return",
+          "direction": "out",
+          "apiKey": "SendGridApiKey",
+          "from": "Azure Functions <samples@functions.com>",
+          "to": "{CustomerEmail}"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "SendGrid",
+      "description": "$SendGrid_description",
+      "name": "SendGrid",
+      "language": "C#",
+      "category": [
+        "$temp_category_samples",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "to",
+        "from",
+        "apiKey"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SendGrid",
+          "version": "3.0.0"
+        },
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SendGrid-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "type": "queueTrigger",
+          "name": "order",
+          "direction": "in",
+          "queueName": "samples-orders"
+        },
+        {
+          "type": "sendGrid",
+          "name": "message",
+          "direction": "out",
+          "apiKey": "SendGridApiKey",
+          "from": "Azure Functions <samples@functions.com>",
+          "to": "{customerEmail}",
+          "subject": "",
+          "text": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "SendGrid",
+      "description": "$SendGrid_description",
+      "name": "SendGrid",
+      "language": "Custom",
+      "category": [
+        "$temp_category_samples",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "to",
+        "from",
+        "subject",
+        "text",
+        "apiKey"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SendGrid",
+          "version": "3.0.0"
+        },
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SendGrid-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "var util = require('util');\r\n\r\n// The 'From' and 'To' fields are automatically populated with the values specified by the binding settings.\r\n//\r\n// You can also optionally configure the default From/To addresses globally via host.config, e.g.:\r\n//\r\n// {\r\n//   \"sendGrid\": {\r\n//      \"to\": \"user@host.com\",\r\n//      \"from\": \"Azure Functions <samples@functions.com>\"\r\n//   }\r\n// }\r\nmodule.exports = async function (context, order) {\r\n    context.log('JavaScript queue trigger function processed order', order.orderId);\r\n\r\n    context.bindings.message = {\r\n        subject: util.format('Thanks for your order (#%d)!', order.orderId),\r\n        content: [{\r\n            type: 'text/plain',\r\n            value: util.format(\"%s, your order (%d) is being processed!\", order.customerName, order.orderId)\r\n        }]\r\n    };\r\n}",
+      "sample.dat": "{ \"orderId\": 12345, \"customerName\": \"Joe Schmoe\", \"customerEmail\": \"joeschmoe@foo.com\" }"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "queueTrigger",
+          "name": "order",
+          "direction": "in",
+          "queueName": "samples-orders"
+        },
+        {
+          "type": "sendGrid",
+          "name": "message",
+          "direction": "out",
+          "apiKey": "SendGridApiKey",
+          "from": "Azure Functions <samples@functions.com>",
+          "to": "{customerEmail}",
+          "subject": "",
+          "text": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "SendGrid",
+      "description": "$SendGrid_description",
+      "name": "SendGrid",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_samples",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "to",
+        "from",
+        "subject",
+        "text",
+        "apiKey"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SendGrid",
+          "version": "3.0.0"
+        },
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SendGrid-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "# The 'From' and 'To' fields are automatically populated with the values specified by the binding settings.\r\n#\r\n# You can also optionally configure the default From/To addresses globally via host.config, e.g.:\r\n#\r\n# {\r\n#   \"sendGrid\": {\r\n#      \"to\": \"user@host.com\",\r\n#      \"from\": \"Azure Functions <samples@functions.com>\"\r\n#   }\r\n# }\r\nparam($order, $TriggerMetadata)\r\n\r\nWrite-Host \"JavaScript queue trigger function processed order: $($order.orderId)\"\r\n\r\nPush-OutputBinding -Name Response -Value (@{\r\n    subject = \"Thanks for your order (#$($order.orderId))!\"\r\n    content = @(@{\r\n        type = 'text/plain'\r\n        value = \"$($order.customerName), your order ($($order.orderId)) is being processed!\"\r\n    })\r\n})\r\n",
+      "sample.dat": "{ \"orderId\": 12345, \"customerName\": \"Joe Schmoe\", \"customerEmail\": \"joeschmoe@foo.com\" }"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "queueTrigger",
+          "name": "order",
+          "direction": "in",
+          "queueName": "samples-orders"
+        },
+        {
+          "type": "sendGrid",
+          "name": "message",
+          "direction": "out",
+          "apiKey": "SendGridApiKey",
+          "from": "Azure Functions <samples@functions.com>",
+          "to": "{customerEmail}",
+          "subject": "",
+          "text": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "SendGrid",
+      "description": "$SendGrid_description",
+      "name": "SendGrid",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_samples",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "to",
+        "from",
+        "subject",
+        "text",
+        "apiKey"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SendGrid",
+          "version": "3.0.0"
+        },
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SendGrid-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\n// The 'From' and 'To' fields are automatically populated with the values specified by the binding settings.\r\n//\r\n// You can also optionally configure the default From/To addresses globally via host.config, e.g.:\r\n//\r\n// {\r\n//   \"sendGrid\": {\r\n//      \"to\": \"user@host.com\",\r\n//      \"from\": \"Azure Functions <samples@functions.com>\"\r\n//   }\r\n// }\r\n\r\nconst sendGrid: AzureFunction =  async function (context: Context, order: any): Promise<void> {\r\n    context.log('Queue trigger function processed order', order.orderId);\r\n\r\n    context.bindings.message = {\r\n        subject: `Thanks for your order (#${order.orderId})!`,\r\n        content: [{\r\n            type: 'text/plain',\r\n            value: `${order.customerName}, your order (${order.orderId}) is being processed!`\r\n        }]\r\n    };\r\n}\r\n\r\nexport default sendGrid;\r\n",
+      "sample.dat": "{ \"orderId\": 12345, \"customerName\": \"Joe Schmoe\", \"customerEmail\": \"joeschmoe@foo.com\" }"
+    },
+    "function": {
+      "bindings": [
+        {
+          "type": "queueTrigger",
+          "name": "order",
+          "direction": "in",
+          "queueName": "samples-orders"
+        },
+        {
+          "type": "sendGrid",
+          "name": "message",
+          "direction": "out",
+          "apiKey": "SendGridApiKey",
+          "from": "Azure Functions <samples@functions.com>",
+          "to": "{customerEmail}",
+          "subject": "",
+          "text": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "SendGrid",
+      "description": "$SendGrid_description",
+      "name": "SendGrid",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_samples",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "to",
+        "from",
+        "subject",
+        "text",
+        "apiKey"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SendGrid",
+          "version": "3.0.0"
+        },
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.Storage",
+          "version": "3.0.10"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "using System;\r\nusing System.Threading.Tasks;\r\n\r\npublic static void Run(string myQueueItem, ILogger log)\r\n{\r\n    log.LogInformation($\"C# ServiceBus queue trigger function processed message: {myQueueItem}\");\r\n}\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myQueueItem",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myinputqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function(context, mySbMsg) {\r\n    context.log('JavaScript ServiceBus queue trigger function processed message', mySbMsg);\r\n};",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myinputqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "param([string] $mySbMsg, $TriggerMetadata)\r\n\r\nWrite-Host \"PowerShell ServiceBus queue trigger function processed message: $mySbMsg\"\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myinputqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "Service Bus Message",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(msg: func.ServiceBusMessage):\r\n    logging.info('Python ServiceBus queue trigger processed message: %s',\r\n                 msg.get_body().decode('utf-8'))\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "name": "msg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myinputqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusQueueTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst serviceBusQueueTrigger: AzureFunction = async function(context: Context, mySbMsg: any): Promise<void> {\r\n    context.log('ServiceBus queue trigger function processed message', mySbMsg);\r\n};\r\n\r\nexport default serviceBusQueueTrigger;\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "queueName": "myinputqueue",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusQueueTrigger",
+      "description": "$ServiceBusQueueTrigger_description",
+      "name": "Azure Service Bus Queue trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "queueName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "using System;\r\nusing System.Threading.Tasks;\r\n\r\npublic static void Run(string mySbMsg, ILogger log)\r\n{\r\n    log.LogInformation($\"C# ServiceBus topic trigger function processed message: {mySbMsg}\");\r\n}\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function(context, mySbMsg) {\r\n    context.log('JavaScript ServiceBus topic trigger function processed message', mySbMsg);\r\n};",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "param([string] $mySbMsg, $TriggerMetadata)\r\n\r\nWrite-Host \"PowerShell ServiceBus topic trigger function processed message: $mySbMsg\"\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "sample.dat": "Service Bus Message",
+      "__init__.py": "import logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(message: func.ServiceBusMessage):\r\n    # Log the Service Bus Message as plaintext\r\n\r\n    message_content_type = message.content_type\r\n    message_body = message.get_body().decode(\"utf-8\")\r\n\r\n    logging.info(\"Python ServiceBus topic trigger processed message.\")\r\n    logging.info(\"Message Content Type: \" + message_content_type)\r\n    logging.info(\"Message Body: \" + message_body)\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "entryPoint": "main",
+      "bindings": [
+        {
+          "name": "message",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ServiceBusTopicTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst serviceBusTopicTrigger: AzureFunction = async function(context: Context, mySbMsg: any): Promise<void> {\r\n    context.log('ServiceBus topic trigger function processed message', mySbMsg);\r\n};\r\n\r\nexport default serviceBusTopicTrigger;\r\n",
+      "sample.dat": "Service Bus Message"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "mySbMsg",
+          "type": "serviceBusTrigger",
+          "direction": "in",
+          "topicName": "mytopic",
+          "subscriptionName": "mysubscription",
+          "connection": ""
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "ServiceBusTopicTrigger",
+      "description": "$ServiceBusTopicTrigger_description",
+      "name": "Azure Service Bus Topic trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "serviceBus",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "connection",
+        "topicName",
+        "subscriptionName"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.ServiceBus",
+          "version": "4.1.0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SignalRConnectionInfoHttpTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "run.csx": "#r \"Microsoft.Azure.WebJobs.Extensions.SignalRService\"\r\nusing Microsoft.Azure.WebJobs.Extensions.SignalRService;\r\n\r\npublic static SignalRConnectionInfo Run(HttpRequest req, SignalRConnectionInfo connectionInfo)\r\n{\r\n    return connectionInfo;\r\n}\r\n",
+      "sample.dat": ""
+    },
+    "function": {
+      "disabled": false,
+      "bindings": [
+        {
+          "authLevel": "anonymous",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "post"
+          ],
+          "name": "req",
+          "route": "negotiate"
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        },
+        {
+          "type": "signalRConnectionInfo",
+          "name": "connectionInfo",
+          "hubName": "default",
+          "connectionStringSetting": "AzureSignalRConnectionString",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "negotiate",
+      "description": "$signalRConnectionInfoNegotiate_description",
+      "name": "SignalR negotiate HTTP trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "hubName",
+        "connectionStringSetting",
+        "route"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SignalRService",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SignalRConnectionInfoHttpTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "disabled": false,
+      "bindings": [
+        {
+          "authLevel": "anonymous",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "post"
+          ],
+          "name": "req",
+          "route": "negotiate"
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        },
+        {
+          "type": "signalRConnectionInfo",
+          "name": "connectionInfo",
+          "hubName": "default",
+          "connectionStringSetting": "AzureSignalRConnectionString",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "negotiate",
+      "description": "$signalRConnectionInfoNegotiate_description",
+      "name": "SignalR negotiate HTTP trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "hubName",
+        "connectionStringSetting",
+        "route"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SignalRService",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SignalRConnectionInfoHttpTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, req, connectionInfo) {\r\n    context.res.body = connectionInfo;\r\n};",
+      "sample.dat": ""
+    },
+    "function": {
+      "disabled": false,
+      "bindings": [
+        {
+          "authLevel": "anonymous",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "post"
+          ],
+          "name": "req",
+          "route": "negotiate"
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        },
+        {
+          "type": "signalRConnectionInfo",
+          "name": "connectionInfo",
+          "hubName": "default",
+          "connectionStringSetting": "AzureSignalRConnectionString",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "negotiate",
+      "description": "$signalRConnectionInfoNegotiate_description",
+      "name": "SignalR negotiate HTTP trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "hubName",
+        "connectionStringSetting",
+        "route"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SignalRService",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SignalRConnectionInfoHttpTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "run.ps1": "using namespace System.Net\r\n\r\nparam($Request, $TriggerMetadata, $ConnectionInfo)\r\n\r\nPush-OutputBinding -Name Response -Value ([HttpResponseContext]@{\r\n    StatusCode = [HttpStatusCode]::OK\r\n    ContentType = \"application/json\"\r\n    Body = $ConnectionInfo\r\n})",
+      "sample.dat": ""
+    },
+    "function": {
+      "disabled": false,
+      "bindings": [
+        {
+          "authLevel": "anonymous",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "post"
+          ],
+          "name": "Request",
+          "route": "negotiate"
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "Response"
+        },
+        {
+          "type": "signalRConnectionInfo",
+          "name": "ConnectionInfo",
+          "hubName": "default",
+          "connectionStringSetting": "AzureSignalRConnectionString",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "negotiate",
+      "description": "$signalRConnectionInfoNegotiate_description",
+      "name": "SignalR negotiate HTTP trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "hubName",
+        "connectionStringSetting",
+        "route"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SignalRService",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "SignalRConnectionInfoHttpTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context, HttpRequest } from \"@azure/functions\"\r\n\r\nconst httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest, connectionInfo: any): Promise<void> {\r\n    context.res.body = connectionInfo;\r\n};\r\n\r\nexport default httpTrigger;\r\n",
+      "sample.dat": ""
+    },
+    "function": {
+      "disabled": false,
+      "bindings": [
+        {
+          "authLevel": "anonymous",
+          "type": "httpTrigger",
+          "direction": "in",
+          "methods": [
+            "post"
+          ],
+          "name": "req",
+          "route": "negotiate"
+        },
+        {
+          "type": "http",
+          "direction": "out",
+          "name": "res"
+        },
+        {
+          "type": "signalRConnectionInfo",
+          "name": "connectionInfo",
+          "hubName": "default",
+          "connectionStringSetting": "AzureSignalRConnectionString",
+          "direction": "in"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "negotiate",
+      "description": "$signalRConnectionInfoNegotiate_description",
+      "name": "SignalR negotiate HTTP trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_api"
+      ],
+      "categoryStyle": "other",
+      "enabledInTryMode": false,
+      "userPrompt": [
+        "hubName",
+        "connectionStringSetting",
+        "route"
+      ],
+      "extensions": [
+        {
+          "id": "Microsoft.Azure.WebJobs.Extensions.SignalRService",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-CSharp",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# TimerTrigger - C<span>#</span>\r\n\r\nThe `TimerTrigger` makes it incredibly easy to have your functions executed on a schedule. This sample demonstrates a simple use case of calling your function every 5 minutes.\r\n\r\n## How it works\r\n\r\nFor a `TimerTrigger` to work, you provide a schedule in the form of a [cron expression](https://en.wikipedia.org/wiki/Cron#CRON_expression)(See the link for full details). A cron expression is a string with 6 separate expressions which represent a given schedule via patterns. The pattern we use to represent every 5 minutes is `0 */5 * * * *`. This, in plain text, means: \"When seconds is equal to 0, minutes is divisible by 5, for any hour, day of the month, month, day of the week, or year\".\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "run.csx": "using System;\r\n\r\npublic static void Run(TimerInfo myTimer, ILogger log)\r\n{\r\n    log.LogInformation($\"C# Timer trigger function executed at: {DateTime.Now}\");\r\n}\r\n",
+      "sample.dat": ""
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myTimer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "C#",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-Custom",
+    "runtime": "3",
+    "files": {},
+    "function": {
+      "bindings": [
+        {
+          "name": "myTimer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "Custom",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-JavaScript",
+    "runtime": "3",
+    "files": {
+      "index.js": "module.exports = async function (context, myTimer) {\r\n    var timeStamp = new Date().toISOString();\r\n    \r\n    if (myTimer.isPastDue)\r\n    {\r\n        context.log('JavaScript is running late!');\r\n    }\r\n    context.log('JavaScript timer trigger function ran!', timeStamp);   \r\n};",
+      "readme.md": "# TimerTrigger - JavaScript\r\n\r\nThe `TimerTrigger` makes it incredibly easy to have your functions executed on a schedule. This sample demonstrates a simple use case of calling your function every 5 minutes.\r\n\r\n## How it works\r\n\r\nFor a `TimerTrigger` to work, you provide a schedule in the form of a [cron expression](https://en.wikipedia.org/wiki/Cron#CRON_expression)(See the link for full details). A cron expression is a string with 6 separate expressions which represent a given schedule via patterns. The pattern we use to represent every 5 minutes is `0 */5 * * * *`. This, in plain text, means: \"When seconds is equal to 0, minutes is divisible by 5, for any hour, day of the month, month, day of the week, or year\".\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation",
+      "sample.dat": ""
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myTimer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "JavaScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-PowerShell",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# TimerTrigger - PowerShell\r\n\r\nThe `TimerTrigger` makes it incredibly easy to have your functions executed on a schedule. This sample demonstrates a simple use case of calling your function every 5 minutes.\r\n\r\n## How it works\r\n\r\nFor a `TimerTrigger` to work, you provide a schedule in the form of a [cron expression](https://en.wikipedia.org/wiki/Cron#CRON_expression)(See the link for full details). A cron expression is a string with 6 separate expressions which represent a given schedule via patterns. The pattern we use to represent every 5 minutes is `0 */5 * * * *`. This, in plain text, means: \"When seconds is equal to 0, minutes is divisible by 5, for any hour, day of the month, month, day of the week, or year\".\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation\r\n",
+      "run.ps1": "# Input bindings are passed in via param block.\r\nparam($Timer)\r\n\r\n# Get the current universal time in the default string format\r\n$currentUTCtime = (Get-Date).ToUniversalTime()\r\n\r\n# The 'IsPastDue' porperty is 'true' when the current function invocation is later than scheduled.\r\nif ($Timer.IsPastDue) {\r\n    Write-Host \"PowerShell timer is running late!\"\r\n}\r\n\r\n# Write an information log with the current time.\r\nWrite-Host \"PowerShell timer trigger function ran! TIME: $currentUTCtime\"\r\n",
+      "sample.dat": ""
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "Timer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "PowerShell",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-Python",
+    "runtime": "3",
+    "files": {
+      "readme.md": "# TimerTrigger - Python\r\n\r\nThe `TimerTrigger` makes it incredibly easy to have your functions executed on a schedule. This sample demonstrates a simple use case of calling your function every 5 minutes.\r\n\r\n## How it works\r\n\r\nFor a `TimerTrigger` to work, you provide a schedule in the form of a [cron expression](https://en.wikipedia.org/wiki/Cron#CRON_expression)(See the link for full details). A cron expression is a string with 6 separate expressions which represent a given schedule via patterns. The pattern we use to represent every 5 minutes is `0 */5 * * * *`. This, in plain text, means: \"When seconds is equal to 0, minutes is divisible by 5, for any hour, day of the month, month, day of the week, or year\".\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation\r\n",
+      "sample.dat": "",
+      "__init__.py": "import datetime\r\nimport logging\r\n\r\nimport azure.functions as func\r\n\r\n\r\ndef main(mytimer: func.TimerRequest) -> None:\r\n    utc_timestamp = datetime.datetime.utcnow().replace(\r\n        tzinfo=datetime.timezone.utc).isoformat()\r\n\r\n    if mytimer.past_due:\r\n        logging.info('The timer is past due!')\r\n\r\n    logging.info('Python timer trigger function ran at %s', utc_timestamp)\r\n"
+    },
+    "function": {
+      "scriptFile": "__init__.py",
+      "bindings": [
+        {
+          "name": "mytimer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "Python",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ],
+      "filters": [
+        "Python3"
+      ]
+    }
+  },
+  {
+    "id": "TimerTrigger-TypeScript",
+    "runtime": "3",
+    "files": {
+      "index.ts": "import { AzureFunction, Context } from \"@azure/functions\"\r\n\r\nconst timerTrigger: AzureFunction = async function (context: Context, myTimer: any): Promise<void> {\r\n    var timeStamp = new Date().toISOString();\r\n    \r\n    if (myTimer.isPastDue)\r\n    {\r\n        context.log('Timer function is running late!');\r\n    }\r\n    context.log('Timer trigger function ran!', timeStamp);   \r\n};\r\n\r\nexport default timerTrigger;\r\n",
+      "readme.md": "# TimerTrigger - TypeScript\r\n\r\nThe `TimerTrigger` makes it incredibly easy to have your functions executed on a schedule. This sample demonstrates a simple use case of calling your function every 5 minutes.\r\n\r\n## How it works\r\n\r\nFor a `TimerTrigger` to work, you provide a schedule in the form of a [cron expression](https://en.wikipedia.org/wiki/Cron#CRON_expression)(See the link for full details). A cron expression is a string with 6 separate expressions which represent a given schedule via patterns. The pattern we use to represent every 5 minutes is `0 */5 * * * *`. This, in plain text, means: \"When seconds is equal to 0, minutes is divisible by 5, for any hour, day of the month, month, day of the week, or year\".\r\n\r\n## Learn more\r\n\r\n<TODO> Documentation"
+    },
+    "function": {
+      "bindings": [
+        {
+          "name": "myTimer",
+          "type": "timerTrigger",
+          "direction": "in",
+          "schedule": "0 */5 * * * *"
+        }
+      ]
+    },
+    "metadata": {
+      "defaultFunctionName": "TimerTrigger",
+      "description": "$TimerTrigger_description",
+      "name": "Timer trigger",
+      "language": "TypeScript",
+      "category": [
+        "$temp_category_core",
+        "$temp_category_dataProcessing"
+      ],
+      "categoryStyle": "timer",
+      "enabledInTryMode": true,
+      "userPrompt": [
+        "schedule"
+      ]
+    }
+  }
+]

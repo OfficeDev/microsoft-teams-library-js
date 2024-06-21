@@ -1,0 +1,120 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">ThreadJob</S>
+      <S N="Version">2.0.3</S>
+      <S N="Type">Module</S>
+      <S N="Description">PowerShell's built-in BackgroundJob jobs (Start-Job) are run in separate processes on the local machine._x000D__x000A_They provide excellent isolation but are resource heavy.  Running hundreds of BackgroundJob jobs can quickly_x000D__x000A_absorb system resources._x000D__x000A__x000D__x000A_This module extends the existing PowerShell BackgroundJob to include a new thread based ThreadJob job.  This is a _x000D__x000A_lighter weight solution for running concurrent PowerShell scripts that works within the existing PowerShell job _x000D__x000A_infrastructure._x000D__x000A__x000D__x000A_ThreadJob jobs will tend to run quicker because there is lower overhead and they do not use the remoting serialization _x000D__x000A_system.  And they will use up fewer system resources.  In addition output objects returned from the job will be_x000D__x000A_'live' since they are not re-hydrated from the serialization system.  However, there is less isolation.  If one_x000D__x000A_ThreadJob job crashes the process then all ThreadJob jobs running in that process will be terminated._x000D__x000A__x000D__x000A_This module exports a single cmdlet, Start-ThreadJob, which works similarly to the existing Start-Job cmdlet._x000D__x000A_The main difference is that the jobs which are created run in separate threads within the local process._x000D__x000A__x000D__x000A_One difference is that ThreadJob jobs support a ThrottleLimit parameter to limit the number of running jobs,_x000D__x000A_and thus active threads, at a time.  If more jobs are started then they go into a queue and wait until the current_x000D__x000A_number of jobs drops below the throttle limit._x000D__x000A__x000D__x000A_Source for this module is at GitHub.  Please submit any issues there._x000D__x000A_https://github.com/PaulHigin/PSThreadJob_x000D__x000A__x000D__x000A_Added Runspace cleanup._x000D__x000A_Added Using variable expression support._x000D__x000A_Added StreamingHost parameter to stream host data writes to a provided host object._x000D__x000A_Added Information stream handling._x000D__x000A_Bumped version to 2.0.0, and now only support PowerShell version 5.1 and higher._x000D__x000A_Fixed using keyword bug with PowerShell preview version, and removed unneeded version check._x000D__x000A_Added setting current working directory to running jobs, when available._x000D__x000A_Added help URI to module.</S>
+      <S N="Author">Microsoft Corporation</S>
+      <S N="CompanyName">paulhi</S>
+      <S N="Copyright">(c) Microsoft Corporation. All rights reserved.</S>
+      <DT N="PublishedDate">2019-12-20T16:37:53+00:00</DT>
+      <Nil N="InstalledDate" />
+      <Nil N="UpdatedDate" />
+      <Nil N="LicenseUri" />
+      <Nil N="ProjectUri" />
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="1">
+        <TN RefId="1">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="2">
+        <TN RefId="2">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Workflow</S>
+            <Obj N="Value" RefId="3">
+              <TNRef RefId="1" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="4">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Start-ThreadJob</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Start-ThreadJob</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Ref N="Value" RefId="3" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <Nil N="ReleaseNotes" />
+      <Obj N="Dependencies" RefId="6">
+        <TNRef RefId="1" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="7">
+        <TN RefId="3">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">(c) Microsoft Corporation. All rights reserved.</S>
+          <S N="description">PowerShell's built-in BackgroundJob jobs (Start-Job) are run in separate processes on the local machine._x000D__x000A_They provide excellent isolation but are resource heavy.  Running hundreds of BackgroundJob jobs can quickly_x000D__x000A_absorb system resources._x000D__x000A__x000D__x000A_This module extends the existing PowerShell BackgroundJob to include a new thread based ThreadJob job.  This is a _x000D__x000A_lighter weight solution for running concurrent PowerShell scripts that works within the existing PowerShell job _x000D__x000A_infrastructure._x000D__x000A__x000D__x000A_ThreadJob jobs will tend to run quicker because there is lower overhead and they do not use the remoting serialization _x000D__x000A_system.  And they will use up fewer system resources.  In addition output objects returned from the job will be_x000D__x000A_'live' since they are not re-hydrated from the serialization system.  However, there is less isolation.  If one_x000D__x000A_ThreadJob job crashes the process then all ThreadJob jobs running in that process will be terminated._x000D__x000A__x000D__x000A_This module exports a single cmdlet, Start-ThreadJob, which works similarly to the existing Start-Job cmdlet._x000D__x000A_The main difference is that the jobs which are created run in separate threads within the local process._x000D__x000A__x000D__x000A_One difference is that ThreadJob jobs support a ThrottleLimit parameter to limit the number of running jobs,_x000D__x000A_and thus active threads, at a time.  If more jobs are started then they go into a queue and wait until the current_x000D__x000A_number of jobs drops below the throttle limit._x000D__x000A__x000D__x000A_Source for this module is at GitHub.  Please submit any issues there._x000D__x000A_https://github.com/PaulHigin/PSThreadJob_x000D__x000A__x000D__x000A_Added Runspace cleanup._x000D__x000A_Added Using variable expression support._x000D__x000A_Added StreamingHost parameter to stream host data writes to a provided host object._x000D__x000A_Added Information stream handling._x000D__x000A_Bumped version to 2.0.0, and now only support PowerShell version 5.1 and higher._x000D__x000A_Fixed using keyword bug with PowerShell preview version, and removed unneeded version check._x000D__x000A_Added setting current working directory to running jobs, when available._x000D__x000A_Added help URI to module.</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">5502656</S>
+          <S N="downloadCount">5586719</S>
+          <S N="packageSize">30893</S>
+          <S N="published">12/20/2019 16:37:53 +00:00</S>
+          <S N="created">12/20/2019 16:37:53 +00:00</S>
+          <S N="lastUpdated">04/12/2024 23:46:27 +00:00</S>
+          <S N="tags">PSModule</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2024-04-12T23:46:27Z</S>
+          <S N="NormalizedVersion">2.0.3</S>
+          <S N="Authors">Microsoft Corporation</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">ThreadJob.nuspec|Microsoft.PowerShell.ThreadJob.dll|ThreadJob.psd1</S>
+          <S N="Cmdlets">Start-ThreadJob</S>
+          <S N="GUID">0e7b895d-2fec-43f7-8cae-11e8d16f6e40</S>
+          <S N="PowerShellVersion">5.1</S>
+          <S N="CompanyName">Microsoft Corporation</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">/mnt/vss/_work/1/s/src/Modules/ThreadJob/2.0.3</S>
+    </MS>
+  </Obj>
+</Objs>

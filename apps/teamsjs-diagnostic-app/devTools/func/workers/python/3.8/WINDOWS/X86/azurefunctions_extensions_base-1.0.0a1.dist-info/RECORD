@@ -1,0 +1,11 @@
+azurefunctions/extensions/base/__init__.py,sha256=C-JMu8s3jqocDjL1Bv3zg8b52w532eglwmKO5xoj0Xk,856
+azurefunctions/extensions/base/meta.py,sha256=5kW6oJhZFB3s3gbL3874S9LdrAuW7I-8mJ2gp70gEqw,5754
+azurefunctions/extensions/base/sdkType.py,sha256=QEdPHRca-Tgf7rE99lhRfds6xf8zbFEk16pQoz_92c8,296
+azurefunctions/extensions/base/utils.py,sha256=Ouzdu5BYJU4F3x5__VO126-kyw_VK88902UdTaRrsM8,9063
+azurefunctions/extensions/base/web.py,sha256=2a52ZhtFvzddumkIhw1ouI-gJ_3qX0OICqdOJ61GU2E,5010
+azurefunctions_extensions_base-1.0.0a1.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+azurefunctions_extensions_base-1.0.0a1.dist-info/LICENSE,sha256=kD31US99AmCf7Qx4CptwT1o-625NhOvkKimEXIGJmjw,1093
+azurefunctions_extensions_base-1.0.0a1.dist-info/METADATA,sha256=XnfrvbjSOhJFWLmPS1QFTCedWwzSG6HArV9OPRZRk2I,1502
+azurefunctions_extensions_base-1.0.0a1.dist-info/RECORD,,
+azurefunctions_extensions_base-1.0.0a1.dist-info/WHEEL,sha256=GJ7t_kWBFywbagK5eo9IoUwLW6oyOeTKmQ-9iHFVNxQ,92
+azurefunctions_extensions_base-1.0.0a1.dist-info/top_level.txt,sha256=EnJq2f0v_QdeephavYBNu9lFoNYlaqoV4AwpyPqWJ1w,15

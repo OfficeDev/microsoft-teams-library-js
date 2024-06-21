@@ -1,0 +1,1895 @@
+{
+  "files": [
+    {
+      "fileName": "./../../s/node_modules/@azure/functions/_manifest/spdx_2.2/manifest.spdx.json",
+      "SPDXID": "SPDXRef-File--..-..-s-node-modules--azure-functions--manifest-spdx-2.2-manifest.spdx.json-EF5161559CD973E349F85773629927C4605CA038",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6ab57a34187a584ebe5236e0870d18ecf05bb4a2cebdb696ab10f60e96b5ed57"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ef5161559cd973e349f85773629927c4605ca038"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION",
+      "fileTypes": [
+        "SPDX"
+      ]
+    },
+    {
+      "fileName": "./package.json",
+      "SPDXID": "SPDXRef-File--package.json-ABF060A00D520B8C5F13129C927AFBCEC3EEF68F",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "ba2a93ef664c8ff184147bd597af49018fa348fd945f2cec5adfa545c3ed20d6"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "abf060a00d520b8c5f13129c927afbcec3eef68f"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./LICENSE",
+      "SPDXID": "SPDXRef-File--LICENSE-14CB404E9DE5F2B618AD67DDA908AF2452A4B2B4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "9fa73cb72fb654d029c9214f0e3eec32c301a0c23be71b50fe3910e61553fa34"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "14cb404e9de5f2b618ad67dda908af2452a4b2b4"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./worker.config.json",
+      "SPDXID": "SPDXRef-File--worker.config.json-3882BBC9A2831BF1781AB2204F0ECF43FE312026",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "bf3539cb0a3a1d28335304f47af39fb1d2c0b9d395851f9f2bc0cbe72b723667"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "3882bbc9a2831bf1781ab2204f0ecf43fe312026"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./dist/src/nodejsWorker.js",
+      "SPDXID": "SPDXRef-File--dist-src-nodejsWorker.js-C5D2FF7BF23BA2A120E2737775B94F3E8E49FF4D",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "18c1cad0e86182a9a3bbfcb10c696538e8a5e3e5a139ac8846c7f041f3336a8e"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "c5d2ff7bf23ba2a120e2737775b94f3e8e49ff4d"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./NOTICE.html",
+      "SPDXID": "SPDXRef-File--NOTICE.html-38F092729F22BCD3C2AC8A6A8DFDB83070E8B68F",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "314069db3a7fe7f09d11b9eeae33ae82cc28ad8b40e69298ae3981c60319bc79"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "38f092729f22bcd3c2ac8a6a8dfdb83070e8b68f"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./dist/src/worker-bundle.js",
+      "SPDXID": "SPDXRef-File--dist-src-worker-bundle.js-1E9C97A70DA1600B95CD519BC594D323E8DF4C45",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "3afff34fa2578d0a7e5dd4c1b1b3e69746fed7d3ab05cf9f8fdd4cfaf2420363"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "1e9c97a70da1600b95cd519bc594d323e8df4c45"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION"
+    }
+  ],
+  "packages": [
+    {
+      "name": "y18n",
+      "SPDXID": "SPDXRef-Package-FBA0A2AC506A264A886FF03686ED110ECF6F9AF77889F9C1A8A275D05F9A52FD",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.0.8",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/y18n@5.0.8"
+        }
+      ],
+      "supplier": "Organization: Ben Coe (bencoe@gmail.com)"
+    },
+    {
+      "name": "to-regex-range",
+      "SPDXID": "SPDXRef-Package-489930FDA7E98DE6FC171A686317E3658F783AE0EF6571F7D6E36BFA28835CE4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/to-regex-range@5.0.1"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "wrap-ansi",
+      "SPDXID": "SPDXRef-Package-2B00140AFF7C89C2C0F7033FBBD1BA64241178F36EA664699A6F7FAC3D3A8008",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "7.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/wrap-ansi@7.0.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "uuid",
+      "SPDXID": "SPDXRef-Package-786FBBEEC30E1732AAA8DA0F59D3D30CF8F2950EB7778E476E1F20D2A0894405",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "8.3.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/uuid@8.3.2"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "safer-buffer",
+      "SPDXID": "SPDXRef-Package-DBA0EACCA85A46E91A7567F20D60695AF5D117996500EFA78FD8F82CB177F801",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.1.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/safer-buffer@2.1.2"
+        }
+      ],
+      "supplier": "Organization: Nikita Skovoroda (chalkerx@gmail.com)"
+    },
+    {
+      "name": "picomatch",
+      "SPDXID": "SPDXRef-Package-F5B5980B1CF6C51F986E78BFDC52BD05CC77E71F06421731331C78BEB6F62E3D",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.3.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/picomatch@2.3.0"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "jsonfile",
+      "SPDXID": "SPDXRef-Package-6902D247E9BD5206CA1344524C608D2E4F1ECDF5994CE7CD6FB3A9DA716B6757",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "6.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/jsonfile@6.1.0"
+        }
+      ],
+      "supplier": "Organization: JP Richardson (jprichardson@gmail.com)"
+    },
+    {
+      "name": "globby",
+      "SPDXID": "SPDXRef-Package-3A9B9A245743A3638D3B0FFE35AB1FADA1D5BE93C0901B961507A1ACE49E4672",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "11.0.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/globby@11.0.4"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "escalade",
+      "SPDXID": "SPDXRef-Package-C54FFB9578AE149221DB21A903D7191BB87BADE2805E8F889AA886CEE40EBA1C",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.1.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/escalade@3.1.1"
+        }
+      ],
+      "supplier": "Organization: Luke Edwards (luke.edwards05@gmail.com)"
+    },
+    {
+      "name": "array-union",
+      "SPDXID": "SPDXRef-Package-54D882180C18C0AED863ED3B15CDA569940E12CD9C9EE42F0F27D9B87D8D57C8",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/array-union@2.1.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "run-parallel",
+      "SPDXID": "SPDXRef-Package-763D936F2AAAD5FB9E8A20C026CA3D32751CB2F2CCF45D2B9EA0A2A961FA2FB7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/run-parallel@1.2.0"
+        }
+      ],
+      "supplier": "Organization: Feross Aboukhadijeh (feross@feross.org)"
+    },
+    {
+      "name": "path-type",
+      "SPDXID": "SPDXRef-Package-3875A4489D036870F76049640DB71F57BEBF05C7DBA40382A0323E4FAE950B08",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/path-type@4.0.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "is-number",
+      "SPDXID": "SPDXRef-Package-71C54EF1C8DA4D8F4D82085F3E6DF9DD16109E2B8FD9C9F4ECD9F351CD7C5E67",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "7.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/is-number@7.0.0"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "glob-parent",
+      "SPDXID": "SPDXRef-Package-8312D5C9383A2DB47B88CA7762B14991F4CA93EBD40BAC3818CDEDA3A39B0699",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.1.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/glob-parent@5.1.2"
+        }
+      ],
+      "supplier": "Organization: Gulp Team (team@gulpjs.com)"
+    },
+    {
+      "name": "emoji-regex",
+      "SPDXID": "SPDXRef-Package-BF722EAF20CF5B5A7976BEB97EE1B3C7E4EE7430E361E9612B6065A04059941D",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "8.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/emoji-regex@8.0.0"
+        }
+      ],
+      "supplier": "Organization: Mathias Bynens"
+    },
+    {
+      "name": "ansi-styles",
+      "SPDXID": "SPDXRef-Package-B35C7B99F1469CE03434FE888EE4F7C1995BB4F2614C9AED801AD074F60EDC57",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.3.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/ansi-styles@4.3.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "reusify",
+      "SPDXID": "SPDXRef-Package-825BED338534608E70ECC844A1795B4298B55B6D257D9ABF2B7C7D839A0BD76B",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.0.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/reusify@1.0.4"
+        }
+      ],
+      "supplier": "Organization: Matteo Collina (hello@matteocollina.com)"
+    },
+    {
+      "name": "p-retry",
+      "SPDXID": "SPDXRef-Package-0067B7C524DCAF99E26636657F537E0BFA2BF705B929071D959581B074979D73",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.6.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/p-retry@4.6.2"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "is-glob",
+      "SPDXID": "SPDXRef-Package-BE1BB15EE8CA222A074777F615FB763CE9F2E4AE01560C733D0191B8F7B74007",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.0.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/is-glob@4.0.3"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "get-caller-file",
+      "SPDXID": "SPDXRef-Package-C6D8AF6C89928E623B5C9FC68AFA9A3158EA1968A3075509944C16325DC10D60",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.0.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/get-caller-file@2.0.5"
+        }
+      ],
+      "supplier": "Organization: Stefan Penner"
+    },
+    {
+      "name": "require-directory",
+      "SPDXID": "SPDXRef-Package-92917E7EE97A322F55EC19A07F19A91CC894BC83BEB04D2704682CD630032C6C",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.1.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/require-directory@2.1.1"
+        }
+      ],
+      "supplier": "Organization: Troy Goode (troygoode@gmail.com)"
+    },
+    {
+      "name": "micromatch",
+      "SPDXID": "SPDXRef-Package-29EE0B69DD31E2EFC0983AD2A8B54C2B6696463E07390DAFBE420B1FE82FB31F",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.0.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/micromatch@4.0.4"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "is-extglob",
+      "SPDXID": "SPDXRef-Package-EB2508C666A417559E69EFF06A1932609FDB7803603EC401E7CC24087EF827B6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.1.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/is-extglob@2.1.1"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "fs-extra",
+      "SPDXID": "SPDXRef-Package-098FADCB01CEB1326E6817ECE1B0C63E28E778027F2600D410523E6FBC45BA03",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "10.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/fs-extra@10.0.1"
+        }
+      ],
+      "supplier": "Organization: JP Richardson (jprichardson@gmail.com)"
+    },
+    {
+      "name": "color-convert",
+      "SPDXID": "SPDXRef-Package-8AE0148B14411D8746F1F847BDA9350D7CC3FC9D58C7E64E170C3CBD77F97E02",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/color-convert@2.0.1"
+        }
+      ],
+      "supplier": "Organization: Heather Arthur (fayearthur@gmail.com)"
+    },
+    {
+      "name": "@types/node",
+      "SPDXID": "SPDXRef-Package-F6D3AC1A8712C92C071302471B71489A1227E3D55D00876437031A938A878C68",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "16.10.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@types/node@16.10.3"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "@protobufjs/inquire",
+      "SPDXID": "SPDXRef-Package-28FF40D15ADAC43DD4B9DB80E5C94F3820F5C281CD95C0C6C01374F4E4E139D0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/inquire@1.1.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@protobufjs/path",
+      "SPDXID": "SPDXRef-Package-599F8BEF18F21A01FD13DCA60F95D7C6F33D0516266F3ACFB54A531D3DE4094C",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/path@1.1.2"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@nodelib/fs.walk",
+      "SPDXID": "SPDXRef-Package-CC8563982E0DD35D4EAA5D731B84AE9B0CC56663B2F646B232BBF9962349CF0C",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.2.8",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@nodelib/fs.walk@1.2.8"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "@protobufjs/eventemitter",
+      "SPDXID": "SPDXRef-Package-75881016BD9AAFE26A657083717DCF6A90AA648B64A6343472415AA8B6ADE6EF",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/eventemitter@1.1.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@grpc/grpc-js",
+      "SPDXID": "SPDXRef-Package-FAFA72983CB5284690EFD638CFF66BB3741D282E2C463CD4EA644B3702A0E77E",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.8.18",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@grpc/grpc-js@1.8.18"
+        }
+      ],
+      "supplier": "Organization: Google Inc."
+    },
+    {
+      "name": "@nodelib/fs.stat",
+      "SPDXID": "SPDXRef-Package-473982FDA490689758337043A506051D247520B842050FBE6456418CF6741654",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.0.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@nodelib/fs.stat@2.0.5"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "dir-glob",
+      "SPDXID": "SPDXRef-Package-0C5D04EE0401392CBE52250F0D16B67B8DC65CBA0E63AF9B93B1981D7477550D",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/dir-glob@3.0.1"
+        }
+      ],
+      "supplier": "Organization: Kevin Mårtensson (kevinmartensson@gmail.com)"
+    },
+    {
+      "name": "ansi-regex",
+      "SPDXID": "SPDXRef-Package-4F49270DCEA60C0D9F44BC6123811C3DE8CCC18C9222E8C526F45ECE375B9FC7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/ansi-regex@5.0.1"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "@protobufjs/float",
+      "SPDXID": "SPDXRef-Package-3A66A7A03B59196CF3E073C6CEE1076EB34F297E3CBDA7E03FD1CFD6CC8AB01E",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.0.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/float@1.0.2"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@nodelib/fs.scandir",
+      "SPDXID": "SPDXRef-Package-570C72DAC400ACC41477EE07FC7D1870DE6BECB6293C3C93175294F2C1907048",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.1.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@nodelib/fs.scandir@2.1.5"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "yargs",
+      "SPDXID": "SPDXRef-Package-5E629196EDDE2A814C1C7FD4F4CEA7DCEA3BE44F1411C8C308DF0AC836B7A8FB",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "17.7.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/yargs@17.7.2"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "strip-ansi",
+      "SPDXID": "SPDXRef-Package-9A329D4BBF8BD8BBB4D07B7C4BBDBB7599B73F4F38137E214AB97497AA48CAC9",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "6.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/strip-ansi@6.0.1"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "yargs-parser",
+      "SPDXID": "SPDXRef-Package-223C74996FD18DF5688766709CAAC600D184EB54E1221FDE7ED92E712354A19A",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "21.1.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/yargs-parser@21.1.1"
+        }
+      ],
+      "supplier": "Organization: Ben Coe (ben@npmjs.com)"
+    },
+    {
+      "name": "Azure Pipelines Hosted Image win19",
+      "SPDXID": "SPDXRef-Package-275EE153CE9130BAD3B92CC77AC2EE9D6D94CD150E8786D8B7CAE6F2C9397C6B",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "20240407.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "https://github.com/actions/virtual-environments"
+        }
+      ],
+      "supplier": "Organization: Microsoft/GitHub"
+    },
+    {
+      "name": "slash",
+      "SPDXID": "SPDXRef-Package-2E0F41AA499B51B905908D3E3B4F8E4C82536C0F45DD3E6948F50FAF8D1E4D3D",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/slash@3.0.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "string-width",
+      "SPDXID": "SPDXRef-Package-CAF8256339C34BF98D28B480A4D0A9818D01E9B6DA88DD48BD2D6030320280F4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.2.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/string-width@4.2.3"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "universalify",
+      "SPDXID": "SPDXRef-Package-990E20CB1EE9CEFE84A73723FDDF02BF285221FA46B1B84F9C3073F48E4B23AA",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/universalify@2.0.0"
+        }
+      ],
+      "supplier": "Organization: Ryan Zimmerman (opensrc@ryanzim.com)"
+    },
+    {
+      "name": "protobufjs",
+      "SPDXID": "SPDXRef-Package-A95CF3197EE846DE65551BD109FCF26B7A5166357664A97DBCB96D09F232B0A4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "7.2.5",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/protobufjs@7.2.5"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "queue-microtask",
+      "SPDXID": "SPDXRef-Package-F57C3B4B2FCB564079C16D1588446BD67D963CF3D2D0C379F278358CD1FAD33A",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.2.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/queue-microtask@1.2.3"
+        }
+      ],
+      "supplier": "Organization: Feross Aboukhadijeh (feross@feross.org)"
+    },
+    {
+      "name": "long",
+      "SPDXID": "SPDXRef-Package-8BE41865A407C16F830D70F2715E27D0C676B0F0B8DD4CEC06417315776A8D29",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.2.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/long@5.2.3"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode@dcode.io)"
+    },
+    {
+      "name": "lodash.camelcase",
+      "SPDXID": "SPDXRef-Package-3BBD5FC925B117CEC6245AEC55D36EAC9AC7C3FE64D6BC25A6C1E1A09120358E",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.3.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/lodash.camelcase@4.3.0"
+        }
+      ],
+      "supplier": "Organization: John-David Dalton (john.david.dalton@gmail.com)"
+    },
+    {
+      "name": "merge2",
+      "SPDXID": "SPDXRef-Package-ADA0A87DA059D0BF66DE543FAB643285A57E769B560C47D8BD2B5C94A730BF67",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.4.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/merge2@1.4.1"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "retry",
+      "SPDXID": "SPDXRef-Package-C1998955E0A92ED8CC3668483FB5A4B3AB6D30CF900242E5030EA09068E2252F",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "0.13.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/retry@0.13.1"
+        }
+      ],
+      "supplier": "Organization: Tim Koschützki (tim@debuggable.com)"
+    },
+    {
+      "name": "minimist",
+      "SPDXID": "SPDXRef-Package-550B23203A0EF42A95F5014D4159D487CA87F07A05A114CC9DAC613AB3EDD349",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.2.6",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/minimist@1.2.6"
+        }
+      ],
+      "supplier": "Organization: James Halliday (mail@substack.net)"
+    },
+    {
+      "name": "long",
+      "SPDXID": "SPDXRef-Package-044336899C3AD719572161F32356DFBD386B721EFA99ECA36B059C7A2374DA68",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/long@4.0.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode@dcode.io)"
+    },
+    {
+      "name": "iconv-lite",
+      "SPDXID": "SPDXRef-Package-258FE309BEE2AEAB9851C2B85FE2F1B65229406867D180D7F84D975D6DDE8134",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "0.6.3",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/iconv-lite@0.6.3"
+        }
+      ],
+      "supplier": "Organization: Alexander Shtuchkin (ashtuchkin@gmail.com)"
+    },
+    {
+      "name": "fastq",
+      "SPDXID": "SPDXRef-Package-093E9B21F6B1E662A974E6C263E0791DDD87D032DF6403BDE8E0975BF11AA39E",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.13.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/fastq@1.13.0"
+        }
+      ],
+      "supplier": "Organization: Matteo Collina (hello@matteocollina.com)"
+    },
+    {
+      "name": "braces",
+      "SPDXID": "SPDXRef-Package-DCE18FF6948DE8967799C5A806EB41DB0B17BF1638B8A599216C2CC290909713",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.0.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/braces@3.0.2"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "graceful-fs",
+      "SPDXID": "SPDXRef-Package-8B598FBFF684BA9D1CEE650F75CEF0EF36EC523B445379C005D15378AC7C256A",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.2.10",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/graceful-fs@4.2.10"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "fast-glob",
+      "SPDXID": "SPDXRef-Package-D09C3E31BD65BCCE551A748AF1B78696832561E9F2F919C8002961E5AC604CE7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.2.7",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/fast-glob@3.2.7"
+        }
+      ],
+      "supplier": "Organization: Denis Malinochkin"
+    },
+    {
+      "name": "blocked-at",
+      "SPDXID": "SPDXRef-Package-F92E6A661834D18EF655A4F9146BC941CA4413A70C0523387A1961009C79FAC4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/blocked-at@1.2.0"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "@protobufjs/pool",
+      "SPDXID": "SPDXRef-Package-DEC05AEEE350AED6A2F9D685EF36FEBA52AE9FF07F3472479B800ECFFA94E149",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/pool@1.1.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "is-fullwidth-code-point",
+      "SPDXID": "SPDXRef-Package-4C0343CDE0BACF0B8D6D81D5B1BAD6D2BC634737BCA5D41234650AB163E4FAFE",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.0.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/is-fullwidth-code-point@3.0.0"
+        }
+      ],
+      "supplier": "Organization: Sindre Sorhus (sindresorhus@gmail.com)"
+    },
+    {
+      "name": "@protobufjs/aspromise",
+      "SPDXID": "SPDXRef-Package-320AD3F8CCA109FF9EEDA82922118E1A67CB72992A1351EE258AC7DFB9D8A95B",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/aspromise@1.1.2"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "fsevents",
+      "SPDXID": "SPDXRef-Package-EEEEEE210EC980714C74E979E40F36ED52F648607F8D185171F56D224912356C",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.3.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/fsevents@2.3.2"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "color-name",
+      "SPDXID": "SPDXRef-Package-F29187D25E21E5FFF51A4B6C21CA388376276057926EB90F4DA5CD3F2616A8F8",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/color-name@1.1.4"
+        }
+      ],
+      "supplier": "Organization: DY (dfcreative@gmail.com)"
+    },
+    {
+      "name": "@types/retry",
+      "SPDXID": "SPDXRef-Package-66F55D61E5120DB3DA4635BB1AE00BE2DDE7739BA57E348B467EF32D70D6C7AB",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "0.12.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@types/retry@0.12.0"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "ignore",
+      "SPDXID": "SPDXRef-Package-266B2C516C4F6F4CBC6416D1EE073911B8CDF0F272D417B4B3FE3832405DBC02",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "5.1.8",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/ignore@5.1.8"
+        }
+      ],
+      "supplier": "Organization: kael"
+    },
+    {
+      "name": "fill-range",
+      "SPDXID": "SPDXRef-Package-0C488E84D70135A19CA13114A53D862FFE89EC6FF1671CD039178AF68D8C35AA",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "7.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/fill-range@7.0.1"
+        }
+      ],
+      "supplier": "Organization: Jon Schlinkert"
+    },
+    {
+      "name": "cliui",
+      "SPDXID": "SPDXRef-Package-E1BF2E9417F3E58525EF2C0CF3135F277FBEA99CA5D604E6F4C1D41BB7CFF7D6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "8.0.1",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/cliui@8.0.1"
+        }
+      ],
+      "supplier": "Organization: Ben Coe (ben@npmjs.com)"
+    },
+    {
+      "name": "@protobufjs/fetch",
+      "SPDXID": "SPDXRef-Package-450B5C9653AEE01027364B8952D58822B5CAEF0C833EFC128D8DC53D8D1DA111",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/fetch@1.1.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@grpc/proto-loader",
+      "SPDXID": "SPDXRef-Package-1E1A3D48E0AC8E3EEC521C58436D57E823837A50E4016FA449DB85CDF31EB4A9",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "0.7.8",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@grpc/proto-loader@0.7.8"
+        }
+      ],
+      "supplier": "Organization: Google Inc."
+    },
+    {
+      "name": "@protobufjs/utf8",
+      "SPDXID": "SPDXRef-Package-70EF4CFDB103ED5B6F9C2DCD09542300839DA76E3DA3B1A24ABD84DADBEDC220",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/utf8@1.1.0"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@types/long",
+      "SPDXID": "SPDXRef-Package-BFF4CD7FD00742C92B49E6F5090D51A4ED942B39116F4F2CBBB68BE4D4E661F9",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "4.0.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@types/long@4.0.2"
+        }
+      ],
+      "supplier": "NOASSERTION"
+    },
+    {
+      "name": "@protobufjs/base64",
+      "SPDXID": "SPDXRef-Package-42C018ACE6C72F87EBA7986DA7FC45D7665C8F903B8704D0A196AAD7286E1966",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "1.1.2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/base64@1.1.2"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@protobufjs/codegen",
+      "SPDXID": "SPDXRef-Package-4E850ABEE7DA97A8ECEF1D6A253AD919CF828270CF23C0B10FBC5C1B86758A71",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "2.0.4",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@protobufjs/codegen@2.0.4"
+        }
+      ],
+      "supplier": "Organization: Daniel Wirtz (dcode+protobufjs@dcode.io)"
+    },
+    {
+      "name": "@azure/functions",
+      "SPDXID": "SPDXRef-Package-D43058984859BCF3B6825D99A84BBAAA9CED2BD44FD589506E850DCF452B3D25",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "3.5.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/@azure/functions@3.5.0"
+        }
+      ],
+      "supplier": "Organization: Microsoft"
+    },
+    {
+      "name": "Azure Functions Node.js Worker",
+      "SPDXID": "SPDXRef-RootPackage",
+      "downloadLocation": "NOASSERTION",
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "b4072044f6babdc30acdc33bbd8df1a8f1e8c0c3"
+      },
+      "filesAnalyzed": true,
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoFromFiles": [
+        "NOASSERTION"
+      ],
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "versionInfo": "164009",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:swid/Microsoft/sbom.microsoft/Azure%20Functions%20Node.js%20Worker@164009?tag_id=5061e281-d6af-4b21-8984-e01eee9c9711"
+        }
+      ],
+      "supplier": "Organization: Microsoft",
+      "hasFiles": [
+        "SPDXRef-File--dist-src-worker-bundle.js-1E9C97A70DA1600B95CD519BC594D323E8DF4C45",
+        "SPDXRef-File--NOTICE.html-38F092729F22BCD3C2AC8A6A8DFDB83070E8B68F",
+        "SPDXRef-File--dist-src-nodejsWorker.js-C5D2FF7BF23BA2A120E2737775B94F3E8E49FF4D",
+        "SPDXRef-File--worker.config.json-3882BBC9A2831BF1781AB2204F0ECF43FE312026",
+        "SPDXRef-File--LICENSE-14CB404E9DE5F2B618AD67DDA908AF2452A4B2B4",
+        "SPDXRef-File--package.json-ABF060A00D520B8C5F13129C927AFBCEC3EEF68F"
+      ]
+    }
+  ],
+  "externalDocumentRefs": [
+    {
+      "externalDocumentId": "DocumentRef-Azure-Functions-Node.js-Framework-107047-ef5161559cd973e349f85773629927c4605ca038",
+      "spdxDocument": "https://sbom.microsoft/1:vB_F0XdED0q5n_yQEwCaWA:kgyn5ihBn0OAEjgv541jlg/145:107047/vF4IMoZJC0egXwGZDvy3Yw",
+      "checksum": {
+        "algorithm": "SHA1",
+        "checksumValue": "ef5161559cd973e349f85773629927c4605ca038"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-1E1A3D48E0AC8E3EEC521C58436D57E823837A50E4016FA449DB85CDF31EB4A9",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DESCRIBED_BY",
+      "relatedSpdxElement": "SPDXRef-DOCUMENT",
+      "spdxElementId": "SPDXRef-File--..-..-s-node-modules--azure-functions--manifest-spdx-2.2-manifest.spdx.json-EF5161559CD973E349F85773629927C4605CA038"
+    },
+    {
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-RootPackage",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relationshipType": "PREREQUISITE_FOR",
+      "relatedSpdxElement": "DocumentRef-Azure-Functions-Node.js-Framework-107047-ef5161559cd973e349f85773629927c4605ca038:SPDXRef-RootPackage",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-450B5C9653AEE01027364B8952D58822B5CAEF0C833EFC128D8DC53D8D1DA111",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-66F55D61E5120DB3DA4635BB1AE00BE2DDE7739BA57E348B467EF32D70D6C7AB",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-F29187D25E21E5FFF51A4B6C21CA388376276057926EB90F4DA5CD3F2616A8F8",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-EEEEEE210EC980714C74E979E40F36ED52F648607F8D185171F56D224912356C",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-4C0343CDE0BACF0B8D6D81D5B1BAD6D2BC634737BCA5D41234650AB163E4FAFE",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-550B23203A0EF42A95F5014D4159D487CA87F07A05A114CC9DAC613AB3EDD349",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-C1998955E0A92ED8CC3668483FB5A4B3AB6D30CF900242E5030EA09068E2252F",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-990E20CB1EE9CEFE84A73723FDDF02BF285221FA46B1B84F9C3073F48E4B23AA",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-275EE153CE9130BAD3B92CC77AC2EE9D6D94CD150E8786D8B7CAE6F2C9397C6B",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-42C018ACE6C72F87EBA7986DA7FC45D7665C8F903B8704D0A196AAD7286E1966",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-70EF4CFDB103ED5B6F9C2DCD09542300839DA76E3DA3B1A24ABD84DADBEDC220",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-DCE18FF6948DE8967799C5A806EB41DB0B17BF1638B8A599216C2CC290909713",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-093E9B21F6B1E662A974E6C263E0791DDD87D032DF6403BDE8E0975BF11AA39E",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-258FE309BEE2AEAB9851C2B85FE2F1B65229406867D180D7F84D975D6DDE8134",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-044336899C3AD719572161F32356DFBD386B721EFA99ECA36B059C7A2374DA68",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-8BE41865A407C16F830D70F2715E27D0C676B0F0B8DD4CEC06417315776A8D29",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-CAF8256339C34BF98D28B480A4D0A9818D01E9B6DA88DD48BD2D6030320280F4",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-223C74996FD18DF5688766709CAAC600D184EB54E1221FDE7ED92E712354A19A",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-D43058984859BCF3B6825D99A84BBAAA9CED2BD44FD589506E850DCF452B3D25",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-4E850ABEE7DA97A8ECEF1D6A253AD919CF828270CF23C0B10FBC5C1B86758A71",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-BFF4CD7FD00742C92B49E6F5090D51A4ED942B39116F4F2CBBB68BE4D4E661F9",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-E1BF2E9417F3E58525EF2C0CF3135F277FBEA99CA5D604E6F4C1D41BB7CFF7D6",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-0C488E84D70135A19CA13114A53D862FFE89EC6FF1671CD039178AF68D8C35AA",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-266B2C516C4F6F4CBC6416D1EE073911B8CDF0F272D417B4B3FE3832405DBC02",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-ADA0A87DA059D0BF66DE543FAB643285A57E769B560C47D8BD2B5C94A730BF67",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-F57C3B4B2FCB564079C16D1588446BD67D963CF3D2D0C379F278358CD1FAD33A",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-9A329D4BBF8BD8BBB4D07B7C4BBDBB7599B73F4F38137E214AB97497AA48CAC9",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-320AD3F8CCA109FF9EEDA82922118E1A67CB72992A1351EE258AC7DFB9D8A95B",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-DEC05AEEE350AED6A2F9D685EF36FEBA52AE9FF07F3472479B800ECFFA94E149",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-F92E6A661834D18EF655A4F9146BC941CA4413A70C0523387A1961009C79FAC4",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-D09C3E31BD65BCCE551A748AF1B78696832561E9F2F919C8002961E5AC604CE7",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-8B598FBFF684BA9D1CEE650F75CEF0EF36EC523B445379C005D15378AC7C256A",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-3BBD5FC925B117CEC6245AEC55D36EAC9AC7C3FE64D6BC25A6C1E1A09120358E",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-A95CF3197EE846DE65551BD109FCF26B7A5166357664A97DBCB96D09F232B0A4",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-2E0F41AA499B51B905908D3E3B4F8E4C82536C0F45DD3E6948F50FAF8D1E4D3D",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-5E629196EDDE2A814C1C7FD4F4CEA7DCEA3BE44F1411C8C308DF0AC836B7A8FB",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-570C72DAC400ACC41477EE07FC7D1870DE6BECB6293C3C93175294F2C1907048",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-3A66A7A03B59196CF3E073C6CEE1076EB34F297E3CBDA7E03FD1CFD6CC8AB01E",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-4F49270DCEA60C0D9F44BC6123811C3DE8CCC18C9222E8C526F45ECE375B9FC7",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-0C5D04EE0401392CBE52250F0D16B67B8DC65CBA0E63AF9B93B1981D7477550D",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-C6D8AF6C89928E623B5C9FC68AFA9A3158EA1968A3075509944C16325DC10D60",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-BE1BB15EE8CA222A074777F615FB763CE9F2E4AE01560C733D0191B8F7B74007",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-0067B7C524DCAF99E26636657F537E0BFA2BF705B929071D959581B074979D73",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-825BED338534608E70ECC844A1795B4298B55B6D257D9ABF2B7C7D839A0BD76B",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-786FBBEEC30E1732AAA8DA0F59D3D30CF8F2950EB7778E476E1F20D2A0894405",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-473982FDA490689758337043A506051D247520B842050FBE6456418CF6741654",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-28FF40D15ADAC43DD4B9DB80E5C94F3820F5C281CD95C0C6C01374F4E4E139D0",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-B35C7B99F1469CE03434FE888EE4F7C1995BB4F2614C9AED801AD074F60EDC57",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-BF722EAF20CF5B5A7976BEB97EE1B3C7E4EE7430E361E9612B6065A04059941D",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-8312D5C9383A2DB47B88CA7762B14991F4CA93EBD40BAC3818CDEDA3A39B0699",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-71C54EF1C8DA4D8F4D82085F3E6DF9DD16109E2B8FD9C9F4ECD9F351CD7C5E67",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-3875A4489D036870F76049640DB71F57BEBF05C7DBA40382A0323E4FAE950B08",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-763D936F2AAAD5FB9E8A20C026CA3D32751CB2F2CCF45D2B9EA0A2A961FA2FB7",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-2B00140AFF7C89C2C0F7033FBBD1BA64241178F36EA664699A6F7FAC3D3A8008",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-FAFA72983CB5284690EFD638CFF66BB3741D282E2C463CD4EA644B3702A0E77E",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-75881016BD9AAFE26A657083717DCF6A90AA648B64A6343472415AA8B6ADE6EF",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-F6D3AC1A8712C92C071302471B71489A1227E3D55D00876437031A938A878C68",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-8AE0148B14411D8746F1F847BDA9350D7CC3FC9D58C7E64E170C3CBD77F97E02",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-098FADCB01CEB1326E6817ECE1B0C63E28E778027F2600D410523E6FBC45BA03",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-EB2508C666A417559E69EFF06A1932609FDB7803603EC401E7CC24087EF827B6",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-29EE0B69DD31E2EFC0983AD2A8B54C2B6696463E07390DAFBE420B1FE82FB31F",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-92917E7EE97A322F55EC19A07F19A91CC894BC83BEB04D2704682CD630032C6C",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-489930FDA7E98DE6FC171A686317E3658F783AE0EF6571F7D6E36BFA28835CE4",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-CC8563982E0DD35D4EAA5D731B84AE9B0CC56663B2F646B232BBF9962349CF0C",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-599F8BEF18F21A01FD13DCA60F95D7C6F33D0516266F3ACFB54A531D3DE4094C",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-54D882180C18C0AED863ED3B15CDA569940E12CD9C9EE42F0F27D9B87D8D57C8",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-C54FFB9578AE149221DB21A903D7191BB87BADE2805E8F889AA886CEE40EBA1C",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-3A9B9A245743A3638D3B0FFE35AB1FADA1D5BE93C0901B961507A1ACE49E4672",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-6902D247E9BD5206CA1344524C608D2E4F1ECDF5994CE7CD6FB3A9DA716B6757",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-F5B5980B1CF6C51F986E78BFDC52BD05CC77E71F06421731331C78BEB6F62E3D",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-DBA0EACCA85A46E91A7567F20D60695AF5D117996500EFA78FD8F82CB177F801",
+      "spdxElementId": "SPDXRef-RootPackage"
+    },
+    {
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-FBA0A2AC506A264A886FF03686ED110ECF6F9AF77889F9C1A8A275D05F9A52FD",
+      "spdxElementId": "SPDXRef-RootPackage"
+    }
+  ],
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "Azure Functions Node.js Worker 164009",
+  "documentNamespace": "https://sbom.microsoft/1:vB_F0XdED0q5n_yQEwCaWA:kgyn5ihBn0OAEjgv541jlg/10:164009/2wYklhdBt0mV4PinNnlBFA",
+  "creationInfo": {
+    "created": "2024-04-12T01:14:17Z",
+    "creators": [
+      "Organization: Microsoft",
+      "Tool: Microsoft.SBOMTool-2.2.4"
+    ]
+  },
+  "documentDescribes": [
+    "SPDXRef-RootPackage"
+  ]
+}

@@ -1,0 +1,3013 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Azure.Functions.PowerShellWorker</name>
+    </assembly>
+    <members>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.BackgroundDependencySnapshotMaintainer.InstallAndPurgeSnapshots(System.Func{System.Management.Automation.PowerShell},Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Returns the path for the new dependencies snapshot.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManager.Initialize(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage,Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Initializes the dependency manager:
+            - Parses functionAppRoot\requirements.psd1 file and creates a list of dependencies to install.
+            - Determines the snapshot directory path to use.
+            </summary>
+            <returns>
+            The dependency snapshot path where all the required dependencies are installed
+            or will be installed. This path can be added to PSModulePath.
+            Returns null if managed dependencies are disabled or the manifest does not have any dependencies declared.
+            </returns>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManager.StartDependencyInstallationIfNeeded(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage,System.Management.Automation.PowerShell,Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Start dependency installation if needed.
+            firstPowerShell is the first PowerShell instance created in this process (which this is important for local debugging),
+            and it _may_ be used to download modules.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManager.WaitForDependenciesAvailability(System.Func{Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger})">
+            <summary>
+            Waits for dependencies availability if necessary, returns immediately if
+            the dependencies are already available.
+            </summary>
+            <returns>True if waiting for dependencies installation was required.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManager.WaitForBackgroundDependencyInstallationTaskCompletion">
+            <summary>
+            For testing purposes only: wait for the background installation task completion.
+            </summary>
+            <returns>Returns the path for the new dependencies snapshot that the background task was installing.</returns>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManager.InstallFunctionAppDependencies(System.Management.Automation.PowerShell,System.Func{System.Management.Automation.PowerShell},Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Installs function app dependencies.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManifest.ParsePowerShellDataFile">
+            <summary>
+            Parses the given PowerShell (psd1) data file.
+            Returns a Hashtable representing the key value pairs.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencyManifest.ValidateModuleName(System.String)">
+            <summary>
+            Validate that the module name is not null or empty.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencySnapshotFolderNameTools.ConvertInstalledToInstalling(System.String)">
+            <summary>
+            Converts an _installed_ snapshot path to an _installing_ snapshot by
+            appending a postfix, so that that the resulting path follows a different
+            pattern and can be discovered using a different file mask.
+            For example, for the _installed_ path
+                ".../2107131600546921703.r"
+            the _installing_ path will be:
+                ".../2107131600546921703.ri"
+            This makes it possible to enumerate all the installed snapshots by using ".../*.r" mask,
+            and all the installing snapshots by using ".../*i" mask.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencySnapshotInstaller.GetCurrentAttemptMessage(System.Int32)">
+            <summary>
+            Returns the string representation of the given attempt number.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencySnapshotInstaller.GetModuleLatestPublishedVersion(System.String,System.String)">
+            <summary>
+            Gets the latest published module version for the given module name and major version.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencySnapshotPurger.SetCurrentlyUsedSnapshot(System.String,Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Set the path to the snapshot currently used by the current worker.
+            As long as there is any live worker that declared this snapshot as
+            being in use, this snapshot should not be purged by any worker.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.DependencySnapshotPurger.Purge(Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Remove unused snapshots.
+            A snapshot is considered unused if it has not been accessed for at least
+            (MDHeartbeatPeriod + MDOldSnapshotHeartbeatMargin) minutes.
+            However, the last MDMinNumberOfSnapshotsToKeep snapshots will be kept regardless
+            of the access time.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IBackgroundDependencySnapshotMaintainer.InstallAndPurgeSnapshots(System.Func{System.Management.Automation.PowerShell},Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Returns the path for the new dependencies snapshot.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IDependencySnapshotPurger.SetCurrentlyUsedSnapshot(System.String,Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Set the path to the snapshot currently used by the current worker.
+            As long as there is any live worker that declared this snapshot as
+            being in use, this snapshot should not be purged by any worker.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IDependencySnapshotPurger.Purge(Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger)">
+            <summary>
+            Remove unused snapshots.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IModuleProvider.GetLatestPublishedModuleVersion(System.String,System.String)">
+            <summary>
+            Returns the latest published module version for the given module name and major version.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IModuleProvider.SaveModule(System.Management.Automation.PowerShell,System.String,System.String,System.String)">
+            <summary>
+            Save the specified module locally.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.IModuleProvider.Cleanup(System.Management.Automation.PowerShell)">
+            <summary>
+            Clean up after installing modules.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.ManagedDependenciesPathDetector.GetManagedDependenciesPath(System.String)">
+            <summary>
+            Gets the Managed Dependencies folder path.
+            If we are running in Azure, the path is HOME\data\ManagedDependencies.
+            Otherwise, the path is LocalApplicationData\AzureFunctions\FunctionAppName\ManagedDependencies.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.PowerShellGalleryModuleProvider.GetLatestPublishedModuleVersion(System.String,System.String)">
+            <summary>
+            Returns the latest module version from the PSGallery for the given module name and major version.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.PowerShellGalleryModuleProvider.SaveModule(System.Management.Automation.PowerShell,System.String,System.String,System.String)">
+            <summary>
+            Save the specified module locally.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.PowerShellGalleryModuleProvider.Cleanup(System.Management.Automation.PowerShell)">
+            <summary>
+            Remove modules that might have been imported for the purpose
+            of saving modules from the PowerShell gallery.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.DependencyManagement.PowerShellModuleSnapshotTools.GetModuleVersionSubdirectories(System.String)">
+             <summary>
+             Returns all module version subdirectories, assuming that the directory structure follows
+             regular PowerShell conventions.
+            
+             For example, if PowerShell modules are installed into the "C:\Modules" directory
+             and the content of this directory looks like this:
+             
+                     C:\
+                         Modules\
+                             ModuleA\
+                                 1.0\
+                                     ...
+                                 2.1\
+                                     ...
+                             ModuleB\
+                                 1.3.2\
+                                     ...
+             then GetModuleVersionSubdirectories("C:\Modules") will return the following strings:
+             
+                 C:\Modules\ModuleA\1.0
+                 C:\Modules\ModuleA\2.1
+                 C:\Modules\ModuleB\1.3.2
+             
+             </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType">
+            <summary>
+            Action types
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallActivity">
+            <summary>
+            Call an activity function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallActivityWithRetry">
+            <summary>
+            Call an activity function with retry.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallSubOrchestrator">
+            <summary>
+            Call a sub-orchestration function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallSubOrchestratorWithRetry">
+            <summary>
+            Call a sub-orchestration function with retry.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.ContinueAsNew">
+            <summary>
+            Run the orchestration function as a loop.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CreateTimer">
+            <summary>
+            Create a timer.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.WaitForExternalEvent">
+            <summary>
+            Wait for an external event.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallEntity">
+            <summary>
+            Call an entity function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ActionType.CallHttp">
+            <summary>
+            Make an Http call.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityAction">
+            <summary>
+            An orchestration action that represents calling an activity function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityAction.FunctionName">
+            <summary>
+            The activity function name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityAction.Input">
+            <summary>
+            The input to the activity function.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityWithRetryAction">
+            <summary>
+            An orchestration action that represents calling an activity function with retry.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityWithRetryAction.FunctionName">
+            <summary>
+            The activity function name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityWithRetryAction.Input">
+            <summary>
+            The input to the activity function.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CallActivityWithRetryAction.RetryOptions">
+            <summary>
+            Retry options.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CreateDurableTimerAction">
+            <summary>
+            An orchestration action that represents creating a Durable timer.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CreateDurableTimerAction.FireAt">
+            <summary>
+            The DateTime at which the timer will fire.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.CreateDurableTimerAction.IsCanceled">
+            <summary>
+            Indicates whether the timer has been canceled.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ExternalEventAction">
+            <summary>
+            An orchestration action that represents listening for an external event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ExternalEventAction.ExternalEventName">
+            <summary>
+            The external event name.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.ExternalEventAction.Reason">
+            <summary>
+            Reason for the action. This field is necessary for the Durable extension to recognize the ExternalEventAction.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Actions.OrchestrationAction">
+            <summary>
+            Base class that represents an orchestration action.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.ActivityFailureException">
+            <summary>
+            Durable activity failure exception.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.InvokeDurableActivityCommand">
+            <summary>
+            Invoke a durable activity.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.InvokeDurableActivityCommand.FunctionName">
+            <summary>
+            Gets and sets the activity function name.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.InvokeDurableActivityCommand.Input">
+            <summary>
+            Gets and sets the input for an activity function.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.SetFunctionInvocationContextCommand">
+            <summary>
+            Set the orchestration context.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.SetFunctionInvocationContextCommand.DurableClient">
+            <summary>
+            The orchestration client.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StartDurableExternalEventListenerCommand">
+            <summary>
+            Start the Durable External Event Listener
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StartDurableExternalEventListenerCommand.EventName">
+            <summary>
+            Gets and sets the EventName of the external event to listen for
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StartDurableTimerCommand">
+            <summary>
+            Start the Durable Functions timer
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StartDurableTimerCommand.Duration">
+            <summary>
+            Gets and sets the duration of the Durable Timer.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StopDurableTimerCommand">
+            <summary>
+            Stop the Durable timeout task
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Durable.Commands.StopDurableTimerCommand.Task">
+            <summary>
+            Gets and sets the task to be stopped.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.ExecutionStarted">
+            <summary>
+            Orchestration execution has started event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.ExecutionCompleted">
+            <summary>
+            Orchestration execution has completed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.ExecutionFailed">
+            <summary>
+            Orchestration execution has failed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.ExecutionTerminated">
+            <summary>
+            Orchestration was terminated event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.TaskScheduled">
+            <summary>
+            Task Activity scheduled event 
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.TaskCompleted">
+            <summary>
+            Task Activity completed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.TaskFailed">
+            <summary>
+            Task Activity failed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.SubOrchestrationInstanceCreated">
+            <summary>
+            Sub Orchestration instance created event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.SubOrchestrationInstanceCompleted">
+            <summary>
+            Sub Orchestration instance completed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.SubOrchestrationInstanceFailed">
+            <summary>
+            Sub Orchestration instance failed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.TimerCreated">
+            <summary>
+            Timer created event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.TimerFired">
+            <summary>
+            Timer fired event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.OrchestratorStarted">
+            <summary>
+            Orchestration has started event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.OrchestratorCompleted">
+            <summary>
+            Orchestration has completed event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.EventSent">
+            <summary>
+            External Event sent by orchestration event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.EventRaised">
+            <summary>
+            External Event raised to orchestration event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.ContinueAsNew">
+            <summary>
+            Orchestration Continued as new event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.GenericEvent">
+            <summary>
+            Generic event for tracking event existence
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.HistoryEventType.HistoryState">
+            <summary>
+            Orchestration state history event
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationContext">
+            <summary>
+            Represent the context of an execution of an orchestration function.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationFailureException">
+            <summary>
+            OrchestrationFailureException should be propagated back to the Host when an orchestrator function
+            throws and does not handle an exception. The Durable Functions extension implementation requires
+            this exception message to contain the Json-serialized orchestration replay state after a special marker.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage">
+            <summary>
+            Represent an orchestration message to be sent to the host.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage.IsDone">
+            <summary>
+            Indicate whether the orchestration is done.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage.Actions">
+            <summary>
+            Orchestration actions to be taken.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage.Output">
+            <summary>
+            The output result of the orchestration function run.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage.Error">
+            <summary>
+            The orchestration error message.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.Durable.OrchestrationMessage.CustomStatus">
+            <summary>
+            Custom orchestration status.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Durable.DurableController">
+            <summary>
+            The main entry point for durable functions support.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.AzFunctionInfo">
+            <summary>
+            This type represents the metadata of an Azure PowerShell Function.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.AzFunctionInfo.#ctor(Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata)">
+            <summary>
+            Construct an object of AzFunctionInfo from the 'RpcFunctionMetadata'.
+            Necessary validations are done on the metadata and script.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.PSScriptParamInfo">
+            <summary>
+            Represent the metadata of a parameter declared in the PowerShell script.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo">
+            <summary>
+            A read-only type that represents a BindingInfo.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo.Type">
+            <summary>
+            The type of the binding.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo.Direction">
+            <summary>
+            The direction of the binding.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader">
+            <summary>
+            FunctionLoader holds metadata of functions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.GetFunctionInfo(System.String)">
+            <summary>
+            Query for function metadata can happen in parallel.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.IsLoaded(System.String)">
+            <summary>
+            Returns true if the function with the given functionId is already loaded.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.LoadFunction(Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest)">
+            <summary>
+            This method runs once per 'FunctionLoadRequest' during the code start of the worker.
+            It will always run synchronously because we process 'FunctionLoadRequest' synchronously.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.GetLoadedFunctions">
+            <summary>
+            Get all loaded functions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.ClearLoadedFunctions">
+            <summary>
+            Clear all loaded functions.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionLoader.SetupWellKnownPaths(Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest,System.String)">
+            <summary>
+            Setup the well known paths about the FunctionApp.
+            This method is called only once during the code start.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger.Log(System.Boolean,Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Types.Level,System.String,System.Exception)">
+             <param name="isUserOnlyLog">
+             isUserOnlyLog must be true when logging data that belongs to the user and may contain
+             secrets or PII, such as PowerShell streams produced by the Function code, console output
+             of external commands, etc.
+             Messages sent with isUserOnlyLog == true will be visible to the Function user only.
+             
+             isUserOnlyLog must be false when logging internal telemetry messages free of secrets and PII
+             for diagnostic and statistical purposes.
+             Messages sent with isUserOnlyLog == false will be visible to both the user and the service engineers.
+            
+             Regardless of the isUserOnlyLog value, all these messages will be available at the
+             usual locations (for example, the current Azure Portal implementation will show them on
+             the Logs tab under the Function source code, on the Monitor page under the Function,
+             and in the Application Insights logs). The only difference is that the messages written
+             with isUserOnlyLog == true will be available to the user, but not to the service engineers.
+             The messages written with isUserOnlyLog == false will also be sent to a location like an
+             internal log storage available to the service engineers.
+            
+             It is important to understand and strictly maintain this separation.
+             When in doubt, use isUserOnlyLog == true.
+             </param>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.RpcLogger.Log(System.Boolean,Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Types.Level,System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.TypeExtensions.ShouldConvertBodyFromJson(Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp)">
+            <summary>
+            The body should be deserialized from JSON automatically only if the HTTP request:
+              - does not have Content-Type header; or
+              - does have Content-Type header, and it contains 'application/json'.
+            Any other Content-Type is interpreted as an instruction to *not* deserialize the body.
+            In these cases, we should pass the body to the function code as is, without any attempt to deserialize.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.Utils.NewPwshInstance">
+            <summary>
+            Create a new PowerShell instance using our singleton InitialSessionState instance.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.Utils.CleanupGlobalVariables(System.Management.Automation.PowerShell)">
+            <summary>
+            Clean up the global variables added by the function invocation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.Utils.TransformInBindingValueAsNeeded(Microsoft.Azure.Functions.PowerShellWorker.PSScriptParamInfo,Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo,System.Object)">
+            <summary>
+            Helper method to do additional transformation on the input value based on the type constraints specified in the script.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Utility.Utils.TransformOutBindingValueAsNeeded(System.String,Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo,System.Object)">
+            <summary>
+            Helper method to do additional transformation on the output value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Messaging.MessagingStream.GetCurrentMessage">
+            <summary>
+            Get the current message.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Messaging.MessagingStream.MoveNext">
+            <summary>
+            Move to the next message.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Messaging.MessagingStream.Write(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage)">
+            <summary>
+            Write the outgoing message.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Messaging.MessagingStream.WriteImplAsync(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage)">
+            <summary>
+            Take a message from the buffer and write to the gRPC channel.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.ErrorRecordFormatter.Format(System.Management.Automation.ErrorRecord,System.Int32)">
+            <summary>
+            maxSize limits the maximum size of the formatted error string (in characters).
+            The rest will be truncated. This value should be high enough to allow the result
+            contain the most important and relevant information, but low enough to create
+            no problems for the communication channels used to propagate this data.
+            The default value is somewhat arbitrary but satisfies both conditions.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.InstanceId">
+            <summary>
+            Gets the Runspace InstanceId.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.Logger">
+            <summary>
+            Gets the associated logger.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.#ctor(Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger,System.Management.Automation.PowerShell,System.Int32)">
+            <summary>
+            Constructor for setting the basic fields.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.#ctor(Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger,System.Management.Automation.PowerShell)">
+            <summary>
+            Create a PowerShellManager instance but defer the Initialization.
+            </summary>
+            <remarks>
+            This constructor is only for creating the very first PowerShellManager instance.
+            The initialization work is deferred until all prerequisites are ready, such as
+            the dependent modules are downloaded and all Az functions are loaded.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.#ctor(Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger,System.Int32)">
+            <summary>
+            Create a PowerShellManager instance and initialize it.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.Initialize">
+            <summary>
+            Extra initialization of the Runspace.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.RegisterStreamEvents">
+            <summary>
+            Setup Stream event listeners.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.DeployAzFunctionToRunspace">
+            <summary>
+            Create the PowerShell function that is equivalent to the 'scriptFile' when possible.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.InvokeProfile(System.String)">
+            <summary>
+            This method invokes the FunctionApp's profile.ps1.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager.InvokeNonOrchestrationFunction(Microsoft.Azure.Functions.PowerShellWorker.Durable.DurableController,System.Collections.IDictionary)">
+            <summary>
+            Execution a function fired by a trigger or an activity function scheduled by an orchestration.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool">
+            <summary>
+            The PowerShellManager pool for the in-proc concurrency support.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool.UpperBound">
+            <summary>
+            Gets the concurrency upper bound.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool.#ctor(System.Func{Microsoft.Azure.Functions.PowerShellWorker.Utility.ILogger})">
+            <summary>
+            Constructor of the pool.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool.Initialize(System.Management.Automation.PowerShell)">
+            <summary>
+            Populate the pool with the very first PowerShellManager instance.
+            We instantiate PowerShellManager instances in a lazy way, starting from size 1 and increase the number of workers as needed.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool.CheckoutIdleWorker(System.String,System.String,System.String,System.Collections.ObjectModel.ReadOnlyDictionary{System.String,Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo})">
+            <summary>
+            Checkout an idle PowerShellManager instance in a non-blocking asynchronous way.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManagerPool.ReclaimUsedWorker(Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager)">
+            <summary>
+            Return a used PowerShellManager instance to the pool.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand">
+            <summary>
+            Gets the hashtable of the output bindings set so far.
+            </summary>
+            <remarks>
+            .EXAMPLE
+              PS > Get-OutputBinding
+              Gets the hashtable of all the output bindings set so far.
+            .EXAMPLE
+              PS > Get-OutputBinding -Name res
+              Gets the hashtable of specific output binding.
+            .EXAMPLE
+              PS > Get-OutputBinding -Name r*
+              Gets the hashtable of output bindings that match the wildcard.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand.Name">
+            <summary>
+            The name of the output binding you want to get. Supports wildcards.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand.Purge">
+            <summary>
+            Clear all stored output binding values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand.BeginProcessing">
+            <summary>
+            BeginProcessing override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand.ProcessRecord">
+            <summary>
+            ProcessRecord override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.GetOutputBindingCommand.EndProcessing">
+            <summary>
+            ProcessRecord override.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand">
+             <summary>
+             Sets the value for the specified output binding.
+             </summary>
+             <remarks>
+             When running in the Functions runtime, this cmdlet is aware of the output bindings
+             defined for the function that is invoking this cmdlet. Hence, it's able to decide
+             whether an output binding accepts singleton value only or a collection of values.
+            
+             For example, the HTTP output binding only accepts one response object, while the
+             queue output binding can accept one or multiple queue messages.
+            
+             With this knowledge, the 'Push-OutputBinding' cmdlet acts differently based on the
+             value specified for '-Name':
+            
+             - If the specified name cannot be resolved to a valid output binding, then an error
+               will be thrown;
+            
+             - If the output binding corresponding to that name accepts a collection of values,
+               then it's allowed to call 'Push-OutputBinding' with the same name repeatedly in
+               the function script to push multiple values;
+            
+             - If the output binding corresponding to that name only accepts a singleton value,
+               then the second time calling 'Push-OutputBinding' with that name will result in
+               an error, with detailed message about why it failed.
+            
+             .EXAMPLE
+               PS > Push-OutputBinding -Name response -Value "output #1"
+               The output binding of "response" will have the value of "output #1"
+             .EXAMPLE
+               PS > Push-OutputBinding -Name response -Value "output #2"
+               The output binding is 'http', which accepts a singleton value only.
+               So an error will be thrown from this second run.
+             .EXAMPLE
+               PS > Push-OutputBinding -Name response -Value "output #3" -Clobber
+               The output binding is 'http', which accepts a singleton value only.
+               But you can use '-Clobber' to override the old value.
+               The output binding of "response" will now have the value of "output #3"
+             .EXAMPLE
+               PS > Push-OutputBinding -Name outQueue -Value "output #1"
+               The output binding of "outQueue" will have the value of "output #1"
+             .EXAMPLE
+               PS > Push-OutputBinding -Name outQueue -Value "output #2"
+               The output binding is 'queue', which accepts multiple output values.
+               The output binding of "outQueue" will now have a list with 2 items: "output #1", "output #2"
+             .EXAMPLE
+               PS > Push-OutputBinding -Name outQueue -Value @("output #3", "output #4")
+               When the value is a collection, the collection will be unrolled and elements of the collection
+               will be added to the list. The output binding of "outQueue" will now have a list with 4 items:
+               "output #1", "output #2", "output #3", "output #4".
+             </remarks>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.Name">
+            <summary>
+            The name of the output binding you want to set.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.Value">
+            <summary>
+            The value of the output binding you want to set.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.Clobber">
+            <summary>
+            (Optional) If specified, will force the value to be set for a specified output binding.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.BeginProcessing">
+            <summary>
+            BeginProcessing override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.ProcessRecord">
+            <summary>
+            ProcessRecord override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.GetBindingInfo(System.String)">
+            <summary>
+            Helper private function that resolve the name to the corresponding binding information.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.GetDataCollectingBehavior(Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo)">
+            <summary>
+            Helper private function that maps an output binding to a data collecting behavior.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.PushOutputBindingCommand.MergeCollection(System.Object,System.Object)">
+             <summary>
+             Combine the new data with the existing data for a output binding with 'Collection' behavior.
+             Here is what this command does:
+             - when there is no existing data
+               - if the new data is considered enumerable by PowerShell,
+                 then all its elements get added to a List[object], and that list is returned.
+               - otherwise, the new data is returned intact.
+            
+             - when there is existing data
+               - if the existing data is a singleton, then a List[object] is created and the existing data
+                 is added to the list.
+               - otherwise, the existing data is already a List[object]
+               - Then, depending on whether the new data is enumerable or not, its elements or itself will also be added to the list.
+               - That list is returned.
+             </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Commands.TracePipelineObjectCommand">
+            <summary>
+            Writes the formatted output of the pipeline object to the information stream before passing the object down to the pipeline.
+            </summary>
+            <remarks>
+            This Cmdlet behaves like 'Tee-Object'.
+            An input pipeline object is first pushed through a steppable pipeline that consists of 'Out-String | Write-Information -Tags "__PipelineObject__"',
+            and then it's written out back to the pipeline without change. In this approach, we can intercept and trace the pipeline objects in a streaming way
+            and keep the objects in pipeline at the same time.
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.Commands.TracePipelineObjectCommand.InputObject">
+            <summary>
+            The object from pipeline.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.TracePipelineObjectCommand.BeginProcessing">
+            <summary>
+            BeginProcessing override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.TracePipelineObjectCommand.ProcessRecord">
+            <summary>
+            ProcessRecord override.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Commands.TracePipelineObjectCommand.EndProcessing">
+            <summary>
+            EndProcessing override.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.FunctionMetadata">
+            <summary>
+            Function metadata for the PowerShellWorker module to query.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionMetadata.GetOutputBindingInfo(System.Guid)">
+            <summary>
+            Get the binding metadata for the given Runspace instance id.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionMetadata.GetOutputBindingHashtable(System.Guid)">
+            <summary>
+            Get the Hashtable that is holding the output binding values for the given Runspace.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionMetadata.RegisterFunctionMetadata(System.Guid,System.Collections.ObjectModel.ReadOnlyDictionary{System.String,Microsoft.Azure.Functions.PowerShellWorker.ReadOnlyBindingInfo})">
+            <summary>
+            Helper method to set the output binding metadata for the function that is about to run.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.FunctionMetadata.UnregisterFunctionMetadata(System.Guid)">
+            <summary>
+            Helper method to clear the output binding metadata for the function that has done running.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext">
+            <summary>
+            Custom type represent the context of the in-coming Http request.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.#ctor">
+            <summary>
+            Constructor for HttpRequestContext.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Body">
+            <summary>
+            Gets the Body of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Headers">
+            <summary>
+            Gets the Headers of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Method">
+            <summary>
+            Gets the Method of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Url">
+            <summary>
+            Gets the Url of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Params">
+            <summary>
+            Gets the Params of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.Query">
+            <summary>
+            Gets the Query of the Http request.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpRequestContext.RawBody">
+            <summary>
+            Gets the RawBody of the Http request.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext">
+            <summary>
+            Custom type represent the context of the Http response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext.Body">
+            <summary>
+            Gets or sets the Body of the Http response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext.ContentType">
+            <summary>
+            Gets or sets the ContentType of the Http response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext.EnableContentNegotiation">
+            <summary>
+            Gets or sets the EnableContentNegotiation of the Http response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext.Headers">
+            <summary>
+            Gets or sets the Headers of the Http response.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.Functions.PowerShellWorker.HttpResponseContext.StatusCode">
+            <summary>
+            Gets or sets the StatusCode of the Http response.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.RetryContext">
+            <summary>
+            Custom RetryContext constructed from the RpcRetryContext member received from the host.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.TraceContext">
+            <summary>
+            Custom TraceContext constructed from the RpcTraceContext member received from the host.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.RequestProcessor.ProcessFunctionLoadRequest(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage)">
+            <summary>
+            Method to process a FunctionLoadRequest.
+            FunctionLoadRequest should be processed sequentially. There is no point to process FunctionLoadRequest
+            concurrently as a FunctionApp doesn't include a lot functions in general. Having this step sequential
+            will make the Runspace-level initialization easier and more predictable.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.RequestProcessor.ProcessInvocationRequest(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage)">
+            <summary>
+            Method to process a InvocationRequest.
+            This method checks out a worker from the pool, and then starts the actual invocation in a threadpool thread.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.RequestProcessor.ProcessInvocationRequestImpl(Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage,Microsoft.Azure.Functions.PowerShellWorker.AzFunctionInfo,Microsoft.Azure.Functions.PowerShellWorker.PowerShell.PowerShellManager,Microsoft.Azure.Functions.PowerShellWorker.Utility.FunctionInvocationPerformanceStopwatch)">
+            <summary>
+            Implementation method to actual invoke the corresponding function.
+            InvocationRequest messages are processed in parallel when there are multiple PowerShellManager instances in the pool.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.RequestProcessor.NewStreamingMessageTemplate(System.String,Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.ContentOneofCase,Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult@)">
+            <summary>
+            Create an object of 'StreamingMessage' as a template, for further update.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.RequestProcessor.BindOutputFromResult(Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse,Microsoft.Azure.Functions.PowerShellWorker.AzFunctionInfo,System.Collections.IDictionary)">
+            <summary>
+            Set the 'ReturnValue' and 'OutputData' based on the invocation results appropriately.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.Functions.PowerShellWorker.Worker">
+            <summary>
+            The PowerShell language worker for Azure Function
+            </summary>
+        </member>
+        <member name="M:Microsoft.Azure.Functions.PowerShellWorker.Worker.Main(System.String[])">
+            <summary>
+            Entry point of the language worker.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpcReflection">
+            <summary>Holder for reflection information generated from FunctionRpc.proto</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpcReflection.Descriptor">
+            <summary>File descriptor for FunctionRpc.proto</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcDataType">
+            <summary>
+            Specify which type of data is contained in the shared memory region being read
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.RequestIdFieldNumber">
+            <summary>Field number for the "request_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.RequestId">
+            <summary>
+            Used to identify message between host and worker
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.StartStreamFieldNumber">
+            <summary>Field number for the "start_stream" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.StartStream">
+            <summary>
+            Worker initiates stream
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerInitRequestFieldNumber">
+            <summary>Field number for the "worker_init_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerInitRequest">
+            <summary>
+            Host sends capabilities/init data to worker
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerInitResponseFieldNumber">
+            <summary>Field number for the "worker_init_response" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerInitResponse">
+            <summary>
+            Worker responds after initializing with its capabilities &amp; status
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerHeartbeatFieldNumber">
+            <summary>Field number for the "worker_heartbeat" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerHeartbeat">
+            <summary>
+            Worker periodically sends empty heartbeat message to host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerTerminateFieldNumber">
+            <summary>Field number for the "worker_terminate" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerTerminate">
+            <summary>
+            Host sends terminate message to worker.
+            Worker terminates if it can, otherwise host terminates after a grace period
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerStatusRequestFieldNumber">
+            <summary>Field number for the "worker_status_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerStatusRequest">
+            <summary>
+            Host periodically sends status request to the worker
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerStatusResponseFieldNumber">
+            <summary>Field number for the "worker_status_response" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FileChangeEventRequestFieldNumber">
+            <summary>Field number for the "file_change_event_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FileChangeEventRequest">
+            <summary>
+            On file change event, host sends notification to worker
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerActionResponseFieldNumber">
+            <summary>Field number for the "worker_action_response" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.WorkerActionResponse">
+            <summary>
+            Worker requests a desired action (restart worker, reload function)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadRequestFieldNumber">
+            <summary>Field number for the "function_load_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadRequest">
+            <summary>
+            Host sends required metadata to worker to load function
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadResponseFieldNumber">
+            <summary>Field number for the "function_load_response" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadResponse">
+            <summary>
+            Worker responds after loading with the load result
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationRequestFieldNumber">
+            <summary>Field number for the "invocation_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationRequest">
+            <summary>
+            Host requests a given invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationResponseFieldNumber">
+            <summary>Field number for the "invocation_response" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationResponse">
+            <summary>
+            Worker responds to a given invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationCancelFieldNumber">
+            <summary>Field number for the "invocation_cancel" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.InvocationCancel">
+            <summary>
+            Host sends cancel message to attempt to cancel an invocation.
+            If an invocation is cancelled, host will receive an invocation response with status cancelled.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.RpcLogFieldNumber">
+            <summary>Field number for the "rpc_log" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.RpcLog">
+            <summary>
+            Worker logs a message back to the host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionEnvironmentReloadRequestFieldNumber">
+            <summary>Field number for the "function_environment_reload_request" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionEnvironmentReloadResponseFieldNumber">
+            <summary>Field number for the "function_environment_reload_response" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.CloseSharedMemoryResourcesRequestFieldNumber">
+            <summary>Field number for the "close_shared_memory_resources_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.CloseSharedMemoryResourcesRequest">
+            <summary>
+            Ask the worker to close any open shared memory resources for a given invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.CloseSharedMemoryResourcesResponseFieldNumber">
+            <summary>Field number for the "close_shared_memory_resources_response" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionsMetadataRequestFieldNumber">
+            <summary>Field number for the "functions_metadata_request" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionsMetadataRequest">
+            <summary>
+            Worker indexing message types
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionMetadataResponseFieldNumber">
+            <summary>Field number for the "function_metadata_response" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadRequestCollectionFieldNumber">
+            <summary>Field number for the "function_load_request_collection" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadRequestCollection">
+            <summary>
+            Host sends required metadata to worker to load functions
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadResponseCollectionFieldNumber">
+            <summary>Field number for the "function_load_response_collection" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.FunctionLoadResponseCollection">
+            <summary>
+            Host gets the list of function load responses
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StreamingMessage.ContentOneofCase">
+            <summary>Enum of possible cases for the "content" oneof.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StartStream">
+            <summary>
+            Worker sends the host information identifying itself
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StartStream.WorkerIdFieldNumber">
+            <summary>Field number for the "worker_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StartStream.WorkerId">
+            <summary>
+            id of the worker
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest">
+            <summary>
+            Host requests the worker to initialize itself
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.HostVersionFieldNumber">
+            <summary>Field number for the "host_version" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.HostVersion">
+            <summary>
+            version of the host sending init request
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.CapabilitiesFieldNumber">
+            <summary>Field number for the "capabilities" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.Capabilities">
+            <summary>
+            A map of host supported features/capabilities
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.LogCategoriesFieldNumber">
+            <summary>Field number for the "log_categories" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.LogCategories">
+            <summary>
+            inform worker of supported categories and their levels
+            i.e. Worker = Verbose, Function.MyFunc = None
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.WorkerDirectoryFieldNumber">
+            <summary>Field number for the "worker_directory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.WorkerDirectory">
+            <summary>
+            Full path of worker.config.json location
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.FunctionAppDirectoryFieldNumber">
+            <summary>Field number for the "function_app_directory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitRequest.FunctionAppDirectory">
+            <summary>
+            base directory for function app
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse">
+            <summary>
+            Worker responds with the result of initializing itself
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.WorkerVersionFieldNumber">
+            <summary>Field number for the "worker_version" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.WorkerVersion">
+            <summary>
+            NOT USED
+            TODO: Remove from protobuf during next breaking change release
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.CapabilitiesFieldNumber">
+            <summary>Field number for the "capabilities" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.Capabilities">
+            <summary>
+            A map of worker supported features/capabilities
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.Result">
+            <summary>
+            Status of the response
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.WorkerMetadataFieldNumber">
+            <summary>Field number for the "worker_metadata" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerInitResponse.WorkerMetadata">
+            <summary>
+            Worker metadata captured for telemetry purposes
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.RuntimeNameFieldNumber">
+            <summary>Field number for the "runtime_name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.RuntimeName">
+            <summary>
+            The runtime/stack name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.RuntimeVersionFieldNumber">
+            <summary>Field number for the "runtime_version" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.RuntimeVersion">
+            <summary>
+            The version of the runtime/stack
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.WorkerVersionFieldNumber">
+            <summary>Field number for the "worker_version" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.WorkerVersion">
+            <summary>
+            The version of the worker
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.WorkerBitnessFieldNumber">
+            <summary>Field number for the "worker_bitness" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.WorkerBitness">
+            <summary>
+            The worker bitness/architecture
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.CustomPropertiesFieldNumber">
+            <summary>Field number for the "custom_properties" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerMetadata.CustomProperties">
+            <summary>
+            Optional additional custom properties
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult">
+            <summary>
+            Used by the host to determine success/failure/cancellation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.StatusFieldNumber">
+            <summary>Field number for the "status" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Status">
+            <summary>
+            Status for the given result
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Result">
+            <summary>
+            Specific message about the result
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.ExceptionFieldNumber">
+            <summary>Field number for the "exception" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Exception">
+            <summary>
+            Exception message (if exists) for the status
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.LogsFieldNumber">
+            <summary>Field number for the "logs" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Logs">
+            <summary>
+            Captured logs or relevant details can use the logs property
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Types">
+            <summary>Container for nested types declared in the StatusResult message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.StatusResult.Types.Status">
+            <summary>
+            Indicates Failure/Success/Cancelled
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerHeartbeat">
+            <summary>
+            NOT USED
+            TODO: Remove from protobuf during next breaking change release
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerTerminate">
+            <summary>
+            Warning before killing the process after grace_period
+            Worker self terminates ..no response on this
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerTerminate.GracePeriodFieldNumber">
+            <summary>Field number for the "grace_period" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest">
+            <summary>
+            Host notifies worker of file content change
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.Type">
+            <summary>
+            type for this event
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.FullPathFieldNumber">
+            <summary>Field number for the "full_path" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.FullPath">
+            <summary>
+            full file path for the file change notification
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.Name">
+            <summary>
+            Name of the function affected
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.Types">
+            <summary>Container for nested types declared in the FileChangeEventRequest message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FileChangeEventRequest.Types.Type">
+            <summary>
+            Types of File change operations (See link for more info: https://msdn.microsoft.com/en-us/library/t6xf43e0(v=vs.110).aspx)
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse">
+            <summary>
+            Indicates whether worker reloaded successfully or needs a restart
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.ActionFieldNumber">
+            <summary>Field number for the "action" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.Action">
+            <summary>
+            action for this response
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.ReasonFieldNumber">
+            <summary>Field number for the "reason" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.Reason">
+            <summary>
+            text reason for the response
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.Types">
+            <summary>Container for nested types declared in the WorkerActionResponse message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerActionResponse.Types.Action">
+            <summary>
+            indicates whether a restart is needed, or reload successfully
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerStatusRequest">
+            <summary>
+            Used by the host to determine worker health
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.WorkerStatusResponse">
+            <summary>
+            Worker responds with status message
+            TODO: Add any worker relevant status to response
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadRequest.EnvironmentVariablesFieldNumber">
+            <summary>Field number for the "environment_variables" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadRequest.EnvironmentVariables">
+            <summary>
+            Environment variables from the current process
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadRequest.FunctionAppDirectoryFieldNumber">
+            <summary>Field number for the "function_app_directory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadRequest.FunctionAppDirectory">
+            <summary>
+            Current directory of function app
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadResponse.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionEnvironmentReloadResponse.Result">
+            <summary>
+            Status of the response
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CloseSharedMemoryResourcesRequest">
+            <summary>
+            Tell the out-of-proc worker to close any shared memory maps it allocated for given invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CloseSharedMemoryResourcesRequest.MapNamesFieldNumber">
+            <summary>Field number for the "map_names" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CloseSharedMemoryResourcesResponse">
+            <summary>
+            Response from the worker indicating which of the shared memory maps have been successfully closed and which have not been closed
+            The key (string) is the map name and the value (bool) is true if it was closed, false if not
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CloseSharedMemoryResourcesResponse.CloseMapResultsFieldNumber">
+            <summary>Field number for the "close_map_results" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequestCollection">
+            <summary>
+            Host tells the worker to load a list of Functions
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequestCollection.FunctionLoadRequestsFieldNumber">
+            <summary>Field number for the "function_load_requests" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponseCollection">
+            <summary>
+            Host gets the list of function load responses
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponseCollection.FunctionLoadResponsesFieldNumber">
+            <summary>Field number for the "function_load_responses" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest">
+            <summary>
+            Load request of a single Function
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.FunctionIdFieldNumber">
+            <summary>Field number for the "function_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.FunctionId">
+            <summary>
+            unique function identifier (avoid name collisions, facilitate reload case)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.MetadataFieldNumber">
+            <summary>Field number for the "metadata" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.Metadata">
+            <summary>
+            Metadata for the request
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.ManagedDependencyEnabledFieldNumber">
+            <summary>Field number for the "managed_dependency_enabled" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadRequest.ManagedDependencyEnabled">
+            <summary>
+            A flag indicating if managed dependency is enabled or not
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse">
+            <summary>
+            Worker tells host result of reload
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.FunctionIdFieldNumber">
+            <summary>Field number for the "function_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.FunctionId">
+            <summary>
+            unique function identifier
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.Result">
+            <summary>
+            Result of load operation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.IsDependencyDownloadedFieldNumber">
+            <summary>Field number for the "is_dependency_downloaded" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionLoadResponse.IsDependencyDownloaded">
+            <summary>
+            Result of load operation
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata">
+            <summary>
+            Information on how a Function should be loaded and its bindings
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Name">
+            <summary>
+            TODO: do we want the host's name - the language worker might do a better job of assignment than the host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.DirectoryFieldNumber">
+            <summary>Field number for the "directory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Directory">
+            <summary>
+            base directory for the Function
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.ScriptFileFieldNumber">
+            <summary>Field number for the "script_file" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.ScriptFile">
+            <summary>
+            Script file specified
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.EntryPointFieldNumber">
+            <summary>Field number for the "entry_point" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.EntryPoint">
+            <summary>
+            Entry point specified
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.BindingsFieldNumber">
+            <summary>Field number for the "bindings" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Bindings">
+            <summary>
+            Bindings info
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.IsProxyFieldNumber">
+            <summary>Field number for the "is_proxy" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.IsProxy">
+            <summary>
+            Is set to true for proxy
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.StatusFieldNumber">
+            <summary>Field number for the "status" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Status">
+            <summary>
+            Function indexing status
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.LanguageFieldNumber">
+            <summary>Field number for the "language" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Language">
+            <summary>
+            Function language
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.RawBindingsFieldNumber">
+            <summary>Field number for the "raw_bindings" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.RawBindings">
+            <summary>
+            Raw binding info
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.FunctionIdFieldNumber">
+            <summary>Field number for the "function_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.FunctionId">
+            <summary>
+            unique function identifier (avoid name collisions, facilitate reload case)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.ManagedDependencyEnabledFieldNumber">
+            <summary>Field number for the "managed_dependency_enabled" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.ManagedDependencyEnabled">
+            <summary>
+            A flag indicating if managed dependency is enabled or not
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.PropertiesFieldNumber">
+            <summary>Field number for the "Properties" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcFunctionMetadata.Properties">
+            <summary>
+            Properties for function metadata
+            They're usually specific to a worker and largely passed along to the controller API for use
+            outside the host
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionsMetadataRequest">
+            <summary>
+            Host tells worker it is ready to receive metadata
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionsMetadataRequest.FunctionAppDirectoryFieldNumber">
+            <summary>Field number for the "function_app_directory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionsMetadataRequest.FunctionAppDirectory">
+            <summary>
+            base directory for function app
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse">
+            <summary>
+            Worker sends function metadata back to host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.FunctionMetadataResultsFieldNumber">
+            <summary>Field number for the "function_metadata_results" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.FunctionMetadataResults">
+            <summary>
+            list of function indexing responses
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.Result">
+            <summary>
+            status of overall metadata request
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.UseDefaultMetadataIndexingFieldNumber">
+            <summary>Field number for the "use_default_metadata_indexing" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionMetadataResponse.UseDefaultMetadataIndexing">
+            <summary>
+            if set to true then host will perform indexing
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest">
+            <summary>
+            Host requests worker to invoke a Function
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.InvocationIdFieldNumber">
+            <summary>Field number for the "invocation_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.InvocationId">
+            <summary>
+            Unique id for each invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.FunctionIdFieldNumber">
+            <summary>Field number for the "function_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.FunctionId">
+            <summary>
+            Unique id for each Function
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.InputDataFieldNumber">
+            <summary>Field number for the "input_data" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.InputData">
+            <summary>
+            Input bindings (include trigger)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.TriggerMetadataFieldNumber">
+            <summary>Field number for the "trigger_metadata" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.TriggerMetadata">
+            <summary>
+            binding metadata from trigger
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.TraceContextFieldNumber">
+            <summary>Field number for the "trace_context" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.TraceContext">
+            <summary>
+            Populates activityId, tracestate and tags from host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.RetryContextFieldNumber">
+            <summary>Field number for the "retry_context" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationRequest.RetryContext">
+            <summary>
+            Current retry context
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext">
+            <summary>
+            Host sends ActivityId, traceStateString and Tags from host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.TraceParentFieldNumber">
+            <summary>Field number for the "trace_parent" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.TraceParent">
+            <summary>
+            This corresponds to Activity.Current?.Id
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.TraceStateFieldNumber">
+            <summary>Field number for the "trace_state" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.TraceState">
+            <summary>
+            This corresponds to Activity.Current?.TraceStateString
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.AttributesFieldNumber">
+            <summary>Field number for the "attributes" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcTraceContext.Attributes">
+            <summary>
+            This corresponds to Activity.Current?.Tags
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext">
+            <summary>
+            Host sends retry context for a function invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.RetryCountFieldNumber">
+            <summary>Field number for the "retry_count" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.RetryCount">
+            <summary>
+            Current retry count
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.MaxRetryCountFieldNumber">
+            <summary>Field number for the "max_retry_count" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.MaxRetryCount">
+            <summary>
+            Max retry count
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.ExceptionFieldNumber">
+            <summary>Field number for the "exception" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RetryContext.Exception">
+            <summary>
+            Exception that caused the retry
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationCancel">
+            <summary>
+            Host requests worker to cancel invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationCancel.InvocationIdFieldNumber">
+            <summary>Field number for the "invocation_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationCancel.InvocationId">
+            <summary>
+            Unique id for invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationCancel.GracePeriodFieldNumber">
+            <summary>Field number for the "grace_period" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationCancel.GracePeriod">
+            <summary>
+            Time period before force shutdown
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse">
+            <summary>
+            Worker responds with status of Invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.InvocationIdFieldNumber">
+            <summary>Field number for the "invocation_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.InvocationId">
+            <summary>
+            Unique id for invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.OutputDataFieldNumber">
+            <summary>Field number for the "output_data" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.OutputData">
+            <summary>
+            Output binding data
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.ReturnValueFieldNumber">
+            <summary>Field number for the "return_value" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.ReturnValue">
+            <summary>
+            data returned from Function (for $return and triggers with return support)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.ResultFieldNumber">
+            <summary>Field number for the "result" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.InvocationResponse.Result">
+            <summary>
+            Status of the invocation (success/failure/canceled)
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData">
+            <summary>
+            Used to encapsulate data which could be a variety of types
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.StringFieldNumber">
+            <summary>Field number for the "string" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.JsonFieldNumber">
+            <summary>Field number for the "json" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.BytesFieldNumber">
+            <summary>Field number for the "bytes" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.StreamFieldNumber">
+            <summary>Field number for the "stream" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.HttpFieldNumber">
+            <summary>Field number for the "http" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.IntFieldNumber">
+            <summary>Field number for the "int" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.DoubleFieldNumber">
+            <summary>Field number for the "double" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.CollectionBytesFieldNumber">
+            <summary>Field number for the "collection_bytes" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.CollectionStringFieldNumber">
+            <summary>Field number for the "collection_string" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.CollectionDoubleFieldNumber">
+            <summary>Field number for the "collection_double" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.CollectionSint64FieldNumber">
+            <summary>Field number for the "collection_sint64" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.TypedData.DataOneofCase">
+            <summary>Enum of possible cases for the "data" oneof.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory">
+            <summary>
+            Used to provide metadata about shared memory region to read data from
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.Name">
+            <summary>
+            Name of the shared memory map containing data
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.OffsetFieldNumber">
+            <summary>Field number for the "offset" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.Offset">
+            <summary>
+            Offset in the shared memory map to start reading data from
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.CountFieldNumber">
+            <summary>Field number for the "count" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.Count">
+            <summary>
+            Number of bytes to read (starting from the offset)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcSharedMemory.Type">
+            <summary>
+            Final type to which the read data (in bytes) is to be interpreted as
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionString">
+            <summary>
+            Used to encapsulate collection string
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionString.StringFieldNumber">
+            <summary>Field number for the "string" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionBytes">
+            <summary>
+            Used to encapsulate collection bytes
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionBytes.BytesFieldNumber">
+            <summary>Field number for the "bytes" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionDouble">
+            <summary>
+            Used to encapsulate collection double
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionDouble.DoubleFieldNumber">
+            <summary>Field number for the "double" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionSInt64">
+            <summary>
+            Used to encapsulate collection sint64
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.CollectionSInt64.Sint64FieldNumber">
+            <summary>Field number for the "sint64" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding">
+            <summary>
+            Used to describe a given binding on invocation
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.Name">
+            <summary>
+            Name for the binding
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.DataFieldNumber">
+            <summary>Field number for the "data" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.Data">
+            <summary>
+            Data for the binding
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.RpcSharedMemoryFieldNumber">
+            <summary>Field number for the "rpc_shared_memory" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.RpcSharedMemory">
+            <summary>
+            Metadata about the shared memory region to read data from
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.ParameterBinding.RpcDataOneofCase">
+            <summary>Enum of possible cases for the "rpc_data" oneof.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo">
+            <summary>
+            Used to describe a given binding on load
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.Type">
+            <summary>
+            Type of binding (e.g. HttpTrigger)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.DirectionFieldNumber">
+            <summary>Field number for the "direction" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.Direction">
+            <summary>
+            Direction of the given binding
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.DataTypeFieldNumber">
+            <summary>Field number for the "data_type" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.Types">
+            <summary>Container for nested types declared in the BindingInfo message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.Types.Direction">
+            <summary>
+            Indicates whether it is an input or output binding (or a fancy inout binding)
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.BindingInfo.Types.DataType">
+            <summary>
+            Indicates the type of the data for the binding
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog">
+            <summary>
+            Used to send logs back to the Host
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.InvocationIdFieldNumber">
+            <summary>Field number for the "invocation_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.InvocationId">
+            <summary>
+            Unique id for invocation (if exists)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.CategoryFieldNumber">
+            <summary>Field number for the "category" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Category">
+            <summary>
+            TOD: This should be an enum
+            Category for the log (startup, load, invocation, etc.)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.LevelFieldNumber">
+            <summary>Field number for the "level" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Level">
+            <summary>
+            Level for the given log message
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.MessageFieldNumber">
+            <summary>Field number for the "message" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Message">
+            <summary>
+            Message for the given log
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.EventIdFieldNumber">
+            <summary>Field number for the "event_id" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.EventId">
+            <summary>
+            Id for the even associated with this log (if exists)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.ExceptionFieldNumber">
+            <summary>Field number for the "exception" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Exception">
+            <summary>
+            Exception (if exists)
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.PropertiesFieldNumber">
+            <summary>Field number for the "properties" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Properties">
+            <summary>
+            json serialized property bag
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.LogCategoryFieldNumber">
+            <summary>Field number for the "log_category" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.LogCategory">
+            <summary>
+            Category of the log. Either user(default), system, or custom metric.
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.PropertiesMapFieldNumber">
+            <summary>Field number for the "propertiesMap" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.PropertiesMap">
+            <summary>
+            strongly-typed (ish) property bag
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Types">
+            <summary>Container for nested types declared in the RpcLog message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Types.Level">
+            <summary>
+            Matching ILogger semantics
+            https://github.com/aspnet/Logging/blob/9506ccc3f3491488fe88010ef8b9eb64594abf95/src/Microsoft.Extensions.Logging/Logger.cs
+            Level for the Log
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcLog.Types.RpcLogCategory">
+            <summary>
+            Category of the log. Defaults to User if not specified.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException">
+            <summary>
+            Encapsulates an Exception
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.SourceFieldNumber">
+            <summary>Field number for the "source" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.Source">
+            <summary>
+            Source of the exception
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.StackTraceFieldNumber">
+            <summary>Field number for the "stack_trace" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.StackTrace">
+            <summary>
+            Stack trace for the exception
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.MessageFieldNumber">
+            <summary>Field number for the "message" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.Message">
+            <summary>
+            Textual message describing the exception
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.IsUserExceptionFieldNumber">
+            <summary>Field number for the "is_user_exception" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.IsUserException">
+            <summary>
+            Worker specifies whether exception is a user exception, 
+            for purpose of application insights logging. Defaults to false. 
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcException.Type">
+            <summary>
+            Type of exception. If it's a user exception, the type is passed along to app insights.
+            Otherwise, it's ignored for now.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie">
+            <summary>
+            Http cookie type. Note that only name and value are used for Http requests
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.NameFieldNumber">
+            <summary>Field number for the "name" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Name">
+            <summary>
+            Cookie name
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Value">
+            <summary>
+            Cookie value
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.DomainFieldNumber">
+            <summary>Field number for the "domain" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Domain">
+            <summary>
+            Specifies allowed hosts to receive the cookie
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.PathFieldNumber">
+            <summary>Field number for the "path" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Path">
+            <summary>
+            Specifies URL path that must exist in the requested URL
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.ExpiresFieldNumber">
+            <summary>Field number for the "expires" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Expires">
+            <summary>
+            Sets the cookie to expire at a specific date instead of when the client closes.
+            It is generally recommended that you use "Max-Age" over "Expires".
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.SecureFieldNumber">
+            <summary>Field number for the "secure" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Secure">
+            <summary>
+            Sets the cookie to only be sent with an encrypted request
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.HttpOnlyFieldNumber">
+            <summary>Field number for the "http_only" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.HttpOnly">
+            <summary>
+            Sets the cookie to be inaccessible to JavaScript's Document.cookie API
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.SameSiteFieldNumber">
+            <summary>Field number for the "same_site" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.SameSite">
+            <summary>
+            Allows servers to assert that a cookie ought not to be sent along with cross-site requests
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.MaxAgeFieldNumber">
+            <summary>Field number for the "max_age" field.</summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.MaxAge">
+            <summary>
+            Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Types">
+            <summary>Container for nested types declared in the RpcHttpCookie message type.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttpCookie.Types.SameSite">
+            <summary>
+            Enum that lets servers require that a cookie shouldn't be sent with cross-site requests
+            </summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp">
+            <summary>
+            TODO - solidify this or remove it
+            </summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.MethodFieldNumber">
+            <summary>Field number for the "method" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.UrlFieldNumber">
+            <summary>Field number for the "url" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.HeadersFieldNumber">
+            <summary>Field number for the "headers" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.BodyFieldNumber">
+            <summary>Field number for the "body" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.ParamsFieldNumber">
+            <summary>Field number for the "params" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.StatusCodeFieldNumber">
+            <summary>Field number for the "status_code" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.QueryFieldNumber">
+            <summary>Field number for the "query" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.EnableContentNegotiationFieldNumber">
+            <summary>Field number for the "enable_content_negotiation" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.RawBodyFieldNumber">
+            <summary>Field number for the "rawBody" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.IdentitiesFieldNumber">
+            <summary>Field number for the "identities" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.CookiesFieldNumber">
+            <summary>Field number for the "cookies" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.NullableHeadersFieldNumber">
+            <summary>Field number for the "nullable_headers" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.NullableParamsFieldNumber">
+            <summary>Field number for the "nullable_params" field.</summary>
+        </member>
+        <member name="F:Microsoft.Azure.WebJobs.Script.Grpc.Messages.RpcHttp.NullableQueryFieldNumber">
+            <summary>Field number for the "nullable_query" field.</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc">
+            <summary>
+            Interface exported by the server.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcBase">
+            <summary>Base class for server-side implementations of FunctionRpc</summary>
+        </member>
+        <member name="T:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient">
+            <summary>Client for FunctionRpc</summary>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for FunctionRpc</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for FunctionRpc that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.BindService(Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.BindService(Grpc.Core.ServiceBinderBase,Microsoft.Azure.WebJobs.Script.Grpc.Messages.FunctionRpc.FunctionRpcBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the  service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:PowerShellWorkerStrings">
+            <summary>
+            A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ResourceManager">
+            <summary>
+            Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.Culture">
+            <summary>
+            Overrides the current threads CurrentUICulture property for all
+            resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.PowerShellWorkerVersion">
+            <summary>
+            Looks up a localized string similar to 
+              Azure Functions PowerShell Worker version [{0}].
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.RequireEntryPointForScriptModule">
+            <summary>
+            Looks up a localized string similar to 
+              The 'entryPoint' property needs to be specified when 'scriptFile' points to a PowerShell module script file (.psm1).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.InvalidEntryPointForScriptFile">
+            <summary>
+            Looks up a localized string similar to 
+              The 'entryPoint' property is supported only if 'scriptFile' points to a PowerShell module script file (.psm1).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.InOutBindingNotSupported">
+            <summary>
+            Looks up a localized string similar to 
+              The binding '{0}' is declared with 'InOut' direction, which is not supported by PowerShell functions.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.MissingParameter">
+            <summary>
+            Looks up a localized string similar to 
+              No parameter defined in the script or function for the input binding '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.UnknownParameter">
+            <summary>
+            Looks up a localized string similar to 
+              No input binding defined for the parameter '{0}' that is declared in the script or function.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToParseScript">
+            <summary>
+            Looks up a localized string similar to 
+              The script file '{0}' has parsing errors:\n{1}
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.CannotFindEntryPoint">
+            <summary>
+            Looks up a localized string similar to 
+              Cannot find the function '{0}' defined in '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.MultipleEntryPointFound">
+            <summary>
+            Looks up a localized string similar to 
+              More than one functions named '{0}' are found in '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionNotLoaded">
+            <summary>
+            Looks up a localized string similar to 
+              Function with the ID '{0}' was not loaded.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionAppRootNotResolved">
+            <summary>
+            Looks up a localized string similar to 
+              The function app root hasn't been resolved yet!
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FileNotFound">
+            <summary>
+            Looks up a localized string similar to 
+              No '{0}' is found at the function app root folder: {1}.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ErrorsWhileExecutingProfile">
+            <summary>
+            Looks up a localized string similar to 
+              Errors reported while executing profile.ps1. See logs for detailed errors. Profile location: {0}.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.UnsupportedMessage">
+            <summary>
+            Looks up a localized string similar to 
+              Unsupported message type: {0}.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToConvertToHttpResponseContext">
+            <summary>
+            Looks up a localized string similar to 
+              The given value for the 'http' output binding '{0}' cannot be converted to the type 'HttpResponseContext'. The conversion failed with the following error: {1}
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.SpecifiedCustomPipeName">
+            <summary>
+            Looks up a localized string similar to 
+              Custom pipe name specified. You can attach to the process by using vscode or by running `Enter-PSHostProcess -CustomPipeName {0}`
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToGetModuleLatestVersion">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to get latest version for module '{0}' with major version '{1}'. {2} 
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionAppDoesNotHaveRequiredModulesToInstall">
+            <summary>
+            Looks up a localized string similar to 
+              Function app does have required modules to install.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependencyNameIsNullOrEmpty">
+            <summary>
+            Looks up a localized string similar to 
+              Dependency name is null or empty.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.StartedInstallingModule">
+            <summary>
+            Looks up a localized string similar to 
+              Started installing module '{0}' version '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ModuleHasBeenInstalled">
+            <summary>
+            Looks up a localized string similar to 
+              Module name '{0}' version '{1}' has been installed. Module installation completed in {2} ms.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.AcceptableFunctionAppDependenciesAlreadyInstalled">
+            <summary>
+            Looks up a localized string similar to 
+              The function app has existing dependencies installed. Updating the dependencies to the latest versions will be performed in the background. New function app instances will pick up any new dependencies.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.InvalidPowerShellDataFile">
+            <summary>
+            Looks up a localized string similar to 
+              The PowerShell data file '{0}' is invalid since it cannot be evaluated into a Hashtable object.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.InvalidVersionFormat">
+            <summary>
+            Looks up a localized string similar to 
+              Version specification '{0}' is not in the correct format. Please specify the exact version or use the following notation: '{1}'
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToInstallFuncAppDependencies">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to install function app dependencies. Error: '{0}'
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToResolveHomeDirectory">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to resolve '{0}' path in App Service.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.InstallingFunctionAppRequiredModules">
+            <summary>
+            Looks up a localized string similar to 
+              Installing function app required modules to '{0}' (installation mode: {1}).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.LogConcurrencyUpperBound">
+            <summary>
+            Looks up a localized string similar to 
+              The enforced concurrency level (pool size limit) is '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.LogNewPowerShellManagerCreated">
+            <summary>
+            Looks up a localized string similar to 
+              A new PowerShell manager instance is added to the pool. Current pool size '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependencyDownloadInProgress">
+            <summary>
+            Looks up a localized string similar to 
+              The first managed dependency download is in progress, function execution will continue when it's done. Depending on the content of requirements.psd1, this can take a few minutes. Subsequent function executions will not block and updates will be performed in the background.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.OutputBindingAlreadySet">
+            <summary>
+            Looks up a localized string similar to 
+              The output binding '{0}' is already set with a value. The type of the output binding is '{1}'. It only accepts one message/record/file per a Function invocation. To override the value, use '-Clobber'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DontPushOutputOutsideWorkerRunspace">
+            <summary>
+            Looks up a localized string similar to 
+              'Push-OutputBinding' should only be used in the PowerShell Language Worker's default runspace(s). Do not use it in a custom runspace created during the function execution because the pushed values cannot be collected.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.BindingNameNotExist">
+            <summary>
+            Looks up a localized string similar to 
+              The specified name '{0}' cannot be resolved to a valid output binding of this function.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.UnrecognizedBehavior">
+            <summary>
+            Looks up a localized string similar to 
+              Unrecognized data collecting behavior '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToCreateFunctionAppDependenciesDestinationPath">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to create function app dependencies destination path '{0}'. Please make sure you have write access to this location. Error '{1}'. 
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailToInstallModule">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to install module '{0}' version '{1}'. {2} attempt. Error: '{3}'
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FirstAttempt">
+            <summary>
+            Looks up a localized string similar to 
+              1st
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.SecondAttempt">
+            <summary>
+            Looks up a localized string similar to 
+              2nd
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ThirdAttempt">
+            <summary>
+            Looks up a localized string similar to 
+              3rd
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ErrorDetails">
+            <summary>
+            Looks up a localized string similar to 
+              Error: '{0}'
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependenciesUpgradeSkippedMessage">
+            <summary>
+            Looks up a localized string similar to 
+              Function app dependencies upgrade skipped. Error details: {0}. 
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToRemoveDependenciesFolder">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to remove old dependencies folder '{0}'. Error: '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.RemovingDependenciesFolder">
+            <summary>
+            Looks up a localized string similar to 
+              Removing dependencies folder '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToRetrieveDependenciesFolderAccessTime">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to retrieve dependencies folder '{0}' access time. Error: '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.UpdatingManagedDependencySnapshotHeartbeat">
+            <summary>
+            Looks up a localized string similar to 
+              Updating dependencies folder heartbeat for '{0}''.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToUpdateManagedDependencySnapshotHeartbeat">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to update dependencies folder heartbeat for '{0}'. Exception {1}: '{2}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToInstallDependenciesSnapshot">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to install dependencies into '{0}' (installation mode: {1}), removing the folder.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.TooManyDependencies">
+            <summary>
+            Looks up a localized string similar to 
+              The number of entries in the '{0}' file is {1}, which exceeds the maximum supported number of entries ({2}).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToCompareDependencySnapshots">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to compare dependency snapshots '{0}' and '{1}'. Error: '{2}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.RemovingEquivalentDependencySnapshot">
+            <summary>
+            Looks up a localized string similar to 
+              Removing dependency snapshot '{0}' because it is equivalent to '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.PromotedDependencySnapshot">
+            <summary>
+            Looks up a localized string similar to 
+              Promoted dependency snapshot '{0}' to '{1}' (installation mode: {2}).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.LookingForNewerDependencySnapshot">
+            <summary>
+            Looks up a localized string similar to 
+              Looking for a dependency snapshot newer than {0}.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.NoNewerDependencySnapshotDetected">
+            <summary>
+            Looks up a localized string similar to 
+              No newer dependency snapshot detected.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.NewerDependencySnapshotDetected">
+            <summary>
+            Looks up a localized string similar to 
+              Detected newer dependency snapshot: '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.RestartingWorker">
+            <summary>
+            Looks up a localized string similar to 
+              The PowerShell worker process is exiting with exit code '{0}', expecting a restart.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionQueuingRequest">
+            <summary>
+            Looks up a localized string similar to 
+              Your function '{0}' is queuing requests as there are no available runspaces. You may be able to increase your throughput by following the best practices on https://aka.ms/functions-powershell-concurrency.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FirstFunctionLoadCompleted">
+            <summary>
+            Looks up a localized string similar to 
+              First function load request completed in {0} ms.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ProfileInvocationCompleted">
+            <summary>
+            Looks up a localized string similar to 
+              Profile invocation completed in {0} ms.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionInvocationStarting">
+            <summary>
+            Looks up a localized string similar to 
+              Invoking function '{0}' code {1} ms after receiving request. Invocation performance details: {2}
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependencyShapshotContent">
+            <summary>
+            Looks up a localized string similar to 
+              Dependency snapshot '{0}' contains module '{1}' version '{2}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FailedToEnumerateDependencySnapshotContent">
+            <summary>
+            Looks up a localized string similar to 
+              Failed to enumerate dependency snapshot '{0}' content: {1}
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.CommandNotFoundException_Error">
+            <summary>
+            Looks up a localized string similar to 
+              CommandNotFoundException detected (error).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.CommandNotFoundException_Exception">
+            <summary>
+            Looks up a localized string similar to 
+              CommandNotFoundException detected (exception).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.CommandNotFoundUserWarning">
+            <summary>
+            Looks up a localized string similar to 
+              The Function app may be missing a module containing the '{0}' command definition. If this command belongs to a module available on the PowerShell Gallery, add a reference to this module to requirements.psd1. Make sure this module is compatible with PowerShell 7. For more details, see https://aka.ms/functions-powershell-managed-dependency. If the module is installed but you are still getting this error, try to import the module explicitly by invoking Import-Module just before the command that produces the error: this will not fix the issue but will expose the root cause.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ModuleNotFound_Error">
+            <summary>
+            Looks up a localized string similar to 
+              ModuleNotFound detected (error).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ModuleNotFound_Exception">
+            <summary>
+            Looks up a localized string similar to 
+              ModuleNotFound detected (exception).
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.ModuleNotFoundUserWarning">
+            <summary>
+            Looks up a localized string similar to 
+              The Function app may be missing the '{0}' module. If '{0}' is available on the PowerShell Gallery, add a reference to this module to requirements.psd1. Make sure this module is compatible with PowerShell 7. For more details, see https://aka.ms/functions-powershell-managed-dependency.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.PowerShellVersion">
+            <summary>
+            Looks up a localized string similar to 
+              PowerShell version: '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.EnvironmentReloadCompleted">
+            <summary>
+            Looks up a localized string similar to 
+              Environment reload completed in {0} ms.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionNotFound">
+            <summary>
+            Looks up a localized string similar to 
+              Function '{0}' is not found.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.FunctionDoesNotHaveProperActivityFunctionBinding">
+            <summary>
+            Looks up a localized string similar to 
+              Function '{0}' does not have an activityTrigger input binding.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.SettingCurrentDirectory">
+            <summary>
+            Looks up a localized string similar to 
+              Setting current directory to '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.LogDependencySnapshotsInstalledAndSnapshotsToKeep">
+            <summary>
+            Looks up a localized string similar to 
+              Number of dependency snapshots installed: '{0}'. Dependency snapshots to keep: '{1}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.NoInstalledDependencySnapshot">
+            <summary>
+            Looks up a localized string similar to 
+              No installed dependency snapshot found.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.LastInstalledDependencySnapshotFound">
+            <summary>
+            Looks up a localized string similar to 
+              Last installed dependency snapshot found: '{0}'.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.EquivalentDependencySnapshotManifest">
+            <summary>
+            Looks up a localized string similar to 
+              Dependency snapshot '{0}' manifest is equivalent to the current manifest.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependencySnapshotContainsAcceptableModuleVersions">
+            <summary>
+            Looks up a localized string similar to 
+              Dependency snapshot '{0}' contains acceptable module versions.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.DependencySnapshotDoesNotContainAcceptableModuleVersions">
+            <summary>
+            Looks up a localized string similar to 
+              Dependency snapshot '{0}' does not contain acceptable module versions.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.AutomaticUpgradesAreDisabled">
+            <summary>
+            Looks up a localized string similar to 
+              Automatic upgrades are disabled in PowerShell 7.0 function apps. To enable this functionality back, please migrate your function app to PowerShell 7.2. For more details, see https://aka.ms/functions-powershell-7.0-to-7.2.
+            </summary>
+        </member>
+        <member name="P:PowerShellWorkerStrings.WorkerInitCompleted">
+            <summary>
+            Looks up a localized string similar to 
+              Worker init request completed in {0} ms.
+            </summary>
+        </member>
+        <member name="T:ClaimsIdentityRpcReflection">
+            <summary>Holder for reflection information generated from identity/ClaimsIdentityRpc.proto</summary>
+        </member>
+        <member name="P:ClaimsIdentityRpcReflection.Descriptor">
+            <summary>File descriptor for identity/ClaimsIdentityRpc.proto</summary>
+        </member>
+        <member name="T:RpcClaimsIdentity">
+            <summary>
+            Light-weight representation of a .NET System.Security.Claims.ClaimsIdentity object.
+            This is the same serialization as found in EasyAuth, and needs to be kept in sync with
+            its ClaimsIdentitySlim definition, as seen in the WebJobs extension:
+            https://github.com/Azure/azure-webjobs-sdk-extensions/blob/dev/src/WebJobs.Extensions.Http/ClaimsIdentitySlim.cs
+            </summary>
+        </member>
+        <member name="F:RpcClaimsIdentity.AuthenticationTypeFieldNumber">
+            <summary>Field number for the "authentication_type" field.</summary>
+        </member>
+        <member name="F:RpcClaimsIdentity.NameClaimTypeFieldNumber">
+            <summary>Field number for the "name_claim_type" field.</summary>
+        </member>
+        <member name="F:RpcClaimsIdentity.RoleClaimTypeFieldNumber">
+            <summary>Field number for the "role_claim_type" field.</summary>
+        </member>
+        <member name="F:RpcClaimsIdentity.ClaimsFieldNumber">
+            <summary>Field number for the "claims" field.</summary>
+        </member>
+        <member name="T:RpcClaim">
+            <summary>
+            Light-weight representation of a .NET System.Security.Claims.Claim object.
+            This is the same serialization as found in EasyAuth, and needs to be kept in sync with
+            its ClaimSlim definition, as seen in the WebJobs extension:
+            https://github.com/Azure/azure-webjobs-sdk-extensions/blob/dev/src/WebJobs.Extensions.Http/ClaimSlim.cs
+            </summary>
+        </member>
+        <member name="F:RpcClaim.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="F:RpcClaim.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="T:NullableTypesReflection">
+            <summary>Holder for reflection information generated from shared/NullableTypes.proto</summary>
+        </member>
+        <member name="P:NullableTypesReflection.Descriptor">
+            <summary>File descriptor for shared/NullableTypes.proto</summary>
+        </member>
+        <member name="F:NullableString.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="T:NullableString.StringOneofCase">
+            <summary>Enum of possible cases for the "string" oneof.</summary>
+        </member>
+        <member name="F:NullableDouble.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="T:NullableDouble.DoubleOneofCase">
+            <summary>Enum of possible cases for the "double" oneof.</summary>
+        </member>
+        <member name="F:NullableBool.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="T:NullableBool.BoolOneofCase">
+            <summary>Enum of possible cases for the "bool" oneof.</summary>
+        </member>
+        <member name="F:NullableTimestamp.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="T:NullableTimestamp.TimestampOneofCase">
+            <summary>Enum of possible cases for the "timestamp" oneof.</summary>
+        </member>
+    </members>
+</doc>

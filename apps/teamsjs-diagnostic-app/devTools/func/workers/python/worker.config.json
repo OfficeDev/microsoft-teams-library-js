@@ -1,0 +1,13 @@
+{
+    "description":{
+        "language":"python",
+        "defaultRuntimeVersion":"3.10",
+        "supportedOperatingSystems":["LINUX", "OSX", "WINDOWS"],
+        "supportedRuntimeVersions":["3.7", "3.8", "3.9", "3.10", "3.11"],
+        "supportedArchitectures":["X64", "X86", "Arm64"],
+        "extensions":[".py"],
+        "defaultExecutablePath":"python",
+        "defaultWorkerPath":"%FUNCTIONS_WORKER_RUNTIME_VERSION%/{os}/{architecture}/worker.py",
+        "workerIndexing": "true"
+    }
+}

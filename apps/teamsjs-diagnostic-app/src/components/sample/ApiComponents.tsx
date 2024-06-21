@@ -10,6 +10,8 @@ import ClipboardAPIs from './../../apis/ClipboardApi';
 import CustomAPIs from './../../apis/CustomApi';
 import DialogAPIs from './../../apis/DialogApi';
 import DialogCardAPIs from './../../apis/DialogCardApi';
+import { ApiWithTextInput } from '../../apis/utils/ApiWithTextInput';
+import { ApiWithCheckboxInput } from '../../apis/utils/ApiWithCheckboxInput';
 
 /* IMPLEMENT WHEN DO FULL FUNCTIONING APP
 import { DialogCardBotAPIs } from '../../apis/DialogCardBotApi';
@@ -70,6 +72,8 @@ const apiComponents = [
   { component: CustomAPIs, title: 'CustomAPIs' },
   { component: DialogAPIs, title: 'DialogAPIs' },
   { component: DialogCardAPIs, title: 'DialogCardAPIs' },
+  { component: ApiWithTextInput, title: 'ApiWithTextInput', inputType: 'text' },
+  { component: ApiWithCheckboxInput, title: 'ApiWithCheckboxInput', inputType: 'checkbox' },
   /*
   DialogCardBotAPIs,
   DialogUpdateAPIs,

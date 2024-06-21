@@ -1,0 +1,9 @@
+.apiWithTextInputHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding: 0 5px;
+    gap: 5px;
+  }
+  
