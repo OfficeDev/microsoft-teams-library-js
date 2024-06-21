@@ -1,21 +1,3 @@
-# TeamsFx files
-env/.env.*.user
-env/.env.local
-.DS_Store
-build
-appPackage/build
-.deployment
-.localConfigs
-
-# dependencies
-/node_modules
-
-# testing
-/coverage
-
-# Dev tool directories
-/devTools/
-
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules/
@@ -64,18 +46,3 @@ obj/
 
 #VS Code Local Files
 *.sln
-
-# TypeScript output
-dist
-out
-
-# Azure Functions artifacts
-bin
-obj
-appsettings.json
-
-# misc
-.DS_Store
-
-# Local data
-.localConfigs
