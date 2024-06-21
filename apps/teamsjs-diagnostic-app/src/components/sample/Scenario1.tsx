@@ -36,6 +36,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
       await registerOnResume();
       console.log('Attempting to authenticate user...');
       const authSuccess = await authenticateUser();
+      
       if (authSuccess) {
         console.log('App Initialization Scenario successfully completed');
       } else {

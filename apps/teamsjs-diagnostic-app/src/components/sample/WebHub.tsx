@@ -1,5 +1,4 @@
 import "./WebHub.css";
-//import { Image } from "@fluentui/react-components";
 
 export function WebHub(props: { docsUrl?: string }) {
   return (

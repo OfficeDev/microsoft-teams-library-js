@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Configuration>
+  <!-- 
+  *
+  * Copyright (c) Microsoft Corporation. All rights reserved.
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
+  -->
+<ViewDefinitions>
+  <View>
+    <Name>package</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>30</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+
+  <View>
+    <Name>GetPackage</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#GetPackage</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#GetPackage</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>30</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>32</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>ProviderName</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+
+   <View>
+    <Name>packageWithLongSourceName</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>30</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>32</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+
+  <View>
+    <Name>packageWithLongSourceNameAndCulture</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayCulture</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayCulture</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>30</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>32</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Culture</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+
+  <View>
+    <Name>packageWithLongSourceNameAndName</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayLongName</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayLongName</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>45</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>32</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+  <View>
+    <Name>packageWithLongSourceNameAndCultureAndName</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayCulture#DisplayLongName</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongSourceName#DisplayCulture#DisplayLongName</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>42</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>24</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Culture</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+  
+  <View>
+    <Name>PackageWithCulture</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayCulture</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayCulture</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>30</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Culture</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+  <View>
+    <Name>PackageWithLongName</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongName</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayLongName</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>52</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+  <View>
+    <Name>PackageWithCultureAndLongName</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayCulture#DisplayLongName</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.SoftwareIdentity#DisplayCulture#DisplayLongName</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>52</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Culture</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Source</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Summary</PropertyName>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+  <View>
+    <Name>PackageSource</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Packaging.PackageSource</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Packaging.PackageSource</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>32</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>10</Width>
+        </TableColumnHeader>      
+        <TableColumnHeader>
+        </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Name</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ProviderName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>IsTrusted</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Location</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+
+  <View>
+    <Name>PackageProvider</Name>
+    <ViewSelectedBy>
+      <TypeName>Microsoft.PackageManagement.Implementation.PackageProvider</TypeName>
+      <TypeName>Deserialized.Microsoft.PackageManagement.Implementation.PackageProvider</TypeName>
+    </ViewSelectedBy>
+    <TableControl>
+      <TableHeaders>
+        <TableColumnHeader>
+          <Width>24</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+          <Width>16</Width>
+        </TableColumnHeader>
+        <TableColumnHeader>
+	  <Label>DynamicOptions</Label>
+        </TableColumnHeader>
+      </TableHeaders>
+      <TableRowEntries>
+        <TableRowEntry>         
+          <TableColumnItems>
+            <TableColumnItem>
+              <PropertyName>Name</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <PropertyName>Version</PropertyName>
+            </TableColumnItem>
+            <TableColumnItem>
+              <ScriptBlock>$options = $_.DynamicOptions.Name | select-object -unique; $options -join ", "</ScriptBlock>
+            </TableColumnItem>
+          </TableColumnItems>
+        </TableRowEntry>
+      </TableRowEntries>
+    </TableControl>
+  </View>
+
+
+</ViewDefinitions>
+</Configuration>
+<!-- SIG # Begin signature block -->
+<!-- MIIjiQYJKoZIhvcNAQcCoIIjejCCI3YCAQExDzANBglghkgBZQMEAgEFADB5Bgor -->
+<!-- BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG -->
+<!-- KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDPNAbag0XHNsTX -->
+<!-- fSzELY7uw4DkrTl94u/UCF0hnuajK6CCDYUwggYDMIID66ADAgECAhMzAAABiK9S -->
+<!-- 1rmSbej5AAAAAAGIMA0GCSqGSIb3DQEBCwUAMH4xCzAJBgNVBAYTAlVTMRMwEQYD -->
+<!-- VQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdSZWRtb25kMR4wHAYDVQQKExVNaWNy -->
+<!-- b3NvZnQgQ29ycG9yYXRpb24xKDAmBgNVBAMTH01pY3Jvc29mdCBDb2RlIFNpZ25p -->
+<!-- bmcgUENBIDIwMTEwHhcNMjAwMzA0MTgzOTQ4WhcNMjEwMzAzMTgzOTQ4WjB0MQsw -->
+<!-- CQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9u -->
+<!-- ZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMR4wHAYDVQQDExVNaWNy -->
+<!-- b3NvZnQgQ29ycG9yYXRpb24wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB -->
+<!-- AQCSCNryE+Cewy2m4t/a74wZ7C9YTwv1PyC4BvM/kSWPNs8n0RTe+FvYfU+E9uf0 -->
+<!-- t7nYlAzHjK+plif2BhD+NgdhIUQ8sVwWO39tjvQRHjP2//vSvIfmmkRoML1Ihnjs -->
+<!-- 9kQiZQzYRDYYRp9xSQYmRwQjk5hl8/U7RgOiQDitVHaU7BT1MI92lfZRuIIDDYBd -->
+<!-- vXtbclYJMVOwqZtv0O9zQCret6R+fRSGaDNfEEpcILL+D7RV3M4uaJE4Ta6KAOdv -->
+<!-- V+MVaJp1YXFTZPKtpjHO6d9pHQPZiG7NdC6QbnRGmsa48uNQrb6AfmLKDI1Lp31W -->
+<!-- MogTaX5tZf+CZT9PSuvjOCLNAgMBAAGjggGCMIIBfjAfBgNVHSUEGDAWBgorBgEE -->
+<!-- AYI3TAgBBggrBgEFBQcDAzAdBgNVHQ4EFgQUj9RJL9zNrPcL10RZdMQIXZN7MG8w -->
+<!-- VAYDVR0RBE0wS6RJMEcxLTArBgNVBAsTJE1pY3Jvc29mdCBJcmVsYW5kIE9wZXJh -->
+<!-- dGlvbnMgTGltaXRlZDEWMBQGA1UEBRMNMjMwMDEyKzQ1ODM4NjAfBgNVHSMEGDAW -->
+<!-- gBRIbmTlUAXTgqoXNzcitW2oynUClTBUBgNVHR8ETTBLMEmgR6BFhkNodHRwOi8v -->
+<!-- d3d3Lm1pY3Jvc29mdC5jb20vcGtpb3BzL2NybC9NaWNDb2RTaWdQQ0EyMDExXzIw -->
+<!-- MTEtMDctMDguY3JsMGEGCCsGAQUFBwEBBFUwUzBRBggrBgEFBQcwAoZFaHR0cDov -->
+<!-- L3d3dy5taWNyb3NvZnQuY29tL3BraW9wcy9jZXJ0cy9NaWNDb2RTaWdQQ0EyMDEx -->
+<!-- XzIwMTEtMDctMDguY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggIB -->
+<!-- ACnXo8hjp7FeT+H6iQlV3CcGnkSbFvIpKYafgzYCFo3UHY1VHYJVb5jHEO8oG26Q -->
+<!-- qBELmak6MTI+ra3WKMTGhE1sEIlowTcp4IAs8a5wpCh6Vf4Z/bAtIppP3p3gXk2X -->
+<!-- 8UXTc+WxjQYsDkFiSzo/OBa5hkdW1g4EpO43l9mjToBdqEPtIXsZ7Hi1/6y4gK0P -->
+<!-- mMiwG8LMpSn0n/oSHGjrUNBgHJPxgs63Slf58QGBznuXiRaXmfTUDdrvhRocdxIM -->
+<!-- i8nXQwWACMiQzJSRzBP5S2wUq7nMAqjaTbeXhJqD2SFVHdUYlKruvtPSwbnqSRWT -->
+<!-- GI8s4FEXt+TL3w5JnwVZmZkUFoioQDMMjFyaKurdJ6pnzbr1h6QW0R97fWc8xEIz -->
+<!-- LIOiU2rjwWAtlQqFO8KNiykjYGyEf5LyAJKAO+rJd9fsYR+VBauIEQoYmjnUbTXM -->
+<!-- SY2Lf5KMluWlDOGVh8q6XjmBccpaT+8tCfxpaVYPi1ncnwTwaPQvVq8RjWDRB7Pa -->
+<!-- 8ruHgj2HJFi69+hcq7mWx5nTUtzzFa7RSZfE5a1a5AuBmGNRr7f8cNfa01+tiWjV -->
+<!-- Kk1a+gJUBSP0sIxecFbVSXTZ7bqeal45XSDIisZBkWb+83TbXdTGMDSUFKTAdtC+ -->
+<!-- r35GfsN8QVy59Hb5ZYzAXczhgRmk7NyE6jD0Ym5TKiW5MIIHejCCBWKgAwIBAgIK -->
+<!-- YQ6Q0gAAAAAAAzANBgkqhkiG9w0BAQsFADCBiDELMAkGA1UEBhMCVVMxEzARBgNV -->
+<!-- BAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jv -->
+<!-- c29mdCBDb3Jwb3JhdGlvbjEyMDAGA1UEAxMpTWljcm9zb2Z0IFJvb3QgQ2VydGlm -->
+<!-- aWNhdGUgQXV0aG9yaXR5IDIwMTEwHhcNMTEwNzA4MjA1OTA5WhcNMjYwNzA4MjEw -->
+<!-- OTA5WjB+MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UE -->
+<!-- BxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSgwJgYD -->
+<!-- VQQDEx9NaWNyb3NvZnQgQ29kZSBTaWduaW5nIFBDQSAyMDExMIICIjANBgkqhkiG -->
+<!-- 9w0BAQEFAAOCAg8AMIICCgKCAgEAq/D6chAcLq3YbqqCEE00uvK2WCGfQhsqa+la -->
+<!-- UKq4BjgaBEm6f8MMHt03a8YS2AvwOMKZBrDIOdUBFDFC04kNeWSHfpRgJGyvnkmc -->
+<!-- 6Whe0t+bU7IKLMOv2akrrnoJr9eWWcpgGgXpZnboMlImEi/nqwhQz7NEt13YxC4D -->
+<!-- dato88tt8zpcoRb0RrrgOGSsbmQ1eKagYw8t00CT+OPeBw3VXHmlSSnnDb6gE3e+ -->
+<!-- lD3v++MrWhAfTVYoonpy4BI6t0le2O3tQ5GD2Xuye4Yb2T6xjF3oiU+EGvKhL1nk -->
+<!-- kDstrjNYxbc+/jLTswM9sbKvkjh+0p2ALPVOVpEhNSXDOW5kf1O6nA+tGSOEy/S6 -->
+<!-- A4aN91/w0FK/jJSHvMAhdCVfGCi2zCcoOCWYOUo2z3yxkq4cI6epZuxhH2rhKEmd -->
+<!-- X4jiJV3TIUs+UsS1Vz8kA/DRelsv1SPjcF0PUUZ3s/gA4bysAoJf28AVs70b1FVL -->
+<!-- 5zmhD+kjSbwYuER8ReTBw3J64HLnJN+/RpnF78IcV9uDjexNSTCnq47f7Fufr/zd -->
+<!-- sGbiwZeBe+3W7UvnSSmnEyimp31ngOaKYnhfsi+E11ecXL93KCjx7W3DKI8sj0A3 -->
+<!-- T8HhhUSJxAlMxdSlQy90lfdu+HggWCwTXWCVmj5PM4TasIgX3p5O9JawvEagbJjS -->
+<!-- 4NaIjAsCAwEAAaOCAe0wggHpMBAGCSsGAQQBgjcVAQQDAgEAMB0GA1UdDgQWBBRI -->
+<!-- bmTlUAXTgqoXNzcitW2oynUClTAZBgkrBgEEAYI3FAIEDB4KAFMAdQBiAEMAQTAL -->
+<!-- BgNVHQ8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAWgBRyLToCMZBD -->
+<!-- uRQFTuHqp8cx0SOJNDBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3JsLm1pY3Jv -->
+<!-- c29mdC5jb20vcGtpL2NybC9wcm9kdWN0cy9NaWNSb29DZXJBdXQyMDExXzIwMTFf -->
+<!-- MDNfMjIuY3JsMF4GCCsGAQUFBwEBBFIwUDBOBggrBgEFBQcwAoZCaHR0cDovL3d3 -->
+<!-- dy5taWNyb3NvZnQuY29tL3BraS9jZXJ0cy9NaWNSb29DZXJBdXQyMDExXzIwMTFf -->
+<!-- MDNfMjIuY3J0MIGfBgNVHSAEgZcwgZQwgZEGCSsGAQQBgjcuAzCBgzA/BggrBgEF -->
+<!-- BQcCARYzaHR0cDovL3d3dy5taWNyb3NvZnQuY29tL3BraW9wcy9kb2NzL3ByaW1h -->
+<!-- cnljcHMuaHRtMEAGCCsGAQUFBwICMDQeMiAdAEwAZQBnAGEAbABfAHAAbwBsAGkA -->
+<!-- YwB5AF8AcwB0AGEAdABlAG0AZQBuAHQALiAdMA0GCSqGSIb3DQEBCwUAA4ICAQBn -->
+<!-- 8oalmOBUeRou09h0ZyKbC5YR4WOSmUKWfdJ5DJDBZV8uLD74w3LRbYP+vj/oCso7 -->
+<!-- v0epo/Np22O/IjWll11lhJB9i0ZQVdgMknzSGksc8zxCi1LQsP1r4z4HLimb5j0b -->
+<!-- pdS1HXeUOeLpZMlEPXh6I/MTfaaQdION9MsmAkYqwooQu6SpBQyb7Wj6aC6VoCo/ -->
+<!-- KmtYSWMfCWluWpiW5IP0wI/zRive/DvQvTXvbiWu5a8n7dDd8w6vmSiXmE0OPQvy -->
+<!-- CInWH8MyGOLwxS3OW560STkKxgrCxq2u5bLZ2xWIUUVYODJxJxp/sfQn+N4sOiBp -->
+<!-- mLJZiWhub6e3dMNABQamASooPoI/E01mC8CzTfXhj38cbxV9Rad25UAqZaPDXVJi -->
+<!-- hsMdYzaXht/a8/jyFqGaJ+HNpZfQ7l1jQeNbB5yHPgZ3BtEGsXUfFL5hYbXw3MYb -->
+<!-- BL7fQccOKO7eZS/sl/ahXJbYANahRr1Z85elCUtIEJmAH9AAKcWxm6U/RXceNcbS -->
+<!-- oqKfenoi+kiVH6v7RyOA9Z74v2u3S5fi63V4GuzqN5l5GEv/1rMjaHXmr/r8i+sL -->
+<!-- gOppO6/8MO0ETI7f33VtY5E90Z1WTk+/gFcioXgRMiF670EKsT/7qMykXcGhiJtX -->
+<!-- cVZOSEXAQsmbdlsKgEhr/Xmfwb1tbWrJUnMTDXpQzTGCFVowghVWAgEBMIGVMH4x -->
+<!-- CzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdSZWRt -->
+<!-- b25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xKDAmBgNVBAMTH01p -->
+<!-- Y3Jvc29mdCBDb2RlIFNpZ25pbmcgUENBIDIwMTECEzMAAAGIr1LWuZJt6PkAAAAA -->
+<!-- AYgwDQYJYIZIAWUDBAIBBQCgga4wGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw -->
+<!-- HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwLwYJKoZIhvcNAQkEMSIEINz4 -->
+<!-- jGTwSIrypQ6y68jBIWu9n1aXp6rTDVBbE3XDkWX9MEIGCisGAQQBgjcCAQwxNDAy -->
+<!-- oBSAEgBNAGkAYwByAG8AcwBvAGYAdKEagBhodHRwOi8vd3d3Lm1pY3Jvc29mdC5j -->
+<!-- b20wDQYJKoZIhvcNAQEBBQAEggEAN5P2OFvDYFQeq1HVdnBIrOPARYw8AA66PJD5 -->
+<!-- G/05G/Vlb0uM8lPcPTgjohtK5r/Zr3phQu1IsVJoJKfJJgpXemJXFxDQBtWIvul9 -->
+<!-- mAIny0sov16jRpIayYYHunWp6ajv5cPdEu60bMaK8PyCIQqzqFlfkD55UqXVWl40 -->
+<!-- Lkka0AbiPyg7j+fmkckYlEzKkTf4kUAzIaXOrrD3g6sy5UDFD+P9L/I8OPSulqQj -->
+<!-- mfBAs6oTminryu+uORbHzUmuOrlHHfHfSaAqFiwj099qZQL+t6jBQS/9zjfUWIvn -->
+<!-- 45ULOEXeP0tH8xrMxDZKWLZLOFMxZZaVaifYWJpRcIzC1YCWOaGCEuQwghLgBgor -->
+<!-- BgEEAYI3AwMBMYIS0DCCEswGCSqGSIb3DQEHAqCCEr0wghK5AgEDMQ8wDQYJYIZI -->
+<!-- AWUDBAIBBQAwggFQBgsqhkiG9w0BCRABBKCCAT8EggE7MIIBNwIBAQYKKwYBBAGE -->
+<!-- WQoDATAxMA0GCWCGSAFlAwQCAQUABCBaOaG+LGo0Frlfuk2dM+HFOqifZFG5rlI+ -->
+<!-- rlttWnjsSgIGXnuMKMpbGBIyMDIwMDQyNDAxMTc0Ni42OFowBIACAfSggdCkgc0w -->
+<!-- gcoxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdS -->
+<!-- ZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xJTAjBgNVBAsT -->
+<!-- HE1pY3Jvc29mdCBBbWVyaWNhIE9wZXJhdGlvbnMxJjAkBgNVBAsTHVRoYWxlcyBU -->
+<!-- U1MgRVNOOkQ2QkQtRTNFNy0xNjg1MSUwIwYDVQQDExxNaWNyb3NvZnQgVGltZS1T -->
+<!-- dGFtcCBTZXJ2aWNloIIOPDCCBPEwggPZoAMCAQICEzMAAAEeDrzlSxaiAxsAAAAA -->
+<!-- AR4wDQYJKoZIhvcNAQELBQAwfDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hp -->
+<!-- bmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jw -->
+<!-- b3JhdGlvbjEmMCQGA1UEAxMdTWljcm9zb2Z0IFRpbWUtU3RhbXAgUENBIDIwMTAw -->
+<!-- HhcNMTkxMTEzMjE0MDQwWhcNMjEwMjExMjE0MDQwWjCByjELMAkGA1UEBhMCVVMx -->
+<!-- EzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoT -->
+<!-- FU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjElMCMGA1UECxMcTWljcm9zb2Z0IEFtZXJp -->
+<!-- Y2EgT3BlcmF0aW9uczEmMCQGA1UECxMdVGhhbGVzIFRTUyBFU046RDZCRC1FM0U3 -->
+<!-- LTE2ODUxJTAjBgNVBAMTHE1pY3Jvc29mdCBUaW1lLVN0YW1wIFNlcnZpY2UwggEi -->
+<!-- MA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDOE7cYEKL89fBcrqzt/Bt1qpVf -->
+<!-- nrSxYwlYgs3r3C/tGlZeFEoncyqOa+RRYGQfW+p3AJHwCcWH+sZkONhw5raY7vnC -->
+<!-- tjtuKt8bvqNQ0aewxXd9utR5wWVUX5xKEezwCIfXnpwavixR+Gd6QKy91NcvE8FX -->
+<!-- QVPdVhDr3FMizOqkqchyHYrj4M9LgtxbkiDycaxsav3X68TttcwpBcMCn2obFSZj -->
+<!-- CaUVzHbGr6EfoL03Teabx0WZrEe2x7QT0ZkYQBCYmJS1UXQSAVVjqb1wnMXr7+1H -->
+<!-- 8fHLrd1/dtM2DsR/DXwnwEoz9Z1Upreflph3d1V2IbV9zKOefXgp/IB2aRS7AgMB -->
+<!-- AAGjggEbMIIBFzAdBgNVHQ4EFgQUjBMo55F4RuBL+36bP9mvJ9pmilswHwYDVR0j -->
+<!-- BBgwFoAU1WM6XIoxkPNDe3xGG8UzaFqFbVUwVgYDVR0fBE8wTTBLoEmgR4ZFaHR0 -->
+<!-- cDovL2NybC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvTWljVGltU3Rh -->
+<!-- UENBXzIwMTAtMDctMDEuY3JsMFoGCCsGAQUFBwEBBE4wTDBKBggrBgEFBQcwAoY+ -->
+<!-- aHR0cDovL3d3dy5taWNyb3NvZnQuY29tL3BraS9jZXJ0cy9NaWNUaW1TdGFQQ0Ff -->
+<!-- MjAxMC0wNy0wMS5jcnQwDAYDVR0TAQH/BAIwADATBgNVHSUEDDAKBggrBgEFBQcD -->
+<!-- CDANBgkqhkiG9w0BAQsFAAOCAQEALmTcjnWWI5CCEyJUDSXodjSHPN2w3oiARSDv -->
+<!-- g5jI27H2hj7r9C+/+eMU5kfkzI9mTJ/3m1uaUyaGvWO+aGXfF6hTvyhGAQo2oclw -->
+<!-- uQccPqVqk+9ARrIPptCHRmGhQAyWEJujVgtWrWN/KtKLHH6GWIBkeExySJF2aTfu -->
+<!-- 7j69cgPz5DDSvl3UmghUBl1uTXUh/0MeQskhdwfJ4BKUaLO2qAAXmlQH42tRVasa -->
+<!-- 0qNYMdPm7xF1YQVlr1EBnvm9lUHTab0NqVF+Eu6kbn3LUs0ogHgWmBAmkQjWOayt -->
+<!-- aLywMIhHdwYOyp7SwaJUHx69cP1XNrOdoknGhUXodOHSXX4hbTCCBnEwggRZoAMC -->
+<!-- AQICCmEJgSoAAAAAAAIwDQYJKoZIhvcNAQELBQAwgYgxCzAJBgNVBAYTAlVTMRMw -->
+<!-- EQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQHEwdSZWRtb25kMR4wHAYDVQQKExVN -->
+<!-- aWNyb3NvZnQgQ29ycG9yYXRpb24xMjAwBgNVBAMTKU1pY3Jvc29mdCBSb290IENl -->
+<!-- cnRpZmljYXRlIEF1dGhvcml0eSAyMDEwMB4XDTEwMDcwMTIxMzY1NVoXDTI1MDcw -->
+<!-- MTIxNDY1NVowfDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAO -->
+<!-- BgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEm -->
+<!-- MCQGA1UEAxMdTWljcm9zb2Z0IFRpbWUtU3RhbXAgUENBIDIwMTAwggEiMA0GCSqG -->
+<!-- SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCpHQ28dxGKOiDs/BOX9fp/aZRrdFQQ1aUK -->
+<!-- AIKF++18aEssX8XD5WHCdrc+Zitb8BVTJwQxH0EbGpUdzgkTjnxhMFmxMEQP8WCI -->
+<!-- hFRDDNdNuDgIs0Ldk6zWczBXJoKjRQ3Q6vVHgc2/JGAyWGBG8lhHhjKEHnRhZ5Ff -->
+<!-- gVSxz5NMksHEpl3RYRNuKMYa+YaAu99h/EbBJx0kZxJyGiGKr0tkiVBisV39dx89 -->
+<!-- 8Fd1rL2KQk1AUdEPnAY+Z3/1ZsADlkR+79BL/W7lmsqxqPJ6Kgox8NpOBpG2iAg1 -->
+<!-- 6HgcsOmZzTznL0S6p/TcZL2kAcEgCZN4zfy8wMlEXV4WnAEFTyJNAgMBAAGjggHm -->
+<!-- MIIB4jAQBgkrBgEEAYI3FQEEAwIBADAdBgNVHQ4EFgQU1WM6XIoxkPNDe3xGG8Uz -->
+<!-- aFqFbVUwGQYJKwYBBAGCNxQCBAweCgBTAHUAYgBDAEEwCwYDVR0PBAQDAgGGMA8G -->
+<!-- A1UdEwEB/wQFMAMBAf8wHwYDVR0jBBgwFoAU1fZWy4/oolxiaNE9lJBb186aGMQw -->
+<!-- VgYDVR0fBE8wTTBLoEmgR4ZFaHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraS9j -->
+<!-- cmwvcHJvZHVjdHMvTWljUm9vQ2VyQXV0XzIwMTAtMDYtMjMuY3JsMFoGCCsGAQUF -->
+<!-- BwEBBE4wTDBKBggrBgEFBQcwAoY+aHR0cDovL3d3dy5taWNyb3NvZnQuY29tL3Br -->
+<!-- aS9jZXJ0cy9NaWNSb29DZXJBdXRfMjAxMC0wNi0yMy5jcnQwgaAGA1UdIAEB/wSB -->
+<!-- lTCBkjCBjwYJKwYBBAGCNy4DMIGBMD0GCCsGAQUFBwIBFjFodHRwOi8vd3d3Lm1p -->
+<!-- Y3Jvc29mdC5jb20vUEtJL2RvY3MvQ1BTL2RlZmF1bHQuaHRtMEAGCCsGAQUFBwIC -->
+<!-- MDQeMiAdAEwAZQBnAGEAbABfAFAAbwBsAGkAYwB5AF8AUwB0AGEAdABlAG0AZQBu -->
+<!-- AHQALiAdMA0GCSqGSIb3DQEBCwUAA4ICAQAH5ohRDeLG4Jg/gXEDPZ2joSFvs+um -->
+<!-- zPUxvs8F4qn++ldtGTCzwsVmyWrf9efweL3HqJ4l4/m87WtUVwgrUYJEEvu5U4zM -->
+<!-- 9GASinbMQEBBm9xcF/9c+V4XNZgkVkt070IQyK+/f8Z/8jd9Wj8c8pl5SpFSAK84 -->
+<!-- Dxf1L3mBZdmptWvkx872ynoAb0swRCQiPM/tA6WWj1kpvLb9BOFwnzJKJ/1Vry/+ -->
+<!-- tuWOM7tiX5rbV0Dp8c6ZZpCM/2pif93FSguRJuI57BlKcWOdeyFtw5yjojz6f32W -->
+<!-- apB4pm3S4Zz5Hfw42JT0xqUKloakvZ4argRCg7i1gJsiOCC1JeVk7Pf0v35jWSUP -->
+<!-- ei45V3aicaoGig+JFrphpxHLmtgOR5qAxdDNp9DvfYPw4TtxCd9ddJgiCGHasFAe -->
+<!-- b73x4QDf5zEHpJM692VHeOj4qEir995yfmFrb3epgcunCaw5u+zGy9iCtHLNHfS4 -->
+<!-- hQEegPsbiSpUObJb2sgNVZl6h3M7COaYLeqN4DMuEin1wC9UJyH3yKxO2ii4sanb -->
+<!-- lrKnQqLJzxlBTeCG+SqaoxFmMNO7dDJL32N79ZmKLxvHIa9Zta7cRDyXUHHXodLF -->
+<!-- VeNp3lfB0d4wwP3M5k37Db9dT+mdHhk4L7zPWAUu7w2gUDXa7wknHNWzfjUeCLra -->
+<!-- NtvTX4/edIhJEqGCAs4wggI3AgEBMIH4oYHQpIHNMIHKMQswCQYDVQQGEwJVUzET -->
+<!-- MBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMV -->
+<!-- TWljcm9zb2Z0IENvcnBvcmF0aW9uMSUwIwYDVQQLExxNaWNyb3NvZnQgQW1lcmlj -->
+<!-- YSBPcGVyYXRpb25zMSYwJAYDVQQLEx1UaGFsZXMgVFNTIEVTTjpENkJELUUzRTct -->
+<!-- MTY4NTElMCMGA1UEAxMcTWljcm9zb2Z0IFRpbWUtU3RhbXAgU2VydmljZaIjCgEB -->
+<!-- MAcGBSsOAwIaAxUAOckG4+3pqzET/o43WLrKWYzKsNyggYMwgYCkfjB8MQswCQYD -->
+<!-- VQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEe -->
+<!-- MBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSYwJAYDVQQDEx1NaWNyb3Nv -->
+<!-- ZnQgVGltZS1TdGFtcCBQQ0EgMjAxMDANBgkqhkiG9w0BAQUFAAIFAOJMRa8wIhgP -->
+<!-- MjAyMDA0MjQwMDQ5NTFaGA8yMDIwMDQyNTAwNDk1MVowdzA9BgorBgEEAYRZCgQB -->
+<!-- MS8wLTAKAgUA4kxFrwIBADAKAgEAAgIfQAIB/zAHAgEAAgIRlTAKAgUA4k2XLwIB -->
+<!-- ADA2BgorBgEEAYRZCgQCMSgwJjAMBgorBgEEAYRZCgMCoAowCAIBAAIDB6EgoQow -->
+<!-- CAIBAAIDAYagMA0GCSqGSIb3DQEBBQUAA4GBADJudCmRLKcPrjXP9aDs170xmVY+ -->
+<!-- V6rouYIpCpW9v2HcRSRZkMqTrsIEgwYm/79vlpDhKeJwsTNOb6k/8dLSo0pJxoEo -->
+<!-- fcarBNTmtkkRRj+4YMg+6xi1zxVczoulbBHITLBeUtTegGvmozvFhiOTbQQVX/Vs -->
+<!-- qpQZlg+LREcqyVh7MYIDDTCCAwkCAQEwgZMwfDELMAkGA1UEBhMCVVMxEzARBgNV -->
+<!-- BAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jv -->
+<!-- c29mdCBDb3Jwb3JhdGlvbjEmMCQGA1UEAxMdTWljcm9zb2Z0IFRpbWUtU3RhbXAg -->
+<!-- UENBIDIwMTACEzMAAAEeDrzlSxaiAxsAAAAAAR4wDQYJYIZIAWUDBAIBBQCgggFK -->
+<!-- MBoGCSqGSIb3DQEJAzENBgsqhkiG9w0BCRABBDAvBgkqhkiG9w0BCQQxIgQgPU66 -->
+<!-- ozhpg2mpiLAlaha9xT4ajQLYb1M3oiEtUB5TiyYwgfoGCyqGSIb3DQEJEAIvMYHq -->
+<!-- MIHnMIHkMIG9BCBzO+RYw99xOlHlvaefPKE3cS3NJdWU8foiBBwPjdZfRzCBmDCB -->
+<!-- gKR+MHwxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQH -->
+<!-- EwdSZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xJjAkBgNV -->
+<!-- BAMTHU1pY3Jvc29mdCBUaW1lLVN0YW1wIFBDQSAyMDEwAhMzAAABHg685UsWogMb -->
+<!-- AAAAAAEeMCIEIBH+b9rwL66ySIn0eo04XKHAtpX431W5RtfkGrGHNH2GMA0GCSqG -->
+<!-- SIb3DQEBCwUABIIBAMMmaTKS8EwC9GwXnaIm2E06FmuqfOFXXtme8Ouf9y8aFTe/ -->
+<!-- S5SIdMOM0ilWwcNUM1HijeZNI5yxb8XI42ymuyFFr620F5NN7KIHh6sGQSCSvWqE -->
+<!-- Bnv2TaJnVRvO2s7ZtOYEh3srMyGDN8/MLOqBcM2Q0Ar3+SrgWSVSi6Di5GljrsFI -->
+<!-- zTCVzb9uLRVdxtgsu4y+tDyxpgiTxgxPmsWOSWMoPwcicfCun3wy0SD5eBvDfeOg -->
+<!-- KANCSIM+zzoJNnLJ0pBXojsWDQmKKasYq8+Faqs5+mHAoA89cny+UydGcJc8teBG -->
+<!-- EAQbADIZelfkjfLI0e9BT7p6Z0c4YfhKgCUxIl8= -->
+<!-- SIG # End signature block -->

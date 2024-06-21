@@ -1,0 +1,129 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">Microsoft.PowerShell.Archive</S>
+      <S N="Version">1.2.5</S>
+      <S N="Type">Module</S>
+      <S N="Description">PowerShell module for working with ZIP archives.</S>
+      <S N="Author">Microsoft Corporation</S>
+      <Obj N="CompanyName" RefId="1">
+        <TN RefId="1">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>stevelee</S>
+          <S>anmenaga</S>
+          <S>pmeinecke</S>
+        </LST>
+      </Obj>
+      <S N="Copyright">© Microsoft Corporation. All rights reserved.</S>
+      <DT N="PublishedDate">2020-02-11T22:00:12+00:00</DT>
+      <Nil N="InstalledDate" />
+      <Nil N="UpdatedDate" />
+      <Nil N="LicenseUri" />
+      <Nil N="ProjectUri" />
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="2">
+        <TNRef RefId="1" />
+        <LST>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="3">
+        <TN RefId="2">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Workflow</S>
+            <Obj N="Value" RefId="4">
+              <TNRef RefId="1" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Compress-Archive</S>
+                <S>Expand-Archive</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="4" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="4" />
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Ref N="Value" RefId="4" />
+          </En>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="1" />
+              <LST>
+                <S>Compress-Archive</S>
+                <S>Expand-Archive</S>
+              </LST>
+            </Obj>
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <Nil N="ReleaseNotes" />
+      <Obj N="Dependencies" RefId="7">
+        <TNRef RefId="1" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="8">
+        <TN RefId="3">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">© Microsoft Corporation. All rights reserved.</S>
+          <S N="description">PowerShell module for working with ZIP archives.</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="isLatestVersion">True</S>
+          <S N="isAbsoluteLatestVersion">True</S>
+          <S N="versionDownloadCount">575882</S>
+          <S N="downloadCount">690731</S>
+          <S N="packageSize">43929</S>
+          <S N="published">02/11/2020 22:00:12 +00:00</S>
+          <S N="created">02/11/2020 22:00:12 +00:00</S>
+          <S N="lastUpdated">04/12/2024 23:46:27 +00:00</S>
+          <S N="tags">PSModule</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2024-04-12T23:46:27Z</S>
+          <S N="NormalizedVersion">1.2.5</S>
+          <S N="Authors">Microsoft Corporation</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">Microsoft.PowerShell.Archive.nuspec|Microsoft.PowerShell.Archive.cat|Microsoft.PowerShell.Archive.psd1|Microsoft.PowerShell.Archive.psm1|en-US\ArchiveResources.psd1</S>
+          <S N="Functions">Compress-Archive Expand-Archive</S>
+          <S N="GUID">eb74e8da-9ae2-482a-a648-e96550fb8733</S>
+          <S N="PowerShellVersion">3.0</S>
+          <S N="CompanyName">Microsoft Corporation</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">/mnt/vss/_work/1/s/src/Modules/Microsoft.PowerShell.Archive/1.2.5</S>
+    </MS>
+  </Obj>
+</Objs>
