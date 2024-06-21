@@ -103,9 +103,7 @@ export namespace clipboard {
     if (GlobalVars.isFramelessWindow) {
       return ensureInitialized(runtime) && runtime.supports.clipboard ? true : false;
     } else {
-      return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard
-        ? true
-        : false;
+      return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard ? true : false;
     }
   }
 }
