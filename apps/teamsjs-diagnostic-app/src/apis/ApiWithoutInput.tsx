@@ -1,4 +1,3 @@
-//EXPAND ON THIS FILE LATER
 import React from 'react';
 
 interface ApiWithoutInputProps {

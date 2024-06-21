@@ -14,10 +14,6 @@ import Tab from "./Tab";
 import { TeamsFxContext } from "./Context";
 import config from "./sample/lib/config";
 
-/**
- * The main app which handles the initialization and routing
- * of the app.
- */
 export default function App() {
   const { loading, theme, themeString, teamsUserCredential } = useTeamsUserCredential({
     initiateLoginEndpoint: config.initiateLoginEndpoint!,
