@@ -1,35 +1,39 @@
 import React, { useState } from 'react';
-import { appInstallDialog } from '@microsoft/teams-js';
-import { ApiWithTextInput } from '../utils/ApiWithTextInput';
+import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
-  addToScenario: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, addToScenario }) => {
+const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>(apiComponent.defaultInput || '');
+  const [inputValue, setInputValue] = useState<string>('');
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'API',
+    item: { api: apiComponent, func: selectedFunction, input: inputValue },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
 
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedFunction(event.target.value);
+    const selectedFunc = event.target.value;
+    setSelectedFunction(selectedFunc);
+    if (selectedFunc === 'OpenAppInstallDialog') {
+      setInputValue(apiComponent.defaultInput || '');
+    } else {
+      setInputValue('');
+    }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const fillDefaultInput = () => {
-    setInputValue(apiComponent.defaultInput || '');
-  };
-
-  const handleAddToScenario = () => {
-    addToScenario(apiComponent, selectedFunction, inputValue);
-  };
-
   return (
-    <div className="api-container">
+    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <div className="api-header">{apiComponent.title}</div>
       <div className="dropdown-menu">
         <label htmlFor={`select-${apiComponent.name}`} className="sr-only">
@@ -43,13 +47,17 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
             </option>
           ))}
         </select>
-        {selectedFunction && apiComponent.inputType === 'text' && (
+        {selectedFunction === 'OpenAppInstallDialog' && (
           <div className="input-container">
-            <input type="text" value={inputValue} onChange={handleInputChange} />
-            <button onClick={fillDefaultInput}>Default</button>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Enter input for OpenAppInstallDialog"
+            />
+            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>
         )}
-        <button onClick={handleAddToScenario}>Add to Scenario</button>
       </div>
     </div>
   );
