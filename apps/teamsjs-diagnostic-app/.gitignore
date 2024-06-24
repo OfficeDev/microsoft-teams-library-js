@@ -1,17 +1,33 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# TypeScript output
+dist
+out
+
+# Dependency directories
+node_modules
+
+# Azure Functions artifacts
+bin
+obj
+appsettings.json
+
+# Misc
+.DS_Store
+
+# Local data
+.localConfigs
+
 # TeamsFx files
 env/.env.*.user
 env/.env.local
-.DS_Store
+
+# Build directories
 build
 appPackage/build
+
+# Deployment
 .deployment
-.localConfigs
 
-# dependencies
-/node_modules
-
-# testing
+# Testing
 /coverage
 
 # Dev tool directories
