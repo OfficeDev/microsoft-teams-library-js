@@ -41,12 +41,19 @@ describe('clipboard', () => {
         utils = new Utils();
         utils.mockWindow.parent = undefined;
         utils.messages = [];
-        GlobalVars.isFramelessWindow = false;
+        GlobalVars.isFramelessWindow = true;
+        // Clipboard capabilities should function in frameless context when navigator.clipboard is not available
+        Object.assign(navigator, {
+          clipboard: null,
+        })
       });
 
       afterEach(() => {
+        Object.assign(navigator, {
+          clipboard: {},
+        })
         app._uninitialize();
-        GlobalVars.isFramelessWindow = false;
+        GlobalVars.isFramelessWindow = true;
       });
 
       it('clipboard.write should not allow calls before initialization', async () => {
