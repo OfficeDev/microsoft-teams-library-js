@@ -8,7 +8,7 @@ import {
   TabValue,
 } from "@fluentui/react-components";
 import "./Welcome.css";
-import { Scenario1 } from "./Scenario1";
+import Scenario1 from "./Scenario1";
 import { useData } from "@microsoft/teamsfx-react";
 import { TeamsJs } from "./TeamsJs";
 import { WebHub } from "./WebHub";

@@ -1,76 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { appInstallDialog } from '@microsoft/teams-js';
 import { ApiWithTextInput } from '../utils/ApiWithTextInput';
-import { ApiWithCheckboxInput } from '../utils/ApiWithCheckboxInput';
-import { ApiWithoutInput } from '../utils/ApiWithoutInput';
 import { ApiComponent } from '../components/sample/ApiComponents';
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
+  addToScenario: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent }) => {
-  
-  const OpenAppInstallDialog: React.FC = () => {
-    const handleClick = async () => {
-      try {
-        const input = JSON.parse(apiComponent.defaultInput || '');
-        await appInstallDialog.openAppInstallDialog(input);
-        console.log('OpenAppInstallDialog executed successfully.');
-      } catch (error) {
-        console.error('Error in executing OpenAppInstallDialog:', error);
-      }
-    };
+const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, addToScenario }) => {
+  const [selectedFunction, setSelectedFunction] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>(apiComponent.defaultInput || '');
 
-    return (
-      <ApiWithTextInput
-        title={apiComponent.title}
-        name="openAppInstallDialog"
-        onClick={handleClick}
-        defaultInput={apiComponent.defaultInput || ''}
-      />
-    );
+  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFunction(event.target.value);
   };
 
-  const CheckAppInstallDialogCapability: React.FC = () => {
-    const handleClick = async () => {
-      try {
-        const result = appInstallDialog.isSupported();
-        console.log(`AppInstallDialog module ${result ? 'is' : 'is not'} supported.`);
-      } catch (error) {
-        console.error('Error in checking AppInstallDialog capability:', error);
-      }
-    };
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
 
-    return (
-      <ApiWithoutInput
-        title={apiComponent.title}
-        name="checkCapabilityAppInstallDialog"
-        onClick={handleClick}
-      />
-    );
+  const fillDefaultInput = () => {
+    setInputValue(apiComponent.defaultInput || '');
+  };
+
+  const handleAddToScenario = () => {
+    addToScenario(apiComponent, selectedFunction, inputValue);
   };
 
   return (
     <div className="api-container">
       <div className="api-header">{apiComponent.title}</div>
-      {apiComponent.inputType === 'text' && <OpenAppInstallDialog />}
-      {apiComponent.inputType === 'checkbox' && (
-        <ApiWithCheckboxInput
-          title={apiComponent.title}
-          name={apiComponent.name}
-          onClick={() => {}}
-          defaultCheckboxState={apiComponent.defaultCheckboxState || false}
-          label={apiComponent.label || ''}
-        />
-      )}
-      {apiComponent.inputType === 'none' && (
-        <ApiWithoutInput
-          title={apiComponent.title}
-          name={apiComponent.name}
-          onClick={() => {}}
-        />
-      )}
+      <div className="dropdown-menu">
+        <label htmlFor={`select-${apiComponent.name}`} className="sr-only">
+          Select an option for {apiComponent.title}
+        </label>
+        <select id={`select-${apiComponent.name}`} className="box-dropdown" onChange={handleFunctionChange}>
+          <option value="">Select a function</option>
+          {apiComponent.options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        {selectedFunction && apiComponent.inputType === 'text' && (
+          <div className="input-container">
+            <input type="text" value={inputValue} onChange={handleInputChange} />
+            <button onClick={fillDefaultInput}>Default</button>
+          </div>
+        )}
+        <button onClick={handleAddToScenario}>Add to Scenario</button>
+      </div>
     </div>
   );
 };

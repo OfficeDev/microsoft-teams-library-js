@@ -1,6 +1,6 @@
 import './Scenario1.css';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Scenario1 } from './Scenario1';
+import Scenario1 from './Scenario1';
 
 jest.mock('@microsoft/teams-js', () => ({
   app: {

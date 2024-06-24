@@ -1,38 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import './Scenario1.css';
-import { captureConsoleLogs } from './LoggerUtility';
 import { app } from '@microsoft/teams-js';
-import { registerOnResume } from '../../apis/AppApi';
-import { authenticateUser } from '../../apis/AuthenticationStart';
-//import appInstallDialogAPIs from './ApiComponents';
-import { ApiComponent } from './ApiComponents';
-import apiComponents from './ApiComponents';
+import apiComponents, { ApiComponent } from './ApiComponents';
+import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
 import { ApiWithTextInput } from '../../utils/ApiWithTextInput';
 import { ApiWithCheckboxInput } from '../../utils/ApiWithCheckboxInput';
 import { ApiWithoutInput } from '../../utils/ApiWithoutInput';
+import { registerOnResume } from '../../apis/AppApi';
+import { authenticateUser } from '../../apis/AuthenticationStart';
 
 type Log = string;
 
-interface Scenario1Props {
+export interface Scenario1Props {
   showFunction?: boolean;
 }
 
-export function Scenario1({ showFunction }: Scenario1Props) {
+const Scenario1: React.FC<Scenario1Props> = ({ showFunction = true }) => {
   const [logStatements, setLogStatements] = useState<Log[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
 
   useEffect(() => {
-    const filteredLogs: Log[] = [];
-    captureConsoleLogs((log: string) => {
-      if (!log.includes('Get basic user info from SSO token')) {
-        filteredLogs.push(log);
-        setLogStatements([...filteredLogs]);
-        localStorage.setItem('logStatements', JSON.stringify(filteredLogs));
-      }
-    });
-
     app.initialize();
   }, []);
+
+  useEffect(() => {
+    const storedLogs = localStorage.getItem('logStatements');
+    if (storedLogs) {
+      setLogStatements(JSON.parse(storedLogs));
+    }
+  }, []);
+
+  const handleRunScenario = async () => {
+    console.log('Running custom scenario...');
+    for (const { api, func, input } of customScenario) {
+      console.log(`Executing ${func} for ${api.title} with input: ${input}`);
+      // Execute the API function based on the selected function and input
+    }
+  };
+
+  const addToScenario = (api: ApiComponent, func: string, input?: string) => {
+    setCustomScenario([...customScenario, { api, func, input }]);
+  };
+
+  const generateVerticalBoxes = () => {
+    const filteredApis = apiComponents.filter(api =>
+      api.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return filteredApis.map((api: ApiComponent, index: number) => (
+      <div key={index} className="vertical-box">
+        <AppInstallDialogAPIs apiComponent={api} addToScenario={addToScenario} />
+      </div>
+    ));
+  };
 
   const runAppInitializationScenario = async () => {
     try {
@@ -56,64 +77,6 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     console.log('Showing sign-in popup...');
   };
 
-  useEffect(() => {
-    const storedLogs = localStorage.getItem('logStatements');
-    if (storedLogs) {
-      setLogStatements(JSON.parse(storedLogs));
-    }
-  }, []);
-
-  const generateVerticalBoxes = () => {
-    const filteredApis: ApiComponent[] = apiComponents.filter(api =>
-      api.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  
-    return filteredApis.map((api: ApiComponent, index: number) => (
-      <div key={index} className="vertical-box">
-        <div className="api-container">
-          <div className="api-header">{api.title}</div>
-          <div className="dropdown-menu">
-            <label htmlFor={`select-${index}`} className="sr-only">
-              Select an option for {api.title}
-            </label>
-            <select id={`select-${index}`} className="box-dropdown">
-              {api.options.map((option, optionIndex) => (
-                <option key={optionIndex} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-          {api.inputType === 'text' && (
-            <ApiWithTextInput
-              title={api.title}
-              name={api.name}
-              onClick={api.onClick}
-              defaultInput={api.defaultInput}
-            />
-          )}
-          {api.inputType === 'checkbox' && (
-            <ApiWithCheckboxInput
-              title={api.title}
-              name={api.name}
-              onClick={api.onClick}
-              defaultCheckboxState={api.defaultCheckboxState || false}
-              label={api.label || ''}
-            />
-          )}
-          {api.inputType === 'none' && (
-            <ApiWithoutInput
-              title={api.title}
-              name={api.name}
-              onClick={api.onClick}
-            />
-          )}
-        </div>
-      </div>
-    ));
-  };
-  
-
   return (
     <div>
       <h2>App Initialization Scenario</h2>
@@ -131,7 +94,12 @@ export function Scenario1({ showFunction }: Scenario1Props) {
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">
-              {generateVerticalBoxes()}
+              <div className="vertical-box">
+                <span className="box-title">1. app</span>
+              </div>
+              <div className="vertical-box">
+                <span className="box-title">2. authentication</span>
+              </div>
             </div>
           </div>
         </div>
@@ -179,3 +147,4 @@ export function Scenario1({ showFunction }: Scenario1Props) {
 }
 
 export default Scenario1;
+
