@@ -11,7 +11,7 @@ export interface ApiComponent {
 
 const apiComponents: ApiComponent[] = [
   {
-    title: 'AppInstallDialog',
+    title: 'App Install Dialog API',
     name: 'appInstallDialog',
     options: ['OpenAppInstallDialog', 'CheckAppInstallCapability'],
     defaultInput: 'default input for OpenAppInstallDialog',
@@ -19,7 +19,7 @@ const apiComponents: ApiComponent[] = [
     onClick: () => console.log('App Install Dialog API called'),
   },
   {
-    title: 'Bar Code APIs',
+    title: 'Bar Code API',
     name: 'barCode',
     options: ['checkBarCodeCapability', 'scanBarCode', 'hasBarCodePermission', 'requestBarCodePermission'],
     defaultInput: '{}',

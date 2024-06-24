@@ -29,6 +29,10 @@
   overflow: hidden;
 }
 
+.custom-scenario-box.drag-over {
+  background-color: lightgreen;
+}
+
 .scenario1-button {
   padding: 10px 20px;
   font-size: 16px;

@@ -65,9 +65,9 @@ const Scenario1: React.FC<Scenario1Props> = ({ showFunction = true }) => {
 
     return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
-        {api.title === 'AppInstallDialog' ? (
+        {api.title === 'App Install Dialog API' ? (
           <AppInstallDialogAPIs apiComponent={api} />
-        ) : api.title === 'Bar Code APIs' ? (
+        ) : api.title === 'Bar Code API' ? (
           <BarCodeAPIs apiComponent={api} />
         ) : null}
       </div>
