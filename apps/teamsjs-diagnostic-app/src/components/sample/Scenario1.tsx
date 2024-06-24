@@ -4,7 +4,12 @@ import { captureConsoleLogs } from './LoggerUtility';
 import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
+//import appInstallDialogAPIs from './ApiComponents';
+import { ApiComponent } from './ApiComponents';
 import apiComponents from './ApiComponents';
+import { ApiWithTextInput } from '../../utils/ApiWithTextInput';
+import { ApiWithCheckboxInput } from '../../utils/ApiWithCheckboxInput';
+import { ApiWithoutInput } from '../../utils/ApiWithoutInput';
 
 type Log = string;
 
@@ -59,31 +64,55 @@ export function Scenario1({ showFunction }: Scenario1Props) {
   }, []);
 
   const generateVerticalBoxes = () => {
-    const filteredApis = apiComponents.filter(api =>
+    const filteredApis: ApiComponent[] = apiComponents.filter(api =>
       api.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const options = ['Option 1', 'Option 2', 'Option 3'];
-    return filteredApis.map((api, index) => (
+  
+    return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
         <div className="api-container">
           <div className="api-header">{api.title}</div>
           <div className="dropdown-menu">
             <label htmlFor={`select-${index}`} className="sr-only">
-              Select an option for API {index}
+              Select an option for {api.title}
             </label>
             <select id={`select-${index}`} className="box-dropdown">
-              {options.map((option, optionIndex) => (
+              {api.options.map((option, optionIndex) => (
                 <option key={optionIndex} value={option}>
                   {option}
                 </option>
               ))}
             </select>
           </div>
+          {api.inputType === 'text' && (
+            <ApiWithTextInput
+              title={api.title}
+              name={api.name}
+              onClick={api.onClick}
+              defaultInput={api.defaultInput}
+            />
+          )}
+          {api.inputType === 'checkbox' && (
+            <ApiWithCheckboxInput
+              title={api.title}
+              name={api.name}
+              onClick={api.onClick}
+              defaultCheckboxState={api.defaultCheckboxState || false}
+              label={api.label || ''}
+            />
+          )}
+          {api.inputType === 'none' && (
+            <ApiWithoutInput
+              title={api.title}
+              name={api.name}
+              onClick={api.onClick}
+            />
+          )}
         </div>
       </div>
     ));
   };
+  
 
   return (
     <div>
@@ -102,12 +131,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">
-              <div className="vertical-box">
-                <span className="box-title">1. app</span>
-              </div>
-              <div className="vertical-box">
-                <span className="box-title">2. authentication</span>
-              </div>
+              {generateVerticalBoxes()}
             </div>
           </div>
         </div>
@@ -153,3 +177,5 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     </div>
   );
 }
+
+export default Scenario1;
