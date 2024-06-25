@@ -115,4 +115,25 @@ export namespace stageView {
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
   }
+
+  /**
+   * Closes the current stage view.
+   * @returns Promise that resolves or rejects with an error once the stage view is closed.
+   */
+  export function closeCurrentWindow(): Promise<void> {
+    return new Promise((resolve) => {
+      ensureInitialized(runtime, FrameContexts.stage);
+
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
+          'stageView.closeCurrentWindow',
+        ),
+      );
+    });
+  }
 }

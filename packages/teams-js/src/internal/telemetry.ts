@@ -297,6 +297,7 @@ export const enum ApiName {
   Sharing_History_GetContent = 'sharing.history.getContent',
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
+  StageView_Close = 'stageView.closeCurrentWindow',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',
