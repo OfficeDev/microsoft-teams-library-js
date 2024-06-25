@@ -272,7 +272,7 @@ describe('Dialog', () => {
       it('should not allow calls before initialization', () => {
         expect(() => dialog.url.submit()).toThrowError(errorLibraryNotInitialized);
       });
-      const allowedContexts = [FrameContexts.content, FrameContexts.task];
+      const allowedContexts = [FrameContexts.task];
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
           it(`FRAMELESS: should throw error when dialog is not supported in ${context} context`, async () => {
