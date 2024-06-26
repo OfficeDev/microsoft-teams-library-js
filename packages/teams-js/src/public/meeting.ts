@@ -1075,6 +1075,10 @@ export namespace meeting {
      */
     M365CalendarFormJoinTeamsMeetingButton = 'm365_calendar_form_join_teams_meeting_button',
     /**
+     * Source is calendar ribbon join with id button
+     */
+    M365CalendarRibbonJoinWithIDButton = 'm365_calendar_ribbon_join_with_id_button',
+    /**
      * Other sources.
      */
     Other = 'other',
