@@ -116,24 +116,38 @@ export namespace stageView {
     return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
   }
 
-  /**
-   * Closes the current stage view.
-   * @returns Promise that resolves or rejects with an error once the stage view is closed.
-   */
-  export function closeCurrentWindow(): Promise<void> {
-    return new Promise((resolve) => {
-      ensureInitialized(runtime, FrameContexts.stage);
+  export namespace stageClose {
+    /**
+     * Closes the current stage view.
+     * @returns Promise that resolves or rejects with an error once the stage view is closed.
+     */
+    export function closeCurrentWindow(): Promise<void> {
+      return new Promise((resolve) => {
+        ensureInitialized(runtime, FrameContexts.stage);
 
-      if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
-      }
+        if (!isSupported()) {
+          throw errorNotSupportedOnPlatform;
+        }
 
-      resolve(
-        sendAndHandleSdkError(
-          getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
-          'stageView.closeCurrentWindow',
-        ),
-      );
-    });
+        resolve(
+          sendAndHandleSdkError(
+            getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
+            'stageView.closeCurrentWindow',
+          ),
+        );
+      });
+    }
+
+    /**
+     * Checks if stageView capability is supported by the host
+     * @beta
+     * @returns boolean to represent whether the stageView capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
+    }
   }
 }
