@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Scenario1.css';
 import { captureConsoleLogs } from './LoggerUtility';
 import { app } from '@microsoft/teams-js';
-import { registerOnResume } from '../../apis/AppApi';
-import { authenticateUser } from '../../apis/AuthenticationStart';
-import apiComponents from './ApiComponents';
 
 type Log = string;
 
@@ -29,28 +26,6 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     app.initialize();
   }, []);
 
-  const runAppInitializationScenario = async () => {
-    try {
-      console.log('Running App Initialization Scenario...');
-      console.log('Attempting to register on resume handler...');
-      await registerOnResume();
-      console.log('Attempting to authenticate user...');
-      const authSuccess = await authenticateUser();
-      if (authSuccess) {
-        console.log('App Initialization Scenario successfully completed');
-      } else {
-        console.log('User not authenticated');
-        showSignInPopup();
-      }
-    } catch (error: any) {
-      console.log(`App initialization scenario failed. ${error.message}`);
-    }
-  };
-
-  const showSignInPopup = () => {
-    console.log('Showing sign-in popup...');
-  };
-
   useEffect(() => {
     const storedLogs = localStorage.getItem('logStatements');
     if (storedLogs) {
@@ -58,31 +33,32 @@ export function Scenario1({ showFunction }: Scenario1Props) {
     }
   }, []);
 
-  const generateVerticalBoxes = () => {
-    const filteredApis = apiComponents.filter(api =>
-      api.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
+  const generateVerticalBoxes = (numBoxes: number) => {
     const options = ['Option 1', 'Option 2', 'Option 3'];
-    return filteredApis.map((api, index) => (
-      <div key={index} className="vertical-box">
-        <div className="api-container">
-          <div className="api-header">{api.title}</div>
-          <div className="dropdown-menu">
-            <label htmlFor={`select-${index}`} className="sr-only">
-              Select an option for API {index}
-            </label>
-            <select id={`select-${index}`} className="box-dropdown">
-              {options.map((option, optionIndex) => (
-                <option key={optionIndex} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+
+    return (
+      <div className="vertical-box-container">
+        {Array.from({ length: numBoxes }, (_, index) => (
+          <div key={index} className="vertical-box">
+            <div className="api-container">
+              <div className="api-header">API {index + 1}</div>
+              <div className="dropdown-menu">
+                <label htmlFor={`select-${index}`} className="sr-only">
+                  Select an option for API {index + 1}
+                </label>
+                <select id={`select-${index}`} className="box-dropdown">
+                  {options.map((option, optionIndex) => (
+                    <option key={optionIndex} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
-    ));
+    );
   };
 
   return (
@@ -91,12 +67,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
       <p>Click the button to run the app initialization scenario.</p>
       <div className="scenario-container">
         <div className="scenario1-box">
-          <button
-            className="scenario1-button"
-            onClick={runAppInitializationScenario}
-            type="button"
-            data-testid="run-scenario-button"
-          >
+          <button className="scenario1-button" type="button" data-testid="run-scenario-button">
             Run Scenario
           </button>
           <div className="api-section">
@@ -134,7 +105,7 @@ export function Scenario1({ showFunction }: Scenario1Props) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <div className="all-api-box">{generateVerticalBoxes()}</div>
+          <div className="all-api-box">{generateVerticalBoxes(12)}</div>
         </div>
       </div>
 
