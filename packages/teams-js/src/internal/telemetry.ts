@@ -1,6 +1,15 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
 const topLevelLogger = registerLogger('teamsJs');
+enableTimePrependingOnLogStatements();
+
+function enableTimePrependingOnLogStatements(): void {
+  const originalFormatArgs = registerLogger.formatArgs;
+  registerLogger.formatArgs = (args) => {
+    args[0] = `${new Date().toISOString()} ${args[0]}`;
+    originalFormatArgs.call(registerLogger, args);
+  };
+}
 
 /**
  * @internal
