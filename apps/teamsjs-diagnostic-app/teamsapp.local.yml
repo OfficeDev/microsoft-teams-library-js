@@ -55,7 +55,7 @@ provision:
     with:
       # Relative path to this file. Environment variables in manifest will
       # be replaced before apply to Microsoft Entra app
-      manifestPath: ./aad.manifest.json
+      manifestPath: ./aad.on
       outputFilePath: ./build/aad.manifest.${{TEAMSFX_ENV}}.json
 
   # Validate using manifest schema
