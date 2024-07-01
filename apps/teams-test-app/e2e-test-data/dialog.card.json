@@ -1,0 +1,10 @@
+{
+  "name": "Dialog Card",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityDialogAdaptiveCard",
+    "toggleId": "dialogCardToggle",
+    "expectedOutput": "Dialog Adaptive Card module is not supported"
+  },
+  "testCases": []
+}

@@ -292,13 +292,12 @@ export namespace pages {
   }
 
   /**
-   * Navigate to the given application ID and page ID, with optional parameters for a WebURL (if the application
-   * cannot be navigated to, such as if it is not installed), Channel ID (for applications installed as a channel tab),
-   * and sub-page ID (for navigating to specific content within the page). This is equivalent to navigating to
-   * a deep link with the above data, but does not require the application to build a URL or worry about different
-   * deep link formats for different hosts.
-   * @param params - Parameters for the navigation
-   * @returns a promise that will resolve if the navigation was successful
+   * Used to navigate to apps other than your own.
+   *
+   * If you are looking to navigate within your own app, use {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
+   *
+   * @param params Parameters for the navigation
+   * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
    */
   export function navigateToApp(params: NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -372,28 +371,28 @@ export namespace pages {
    */
   export interface NavigateToAppParams {
     /**
-     * ID of the application to navigate to
+     * ID of the app to navigate to
      */
     appId: string;
 
     /**
-     * Developer-defined ID of the Page to navigate to within the application (Formerly EntityID)
+     * Developer-defined ID of the page to navigate to within the app (formerly called `entityId`)
      */
     pageId: string;
 
     /**
-     * Optional URL to open if the navigation cannot be completed within the host
+     * Fallback URL to open if the navigation cannot be completed within the host (e.g. if the target app is not installed)
      */
     webUrl?: string;
 
     /**
-     * Optional developer-defined ID describing the content to navigate to within the Page. This will be passed
-     * back to the application via the Context object.
+     * Developer-defined ID describing the content to navigate to within the page. This ID is passed to the application
+     * via the {@link app.PageInfo.subPageId} property on the {@link app.Context} object (retrieved by calling {@link app.getContext})
      */
     subPageId?: string;
 
     /**
-     * Optional ID of the Teams Channel where the application should be opened
+     * For apps installed as a channel tab, this ID can be supplied to indicate in which Teams channel the app should be opened
      */
     channelId?: string;
   }
@@ -1007,16 +1006,19 @@ export namespace pages {
   }
 
   /**
-   * Provides functions for navigating without needing to specify your application ID.
+   * Provides functions for navigating within your own app
+   *
+   * @remarks
+   * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
    */
   export namespace currentApp {
     /**
-     * Parameters for the NavigateWithinApp
+     * Parameters provided to the {@link pages.currentApp.navigateTo} function
      */
     export interface NavigateWithinAppParams {
       /**
        * The developer-defined unique ID for the page defined in the manifest or when first configuring
-       * the page. (Known as {@linkcode Context.entityId} prior to TeamsJS v.2.0.0)
+       * the page. (Known as {@linkcode Context.entityId} prior to TeamsJS v2.0.0)
        */
       pageId: string;
 
@@ -1028,10 +1030,13 @@ export namespace pages {
     }
 
     /**
-     * Navigate within the currently running application with page ID, and sub-page ID (for navigating to
-     * specific content within the page).
-     * @param params - Parameters for the navigation
-     * @returns a promise that will resolve if the navigation was successful
+     * Navigate within the currently running app
+     *
+     * @remarks
+     * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
+     *
+     * @param params Parameters for the navigation
+     * @returns `Promise` that will resolve if the navigation was successful and reject if not
      */
     export function navigateTo(params: NavigateWithinAppParams): Promise<void> {
       return new Promise<void>((resolve) => {
@@ -1058,8 +1063,10 @@ export namespace pages {
     }
 
     /**
-     * Navigate to the currently running application's first static page defined in the application
+     * Navigate to the currently running app's first static page defined in the application
      * manifest.
+     *
+     * @returns `Promise` that will resolve if the navigation was successful and reject if not
      */
     export function navigateToDefaultPage(): Promise<void> {
       return new Promise<void>((resolve) => {

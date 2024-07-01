@@ -14,7 +14,7 @@ export enum HostClientType {
   macos = 'macos',
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link teamsRoomsWindows} instead.
+   * As of TeamsJS v2.0.0, please use {@link teamsRoomsWindows} instead.
    */
   rigel = 'rigel',
   /** Represents the client of host, which runs on surface hub devices. */
@@ -144,7 +144,7 @@ export enum DialogDimension {
 import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
 /**
  * @deprecated
- * As of 2.0.0, please use {@link DialogDimension} instead.
+ * As of TeamsJS v2.0.0, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export import TaskModuleDimension = DialogDimension;

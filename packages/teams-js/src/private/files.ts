@@ -2,7 +2,8 @@ import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { FrameContexts } from '../public/constants';
+import { ErrorCode, FileOpenPreference, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
