@@ -70,7 +70,7 @@ steps:
   - task: MavenAuthenticate@0
     displayName: 'Authenticate machine'
     inputs:
-      artifactsFeeds: 'LensSDKAndroidIA20'
+      artifactsFeeds: 'ISS_PublicPackages,LensSDKAndroidIA20'
 
   - task: Bash@3
     displayName: 'Run Android E2E Tests'
