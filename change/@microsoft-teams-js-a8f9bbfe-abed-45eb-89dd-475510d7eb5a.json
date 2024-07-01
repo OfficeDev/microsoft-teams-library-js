@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new fields to `VideoFrameConfig` and `VideoFrameData` to allow specifying additional capabilities to be applied to a video frame and reading arbitrary attributes on a video frame respectively. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "packageName": "@microsoft/teams-js",
+  "email": "olsolari@microsoft.com",
+  "dependentChangeType": "patch"
+}

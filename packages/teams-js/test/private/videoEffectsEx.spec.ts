@@ -40,6 +40,7 @@ describe('videoEffectsEx', () => {
         format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
         audioInferenceModel: new ArrayBuffer(100),
+        requiredCapabilities: [],
       };
 
       const registerForVideoFrameParameters: videoEffectsEx.RegisterForVideoFrameParameters = {
@@ -698,6 +699,7 @@ describe('videoEffectsEx', () => {
         format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
         audioInferenceModel: new ArrayBuffer(100),
+        requiredCapabilities: [],
       };
       const registerForVideoFrameParameters: videoEffectsEx.RegisterForVideoFrameParameters = {
         videoBufferHandler: (_bufferData, _onSuccess, _onError) => {},
