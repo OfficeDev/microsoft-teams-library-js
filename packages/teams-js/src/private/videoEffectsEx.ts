@@ -71,6 +71,15 @@ export namespace videoEffectsEx {
      * Limited to Microsoft-internal use
      */
     audioInferenceModel?: ArrayBuffer;
+    /**
+     * @hidden
+     * Specifies additional capabilities that needs to be applied to the video frame.
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    requiredCapabilities?: string[];
   }
 
   /**
@@ -139,6 +148,15 @@ export namespace videoEffectsEx {
      * Limited to Microsoft-internal use
      */
     audioInferenceResult?: Uint8Array;
+    /**
+     * @hidden
+     * Additional metadata determined by capabilities specified in {@linkcode VideoFrameConfig.requiredCapabilities}
+     * @beta
+     *
+     * @internal
+     * Limited to Microsoft-internal use
+     */
+    attributes?: ReadonlyMap<string, Uint8Array>;
   };
 
   /**
