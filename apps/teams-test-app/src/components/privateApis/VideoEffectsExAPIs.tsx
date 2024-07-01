@@ -107,6 +107,7 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
     onClick: async (setResult) => {
       try {
         const audioInferenceModel = new ArrayBuffer(8);
+        const requiredCapabilities = [];
         const view = new Uint8Array(audioInferenceModel);
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
@@ -121,6 +122,7 @@ const MediaStreamRegisterForVideoFrame = (): React.ReactElement =>
             format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
+            requiredCapabilities,
           },
         });
       } catch (error) {
@@ -138,6 +140,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
     onClick: async (setResult) => {
       try {
         const audioInferenceModel = new ArrayBuffer(8);
+        const requiredCapabilities = [];
         const view = new Uint8Array(audioInferenceModel);
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
@@ -153,6 +156,7 @@ const SharedFrameRegisterForVideoFrameToBeRemoved = (): React.ReactElement =>
             format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
+            requiredCapabilities,
           },
         });
       } catch (error) {
@@ -169,6 +173,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
     onClick: async (setResult) => {
       try {
         const audioInferenceModel = new ArrayBuffer(8);
+        const requiredCapabilities = [];
         const view = new Uint8Array(audioInferenceModel);
         for (let i = 0; i < view.length; i++) {
           view[i] = i;
@@ -184,6 +189,7 @@ const SharedFrameRegisterForVideoFrame = (): React.ReactElement =>
             format: videoEffects.VideoFrameFormat.NV12,
             requireCameraStream: false,
             audioInferenceModel,
+            requiredCapabilities,
           },
         });
       } catch (error) {
