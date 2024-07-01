@@ -8,7 +8,7 @@ steps:
     displayName: 'Setup pnpm'
     inputs:
       script: |
-        npm install -g pnpm@7.30.1
+        npm install -g pnpm@9.0.6
         pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
   - task: CmdLine@2

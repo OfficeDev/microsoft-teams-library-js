@@ -1,10 +1,12 @@
 import * as communication from '../../src/internal/communication';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuth';
+import { MessageRequest } from '../../src/internal/messageObjects';
+import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
+import { UUID } from '../../src/internal/uuidObject';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
-import { MessageRequest, Utils } from '../utils';
+import { Utils } from '../utils';
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
 
@@ -1606,6 +1608,144 @@ describe('Testing communication', () => {
         );
 
         expect(onMessageReceivedCb).not.toBeCalled();
+      });
+    });
+  });
+  describe('UUID tests', () => {
+    let utils: Utils = new Utils();
+
+    beforeEach(() => {
+      // Set a mock window for testing
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      app._initialize(utils.mockWindow);
+      communication.Communication.parentWindow = undefined;
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      communication.uninitializeCommunication();
+    });
+    afterAll(() => {
+      GlobalVars.isFramelessWindow = false;
+    });
+    describe('postMessage', () => {
+      it('should delete callback correctly with uuid', async () => {
+        app._initialize(utils.mockWindow);
+        communication.initializeCommunication(undefined, testApiVersion);
+        let callbackWasCalled = 0;
+        const initializeMessage = utils.findInitializeMessageOrThrow();
+        let message = utils.findMessageByFunc('initialize');
+
+        if (message) {
+          expect(message.id).toBe(0);
+        }
+
+        await utils.respondToMessage(initializeMessage);
+
+        communication.sendMessageToParent(testApiVersion, 'testAction', () => {
+          callbackWasCalled++;
+        });
+        message = utils.findMessageByFunc('testAction');
+
+        if (message) {
+          expect(message.id).toBe(1);
+        }
+
+        await utils.respondToMessage({ id: message?.id, uuid: message?.uuid, func: 'testAction' }, false);
+
+        expect(callbackWasCalled).toBe(1);
+
+        //Call respondToMessageAgain, this should not call the callback since it should be deleted and callbackWasCalled should be still 1
+        await utils.respondToMessage({ id: message?.id, uuid: message?.uuid, func: 'testAction' }, false);
+
+        expect(callbackWasCalled).toBe(1);
+
+        communication.sendMessageToParent(testApiVersion, 'testAction2', () => {
+          callbackWasCalled++;
+        });
+
+        message = utils.findMessageByFunc('testAction2');
+
+        if (message) {
+          expect(message.id).toBe(2);
+        }
+
+        await utils.respondToMessage({ id: message?.id, uuid: message?.uuid, func: 'testAction2' }, false);
+        expect(callbackWasCalled).toBe(2);
+      });
+
+      it('should delete callback correctly with number id only', async () => {
+        app._initialize(utils.mockWindow);
+        communication.initializeCommunication(undefined, testApiVersion);
+        let callbackWasCalled = 0;
+        const initializeMessage = utils.findInitializeMessageOrThrow();
+        let message = utils.findMessageByFunc('initialize');
+
+        if (message) {
+          expect(message.id).toBe(0);
+        }
+
+        await utils.respondToMessage(initializeMessage);
+
+        communication.sendMessageToParent(testApiVersion, 'testAction', () => {
+          callbackWasCalled++;
+        });
+        message = utils.findMessageByFunc('testAction');
+
+        if (message) {
+          expect(message.id).toBe(1);
+        }
+
+        await utils.respondToMessage({ id: message?.id, func: 'testAction' }, false);
+
+        expect(callbackWasCalled).toBe(1);
+
+        //Call respondToMessageAgain, this should not call the callback since it should be deleted and callbackWasCalled should be still 1
+        await utils.respondToMessage({ id: message?.id, func: 'testAction' }, false);
+
+        expect(callbackWasCalled).toBe(1);
+
+        communication.sendMessageToParent(testApiVersion, 'testAction2', () => {
+          callbackWasCalled++;
+        });
+
+        message = utils.findMessageByFunc('testAction2');
+
+        if (message) {
+          expect(message.id).toBe(2);
+        }
+
+        await utils.respondToMessage({ id: message?.id, func: 'testAction2' }, false);
+        expect(callbackWasCalled).toBe(2);
+      });
+
+      it('should not call callback with invalid uuid', async () => {
+        app._initialize(utils.mockWindow);
+        communication.initializeCommunication(undefined, testApiVersion);
+        let callbackWasCalled = 0;
+        const initializeMessage = utils.findInitializeMessageOrThrow();
+
+        await utils.respondToMessage(initializeMessage);
+
+        communication.sendMessageToParent(testApiVersion, 'testAction', () => {
+          callbackWasCalled++;
+        });
+
+        const message = utils.findMessageByFunc('testAction');
+
+        if (message) {
+          expect(message.id).toBe(1);
+        }
+
+        await utils.respondToMessage({ id: message?.id, uuid: new UUID(), func: 'testAction' }, false);
+
+        //Since uuid is set but is not the same value as the message request, message should not process and message should not call callback
+        expect(callbackWasCalled).toBe(0);
+
+        //Respond with correct set of message uuid and now callback should be called
+        await utils.respondToMessage({ id: message?.id, uuid: message?.uuid, func: 'testAction' }, false);
+
+        expect(callbackWasCalled).toBe(1);
       });
     });
   });

@@ -15,6 +15,7 @@ import {
   ActionObjectType,
   Context,
   FileOpenPreference,
+  LoadContext,
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
@@ -43,6 +44,10 @@ function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
+  const loadContext: LoadContext = {
+    entityId: 'testEntityId',
+    contentUrl: 'https://localhost:4000',
+  };
   describe('Framed - Testing app capability', () => {
     // Use to send a mock message from the app.
     const utils = new Utils();
@@ -106,7 +111,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -553,6 +558,7 @@ describe('Testing app capability', () => {
             userClickTime: 2222,
             userFileOpenPreference: FileOpenPreference.Inline,
             isMultiWindow: true,
+            isBackgroundLoad: true,
             frameContext: context,
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
@@ -585,6 +591,7 @@ describe('Testing app capability', () => {
               sourceOrigin: 'www.origin.com',
               frameContext: context,
               isMultiWindow: true,
+              isBackgroundLoad: true,
             },
             user: {
               id: 'someUserObjectId',
@@ -631,6 +638,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           //insert expected time comparison here?
@@ -887,7 +895,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -896,7 +904,7 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
 
             await utils.sendMessage('beforeUnload');
 
@@ -908,7 +916,7 @@ describe('Testing app capability', () => {
       describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
         it('should not allow calls before initialization', () => {
           expect(() =>
-            app.lifecycle.registerOnResumeHandler(() => {
+            app.lifecycle.registerOnResumeHandler(async () => {
               return false;
             }),
           ).toThrowError(new Error(errorLibraryNotInitialized));
@@ -922,8 +930,7 @@ describe('Testing app capability', () => {
             app.lifecycle.registerOnResumeHandler(() => {
               handlerInvoked = true;
             });
-
-            await utils.sendMessage('load');
+            await utils.sendMessage('load', loadContext);
             expect(handlerInvoked).toBe(true);
           });
         });
@@ -989,7 +996,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -1490,6 +1497,7 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           await utils.respondToFramelessMessage({
@@ -1688,7 +1696,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -1697,7 +1705,7 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
             await utils.respondToFramelessMessage({
               data: {
                 func: 'beforeUnload',
@@ -1729,6 +1737,7 @@ describe('Testing app capability', () => {
             await utils.respondToFramelessMessage({
               data: {
                 func: 'load',
+                args: [loadContext],
               },
             } as DOMMessageEvent);
             expect(handlerInvoked).toBe(true);

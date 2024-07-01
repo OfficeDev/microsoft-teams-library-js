@@ -401,17 +401,124 @@ export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
 }
 
-const appIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /**
- * @param appID The app ID to validate against the GUID format
- * @throws Error if appID is not a valid GUID
+ * @param id The id to validate
+ * @param errorToThrow Customized error to throw if the id is not valid
+ *
+ * @throws Error if id is not valid
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function validateAppIdIsGuid(appId: string): void {
-  if (!appIdRegex.test(appId)) {
-    throw new Error('App ID is not valid. Must be GUID format. App ID: ' + appId);
+export function validateId(id: string, errorToThrow?: Error): void {
+  if (hasScriptTags(id) || !isIdLengthValid(id) || !isOpaque(id)) {
+    throw errorToThrow || new Error('id is not valid.');
+  }
+}
+
+export function validateUrl(url: URL, errorToThrow?: Error): void {
+  const urlString = url.toString().toLocaleLowerCase();
+  if (hasScriptTags(urlString)) {
+    throw errorToThrow || new Error('Invalid Url');
+  }
+  if (urlString.length > 2048) {
+    throw errorToThrow || new Error('Url exceeds the maximum size of 2048 characters');
+  }
+  if (!isValidHttpsURL(url)) {
+    throw errorToThrow || new Error('Url should be a valid https url');
+  }
+}
+
+/**
+ * This function takes in a string that represents a full or relative path and returns a
+ * fully qualified URL object.
+ *
+ * Currently this is accomplished by assigning the input string to an a tag and then retrieving
+ * the a tag's href value. A side effect of doing this is that the string becomes a fully qualified
+ * URL. This is probably not how I would choose to do this, but in order to not unintentionally
+ * break something I've preseved the functionality here and just isolated the code to make it
+ * easier to mock.
+ *
+ * @example
+ *    `fullyQualifyUrlString('https://example.com')` returns `new URL('https://example.com')`
+ *    `fullyQualifyUrlString('helloWorld')` returns `new URL('https://example.com/helloWorld')`
+ *    `fullyQualifyUrlString('hello%20World')` returns `new URL('https://example.com/hello%20World')`
+ *
+ * @param fullOrRelativePath A string representing a full or relative URL.
+ * @returns A fully qualified URL representing the input string.
+ */
+export function fullyQualifyUrlString(fullOrRelativePath: string): URL {
+  const link = document.createElement('a');
+  link.href = fullOrRelativePath;
+  return new URL(link.href);
+}
+
+/**
+ * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
+ * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.
+ * Next, it defines a regular expression scriptRegex that matches any string that starts with <script (followed by any characters), then has any characters (including newlines),
+ * and ends with </script> (preceded by any characters).
+ * Finally, it uses the test method to check if the decoded input matches this regular expression. The function returns true if a match is found and false otherwise.
+ * @param input URL converted to string to pattern match
+ * @returns true if the input string contains a script tag, false otherwise
+ */
+function hasScriptTags(input: string): boolean {
+  let decodedInput;
+  try {
+    const decodedHTMLInput = decodeHTMLEntities(input);
+    decodedInput = decodeURIComponent(decodedHTMLInput);
+  } catch (e) {
+    // input was not encoded, use it as is
+    decodedInput = input;
+  }
+  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
+  return scriptRegex.test(decodedInput);
+}
+
+/**
+ * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters.
+ */
+function decodeHTMLEntities(input: string): string {
+  const entityMap = new Map<string, string>([
+    ['&lt;', '<'],
+    ['&gt;', '>'],
+    ['&amp;', '&'],
+    ['&quot;', '"'],
+    ['&#39;', "'"],
+    ['&#x2F;', '/'],
+  ]);
+  entityMap.forEach((value, key) => {
+    input = input.replace(new RegExp(key, 'gi'), value);
+  });
+  return input;
+}
+
+function isIdLengthValid(id: string): boolean {
+  return id.length < 256 && id.length > 4;
+}
+
+function isOpaque(id: string): boolean {
+  for (let i = 0; i < id.length; i++) {
+    const charCode = id.charCodeAt(i);
+    if (charCode < 32 || charCode > 126) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * @param id The ID to validate against the UUID format
+ * @throws Error if ID is not a valid UUID
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateUuid(id: string | undefined | null): void {
+  if (!id) {
+    throw new Error('id must not be empty');
+  }
+  if (uuid.validate(id) === false) {
+    throw new Error('id must be a valid UUID');
   }
 }

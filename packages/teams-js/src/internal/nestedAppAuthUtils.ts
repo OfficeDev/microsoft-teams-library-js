@@ -2,7 +2,7 @@ import { GlobalVars } from './globalVars';
 import { MessageRequestWithRequiredProperties } from './messageObjects';
 import { getLogger } from './telemetry';
 
-const nestedAppAuthLogger = getLogger('nestedAppAuth');
+const nestedAppAuthLogger = getLogger('nestedAppAuthUtils');
 const tryPolyfillWithNestedAppAuthBridgeLogger = nestedAppAuthLogger.extend('tryPolyfillWithNestedAppAuthBridge');
 
 /**
@@ -17,7 +17,7 @@ const tryPolyfillWithNestedAppAuthBridgeLogger = nestedAppAuthLogger.extend('try
  * @property {string} Request - Event name for a nested app authentication request.
  * @property {string} Response - Event name for a nested app authentication response.
  */
-export enum NestedAppAuthMessageEventNames {
+export const enum NestedAppAuthMessageEventNames {
   Request = 'NestedAppAuthRequest',
   Response = 'NestedAppAuthResponse',
 }

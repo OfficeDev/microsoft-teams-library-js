@@ -54,7 +54,7 @@ export namespace monetization {
   export function openPurchaseExperience(planInfo?: PlanInfo): Promise<void>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link monetization.openPurchaseExperience monetization.openPurchaseExperience(planInfo?: PlanInfo): Promise\<void\>} instead.
    *
    * @hidden
    * Open dialog to start user's purchase experience

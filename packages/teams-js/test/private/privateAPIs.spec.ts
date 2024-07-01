@@ -1,4 +1,4 @@
-import { MessageResponse } from '../../src/internal/messageObjects';
+import { MessageRequest, MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
   openFilePreview,
@@ -10,7 +10,7 @@ import {
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { MessageRequest, Utils } from '../utils';
+import { Utils } from '../utils';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
@@ -255,6 +255,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId1',
       },
+      dialogParameters: {},
     };
 
     const contextBridge2: Context = {
@@ -284,6 +285,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId2',
       },
+      dialogParameters: {},
     };
 
     const contextBridge3: Context = {
@@ -313,6 +315,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId3',
       },
+      dialogParameters: {},
     };
 
     // respond in the wrong order
