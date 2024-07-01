@@ -29,10 +29,11 @@ describe('Testing communication', () => {
         GlobalVars.isFramelessWindow = false;
       });
 
-      it('should throw if there is no parent window and no native interface on the current window', async () => {
+      it('should throw if there is no parent window and no native interface on the current window', () => {
         app._initialize(undefined);
-        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
-        await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
+        expect(() => communication.initializeCommunication(undefined, testApiVersion)).toThrowError(
+          'Initialization Failed. No Parent window found.',
+        );
       });
 
       it('should receive valid initialize response from parent when there is no parent window but the window has a native interface', async () => {
@@ -206,8 +207,9 @@ describe('Testing communication', () => {
         // In this case, because Communication.currentWindow is being initialized to undefined we fall back to the actual
         // window object created by jest, which does not have nativeInterface defined on it
         app._initialize(undefined);
-        const initPromise = communication.initializeCommunication(undefined, testApiVersion);
-        await expect(initPromise).rejects.toThrowError('Initialization Failed. No Parent window found.');
+        expect(() => communication.initializeCommunication(undefined, testApiVersion)).toThrowError(
+          'Initialization Failed. No Parent window found.',
+        );
       });
 
       it('should receive valid initialize response from parent when currentWindow has a parent with postMessage defined', async () => {
