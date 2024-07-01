@@ -23,11 +23,10 @@
       "type": "registerAndRaiseEvent",
       "boxSelector": "#box_otherAppStateChange_registerInstallHandler",
       "eventName": "otherApp.install",
-      "eventData": [
+      "eventData":
         {
           "appIds": ["123", "456"]
-        }
-      ],
+        },
       "expectedTestAppValue": "received"
     },
     {
