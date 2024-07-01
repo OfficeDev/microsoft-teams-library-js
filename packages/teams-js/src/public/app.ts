@@ -356,7 +356,7 @@ export namespace app {
     appLaunchId?: string;
 
     /**
-     * Internal app id that is used by Hubs to distinguish between different apps sideloaded or in store
+     * Internal app id that is used by Hosts to distinguish between different apps sideloaded or in store
      */
     internalAppId?: string;
   }
