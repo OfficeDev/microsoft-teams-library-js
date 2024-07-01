@@ -563,6 +563,7 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
+            internalAppId: 'someInternalAppId',
           };
 
           const expectedContext: app.Context = {
@@ -576,6 +577,7 @@ describe('Testing app capability', () => {
               userClickTime: 2222,
               userFileOpenPreference: FileOpenPreference.Inline,
               appLaunchId: 'appLaunchId',
+              internalAppId: 'someinternalAppId',
               host: {
                 name: HostName.orange,
                 clientType: HostClientType.web,
@@ -1430,6 +1432,7 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
+            internalAppId: 'someinternalAppId',
           };
 
           const expectedContext: app.Context = {
@@ -1449,6 +1452,7 @@ describe('Testing app capability', () => {
                 ringId: 'someRingId',
               },
               appLaunchId: 'appLaunchId',
+              internalAppId: 'someinternalAppId',
             },
             page: {
               id: 'someEntityId',
