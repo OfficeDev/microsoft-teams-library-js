@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { authentication } from '@microsoft/teams-js';
 import { useNavigate } from 'react-router-dom';
 

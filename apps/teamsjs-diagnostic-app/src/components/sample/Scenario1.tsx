@@ -1,35 +1,28 @@
-import React, { useState, useEffect } from "react";
-import config from "./lib/config";
-import "./Scenario1.css";
-import { captureConsoleLogs } from "./LoggerUtility";
-import { app } from "@microsoft/teams-js";
+import React, { useState, useEffect } from 'react';
+import './Scenario1.css';
+import { captureConsoleLogs } from './LoggerUtility';
+import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';
-import { authenticateUser } from "../../apis/AuthenticationStart";
+import { authenticateUser } from '../../apis/AuthenticationStart';
+import apiComponents from './ApiComponents';
 
-const functionName = config.apiName || "myFunc";
 type Log = string;
 
-export function Scenario1(props: {
+interface Scenario1Props {
   showFunction?: boolean;
-  tabCodeEntry?: string;
-  functionCodePath?: string;
-}) {
-  const { showFunction, functionCodePath } = {
-    showFunction: true,
-    functionCodePath: `api/src/functions/${functionName}.ts`,
-    ...props,
-  };
+}
 
+export function Scenario1({ showFunction }: Scenario1Props) {
   const [logStatements, setLogStatements] = useState<Log[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const filteredLogs: Log[] = [];
     captureConsoleLogs((log: string) => {
-      // Filter out logs not needed
-      if (!log.includes("Get basic user info from SSO token")) {
+      if (!log.includes('Get basic user info from SSO token')) {
         filteredLogs.push(log);
         setLogStatements([...filteredLogs]);
-        localStorage.setItem("logStatements", JSON.stringify(filteredLogs)); // Store in localStorage
+        localStorage.setItem('logStatements', JSON.stringify(filteredLogs));
       }
     });
 
@@ -38,16 +31,15 @@ export function Scenario1(props: {
 
   const runAppInitializationScenario = async () => {
     try {
-      console.log("Running App Initialization Scenario...");
-      console.log("Attempting to register on resume handler...");
+      console.log('Running App Initialization Scenario...');
+      console.log('Attempting to register on resume handler...');
       await registerOnResume();
-      console.log("Attempting to authenticate user...");
+      console.log('Attempting to authenticate user...');
       const authSuccess = await authenticateUser();
       if (authSuccess) {
-        console.log("User authenticated")
-        console.log("App Initialization Scenario successfully completed");
+        console.log('App Initialization Scenario successfully completed');
       } else {
-        console.log("User not authenticated");
+        console.log('User not authenticated');
         showSignInPopup();
       }
     } catch (error: any) {
@@ -56,37 +48,42 @@ export function Scenario1(props: {
   };
 
   const showSignInPopup = () => {
-    console.log("Showing sign-in popup...");
-  };
-
-  const generateVerticalBoxes = (count: number) => {
-    const options = ["Option 1", "Option 2", "Option 3"];
-    const verticalBoxes = [];
-    for (let i = 1; i <= count; i++) {
-      verticalBoxes.push(
-        <div key={i} className="vertical-box">
-          <span className="box-title">{i}. API {i}</span>
-          <label htmlFor={`select-${i}`} className="sr-only">Select an option for API {i}</label>
-          <select id={`select-${i}`} className="box-dropdown">
-            {options.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-      );
-    }
-    return verticalBoxes;
+    console.log('Showing sign-in popup...');
   };
 
   useEffect(() => {
-    // Load log statements from localStorage
-    const storedLogs = localStorage.getItem("logStatements");
+    const storedLogs = localStorage.getItem('logStatements');
     if (storedLogs) {
       setLogStatements(JSON.parse(storedLogs));
     }
   }, []);
+
+  const generateVerticalBoxes = () => {
+    const filteredApis = apiComponents.filter(api =>
+      api.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const options = ['Option 1', 'Option 2', 'Option 3'];
+    return filteredApis.map((api, index) => (
+      <div key={index} className="vertical-box">
+        <div className="api-container">
+          <div className="api-header">{api.title}</div>
+          <div className="dropdown-menu">
+            <label htmlFor={`select-${index}`} className="sr-only">
+              Select an option for API {index}
+            </label>
+            <select id={`select-${index}`} className="box-dropdown">
+              {options.map((option, optionIndex) => (
+                <option key={optionIndex} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    ));
+  };
 
   return (
     <div>
@@ -98,6 +95,7 @@ export function Scenario1(props: {
             className="scenario1-button"
             onClick={runAppInitializationScenario}
             type="button"
+            data-testid="run-scenario-button"
           >
             Run Scenario
           </button>
@@ -129,9 +127,14 @@ export function Scenario1(props: {
         </div>
 
         <div className="all-api-container">
-          <div className="all-api-box">
-            {generateVerticalBoxes(12)}
-          </div>
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search APIs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div className="all-api-box">{generateVerticalBoxes()}</div>
         </div>
       </div>
 

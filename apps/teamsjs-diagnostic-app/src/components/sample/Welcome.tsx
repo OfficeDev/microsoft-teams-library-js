@@ -69,7 +69,6 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
             {selectedValue === "local" && (
               <div>
                 <Scenario1 showFunction={showFunction} />
-        
               </div>
             )}
             {selectedValue === "azure" && (

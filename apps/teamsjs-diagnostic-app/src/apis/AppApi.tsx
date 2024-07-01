@@ -7,10 +7,6 @@ export const registerOnResume = async (): Promise<string> => {
   
       app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
         console.log('Successfully called with context: ' + JSON.stringify(context));
-        // Get the route from the context
-        // const route = new URL(context.contentUrl);
-        // Navigate to the correct path based on URL
-        // navigate(route.pathname);
         app.notifySuccess();
       });
   
