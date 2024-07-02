@@ -1432,7 +1432,7 @@ describe('Testing app capability', () => {
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
             teamSiteId: 'someSiteId',
-            appId: 'appId',
+            appId: 'someAppId',
           };
 
           const expectedContext: app.Context = {
