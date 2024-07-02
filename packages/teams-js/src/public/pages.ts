@@ -264,13 +264,10 @@ export namespace pages {
 
   /**
    * @deprecated
-   * As of 2.0.0, this API is no longer needed. Please remove any calls to it.
-   *
-   * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
-   * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
-   * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
-   * than the current one in a way that keeps the application informed of the change and allows the SDK to
-   * continue working.
+   * As of 2.0.0, this API is deprecated and can be replaced by the standard JavaScript
+   * API, window.location.href, when navigating the app to a new cross-domain URL. Any URL
+   * that is redirected to must be listed in the validDomains block of the manifest. Please
+   * remove any calls to this API.
    * @param url - The URL to navigate the frame to.
    * @returns Promise that resolves when the navigation has completed.
    */
