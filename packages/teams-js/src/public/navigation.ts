@@ -68,7 +68,7 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteH
  * that is redirected to must be listed in the validDomains block of the manifest. Please
  * remove any calls to this API.
  * @param url - The URL to navigate the frame to.
- * @returns Promise that resolves when the navigation has completed.
+ * @param onComplete - The callback to invoke when the action is complete.
  */
 export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerFunctionType): void {
   ensureInitialized(
