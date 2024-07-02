@@ -279,7 +279,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly sharing?: {
       readonly history?: {};
     };
-    readonly stageView?: {};
+    readonly stageView?: {
+      readonly self?: {};
+    };
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
