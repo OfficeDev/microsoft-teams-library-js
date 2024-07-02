@@ -10,6 +10,8 @@ import { runtime } from '../public/runtime';
 // 4. I've added empty, private `validate` functions for the threadId and TabInstance. Any validation that is possible will help prevent against
 //    bad data being sent to the host. If you have any validation that can be done, please add it there. If you *can* use restrictive types like UUID
 //    or something, that would be even better.
+// 5. I've made the namespace structure an empty `associatedApps` namespace that only contains the `tab` namespace. This was an attempt to leave room for
+//    expansion in the future for non-tab scenarios that will make it less likely that your callers will need to update their code. Open to opinions though.
 
 // TODO: Add unit tests
 // TODO: Add E2E tests
@@ -19,12 +21,22 @@ import { runtime } from '../public/runtime';
  * @internal
  * @beta
  * Limited to Microsoft-internal use
+ *
+ * TODO: Brief description of what this capability does
  */
 export namespace associatedApps {
   export enum AppTypes {
     meeting = 'meeting',
   }
 
+  /**
+   * @hidden
+   * @internal
+   * @beta
+   * Limited to Microsoft-internal use
+   *
+   * TODO: Brief description of what this capability does
+   */
   export namespace tab {
     interface ErrorResponse {
       errorCode: ErrorCode;
@@ -32,6 +44,11 @@ export namespace associatedApps {
     }
 
     /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     *
      * TODO: Add full description of what this function does, ie "Launches host-owned UI that lets a user select an app, installs it if required,
      * runs through app configuration if required, and then associates the app with the threadId provided. If external docs exist, link to them here"
      *
@@ -66,6 +83,11 @@ export namespace associatedApps {
     }
 
     /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     *
      * TODO: Add full description of what this function does, ie "Allows the user to go through the tab config process again for the specified app. If
      * no config process exists, X happens, etc."
      *
@@ -101,6 +123,11 @@ export namespace associatedApps {
     }
 
     /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     *
      * TODO: Add full description of what this function does, ie "Renames the tab associated with an app"
      *
      * @param tab fill in details
@@ -135,6 +162,11 @@ export namespace associatedApps {
     }
 
     /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     *
      * TODO: Add full description of what this function does, ie "Removes a tab associated with an app, must be called on an app tab, etc."
      *
      * @param tab fill in details
