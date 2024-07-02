@@ -1,6 +1,6 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ErrorCode, TabInstance } from '../public';
+import { ErrorCode, SdkError, TabInstance } from '../public';
 import { runtime } from '../public/runtime';
 
 // Open questions
@@ -38,10 +38,10 @@ export namespace associatedApps {
    * TODO: Brief description of what this capability does
    */
   export namespace tab {
-    interface ErrorResponse {
-      errorCode: ErrorCode;
-      message?: string; // TODO: Can remove if you don't have a message to send back to the app developer
-    }
+    // interface ErrorResponse {
+    //   errorCode: ErrorCode;
+    //   message?: string; // TODO: Can remove if you don't have a message to send back to the app developer
+    // }
 
     /**
      * @hidden
@@ -68,14 +68,14 @@ export namespace associatedApps {
 
       validateThreadId(threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | ErrorResponse]>(
+      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
         'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
         'associatedApps.tab.addAndConfigureApp',
         [threadId, appTypes],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | ErrorResponse]) => {
+      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
           // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
-          const error = response as ErrorResponse;
+          const error = response as SdkError;
           throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
         }
         return response as TabInstance;
@@ -108,14 +108,14 @@ export namespace associatedApps {
       validateTab(tab);
       validateThreadId(threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | ErrorResponse]>(
+      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
         'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
         'associatedApps.tab.reconfigure',
         [tab, threadId],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | ErrorResponse]) => {
+      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
           // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
-          const error = response as ErrorResponse;
+          const error = response as SdkError;
           throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
         }
         return response as TabInstance;
@@ -133,7 +133,7 @@ export namespace associatedApps {
      * @param tab fill in details
      * @param threadId Info about where this comes from, links to external docs if available, etc.
      *
-     * @returns The TabInstance of the newly renamed app
+     * @returns The TabInstance of the newly renamed app tab
      *
      * @throws TODO: Description of errors that can be thrown from this function
      */
@@ -147,14 +147,14 @@ export namespace associatedApps {
       validateTab(tab);
       validateThreadId(threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | ErrorResponse]>(
+      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
         'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
         'associatedApps.tab.rename',
         [tab, threadId],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | ErrorResponse]) => {
+      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
           // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
-          const error = response as ErrorResponse;
+          const error = response as SdkError;
           throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
         }
         return response as TabInstance;
@@ -184,14 +184,14 @@ export namespace associatedApps {
       validateTab(tab);
       validateThreadId(threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | ErrorResponse]>(
+      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
         'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
         'associatedApps.tab.remove',
         [tab, threadId],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | ErrorResponse]) => {
+      ).then(([wasSuccessful, response]: [boolean, SdkError]) => {
         if (!wasSuccessful) {
           // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
-          const error = response as ErrorResponse;
+          const error = response as SdkError;
           throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
         }
       });
