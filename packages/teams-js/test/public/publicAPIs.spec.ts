@@ -348,7 +348,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         appSessionId: 'appSessionId',
         appLaunchId: 'appLaunchId',
         meetingId: 'dummyMeetingId',
-        internalAppId: 'dummyInternalAppId',
+        appId: 'dummyAppId',
       };
       getContext((context) => {
         Object.keys(expectedContext).forEach((e) => {

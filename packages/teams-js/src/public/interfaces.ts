@@ -760,11 +760,11 @@ export interface Context {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link app.Context.internalAppId} instead
+   * As of 2.0.0, please use {@link app.AppInfo.appId | app.Context.app.appId} instead
    *
-   * Internal app id that is used by Hubs to distinguish between different apps sideloaded or in store
+   * App id that is used by Hosts to distinguish between different apps sideloaded or in store
    */
-  internalAppId?: string;
+  appId?: string;
 }
 
 /** Represents the parameters used to share a deep link. */
