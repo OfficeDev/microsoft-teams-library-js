@@ -1,4 +1,5 @@
 import { sendAndHandleSdkError } from '../internal/communication';
+import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import * as utils from '../internal/utils';
@@ -99,6 +100,12 @@ export namespace clipboard {
    * @beta
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard ? true : false;
+    if (GlobalVars.isFramelessWindow) {
+      return ensureInitialized(runtime) && runtime.supports.clipboard ? true : false;
+    } else {
+      return ensureInitialized(runtime) && navigator && navigator.clipboard && runtime.supports.clipboard
+        ? true
+        : false;
+    }
   }
 }
