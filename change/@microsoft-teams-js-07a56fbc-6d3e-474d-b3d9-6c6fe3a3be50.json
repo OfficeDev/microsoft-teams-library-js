@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added a new parameter to getContext() API called appId for developers to access their current App ID",
+  "comment": "Added a new parameter to getContext() API called internalAppId for Internal App ID",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
   "dependentChangeType": "patch"
