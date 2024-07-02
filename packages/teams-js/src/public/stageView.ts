@@ -116,12 +116,17 @@ export namespace stageView {
     return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
   }
 
-  export namespace stageClose {
+  /**
+   * Namespace to for actions that can be taken on the stage view itself.
+   *
+   * @beta
+   */
+  export namespace self {
     /**
      * Closes the current stage view.
      * @returns Promise that resolves or rejects with an error once the stage view is closed.
      */
-    export function closeCurrentWindow(): Promise<void> {
+    export function close(): Promise<void> {
       return new Promise((resolve) => {
         ensureInitialized(runtime, FrameContexts.stage);
 
@@ -132,22 +137,26 @@ export namespace stageView {
         resolve(
           sendAndHandleSdkError(
             getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
-            'stageView.closeCurrentWindow',
+            'stageView.self.close',
           ),
         );
       });
     }
 
     /**
-     * Checks if stageView capability is supported by the host
+     * Checks if stageView.self capability is supported by the host
      * @beta
-     * @returns boolean to represent whether the stageView capability is supported
+     * @returns boolean to represent whether the stageView.self capability is supported
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      *
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.stageView ? true : false;
+      return ensureInitialized(runtime, FrameContexts.stage) &&
+        runtime.supports.stageView &&
+        runtime.supports.stageView.self
+        ? true
+        : false;
     }
   }
 }
