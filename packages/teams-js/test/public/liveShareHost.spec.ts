@@ -40,7 +40,7 @@ describe('LiveShareHost', () => {
       await utils.initializeWithContext('settings');
       const result = new Promise((resolve) => resolve(LiveShareHost.create()));
       await expect(result).rejects.toThrowError(
-        'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+        'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
       );
     });
 
@@ -68,7 +68,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -84,7 +84,7 @@ describe('LiveShareHost', () => {
 
       const getFluidTenantInfoMessage = utils.findMessageByFunc('interactive.getFluidTenantInfo');
       expect(getFluidTenantInfoMessage).not.toBeNull();
-      utils.respondToMessage(getFluidTenantInfoMessage, false, mockTenantInfo);
+      await utils.respondToMessage(getFluidTenantInfoMessage, false, mockTenantInfo);
       await expect(promise).resolves.toEqual(mockTenantInfo);
     });
   });
@@ -106,7 +106,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -119,7 +119,7 @@ describe('LiveShareHost', () => {
       const getFluidTokenMessage = utils.findMessageByFunc('interactive.getFluidToken');
       expect(getFluidTokenMessage).not.toBeNull();
       expect(getFluidTokenMessage.args).toStrictEqual(['test-container']);
-      utils.respondToMessage(getFluidTokenMessage, false, mockToken);
+      await utils.respondToMessage(getFluidTokenMessage, false, mockToken);
       await expect(promise).resolves.toStrictEqual(mockToken);
     });
   });
@@ -141,7 +141,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -159,7 +159,7 @@ describe('LiveShareHost', () => {
 
       const getFluidContainerIdMessage = utils.findMessageByFunc('interactive.getFluidContainerId');
       expect(getFluidContainerIdMessage).not.toBeNull();
-      utils.respondToMessage(getFluidContainerIdMessage, false, mockContainerInfo);
+      await utils.respondToMessage(getFluidContainerIdMessage, false, mockContainerInfo);
       await expect(promise).resolves.toEqual(mockContainerInfo);
     });
   });
@@ -181,7 +181,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -200,7 +200,7 @@ describe('LiveShareHost', () => {
       const setFluidContainerIdMessage = utils.findMessageByFunc('interactive.setFluidContainerId');
       expect(setFluidContainerIdMessage).not.toBeNull();
       expect(setFluidContainerIdMessage.args).toStrictEqual(['test-container']);
-      utils.respondToMessage(setFluidContainerIdMessage, false, mockContainerInfo);
+      await utils.respondToMessage(setFluidContainerIdMessage, false, mockContainerInfo);
       await expect(promise).resolves.toStrictEqual(mockContainerInfo);
     });
   });
@@ -222,7 +222,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -238,7 +238,7 @@ describe('LiveShareHost', () => {
 
       const getNtpTimeMessage = utils.findMessageByFunc('interactive.getNtpTime');
       expect(getNtpTimeMessage).not.toBeNull();
-      utils.respondToMessage(getNtpTimeMessage, false, mockNtpTime);
+      await utils.respondToMessage(getNtpTimeMessage, false, mockNtpTime);
       await expect(promise).resolves.toEqual(mockNtpTime);
     });
   });
@@ -260,7 +260,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -273,7 +273,7 @@ describe('LiveShareHost', () => {
       const registerClientIdMessage = utils.findMessageByFunc('interactive.registerClientId');
       expect(registerClientIdMessage).not.toBeNull();
       expect(registerClientIdMessage.args).toStrictEqual(['test-client']);
-      utils.respondToMessage(registerClientIdMessage, false, userRoles);
+      await utils.respondToMessage(registerClientIdMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
     });
   });
@@ -295,7 +295,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -308,7 +308,7 @@ describe('LiveShareHost', () => {
       const getClientRolesMessage = utils.findMessageByFunc('interactive.getClientRoles');
       expect(getClientRolesMessage).not.toBeNull();
       expect(getClientRolesMessage.args).toStrictEqual(['test-client']);
-      utils.respondToMessage(getClientRolesMessage, false, userRoles);
+      await utils.respondToMessage(getClientRolesMessage, false, userRoles);
       await expect(promise).resolves.toStrictEqual(userRoles);
     });
   });
@@ -330,7 +330,7 @@ describe('LiveShareHost', () => {
         expect(true).toBe(false);
       } catch (e) {
         expect(e.message).toBe(
-          'This call is only allowed in following contexts: ["meetingStage","sidePanel"]. Current context: "settings".',
+          'This call is only allowed in following contexts: ["meetingStage","sidePanel","content"]. Current context: "settings".',
         );
       }
     });
@@ -347,7 +347,7 @@ describe('LiveShareHost', () => {
       const getClientInfoMessage = utils.findMessageByFunc('interactive.getClientInfo');
       expect(getClientInfoMessage).not.toBeNull();
       expect(getClientInfoMessage.args).toStrictEqual(['test-client']);
-      utils.respondToMessage(getClientInfoMessage, false, userInfo);
+      await utils.respondToMessage(getClientInfoMessage, false, userInfo);
       await expect(promise).resolves.toStrictEqual(userInfo);
     });
   });

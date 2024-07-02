@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { sendMessageToParentWithVersion } from '../internal/communication';
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ChildAppWindow, IAppWindow } from './appWindow';
@@ -17,7 +17,7 @@ const tasksTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link dialog} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
@@ -55,10 +55,10 @@ export namespace tasks {
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParentWithVersion(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.card) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParentWithVersion(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
       botUrlOpenHelper(apiVersionTag, getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
@@ -69,7 +69,7 @@ export namespace tasks {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
+   * As of TeamsJS v2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *

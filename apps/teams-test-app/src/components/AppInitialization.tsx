@@ -67,6 +67,7 @@ const NotifyFailure = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: isTestBackCompat() ? `"${appInitialization.FailedReason.Timeout}"` : `"${app.FailedReason.Other}"`,
   });
 
 const NotifyExpectedFailure = (): React.ReactElement =>
@@ -93,6 +94,9 @@ const NotifyExpectedFailure = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: isTestBackCompat()
+      ? `"${appInitialization.ExpectedFailureReason.Throttling}"`
+      : `"${app.ExpectedFailureReason.Other}"`,
   });
 
 const AppInitializationAPIs = (): ReactElement => (

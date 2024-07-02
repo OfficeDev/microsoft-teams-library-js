@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed more violations of strictNullChecks",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,8 +1,14 @@
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const calendarTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Interact with the user's calendar, including opening calendar items and composing meetings.
@@ -24,7 +30,13 @@ export namespace calendar {
         throw new Error('Must supply an itemId to openCalendarItem');
       }
 
-      resolve(sendAndHandleStatusAndReason('calendar.openCalendarItem', openCalendarItemParams));
+      resolve(
+        sendAndHandleStatusAndReason(
+          getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_OpenCalendarItem),
+          'calendar.openCalendarItem',
+          openCalendarItemParams,
+        ),
+      );
     });
   }
 
@@ -39,9 +51,11 @@ export namespace calendar {
       if (!isSupported()) {
         throw new Error('Not supported');
       }
+      const apiVersionTag = getApiVersionTag(calendarTelemetryVersionNumber, ApiName.Calendar_ComposeMeeting);
       if (runtime.isLegacyTeams) {
         resolve(
           sendAndHandleStatusAndReason(
+            apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForCalendar(
               composeMeetingParams.attendees,
@@ -53,7 +67,7 @@ export namespace calendar {
           ),
         );
       } else {
-        resolve(sendAndHandleStatusAndReason('calendar.composeMeeting', composeMeetingParams));
+        resolve(sendAndHandleStatusAndReason(apiVersionTag, 'calendar.composeMeeting', composeMeetingParams));
       }
     });
   }

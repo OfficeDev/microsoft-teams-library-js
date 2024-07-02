@@ -7,6 +7,7 @@ import {
   ResumeContext,
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
@@ -60,6 +61,7 @@ const OpenLink = (): ReactElement =>
         },
       },
     },
+    defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
   });
 
 const RegisterOnThemeChangeHandler = (): ReactElement =>
@@ -78,34 +80,50 @@ const RegisterOnThemeChangeHandler = (): ReactElement =>
     },
   });
 
-const RegisterOnResumeHandler = (): React.ReactElement =>
-  ApiWithoutInput({
+const RegisterOnResumeHandler = (): React.ReactElement => {
+  const navigate = useNavigate();
+  return ApiWithoutInput({
     name: 'RegisterOnResumeHandler',
     title: 'Register On Resume Handler',
     onClick: async (setResult) => {
       app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
         setResult('successfully called with context:' + JSON.stringify(context));
+        // get the route from the context
+        const route = context.contentUrl;
+        // navigate to the correct path based on URL
+        navigate(route.pathname);
         app.notifySuccess();
       });
 
       return 'registered';
     },
   });
+};
 
 const RegisterBeforeSuspendOrTerminateHandler = (): React.ReactElement =>
-  ApiWithoutInput({
+  ApiWithTextInput<number>({
     name: 'RegisterBeforeSuspendOrTerminateHandler',
     title: 'Register Before Suspend/Terminate Handler',
-    onClick: async (setResult) => {
-      app.lifecycle.registerBeforeSuspendOrTerminateHandler((): void => {
-        alert('beforeSuspendOrTerminate received');
-        setResult('Success');
-      });
-
-      return 'registered';
+    onClick: {
+      validateInput: (input) => {
+        if (typeof input !== 'number') {
+          throw new Error('input should be a number');
+        }
+      },
+      submit: async (delay: number, setResult: (result: string) => void) => {
+        app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
+          return new Promise<void>((resolve) => {
+            setTimeout(() => {
+              setResult('beforeSuspendOrTerminate received');
+              resolve();
+            }, delay);
+          });
+        });
+        return 'registered';
+      },
     },
+    defaultInput: '3000',
   });
-
 const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />

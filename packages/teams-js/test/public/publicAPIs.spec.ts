@@ -3,7 +3,7 @@ import * as utilFunc from '../../src/internal/utils';
 import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
-import { Context, FrameContext, TabInstanceParameters } from '../../src/public/interfaces';
+import { Context, FrameContext, LoadContext, TabInstanceParameters } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {
   enablePrintCapability,
@@ -74,7 +74,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(2);
+    expect(initMessage.args.length).toEqual(3);
     expect(initMessage.args[0]).toEqual(version);
     expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     expect(initMessage.timestamp).not.toBeNull();
@@ -143,7 +143,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
 
-    utils.sendMessage('changeSettings', '');
+    await utils.sendMessage('changeSettings', '');
 
     expect(handlerCalled).toBeTruthy();
   });
@@ -164,7 +164,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
 
-    utils.sendMessage('appButtonClick', '');
+    await utils.sendMessage('appButtonClick', '');
     expect(handlerCalled).toBeTruthy();
   });
 
@@ -184,7 +184,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
 
-    utils.sendMessage('appButtonHoverEnter', '');
+    await utils.sendMessage('appButtonHoverEnter', '');
 
     expect(handlerCalled).toBeTruthy();
   });
@@ -205,7 +205,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerCalled = true;
     });
 
-    utils.sendMessage('appButtonHoverLeave', '');
+    await utils.sendMessage('appButtonHoverLeave', '');
 
     expect(handlerCalled).toBeTruthy();
   });
@@ -226,7 +226,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       newTheme = theme;
     });
 
-    utils.sendMessage('themeChange', 'someTheme');
+    await utils.sendMessage('themeChange', 'someTheme');
 
     expect(newTheme).toBe('someTheme');
   });
@@ -234,7 +234,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   it('should call navigateBack automatically when no back button handler is registered', async () => {
     await utils.initializeWithContext(FrameContexts.content);
 
-    utils.sendMessage('backButtonPress');
+    await utils.sendMessage('backButtonPress');
 
     const navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
@@ -248,7 +248,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       return true;
     });
 
-    utils.sendMessage('backButtonPress');
+    await utils.sendMessage('backButtonPress');
 
     const navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).toBeNull();
@@ -275,7 +275,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       return true;
     });
 
-    utils.sendMessage('focusEnter');
+    await utils.sendMessage('focusEnter');
     expect(handlerInvoked).toBe(true);
   });
 
@@ -299,7 +299,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       handlerInvoked = true;
     });
 
-    utils.sendMessage('fullScreenChange');
+    await utils.sendMessage('fullScreenChange');
     expect(handlerInvoked).toBe(true);
   });
 
@@ -313,7 +313,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
   });
 
   it('should successfully get context', (done) => {
-    utils.initializeWithContext(FrameContexts.content).then(() => {
+    utils.initializeWithContext(FrameContexts.content).then(async () => {
       const expectedContext: Context = {
         groupId: 'someGroupId',
         teamId: 'someTeamId',
@@ -361,12 +361,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
       //insert expected time comparison here?
-      utils.respondToMessage(getContextMessage, expectedContext);
+      await utils.respondToMessage(getContextMessage, expectedContext);
     });
   });
 
   it('should successfully get frame context in side panel', (done) => {
-    utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
+    utils.initializeWithContext(FrameContexts.sidePanel).then(async () => {
       getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
@@ -375,12 +375,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
-      utils.respondToMessage(getContextMessage, {});
+      await utils.respondToMessage(getContextMessage, {});
     });
   });
 
   it('should successfully get frame context when returned from client', (done) => {
-    utils.initializeWithContext(FrameContexts.content).then(() => {
+    utils.initializeWithContext(FrameContexts.content).then(async () => {
       getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
@@ -389,12 +389,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
-      utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
+      await utils.respondToMessage(getContextMessage, { frameContext: FrameContexts.sidePanel });
     });
   });
 
   it('should successfully get frame context in side panel with fallback logic if not returned from client', (done) => {
-    utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
+    utils.initializeWithContext(FrameContexts.sidePanel).then(async () => {
       getContext((context) => {
         expect(context.frameContext).toBe(FrameContexts.sidePanel);
         done();
@@ -403,7 +403,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       const getContextMessage = utils.findMessageByFunc('getContext');
       expect(getContextMessage).not.toBeNull();
 
-      utils.respondToMessage(getContextMessage, {});
+      await utils.respondToMessage(getContextMessage, {});
     });
   });
 
@@ -416,7 +416,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
       return false;
     });
 
-    utils.sendMessage('backButtonPress');
+    await utils.sendMessage('backButtonPress');
 
     const navigateBackMessage = utils.findMessageByFunc('navigateBack');
     expect(navigateBackMessage).not.toBeNull();
@@ -453,7 +453,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.content).then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(async () => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(true);
@@ -476,12 +476,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: true,
         };
 
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
 
     it('should invoke error callback', (done) => {
-      utils.initializeWithContext(FrameContexts.content).then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(async () => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(false);
@@ -504,12 +504,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: false,
           error: 'Something went wrong...',
         };
-        utils.respondToMessage(message, data.success, data.error);
+        await utils.respondToMessage(message, data.success, data.error);
       });
     });
 
     it('should invoke getGenericOnCompleteHandler when no callback is provided.', (done) => {
-      utils.initializeWithContext(FrameContexts.content).then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(async () => {
         const request = 'dummyDeepLink';
         jest.spyOn(utilFunc, 'getGenericOnCompleteHandler').mockImplementation(() => {
           return (success: boolean, reason: string): void => {
@@ -535,12 +535,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: false,
           error: 'Something went wrong...',
         };
-        utils.respondToMessage(message, data.success, data.error);
+        await utils.respondToMessage(message, data.success, data.error);
       });
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.content).then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(async () => {
         const request = 'dummyDeepLink';
         const onComplete = (status: boolean, reason?: string): void => {
           expect(status).toBe(true);
@@ -562,7 +562,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         const data = {
           success: true,
         };
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
   });
@@ -577,7 +577,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -601,12 +601,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: true,
         };
 
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
 
     it('should invoke error callback', (done) => {
-      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -630,12 +630,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: false,
           error: 'Something went wrong...',
         };
-        utils.respondToMessage(message, data.success, data.error);
+        await utils.respondToMessage(message, data.success, data.error);
       });
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.sidePanel).then(() => {
+      utils.initializeWithContext(FrameContexts.sidePanel).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -658,7 +658,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         const data = {
           success: true,
         };
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
   });
@@ -673,7 +673,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.task).then(() => {
+      utils.initializeWithContext(FrameContexts.task).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -697,12 +697,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: true,
         };
 
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
 
     it('should invoke error callback', (done) => {
-      utils.initializeWithContext(FrameContexts.task).then(() => {
+      utils.initializeWithContext(FrameContexts.task).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -727,12 +727,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
           error: 'Something went wrong...',
         };
 
-        utils.respondToMessage(message, data.success, data.error);
+        await utils.respondToMessage(message, data.success, data.error);
       });
     });
 
     it('should successfully send a request', (done) => {
-      utils.initializeWithContext(FrameContexts.content).then(() => {
+      utils.initializeWithContext(FrameContexts.content).then(async () => {
         const request = 'dummyDeepLink';
 
         const onComplete = (status: boolean, reason?: string): void => {
@@ -756,7 +756,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
           success: true,
         };
 
-        utils.respondToMessage(message, data.success);
+        await utils.respondToMessage(message, data.success);
       });
     });
   });
@@ -849,7 +849,12 @@ describe('MicrosoftTeams-publicAPIs', () => {
         return false;
       });
 
-      utils.sendMessage('load');
+      const loadContext: LoadContext = {
+        entityId: 'testEntityId',
+        contentUrl: 'https://localhost:4000',
+      };
+
+      await utils.sendMessage('load', loadContext);
 
       expect(handlerInvoked).toBe(true);
     });
@@ -905,7 +910,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         return false;
       });
 
-      utils.sendMessage('beforeUnload');
+      await utils.sendMessage('beforeUnload');
 
       expect(handlerInvoked).toBe(true);
     });
@@ -924,7 +929,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     it('should call readyToUnload automatically when no before unload handler is registered', async () => {
       await utils.initializeWithContext(FrameContexts.content);
 
-      utils.sendMessage('beforeUnload');
+      await utils.sendMessage('beforeUnload');
 
       const readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).not.toBeNull();
@@ -975,7 +980,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
         return true;
       });
 
-      utils.sendMessage('beforeUnload');
+      await utils.sendMessage('beforeUnload');
 
       let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
       expect(readyToUnloadMessage).toBeNull();
@@ -1016,7 +1021,7 @@ describe('MicrosoftTeams-publicAPIs', () => {
     expect(initMessage).not.toBeNull();
     expect(initMessage.id).toBe(0);
     expect(initMessage.func).toBe('initialize');
-    expect(initMessage.args.length).toEqual(2);
+    expect(initMessage.args.length).toEqual(3);
     expect(initMessage.args[0]).toEqual(version);
     expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
     const message = utils.findMessageByFunc('setFrameContext');

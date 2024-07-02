@@ -15,6 +15,7 @@ import {
   ActionObjectType,
   Context,
   FileOpenPreference,
+  LoadContext,
   M365ContentAction,
   SecondaryM365ContentIdName,
 } from '../../src/public/interfaces';
@@ -43,6 +44,10 @@ function isM365ContentType(actionItem: unknown): actionItem is M365ContentAction
 
 describe('Testing app capability', () => {
   const mockErrorMessage = 'Something went wrong...';
+  const loadContext: LoadContext = {
+    entityId: 'testEntityId',
+    contentUrl: 'https://localhost:4000',
+  };
   describe('Framed - Testing app capability', () => {
     // Use to send a mock message from the app.
     const utils = new Utils();
@@ -78,7 +83,7 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -106,7 +111,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -140,7 +145,7 @@ describe('Testing app capability', () => {
         expect(secondCallbackInvoked).toBe(false);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
         await initPromise;
 
         expect(firstCallbackInvoked).toBe(true);
@@ -154,7 +159,7 @@ describe('Testing app capability', () => {
         expect(utils.messages.length).toBe(1);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
         await initPromise;
 
         let callbackInvoked = false;
@@ -170,7 +175,7 @@ describe('Testing app capability', () => {
 
         const initMessage = utils.findMessageByFunc('initialize');
         const highestSupportedVersion: string = '1.6.0';
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, highestSupportedVersion);
+        await utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, highestSupportedVersion);
         await initPromise;
         expect(runtime).toEqual(
           generateVersionBasedTeamsRuntimeConfig(
@@ -186,7 +191,13 @@ describe('Testing app capability', () => {
 
         const initMessage = utils.findMessageByFunc('initialize');
         const highestSupportedVersion: string = '1.6.0';
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '', highestSupportedVersion);
+        await utils.respondToMessage(
+          initMessage,
+          FrameContexts.content,
+          HostClientType.web,
+          '',
+          highestSupportedVersion,
+        );
         await initPromise;
 
         expect(runtime).toEqual(
@@ -203,7 +214,7 @@ describe('Testing app capability', () => {
 
         const initMessage = utils.findMessageByFunc('initialize');
         const highestSupportedVersion: string = '1.6.0';
-        utils.respondToMessage(
+        await utils.respondToMessage(
           initMessage,
           FrameContexts.content,
           HostClientType.web,
@@ -225,7 +236,7 @@ describe('Testing app capability', () => {
         const promise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
+        await utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, null);
 
         await expect(promise).rejects.toThrowError('Received runtime config is invalid');
       });
@@ -234,7 +245,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(
+        await utils.respondToMessage(
           initMessage,
           FrameContexts.content,
           HostClientType.web,
@@ -250,7 +261,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(
+        await utils.respondToMessage(
           initMessage,
           FrameContexts.content,
           HostClientType.web,
@@ -267,7 +278,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(
+        await utils.respondToMessage(
           initMessage,
           FrameContexts.content,
           HostClientType.web,
@@ -285,7 +296,7 @@ describe('Testing app capability', () => {
 
         const initMessage = utils.findMessageByFunc('initialize');
         const highestSupportedVersion: string = '1.6.0';
-        utils.respondToMessage(
+        await utils.respondToMessage(
           initMessage,
           FrameContexts.content,
           HostClientType.web,
@@ -309,7 +320,7 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
         expect(initMessage).not.toBeNull();
 
-        utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
+        await utils.respondToMessage(initMessage, FrameContexts.content, HostClientType.web, '1.6.0', 'null');
 
         await expect(initPromise).rejects.toThrowError(
           'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
@@ -321,7 +332,7 @@ describe('Testing app capability', () => {
           const initPromise = app.initialize();
 
           const initMessage = utils.findMessageByFunc('initialize');
-          utils.respondToMessage(initMessage, FrameContexts.content, hostClientType, '', '1.6.0');
+          await utils.respondToMessage(initMessage, FrameContexts.content, hostClientType, '', '1.6.0');
           await initPromise;
 
           expect(GlobalVars.hostClientType).toBe(hostClientType);
@@ -333,7 +344,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(spy).toHaveBeenCalled();
@@ -344,7 +355,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(spy).toHaveBeenCalled();
@@ -355,7 +366,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(spy).toHaveBeenCalled();
@@ -366,7 +377,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(spy).toHaveBeenCalled();
@@ -377,7 +388,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize([validOrigin]);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToMessage(initMessage, FrameContexts.content);
+        await utils.respondToMessage(initMessage, FrameContexts.content);
         await initPromise;
 
         expect(GlobalVars.additionalValidOrigins.length).toBe(1);
@@ -401,7 +412,7 @@ describe('Testing app capability', () => {
         let message = utils.findMessageByFunc('getContext');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -418,7 +429,7 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          utils.respondToMessage(getContextMessage, {});
+          await utils.respondToMessage(getContextMessage, {});
           const actualContext = await contextPromise;
 
           expect(actualContext.page.frameContext).toBe(context);
@@ -432,7 +443,7 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          utils.respondToMessage(getContextMessage, { frameContext: context });
+          await utils.respondToMessage(getContextMessage, { frameContext: context });
           const actualContext = await contextPromise;
 
           expect(actualContext.page.frameContext).toBe(context);
@@ -446,7 +457,7 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          utils.respondToMessage(getContextMessage, {});
+          await utils.respondToMessage(getContextMessage, {});
           const actualContext = await contextPromise;
 
           expect(actualContext.page.frameContext).toBe(context);
@@ -547,6 +558,7 @@ describe('Testing app capability', () => {
             userClickTime: 2222,
             userFileOpenPreference: FileOpenPreference.Inline,
             isMultiWindow: true,
+            isBackgroundLoad: true,
             frameContext: context,
             appLaunchId: 'appLaunchId',
             userDisplayName: 'someTestUser',
@@ -579,6 +591,7 @@ describe('Testing app capability', () => {
               sourceOrigin: 'www.origin.com',
               frameContext: context,
               isMultiWindow: true,
+              isBackgroundLoad: true,
             },
             user: {
               id: 'someUserObjectId',
@@ -625,10 +638,11 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
           //insert expected time comparison here?
-          utils.respondToMessage(getContextMessage, contextBridge);
+          await utils.respondToMessage(getContextMessage, contextBridge);
           const actualContext = await contextPromise;
 
           const firstActionItem =
@@ -662,7 +676,7 @@ describe('Testing app capability', () => {
         let message = utils.findMessageByFunc('appInitialization.appLoaded');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -698,7 +712,7 @@ describe('Testing app capability', () => {
         let message = utils.findMessageByFunc('appInitialization.success');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -742,7 +756,7 @@ describe('Testing app capability', () => {
         let message = utils.findMessageByFunc('appInitialization.failure');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -794,7 +808,7 @@ describe('Testing app capability', () => {
           app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
-          utils.sendMessage('themeChange', 'someTheme');
+          await utils.sendMessage('themeChange', 'someTheme');
           expect(newTheme).toBe('someTheme');
         });
       });
@@ -817,7 +831,7 @@ describe('Testing app capability', () => {
     it('should call navigateBack automatically when no back button handler is registered', async () => {
       await utils.initializeWithContext('content');
 
-      utils.sendMessage('backButtonPress');
+      await utils.sendMessage('backButtonPress');
 
       const navigateBackMessage = utils.findMessageByFunc('navigateBack');
       expect(navigateBackMessage).not.toBeNull();
@@ -849,7 +863,7 @@ describe('Testing app capability', () => {
               success: true,
             };
 
-            utils.respondToMessage(message, data.success);
+            await utils.respondToMessage(message, data.success);
             await expect(promise).resolves.not.toThrow();
           });
 
@@ -872,7 +886,7 @@ describe('Testing app capability', () => {
               success: false,
               error: mockErrorMessage,
             };
-            utils.respondToMessage(message, data.success, data.error);
+            await utils.respondToMessage(message, data.success, data.error);
             await expect(promise).rejects.toThrowError(mockErrorMessage);
           });
         });
@@ -881,7 +895,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -890,9 +904,9 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
 
-            utils.sendMessage('beforeUnload');
+            await utils.sendMessage('beforeUnload');
 
             let readyToUnloadMessage = utils.findMessageByFunc('readyToUnload');
             expect(readyToUnloadMessage).not.toBeNull();
@@ -902,7 +916,7 @@ describe('Testing app capability', () => {
       describe('Testing app.lifecycle.registerOnResumeHandler function', () => {
         it('should not allow calls before initialization', () => {
           expect(() =>
-            app.lifecycle.registerOnResumeHandler(() => {
+            app.lifecycle.registerOnResumeHandler(async () => {
               return false;
             }),
           ).toThrowError(new Error(errorLibraryNotInitialized));
@@ -916,8 +930,7 @@ describe('Testing app capability', () => {
             app.lifecycle.registerOnResumeHandler(() => {
               handlerInvoked = true;
             });
-
-            utils.sendMessage('load');
+            await utils.sendMessage('load', loadContext);
             expect(handlerInvoked).toBe(true);
           });
         });
@@ -951,7 +964,7 @@ describe('Testing app capability', () => {
         expect(app.isInitialized()).toBe(false);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -983,7 +996,7 @@ describe('Testing app capability', () => {
         expect(initMessage).not.toBeNull();
         expect(initMessage.id).toBe(0);
         expect(initMessage.func).toBe('initialize');
-        expect(initMessage.args.length).toEqual(2);
+        expect(initMessage.args.length).toEqual(3);
         expect(initMessage.args[0]).toEqual(version);
         expect(initMessage.args[1]).toEqual(latestRuntimeApiVersion);
         expect(initMessage.timestamp).not.toBeNull();
@@ -1015,7 +1028,7 @@ describe('Testing app capability', () => {
         expect(secondCallbackInvoked).toBe(false);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1033,7 +1046,7 @@ describe('Testing app capability', () => {
         expect(utils.messages.length).toBe(1);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1054,7 +1067,7 @@ describe('Testing app capability', () => {
         const initMessage = utils.findMessageByFunc('initialize');
 
         const highestSupportedVersion = '1.6.0';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, highestSupportedVersion],
@@ -1076,7 +1089,7 @@ describe('Testing app capability', () => {
 
         const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '', highestSupportedVersion],
@@ -1098,7 +1111,7 @@ describe('Testing app capability', () => {
 
         const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, 'nonJSONStr', highestSupportedVersion],
@@ -1119,7 +1132,7 @@ describe('Testing app capability', () => {
         const promise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, null],
@@ -1132,7 +1145,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}'],
@@ -1148,7 +1161,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '{"apiVersion":1, "supports":{"mail":{}}}', '1.0.0'],
@@ -1164,7 +1177,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize();
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, '1.0.0', '{"apiVersion":1, "supports":{"mail":{}}}'],
@@ -1181,7 +1194,7 @@ describe('Testing app capability', () => {
 
         const highestSupportedVersion = '1.6.0';
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [FrameContexts.content, HostClientType.web, highestSupportedVersion, 'nonJSONStr'],
@@ -1203,7 +1216,7 @@ describe('Testing app capability', () => {
           const initPromise = app.initialize();
 
           const initMessage = utils.findMessageByFunc('initialize');
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: initMessage.id,
               args: [FrameContexts.content, hostClientType, '', '1.6.0'],
@@ -1220,7 +1233,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1236,7 +1249,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1252,7 +1265,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1268,7 +1281,7 @@ describe('Testing app capability', () => {
 
         const initPromise = app.initialize();
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1284,7 +1297,7 @@ describe('Testing app capability', () => {
         const initPromise = app.initialize([validOrigin]);
 
         const initMessage = utils.findMessageByFunc('initialize');
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: initMessage.id,
             args: [],
@@ -1311,7 +1324,7 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{}],
@@ -1329,7 +1342,7 @@ describe('Testing app capability', () => {
 
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{ frameContext: context }],
@@ -1348,7 +1361,7 @@ describe('Testing app capability', () => {
           const getContextMessage = utils.findMessageByFunc('getContext');
           expect(getContextMessage).not.toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [{}],
@@ -1484,9 +1497,10 @@ describe('Testing app capability', () => {
               mySitePath: 'mySitePath',
               mySiteDomain: 'myDomain',
             },
+            dialogParameters: {},
           };
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: getContextMessage.id,
               args: [contextBridge],
@@ -1589,7 +1603,7 @@ describe('Testing app capability', () => {
           app.registerOnThemeChangeHandler((theme) => {
             newTheme = theme;
           });
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               func: 'themeChange',
               args: ['someTheme'],
@@ -1603,7 +1617,7 @@ describe('Testing app capability', () => {
     it('should call navigateBack automatically when no back button handler is registered', async () => {
       await utils.initializeWithContext('content');
 
-      utils.respondToFramelessMessage({
+      await utils.respondToFramelessMessage({
         data: {
           func: 'backButtonPress',
           args: ['navigateBack'],
@@ -1640,7 +1654,7 @@ describe('Testing app capability', () => {
               success: true,
             };
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [data.success],
@@ -1668,7 +1682,7 @@ describe('Testing app capability', () => {
               success: false,
               error: mockErrorMessage,
             };
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [data.success, data.error],
@@ -1682,7 +1696,7 @@ describe('Testing app capability', () => {
     describe('Testing app.lifecycle subcapability', () => {
       describe('Testing app.lifecycle.registerBeforeSuspendOrTerminateHandler function', () => {
         it('should not allow calls before initialization', () => {
-          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {})).toThrowError(
+          expect(() => app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {})).toThrowError(
             new Error(errorLibraryNotInitialized),
           );
         });
@@ -1691,8 +1705,8 @@ describe('Testing app capability', () => {
           it(`app.lifecycle.registerBeforeSuspendOrTerminateHandler should successfully register a beforSuspendOrTerminate handler and readyToUnload should be called. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
 
-            app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {});
-            utils.respondToFramelessMessage({
+            app.lifecycle.registerBeforeSuspendOrTerminateHandler(async () => {});
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'beforeUnload',
               },
@@ -1720,9 +1734,10 @@ describe('Testing app capability', () => {
             app.lifecycle.registerOnResumeHandler(() => {
               handlerInvoked = true;
             });
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 func: 'load',
+                args: [loadContext],
               },
             } as DOMMessageEvent);
             expect(handlerInvoked).toBe(true);

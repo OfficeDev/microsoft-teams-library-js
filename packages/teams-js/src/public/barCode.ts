@@ -1,9 +1,15 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { validateScanBarCodeInput } from '../internal/mediaUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const barCodeTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the barcode scanning-specific part of the SDK.
@@ -44,7 +50,13 @@ export namespace barCode {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
 
-      resolve(sendAndHandleSdkError('media.scanBarCode', barCodeConfig));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_ScanBarCode),
+          'media.scanBarCode',
+          barCodeConfig,
+        ),
+      );
     });
   }
 
@@ -63,7 +75,13 @@ export namespace barCode {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_HasPermission),
+          'permissions.has',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -82,7 +100,13 @@ export namespace barCode {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(barCodeTelemetryVersionNumber, ApiName.BarCode_RequestPermission),
+          'permissions.request',
+          permissions,
+        ),
+      );
     });
   }
 

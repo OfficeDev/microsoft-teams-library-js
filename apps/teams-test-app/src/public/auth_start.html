@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <h2 style="font-size: 40px;">Starting auth</h2>
+    <h2 style="font-size: 40px">Starting auth</h2>
   </head>
 
   <body>
@@ -10,12 +10,12 @@
       const mockOAuth = params.get('mockOAuth');
       const authId = params.get('authId');
       const method = params.get('oauthRedirectMethod');
-      const redirectUrl = params.get('hostRedirectUrl')
+      const redirectUrl = params.get('hostRedirectUrl');
       const hostName = params.get('hostName');
       const state = `{"authId":"${authId}","method":"${method}","hostName":"${hostName}"}`;
 
       if (redirectUrl) {
-        sessionStorage.setItem('hostRedirectUrl', redirectUrl)
+        sessionStorage.setItem('hostRedirectUrl', redirectUrl);
       }
 
       const getRedirectUri = () => {

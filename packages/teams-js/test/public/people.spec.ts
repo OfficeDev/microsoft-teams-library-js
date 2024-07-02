@@ -155,7 +155,9 @@ describe('people', () => {
   });
 
   describe('Testing people.isSupported function', () => {
+    let utils: Utils = new Utils();
     afterEach(() => {
+      utils = new Utils();
       app._uninitialize();
     });
     it('people.isSupported should return false if the runtime says people is not supported', async () => {

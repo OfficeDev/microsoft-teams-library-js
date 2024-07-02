@@ -41,12 +41,19 @@ describe('clipboard', () => {
         utils = new Utils();
         utils.mockWindow.parent = undefined;
         utils.messages = [];
-        GlobalVars.isFramelessWindow = false;
+        GlobalVars.isFramelessWindow = true;
+        // Clipboard capabilities should function in frameless context when navigator.clipboard is not available
+        Object.assign(navigator, {
+          clipboard: null,
+        })
       });
 
       afterEach(() => {
+        Object.assign(navigator, {
+          clipboard: {},
+        })
         app._uninitialize();
-        GlobalVars.isFramelessWindow = false;
+        GlobalVars.isFramelessWindow = true;
       });
 
       it('clipboard.write should not allow calls before initialization', async () => {
@@ -95,7 +102,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -111,7 +118,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -127,7 +134,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -143,7 +150,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
         } else {
@@ -220,7 +227,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -236,7 +243,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -252,7 +259,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
 
@@ -268,7 +275,7 @@ describe('clipboard', () => {
               expect(message).not.toBeNull();
               expect(message.args.length).toBe(1);
             }
-            message && utils.respondToMessage(message, undefined as unknown);
+            message && (await utils.respondToMessage(message, undefined as unknown));
             expect(promise).resolves;
           });
         } else {
@@ -308,6 +315,7 @@ describe('clipboard', () => {
       Object.values(FrameContexts).forEach((context) => {
         Object.values([
           HostClientType.android,
+          HostClientType.desktop,
           HostClientType.ios,
           HostClientType.ipados,
           HostClientType.macos,
@@ -328,7 +336,7 @@ describe('clipboard', () => {
               try {
                 const promise = clipboard.read();
                 const clipboardReadMessage = utils.findMessageByFunc('clipboard.readFromClipboard');
-                utils.respondToFramelessMessage({
+                await utils.respondToFramelessMessage({
                   data: {
                     id: clipboardReadMessage?.id,
                     args: [undefined, base64ResponsePlainText as string],
@@ -347,7 +355,7 @@ describe('clipboard', () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
               const promise = clipboard.read();
               const clipboardReadMessage = utils.findMessageByFunc('clipboard.readFromClipboard');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: clipboardReadMessage?.id,
                   args: [undefined, base64ResponseHtmlText],
@@ -367,7 +375,7 @@ describe('clipboard', () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
               const promise = clipboard.read();
               const clipboardReadMessage = utils.findMessageByFunc('clipboard.readFromClipboard');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: clipboardReadMessage?.id,
                   args: [undefined, base64ResponseJpeg],
@@ -387,7 +395,7 @@ describe('clipboard', () => {
               utils.setRuntimeConfig({ apiVersion: 2, supports: { clipboard: {} } });
               const promise = clipboard.read();
               const clipboardReadMessage = utils.findMessageByFunc('clipboard.readFromClipboard');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: clipboardReadMessage?.id,
                   args: [undefined, base64ResponsePng],
@@ -455,7 +463,7 @@ describe('clipboard', () => {
             if (message && message.args) {
               expect(message).not.toBeNull();
             }
-            message && utils.respondToMessage(message, undefined as unknown, dataToCopy);
+            message && (await utils.respondToMessage(message, undefined as unknown, dataToCopy));
             const response = await promise;
             expect(response.type).toEqual(dataToCopy.type);
           });
@@ -468,7 +476,7 @@ describe('clipboard', () => {
             if (message && message.args) {
               expect(message).not.toBeNull();
             }
-            message && utils.respondToMessage(message, undefined as unknown, htmlDataToCopy);
+            message && (await utils.respondToMessage(message, undefined as unknown, htmlDataToCopy));
             const response = await promise;
             expect(response.type).toEqual(htmlDataToCopy.type);
           });
@@ -481,7 +489,7 @@ describe('clipboard', () => {
             if (message && message.args) {
               expect(message).not.toBeNull();
             }
-            message && utils.respondToMessage(message, undefined as unknown, imagePngdataToCopy);
+            message && (await utils.respondToMessage(message, undefined as unknown, imagePngdataToCopy));
             const response = await promise;
             expect(response.type).toEqual(imagePngdataToCopy.type);
           });
@@ -493,7 +501,7 @@ describe('clipboard', () => {
             if (message && message.args) {
               expect(message).not.toBeNull();
             }
-            message && utils.respondToMessage(message, undefined as unknown, imageJpegDataToCopy);
+            message && (await utils.respondToMessage(message, undefined as unknown, imageJpegDataToCopy));
             const response = await promise;
             expect(response.type).toEqual(imageJpegDataToCopy.type);
           });

@@ -1,7 +1,13 @@
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const mailTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Used to interact with mail capability, including opening and composing mail.
@@ -23,7 +29,13 @@ export namespace mail {
         throw new Error('Must supply an itemId to openMailItem');
       }
 
-      resolve(sendAndHandleStatusAndReason('mail.openMailItem', openMailItemParams));
+      resolve(
+        sendAndHandleStatusAndReason(
+          getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_OpenMailItem),
+          'mail.openMailItem',
+          openMailItemParams,
+        ),
+      );
     });
   }
 
@@ -40,7 +52,13 @@ export namespace mail {
         throw new Error('Not supported');
       }
 
-      resolve(sendAndHandleStatusAndReason('mail.composeMail', composeMailParams));
+      resolve(
+        sendAndHandleStatusAndReason(
+          getApiVersionTag(mailTelemetryVersionNumber, ApiName.Mail_ComposeMail),
+          'mail.composeMail',
+          composeMailParams,
+        ),
+      );
     });
   }
 

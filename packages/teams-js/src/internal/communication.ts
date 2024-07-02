@@ -10,9 +10,28 @@ import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
-import { MessageRequest, MessageRequestWithRequiredProperties, MessageResponse } from './messageObjects';
+import {
+  deserializeMessageRequest,
+  deserializeMessageResponse,
+  MessageID,
+  MessageRequest,
+  MessageRequestWithRequiredProperties,
+  MessageResponse,
+  SerializedMessageRequest,
+  SerializedMessageResponse,
+  serializeMessageRequest,
+  serializeMessageResponse,
+} from './messageObjects';
+import {
+  NestedAppAuthMessageEventNames,
+  NestedAppAuthRequest,
+  ParsedNestedAppAuthMessageData,
+  tryPolyfillWithNestedAppAuthBridge,
+} from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow, validateOrigin } from './utils';
+import { ssrSafeWindow } from './utils';
+import { UUID as MessageUUID } from './uuidObject';
+import { validateOrigin } from './validOrigins';
 
 const communicationLogger = getLogger('communication');
 
@@ -26,6 +45,8 @@ export class Communication {
   public static parentWindow: Window | any;
   public static childWindow: Window | null;
   public static childOrigin: string | null;
+  public static topWindow: Window | any;
+  public static topOrigin: string | null;
 }
 
 /**
@@ -35,14 +56,15 @@ export class Communication {
 class CommunicationPrivate {
   public static parentMessageQueue: MessageRequest[] = [];
   public static childMessageQueue: MessageRequest[] = [];
+  public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
-  public static callbacks: {
-    [id: number]: Function; // (arg1, arg2, ...etc) => void
-  } = {};
-  public static promiseCallbacks: {
-    [id: number]: Function; // (args[]) => void
-  } = {};
+  public static callbacks: Map<MessageUUID, Function> = new Map();
+  public static promiseCallbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
+  public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
+  public static legacyMessageIdsToUuidMap: {
+    [legacyId: MessageID]: MessageUUID;
+  } = {};
 }
 
 /**
@@ -65,7 +87,7 @@ export function initializeCommunication(
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
-  CommunicationPrivate.messageListener = (evt: DOMMessageEvent): void => processMessage(evt);
+  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> => await processMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -74,6 +96,7 @@ export function initializeCommunication(
     Communication.currentWindow.parent !== Communication.currentWindow.self
       ? Communication.currentWindow.parent
       : Communication.currentWindow.opener;
+  Communication.topWindow = Communication.currentWindow.top;
 
   // Listen to messages from the parent or child frame.
   // Frameless windows will only receive this event from child frames and if validMessageOrigins is passed.
@@ -96,11 +119,16 @@ export function initializeCommunication(
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
-    return sendMessageToParentAsyncWithVersion<[FrameContexts, string, string, string]>(apiVersionTag, 'initialize', [
+    return sendMessageToParentAsync<[FrameContexts, string, string, string]>(apiVersionTag, 'initialize', [
       version,
       latestRuntimeApiVersion,
+      validMessageOrigins,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
+        tryPolyfillWithNestedAppAuthBridge(clientSupportedSDKVersion, Communication.currentWindow, {
+          onMessage: processAuthBridgeMessage,
+          sendPostMessage: sendNestedAuthRequestToTopWindow,
+        });
         return { context, clientType, runtimeConfig, clientSupportedSDKVersion };
       },
     );
@@ -126,45 +154,33 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.parentMessageQueue = [];
   CommunicationPrivate.childMessageQueue = [];
   CommunicationPrivate.nextMessageId = 0;
-  CommunicationPrivate.callbacks = {};
-  CommunicationPrivate.promiseCallbacks = {};
+  CommunicationPrivate.callbacks.clear();
+  CommunicationPrivate.promiseCallbacks.clear();
+  CommunicationPrivate.portCallbacks.clear();
+  CommunicationPrivate.legacyMessageIdsToUuidMap = {};
 }
 
 /**
  * @hidden
  * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendAndUnwrap function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndUnwrapWithVersion<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(([result]: [T]) => result);
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendAndUnwrap<T>(actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsync(actionName, args).then(([result]: [T]) => result);
+export function sendAndUnwrap<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(apiVersionTag, actionName, args).then(([result]: [T]) => result);
 }
 
 /**
  * @hidden
  * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReason function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
  */
-export function sendAndHandleStatusAndReasonWithVersion(
-  apiVersionTag: string,
-  actionName: string,
-  ...args: any[]
-): Promise<void> {
-  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(
+export function sendAndHandleStatusAndReason(apiVersionTag: string, actionName: string, ...args: any[]): Promise<void> {
+  return sendMessageToParentAsync(apiVersionTag, actionName, args).then(
     ([wasSuccessful, reason]: [boolean, string]) => {
       if (!wasSuccessful) {
         throw new Error(reason);
@@ -173,31 +189,22 @@ export function sendAndHandleStatusAndReasonWithVersion(
   );
 }
 
-export function sendAndHandleStatusAndReason(actionName: string, ...args: any[]): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
-    if (!wasSuccessful) {
-      throw new Error(reason);
-    }
-  });
-}
-
 /**
  * @hidden
  * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendAndHandleStatusAndReasonWithDefaultError function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
+export function sendAndHandleStatusAndReasonWithDefaultError(
   apiVersionTag: string,
   actionName: string,
   defaultError: string,
   ...args: any[]
 ): Promise<void> {
-  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(
+  return sendMessageToParentAsync(apiVersionTag, actionName, args).then(
     ([wasSuccessful, reason]: [boolean, string]) => {
       if (!wasSuccessful) {
         throw new Error(reason ? reason : defaultError);
@@ -207,50 +214,16 @@ export function sendAndHandleStatusAndReasonWithDefaultErrorWithVersion(
 }
 
 /**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendAndHandleStatusAndReasonWithDefaultError(
-  actionName: string,
-  defaultError: string,
-  ...args: any[]
-): Promise<void> {
-  return sendMessageToParentAsync(actionName, args).then(([wasSuccessful, reason]: [boolean, string]) => {
-    if (!wasSuccessful) {
-      throw new Error(reason ? reason : defaultError);
-    }
-  });
-}
-
-/**
  * @hidden
  * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendAndHandleSdkError function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendAndHandleSdkErrorWithVersion<T>(
-  apiVersionTag: string,
-  actionName: string,
-  ...args: any[]
-): Promise<T> {
-  return sendMessageToParentAsyncWithVersion(apiVersionTag, actionName, args).then(([error, result]: [SdkError, T]) => {
-    if (error) {
-      throw error;
-    }
-    return result;
-  });
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Promise<T> {
-  return sendMessageToParentAsync(actionName, args).then(([error, result]: [SdkError, T]) => {
+export function sendAndHandleSdkError<T>(apiVersionTag: string, actionName: string, ...args: any[]): Promise<T> {
+  return sendMessageToParentAsync(apiVersionTag, actionName, args).then(([error, result]: [SdkError, T]) => {
     if (error) {
       throw error;
     }
@@ -262,13 +235,12 @@ export function sendAndHandleSdkError<T>(actionName: string, ...args: any[]): Pr
  * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendMessageToParentAsync function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentAsyncWithVersion<T>(
+export function sendMessageToParentAsync<T>(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined = undefined,
@@ -281,11 +253,62 @@ export function sendMessageToParentAsyncWithVersion<T>(
 
   return new Promise((resolve) => {
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    resolve(waitForResponse<T>(request.id));
+    resolve(waitForResponse<T>(request.uuid));
   });
 }
+
+/**
+ * @hidden
+ * Send a message to parent requesting a MessageChannel Port.
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function requestPortFromParentWithVersion(
+  apiVersionTag: string,
+  actionName: string,
+  args: any[] | undefined = undefined,
+): Promise<MessagePort> {
+  if (!isFollowingApiVersionTagFormat(apiVersionTag)) {
+    throw Error(
+      `apiVersionTag: ${apiVersionTag} passed in doesn't follow the pattern starting with 'v' followed by digits, then underscore with words, please check.`,
+    );
+  }
+  const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
+  return waitForPort(request.uuid);
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function waitForPort(requestUuid: MessageUUID): Promise<MessagePort> {
+  return new Promise<MessagePort>((resolve, reject) => {
+    CommunicationPrivate.portCallbacks.set(requestUuid, (port: MessagePort | undefined, args?: unknown[]) => {
+      if (port instanceof MessagePort) {
+        resolve(port);
+      } else {
+        // First arg is the error message, if present
+        reject(args && args.length > 0 ? args[0] : new Error('Host responded without port or error details.'));
+      }
+    });
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function waitForResponse<T>(requestUuid: MessageUUID): Promise<T> {
+  return new Promise<T>((resolve) => {
+    CommunicationPrivate.promiseCallbacks.set(requestUuid, resolve);
+  });
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function sendMessageToParent(apiVersionTag: string, actionName: string, callback?: Function): void;
 
 /**
  * @hidden
@@ -294,32 +317,7 @@ export function sendMessageToParentAsyncWithVersion<T>(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParentAsync<T>(actionName: string, args: any[] | undefined = undefined): Promise<T> {
-  return new Promise((resolve) => {
-    const request = sendMessageToParentHelper(
-      getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),
-      actionName,
-      args,
-    );
-    resolve(waitForResponse<T>(request.id));
-  });
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-function waitForResponse<T>(requestId: number): Promise<T> {
-  return new Promise<T>((resolve) => {
-    CommunicationPrivate.promiseCallbacks[requestId] = resolve;
-  });
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageToParentWithVersion(
+export function sendMessageToParent(
   apiVersionTag: string,
   actionName: string,
   args: any[] | undefined,
@@ -327,19 +325,13 @@ export function sendMessageToParentWithVersion(
 ): void;
 
 /**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageToParentWithVersion(apiVersionTag: string, actionName: string, callback?: Function): void;
-
-/**
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
- * for telemetry work. The code inside of this function will be used to replace sendMessageToParent function
- * and this function will be removed when the project is completed.
+ * for telemetry work.
+ *
  */
-export function sendMessageToParentWithVersion(
+export function sendMessageToParent(
   apiVersionTag: string,
   actionName: string,
   argsOrCallback?: any[] | Function,
@@ -358,54 +350,62 @@ export function sendMessageToParentWithVersion(
     );
   }
 
-  // APIs with v0 represents beta changes haven't been implemented on them
-  // Otherwise, minimum version number will be v1
-  /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
   const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
   if (callback) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    CommunicationPrivate.callbacks[request.id] = callback;
+    CommunicationPrivate.callbacks.set(request.uuid, callback);
   }
 }
 
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageToParent(actionName: string, callback?: Function): void;
-
-/**
- * @hidden
- * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export function sendMessageToParent(actionName: string, args: any[] | undefined, callback?: Function): void;
+const sendNestedAuthRequestToTopWindowLogger = communicationLogger.extend('sendNestedAuthRequestToTopWindow');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export function sendMessageToParent(actionName: string, argsOrCallback?: any[] | Function, callback?: Function): void {
-  let args: any[] | undefined;
-  if (argsOrCallback instanceof Function) {
-    callback = argsOrCallback;
-  } else if (argsOrCallback instanceof Array) {
-    args = argsOrCallback;
+export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuthRequest {
+  const logger = sendNestedAuthRequestToTopWindowLogger;
+
+  const targetWindow = Communication.topWindow;
+  const request = createNestedAppAuthRequest(message);
+
+  logger('Message %i information: %o', request.uuid, { actionName: request.func });
+
+  return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
+}
+
+const sendRequestToTargetWindowHelperLogger = communicationLogger.extend('sendRequestToTargetWindowHelper');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function sendRequestToTargetWindowHelper(
+  targetWindow: Window,
+  messageRequest: MessageRequestWithRequiredProperties | NestedAppAuthRequest,
+): MessageRequestWithRequiredProperties | NestedAppAuthRequest {
+  const logger = sendRequestToTargetWindowHelperLogger;
+  const targetWindowName = getTargetName(targetWindow);
+  const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
+
+  if (GlobalVars.isFramelessWindow) {
+    if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
+      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuidAsString);
+      (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
+    }
+  } else {
+    const targetOrigin = getTargetOrigin(targetWindow);
+
+    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
+    // queue the message and send it after the origin is established
+    if (targetWindow && targetOrigin) {
+      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuidAsString);
+      targetWindow.postMessage(request, targetOrigin);
+    } else {
+      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuidAsString);
+      getTargetMessageQueue(targetWindow).push(messageRequest);
+    }
   }
-
-  const request = sendMessageToParentHelper(
-    getApiVersionTag(ApiVersionNumber.V_0, 'testing' as ApiName),
-    actionName,
-    args,
-  );
-  if (callback) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    CommunicationPrivate.callbacks[request.id] = callback;
-  }
+  return messageRequest;
 }
 
 const sendMessageToParentHelperLogger = communicationLogger.extend('sendMessageToParentHelper');
@@ -420,30 +420,13 @@ function sendMessageToParentHelper(
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
+
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
-  logger('Message %i information: %o', request.id, { actionName, args });
+  logger('Message %i information: %o', request.uuid, { actionName, args });
 
-  if (GlobalVars.isFramelessWindow) {
-    if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger('Sending message %i to parent via framelessPostMessage interface', request.id);
-      (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
-    }
-  } else {
-    const targetOrigin = getTargetOrigin(targetWindow);
-
-    // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
-    // queue the message and send it after the origin is established
-    if (targetWindow && targetOrigin) {
-      logger('Sending message %i to parent via postMessage', request.id);
-      targetWindow.postMessage(request, targetOrigin);
-    } else {
-      logger('Adding message %i to parent message queue', request.id);
-      getTargetMessageQueue(targetWindow).push(request);
-    }
-  }
-  return request;
+  return sendRequestToTargetWindowHelper(targetWindow, request);
 }
 
 const processMessageLogger = communicationLogger.extend('processMessage');
@@ -452,7 +435,7 @@ const processMessageLogger = communicationLogger.extend('processMessage');
  * @internal
  * Limited to Microsoft-internal use
  */
-function processMessage(evt: DOMMessageEvent): void {
+async function processMessage(evt: DOMMessageEvent): Promise<void> {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
@@ -464,22 +447,99 @@ function processMessage(evt: DOMMessageEvent): void {
   // in their call to app.initialize
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
+
+  return shouldProcessMessage(messageSource, messageOrigin).then((result) => {
+    if (!result) {
+      processMessageLogger(
+        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+      );
+      return;
+    }
+    // Update our parent and child relationships based on this message
+    updateRelationships(messageSource, messageOrigin);
+    // Handle the message
+    if (messageSource === Communication.parentWindow) {
+      handleParentMessage(evt);
+    } else if (messageSource === Communication.childWindow) {
+      handleChildMessage(evt);
+    }
+  });
+}
+
+const processAuthBridgeMessageLogger = communicationLogger.extend('processAuthBridgeMessage');
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (response: string) => void): void {
+  const logger = processAuthBridgeMessageLogger;
+
+  // Process only if we received a valid message
+  if (!evt || !evt.data || typeof evt.data !== 'object') {
+    logger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  const { args } = evt.data as SerializedMessageResponse;
+  const [, message] = args ?? [];
+  const parsedData: ParsedNestedAppAuthMessageData = (() => {
+    try {
+      return JSON.parse(message);
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  // Validate that it is a valid auth bridge response message
+  if (
+    !parsedData ||
+    typeof parsedData !== 'object' ||
+    parsedData.messageType !== NestedAppAuthMessageEventNames.Response
+  ) {
+    logger('Unrecognized data format received by app, message being ignored. Message: %o', evt);
+    return;
+  }
+
+  // Process only if the message is coming from a different window and a valid origin
+  // valid origins are either a pre-known origin or one specified by the app developer
+  // in their call to app.initialize
+  const messageSource = evt.source || (evt as unknown as DOMMessageEvent)?.originalEvent?.source;
+  const messageOrigin = evt.origin || (evt as unknown as DOMMessageEvent)?.originalEvent?.origin;
+  if (!messageSource) {
+    logger('Message being ignored by app because it is coming for a target that is null');
+    return;
+  }
+
   if (!shouldProcessMessage(messageSource, messageOrigin)) {
-    processMessageLogger(
+    logger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
     return;
   }
 
-  // Update our parent and child relationships based on this message
-  updateRelationships(messageSource, messageOrigin);
-
-  // Handle the message
-  if (messageSource === Communication.parentWindow) {
-    handleParentMessage(evt);
-  } else if (messageSource === Communication.childWindow) {
-    handleChildMessage(evt);
+  /**
+   * In most cases, top level window and the parent window will be same.
+   * If they're not, perform the necessary updates for the top level window.
+   *
+   * Top window logic to flush messages is kept independent so that we don't affect
+   * any of the code for the existing communication channel.
+   */
+  if (!Communication.topWindow || Communication.topWindow.closed || messageSource === Communication.topWindow) {
+    Communication.topWindow = messageSource;
+    Communication.topOrigin = messageOrigin;
   }
+
+  // Clean up pointers to closed parent and child windows
+  if (Communication.topWindow && Communication.topWindow.closed) {
+    Communication.topWindow = null;
+    Communication.topOrigin = null;
+  }
+
+  flushMessageQueue(Communication.topWindow);
+
+  // Return the response to the registered callback
+  onMessageReceived(message);
 }
 
 const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
@@ -491,7 +551,7 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
  * @internal
  * Limited to Microsoft-internal use
  */
-function shouldProcessMessage(messageSource: Window, messageOrigin: string): boolean {
+async function shouldProcessMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
@@ -505,7 +565,7 @@ function shouldProcessMessage(messageSource: Window, messageOrigin: string): boo
   ) {
     return true;
   } else {
-    const isOriginValid = validateOrigin(new URL(messageOrigin));
+    const isOriginValid = await validateOrigin(new URL(messageOrigin));
     if (!isOriginValid) {
       shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }
@@ -557,33 +617,122 @@ const handleParentMessageLogger = communicationLogger.extend('handleParentMessag
  * @internal
  * Limited to Microsoft-internal use
  */
+function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID | undefined {
+  const logger = handleParentMessageLogger;
+  if (response.uuid) {
+    const responseUUID = response.uuid;
+    const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
+    if (callbackUUID) {
+      return callbackUUID;
+    }
+    const promiseCallbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.promiseCallbacks, responseUUID);
+    if (promiseCallbackUUID) {
+      return promiseCallbackUUID;
+    }
+    const portCallbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.portCallbacks, responseUUID);
+    if (portCallbackUUID) {
+      return portCallbackUUID;
+    }
+  } else {
+    return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
+  }
+  logger(
+    `Received a message with uuid: ${response.uuid?.toString()} and legacyId: %i that failed to produce a callbackId`,
+    response.id,
+  );
+  return undefined;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * This function is used to compare a new MessageUUID object value to the key values in the specified callback and retrieving that key
+ * We use this because two objects with the same value are not considered equivalent therefore we can't use the new MessageUUID object
+ * as a key to retrieve the value assosciated with it and should use this function instead.
+ */
+function retrieveMessageUUIDFromCallback(
+  map: Map<MessageUUID, Function>,
+  responseUUID?: MessageUUID,
+): MessageUUID | undefined {
+  if (responseUUID) {
+    const callback = [...map].find(([key, _value]) => {
+      return key.toString() === responseUUID.toString();
+    });
+
+    if (callback) {
+      return callback[0];
+    }
+  }
+  return undefined;
+}
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, Function>): void {
+  const callbackId = retrieveMessageUUIDFromCallback(map, message.uuid);
+  if (callbackId) {
+    map.delete(callbackId);
+  }
+  if (!message.uuid) {
+    delete CommunicationPrivate.legacyMessageIdsToUuidMap[message.id];
+  } else {
+    //If we are here, then the parent is capable of sending UUIDs, therefore free up memory
+    CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 function handleParentMessage(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
-    const message = evt.data as MessageResponse;
-    const callback = CommunicationPrivate.callbacks[message.id];
-    logger('Received a response from parent for message %i', message.id);
-    if (callback) {
-      logger('Invoking the registered callback for message %i with arguments %o', message.id, message.args);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      callback.apply(null, [...message.args, message.isPartialResponse]);
+    const serializedResponse = evt.data as SerializedMessageResponse;
+    const message: MessageResponse = deserializeMessageResponse(serializedResponse);
+    const callbackId = retrieveMessageUUIDFromResponse(message);
+    if (callbackId) {
+      const callback = CommunicationPrivate.callbacks.get(callbackId);
+      logger('Received a response from parent for message %i', callbackId);
+      if (callback) {
+        logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        callback.apply(null, [...message.args, message.isPartialResponse]);
 
-      // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
-      if (!isPartialResponse(evt)) {
-        logger('Removing registered callback for message %i', message.id);
-        delete CommunicationPrivate.callbacks[message.id];
+        // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
+        if (!isPartialResponse(evt)) {
+          logger('Removing registered callback for message %i', callbackId);
+          removeMessageHandlers(message, CommunicationPrivate.callbacks);
+        }
       }
-    }
-    const promiseCallback = CommunicationPrivate.promiseCallbacks[message.id];
-    if (promiseCallback) {
-      logger('Invoking the registered promise callback for message %i with arguments %o', message.id, message.args);
-      promiseCallback(message.args);
+      const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
+      if (promiseCallback) {
+        logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
+        promiseCallback(message.args);
 
-      logger('Removing registered promise callback for message %i', message.id);
-      delete CommunicationPrivate.promiseCallbacks[message.id];
+        logger('Removing registered promise callback for message %i', callbackId);
+        removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
+      }
+      const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
+      if (portCallback) {
+        logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
+        let port: MessagePort | undefined;
+        if (evt.ports && evt.ports[0] instanceof MessagePort) {
+          port = evt.ports[0];
+        }
+        portCallback(port, message.args);
+
+        logger('Removing registered port callback for message %i', callbackId);
+        removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
+      }
+      if (message.uuid) {
+        CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+      }
     }
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
@@ -610,22 +759,27 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
 function handleChildMessage(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
-    const message = evt.data as MessageRequest;
+    const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sendMessageResponseToChild(message.id, Array.isArray(result) ? result : [result]);
+      sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
-      sendMessageToParent(message.func, message.args, (...args: any[]): void => {
-        if (Communication.childWindow) {
-          const isPartialResponse = args.pop();
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          sendMessageResponseToChild(message.id, args, isPartialResponse);
-        }
-      });
+      sendMessageToParent(
+        getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
+        message.func,
+        message.args,
+        (...args: any[]): void => {
+          if (Communication.childWindow) {
+            const isPartialResponse = args.pop();
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
+          }
+        },
+      );
     }
   }
 }
@@ -633,13 +787,29 @@ function handleChildMessage(evt: DOMMessageEvent): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * Checks if the top window and the parent window are different.
+ *
+ * @returns {boolean} Returns true if the top window and the parent window are different, false otherwise.
+ */
+function areTopAndParentWindowsDistinct(): boolean {
+  return Communication.topWindow !== Communication.parentWindow;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
  */
 function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
-  return targetWindow === Communication.parentWindow
-    ? CommunicationPrivate.parentMessageQueue
-    : targetWindow === Communication.childWindow
-    ? CommunicationPrivate.childMessageQueue
-    : [];
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return CommunicationPrivate.topMessageQueue;
+  } else if (targetWindow === Communication.parentWindow) {
+    return CommunicationPrivate.parentMessageQueue;
+  } else if (targetWindow === Communication.childWindow) {
+    return CommunicationPrivate.childMessageQueue;
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -647,11 +817,31 @@ function getTargetMessageQueue(targetWindow: Window | null): MessageRequest[] {
  * Limited to Microsoft-internal use
  */
 function getTargetOrigin(targetWindow: Window | null): string | null {
-  return targetWindow === Communication.parentWindow
-    ? Communication.parentOrigin
-    : targetWindow === Communication.childWindow
-    ? Communication.childOrigin
-    : null;
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return Communication.topOrigin;
+  } else if (targetWindow === Communication.parentWindow) {
+    return Communication.parentOrigin;
+  } else if (targetWindow === Communication.childWindow) {
+    return Communication.childOrigin;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function getTargetName(targetWindow: Window | null): string | null {
+  if (targetWindow === Communication.topWindow && areTopAndParentWindowsDistinct()) {
+    return 'top';
+  } else if (targetWindow === Communication.parentWindow) {
+    return 'parent';
+  } else if (targetWindow === Communication.childWindow) {
+    return 'child';
+  } else {
+    return null;
+  }
 }
 
 const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
@@ -662,12 +852,21 @@ const flushMessageQueueLogger = communicationLogger.extend('flushMessageQueue');
 function flushMessageQueue(targetWindow: Window | any): void {
   const targetOrigin = getTargetOrigin(targetWindow);
   const targetMessageQueue = getTargetMessageQueue(targetWindow);
-  const target = targetWindow == Communication.parentWindow ? 'parent' : 'child';
+  const target = getTargetName(targetWindow);
+
   while (targetWindow && targetOrigin && targetMessageQueue.length > 0) {
-    const request = targetMessageQueue.shift();
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-    flushMessageQueueLogger('Flushing message %i from ' + target + ' message queue via postMessage.', request?.id);
-    targetWindow.postMessage(request, targetOrigin);
+    const messageRequest = targetMessageQueue.shift();
+    if (messageRequest) {
+      const request: SerializedMessageRequest = serializeMessageRequest(messageRequest);
+
+      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+      flushMessageQueueLogger(
+        'Flushing message %i from ' + target + ' message queue via postMessage.',
+        request?.uuidAsString,
+      );
+
+      targetWindow.postMessage(request, targetOrigin);
+    }
   }
 }
 
@@ -676,7 +875,11 @@ function flushMessageQueue(targetWindow: Window | any): void {
  * Limited to Microsoft-internal use
  */
 export function waitForMessageQueue(targetWindow: Window, callback: () => void): void {
-  const messageQueueMonitor = Communication.currentWindow.setInterval(() => {
+  let messageQueueMonitor: ReturnType<typeof setInterval>;
+  /* const cannot be used to declare messageQueueMonitor here because of the JS temporal dead zone. In order for messageQueueMonitor to be referenced inside setInterval,
+     it has to be defined before the setInterval call. */
+  /* eslint-disable-next-line prefer-const */
+  messageQueueMonitor = Communication.currentWindow.setInterval(() => {
     if (getTargetMessageQueue(targetWindow).length === 0) {
       clearInterval(messageQueueMonitor);
       callback();
@@ -691,12 +894,18 @@ export function waitForMessageQueue(targetWindow: Window, callback: () => void):
  * @internal
  * Limited to Microsoft-internal use
  */
-function sendMessageResponseToChild(id: number, args?: any[], isPartialResponse?: boolean): void {
+function sendMessageResponseToChild(
+  id: MessageID,
+  uuid?: MessageUUID,
+  args?: any[],
+  isPartialResponse?: boolean,
+): void {
   const targetWindow = Communication.childWindow;
-  const response = createMessageResponse(id, args, isPartialResponse);
+  const response = createMessageResponse(id, uuid, args, isPartialResponse);
+  const serializedResponse = serializeMessageResponse(response);
   const targetOrigin = getTargetOrigin(targetWindow);
   if (targetWindow && targetOrigin) {
-    targetWindow.postMessage(response, targetOrigin);
+    targetWindow.postMessage(serializedResponse, targetOrigin);
   }
 }
 
@@ -732,12 +941,43 @@ function createMessageRequest(
   func: string,
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
+  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
+  const messageUuid: MessageUUID = new MessageUUID();
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
   return {
-    id: CommunicationPrivate.nextMessageId++,
+    id: messageId,
+    uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
     args: args || [],
-    apiversiontag: apiVersionTag,
+    apiVersionTag: apiVersionTag,
+  };
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Creates a nested app authentication request.
+ *
+ * @param {string} message - The message to be included in the request. This is typically a stringified JSON object containing the details of the authentication request.
+ * The reason for using a string is to allow complex data structures to be sent as a message while avoiding potential issues with object serialization and deserialization.
+ *
+ * @returns {NestedAppAuthRequest} Returns a NestedAppAuthRequest object with a unique id, the function name set to 'nestedAppAuthRequest', the current timestamp, an empty args array, and the provided message as data.
+ */
+function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
+  const messageId: MessageID = CommunicationPrivate.nextMessageId++;
+  const messageUuid: MessageUUID = new MessageUUID();
+  CommunicationPrivate.legacyMessageIdsToUuidMap[messageId] = messageUuid;
+  return {
+    id: messageId,
+    uuid: messageUuid,
+    func: 'nestedAppAuth.execute',
+    timestamp: Date.now(),
+    // Since this is a nested app auth request, we don't need to send any args.
+    // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
+    args: [],
+    data: message,
   };
 }
 
@@ -745,9 +985,15 @@ function createMessageRequest(
  * @internal
  * Limited to Microsoft-internal use
  */
-function createMessageResponse(id: number, args: any[] | undefined, isPartialResponse?: boolean): MessageResponse {
+function createMessageResponse(
+  id: MessageID,
+  uuid?: MessageUUID,
+  args?: any[] | undefined,
+  isPartialResponse?: boolean,
+): MessageResponse {
   return {
     id: id,
+    uuid: uuid,
     args: args || [],
     isPartialResponse,
   };

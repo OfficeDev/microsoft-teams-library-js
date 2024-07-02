@@ -173,7 +173,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          utils.respondToMessage(startTaskMessage, null, 'someResult');
+          await utils.respondToMessage(startTaskMessage, null, 'someResult');
           expect(callbackCalled).toBe(true);
         });
 
@@ -190,7 +190,7 @@ describe('tasks', () => {
 
           const startTaskMessage = utils.findMessageByFunc('tasks.startTask');
           expect(startTaskMessage).not.toBeNull();
-          utils.respondToMessage(startTaskMessage, 'someError');
+          await utils.respondToMessage(startTaskMessage, 'someError');
           expect(callbackCalled).toBe(true);
         });
       } else {
@@ -268,7 +268,7 @@ describe('tasks', () => {
   });
 
   describe('submitTask', () => {
-    const allowedContexts = [FrameContexts.content, FrameContexts.task];
+    const allowedContexts = [FrameContexts.task];
     it('should not allow calls before initialization', () => {
       expect(() => tasks.submitTask()).toThrowError(new Error(errorLibraryNotInitialized));
     });

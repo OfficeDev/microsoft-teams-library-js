@@ -1,5 +1,11 @@
+import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 import { VideoFrameTick } from './videoFrameTick';
 import { VideoPerformanceStatistics } from './videoPerformanceStatistics';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const videoPerformanceMonitorTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * This class is used to monitor the performance of video processing, and report performance events.
@@ -31,9 +37,15 @@ export class VideoPerformanceMonitor {
 
   private performanceStatistics: VideoPerformanceStatistics;
 
-  public constructor(private reportPerformanceEvent: (actionName: string, args: unknown[]) => void) {
+  public constructor(
+    private reportPerformanceEvent: (apiVersionTag: string, actionName: string, args: unknown[]) => void,
+  ) {
     this.performanceStatistics = new VideoPerformanceStatistics(VideoPerformanceMonitor.distributionBinSize, (result) =>
-      this.reportPerformanceEvent('video.performance.performanceDataGenerated', [result]),
+      this.reportPerformanceEvent(
+        getApiVersionTag(videoPerformanceMonitorTelemetryVersionNumber, ApiName.VideoPerformanceMonitor_Constructor),
+        'video.performance.performanceDataGenerated',
+        [result],
+      ),
     );
   }
 
@@ -48,7 +60,14 @@ export class VideoPerformanceMonitor {
       }
       const averageFrameProcessingTime = this.frameProcessingTimeCost / this.processedFrameCount;
       if (averageFrameProcessingTime > this.frameProcessTimeLimit) {
-        this.reportPerformanceEvent('video.performance.frameProcessingSlow', [averageFrameProcessingTime]);
+        this.reportPerformanceEvent(
+          getApiVersionTag(
+            videoPerformanceMonitorTelemetryVersionNumber,
+            ApiName.VideoPerformanceMonitor_StartMonitorSlowFrameProcessing,
+          ),
+          'video.performance.frameProcessingSlow',
+          [averageFrameProcessingTime],
+        );
       }
       this.frameProcessingTimeCost = 0;
       this.processedFrameCount = 0;
@@ -126,11 +145,14 @@ export class VideoPerformanceMonitor {
     this.performanceStatistics.processEnds();
     if (!this.isFirstFrameProcessed) {
       this.isFirstFrameProcessed = true;
-      this.reportPerformanceEvent('video.performance.firstFrameProcessed', [
-        Date.now(),
-        this.appliedEffect.effectId,
-        this.appliedEffect?.effectParam,
-      ]);
+      this.reportPerformanceEvent(
+        getApiVersionTag(
+          videoPerformanceMonitorTelemetryVersionNumber,
+          ApiName.VideoPerformanceMonitor_ReportFrameProcessed,
+        ),
+        'video.performance.firstFrameProcessed',
+        [Date.now(), this.appliedEffect.effectId, this.appliedEffect?.effectParam],
+      );
     }
   }
 
@@ -148,7 +170,14 @@ export class VideoPerformanceMonitor {
   public reportTextureStreamAcquired(): void {
     if (this.gettingTextureStreamStartedAt !== undefined) {
       const timeTaken = performance.now() - this.gettingTextureStreamStartedAt;
-      this.reportPerformanceEvent('video.performance.textureStreamAcquired', [this.currentStreamId, timeTaken]);
+      this.reportPerformanceEvent(
+        getApiVersionTag(
+          videoPerformanceMonitorTelemetryVersionNumber,
+          ApiName.VideoPerformanceMonitor_ReportTextureStreamAcquired,
+        ),
+        'video.performance.textureStreamAcquired',
+        [this.currentStreamId, timeTaken],
+      );
     }
   }
 }

@@ -9,10 +9,22 @@
     {
       "title": "openChat API Call - Success",
       "type": "callResponse",
-      "version": ">2.0.0-beta.3",
+      "version": ">2.0.0-beta.3 && <=2.17.0",
       "boxSelector": "#box_openChat",
       "inputValue": {
         "user": ["testUpn"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+    },
+    {
+      "title": "openChat API Call - Success",
+      "type": "callResponse",
+      "version": ">2.17.0",
+      "boxSelector": "#box_openChat",
+      "inputValue": {
+        "user": "testUpn",
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
@@ -33,10 +45,22 @@
     {
       "title": "openChat2 API Call - Success",
       "type": "callResponse",
-      "version": ">2.2.0",
+      "version": ">2.2.0 && <=2.17.0",
       "boxSelector": "#box_openChat2",
       "inputValue": {
         "user": ["testUpn"],
+        "message": "testMessage"
+      },
+      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
+      "expectedTestAppValue": "chat.openChat() was called"
+    },
+    {
+      "title": "openChat2 API Call - Success",
+      "type": "callResponse",
+      "version": ">2.17.0",
+      "boxSelector": "#box_openChat2",
+      "inputValue": {
+        "user": "testUpn",
         "message": "testMessage"
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",

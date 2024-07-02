@@ -1,0 +1,39 @@
+{
+  "name": "OtherAppStateChange",
+  "platforms": "Web",
+  "version": ">2.21.0",
+  "hostSdkVersion": {
+    "web": ">2.13.1"
+  },
+  "testCases": [
+    {
+      "title": "isSupported - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_otherAppStateChange_isSupported",
+      "expectedTestAppValue": "OtherAppStateChanged module is supported"
+    },
+    {
+      "title": "registerAppInstallationHandler - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_otherAppStateChange_registerInstallHandler",
+      "expectedTestAppValue": "received"
+    },
+    {
+      "title": "registerAppInstallationHandler should not receive install events if app is not approved",
+      "type": "registerAndRaiseEvent",
+      "boxSelector": "#box_otherAppStateChange_registerInstallHandler",
+      "eventName": "otherApp.install",
+      "eventData":
+        {
+          "appIds": ["123", "456"]
+        },
+      "expectedTestAppValue": "received"
+    },
+    {
+      "title": "unregisterAppInstallationHandler - Sends but not processed if app is not approved",
+      "type": "callResponse",
+      "boxSelector": "#box_otherAppStateChange_unregisterInstallHandler",
+      "expectedTestAppValue": "received"
+    }
+  ]
+}

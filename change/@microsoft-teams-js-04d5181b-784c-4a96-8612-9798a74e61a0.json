@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added meetingStage and settings framecontexts to clipboard.",
-  "packageName": "@microsoft/teams-js",
-  "email": "98348000+shrshindeMSFT@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

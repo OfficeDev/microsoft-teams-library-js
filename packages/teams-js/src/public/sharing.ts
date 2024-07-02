@@ -1,9 +1,13 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction, validateUuid } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
+
+const sharingTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to open a share dialog for web content.
@@ -74,7 +78,7 @@ export namespace sharing {
   export function shareWebContent(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link sharing.shareWebContent sharing.shareWebContent(shareWebContentRequest: IShareRequest\<IShareRequestContentType\>): Promise\<void\>} instead.
    *
    * Feature is under development
    * Opens a share dialog for web content
@@ -108,15 +112,26 @@ export namespace sharing {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(shareWebContentHelper, callback, shareWebContentRequest);
+    const apiVersionTag = callback
+      ? getApiVersionTag(sharingTelemetryVersionNumber_v1, ApiName.Sharing_ShareWebContent)
+      : getApiVersionTag(sharingTelemetryVersionNumber_v2, ApiName.Sharing_ShareWebContent);
+    return callCallbackWithSdkErrorFromPromiseAndReturnPromise(
+      shareWebContentHelper,
+      callback,
+      apiVersionTag,
+      shareWebContentRequest,
+    );
   }
 
-  function shareWebContentHelper(shareWebContentRequest: IShareRequest<IShareRequestContentType>): Promise<void> {
+  function shareWebContentHelper(
+    apiVersionTag: string,
+    shareWebContentRequest: IShareRequest<IShareRequestContentType>,
+  ): Promise<void> {
     return new Promise<void>((resolve) => {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      resolve(sendAndHandleSdkError(SharingAPIMessages.shareWebContent, shareWebContentRequest));
+      resolve(sendAndHandleSdkError(apiVersionTag, SharingAPIMessages.shareWebContent, shareWebContentRequest));
     });
   }
 
@@ -178,5 +193,74 @@ export namespace sharing {
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.sharing ? true : false;
+  }
+
+  /**
+   * Namespace to get the list of content shared in a Teams meeting
+   *
+   * @beta
+   */
+  export namespace history {
+    /**
+     * Represents the data returned when calling {@link sharing.history.getContent}
+     *
+     * @beta
+     */
+    export interface IContentResponse {
+      /** Id of the app where the content was shared from */
+      appId: string;
+      /** Title of the shared content */
+      title: string;
+      /** Reference of the shared content */
+      contentReference: string;
+      /** Id of the thread where the content was shared. This is a UUID */
+      threadId: string;
+      /** Id of the user who shared the content. This is a UUID */
+      author: string;
+      /** Type of the shared content.
+       * For sharing to Teams stage scenarios, this value would be `ShareToStage`
+       * Other `contentType` values will be added and documented here over time
+       */
+      contentType: string;
+    }
+
+    /**
+     * Get the list of content shared in a Teams meeting
+     *
+     * @throws Error if call capability is not supported
+     * @throws Error if returned content details are invalid
+     * @returns Promise that will resolve with the {@link IContentResponse} objects array
+     *
+     * @beta
+     */
+    export async function getContent(): Promise<IContentResponse[]> {
+      ensureInitialized(runtime, FrameContexts.sidePanel, FrameContexts.meetingStage);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      const contentDetails: IContentResponse[] = await sendAndHandleSdkError(
+        getApiVersionTag(sharingTelemetryVersionNumber_v2, ApiName.Sharing_History_GetContent),
+        'sharing.history.getContent',
+      );
+      contentDetails.map((contentDetails) => {
+        validateUuid(contentDetails.author);
+        validateUuid(contentDetails.threadId);
+      });
+
+      return contentDetails;
+    }
+
+    /**
+     * Checks if sharing.history capability is supported by the host
+     * @returns boolean to represent whether the sharing.history capability is supported
+     *
+     * @throws Error if {@linkcode app.initialize} has not successfully completed
+     *
+     * @beta
+     */
+    export function isSupported(): boolean {
+      return ensureInitialized(runtime) && runtime.supports.sharing?.history !== undefined;
+    }
   }
 }

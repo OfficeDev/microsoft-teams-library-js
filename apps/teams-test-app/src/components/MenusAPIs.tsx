@@ -32,6 +32,7 @@ const SetUpViews = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify([{ id: 'AAA', title: 'BBB', contentDescription: 'CCC' }]),
   });
 
 const SetNavBarMenu = (): React.ReactElement =>
@@ -54,6 +55,7 @@ const SetNavBarMenu = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify([{ id: 'AAA', title: 'BBB', icon: 'CCC', enabled: true, selected: false }]),
   });
 
 const ShowActionMenu = (): React.ReactElement =>
@@ -79,6 +81,10 @@ const ShowActionMenu = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      title: 'Title',
+      items: [{ id: 'AAA', title: 'BBB', icon: 'CCC', enabled: true, selected: false }],
+    }),
   });
 
 const MenusAPIs = (): ReactElement => (

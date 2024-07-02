@@ -1,0 +1,133 @@
+steps:
+  - task: NodeTool@0
+    displayName: 'Install Node.js'
+    inputs:
+      versionSpec: '18.x'
+
+  - task: CmdLine@2
+    displayName: 'Setup pnpm'
+    inputs:
+      script: |
+        npm install -g pnpm@9.0.6
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+
+  - task: CmdLine@2
+    displayName: 'Install repo dependencies'
+    inputs:
+      script: |
+        pnpm install
+
+  - task: CmdLine@2
+    displayName: 'Check that changefile was created if needed'
+    condition: and( eq(variables['Build.Reason'], 'PullRequest'), not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')), not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/')) )
+    inputs:
+      script: 'node enforceBeachball.js'
+
+  - task: CmdLine@2
+    displayName: 'node prepBetaRelease.js'
+    condition: and( eq(variables['Build.SourceBranch'], 'refs/heads/main'), in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest') )
+    inputs:
+      script: 'node prepBetaRelease.js'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
+
+  - task: CmdLine@2
+    displayName: 'pnpm build'
+    inputs:
+      script: |
+        pnpm build-force-blazor
+
+  - task: CmdLine@2
+    displayName: 'pnpm test'
+    inputs:
+      script: |
+        pnpm test
+
+  - task: PublishTestResults@2
+    inputs:
+      searchFolder: '$(System.DefaultWorkingDirectory)\packages'
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/unit-tests-report*.xml'
+      testRunTitle: 'Unit Tests'
+    condition: succeededOrFailed()
+
+  - task: CmdLine@2
+    displayName: 'Run bundle analysis and collect'
+    inputs:
+      script: |
+        pnpm bundleAnalyze:collect
+
+  - task: Bash@3
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    condition: and( in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'main'))
+    name: bundleAnalysisTask
+    displayName: 'Analyze bundles against main and output result'
+    inputs:
+      targetType: inline
+      script: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
+
+  - task: PowerShell@2
+    name: package
+    displayName: 'Set package.version Variable'
+    inputs:
+      targetType: inline
+      script: |
+        $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
+        Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'apps/teams-test-app/build'
+      contents: '**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+    displayName: 'Copy Test app to artifacts staging directory'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\teams-test-app'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
+      replaceExistingArchive: true
+    displayName: 'Zip Test app artifacts'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'packages\teams-js\dist'
+      contents: '**\?(*.js|*.ts|*.map)'
+      targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
+    displayName: 'Copy TeamsJS Content for CDN'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\src\artifactsForCDN\validDomains.json
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\validDomains\json'
+      flattenFolders: true
+    displayName: 'Copy validDomains for CDN'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\package.json
+        packages\teams-js\README.md
+        LICENSE
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed'
+      flattenFolders: true
+    displayName: 'Copy TeamsJS Content for NPM'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\dist\**\?(*.js|*.ts|*.map)
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
+      flattenFolders: true
+    displayName: 'Copy JS Content for NPM'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\scripts\*.ps1
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+      flattenFolders: true
+    displayName: 'Copy Power Shell scripts to scripts'

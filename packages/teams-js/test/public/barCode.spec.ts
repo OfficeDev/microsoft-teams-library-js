@@ -74,7 +74,7 @@ describe('barCode', () => {
 
           const callbackId = message.id;
           const response = 'scannedCode';
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, response],
@@ -95,7 +95,7 @@ describe('barCode', () => {
           expect(message.args[0]).toEqual(barCodeConfig);
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }],
@@ -170,7 +170,7 @@ describe('barCode', () => {
           expect(message.args[0]).toBe('media');
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, true],
@@ -191,7 +191,7 @@ describe('barCode', () => {
           expect(message.args[0]).toBe('media');
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
@@ -250,7 +250,7 @@ describe('barCode', () => {
           expect(message.args[0]).toBe('media');
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [undefined, true],
@@ -271,7 +271,7 @@ describe('barCode', () => {
           expect(message.args[0]).toBe('media');
 
           const callbackId = message.id;
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: callbackId,
               args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],

@@ -1,8 +1,143 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 01 Nov 2023 18:15:02 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Jun 2024 20:49:06 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.24.0
+
+Wed, 05 Jun 2024 20:49:06 GMT
+
+### Minor changes
+
+- Updated `app.lifecycle.registerBeforeSuspendOrTerminateHandler` to be asynchronous, and updated `app.lifecycle.registerOnResumeHandler` to accept a new Handler type, changing `contentUrl` from `string` to `URL` object.
+- Added `uuid` parameter to `MessageRequest` and `MessageResponse` interfaces
+- Added a new page property (`isBackgroundLoad`) for app context. This will be an indicator that the app is being loaded in the background.
+
+## 2.23.0
+
+Tue, 07 May 2024 20:54:35 GMT
+
+### Minor changes
+
+- Added a new API `externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins`. It can be used to perform authentication with Power Platform connector plugins.
+- Added `messageChannels.telemetry` and moved existing telemetryPort code into it. Added new `messageChannels.dataLayer` subcapability and added code for interacting with the host data layer.
+- Added `meeting.getMeetingDetailsVerbose` to allow retrieving additional meeting details from supported hosts.
+- Added support for `content` frame context to `liveShare` capability. Live Share SDK works now in Chat/Channel Tab and Collab Stage view contexts with this change.
+
+### Patches
+
+- Cleaned up import structure in the `private` folder
+- Fixed API telemetry tag for `pages.navigateToApp` function
+- Updated `authentication.authenticate` so that it only accepts https URLs.
+- Added `validMessageOrigins` to be passed to `parentWindow`.
+- Updated `webStorage` capability to query host for capability support, rather than using a hardcoded answer.
+- Fixed a bug with exported `const enums`
+- Made a skeletonized version of the buffer npm package as a temporary measure to reduce bundle size
+
+## 2.22.0
+
+Thu, 11 Apr 2024 05:06:48 GMT
+
+### Minor changes
+
+- Added `OtherAppStateChange` capability that will allow limited 1P apps to receive events when other apps are installed on the host. The capability is still awaiting support in one or more host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added an optional parameter `fromElement` to `processActionOpenUrl` in `externalAppCardActions`
+- Validate appId in all APIs in `externalAppAuthentication`, `externalAppCardActions` and `externalAppCommands`.
+- Added nested app auth support check api for app developers
+- Added a new API `externalAppAuthentication.authenticateWithOauth2`. It can be used to signal to the host to perform Oauth2 authentication for the app specified by title id.
+- Added `externalAppCommands` 1P internal-only capability
+
+### Patches
+
+- Made some enums `const` to reduce package size
+- Fixed `clipboard` issue for desktop client to resolve 'DOMExecption: Document not focused' error
+- Removed one default valid origin
+- Removed validation that appIds are UUIDs since some very old published apps have IDs that are not UUIDs (they were published before the manifest schema specified they had to be UUIDs)
+
+## 2.21.0
+
+Wed, 06 Mar 2024 22:44:18 GMT
+
+### Minor changes
+
+- Added `meeting.joinMeeting` function
+- Removed Beta/Preview tag on `chat` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+
+### Patches
+
+- Updated all capabilities to include versions to enable hosts to identify exact function being used
+- Updated documentation on `OpenSingleChatRequest` interface and updated all URLs to remove locale-specific portions.
+- Updated `base64ToBlob` function to accept special characters
+- Removed one default valid origin
+- Fixed bug where `authentication.getUser` telemetry was being incorrectly recorded
+- Fixed bug in API Version telemetry
+
+## 2.20.0
+
+Wed, 07 Feb 2024 18:02:49 GMT
+
+### Minor changes
+
+- Added communication for nested app auth
+- Added private `messageChannels` capability
+- Enabled acquiring of access token for cross-tenant resources
+- Added new subcapability `dialog.url.parentCommunication` for dialog-parent communication related APIs. The isSupported function in this subcapability will return `false` if it is invoked from a parentless scenario.
+
+### Patches
+
+- Added telemetry for `appInitialization`, `appInstallDialog`, `appWindow`, `calendar`, and `videoEffectEx` capabilities.
+- Added apiVersionTag for telemetry in `profile`, `search`, `secondaryBrowser`, `settings`, `sharing`, `stageView`, `videoEffects` and `visualMedia` capabilites
+- Fixed bug where `thirdPartyCloudStorage.getDragAndDropFiles` failed deterministically
+- Updated eslint package and fixed subsequent linting errors
+- Removed unused `callbackUrl` parameter from `authentication.notifySuccess` and `authentication.notifyFailure` (in an API-compatible way)
+- Added telemetry to `chat`, `interactive`, `meeting`, `menus`,`monetization` and `people` capabilities
+- Added apiVersionTags for telemetry in `conversations`, `files`, `logs`, `meetingRoom` and `notifications` capabilities
+- Added windows.msn.com to validOrigins list
+- Added apiVersionTag for telemetry in `privateAPIs` and `remoteCamera`, `teams`, `videoEffectsEx` capabilities
+
+## 2.19.0
+
+Wed, 10 Jan 2024 19:55:18 GMT
+
+### Minor changes
+
+- Changed target TypeScript platform to ES2015 (aka ES6) from ES5
+- Removed `cardActionsConfig` property from `externalAppCardActions.processActionSubmit` API
+- Added `externalAppAuthentication` and `externalAppCardActions` 1P internal-only capabilities
+- Added `size` property to internal `FilePreviewParameters` interface
+- Added timeout notifications (2 seconds) to video frame processing in `videoEffectsEx` capability
+- Added new feature to acquire list of valid origins from a CDN endpoint
+- Updated the external app capabilities interfaces
+- Added a new optional parameter, `shareOptions` to `meeting.shareAppContentToStage`. Apps can choose between collaborative and screen sharing for the protocol used when sharing an app to stage.
+- Added support for drag and dropping files from third party storage providers using the `thirdPartyCloudStorage` capability
+- Marked `composeExtension` property on `IQueryMessageExtensionResponse` as optional and added additional input validation on `externalAppAuthentication` and `externalAppCardActions` APIs
+- Made `composeExtension` a required field on `IQueryMessageExtensionResponse`
+
+### Patches
+
+- Added support for `sharing` capability in default runtime for Teams mobile platform
+- Updated runtime capabilities for webStorage to avoid duplicate entry
+- Removed `app` and `app.lifecycle` from runtime.
+
+## 2.18.0
+
+Thu, 30 Nov 2023 23:24:44 GMT
+
+### Minor changes
+
+- Extended `RequestAppAudioHandlingParams` by adding `audioDeviceSelectionChangedCallback` for speaker selection updates
+
+### Patches
+
+- Added `meetingStage` and `settings` framecontexts to `clipboard`.
+- Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities
+- Created new `MessageRequest` interface with required properties to enhance type-safety
+- Added telemetry to `barcode`, `calendar`, `call`, `clipboard`, `mail`, `marketplace` and `media` capabilities
+- Fixed strictNullChecks violations in `media.ts`, `mediaUtil.ts`, and other files
+- Fixed calls to `chat.openChat` and `chat.openGroupChat` when only a single user is specified
+- Fixed more `strictNullChecks` violations
+- Deleted `isSupported` check from `app.lifecycle` subcapability since app resumption cannot be guaranteed even when it is supported.
 
 ## 2.17.0
 
@@ -34,7 +169,7 @@ Wed, 11 Oct 2023 16:51:27 GMT
 
 ### Patches
 
-- Reset registered handlers for unit testing 
+- Reset registered handlers for unit testing
 - Renamed Teams back-compat config for clarity
 - Improved reference docs for the `meeting` namespace and hid the `appShareButton` module.
 - Changed namespace `video` to `videoEffects`, changed namespace `videoEx` to `videoEffectsEx`

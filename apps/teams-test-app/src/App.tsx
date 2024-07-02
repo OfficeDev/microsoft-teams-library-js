@@ -2,69 +2,26 @@ import './App.css';
 
 import { app, appInitialization, initialize } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import AppAPIs from './components/AppAPIs';
-import AppEntityAPIs from './components/AppEntityAPIs';
-import AppInitializationAPIs from './components/AppInitialization';
-import AppInstallDialogAPIs from './components/AppInstallDialog';
-import AuthenticationAPIs from './components/AuthenticationAPIs';
-import BarCodeAPIs from './components/BarCodeAPIs';
-import CalendarAPIs from './components/CalendarAPIs';
-import CallAPIs from './components/CallAPIs';
-import ClipboardAPIs from './components/Clipboard';
-import CustomAPIs from './components/Custom';
-import DialogAPIs from './components/DialogAPIs';
-import DialogCardAPIs from './components/DialogCardAPIs';
-import DialogCardBotAPIs from './components/DialogCardBotAPIs';
-import DialogUpdateAPIs from './components/DialogUpdateAPIs';
-import DialogUrlAPIs from './components/DialogUrlAPIs';
-import DialogUrlBotAPIs from './components/DialogUrlBotAPIs';
-import GeoLocationAPIs from './components/GeoLocationAPIs';
-import Links from './components/Links';
-import LocationAPIs from './components/LocationAPIs';
-import LogAPIs from './components/LogsAPIs';
-import MailAPIs from './components/MailAPIs';
-import MarketplaceAPIs from './components/MarketplaceAPIs';
-import MediaAPIs from './components/MediaAPIs';
-import MeetingAPIs from './components/MeetingAPIs';
-import MenusAPIs from './components/MenusAPIs';
-import PagesAPIs from './components/PagesAPIs';
-import PagesAppButtonAPIs from './components/PagesAppButtonAPIs';
-import PagesBackStackAPIs from './components/PagesBackStackAPIs';
-import PagesConfigAPIs from './components/PagesConfigAPIs';
-import PagesCurrentAppAPIs from './components/PagesCurrentAppAPIs';
-import PagesTabsAPIs from './components/PagesTabsAPIs';
-import PeopleAPIs from './components/PeopleAPIs';
-import ChatAPIs from './components/privateApis/ChatAPIs';
-import FilesAPIs from './components/privateApis/FilesAPIs';
-import FullTrustAPIs from './components/privateApis/FullTrustAPIs';
-import MeetingRoomAPIs from './components/privateApis/MeetingRoomAPIs';
-import MonetizationAPIs from './components/privateApis/MonetizationAPIs';
-import NotificationAPIs from './components/privateApis/NotificationAPIs';
-import PrivateAPIs from './components/privateApis/PrivateAPIs';
-import TeamsAPIs from './components/privateApis/TeamsAPIs';
-import VideoExAPIs from './components/privateApis/VideoEffectsExAPIs';
-import ProfileAPIs from './components/ProfileAPIs';
-import RemoteCameraAPIs from './components/RemoteCameraAPIs';
-import SearchAPIs from './components/SearchAPIs';
-import SecondaryBrowserAPIs from './components/SecondaryBrowserAPIs';
-import SharingAPIs from './components/SharingAPIs';
-import StageViewAPIs from './components/StageViewAPIs';
-import TeamsCoreAPIs from './components/TeamsCoreAPIs';
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
-import Version from './components/Version';
-import VideoAPIs from './components/VideoEffectsApis';
-import VisualMediaAPIs from './components/VisualMediaAPIs';
-import WebStorageAPIs from './components/WebStorageAPIs';
+import { SecondRoute } from './pages/SecondRoute';
+import { TestApp } from './pages/TestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
+
+// The search url parameter 'origins' is used to get the valid message origins which will be passed to
+// the initialize function and based on the hosts it will allow the origins or not.
+// The valid message origins are separated by comma. For example: https://relecloud.com/?origins=https://relecoud.com,https://*.relecloud.com
+const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
+const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
 if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
-    initialize();
+    initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize();
+    app.initialize(validMessageOrigins);
   }
 }
 
@@ -119,64 +76,23 @@ export const generateRegistrationMsg = (changeCause: string): string => {
   return `Registration attempt has been initiated. If successful, this message will change when ${changeCause}.`;
 };
 
+// button to route to the second route
+export const SecondRouteButton = (): ReactElement => (
+  <a href="/second-route">
+    <button>Go to Second Route</button>
+  </a>
+);
+
 const App = (): ReactElement => {
   return (
-    <div>
-      <div className="App-container">
-        <AppAPIs />
-        <AppInitializationAPIs />
-        <AppInstallDialogAPIs />
-        <AuthenticationAPIs />
-        <AppEntityAPIs />
-        <BarCodeAPIs />
-        <CalendarAPIs />
-        <CallAPIs />
-        <ChatAPIs />
-        <ClipboardAPIs />
-        <CustomAPIs />
-        <DialogAPIs />
-        <DialogCardAPIs />
-        <DialogCardBotAPIs />
-        <DialogUpdateAPIs />
-        <DialogUrlAPIs />
-        <DialogUrlBotAPIs />
-        <FilesAPIs />
-        <FullTrustAPIs />
-        <GeoLocationAPIs />
-        <Links />
-        <LocationAPIs />
-        <LogAPIs />
-        <MailAPIs />
-        <MarketplaceAPIs />
-        <MediaAPIs />
-        <MeetingAPIs />
-        <MeetingRoomAPIs />
-        <MenusAPIs />
-        <MonetizationAPIs />
-        <NotificationAPIs />
-        <PagesAPIs />
-        <PagesAppButtonAPIs />
-        <PagesBackStackAPIs />
-        <PagesConfigAPIs />
-        <PagesCurrentAppAPIs />
-        <PagesTabsAPIs />
-        <PeopleAPIs />
-        <PrivateAPIs />
-        <ProfileAPIs />
-        <RemoteCameraAPIs />
-        <SearchAPIs />
-        <SecondaryBrowserAPIs />
-        <SharingAPIs />
-        <WebStorageAPIs />
-        <StageViewAPIs />
-        <TeamsCoreAPIs />
-        <TeamsAPIs />
-        <VideoAPIs />
-        <VideoExAPIs />
-        <VisualMediaAPIs />
-      </div>
-      <Version />
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<TestApp />} />
+          <Route path="/second-route" element={<SecondRoute />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 };
 

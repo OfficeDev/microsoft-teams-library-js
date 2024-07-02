@@ -1,0 +1,105 @@
+parameters:
+  - name: 'androidAppHostingSdkGitPath'
+    default: none
+    type: string
+
+steps:
+  - checkout: self
+  - checkout: ${{ parameters.androidAppHostingSdkGitPath }}
+    path: androidHost
+    persistCredentials: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+
+  - task: Cache@2
+    inputs:
+      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+      path: $(Pipeline.Workspace)/.pnpm-store
+    displayName: Cache pnpm
+
+  - task: CmdLine@2
+    displayName: 'Setup pnpm'
+    inputs:
+      script: |
+        corepack enable
+        corepack prepare pnpm@9.0.6 --activate
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+
+  - task: CmdLine@2
+    displayName: 'Install client sdk dependencies'
+    inputs:
+      script: |
+        pnpm install
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: CmdLine@2
+    displayName: 'Build client sdk'
+    inputs:
+      script: |
+        pnpm build-force-blazor
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: Bash@3
+    displayName: 'Run sample test app in background'
+    inputs:
+      targetType: inline
+      script: 'nohup pnpm start-test-app &'
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - task: Bash@3
+    displayName: 'Install Emulator'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/devtools/ci'
+      # This task is flaky, but when it works it almost always completes in under 5 minutes.
+      # Setting the timeout to 10 minutes so we can fail faster when it fails.
+      timeoutInMinutes: 10
+
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Set default Java to x64'
+
+  # Provides credentials for Azure Artifacts feeds and external maven repositories.
+  - task: MavenAuthenticate@0
+    displayName: 'Authenticate machine'
+    inputs:
+      artifactsFeeds: 'ISS_PublicPackages,LensSDKAndroidIA20'
+
+  - task: Bash@3
+    displayName: 'Run Android E2E Tests'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x ./gradlew && chmod u+x e2eTest.sh && ./e2eTest.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+
+  - task: Bash@3
+    displayName: 'Pull Test Artifacts'
+    inputs:
+      targetType: inline
+      script: 'chmod u+x e2eTestCopyArtifacts.sh && ./e2eTestCopyArtifacts.sh'
+      workingDirectory: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid'
+    condition: always()
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: '**/TEST-*.xml'
+      failTaskOnFailedTests: false
+      testRunTitle: 'E2E Tests - Android'
+      searchFolder: '$(Agent.BuildDirectory)/androidHost'
+      mergeTestResults: true
+    condition: always()
+
+  - task: 1ES.PublishPipelineArtifact@1
+    displayName: 'Publish logs artifact'
+    inputs:
+      path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/androidTestArtifacts'
+      artifact: androidTestArtifacts-$(System.JobAttempt)
+    condition: always()

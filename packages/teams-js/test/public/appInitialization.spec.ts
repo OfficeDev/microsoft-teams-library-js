@@ -1,4 +1,4 @@
-import { app } from '../../src/public/app';
+import * as AppFile from '../../src/public/app';
 import { appInitialization } from '../../src/public/appInitialization';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
@@ -9,6 +9,7 @@ import { Utils } from '../utils';
 
 describe('appInitialization', () => {
   const utils = new Utils();
+  const app = AppFile.app;
 
   beforeEach(() => {
     utils.processMessage = null;
@@ -27,13 +28,13 @@ describe('appInitialization', () => {
   });
 
   describe('testing notifyAppLoaded', () => {
-    it('should call app.notifyAppLoaded from the legacy code', async () => {
+    it('should call notifyAppLoadedHelper from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const appFunc = jest.spyOn(app, 'notifyAppLoaded');
+      const notifyAppLoadedHelperFunc = jest.spyOn(AppFile, 'notifyAppLoadedHelper');
       appInitialization.notifyAppLoaded();
-      expect(appFunc).toHaveBeenCalled();
-      expect(appFunc).toHaveReturned();
-      appFunc.mockRestore();
+      expect(notifyAppLoadedHelperFunc).toHaveBeenCalled();
+      expect(notifyAppLoadedHelperFunc).toHaveReturned();
+      notifyAppLoadedHelperFunc.mockRestore();
     });
     it('should call notifyAppLoaded correctly in legacy flow', async () => {
       await utils.initializeWithContext('content');
@@ -58,11 +59,11 @@ describe('appInitialization', () => {
   describe('testing notifySuccess', () => {
     it('should call app.notifySuccess from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const appFunc = jest.spyOn(app, 'notifySuccess');
+      const notifySuccessHelperFile = jest.spyOn(AppFile, 'notifySuccessHelper');
       appInitialization.notifySuccess();
-      expect(appFunc).toHaveBeenCalled();
-      expect(appFunc).toHaveReturned();
-      appFunc.mockRestore();
+      expect(notifySuccessHelperFile).toHaveBeenCalled();
+      expect(notifySuccessHelperFile).toHaveReturned();
+      notifySuccessHelperFile.mockRestore();
     });
     it('should call notifySuccess correctly in legacy flow', async () => {
       await utils.initializeWithContext('content');
@@ -87,14 +88,14 @@ describe('appInitialization', () => {
   describe('testing notifyExpectedFailure', () => {
     it('should call app.notifyExpectedFailure from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const appFunc = jest.spyOn(app, 'notifyExpectedFailure');
+      const notifyExpectedFailureHelperFunc = jest.spyOn(AppFile, 'notifyExpectedFailureHelper');
       appInitialization.notifyExpectedFailure({
         reason: appInitialization.ExpectedFailureReason.PermissionError,
         message: 'Permission denied',
       });
-      expect(appFunc).toHaveBeenCalled();
-      expect(appFunc).toHaveReturned();
-      appFunc.mockRestore();
+      expect(notifyExpectedFailureHelperFunc).toHaveBeenCalled();
+      expect(notifyExpectedFailureHelperFunc).toHaveReturned();
+      notifyExpectedFailureHelperFunc.mockRestore();
     });
     it('should call notifyExpectedFailure correctly in legacy flow', async () => {
       await utils.initializeWithContext('content');
@@ -127,14 +128,14 @@ describe('appInitialization', () => {
   describe('testing notifyFailure', () => {
     it('should call app.notifyFailure from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const appFunc = jest.spyOn(app, 'notifyFailure');
+      const notifyFailureHelperFunc = jest.spyOn(AppFile, 'notifyFailureHelper');
       appInitialization.notifyFailure({
         reason: appInitialization.FailedReason.AuthFailed,
         message: 'Failed message',
       });
-      expect(appFunc).toHaveBeenCalled();
-      expect(appFunc).toHaveReturned();
-      appFunc.mockRestore();
+      expect(notifyFailureHelperFunc).toHaveBeenCalled();
+      expect(notifyFailureHelperFunc).toHaveReturned();
+      notifyFailureHelperFunc.mockRestore();
     });
     it('should call notifyFailure correctly in legacy flow', async () => {
       await utils.initializeWithContext('content');

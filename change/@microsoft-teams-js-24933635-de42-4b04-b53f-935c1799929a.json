@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added additional telemetry to `App`, `Dialog`, `GeoLocation`, `Location`, `Navigation`, `Pages`, and `Tasks` capabilities",
-  "packageName": "@microsoft/teams-js",
-  "email": "kangxuanye@microsoft.com",
-  "dependentChangeType": "patch"
-}

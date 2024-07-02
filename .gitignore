@@ -34,6 +34,7 @@ yarn-error.log
 lerna-debug.log
 
 # Blazor Test App
+microsoft-teams-library-js.sln
 *.binlog
 *.user
 .dotnet/
@@ -42,3 +43,6 @@ lerna-debug.log
 artifacts/
 bin/
 obj/
+
+#VS Code Local Files
+*.sln

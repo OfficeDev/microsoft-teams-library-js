@@ -1,7 +1,9 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ErrorCode, FileOpenPreference, FrameContexts, SdkError } from '../public';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { FrameContexts } from '../public/constants';
+import { ErrorCode, FileOpenPreference, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -11,7 +13,11 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const filesTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace files {
   /**
    * @hidden
@@ -552,7 +558,9 @@ export namespace files {
    * @hidden
    * Hide from docs
    *
-   * Gets a list of cloud storage folders added to the channel
+   * Gets a list of cloud storage folders added to the channel. This function will not timeout;
+   * the callback will only return when the host responds with a list of folders or error.
+   *
    * @param channelId - ID of the channel whose cloud storage folders should be retrieved
    * @param callback - Callback that will be triggered post folders load
    *
@@ -572,7 +580,12 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolders] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getCloudStorageFolders', [channelId], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetCloudStorageFolders),
+      'files.getCloudStorageFolders',
+      [channelId],
+      callback,
+    );
   }
 
   /**
@@ -600,7 +613,12 @@ export namespace files {
       throw new Error('[files.addCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.addCloudStorageFolder', [channelId], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageFolder),
+      'files.addCloudStorageFolder',
+      [channelId],
+      callback,
+    );
   }
 
   /**
@@ -634,7 +652,12 @@ export namespace files {
       throw new Error('[files.deleteCloudStorageFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.deleteCloudStorageFolder', [channelId, folderToDelete], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DeleteCloudStorageFolder),
+      'files.deleteCloudStorageFolder',
+      [channelId, folderToDelete],
+      callback,
+    );
   }
 
   /**
@@ -670,7 +693,12 @@ export namespace files {
       throw new Error('[files.getCloudStorageFolderContents] provided folder is not a subDirectory');
     }
 
-    sendMessageToParent('files.getCloudStorageFolderContents', [folder, providerCode], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetCloudStorageFolderContents),
+      'files.getCloudStorageFolderContents',
+      [folder, providerCode],
+      callback,
+    );
   }
 
   /**
@@ -702,7 +730,11 @@ export namespace files {
       throw new Error('[files.openCloudStorageFile] provided file is a subDirectory');
     }
 
-    sendMessageToParent('files.openCloudStorageFile', [file, providerCode, fileOpenPreference]);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_OpenCloudStorageFile),
+      'files.openCloudStorageFile',
+      [file, providerCode, fileOpenPreference],
+    );
   }
 
   /**
@@ -725,7 +757,12 @@ export namespace files {
       throw new Error('[files.getExternalProviders] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getExternalProviders', [excludeAddedProviders], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetExternalProviders),
+      'files.getExternalProviders',
+      [excludeAddedProviders],
+      callback,
+    );
   }
 
   /**
@@ -761,6 +798,7 @@ export namespace files {
       throw new Error('[files.copyMoveFiles] callback cannot be null');
     }
     sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_CopyMoveFiles),
       'files.copyMoveFiles',
       [selectedFiles, providerCode, destinationFolder, destinationProviderCode, isMove],
       callback,
@@ -785,7 +823,12 @@ export namespace files {
       throw new Error('[files.getFileDownloads] Callback cannot be null');
     }
 
-    sendMessageToParent('files.getFileDownloads', [], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_GetFileDownloads),
+      'files.getFileDownloads',
+      [],
+      callback,
+    );
   }
 
   /**
@@ -809,7 +852,12 @@ export namespace files {
       throw new Error('[files.openDownloadFolder] Callback cannot be null');
     }
 
-    sendMessageToParent('files.openDownloadFolder', [fileObjectId], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_OpenDownloadFolder),
+      'files.openDownloadFolder',
+      [fileObjectId],
+      callback,
+    );
   }
 
   /**
@@ -835,7 +883,12 @@ export namespace files {
       throw getSdkError(ErrorCode.INVALID_ARGUMENTS, '[files.addCloudStorageProvider] callback cannot be null');
     }
 
-    sendMessageToParent('files.addCloudStorageProvider', [], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageProvider),
+      'files.addCloudStorageProvider',
+      [],
+      callback,
+    );
   }
 
   /**
@@ -869,7 +922,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.removeCloudStorageProvider', [logoutRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RemoveCloudStorageProvider),
+      'files.removeCloudStorageProvider',
+      [logoutRequest],
+      callback,
+    );
   }
 
   /**
@@ -901,7 +959,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.addCloudStorageProviderFile', [addNewFileRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_AddCloudStorageProviderFile),
+      'files.addCloudStorageProviderFile',
+      [addNewFileRequest],
+      callback,
+    );
   }
 
   /**
@@ -933,7 +996,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.renameCloudStorageProviderFile', [renameFileRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RenameCloudStorageProviderFile),
+      'files.renameCloudStorageProviderFile',
+      [renameFileRequest],
+      callback,
+    );
   }
 
   /**
@@ -973,7 +1041,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.deleteCloudStorageProviderFile', [deleteFileRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DeleteCloudStorageProviderFile),
+      'files.deleteCloudStorageProviderFile',
+      [deleteFileRequest],
+      callback,
+    );
   }
 
   /**
@@ -1016,7 +1089,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.downloadCloudStorageProviderFile', [downloadFileRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_DownloadCloudStorageProviderFile),
+      'files.downloadCloudStorageProviderFile',
+      [downloadFileRequest],
+      callback,
+    );
   }
 
   /**
@@ -1063,7 +1141,12 @@ export namespace files {
       );
     }
 
-    sendMessageToParent('files.uploadCloudStorageProviderFile', [uploadFileRequest], callback);
+    sendMessageToParent(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_UploadCloudStorageProviderFile),
+      'files.uploadCloudStorageProviderFile',
+      [uploadFileRequest],
+      callback,
+    );
   }
 
   /**
@@ -1084,7 +1167,11 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderListChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderListChange', handler);
+    registerHandler(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderListChangeHandler),
+      'files.cloudStorageProviderListChange',
+      handler,
+    );
   }
 
   /**
@@ -1106,7 +1193,11 @@ export namespace files {
       throw new Error('[registerCloudStorageProviderContentChangeHandler] Handler cannot be null');
     }
 
-    registerHandler('files.cloudStorageProviderContentChange', handler);
+    registerHandler(
+      getApiVersionTag(filesTelemetryVersionNumber, ApiName.Files_RegisterCloudStorageProviderContentChangeHandler),
+      'files.cloudStorageProviderContentChange',
+      handler,
+    );
   }
 
   function getSdkError(errorCode: ErrorCode, message: string): SdkError {

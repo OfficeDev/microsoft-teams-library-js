@@ -5,9 +5,9 @@
 import {
   Communication,
   initializeCommunication,
-  sendAndHandleStatusAndReasonWithVersion,
-  sendAndUnwrapWithVersion,
-  sendMessageToParentWithVersion,
+  sendAndHandleStatusAndReason,
+  sendAndUnwrap,
+  sendMessageToParent,
   uninitializeCommunication,
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -18,6 +18,8 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
+import { prefetchOriginsFromCDN } from '../internal/validOrigins';
+import { messageChannels } from '../private/messageChannels';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
@@ -62,6 +64,31 @@ export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?:
   }
 }
 
+export function notifyAppLoadedHelper(apiVersionTag: string): void {
+  sendMessageToParent(apiVersionTag, app.Messages.AppLoaded, [version]);
+}
+
+export function notifyExpectedFailureHelper(
+  apiVersionTag: string,
+  expectedFailureRequest: app.IExpectedFailureRequest,
+): void {
+  sendMessageToParent(apiVersionTag, app.Messages.ExpectedFailure, [
+    expectedFailureRequest.reason,
+    expectedFailureRequest.message,
+  ]);
+}
+
+export function notifyFailureHelper(apiVersiontag: string, appInitializationFailedRequest: app.IFailedRequest): void {
+  sendMessageToParent(apiVersiontag, app.Messages.Failure, [
+    appInitializationFailedRequest.reason,
+    appInitializationFailedRequest.message,
+  ]);
+}
+
+export function notifySuccessHelper(apiVersionTag: string): void {
+  sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
+}
+
 const initializeHelperLogger = appLogger.extend('initializeHelper');
 function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   return new Promise<void>((resolve) => {
@@ -69,7 +96,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
     // Just no-op if that happens to make it easier to use.
     if (!GlobalVars.initializeCalled) {
       GlobalVars.initializeCalled = true;
-
       Handlers.initializeHandlers();
       GlobalVars.initializePromise = initializeCommunication(validMessageOrigins, apiVersionTag).then(
         ({ context, clientType, runtimeConfig, clientSupportedSDKVersion = defaultSDKVersionForCompatCheck }) => {
@@ -175,7 +201,7 @@ export function openLinkHelper(apiVersionTag: string, deepLink: string): Promise
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    resolve(sendAndHandleStatusAndReasonWithVersion(apiVersionTag, 'executeDeepLink', deepLink));
+    resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', deepLink));
   });
 }
 
@@ -283,7 +309,7 @@ export namespace app {
     locale: string;
 
     /**
-     * The current UI theme of the host. Possible values: "default", "dark", or "contrast".
+     * The current UI theme of the host. Possible values: "default", "dark", "contrast" or "glass".
      */
     theme: string;
 
@@ -445,6 +471,12 @@ export namespace app {
      * Indication whether the page is in a pop out window
      */
     isMultiWindow?: boolean;
+
+    /**
+     * Indicates whether the page is being loaded in the background as
+     * part of an opt-in performance enhancement.
+     */
+    isBackgroundLoad?: boolean;
 
     /**
      * Source origin from where the page is opened
@@ -676,6 +708,14 @@ export namespace app {
      * Will be `undefined` when not running in Teams.
      */
     team?: TeamInfo;
+
+    /**
+     * When `processActionCommand` activates a dialog, this dialog should automatically fill in some fields with information. This information comes from M365 and is given to `processActionCommand` as `extractedParameters`.
+     * App developers need to use these `extractedParameters` in their dialog.
+     * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
+     * If there's no key/value pairs passed, the object will be empty in the case
+     */
+    dialogParameters: Record<string, string>;
   }
 
   /**
@@ -730,6 +770,7 @@ export namespace app {
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
+    prefetchOriginsFromCDN();
     return appInitializeHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_Initialize),
       validMessageOrigins,
@@ -769,6 +810,9 @@ export namespace app {
     GlobalVars.hostClientType = undefined;
     GlobalVars.isFramelessWindow = false;
 
+    messageChannels.telemetry._clearTelemetryPort();
+    messageChannels.dataLayer._clearDataLayerPort();
+
     uninitializeCommunication();
   }
 
@@ -780,9 +824,7 @@ export namespace app {
   export function getContext(): Promise<app.Context> {
     return new Promise<LegacyContext>((resolve) => {
       ensureInitializeCalled();
-      resolve(
-        sendAndUnwrapWithVersion(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'),
-      );
+      resolve(sendAndUnwrap(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetContext), 'getContext'));
     }).then((legacyContext) => transformLegacyContextToAppContext(legacyContext)); // converts globalcontext to app.context
   }
 
@@ -791,11 +833,7 @@ export namespace app {
    */
   export function notifyAppLoaded(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded),
-      Messages.AppLoaded,
-      [version],
-    );
+    notifyAppLoadedHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyAppLoaded));
   }
 
   /**
@@ -803,11 +841,7 @@ export namespace app {
    */
   export function notifySuccess(): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
-      getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess),
-      Messages.Success,
-      [version],
-    );
+    notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
   }
 
   /**
@@ -818,10 +852,9 @@ export namespace app {
    */
   export function notifyFailure(appInitializationFailedRequest: IFailedRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyFailure),
-      Messages.Failure,
-      [appInitializationFailedRequest.reason, appInitializationFailedRequest.message],
+      appInitializationFailedRequest,
     );
   }
 
@@ -832,10 +865,9 @@ export namespace app {
    */
   export function notifyExpectedFailure(expectedFailureRequest: IExpectedFailureRequest): void {
     ensureInitializeCalled();
-    sendMessageToParentWithVersion(
+    notifyExpectedFailureHelper(
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifyExpectedFailure),
-      Messages.ExpectedFailure,
-      [expectedFailureRequest.reason, expectedFailureRequest.message],
+      expectedFailureRequest,
     );
   }
 
@@ -855,10 +887,35 @@ export namespace app {
   }
 
   /**
-   * open link API.
+   * This function opens deep links to other modules in the host such as chats or channels or
+   * general-purpose links (to external websites). It should not be used for navigating to your
+   * own or other apps.
    *
-   * @param deepLink - deep link.
-   * @returns Promise that will be fulfilled when the operation has completed
+   * @remarks
+   * If you need to navigate to your own or other apps, use:
+   *
+   * - {@link pages.currentApp.navigateToDefaultPage} for navigating to the default page of your own app
+   * - {@link pages.currentApp.navigateTo} for navigating to a section of your own app
+   * - {@link pages.navigateToApp} for navigating to other apps besides your own
+   *
+   * Many areas of functionality previously provided by deep links are now handled by strongly-typed functions in capabilities.
+   * If your app is using a deep link to trigger these specific components, use the strongly-typed alternatives.
+   * For example (this list is not exhaustive):
+   * - To open an app installation dialog, use the {@link appInstallDialog} capability
+   * - To start a call, use the {@link call} capability
+   * - To open a chat, use the {@link chat} capability
+   * - To open a dialog, use the {@link dialog} capability
+   * - To create a new meeting, use the {@link calendar.composeMeeting} function
+   * - To open a Stage View, use the {@link stageView} capability
+   *
+   * In each of these capabilities, you can use the `isSupported()` function to determine if the host supports that capability.
+   * When using a deep link to trigger these components, there's no way to determine whether the host supports it.
+   *
+   * For more information on crafting deep links to the host, see [Configure deep links](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/deep-links)
+   *
+   * @param deepLink The host deep link or external web URL to which to navigate
+   * @returns `Promise` that will be fulfilled when the navigation has initiated. A successful `Promise` resolution
+   * does not necessarily indicate whether the target loaded successfully.
    */
   export function openLink(deepLink: string): Promise<void> {
     return openLinkHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_OpenLink), deepLink);
@@ -886,7 +943,7 @@ export namespace app {
      *
      * @returns void
      */
-    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => void;
+    export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => Promise<void>;
 
     /**
      * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,
@@ -959,6 +1016,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       subPageId: legacyContext.subEntityId,
       isFullScreen: legacyContext.isFullScreen,
       isMultiWindow: legacyContext.isMultiWindow,
+      isBackgroundLoad: legacyContext.isBackgroundLoad,
       sourceOrigin: legacyContext.sourceOrigin,
     },
     user: {
@@ -1024,6 +1082,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
             mySiteDomain: legacyContext.mySiteDomain,
           }
         : undefined,
+    dialogParameters: legacyContext.dialogParameters || {},
   };
 
   return context;

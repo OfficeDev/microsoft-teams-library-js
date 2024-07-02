@@ -128,7 +128,7 @@ describe('calendar', () => {
         error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
+      await utils.respondToMessage(openCalendarItemMessage, data.success, data.error);
 
       await openCalendarItemPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
@@ -145,7 +145,7 @@ describe('calendar', () => {
         success: true,
       };
 
-      utils.respondToMessage(openCalendarItemMessage, data.success);
+      await utils.respondToMessage(openCalendarItemMessage, data.success);
       await openCalendarItemPromise;
 
       expect(openCalendarItemMessage).not.toBeNull();
@@ -165,7 +165,7 @@ describe('calendar', () => {
         success: true,
       };
 
-      utils.respondToMessage(openCalendarItemMessage, data.success);
+      await utils.respondToMessage(openCalendarItemMessage, data.success);
       await expect(openCalendarItemPromise).resolves.not.toThrow();
     });
   });
@@ -228,7 +228,7 @@ describe('calendar', () => {
         error: 'Something went wrong...',
       };
 
-      utils.respondToMessage(composeMeeting, data.success, data.error);
+      await utils.respondToMessage(composeMeeting, data.success, data.error);
 
       await composeMeetingPromise.catch((e) => expect(e).toMatchObject(new Error('Something went wrong...')));
     });
@@ -244,7 +244,7 @@ describe('calendar', () => {
         success: true,
       };
 
-      utils.respondToMessage(composeMeetingMessage, data.success);
+      await utils.respondToMessage(composeMeetingMessage, data.success);
       await composeMeetingPromise;
 
       expect(composeMeetingMessage).not.toBeNull();
@@ -265,7 +265,7 @@ describe('calendar', () => {
       const calendarDeepLink: URL = new URL(executeDeepLinkMessage.args[0] as string);
       validateCalendarDeepLinkPrefix(calendarDeepLink);
 
-      utils.respondToMessage(executeDeepLinkMessage, true);
+      await utils.respondToMessage(executeDeepLinkMessage, true);
       await expect(promise).resolves.not.toThrow();
     });
 
@@ -281,7 +281,7 @@ describe('calendar', () => {
         success: true,
       };
 
-      utils.respondToMessage(composeMeetingMessage, data.success);
+      await utils.respondToMessage(composeMeetingMessage, data.success);
       await expect(composeMeetingPromise).resolves.not.toThrow();
     });
 
@@ -297,7 +297,7 @@ describe('calendar', () => {
         success: true,
       };
 
-      utils.respondToMessage(composeMeetingMessage, data.success);
+      await utils.respondToMessage(composeMeetingMessage, data.success);
       await expect(composeMeetingPromise).resolves.not.toThrow();
     });
   });

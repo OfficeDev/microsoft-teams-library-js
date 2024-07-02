@@ -56,6 +56,16 @@ const GetMeetingDetails = (): React.ReactElement =>
     },
   });
 
+const GetMeetingDetailsVerbose = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'getMeetingDetailsVerbose',
+    title: 'Get Meeting Details Verbose',
+    onClick: async () => {
+      const result = await meeting.getMeetingDetailsVerbose();
+      return JSON.stringify(result);
+    },
+  });
+
 const GetAuthenticationTokenForAnonymousUser = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'getAuthTokenForAnonymousUser',
@@ -123,6 +133,7 @@ const RequestStartLiveStreaming = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ streamUrl: 'this is not a URL', streamKey: 'this is my stream key' }),
   });
 
 const RequestStopLiveStreaming = (): React.ReactElement =>
@@ -241,6 +252,10 @@ const ShareAppContentToStage = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      appContentUrl: 'https://www.bing.com',
+      shareOptions: { sharingProtocol: meeting.SharingProtocol.ScreenShare },
+    }),
   });
 
 const GetAppContentStageSharingCapabilities = (): React.ReactElement =>
@@ -325,6 +340,10 @@ const SetOptions = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      isVisible: true,
+      contentUrl: 'https://www.example.com',
+    }),
   });
 
 const RequestAppAudioHandling = (): React.ReactElement =>
@@ -359,6 +378,31 @@ const RequestAppAudioHandling = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ isMicMuted: true }),
+  });
+
+const RegisterAudioDeviceSelectionChangedHandler = (): React.ReactElement =>
+  ApiWithoutInput({
+    name: 'registerAudioDeviceSelectionChangedHandler',
+    title: 'Register AudioDeviceSelectionChanged Handler',
+    onClick: async (setResult) => {
+      const audioDeviceSelectionChangedCallback = (
+        selectedDevicesInHost: meeting.AudioDeviceSelection | SdkError,
+      ): void => {
+        setResult('Received audioDeviceSelectionChanged event: ' + JSON.stringify(selectedDevicesInHost));
+      };
+      meeting.requestAppAudioHandling(
+        {
+          isAppHandlingAudio: true,
+          micMuteStateChangedCallback: (micState) => Promise.resolve(micState),
+          audioDeviceSelectionChangedCallback: audioDeviceSelectionChangedCallback,
+        },
+        () => {
+          return;
+        },
+      );
+      return generateRegistrationMsg('audioDeviceSelectionChaged event is received');
+    },
   });
 
 const UpdateMicState = (): React.ReactElement =>
@@ -374,9 +418,32 @@ const UpdateMicState = (): React.ReactElement =>
       submit: async (input, setResult) => {
         meeting.updateMicState(input);
         setResult('updateMicState() succeeded');
-        return `updateMicState called with micState: isMicMuted:${input}`;
+        return `updateMicState called with micState: isMicMuted:${input.isMicMuted}`;
       },
     },
+    defaultInput: JSON.stringify({ isMicMuted: true }),
+  });
+
+const JoinMeeting = (): React.ReactElement =>
+  ApiWithTextInput<meeting.ISerializedJoinMeetingParams>({
+    name: 'joinMeeting',
+    title: 'Join a meeting',
+    onClick: {
+      validateInput: (input) => {
+        if (!input?.joinWebUrl) {
+          throw new Error('joinWebUrl not passed');
+        }
+      },
+      submit: async (input, setResult) => {
+        meeting.joinMeeting({ joinWebUrl: new URL(input.joinWebUrl), source: input.source });
+        setResult('joinMeeting() succeeded');
+        return `joinMeeting called with joinWebUrl: ${input.joinWebUrl}`;
+      },
+    },
+    defaultInput: JSON.stringify({
+      joinWebUrl: new URL('https://www.example.com/'),
+      source: 'Other',
+    }),
   });
 
 const MeetingAPIs = (): ReactElement => (
@@ -384,6 +451,7 @@ const MeetingAPIs = (): ReactElement => (
     <GetIncomingClientAudioState />
     <ToggleIncomingClientAudioState />
     <GetMeetingDetails />
+    <GetMeetingDetailsVerbose />
     <GetAuthenticationTokenForAnonymousUser />
     <GetLiveStreamState />
     <RequestStartLiveStreaming />
@@ -398,7 +466,9 @@ const MeetingAPIs = (): ReactElement => (
     <GetAppContentStageSharingState />
     <SetOptions />
     <RequestAppAudioHandling />
+    <RegisterAudioDeviceSelectionChangedHandler />
     <UpdateMicState />
+    <JoinMeeting />
   </ModuleWrapper>
 );
 

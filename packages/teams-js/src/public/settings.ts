@@ -1,12 +1,18 @@
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { pages } from './pages';
+import { configSetConfigHelper, configSetValidityStateHelper, getConfigHelper, pages } from './pages';
 import { runtime } from './runtime';
 
 /**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const settingsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
+/**
  * @deprecated
- * As of 2.0.0, please use {@link pages.config} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.config} namespace instead.
  *
  * Namespace to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
@@ -23,7 +29,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.Config} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.Config} instead.
    * @remarks
    * Renamed to config in pages.Config
    */
@@ -31,7 +37,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.SaveEvent} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.SaveEvent} instead.
    * @remarks
    * See pages.SaveEvent
    */
@@ -39,7 +45,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.RemoveEvent} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.RemoveEvent} instead.
    * @remarks
    * See pages.RemoveEvent
    */
@@ -47,7 +53,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.SaveParameters} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.SaveParameters} instead.
    * @remarks
    * See pages.SaveParameters
    */
@@ -56,7 +62,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.setValidityState pages.config.setValidityState(validityState: boolean): void} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.setValidityState pages.config.setValidityState(validityState: boolean): void} instead.
    *
    * Sets the validity state for the settings.
    * The initial value is false, so the user cannot save the settings until this is called with true.
@@ -64,12 +70,15 @@ export namespace settings {
    * @param validityState - Indicates whether the save or remove button is enabled for the user.
    */
   export function setValidityState(validityState: boolean): void {
-    pages.config.setValidityState(validityState);
+    configSetValidityStateHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_SetValidityState),
+      validityState,
+    );
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.getConfig pages.getConfig(): Promise\<InstanceConfig\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.getConfig pages.getConfig(): Promise\<InstanceConfig\>} instead.
    *
    * Gets the settings for the current instance.
    *
@@ -83,14 +92,16 @@ export namespace settings {
       FrameContexts.remove,
       FrameContexts.sidePanel,
     );
-    pages.getConfig().then((config: pages.InstanceConfig) => {
-      callback(config);
-    });
+    getConfigHelper(getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_GetSettings)).then(
+      (config: pages.InstanceConfig) => {
+        callback(config);
+      },
+    );
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.setConfig pages.config.setConfig(instanceSettings: Config): Promise\<void\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.setConfig pages.config.setConfig(instanceSettings: Config): Promise\<void\>} instead.
    *
    * Sets the settings for the current instance.
    * This is an asynchronous operation; calls to getSettings are not guaranteed to reflect the changed state.
@@ -100,8 +111,10 @@ export namespace settings {
   export function setSettings(instanceSettings: Settings, onComplete?: setSettingsOnCompleteFunctionType): void {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.settings, FrameContexts.sidePanel);
     const completionHandler: setSettingsOnCompleteFunctionType = onComplete ?? getGenericOnCompleteHandler();
-    pages.config
-      .setConfig(instanceSettings)
+    configSetConfigHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_SetSettings),
+      instanceSettings,
+    )
       .then(() => {
         completionHandler(true);
       })
@@ -112,7 +125,7 @@ export namespace settings {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.registerOnSaveHandler pages.config.registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void} instead.
    *
    * Registers a handler for when the user attempts to save the settings. This handler should be used
    * to create or update the underlying resource powering the content.
@@ -122,12 +135,15 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the save button.
    */
   export function registerOnSaveHandler(handler: registerOnSaveHandlerFunctionType): void {
-    pages.config.registerOnSaveHandlerHelper(handler);
+    pages.config.registerOnSaveHandlerHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_RegisterOnSaveHandler),
+      handler,
+    );
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void} instead.
+   * As of TeamsJS v2.0.0, please use {@link pages.config.registerOnRemoveHandler pages.config.registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void} instead.
    *
    * Registers a handler for user attempts to remove content. This handler should be used
    * to remove the underlying resource powering the content.
@@ -137,6 +153,9 @@ export namespace settings {
    * @param handler - The handler to invoke when the user selects the remove button.
    */
   export function registerOnRemoveHandler(handler: registerOnRemoveHandlerFunctionType): void {
-    pages.config.registerOnRemoveHandlerHelper(handler);
+    pages.config.registerOnRemoveHandlerHelper(
+      getApiVersionTag(settingsTelemetryVersionNumber, ApiName.Settings_RegisterOnRemoveHandler),
+      handler,
+    );
   }
 }

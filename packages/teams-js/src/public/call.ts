@@ -2,8 +2,14 @@ import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { errorCallNotStarted } from '../internal/constants';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const callTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Used to interact with call functionality, including starting calls with other users.
@@ -54,6 +60,7 @@ export namespace call {
    * @returns always true if the host notifies of a successful call inititation
    */
   export function startCall(startCallParams: StartCallParams): Promise<boolean> {
+    const apiVersionTag = getApiVersionTag(callTelemetryVersionNumber, ApiName.Call_StartCall);
     return new Promise((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
@@ -62,6 +69,7 @@ export namespace call {
       if (runtime.isLegacyTeams) {
         resolve(
           sendAndUnwrap(
+            apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForCall(
               startCallParams.targets,
@@ -76,7 +84,7 @@ export namespace call {
           }),
         );
       } else {
-        return sendMessageToParent('call.startCall', [startCallParams], resolve);
+        return sendMessageToParent(apiVersionTag, 'call.startCall', [startCallParams], resolve);
       }
     });
   }

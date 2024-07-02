@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Reverted PR: \"Fix calls to chat capability when only a single user is specified (#2050)\"",
-  "packageName": "@microsoft/teams-js",
-  "email": "kangxuanye@microsoft.com",
-  "dependentChangeType": "patch"
-}

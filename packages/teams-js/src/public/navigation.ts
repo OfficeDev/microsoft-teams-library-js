@@ -24,7 +24,7 @@ const navigationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
  *
  * Return focus to the main Teams app. Will focus search bar if navigating foward and app bar if navigating back.
  *
@@ -39,7 +39,7 @@ export function returnFocus(navigateForward?: boolean): void {
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.tabs.navigateToTab pages.tabs.navigateToTab(tabInstance: TabInstance): Promise\<void\>} instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.tabs.navigateToTab pages.tabs.navigateToTab(tabInstance: TabInstance): Promise\<void\>} instead.
  *
  * Navigates the Microsoft Teams app to the specified tab instance.
  *
@@ -96,7 +96,7 @@ export function navigateCrossDomain(url: string, onComplete?: onCompleteHandlerF
 
 /**
  * @deprecated
- * As of 2.0.0, please use {@link pages.backStack.navigateBack pages.backStack.navigateBack(): Promise\<void\>} instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.backStack.navigateBack pages.backStack.navigateBack(): Promise\<void\>} instead.
  *
  * Navigates back in the Teams client.
  * See registerBackButtonHandler for more information on when it's appropriate to use this method.

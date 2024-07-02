@@ -46,6 +46,7 @@ export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export { clipboard } from './clipboard';
 export { dialog } from './dialog';
+export { nestedAppAuth } from './nestedAppAuth';
 export { geoLocation } from './geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
@@ -76,6 +77,7 @@ export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export { call } from './call';
 export { appInitialization } from './appInitialization';
+export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
   enablePrintCapability,

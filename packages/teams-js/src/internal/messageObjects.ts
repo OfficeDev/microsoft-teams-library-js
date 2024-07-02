@@ -1,14 +1,52 @@
+import { UUID as MessageUUID } from './uuidObject';
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * MessageIDs represent the legacy number id used for processing MessageRequests and MessageResponses
+ */
+export type MessageID = number;
+
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
 export interface MessageRequest {
-  id?: number;
+  id?: MessageID;
+  uuid?: MessageUUID;
   func: string;
   timestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
-  apiversiontag?: string;
+  apiVersionTag?: string;
+  isPartialResponse?: boolean;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface SerializedMessageRequest {
+  id?: MessageID;
+  uuidAsString?: string;
+  func: string;
+  timestamp?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+  apiVersionTag?: string;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface SerializedMessageResponse {
+  id: MessageID;
+  uuidAsString?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args?: any[];
+  isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 
 /**
@@ -16,7 +54,8 @@ export interface MessageRequest {
  * Limited to Microsoft-internal use
  */
 export interface MessageResponse {
-  id: number;
+  id: MessageID;
+  uuid?: MessageUUID;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
@@ -34,6 +73,45 @@ export interface MessageResponse {
  * merged. However, it's a journey.
  */
 export interface MessageRequestWithRequiredProperties extends MessageRequest {
-  id: number;
+  id: MessageID;
+  uuid: MessageUUID;
   timestamp: number;
 }
+
+export const serializeMessageRequest = (message: MessageRequest): SerializedMessageRequest => {
+  const { uuid, ...restOfMessage } = message;
+  const uuidAsString = uuid?.toString();
+  const request: SerializedMessageRequest = {
+    ...restOfMessage,
+    uuidAsString: uuidAsString,
+  };
+  return request;
+};
+
+export const deserializeMessageRequest = (message: SerializedMessageRequest): MessageRequest => {
+  const { uuidAsString, ...restOfMessage } = message;
+  const request: MessageRequest = {
+    ...restOfMessage,
+    uuid: uuidAsString ? new MessageUUID(uuidAsString) : undefined,
+  };
+  return request;
+};
+
+export const deserializeMessageResponse = (serializedResponse: SerializedMessageResponse): MessageResponse => {
+  const { uuidAsString, ...restOfResponse } = serializedResponse;
+  const messageResponse: MessageResponse = {
+    ...restOfResponse,
+    uuid: uuidAsString ? new MessageUUID(uuidAsString) : undefined,
+  };
+  return messageResponse;
+};
+
+export const serializeMessageResponse = (response: MessageResponse): SerializedMessageResponse => {
+  const { uuid, ...restOfResponse } = response;
+  const uuidAsString = uuid?.toString();
+  const messageResponse: SerializedMessageResponse = {
+    ...restOfResponse,
+    uuidAsString: uuidAsString,
+  };
+  return messageResponse;
+};

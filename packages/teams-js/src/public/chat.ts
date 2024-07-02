@@ -1,14 +1,19 @@
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
  * Describes information needed to start a chat
- *
- * @beta
  */
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const chatTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
 interface OpenChatRequest {
   /**
    * An optional message used when initiating chat
@@ -20,12 +25,11 @@ interface OpenChatRequest {
  * Used when starting a chat with one person
  *
  * @see OpenGroupChatRequest for use when a chat with more than one person
- *
- * @beta
  */
 export interface OpenSingleChatRequest extends OpenChatRequest {
   /**
-   * The Microsoft Entra UPN (e-mail address) of the user to chat with
+   * The [Microsoft Entra UPN](https://learn.microsoft.com/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
+   * of the user with whom to begin a chat
    */
   user: string;
 }
@@ -34,12 +38,11 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
  * Used when starting a chat with more than one person
  *
  * @see OpenSingleChatRequest for use in a chat with only one person
- *
- * @beta
  */
 export interface OpenGroupChatRequest extends OpenChatRequest {
   /**
-   * Array containing Microsoft Entra UPNs (e-mail addresss) of users to open chat with
+   * Array containing [Microsoft Entra UPNs](https://learn.microsoft.com/entra/identity/hybrid/connect/plan-connect-userprincipalname) (usually but not always an e-mail address)
+   * of users with whom to begin a chat
    */
   users: string[];
   /**
@@ -50,8 +53,6 @@ export interface OpenGroupChatRequest extends OpenChatRequest {
 
 /**
  * Contains functionality to start chat with others
- *
- * @beta
  */
 export namespace chat {
   /**
@@ -61,10 +62,13 @@ export namespace chat {
    * @param openChatRequest: {@link OpenSingleChatRequest}- a request object that contains a user's email as well as an optional message parameter.
    *
    * @returns Promise resolved upon completion
-   *
-   * @beta
    */
   export function openChat(openChatRequest: OpenSingleChatRequest): Promise<void> {
+    const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenChat);
+    return openChatHelper(apiVersionTag, openChatRequest);
+  }
+
+  function openChatHelper(apiVersionTag: string, openChatRequest: OpenSingleChatRequest): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isSupported()) {
@@ -73,13 +77,14 @@ export namespace chat {
       if (runtime.isLegacyTeams) {
         resolve(
           sendAndHandleStatusAndReason(
+            apiVersionTag,
             'executeDeepLink',
             createTeamsDeepLinkForChat([openChatRequest.user], undefined /*topic*/, openChatRequest.message),
           ),
         );
       } else {
-        const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
-          members: openChatRequest.user,
+        const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
+          members: [openChatRequest.user],
           message: openChatRequest.message,
         });
         resolve(sendPromise);
@@ -94,10 +99,9 @@ export namespace chat {
    * @param openChatRequest: {@link OpenGroupChatRequest} - a request object that contains a list of user emails as well as optional parameters for message and topic (display name for the group chat).
    *
    * @returns Promise resolved upon completion
-   *
-   * @beta
    */
   export function openGroupChat(openChatRequest: OpenGroupChatRequest): Promise<void> {
+    const apiVersionTag = getApiVersionTag(chatTelemetryVersionNumber, ApiName.Chat_OpenGroupChat);
     return new Promise<void>((resolve) => {
       if (openChatRequest.users.length < 1) {
         throw Error('OpenGroupChat Failed: No users specified');
@@ -107,7 +111,7 @@ export namespace chat {
           user: openChatRequest.users[0],
           message: openChatRequest.message,
         };
-        openChat(chatRequest);
+        resolve(openChatHelper(apiVersionTag, chatRequest));
       } else {
         ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
         if (!isSupported()) {
@@ -116,12 +120,13 @@ export namespace chat {
         if (runtime.isLegacyTeams) {
           resolve(
             sendAndHandleStatusAndReason(
+              apiVersionTag,
               'executeDeepLink',
               createTeamsDeepLinkForChat(openChatRequest.users, openChatRequest.topic, openChatRequest.message),
             ),
           );
         } else {
-          const sendPromise = sendAndHandleStatusAndReason('chat.openChat', {
+          const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
             members: openChatRequest.users,
             message: openChatRequest.message,
             topic: openChatRequest.topic,
@@ -137,8 +142,6 @@ export namespace chat {
    * @returns boolean to represent whether the chat capability is supported
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @beta
    */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.chat ? true : false;
