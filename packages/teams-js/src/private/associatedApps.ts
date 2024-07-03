@@ -59,7 +59,7 @@ export namespace associatedApps {
      *
      * @throws TODO: Description of errors that can be thrown from this function
      */
-    export function addAndConfigureApp(threadId: string, appTypes: AppTypes[]): Promise<TabInstance> {
+    export function addAndConfigure(threadId: string, appTypes: AppTypes[]): Promise<TabInstance> {
       ensureInitialized(runtime); // TODO: add frameContext checks if this is limited to certain contexts such as content
 
       if (!isSupported()) {
