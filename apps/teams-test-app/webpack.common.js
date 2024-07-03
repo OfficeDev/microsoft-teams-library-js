@@ -1,6 +1,27 @@
 /* eslint @typescript-eslint/no-var-requires: off*/
 
 const path = require('path');
+const fs = require('fs');
+
+const keyPath = process.env.SSL_KEY_FILE;
+const certPath = process.env.SSL_CRT_FILE;
+const sslFilesExist = keyPath && certPath && fs.existsSync(keyPath) && fs.existsSync(certPath);
+if (sslFilesExist) {
+  console.log('Using SSL with the following files:');
+  console.log('SSL_KEY_FILE:', keyPath);
+  console.log('SSL_CRT_FILE:', certPath);
+}
+
+// If the SSL key and certificate files exist, build with SSL options for internal tests.
+const serverConfig = {
+  type: 'https',
+  ...(sslFilesExist && {
+    options: {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    },
+  }),
+};
 
 module.exports = {
   mode: 'production',
@@ -40,7 +61,7 @@ module.exports = {
     },
     compress: true,
     port: 4000,
-    server: 'https',
+    server: serverConfig,
     allowedHosts: 'all',
   },
   performance: { hints: false },
