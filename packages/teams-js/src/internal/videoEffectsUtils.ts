@@ -219,7 +219,10 @@ class OneTextureHeader {
   private readonly ONE_TEXTURE_INPUT_ID = 0x6f746931;
   private readonly INVALID_HEADER_ERROR = 'Invalid video frame header';
   private readonly UNSUPPORTED_LAYOUT_ERROR = 'Unsupported texture layout';
-  public constructor(private readonly headerBuffer: ArrayBuffer, private readonly notifyError: (string) => void) {
+  public constructor(
+    private readonly headerBuffer: ArrayBuffer,
+    private readonly notifyError: (string) => void,
+  ) {
     this.headerDataView = new Uint32Array(headerBuffer);
     // headerDataView will contain the following data:
     // 0: oneTextureLayoutId

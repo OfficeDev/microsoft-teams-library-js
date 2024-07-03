@@ -73,7 +73,7 @@ export namespace videoEffectsEx {
     audioInferenceModel?: ArrayBuffer;
     /**
      * @hidden
-     * Specifies additional capabilities that needs to be applied to the video frame.
+     * Specifies additional capabilities that should be applied to the video frame
      * @beta
      *
      * @internal
