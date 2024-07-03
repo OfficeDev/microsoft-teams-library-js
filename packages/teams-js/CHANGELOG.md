@@ -8,12 +8,9 @@ This log was last generated on Wed, 03 Jul 2024 18:11:19 GMT and should not be m
 
 Wed, 03 Jul 2024 18:11:19 GMT
 
-### Minor changes
-
-- Fixed `dialog.url.submit` api to support only `FrameContext.content`.
-
 ### Patches
 
+- Fixed `dialog.url.submit` api to support only `FrameContext.content`.
 - Updated `clipboard.isSupported` so that it does not depend on `navigator.clipboard` in frameless contexts.
 - Updated whitespace in `clipboard.ts` file to match conventions
 
