@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated whitespace in `clipboard.ts` file to match conventions",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}
