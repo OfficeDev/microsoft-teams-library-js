@@ -1,5 +1,6 @@
 export * from './AppApi';
 export * from './AuthenticationStart';
+export * from './AuthenticationEnd';
 export * from './AppInstallDialogApi';
 export * from './BarCodeApi';
 export * from './CalendarApi';

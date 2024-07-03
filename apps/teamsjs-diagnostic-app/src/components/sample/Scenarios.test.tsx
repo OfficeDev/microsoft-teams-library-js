@@ -1,6 +1,6 @@
 import './Scenario1.css';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Scenario1 } from './Scenario1';
+import AppInitialization from './AppInitializationScenario';
 
 jest.mock('@microsoft/teams-js', () => ({
   app: {
@@ -19,7 +19,7 @@ jest.mock('../../apis/AuthenticationStart', () => ({
 describe('Scenario1 Component', () => {
   // Test case for app initialization scenario
   test('app initialization scenario', async () => {
-    render(<Scenario1 />);
+    render(<AppInitialization />);
 
     // Simulate clicking on the "Run Scenario" button
     fireEvent.click(screen.getByTestId('run-scenario-button'));

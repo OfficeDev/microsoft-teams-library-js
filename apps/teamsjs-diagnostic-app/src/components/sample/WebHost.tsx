@@ -1,9 +1,9 @@
-import "./WebHub.css";
+import "./WebHost.css";
 
-export function WebHub(props: { docsUrl?: string }) {
+export function WebHost(props: { docsUrl?: string }) {
   return (
-    <div className="web hub sdk logging">
-      <h2>Web Hub SDK Logging</h2>
+    <div className="web host sdk logging">
+      <h2>Web Host SDK Logging</h2>
       <p>
         Check back later!
       </p>

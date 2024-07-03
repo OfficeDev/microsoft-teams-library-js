@@ -1,18 +1,11 @@
-import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import {
-  OnBehalfOfCredentialAuthConfig,
-  OnBehalfOfUserCredential,
-  UserInfo,
-} from "@microsoft/teamsfx";
-import config from "../config";
-import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials";
-import { Client } from "@microsoft/microsoft-graph-client";
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import { OnBehalfOfCredentialAuthConfig, OnBehalfOfUserCredential, UserInfo } from '@microsoft/teamsfx';
+import config from '../config';
+import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
+import { Client } from '@microsoft/microsoft-graph-client';
 
-export async function getUserProfile(
-  req: HttpRequest,
-  context: InvocationContext
-): Promise<HttpResponseInit> {
-  context.log("HTTP trigger function processed a request.");
+export async function getUserProfile(req: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+  context.log('HTTP trigger function processed a request.');
 
   // Initialize response.
   const res: HttpResponseInit = {
@@ -21,15 +14,15 @@ export async function getUserProfile(
   const body = Object();
 
   // Put an echo into response body.
-  body.receivedHTTPRequestBody = (await req.text()) || "";
+  body.receivedHTTPRequestBody = (await req.text()) || '';
 
   // Prepare access token.
-  const accessToken: string = req.headers.get("Authorization")?.replace("Bearer ", "").trim();
+  const accessToken: string = req.headers.get('Authorization')?.replace('Bearer ', '').trim();
   if (!accessToken) {
     return {
       status: 400,
       body: JSON.stringify({
-        error: "No access token was found in request header.",
+        error: 'No access token was found in request header.',
       }),
     };
   }
@@ -50,8 +43,8 @@ export async function getUserProfile(
       status: 500,
       body: JSON.stringify({
         error:
-          "Failed to construct OnBehalfOfUserCredential using your accessToken. " +
-          "Ensure your function app is configured with the right Microsoft Entra App registration.",
+          'Failed to construct OnBehalfOfUserCredential using your accessToken. ' +
+          'Ensure your function app is configured with the right Microsoft Entra App registration.',
       }),
     };
   }
@@ -62,14 +55,14 @@ export async function getUserProfile(
     if (currentUser && currentUser.displayName) {
       body.userInfoMessage = `User display name is ${currentUser.displayName}.`;
     } else {
-      body.userInfoMessage = "No user information was found in access token.";
+      body.userInfoMessage = 'No user information was found in access token.';
     }
   } catch (e) {
     context.error(e);
     return {
       status: 400,
       body: JSON.stringify({
-        error: "Access token is invalid.",
+        error: 'Access token is invalid.',
       }),
     };
   }
@@ -78,7 +71,7 @@ export async function getUserProfile(
   try {
     // Create an instance of the TokenCredentialAuthenticationProvider by passing the tokenCredential instance and options to the constructor
     const authProvider = new TokenCredentialAuthenticationProvider(oboCredential, {
-      scopes: ["https://graph.microsoft.com/.default"],
+      scopes: ['https://graph.microsoft.com/.default'],
     });
 
     // Initialize Graph client instance with authProvider
@@ -86,14 +79,13 @@ export async function getUserProfile(
       authProvider: authProvider,
     });
 
-    body.graphClientMessage = await graphClient.api("/me").get();
+    body.graphClientMessage = await graphClient.api('/me').get();
   } catch (e) {
     context.error(e);
     return {
       status: 500,
       body: JSON.stringify({
-        error:
-          "Failed to retrieve user profile from Microsoft Graph. The application may not be authorized.",
+        error: 'Failed to retrieve user profile from Microsoft Graph. The application may not be authorized.',
       }),
     };
   }
@@ -102,8 +94,8 @@ export async function getUserProfile(
   return res;
 }
 
-app.http("getUserProfile", {
-  methods: ["GET", "POST"],
-  authLevel: "anonymous",
+app.http('getUserProfile', {
+  methods: ['GET', 'POST'],
+  authLevel: 'anonymous',
   handler: getUserProfile,
 });

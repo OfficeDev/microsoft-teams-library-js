@@ -46,11 +46,12 @@
                   })
                 );
               } else {
-                microsoftTeams.authentication.notifyFailure("Get empty response.");
+                microsoftTeams.authentication.notifyFailure("Got empty response.");
               }
             })
             .catch((error) => {
-              microsoftTeams.authentication.notifyFailure(JSON.stringify(error));
+              const errorMessage = `Error occurred in auth-end.html: ${JSON.stringify(error)}`;
+              microsoftTeams.authentication.notifyFailure(errorMessage);
             });
         });
       });

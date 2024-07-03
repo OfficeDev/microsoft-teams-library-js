@@ -62,7 +62,7 @@
       "@babel/preset-react"
     ],
     "setupFilesAfterEnv": [
-      "@testing-library/jest-dom/extend-expect"
+      "@testing-library/jest-dom"
     ],
     "testEnvironment": "jsdom",
     "moduleNameMapper": {
@@ -70,11 +70,6 @@
     }
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
