@@ -14,7 +14,7 @@ describe('stageView', () => {
   const utils = new Utils();
 
   function makeRuntimeSupportStageViewCapability() {
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {self: {}} } });
   }
 
   beforeEach(() => {
@@ -167,12 +167,40 @@ describe('stageView', () => {
 
       const promise = stageView.self.close();
 
-      /*const closeStageViewMessage = utils.findMessageByFunc('stageView.self.close');
+      const closeStageViewMessage = utils.findMessageByFunc('stageView.self.close');
       expect(closeStageViewMessage).not.toBeNull();
 
       utils.respondToMessage(closeStageViewMessage, null);
 
-      await expect(promise).resolves.not.toThrowError();*/
+      await expect(promise).resolves.not.toThrowError();
+    });
+
+    it('should properly handle errors', async () => {
+      await utils.initializeWithContext(FrameContexts.stage);
+      makeRuntimeSupportStageViewCapability();
+
+      const promise = stageView.self.close();
+
+      const err = { errorCode: ErrorCode.INTERNAL_ERROR };
+      const closeStageViewMessage = utils.findMessageByFunc('stageView.self.close');
+      expect(closeStageViewMessage).not.toBeNull();
+
+      utils.respondToMessage(closeStageViewMessage, err);
+
+      await expect(promise).rejects.toEqual(err);
+    });
+
+    it('should throw error when stageView is not supported.', async () => {
+      await utils.initializeWithContext(FrameContexts.stage);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      expect.assertions(1);
+
+      try {
+        await stageView.self.close();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
   });
 });
