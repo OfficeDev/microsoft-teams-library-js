@@ -355,6 +355,9 @@ importers:
       scheduler:
         specifier: 0.23.0
         version: 0.23.0
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
     devDependencies:
       '@babel/plugin-transform-private-property-in-object':
         specifier: ^7.24.7
@@ -392,6 +395,9 @@ importers:
       '@types/react-router-dom':
         specifier: ^5.3.3
         version: 5.3.3
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
       babel-jest:
         specifier: ^29.7.0
         version: 29.7.0(@babel/core@7.24.7)
@@ -3098,6 +3104,9 @@ packages:
 
   '@types/tunnel@0.0.3':
     resolution: {integrity: sha512-sOUTGn6h1SfQ+gbgqC364jLFBw2lnFqkgF3q0WovEHRLMrVD1sd5aufqi/aJObLekJO+Aq5z646U4Oxy6shXMA==}
+
+  '@types/uuid@10.0.0':
+    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
 
   '@types/webpack@5.28.5':
     resolution: {integrity: sha512-wR87cgvxj3p6D0Crt1r5avwqffqPXUkNlnQ1mjU93G7gCuFjufZR4I6j8cz5g1F1tTYpfOOFvly+cmIQwL9wvw==}
@@ -13748,11 +13757,6 @@ snapshots:
 
   '@microsoft/load-themed-styles@1.10.295': {}
 
-  '@microsoft/microsoft-graph-client@3.0.7':
-    dependencies:
-      '@babel/runtime': 7.24.7
-      tslib: 2.6.3
-
   '@microsoft/microsoft-graph-client@3.0.7(@azure/identity@2.1.0)(@azure/msal-browser@3.17.0)':
     dependencies:
       '@babel/runtime': 7.24.7
@@ -13836,7 +13840,7 @@ snapshots:
     dependencies:
       '@fluentui/react': 8.119.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@fluentui/react-components': 9.54.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(scheduler@0.23.0)
-      '@microsoft/microsoft-graph-client': 3.0.7
+      '@microsoft/microsoft-graph-client': 3.0.7(@azure/identity@2.1.0)(@azure/msal-browser@3.17.0)
       '@microsoft/teams-js': 2.24.0
       '@microsoft/teamsfx': 2.3.2(@microsoft/teams-js@2.24.0)(encoding@0.1.13)
       react: 18.3.1
@@ -14783,6 +14787,8 @@ snapshots:
   '@types/tunnel@0.0.3':
     dependencies:
       '@types/node': 18.19.39
+
+  '@types/uuid@10.0.0': {}
 
   '@types/webpack@5.28.5(webpack-cli@5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@5.0.4)(webpack@5.92.1))':
     dependencies:
