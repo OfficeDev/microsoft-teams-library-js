@@ -57,6 +57,9 @@ importers:
       '@babel/runtime':
         specifier: ^7.24.4
         version: 7.24.4
+      '@eslint/js':
+        specifier: ^9.6.0
+        version: 9.6.0
       '@microsoft/eslint-plugin-sdl':
         specifier: ^0.2.2
         version: 0.2.2(eslint@8.57.0)
@@ -156,6 +159,9 @@ importers:
       fs-extra:
         specifier: ^9.1.0
         version: 9.1.0
+      globals:
+        specifier: ^15.8.0
+        version: 15.8.0
       html-webpack-plugin:
         specifier: ^5.6.0
         version: 5.6.0(webpack@5.91.0(webpack-cli@5.1.4))
@@ -1060,6 +1066,10 @@ packages:
   '@eslint/js@8.57.0':
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@eslint/js@9.6.0':
+    resolution: {integrity: sha512-D9B0/3vNg44ZeWbYMpBoXqNP4j6eQD5vNwIlGAuFRRzK/WtT/jvDQW3Bi9kkf3PMDMlM7Yi+73VLUsn5bJcl8A==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@floating-ui/core@1.6.0':
     resolution: {integrity: sha512-PcF++MykgmTj3CIyOQbKA/hDzOAiqI3mhuoN44WRCopIs1sgoDoU4oty4Jtqaj/y3oDU6fnVSm4QG0a3t5i0+g==}
@@ -4005,6 +4015,10 @@ packages:
   globals@13.24.0:
     resolution: {integrity: sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==}
     engines: {node: '>=8'}
+
+  globals@15.8.0:
+    resolution: {integrity: sha512-VZAJ4cewHTExBWDHR6yptdIBlx9YSSZuwojj9Nt5mBRXQzrKakDsVKQ1J63sklLvzAJm0X5+RpO4i3Y2hcOnFw==}
+    engines: {node: '>=18'}
 
   globalthis@1.0.3:
     resolution: {integrity: sha512-sFdI5LyBiNTHjRd7cGPWapiHWMOXKyuBNX/cWJ3NfzrZQVa8GI/8cofCl74AOVqq9W5kNmguTIzJ/1s2gyI9wA==}
@@ -7838,6 +7852,8 @@ snapshots:
       - supports-color
 
   '@eslint/js@8.57.0': {}
+
+  '@eslint/js@9.6.0': {}
 
   '@floating-ui/core@1.6.0':
     dependencies:
@@ -12001,6 +12017,8 @@ snapshots:
   globals@13.24.0:
     dependencies:
       type-fest: 0.20.2
+
+  globals@15.8.0: {}
 
   globalthis@1.0.3:
     dependencies:

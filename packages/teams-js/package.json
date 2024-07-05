@@ -15,7 +15,7 @@
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",
-    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix --ext .ts",
+    "lint": "pnpm eslint ./src ./test --max-warnings 0 --fix",
     "prettier": "prettier --write '**/*.{ts,js,css,html}'",
     "test": "jest",
     "test:verbose": "pnpm test -- --verbose false --silent false"
