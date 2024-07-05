@@ -32,6 +32,8 @@ if (
   (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest'))
 ) {
   console.info('Not calling appInitialization because part of App Initialization Test run');
+  const unsafeUrl = 'https://www.bing.com/';
+  console.log(unsafeUrl);
 } else {
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();

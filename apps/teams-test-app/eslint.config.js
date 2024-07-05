@@ -11,4 +11,11 @@ module.exports = {
       project: './tsconfig.json',
     },
   },
+  plugins: {
+    ...globalEslintConfig.plugins,
+  },
+  rules: {
+    ...globalEslintConfig.rules,
+    'microsoftSdlPlugin/no-insecure-url': 'error',
+  },
 };

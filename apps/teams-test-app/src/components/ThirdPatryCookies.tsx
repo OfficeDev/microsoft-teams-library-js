@@ -1,4 +1,3 @@
-/* eslint-disable @microsoft/sdl/no-cookies */
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput } from './utils';

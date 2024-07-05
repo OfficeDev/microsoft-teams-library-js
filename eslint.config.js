@@ -19,7 +19,7 @@ module.exports = {
     },
   },
   plugins: {
-    '@microsoft/sdl': microsoftSdlPlugin,
+    microsoftSdlPlugin,
     '@typescript-eslint': typescriptEsLintPlugin,
     'only-error': onlyError,
     prettier: prettierPlugin,
