@@ -15,7 +15,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
-    "scheduler": "0.23.0"
+    "scheduler": "0.23.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",
@@ -30,6 +31,7 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^10.0.0",
     "babel-jest": "^29.7.0",
     "concurrently": "^8.2.2",
     "env-cmd": "^10.1.0",

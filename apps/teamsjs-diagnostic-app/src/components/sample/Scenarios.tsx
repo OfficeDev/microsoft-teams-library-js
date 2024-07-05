@@ -18,7 +18,6 @@ const Scenarios: React.FC<ScenariosProps> = ({ showFunction }) => {
         <div className="scenario-column">
           <div className="custom-and-apis-container">
             <CustomScenario />
-            {/* Placeholder for AllApis component */}
           </div>
         </div>
     </div>

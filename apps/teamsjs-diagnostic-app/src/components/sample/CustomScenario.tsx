@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './CustomScenario.css'; // Import CSS file for CustomScenarios
+import './CustomScenario.css';
 
 import apiComponents from './ApiComponents';
 

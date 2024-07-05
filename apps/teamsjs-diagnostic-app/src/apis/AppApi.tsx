@@ -14,8 +14,9 @@ export const registerOnResume = async (): Promise<string> => {
   
       return app.Messages.Success;
     } catch (error: any) {
-      console.error(`Failed to register resume handler: ${error.toString()}`);
-      throw new Error(`Failed to register resume handler: ${error.toString()}`);
+        const registerError = new Error(`Failed to register resume handler: ${error.toString()}`);
+        console.error(registerError.message);
+        throw registerError;
     }
   };
   

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './AppInitializationScenario.css'; // Import CSS file for AppInitialization
+import './AppInitializationScenario.css';
 
 import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';

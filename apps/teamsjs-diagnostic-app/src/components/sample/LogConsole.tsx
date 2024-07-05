@@ -1,31 +1,44 @@
-// LogConsole.tsx
 import React, { useEffect, useState } from 'react';
 import './LogConsole.css';
 
 interface LogConsoleProps {
-  initialLogs?: string[]; // Optional initial logs prop
+  initialLogs?: string[];
 }
 
 const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
   const [logStatements, setLogStatements] = useState<string[]>(initialLogs);
 
+  const captureConsoleLogs = (...args: any[]) => {
+    const timestampedLog = `${new Date()} - ${args.join(' ')}`;
+    setLogStatements(prevLogs => {
+      const updatedLogs = [...prevLogs, timestampedLog];
+      // Store updated logs in sessionStorage
+      sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
+      return updatedLogs;
+    });
+  };
+
   useEffect(() => {
-    const captureConsoleLogs = (log: string) => {
-      setLogStatements(prevLogs => [...prevLogs, log]);
+    // Function to load initial logs from sessionStorage
+    const loadLogsFromStorage = () => {
+      const storedLogs = sessionStorage.getItem('logStatements');
+      if (storedLogs) {
+        setLogStatements(JSON.parse(storedLogs));
+      }
     };
 
-    // Example useEffect to initialize logging capture
+    loadLogsFromStorage();
+
     const originalConsoleLog = console.log;
     console.log = function (...args: any[]) {
-      const message = args.join(' ');
-      captureConsoleLogs(message);
+      captureConsoleLogs(...args);
       originalConsoleLog.apply(console, args);
     };
 
     return () => {
-      console.log = originalConsoleLog; // Restore original console.log when component unmounts
+      console.log = originalConsoleLog;
     };
-  }, []); // Ensure this runs only once
+  }, []);
 
   return (
     <div>
