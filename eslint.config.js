@@ -10,7 +10,7 @@ const typescriptEsLintPlugin = require('@typescript-eslint/eslint-plugin');
 module.exports = {
   languageOptions: {
     globals: {
-      ...globals.node,
+      ...globals.browser,
     },
     parser: typescriptEsLintParser,
     parserOptions: {

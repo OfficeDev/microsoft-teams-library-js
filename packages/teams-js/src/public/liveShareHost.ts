@@ -212,7 +212,6 @@ export class LiveShareHost {
         sendAndHandleSdkError(
           getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidToken),
           'interactive.getFluidToken',
-          // eslint-disable-next-line strict-null-checks/all
           containerId,
         ),
       );

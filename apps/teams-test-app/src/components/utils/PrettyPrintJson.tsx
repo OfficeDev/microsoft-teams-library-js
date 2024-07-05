@@ -4,7 +4,7 @@ type PrettyPrintJsonProps = {
   result?: string;
 };
 
-export const PrettyPrintJson = ({ result }: PrettyPrintJsonProps): JSX.Element => {
+export const PrettyPrintJson = ({ result }: PrettyPrintJsonProps): React.JSX.Element => {
   const [formattedResult, setFormattedResult] = React.useState(result);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
