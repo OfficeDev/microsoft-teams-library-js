@@ -9,7 +9,9 @@ const typescriptEsLintPlugin = require('@typescript-eslint/eslint-plugin');
 
 module.exports = {
   languageOptions: {
-    ...globals.node,
+    globals: {
+      ...globals.node,
+    },
     parser: typescriptEsLintParser,
     parserOptions: {
       ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
@@ -20,6 +22,7 @@ module.exports = {
     '@microsoft/sdl': microsoftSdlPlugin,
     '@typescript-eslint': typescriptEsLintPlugin,
     'only-error': onlyError,
+    prettier: prettierPlugin,
     'simple-import-sort': simpleImportSort,
   },
   rules: {

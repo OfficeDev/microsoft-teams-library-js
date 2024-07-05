@@ -25,6 +25,8 @@ module.exports = {
       { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
     'no-inner-declarations': 'off',
+    'no-undef': 'off',
+    'no-redeclare': 'off',
     'strict-null-checks/all': 'warn',
   },
 };
