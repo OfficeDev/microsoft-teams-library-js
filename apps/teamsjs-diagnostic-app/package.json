@@ -8,7 +8,6 @@
   "dependencies": {
     "@babel/preset-react": "^7.24.1",
     "@fluentui/react-components": "^9.54.2",
-    "@microsoft/teams-js": "^2.24.0",
     "@microsoft/teamsfx": "^2.2.0",
     "@microsoft/teamsfx-react": "^3.0.0",
     "axios": "^0.21.1",
@@ -24,6 +23,7 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@jest/types": "^29.6.3",
+    "@microsoft/teams-js": "^2.24.0",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.5.2",
