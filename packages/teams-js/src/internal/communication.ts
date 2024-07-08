@@ -565,17 +565,19 @@ async function shouldProcessMessage(messageSource: Window, messageOrigin: string
   ) {
     return true;
   } else {
+    let messageOriginURL: URL;
     try {
-      const messageOriginURL = new URL(messageOrigin);
-      const isOriginValid = await validateOrigin(messageOriginURL);
-      if (!isOriginValid) {
-        shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
-      }
-      return isOriginValid;
+      messageOriginURL = new URL(messageOrigin);
     } catch (_) {
       shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
       return false;
     }
+
+    const isOriginValid = await validateOrigin(messageOriginURL);
+    if (!isOriginValid) {
+      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+    }
+    return isOriginValid;
   }
 }
 
