@@ -8,7 +8,7 @@ function toQueryString(queryParams: any) {
 }
 
 function _guid() {
-  return uuidv4(); // Use uuidv4 function from uuid library to generate a GUID
+  return uuidv4();
 }
 
 export async function authenticateUser(): Promise<boolean> {

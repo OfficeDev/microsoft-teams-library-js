@@ -11,13 +11,10 @@ jest.mock('../../apis/AppApi', () => ({
   registerOnResume: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../../apis/AuthenticationStart', () => ({
-  authenticateUser: jest.fn(() => Promise.resolve(true)),
-}));
 
 describe('App Initialization Component', () => {
   // Test case for app initialization scenario
-  test('app initialization scenario', async () => {
+  test('app initialization', async () => {
     render(<AppInitializationScenario />);
 
     // Simulate clicking on the "Run Scenario" button
@@ -28,6 +25,5 @@ describe('App Initialization Component', () => {
       expect(successMessage).not.toBeNull();
     });
   });
-
   // Add more test cases later
 });
