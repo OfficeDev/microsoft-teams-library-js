@@ -17,5 +17,6 @@
     "jsx": "react-jsx",
     "types": ["node", "jest", "@types/uuid"]
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests", "node_modules"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './AppInitializationScenario.css';
 
 import { app } from '@microsoft/teams-js';
@@ -6,6 +6,8 @@ import { registerOnResume } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
 
 const AppInitializationScenario: React.FC = () => {
+  const [successMessage, setSuccessMessage] = useState('');
+
   useEffect(() => {
     app.initialize();
   }, []);
@@ -19,6 +21,7 @@ const AppInitializationScenario: React.FC = () => {
       const authSuccess = await authenticateUser();
       if (authSuccess) {
         console.log('App Initialization Scenario successfully completed');
+        setSuccessMessage('App Initialization Scenario successfully completed');
       } else {
         console.log('User not authenticated');
         showSignInPopup();
@@ -38,7 +41,7 @@ const AppInitializationScenario: React.FC = () => {
       <p>Click the button to run the app initialization scenario.</p>
       <div className="scenario-container">
         <div className="scenario1-box">
-          <button
+        <button
             className="scenario1-button"
             onClick={runAppInitializationScenario}
             type="button"
@@ -59,6 +62,7 @@ const AppInitializationScenario: React.FC = () => {
           </div>
         </div>
         </div>
+        {successMessage && <div>{successMessage}</div>}
     </div>
   );
 };
