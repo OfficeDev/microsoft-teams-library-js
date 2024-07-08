@@ -1,4 +1,5 @@
 beforeAll(() => {
+    console.log('Mocking window.location');
     const location = {
       assign: jest.fn(),
       href: 'http://localhost/',
@@ -20,4 +21,3 @@ beforeAll(() => {
   });
   
   export {};
-  

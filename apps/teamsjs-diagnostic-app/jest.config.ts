@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: ['/home/runner/work/microsoft-teams-library-js/microsoft-teams-library-js/apps/teamsjs-diagnostic-app/src/components/sample/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/components/sample/setupTests.ts'],
   clearMocks: true,
 };
 
