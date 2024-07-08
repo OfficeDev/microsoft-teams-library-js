@@ -17,11 +17,11 @@ const AppInitializationScenario: React.FC = () => {
       console.log('Running App Initialization Scenario...');
       console.log('Attempting to register on resume handler...');
       await registerOnResume();
-      setSuccessMessage('App Initialization Scenario successfully completed');
       console.log('Attempting to authenticate user...');
       const authSuccess = await authenticateUser();
       if (authSuccess) {
         console.log('App Initialization Scenario successfully completed');
+        setSuccessMessage('App Initialization Scenario successfully completed');
       } else {
         console.log('User not authenticated');
         showSignInPopup();
