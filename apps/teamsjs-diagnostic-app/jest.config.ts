@@ -1,7 +1,6 @@
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  verbose: true,
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
@@ -11,7 +10,6 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  setupFilesAfterEnv: [require.resolve('./src/components/sample/setupTests.ts')],
   reporters: [
     'default',
     [
