@@ -14,9 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "types": ["node", "jest", "@types/uuid"]
+    "jsx": "react-jsx"
   },
-  "include": ["src", "tests", "node_modules"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }
