@@ -29,10 +29,9 @@ describe('App Initialization Component', () => {
 
     await waitFor(() => {
       console.log('waiting for successMessage');
-      const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
-      console.log(successMessage)
-      expect(successMessage).not.toBeNull();
     });
+    const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
+    expect(successMessage).not.toBeNull();
   });
 
   // Add more test cases later
