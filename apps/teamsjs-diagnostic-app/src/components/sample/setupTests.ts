@@ -1,33 +1,27 @@
 import '@testing-library/jest-dom';
 
 beforeAll(() => {
-  try {
-    console.log('Mocking window.location');
-    const location = {
-      assign: jest.fn(),
-      href: 'http://localhost/',
-      reload: jest.fn(),
-      replace: jest.fn(),
-      origin: 'http://localhost',
-      pathname: '',
-      search: '',
-      hash: '',
-      host: 'localhost',
-      hostname: 'localhost',
-      protocol: 'http:',
-      port: '',
-    };
+  console.log('Mocking window.location');
+  const mockLocation = (new URL('http://localhost/') as unknown) as Location;
 
-    delete (window as any).location;
+  jest.spyOn(window, 'location', 'get').mockReturnValue(mockLocation);
 
-    Object.defineProperty(window, 'location', {
-      value: location,
-      writable: true,
-    });
-    console.log('window.location mocked successfully');
-  } catch (error) {
-    console.error('Error setting up window.location mock:', error);
-  }
+  Object.defineProperty(window.location, 'assign', {
+    configurable: true,
+    value: jest.fn(),
+  });
+
+  Object.defineProperty(window.location, 'reload', {
+    configurable: true,
+    value: jest.fn(),
+  });
+
+  Object.defineProperty(window.location, 'replace', {
+    configurable: true,
+    value: jest.fn(),
+  });
+
+  console.log('window.location mocked successfully');
 });
 
 export {};
