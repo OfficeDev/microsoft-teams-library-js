@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="1" failures="0" errors="0" time="7.419">
-  <testsuite name="App Initialization Component" errors="0" failures="0" skipped="0" timestamp="2024-07-09T20:50:06" time="6.263" tests="1">
-    <testcase classname="src\components\sample\Scenarios.test.tsx" name="App Initialization Component app initialization scenario" time="0.205">
+<testsuites name="jest tests" tests="1" failures="1" errors="0" time="5.686">
+  <testsuite name="App Initialization Component" errors="0" failures="1" skipped="0" timestamp="2024-07-09T21:52:41" time="4.842" tests="1">
+    <testcase classname="src\components\sample\Scenarios.test.tsx" name="App Initialization Component app initialization scenario" time="0.103">
+      <failure>Error: expect(received).not.toBeNull()
+
+Received: null
+    at Object.&lt;anonymous&gt; (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\src\components\sample\Scenarios.test.tsx:29:32)
+    at Promise.then.completed (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\run.js:316:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async _runTest (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\run.js:252:3)
+    at async _runTestsForDescribeBlock (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\run.js:126:9)
+    at async _runTestsForDescribeBlock (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\run.js:121:9)
+    at async run (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\run.js:71:3)
+    at async runAndTransformResultsToJestFormat (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at async jestAdapter (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at async runTestInternal (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-runner\build\runTest.js:367:16)
+    at async runTest (C:\Users\t-avvellozzi\microsoft-teams-library-js\apps\teamsjs-diagnostic-app\node_modules\jest-runner\build\runTest.js:444:34)</failure>
     </testcase>
   </testsuite>
 </testsuites>
