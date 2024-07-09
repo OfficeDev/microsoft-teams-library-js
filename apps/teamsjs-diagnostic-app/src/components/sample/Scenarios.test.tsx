@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AppInitializationScenario from './AppInitializationScenario';
 
@@ -16,11 +17,14 @@ jest.mock('../../apis/AuthenticationStart', () => ({
 }));
 
 describe('App Initialization Component', () => {
-  // Test case for app initialization scenario
+  afterEach(() => {
+     // Clear all mock functions after each test
+    jest.clearAllMocks();
+  });
+
   test('app initialization scenario', async () => {
     render(<AppInitializationScenario />);
 
-    // Simulate clicking on the "Run Scenario" button
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 
     await waitFor(() => {
