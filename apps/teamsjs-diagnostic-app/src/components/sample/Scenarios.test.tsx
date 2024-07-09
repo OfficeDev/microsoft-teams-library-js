@@ -24,7 +24,9 @@ describe('App Initialization Component', () => {
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 
     await waitFor(() => {
+      console.log('waiting for successMessage');
       const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
+      console.log(successMessage)
       expect(successMessage).not.toBeNull();
     });
   });
