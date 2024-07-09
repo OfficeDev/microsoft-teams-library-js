@@ -83,10 +83,12 @@ steps:
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - task: Bash@3
-    displayName: "[iOS] Boot iOS Simulator
+    displayName: "[iOS] Boot iOS Simulator"
     inputs:
       targetType: inline
-      script: xcrun simctl boot "iPhone 14 Pro" || true xcrun simctl bootstatus "iPhone 14 Pro" -b
+      script: |
+        xcrun simctl boot "iPhone 14 Pro" && \
+        xcrun simctl bootstatus "iPhone 14 Pro" -b
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - task: Bash@3
