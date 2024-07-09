@@ -1,4 +1,5 @@
 import type { Config } from '@jest/types';
+const commonSettings = require('../../jest.config.common.js');
 
 const config: Config.InitialOptions = {
   verbose: true,
@@ -15,4 +16,7 @@ const config: Config.InitialOptions = {
   clearMocks: true,
 };
 
-export default config;
+module.exports = {
+  ...commonSettings,
+  ...config,
+};

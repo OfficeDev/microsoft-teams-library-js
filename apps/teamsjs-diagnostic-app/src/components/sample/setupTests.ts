@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom'
+
 beforeAll(() => {
     console.log('Mocking window.location');
     const location = {

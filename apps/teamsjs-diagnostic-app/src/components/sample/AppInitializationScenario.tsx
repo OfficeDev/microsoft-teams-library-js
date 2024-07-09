@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './AppInitializationScenario.css';
-
+import './AppInitializationScenario.css'
 import { app } from '@microsoft/teams-js';
 import { registerOnResume } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
