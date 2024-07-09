@@ -1,5 +1,4 @@
 import type { Config } from '@jest/types';
-const commonSettings = require('../../jest.config.common.js');
 
 const config: Config.InitialOptions = {
   verbose: true,
@@ -13,10 +12,19 @@ const config: Config.InitialOptions = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   setupFilesAfterEnv: ['<rootDir>/src/components/sample/setupTests.ts'],
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'test-results/unit',
+        outputName: 'unit-tests-report.xml',
+        addFileAttribute: true,
+        classNameTemplate: '{filepath}',
+      },
+    ],
+  ],
   clearMocks: true,
 };
 
-module.exports = {
-  ...commonSettings,
-  ...config,
-};
+export default config;
