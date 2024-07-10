@@ -61,6 +61,17 @@ describe('utils', () => {
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
+
+    it('builds a URL with a chatId parameter', () => {
+      const params: pages.NavigateToAppParams = {
+        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+        pageId: 'tasklist123',
+        chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
+      };
+      const expected =
+        'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22chatId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
+      expect(createTeamsAppLink(params)).toBe(expected);
+    });
     it('builds a URL with all optional properties', () => {
       const params: pages.NavigateToAppParams = {
         appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
