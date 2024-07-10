@@ -27,6 +27,7 @@ resources:
     - repository: IOSAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-ios
+      ref: refs/heads/baljesingh/pipelineIssue2
 
 extends:
   template: v1/Office.Official.PipelineTemplate.yml@OfficePipelineTemplates
