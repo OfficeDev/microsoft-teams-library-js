@@ -84,7 +84,11 @@ export namespace calendar {
 
   /** Open calendar item parameters. */
   export interface OpenCalendarItemParams {
-    /** An unique base64-encoded string id that represents the event's unique identifier of the calendar item to be opened. */
+    /** An unique base64-encoded string id that represents the itemId or messageId.
+     * The only acceptable id for this itemId is the EWS (Exchange Web Services) ID. However,
+     * if you are using Graph API, you must convert the REST ID to a EWS ID. The conversion is done by
+     * replacing "+" characters with "-" and "/" with "_".
+     */
     itemId: string;
   }
 
