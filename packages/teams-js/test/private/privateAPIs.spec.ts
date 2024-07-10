@@ -233,6 +233,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
       userObjectId: 'someUserObjectId1',
+      appId: 'someAppId',
     };
     const expectedContext1: app.Context = {
       app: {
@@ -264,6 +265,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
       userObjectId: 'someUserObjectId2',
+      appId: 'someAppId',
     };
     const expectedContext2: app.Context = {
       app: {
@@ -295,6 +297,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
       userObjectId: 'someUserObjectId3',
+      appId: 'someAppId',
     };
     const expectedContext3: app.Context = {
       app: {
