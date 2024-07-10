@@ -362,6 +362,7 @@ describe('AppSDK-privateAPIs', () => {
       userClickTime: 1000,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
       userFileOpenPreference: FileOpenPreference.Web,
+      appId: 'someappId',
     };
 
     // Get many responses to the same message
