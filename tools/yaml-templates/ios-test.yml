@@ -61,6 +61,16 @@ steps:
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: Bash@3
+    displayName: 'Simulator Bootup'
+    inputs:
+      targetType: inline
+      script: |
+        npm install ios-sim -g
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-13, 16.2"
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  
+
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5
@@ -96,9 +106,7 @@ steps:
       -scheme orangeios
       -testPlan ${{parameters.testPlan}}
       -sdk iphonesimulator
-      -parallel-testing-enabled YES
-      -parallel-testing-worker-count 2
-      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2'
+      -destination 'platform=iOS Simulator,name=iPhone 13,OS=16.2'
       -screenshot-enabled="YES"
       test
     displayName: "iOS UI/E2E Tests"
