@@ -67,7 +67,7 @@ steps:
       targetType: inline
       script: |
         npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-13, 16.2"
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-14, 17.0"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
   
 
@@ -108,7 +108,7 @@ steps:
       -sdk iphonesimulator
       -parallel-testing-enabled YES
       -parallel-testing-worker-count 2
-      -destination 'platform=iOS Simulator,name=iPhone 13,OS=16.2'
+      -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0'
       -screenshot-enabled="YES"
       test
     displayName: "iOS UI/E2E Tests"
