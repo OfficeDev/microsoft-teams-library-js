@@ -61,13 +61,6 @@ steps:
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - bash: |
-      rm -rf "$(agent.buildDirectory)/iOS/DerivedData"
-      mkdir -p "$(agent.buildDirectory)/iOS/DerivedData"
-      sudo xcode-select -s /Applications/Xcode_15.0.1.app
-      xcode-select -p
-    displayName: Prepare for Build
-
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5

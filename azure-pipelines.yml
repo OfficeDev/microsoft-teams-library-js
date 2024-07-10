@@ -237,8 +237,7 @@ extends:
           - job: E2ETestAndroid
             displayName: 'E2E Test - Android'
             pool:
-              name: Azure Pipelines
-              image: macos-13
+              image: 'MacVM Automation'
               os: macOS
             steps:
               - template: tools/yaml-templates/android-test.yml@self
@@ -248,8 +247,7 @@ extends:
           - job: E2ETestIOS
             displayName: 'E2E Test - IOS - Plan A'
             pool:
-              name: Azure Pipelines
-              image: macos-13
+              image: 'MacVM Automation'
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
@@ -260,8 +258,7 @@ extends:
           - job: E2ETestIOS2
             displayName: 'E2E Test - IOS - Plan B'
             pool:
-              name: Azure Pipelines
-              image: macos-13
+              image: 'MacVM Automation'
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
