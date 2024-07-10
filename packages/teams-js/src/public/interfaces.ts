@@ -765,7 +765,7 @@ export interface Context {
    *
    * App id that is used by Hosts to distinguish between different apps sideloaded or in store
    */
-  appId?: string;
+  appId: string;
 }
 
 /** Represents the parameters used to share a deep link. */
