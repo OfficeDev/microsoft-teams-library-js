@@ -219,10 +219,7 @@ class OneTextureHeader {
   private readonly ONE_TEXTURE_INPUT_ID = 0x6f746931;
   private readonly INVALID_HEADER_ERROR = 'Invalid video frame header';
   private readonly UNSUPPORTED_LAYOUT_ERROR = 'Unsupported texture layout';
-  public constructor(
-    private readonly headerBuffer: ArrayBuffer,
-    private readonly notifyError: (string) => void,
-  ) {
+  public constructor(private readonly headerBuffer: ArrayBuffer, private readonly notifyError: (string) => void) {
     this.headerDataView = new Uint32Array(headerBuffer);
     // headerDataView will contain the following data:
     // 0: oneTextureLayoutId
@@ -325,8 +322,9 @@ class TransformerWithMetadata {
     const timestamp = originalFrame.timestamp;
     if (timestamp !== null) {
       try {
-        const { videoFrame, metadata: { audioInferenceResult } = {} } =
-          await this.extractVideoFrameAndMetadata(originalFrame);
+        const { videoFrame, metadata: { audioInferenceResult } = {} } = await this.extractVideoFrameAndMetadata(
+          originalFrame,
+        );
         const frameProcessedByApp = await this.videoFrameHandler({ videoFrame, audioInferenceResult });
         // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
         const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {

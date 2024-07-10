@@ -1,18 +1,8 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 03 Jul 2024 18:11:19 GMT and should not be manually modified.
+This log was last generated on Wed, 05 Jun 2024 20:49:06 GMT and should not be manually modified.
 
 <!-- Start content -->
-
-## 2.25.0
-
-Wed, 03 Jul 2024 18:11:19 GMT
-
-### Patches
-
-- Fixed `dialog.url.submit` api to support only `FrameContext.content`.
-- Updated `clipboard.isSupported` so that it does not depend on `navigator.clipboard` in frameless contexts.
-- Updated whitespace in `clipboard.ts` file to match conventions
 
 ## 2.24.0
 
