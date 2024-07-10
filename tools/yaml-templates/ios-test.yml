@@ -92,7 +92,7 @@ steps:
   - bash:
       /usr/bin/xcodebuild
       -configuration Release
-      -workspace /Users/runner/work/1/s/metaos-hub-sdk-iOS/metaos-hub-sdk.xcworkspace
+      -workspace /Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace
       -scheme orangeios
       -testPlan ${{parameters.testPlan}}
       -sdk iphonesimulator
