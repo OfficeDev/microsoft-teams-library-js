@@ -82,12 +82,27 @@ steps:
       script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - task: Bash@3
-    displayName: 'iOS UI/E2E Tests'
-    inputs:
-      targetType: inline
-      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  # - task: Bash@3
+  #   displayName: 'iOS UI/E2E Tests'
+  #   inputs:
+  #     targetType: inline
+  #     script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash:
+      /usr/bin/xcodebuild
+      -configuration Release
+      -workspace /Users/runner/work/1/s/metaos-hub-sdk-iOS/metaos-hub-sdk.xcworkspace
+      -scheme orangeios
+      -testPlan ${{parameters.testPlan}}
+      -sdk iphonesimulator
+      -parallel-testing-enabled YES
+      -parallel-testing-worker-count 2
+      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2'
+      -screenshot-enabled="YES"
+      test
+    displayName: "iOS UI/E2E Tests"
+    workingDirectory: 'metaos-hub-sdk-iOS' 
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
