@@ -22,6 +22,14 @@ const CustomScenario: React.FC = () => {
     setCustomScenario([...customScenario, { api, func, input }]);
   };
 
+  const removeApiFromScenario = (index: number) => {
+    setCustomScenario(customScenario.filter((_, i) => i !== index));
+  };
+
+  const clearScenario = () => {
+    setCustomScenario([]);
+  };
+
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'API',
     drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
@@ -38,49 +46,51 @@ const CustomScenario: React.FC = () => {
     return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
         {api.title === 'App Install Dialog API' ? (
-          <AppInstallDialogAPIs apiComponent={api} />
+          <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={function (apiComponent: ApiComponent, selectedFunction: string, inputValue: string): void {
+            throw new Error('Function not implemented.');
+          } } />
         ) : api.title === 'Bar Code API' ? (
           <BarCodeAPIs apiComponent={api} />
         ) : null}
       </div>
     ));
   };
-  
+
   return (
     <div className="scenario-container">
-        <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'white' }}>
-          <div className="scenario2-header">
-            <h2>Custom Scenario</h2>
-            <p>Drag and drop API components here to build your custom scenario.</p>
-          </div>
-          <div className="custom-scenario-box">
-            <button className="scenario1-button" onClick={handleRunScenario}>Run Scenario</button>
-            <div className="api-section">
-              <div className="api-header">APIs Being Run:</div>
-              <div className="vertical-box-container">
-                {customScenario.map((item, index) => (
-                  <div key={index} className="vertical-box">
-                    <span className="box-title">{item.api.title}</span>
-                    <span className="box-subtitle">{item.func}</span>
-                    {item.input && <span className="box-input">Input: {item.input}</span>}
-                  </div>
-                ))}
-              </div>
+      <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'white' }}>
+        <div className="scenario2-header">
+          <h2>Custom Scenario</h2>
+          <p>Drag and drop API components here to build your custom scenario.</p>
+        </div>
+        <div className="custom-scenario-box">
+          <button className="scenario1-button" onClick={handleRunScenario}>Run Scenario</button>
+          <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
+          <div className="api-section">
+            <div className="api-header">APIs Being Run:</div>
+            <div className="vertical-box-container">
+              {customScenario.map((item, index) => (
+                <div key={index} className="dropped-api">
+                  <span>{`${item.api.title}, ${item.func}(${item.input})`}</span>
+                  <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
-        <div className="all-api-container">
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search APIs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="all-api-box">{generateVerticalBoxes()}</div>
-        </div>
       </div>
+
+      <div className="all-api-container">
+        <input
+          type="text"
+          className="search-bar"
+          placeholder="Search APIs..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <div className="all-api-box">{generateVerticalBoxes()}</div>
+      </div>
+    </div>
   );
 };
 
