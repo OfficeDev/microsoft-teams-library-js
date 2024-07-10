@@ -102,7 +102,7 @@ steps:
       -screenshot-enabled="YES"
       test
     displayName: "iOS UI/E2E Tests"
-    workingDirectory: 'metaos-hub-sdk-iOS' 
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
