@@ -12,7 +12,7 @@ Wed, 03 Jul 2024 18:11:19 GMT
 
 - Fixed `dialog.url.submit` api to support only `FrameContext.content`.
 - Updated `clipboard.isSupported` so that it does not depend on `navigator.clipboard` in frameless contexts.
-- Updated whitespace in `clipboard.ts` file to match conventions
+- Updated whitespace in `clipboard.ts` to match conventions
 
 ## 2.24.0
 
