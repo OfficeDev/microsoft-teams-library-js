@@ -12,15 +12,6 @@ steps:
     path: iOSHost
     persistCredentials: true
 
-  - task: Bash@3
-    displayName: 'Install XCTestHtmlReport for publishing result'
-    inputs:
-      targetType: inline
-      script: |
-        brew install xctesthtmlreport
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-      condition: always()
-
   - task: NodeTool@0
     inputs:
       versionSpec: '18.x'
