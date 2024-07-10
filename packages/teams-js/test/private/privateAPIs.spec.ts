@@ -244,6 +244,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId1',
@@ -274,6 +275,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId2',
@@ -304,6 +306,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId3',
