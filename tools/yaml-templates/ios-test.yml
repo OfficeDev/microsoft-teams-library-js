@@ -106,6 +106,8 @@ steps:
       -scheme orangeios
       -testPlan ${{parameters.testPlan}}
       -sdk iphonesimulator
+      -parallel-testing-enabled YES
+      -parallel-testing-worker-count 2
       -destination 'platform=iOS Simulator,name=iPhone 13,OS=16.2'
       -screenshot-enabled="YES"
       test
