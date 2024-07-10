@@ -5,25 +5,28 @@ interface LogConsoleProps {
   initialLogs?: string[];
 }
 
+const MAX_LOGS = 100;
+
 const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
   const [logStatements, setLogStatements] = useState<string[]>(initialLogs);
 
   const captureConsoleLogs = (...args: any[]) => {
     const timestampedLog = `${new Date()} - ${args.join(' ')}`;
     setLogStatements(prevLogs => {
-      const updatedLogs = [...prevLogs, timestampedLog];
-      // Store updated logs in sessionStorage
+      const updatedLogs = [...prevLogs.slice(-MAX_LOGS + 1), timestampedLog];
       sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
       return updatedLogs;
     });
   };
 
   useEffect(() => {
-    // Function to load initial logs from sessionStorage
     const loadLogsFromStorage = () => {
       const storedLogs = sessionStorage.getItem('logStatements');
       if (storedLogs) {
-        setLogStatements(JSON.parse(storedLogs));
+        const parsedLogs = JSON.parse(storedLogs);
+        // Ensure maximum 100 logs loaded
+        const cappedLogs = parsedLogs.slice(-MAX_LOGS);
+        setLogStatements(cappedLogs);
       }
     };
 
