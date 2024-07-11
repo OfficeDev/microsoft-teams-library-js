@@ -73,6 +73,10 @@ steps:
 
   - bash:
       wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+    displayName: "Download yeetd"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash:
       sudo installer -pkg yeetd-normal.pkg -target /
       yeetd &
     displayName: "Install yeetd"
