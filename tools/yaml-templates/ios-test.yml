@@ -121,7 +121,7 @@ steps:
       xcodeVersion: '14'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 15,OS=17.5"'
+      args: '-destination "platform=iOS Simulator,name=iPhone 14"'
         
   # - bash:
   #     /usr/bin/xcodebuild
