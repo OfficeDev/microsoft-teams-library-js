@@ -12,6 +12,13 @@ steps:
     path: iOSHost
     persistCredentials: true
 
+  - bash: |
+      # clean and kill iOS simulator
+      killall Simulator
+      rm -rf ~/Library/Developer/CoreSimulator/Caches
+    displayName: "[iOS] Kill the simulator and clean up the cache"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
     inputs:
@@ -81,13 +88,6 @@ steps:
       targetType: inline
       script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
       workingDirectory: '$(System.DefaultWorkingDirectory)'
-
-  - bash: |
-      # Boot the iOS simulator
-      xcrun simctl boot "iPhone 14" || true
-      xcrun simctl bootstatus "iPhone 14" -b
-    displayName: "[iOS] Boot iOS Simulator"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
