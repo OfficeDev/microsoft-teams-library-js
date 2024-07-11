@@ -82,6 +82,13 @@ steps:
       script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
+  - bash: |
+      # Boot the iOS simulator
+      xcrun simctl boot "iPhone 14" || true
+      xcrun simctl bootstatus "iPhone 14" -b
+    displayName: "[iOS] Boot iOS Simulator"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
     inputs:
