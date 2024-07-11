@@ -1,4 +1,5 @@
 import * as communication from '../../src/internal/communication';
+import * as handlers from '../../src/internal/handlers';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
@@ -7,6 +8,10 @@ import { UUID } from '../../src/internal/uuidObject';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { Utils } from '../utils';
+
+jest.mock('../../src/internal/handlers', () => ({
+  callHandler: jest.fn(),
+}));
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
 
@@ -224,6 +229,25 @@ describe('Testing communication', () => {
           clientSupportedSDKVersion: undefined,
         };
         expect(initializeResponse).toStrictEqual(expectedResponse);
+      });
+
+      it('should not process messages with malformed or empty origins', async () => {
+        const initPromise = communication.initializeCommunication(
+          ['malformed-valid-origin', utils.validOrigin],
+          testApiVersion,
+        );
+        const initMessage = utils.findInitializeMessageOrThrow();
+
+        await utils.respondToMessage(initMessage, FrameContexts.content);
+        await initPromise;
+
+        await utils.sendMessageWithCustomOrigin('test1', '');
+        await utils.sendMessageWithCustomOrigin('test2', 'malformed-valid-origin');
+        await utils.sendMessageWithCustomOrigin('test3', utils.validOrigin);
+
+        expect(handlers.callHandler as jest.Mock).toHaveBeenCalledWith('test3', []);
+        expect(handlers.callHandler as jest.Mock).not.toHaveBeenCalledWith('test2', []);
+        expect(handlers.callHandler as jest.Mock).not.toHaveBeenCalledWith('test1', []);
       });
 
       it('should set Communication.currentWindow to the value that was passed to app._initialize', async () => {
