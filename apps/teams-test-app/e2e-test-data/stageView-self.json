@@ -1,0 +1,28 @@
+{
+  "name": "StageView-Self",
+  "platforms": "Web",
+  "version": ">2.0.0-beta.3",
+  "checkIsSupported": {
+    "expectedOutput": "StageView Self Actions are not supported",
+    "version": ">2.0.0"
+  },
+  "testCases": [
+    {
+      "title": "close API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_stageView.self.close",
+      "inputValue": {
+        "appId": "appId",
+        "contentUrl": "contentUrl",
+        "threadId": "threadId",
+        "title": "title",
+        "websiteUrl": "websiteUrl",
+        "entityId": "entityId",
+        "openMode": "modal"
+      },
+      "expectedAlertValue": "stageView.self.close called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "closed",
+      "skipForCallbackBasedRuns": true
+    }
+  ]
+}

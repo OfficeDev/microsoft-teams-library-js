@@ -125,7 +125,7 @@ export namespace stageView {
     /**
      * Closes the current stage view.
      * @returns Promise that resolves or rejects with an error once the stage view is closed.
-     * 
+     *
      * @beta
      */
     export function close(): Promise<void> {
@@ -135,7 +135,7 @@ export namespace stageView {
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
         }
-  
+
         resolve(
           sendAndHandleSdkError(
             getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
@@ -154,7 +154,7 @@ export namespace stageView {
      *
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) &&  runtime.supports.stageView?.self !== undefined;
+      return ensureInitialized(runtime) && runtime.supports.stageView?.self !== undefined;
     }
   }
 }
