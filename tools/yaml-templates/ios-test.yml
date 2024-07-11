@@ -93,7 +93,7 @@ steps:
       configuration: 'Release'
       workingDirectory: '/Users/runner/work/1/iOSHost'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: 'default'
+      xcodeVersion: '14'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
