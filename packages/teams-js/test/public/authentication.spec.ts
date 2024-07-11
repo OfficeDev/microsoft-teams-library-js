@@ -4,7 +4,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as internalUtils from '../../src/internal/utils';
-import { FrameContexts, HostClientType } from '../../src/public';
+import { ErrorCode, FrameContexts, HostClientType, SdkError } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
@@ -888,6 +888,22 @@ describe('Testing authentication capability', () => {
           await utils.respondToMessage(message, true, mockUserWithDataResidency);
           await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
+      });
+
+      it('should throw an error message containing the SdkError message when an SdkError is returned from the host', async () => {
+        await utils.initializeWithContext('content');
+
+        const sdkError: SdkError = {
+          errorCode: ErrorCode.INTERNAL_ERROR,
+          message: 'Error Message',
+        };
+
+        const getUserPromise = authentication.getUser();
+
+        const message = utils.findMessageByFunc('authentication.getUser');
+        expect(message).not.toBeNull();
+        await utils.respondToMessage(message!, false, sdkError);
+        await expect(getUserPromise).rejects.toThrowError(new RegExp(sdkError.message!));
       });
     });
 
