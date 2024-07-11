@@ -33,6 +33,10 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     }
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <div className="api-header">{apiComponent.title}</div>
@@ -49,12 +53,15 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
           ))}
         </select>
         {selectedFunction && selectedFunction === 'OpenAppInstallDialog' && (
+          <div className="input-container">
           <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Enter input value"
-          />
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+              placeholder="Enter input for openAppInstallDialog"
+            />
+            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
+          </div>
         )}
       </div>
     </div>
