@@ -77,8 +77,7 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash:
-      sudo installer -pkg yeetd-normal.pkg -target /
-      yeetd &
+      sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
     displayName: "Install yeetd"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
