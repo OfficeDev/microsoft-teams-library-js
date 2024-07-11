@@ -39,7 +39,7 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
       return userInfo;
     }
   });
-  const userName = loading || error ? "" : data!.displayName;
+  const userName = loading || error || !data ? "" : data.displayName;
   const hostName = useData(async () => {
     await app.initialize();
     const context = await app.getContext();
