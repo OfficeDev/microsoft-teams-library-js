@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "Updating Documentation for Mail and Calendar Capability",
+  "comment": "Updated documentation on IDs for `mail` and `calendar` capability",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
   "dependentChangeType": "none"
