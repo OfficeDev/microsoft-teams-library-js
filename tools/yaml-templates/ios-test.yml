@@ -71,6 +71,13 @@ steps:
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
   
 
+  - bash:
+      wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+      sudo installer -pkg yeetd-normal.pkg -target /
+      yeetd &
+    displayName: "Install yeetd"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5
