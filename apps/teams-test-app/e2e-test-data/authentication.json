@@ -17,6 +17,15 @@
       "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getUser",
       "expectedTestAppValue": "Success: {\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    },
+    {
+      "title": "getUser API Call - Failure (Not full trust)",
+      "version": ">2.25.0",
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
+      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
     }
   ]
 }
