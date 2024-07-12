@@ -8,7 +8,7 @@ parameters:
 
 steps:
   - bash:
-      ls /Library/Developer/
+      ls /Applications/
     displayName: "Path"
 
   - bash:
@@ -116,7 +116,7 @@ steps:
       configuration: 'Release'
       workingDirectory: '/Users/runner/work/1/iOSHost'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: '14.1'
+      xcodeVersion: 'Default'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
@@ -142,7 +142,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_15.0.1.app'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
-      xcodeVersion: '14.1'
+      xcodeVersion: 'Default'
       useXcpretty: true
       publishJUnitResults: true
       args: '-destination "platform=iOS Simulator,name=iPhone 14"'
