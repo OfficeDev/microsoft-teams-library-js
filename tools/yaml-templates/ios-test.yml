@@ -61,19 +61,26 @@ steps:
       script: 'nohup pnpm start-test-app &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: Bash@3
+    displayName: 'check system architecture'
+    inputs:
+      targetType: inline
+      script: 'uname -m'
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
-  # - task: Xcode@5
-  #   displayName: '[iOS] Build iOS Host SDK'
-  #   inputs:
-  #     actions: 'build'
-  #     scheme: $(IOSSdkScheme)
-  #     sdk: 'iphoneos'
-  #     configuration: 'Release'
-  #     workingDirectory: '/Users/runner/work/1/iOSHost'
-  #     xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-  #     xcodeVersion: 'default'
-  #     xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+  - task: Xcode@5
+    displayName: '[iOS] Build iOS Host SDK'
+    inputs:
+      actions: 'build'
+      scheme: $(IOSSdkScheme)
+      sdk: 'iphoneos'
+      configuration: 'Release'
+      workingDirectory: '/Users/runner/work/1/iOSHost'
+      xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
+      xcodeVersion: 'default'
+      xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
     displayName: 'Disable Slow Animation'
