@@ -138,7 +138,7 @@ steps:
       workingDirectory: '/Users/runner/work/1/iOSHost'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       xcodeVersion: 'specifyPath'
-      xcodeDeveloperDir: '/Applications/Xcode_15.4.app'
+      xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
@@ -147,7 +147,7 @@ steps:
       targetType: inline
       script: |
         npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-14, 17.2"
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.2"
   
   - task: Bash@3
     displayName: 'Clean Up Xcode Directories'
@@ -189,10 +189,10 @@ steps:
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
       xcodeVersion: 'specifyPath'
-      xcodeDeveloperDir: '/Applications/Xcode_15.4.app'
+      xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" -verbose'
+      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" -verbose'
         
   # - bash:
   #     /usr/bin/xcodebuild
