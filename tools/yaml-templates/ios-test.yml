@@ -20,8 +20,8 @@ steps:
   #   displayName: "Install CommandLineTools"
 
   - bash: |
-      sudo xcode-select -s /Applications/Xcode_14.1.app
-    displayName: "Set Xcode 14.1"
+      sudo xcode-select -s /Applications/Xcode_14.0.app
+    displayName: "Set Xcode 14.0"
 
   - bash: |
       yes '' | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
