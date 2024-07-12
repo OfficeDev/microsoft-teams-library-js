@@ -19,6 +19,7 @@ const CustomScenario: React.FC = () => {
   };
 
   const addToScenario = (api: ApiComponent, func: string, input?: string) => {
+    console.log(`Adding ${func} for ${api.title} with input: ${input}`);
     setCustomScenario([...customScenario, { api, func, input }]);
   };
 

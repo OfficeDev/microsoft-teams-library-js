@@ -1,29 +1,43 @@
-  .scenario-container {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .horizontal-box {
-    width: 1300px;
-    height: 600px;
-    overflow: auto;
-    background-color: lightgray;
-  }
-  
-  .content {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .log-console {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: lightgray;
-  }
-  
-  .log-statement {
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    overflow: auto;
-  }
+.scenario-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.horizontal-box {
+  width: 1300px;
+  height: 600px;
+  overflow: auto;
+  background-color: lightgray;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+}
+
+.log-console {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: lightgray;
+}
+
+.log-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.clear-logs-button {
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.log-statement {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  overflow: auto;
+}

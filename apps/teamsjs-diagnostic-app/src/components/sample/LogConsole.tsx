@@ -43,12 +43,22 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
     };
   }, []);
 
+  const handleClearLogs = () => {
+    setLogStatements([]);
+    sessionStorage.removeItem('logStatements');
+  };
+
   return (
     <div>
       <h2>Log Console</h2>
       <div className="horizontal-box">
         <div className="content">
           <div className="log-console">
+            <div className="log-actions">
+              <button onClick={handleClearLogs} className="clear-logs-button">
+                Clear Logs
+              </button>
+            </div>
             {logStatements.map((statement, index) => (
               <div key={index} className="log-statement">
                 {statement}
