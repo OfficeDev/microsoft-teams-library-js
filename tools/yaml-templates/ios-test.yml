@@ -9,7 +9,19 @@ parameters:
 steps:
   - bash:
       ls /Library/Developer/
-    displayName: "Path of CommandLineTools"
+    displayName: "Path"
+
+ - bash:
+      sudo rm -rf /Library/Developer/CommandLineTools
+    displayName: "Remove CommandLineTools"
+  
+  - bash:
+      xcode-select --install
+    displayName: "Install CommandLineTools"
+
+  - bash:
+      sudo xcode-select -s /Library/Developer/CommandLineTools
+    displayName: "Select CommandLineTools"
 
   - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
@@ -83,21 +95,6 @@ steps:
   - bash:
       sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
     displayName: "Install yeetd"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-  
-  - bash:
-      sudo rm -rf /Library/Developer/CommandLineTools
-    displayName: "Remove CommandLineTools"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-  
-  - bash:
-      xcode-select --install
-    displayName: "Install CommandLineTools"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  - bash:
-      sudo xcode-select -s /Library/Developer/CommandLineTools
-    displayName: "Select CommandLineTools"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
