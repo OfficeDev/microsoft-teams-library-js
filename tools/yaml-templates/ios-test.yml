@@ -105,6 +105,20 @@ steps:
     displayName: "Install yeetd"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
+  - script: |
+      # Shut down and clean up all simulators
+      xcrun simctl shutdown all
+      xcrun simctl erase all
+    displayName: 'Reset Simulators'
+  
+  - script: |
+      # Start the simulators and ensure they are ready
+      open -a Simulator
+      xcrun simctl boot "iPhone 11"
+      sleep 30
+    displayName: 'Start Simulators'
+
+
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
   - task: Xcode@5
@@ -146,7 +160,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 11"'
+      args: '-destination "platform=iOS Simulator,name=iPhone 11" -skipPackageSignatureValidation'
         
   # - bash:
   #     /usr/bin/xcodebuild
