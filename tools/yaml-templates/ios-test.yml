@@ -36,14 +36,14 @@ steps:
     path: iOSHost
     persistCredentials: true
 
-  - task: Bash@3
-    displayName: 'Install XCTestHtmlReport for publishing result'
-    inputs:
-      targetType: inline
-      script: |
-        brew install xctesthtmlreport
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-      condition: always()
+  # - task: Bash@3
+  #   displayName: 'Install XCTestHtmlReport for publishing result'
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       brew install xctesthtmlreport
+  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  #     condition: always()
 
   - task: NodeTool@0
     inputs:
@@ -209,14 +209,14 @@ steps:
   #   displayName: "iOS UI/E2E Tests"
   #   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - task: Bash@3
-    displayName: 'Generate E2E test report'
-    inputs:
-      targetType: inline
-      script: |
-        xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-    condition: always()
+  # - task: Bash@3
+  #   displayName: 'Generate E2E test report'
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
+  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  #   condition: always()
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
