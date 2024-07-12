@@ -142,12 +142,12 @@ steps:
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
-    displayName: 'iPhone-11 Bootup'
+    displayName: 'iPhone-14 Bootup'
     inputs:
       targetType: inline
       script: |
         npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-14, 17.0"
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-14, 17.2"
   
   - task: Bash@3
     displayName: 'Clean Up Xcode Directories'
@@ -192,7 +192,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_15.4.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 14, OS=17.0" destination-timeout=300 -verbose'
+      args: '-destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" -verbose'
         
   # - bash:
   #     /usr/bin/xcodebuild
