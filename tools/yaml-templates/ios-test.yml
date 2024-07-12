@@ -80,6 +80,21 @@ steps:
       sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
     displayName: "Install yeetd"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  
+  - bash:
+      sudo rm -rf /Library/Developer/CommandLineTools
+    displayName: "Remove CommandLineTools"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  
+  - bash:
+      xcode-select --install
+    displayName: "Install CommandLineTools"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash:
+      sudo xcode-select -s /Library/Developer/CommandLineTools
+    displayName: "Select CommandLineTools"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
@@ -91,9 +106,8 @@ steps:
       sdk: 'iphoneos'
       configuration: 'Release'
       workingDirectory: '/Users/runner/work/1/iOSHost'
-      xcodeDeveloperDir: '/Applications/Xcode_15.0.1.app'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: '15.0.1'
+      xcodeVersion: '14.1'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
@@ -119,7 +133,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_15.0.1.app'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
-      xcodeVersion: '15.0.1'
+      xcodeVersion: '14.1'
       useXcpretty: true
       publishJUnitResults: true
       args: '-destination "platform=iOS Simulator,name=iPhone 14"'

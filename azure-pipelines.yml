@@ -250,7 +250,7 @@ extends:
             displayName: 'E2E Test - IOS - Plan A'
             pool:
               name: Azure Pipelines
-              image: 'macos-14'
+              image: 'internal-macos12'
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
