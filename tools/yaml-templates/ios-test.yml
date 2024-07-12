@@ -192,7 +192,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_15.4.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" -verbose'
+      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" -verbose'
         
   # - bash:
   #     /usr/bin/xcodebuild
