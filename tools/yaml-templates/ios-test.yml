@@ -11,39 +11,39 @@ steps:
       ls /Applications/
     displayName: "Path"
 
-  - bash:
-      sudo rm -rf /Library/Developer/CommandLineTools
-    displayName: "Remove CommandLineTools"
+  # - bash:
+  #     sudo rm -rf /Library/Developer/CommandLineTools
+  #   displayName: "Remove CommandLineTools"
   
   # - bash:
   #     xcode-select --install
   #   displayName: "Install CommandLineTools"
 
-  - bash: |
-      sudo xcode-select -s /Applications/Xcode_14.0.app
-    displayName: "Set Xcode 14.0"
+  # - bash: |
+  #     sudo xcode-select -s /Applications/Xcode_14.0.app
+  #   displayName: "Set Xcode 14.0"
 
-  - bash: |
-      yes '' | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    displayName: "Install Homebrew"
+  # - bash: |
+  #     yes '' | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  #   displayName: "Install Homebrew"
 
-  - bash:
-      sudo xcode-select -s /Library/Developer/CommandLineTools
-    displayName: "Select CommandLineTools"
+  # - bash:
+  #     sudo xcode-select -s /Library/Developer/CommandLineTools
+  #   displayName: "Select CommandLineTools"
 
   - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
     persistCredentials: true
 
-  # - task: Bash@3
-  #   displayName: 'Install XCTestHtmlReport for publishing result'
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       arch -arm64 brew install xctesthtmlreport
-  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-  #     condition: always()
+  - task: Bash@3
+    displayName: 'Install XCTestHtmlReport for publishing result'
+    inputs:
+      targetType: inline
+      script: |
+        arch -arm64 brew install xctesthtmlreport
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      condition: always()
 
   # - task: NodeTool@0
   #   inputs:
@@ -139,14 +139,14 @@ steps:
     inputs:
       actions: 'test'
       sdk: 'iphonesimulator'
-      configuration: 'Debug'
+      configuration: 'Release'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
       xcodeVersion: 'specifyPath'
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 14"'
+      args: '-destination "platform=iOS Simulator,name=iPhone 11"'
         
   # - bash:
   #     /usr/bin/xcodebuild
