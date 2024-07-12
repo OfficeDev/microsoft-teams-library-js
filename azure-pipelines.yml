@@ -251,7 +251,7 @@ extends:
               name: Azure Pipelines
               image: internal-macos12
               os: macOS
-            timeoutInMinutes: 90
+            timeoutInMinutes: 120
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
