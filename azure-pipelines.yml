@@ -80,13 +80,6 @@ extends:
                   artifactName: '$(bundleArtifactName)'
 
                 - output: pipelineArtifact
-                  displayName: 'Publish Test app artifacts'
-                  targetPath: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-                  artifactName: 'teams-test-app'
-                  sbomBuildDropPath: '$(Build.ArtifactStagingDirectory)\teams-test-app'
-                  sbomPackageName: 'teamstestappArtifact'
-
-                - output: pipelineArtifact
                   displayName: 'Publish CDN feed to build Artifacts'
                   targetPath: '$(Build.ArtifactStagingDirectory)\CDNFeed'
                   artifactName: 'CDNFeed'
@@ -251,7 +244,7 @@ extends:
               name: Azure Pipelines
               image: internal-macos12
               os: macOS
-            timeoutInMinutes: 120
+            timeoutInMinutes: 90
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
