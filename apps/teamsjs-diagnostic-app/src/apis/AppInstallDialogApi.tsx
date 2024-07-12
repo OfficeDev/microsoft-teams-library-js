@@ -4,7 +4,7 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, selectedFunction: string, inputValue: string) => void;
+  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
 }
 
 const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
@@ -40,7 +40,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
       <div className="api-header">{apiComponent.title}</div>
-      <div className="api-body">
+      <div className="dropdown-menu">
         <label htmlFor={`select-${apiComponent.name}`} className="sr-only">
           Select an option for {apiComponent.title}
         </label>
@@ -52,9 +52,9 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
             </option>
           ))}
         </select>
-        {selectedFunction && selectedFunction === 'OpenAppInstallDialog' && (
+        {selectedFunction === 'OpenAppInstallDialog' && (
           <div className="input-container">
-          <input
+            <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}

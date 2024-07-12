@@ -50,7 +50,9 @@ const CustomScenario: React.FC = () => {
             throw new Error('Function not implemented.');
           } } />
         ) : api.title === 'Bar Code API' ? (
-          <BarCodeAPIs apiComponent={api} />
+          <BarCodeAPIs apiComponent={api} onDropToScenarioBox={function (apiComponent: ApiComponent, func: string, input: string): void {
+              throw new Error('Function not implemented.');
+            } } />
         ) : null}
       </div>
     ));
@@ -65,18 +67,18 @@ const CustomScenario: React.FC = () => {
         </div>
         <div className="custom-scenario-box">
           <button className="scenario1-button" onClick={handleRunScenario}>Run Scenario</button>
-          <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">
               {customScenario.map((item, index) => (
                 <div key={index} className="dropped-api">
-                  <span>{`${item.api.title}, ${item.func}(${item.input})`}</span>
+                  <span>{`${item.api.title}, ${item.func}${item.input ? `(${item.input})` : ''}`}</span>
                   <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
                 </div>
               ))}
             </div>
           </div>
+          <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
         </div>
       </div>
 

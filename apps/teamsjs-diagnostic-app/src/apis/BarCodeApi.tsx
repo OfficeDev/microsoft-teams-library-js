@@ -4,15 +4,20 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 
 interface BarCodeAPIsProps {
   apiComponent: ApiComponent;
+  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
 }
 
-const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent }) => {
+const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
-    item: { api: apiComponent, func: selectedFunction, input: inputValue },
+    item: {
+      api: apiComponent,
+      func: selectedFunction,
+      input: selectedFunction === 'scanBarCode' ? inputValue : '',
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
