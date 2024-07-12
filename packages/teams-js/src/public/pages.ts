@@ -397,7 +397,7 @@ export namespace pages {
     channelId?: string;
 
     /**
-   * Optional ID of the Teams chat or meeting where the app should be opened
+   * Optional ID of the chat or meeting where the app should be opened
 
    */
     chatId?: string;
