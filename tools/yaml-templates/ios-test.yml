@@ -11,7 +11,7 @@ steps:
       ls /Library/Developer/
     displayName: "Path"
 
- - bash:
+  - bash:
       sudo rm -rf /Library/Developer/CommandLineTools
     displayName: "Remove CommandLineTools"
   
