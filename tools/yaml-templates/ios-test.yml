@@ -116,7 +116,7 @@ steps:
       configuration: 'Release'
       workingDirectory: '/Users/runner/work/1/iOSHost'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: '14.0'
+      xcodeVersion: 'specifyPath'
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
@@ -142,7 +142,7 @@ steps:
       configuration: 'Debug'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
-      xcodeVersion: '14.0'
+      xcodeVersion: 'specifyPath'
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       useXcpretty: true
       publishJUnitResults: true
