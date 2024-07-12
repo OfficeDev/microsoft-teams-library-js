@@ -1,4 +1,3 @@
-// import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
