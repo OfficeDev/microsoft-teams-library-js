@@ -110,14 +110,6 @@ steps:
       xcrun simctl shutdown all
       xcrun simctl erase all
     displayName: 'Reset Simulators'
-  
-  - task: Bash@3
-    displayName: 'iPhone-11 Bootup'
-    inputs:
-      targetType: inline
-      script: |
-        npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-11, 16.0"
 
   # - task: Bash@3
   #   displayName: 'iPhone-12 Simulator Bootup'
@@ -148,6 +140,14 @@ steps:
       xcodeVersion: 'specifyPath'
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+
+  - task: Bash@3
+    displayName: 'iPhone-11 Bootup'
+    inputs:
+      targetType: inline
+      script: |
+        npm install ios-sim -g
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-14, 17.0"
   
   - task: Bash@3
     displayName: 'Clean Up Xcode Directories'
@@ -177,7 +177,7 @@ steps:
     displayName: 'iOS UI/E2E Tests'
     inputs:
       targetType: inline
-      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11,OS=16.0' -screenshot-enabled=\"NO\" -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' -screenshot-enabled=\"NO\" -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # - task: Xcode@5
