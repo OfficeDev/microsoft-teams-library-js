@@ -8,7 +8,7 @@ parameters:
 
 steps:
   - bash:
-      ls -R /
+      ls /Library/Developer/
     displayName: "Path of CommandLineTools"
 
   - checkout: self
