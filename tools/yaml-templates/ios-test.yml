@@ -160,7 +160,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-destination "platform=iOS Simulator,name=iPhone 11" -skipPackageSignatureValidation'
+      args: '-destination "platform=iOS Simulator,name=iPhone 11" destination-timeout=300'
         
   # - bash:
   #     /usr/bin/xcodebuild
