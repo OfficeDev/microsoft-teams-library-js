@@ -116,7 +116,8 @@ steps:
       configuration: 'Release'
       workingDirectory: '/Users/runner/work/1/iOSHost'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: 'Default'
+      xcodeVersion: '14.0'
+      xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
@@ -139,10 +140,10 @@ steps:
       actions: 'test'
       sdk: 'iphonesimulator'
       configuration: 'Debug'
-      xcodeDeveloperDir: '/Applications/Xcode_15.0.1.app'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
-      xcodeVersion: 'Default'
+      xcodeVersion: '14.0'
+      xcodeDeveloperDir: '/Applications/Xcode_14.0.app'
       useXcpretty: true
       publishJUnitResults: true
       args: '-destination "platform=iOS Simulator,name=iPhone 14"'
