@@ -92,6 +92,11 @@ steps:
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - bash:
+      xcode-select -p
+    displayName: "Path of CommandLineTools"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - bash:
       sudo xcode-select -s /Library/Developer/CommandLineTools
     displayName: "Select CommandLineTools"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
