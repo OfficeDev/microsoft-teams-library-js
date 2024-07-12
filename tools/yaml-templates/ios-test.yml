@@ -15,9 +15,13 @@ steps:
       sudo rm -rf /Library/Developer/CommandLineTools
     displayName: "Remove CommandLineTools"
   
-  - bash:
-      xcode-select --install
-    displayName: "Install CommandLineTools"
+  # - bash:
+  #     xcode-select --install
+  #   displayName: "Install CommandLineTools"
+
+  - bash: |
+      yes '' | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    displayName: "Install Homebrew"
 
   - bash:
       sudo xcode-select -s /Library/Developer/CommandLineTools
