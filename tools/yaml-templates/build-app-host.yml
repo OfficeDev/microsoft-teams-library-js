@@ -81,9 +81,7 @@ steps:
   # Below script task checks if Cypress cache is hit or not.
   # If Cypress cache is found skip cypress install.
   - script: |
-      CYPRESS_INSTALL_BINARY=0
-      sed -i '/"preinstall":/d' package.json
-      pnpm install --frozen-lockfile
+      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (skip Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
@@ -91,7 +89,6 @@ steps:
   # If Cypress cache is not found include cypress install.
   - script: |
       rm -rf $(pnpm store path)
-      sed -i '/"preinstall":/d' package.json
       pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (include Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
