@@ -8,10 +8,10 @@ parameters:
 
 steps:
   - bash:
-      ls /
+      ls -R /Users/runner/work/1/
     displayName: "Path of CommandLineTools"
     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-    
+
   - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
