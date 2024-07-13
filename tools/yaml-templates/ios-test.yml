@@ -155,20 +155,20 @@ steps:
         xcrun simctl list devices
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - task: Bash@3
-    displayName: 'iOS Build'
-    inputs:
-      targetType: inline
-      script: |
-        export DEVELOPER_DIR=/Applications/Xcode_16.0.app/Contents/Developer
-        xcodebuild \
-          -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace \
-          -scheme $(IOSSdkScheme) \
-          -sdk iphoneos \
-          -configuration Release \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" \
-          build
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  # - task: Bash@3
+  #   displayName: 'iOS Build'
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       export DEVELOPER_DIR=/Applications/Xcode_16.0.app/Contents/Developer
+  #       xcodebuild \
+  #         -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace \
+  #         -scheme $(IOSSdkScheme) \
+  #         -sdk iphoneos \
+  #         -configuration Release \
+  #         -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" \
+  #         build
+  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'iPhone-14 Bootup'
