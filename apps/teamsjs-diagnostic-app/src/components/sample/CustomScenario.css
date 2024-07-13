@@ -18,6 +18,24 @@
   align-items: center;
   padding: 20px;
   position: relative;
+  overflow-y: auto;
+}
+
+.custom-scenario-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scenario-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-scenario-box::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.custom-scenario-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .all-api-container {
@@ -77,7 +95,7 @@
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  max-height: calc(100% - 40px);
+  max-height: calc(100% - 80px);
   margin-bottom: 20px;
 }
 

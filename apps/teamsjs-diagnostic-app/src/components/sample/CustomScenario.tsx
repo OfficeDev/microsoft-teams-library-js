@@ -19,7 +19,11 @@ const CustomScenario: React.FC = () => {
 
   const addToScenario = (api: ApiComponent, func: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
-    setCustomScenario([...customScenario, { api, func, input }]);
+    if (customScenario.length < 5) {
+      setCustomScenario([...customScenario, { api, func, input }]);
+    } else {
+      console.log('Maximum limit reached. Cannot add more APIs to the scenario.');
+    }
   };
 
   const removeApiFromScenario = (index: number) => {
@@ -33,10 +37,11 @@ const CustomScenario: React.FC = () => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'API',
     drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
+    canDrop: () => customScenario.length < 5,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  }));
+  }), [customScenario]);
 
   const generateVerticalBoxes = () => {
     const filteredApis = apiComponents.filter(api =>
