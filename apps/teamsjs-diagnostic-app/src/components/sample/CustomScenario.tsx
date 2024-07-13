@@ -4,16 +4,21 @@ import { useDrop } from 'react-dnd';
 import apiComponents, { ApiComponent } from './ApiComponents';
 import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
 import BarCodeAPIs from '../../apis/BarCodeApi';
+import { handleRunScenario } from './../../utils/HandleRunScenario';
 
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
 
-  const handleRunScenario = async () => {
+  const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
     for (const { api, func, input } of customScenario) {
-      console.log(`Executing ${func} for ${api.title} with input: ${input}`);
-      // Execute the API function based on the selected function and input
+      try {
+        const result = await handleRunScenario(api, func, input);
+        console.log(`Success: ${func} - ${result}`);
+      } catch (error : any) {
+        console.error(`Error: ${func} - ${error.message}`);
+      }
     }
   };
 
@@ -67,7 +72,7 @@ const CustomScenario: React.FC = () => {
           <p>Drag and drop API components here to build your custom scenario.</p>
         </div>
         <div className="custom-scenario-box">
-          <button className="scenario1-button" onClick={handleRunScenario}>Run Scenario</button>
+          <button className="scenario1-button" onClick={handleRunScenarioClick}>Run Scenario</button>
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">

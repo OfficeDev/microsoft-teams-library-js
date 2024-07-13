@@ -14,7 +14,9 @@ const apiComponents: ApiComponent[] = [
     title: 'App Install Dialog API',
     name: 'appInstallDialog',
     options: ['OpenAppInstallDialog', 'CheckAppInstallCapability'],
-    defaultInput: 'default input for OpenAppInstallDialog',
+    defaultInput: JSON.stringify({
+      appId: '957f8a7e-fbcd-411d-b69f-acb7eb58b515',
+    }),
     inputType: 'text',
     onClick: () => console.log('App Install Dialog API called'),
   },

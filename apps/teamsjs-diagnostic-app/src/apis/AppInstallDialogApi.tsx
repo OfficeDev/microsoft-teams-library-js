@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
+import { appInstallDialog } from '@microsoft/teams-js';
+
+export const appInstallDialog_CheckAppInstallCapability = async () => {
+  console.log('Executing CheckAppInstallCapability...');
+  return `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`;
+};
+
+export const appInstallDialog_OpenAppInstallDialog = async (input?: string) => {
+  console.log('Executing OpenAppInstallDialog with input:', input);
+  const parsedInput = input ? JSON.parse(input) : {};
+  await appInstallDialog.openAppInstallDialog(parsedInput);
+  return 'OpenAppInstallDialog called';
+};
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
@@ -25,7 +38,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
