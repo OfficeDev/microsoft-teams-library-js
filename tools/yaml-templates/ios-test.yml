@@ -108,7 +108,7 @@ steps:
       # Add the root certificate to the booted simulator's keychain
       xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
     displayName: "[iOS] Boot iOS Simulator and Add Root Certificate"
-    workingDirectory: 'metaos-hub-sdk-iOS'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
