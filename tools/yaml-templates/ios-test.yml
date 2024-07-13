@@ -147,7 +147,7 @@ steps:
       targetType: inline
       script: |
         npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.2"
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.0"
   
   - task: Bash@3
     displayName: 'Clean Up Xcode Directories'
@@ -192,7 +192,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" -verbose'
+      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" -verbose'
         
   # - bash:
   #     /usr/bin/xcodebuild
