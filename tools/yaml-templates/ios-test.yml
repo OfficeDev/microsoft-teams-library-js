@@ -45,45 +45,45 @@ steps:
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
   #     condition: always()
 
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '18.x'
-    displayName: 'Install Node.js'
+  # - task: NodeTool@0
+  #   inputs:
+  #     versionSpec: '18.x'
+  #   displayName: 'Install Node.js'
 
-  - task: Cache@2
-    inputs:
-      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache pnpm
+  # - task: Cache@2
+  #   inputs:
+  #     key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+  #     path: $(Pipeline.Workspace)/.pnpm-store
+  #   displayName: Cache pnpm
 
-  - task: CmdLine@2
-    displayName: 'Setup pnpm'
-    inputs:
-      script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
-        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  # - task: CmdLine@2
+  #   displayName: 'Setup pnpm'
+  #   inputs:
+  #     script: |
+  #       corepack enable
+  #       corepack prepare pnpm@9.0.6 --activate
+  #       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
-  - task: CmdLine@2
-    displayName: 'Install client sdk dependencies'
-    inputs:
-      script: |
-        pnpm install
-      workingDirectory: '$(ClientSdkProjectDirectory)'
+  # - task: CmdLine@2
+  #   displayName: 'Install client sdk dependencies'
+  #   inputs:
+  #     script: |
+  #       pnpm install
+  #     workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - task: CmdLine@2
-    displayName: 'Build client sdk'
-    inputs:
-      script: |
-        pnpm build-force-blazor
-      workingDirectory: '$(ClientSdkProjectDirectory)'
+  # - task: CmdLine@2
+  #   displayName: 'Build client sdk'
+  #   inputs:
+  #     script: |
+  #       pnpm build-force-blazor
+  #     workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - task: Bash@3
-    displayName: 'Run sample test app in background'
-    inputs:
-      targetType: inline
-      script: 'nohup pnpm start-test-app &'
-      workingDirectory: '$(ClientSdkProjectDirectory)'
+  # - task: Bash@3
+  #   displayName: 'Run sample test app in background'
+  #   inputs:
+  #     targetType: inline
+  #     script: 'nohup pnpm start-test-app &'
+  #     workingDirectory: '$(ClientSdkProjectDirectory)'
 
   # - task: Bash@3
   #   displayName: 'Simulator Bootup'
@@ -133,18 +133,33 @@ steps:
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
-  - task: Xcode@5
-    displayName: '[iOS] Build iOS Host SDK'
+  # - task: Xcode@5
+  #   displayName: '[iOS] Build iOS Host SDK'
+  #   inputs:
+  #     actions: 'build'
+  #     scheme: $(IOSSdkScheme)
+  #     sdk: 'iphoneos'
+  #     configuration: 'Release'
+  #     workingDirectory: '/Users/runner/work/1/iOSHost'
+  #     xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
+  #     xcodeVersion: 'specifyPath'
+  #     xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
+  #     xcodeBuildArguments: '-destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+
+  - task: Bash@3
+    displayName: 'iOS UI/E2E Tests'
     inputs:
-      actions: 'build'
-      scheme: $(IOSSdkScheme)
-      sdk: 'iphoneos'
-      configuration: 'Release'
-      workingDirectory: '/Users/runner/work/1/iOSHost'
-      xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
-      xcodeVersion: 'specifyPath'
-      xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
-      xcodeBuildArguments: '-destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+      targetType: inline
+      script: |
+        export DEVELOPER_DIR=/Applications/Xcode_16.0.app/Contents/Developer
+        xcodebuild \
+          -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace \
+          -scheme $(IOSSdkScheme) \
+          -sdk iphoneos \
+          -configuration Release \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=17" \
+          build
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: Bash@3
     displayName: 'iPhone-14 Bootup'
