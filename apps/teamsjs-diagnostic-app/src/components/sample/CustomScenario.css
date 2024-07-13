@@ -139,7 +139,7 @@
   border: none;
   padding: 5px 10px;
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: 70%;
 }
 
 .remove-api-button:hover {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './CustomScenario.css';
 import { useDrop } from 'react-dnd';
-
 import apiComponents, { ApiComponent } from './ApiComponents';
 import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
 import BarCodeAPIs from '../../apis/BarCodeApi';
@@ -47,13 +46,9 @@ const CustomScenario: React.FC = () => {
     return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
         {api.title === 'App Install Dialog API' ? (
-          <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={function (apiComponent: ApiComponent, selectedFunction: string, inputValue: string): void {
-            throw new Error('Function not implemented.');
-          } } />
+          <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
         ) : api.title === 'Bar Code API' ? (
-          <BarCodeAPIs apiComponent={api} onDropToScenarioBox={function (apiComponent: ApiComponent, func: string, input: string): void {
-              throw new Error('Function not implemented.');
-            } } />
+          <BarCodeAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
         ) : null}
       </div>
     ));
@@ -61,7 +56,7 @@ const CustomScenario: React.FC = () => {
 
   return (
     <div className="scenario-container">
-      <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'white' }}>
+      <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'transparent' }}>
         <div className="scenario2-header">
           <h2>Custom Scenario</h2>
           <p>Drag and drop API components here to build your custom scenario.</p>
