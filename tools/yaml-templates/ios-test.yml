@@ -139,7 +139,7 @@ steps:
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       xcodeVersion: 'specifyPath'
       xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
-      xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+      xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData" -downloadPlatform iOS'
 
   - task: Bash@3
     displayName: 'iPhone-14 Bootup'
@@ -192,7 +192,7 @@ steps:
       xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
       useXcpretty: true
       publishJUnitResults: true
-      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" -verbose'
+      args: '-parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" -verbose -downloadPlatform iOS'
         
   # - bash:
   #     /usr/bin/xcodebuild
