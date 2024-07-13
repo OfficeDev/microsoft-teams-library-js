@@ -185,7 +185,7 @@ steps:
     inputs:
       actions: 'test'
       sdk: 'iphonesimulator'
-      configuration: 'Release'
+      configuration: 'Debug'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/metaos-hub-sdk.xcworkspace'
       scheme: 'orangeios'
       xcodeVersion: 'specifyPath'
