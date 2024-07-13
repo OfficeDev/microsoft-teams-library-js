@@ -147,7 +147,16 @@ steps:
   #     xcodeBuildArguments: '-destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
   - task: Bash@3
-    displayName: 'iOS UI/E2E Tests'
+    displayName: 'List Available Simulators'
+    inputs:
+      targetType: inline
+      script: |
+        export DEVELOPER_DIR=/Applications/Xcode_16.0.app/Contents/Developer
+        xcrun simctl list devices
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+
+  - task: Bash@3
+    displayName: 'iOS Build'
     inputs:
       targetType: inline
       script: |
@@ -157,7 +166,7 @@ steps:
           -scheme $(IOSSdkScheme) \
           -sdk iphoneos \
           -configuration Release \
-          -destination "platform=iOS Simulator,name=iPhone 15,OS=17" \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" \
           build
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
