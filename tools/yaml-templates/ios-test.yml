@@ -55,16 +55,16 @@ steps:
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: DownloadSecureFile@1
-          name: localhostRootCertificate
-          displayName: 'Download localhost certificate'
-          inputs:
-            secureFile: 'localhostCA.pem'
+    name: localhostRootCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhostCA.pem'
   
   - task: DownloadSecureFile@1
-          name: localhostSSLCertificate
-          displayName: 'Download localhost certificate'
-          inputs:
-            secureFile: 'localhost.test.crt'
+    name: localhostSSLCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhost.test.crt'
             
   - task: DownloadSecureFile@1
     name: localhostSSLKey
