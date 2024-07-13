@@ -54,11 +54,29 @@ steps:
         pnpm build-force-blazor
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
+  - task: DownloadSecureFile@1
+    name: localhostRootCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhostCA.pem'
+  
+  - task: DownloadSecureFile@1
+    name: localhostSSLCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhost.test.crt'
+            
+  - task: DownloadSecureFile@1
+    name: localhostSSLKey
+    displayName: 'Download localhost key'
+    inputs:
+      secureFile: 'localhost.test.key'
+
   - task: Bash@3
     displayName: 'Run sample test app in background'
     inputs:
       targetType: inline
-      script: 'nohup pnpm start-test-app &'
+      script: 'nohup pnpm start-test-app --server-options-cert $(localhostSSLCertificate.secureFilePath) --server-options-key $(localhostSSLKey.secureFilePath) &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
@@ -81,6 +99,16 @@ steps:
       targetType: inline
       script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
       workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - bash: |
+      # Boot the iOS simulator
+      xcrun simctl boot "iPhone 14 Pro" || true
+      xcrun simctl bootstatus "iPhone 14 Pro" -b
+
+      # Add the root certificate to the booted simulator's keychain
+      xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
+    displayName: "[iOS] Boot iOS Simulator and Add Root Certificate"
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
