@@ -10,7 +10,7 @@
 }
 
 .custom-scenario-box {
-  width: 400px;
+  width: 425px;
   height: 400px;
   background-color: lightgray;
   display: flex;
@@ -19,6 +19,7 @@
   padding: 20px;
   position: relative;
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 .custom-scenario-box::-webkit-scrollbar {
@@ -121,11 +122,9 @@
   margin-left: 10px;
 }
 
-
 .scenario2-header {
   gap: 20px;
 }
-
 
 .search-bar {
   width: 100%;
@@ -137,18 +136,20 @@
 
 .dropped-api {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   background-color: white;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 10px;
+  overflow-x: auto;
 }
 
 .dropped-api span {
   flex-grow: 1;
   margin-right: 10px;
+  word-break: break-word;
 }
 
 .remove-api-button {
@@ -158,6 +159,7 @@
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 70%;
+  margin-left: auto;
 }
 
 .remove-api-button:hover {

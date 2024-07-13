@@ -4,6 +4,10 @@ import { useDrop } from 'react-dnd';
 import apiComponents, { ApiComponent } from './ApiComponents';
 import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
 import BarCodeAPIs from '../../apis/BarCodeApi';
+import CalendarAPIs from '../../apis/CalendarApi';
+import CallAPIs from '../../apis/CallApi';
+import ChatAPIs from '../../apis/ChatApi';
+import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
 
 const CustomScenario: React.FC = () => {
@@ -16,7 +20,7 @@ const CustomScenario: React.FC = () => {
       try {
         const result = await handleRunScenario(api, func, input);
         console.log(`Success: ${func} - ${result}`);
-      } catch (error : any) {
+      } catch (error: any) {
         console.error(`Error: ${func} - ${error.message}`);
       }
     }
@@ -59,6 +63,14 @@ const CustomScenario: React.FC = () => {
           <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
         ) : api.title === 'Bar Code API' ? (
           <BarCodeAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : api.title === 'Calendar API' ? (
+          <CalendarAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : api.title === 'Call API' ? (
+          <CallAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : api.title === 'Chat API' ? (
+          <ChatAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : api.title === 'Dialog API' ? (
+          <DialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
         ) : null}
       </div>
     ));

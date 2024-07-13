@@ -27,15 +27,52 @@ const apiComponents: ApiComponent[] = [
     defaultInput: '{}',
     inputType: 'text',
     onClick: () => console.log('Barcode API called'),
-    },
-  {
-    title: 'Calendar APIs',
-    name: 'calendar',
-    inputType: 'none',
-    onClick: () => console.log('Calendar API clicked'),
-    options: ['Option X', 'Option Y', 'Option Z']
   },
-  // Add more API components
+  {
+    title: 'Calendar API',
+    name: 'calendar',
+    options: ['CheckCalendarCapability', 'ComposeMeeting', 'OpenCalendarItem'],
+    defaultInput: JSON.stringify({
+      attendees: ['attendees'],
+      startTime: 'startTime',
+      endTime: 'endTime',
+      subject: 'subject',
+      content: 'content',
+    }),
+    inputType: 'text',
+    onClick: () => console.log('Calendar API called'),
+  },
+  {
+    title: 'Call API',
+    name: 'call',
+    options: ['CheckCallCapability', 'StartCall'],
+    defaultInput: JSON.stringify({
+      targets: ['user1', 'user2'],
+      requestedModalities: ['video'],
+      source: 'source',
+    }),
+    inputType: 'text',
+    onClick: () => console.log('Call API called'),
+  },
+  {
+    title: 'Chat API',
+    name: 'chat',
+    options: ['CheckChatCapability', 'OpenChat', 'OpenGroupChat', 'OpenConversation', 'CloseConversation', 'GetChatMembers'],
+    defaultInput: JSON.stringify({
+      user: 'testUpn',
+      message: 'testMessage',
+    }),
+    inputType: 'text',
+    onClick: () => console.log('Chat API called'),
+  },
+  {
+    title: 'Dialog API',
+    name: 'dialog',
+    options: ['CheckDialogCapability'],
+    inputType: 'none',
+    onClick: () => console.log('Dialog API called'),
+  },
+  // Add more API components as needed
 ];
 
 export default apiComponents;
