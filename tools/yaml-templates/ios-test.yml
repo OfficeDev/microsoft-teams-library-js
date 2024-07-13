@@ -76,11 +76,8 @@ steps:
     displayName: 'Run sample test app in background'
     inputs:
       targetType: inline
-      script: 'nohup pnpm start-test-app &'
+      script: 'nohup pnpm start-test-app --server-options-cert $(localhostSSLCertificate.secureFilePath) --server-options-key $(localhostSSLKey.secureFilePath) &'
       workingDirectory: '$(ClientSdkProjectDirectory)'
-      env:
-        SSL_KEY_FILE: $(localhostSSLKey.secureFilePath)
-        SSL_CRT_FILE: $(localhostSSLCertificate.secureFilePath)
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
