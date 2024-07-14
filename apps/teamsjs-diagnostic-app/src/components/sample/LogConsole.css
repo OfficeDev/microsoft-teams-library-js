@@ -26,14 +26,55 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 10px;
+  gap: 10px;
 }
 
-.clear-logs-button {
+.clear-logs-button,
+.download-logs-button,
+.share-logs-button {
   padding: 8px 16px;
-  background-color: #f44336;
   color: white;
   border: none;
   cursor: pointer;
+}
+
+.clear-logs-button {
+  background-color: #f44336;
+}
+
+.download-logs-button {
+  background-color: #4caf50;
+}
+
+.share-logs-button {
+  background-color: #2196f3;
+}
+
+.share-logs-dropdown {
+  position: relative;
+}
+
+.share-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.share-option {
+  display: block;
+  padding: 8px 16px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.share-option:hover {
+  background-color: #f0f0f0;
 }
 
 .log-statement {
