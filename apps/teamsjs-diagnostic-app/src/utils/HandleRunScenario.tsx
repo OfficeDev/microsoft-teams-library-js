@@ -1,14 +1,36 @@
-import { appInstallDialog_CheckAppInstallCapability, appInstallDialog_OpenAppInstallDialog } from '../apis/AppInstallDialogApi';
-import { barCode_checkBarCodeCapability, barCode_hasBarCodePermission, barCode_requestBarCodePermission, barCode_scanBarCode } from '../apis/BarCodeApi';
-import { calendar_CheckCalendarCapability, calendar_OpenCalendarItem } from '../apis/CalendarApi';
-import { call_CheckCallCapability, call_StartCall } from '../apis/CallApi';
-import { chat_CheckChatCapability, chat_CloseConversation, chat_OpenChat, chat_OpenConversation, chat_OpenGroupChat } from '../apis/ChatApi';
-import { dialog_CheckDialogCapability } from '../apis/DialogApi';
 import { ApiComponent } from '../components/sample/ApiComponents';
+import {
+  appInstallDialog_CheckAppInstallCapability,
+  appInstallDialog_OpenAppInstallDialog
+} from '../apis/AppInstallDialogApi';
+import {
+  barCode_checkBarCodeCapability,
+  barCode_hasBarCodePermission,
+  barCode_requestBarCodePermission,
+  barCode_scanBarCode
+} from '../apis/BarCodeApi';
+import {
+  calendar_CheckCalendarCapability,
+  calendar_OpenCalendarItem
+} from '../apis/CalendarApi';
+import {
+  call_CheckCallCapability,
+  call_StartCall
+} from '../apis/CallApi';
+import {
+  chat_CheckChatCapability,
+  chat_CloseConversation,
+  chat_OpenChat,
+  chat_OpenConversation,
+  chat_OpenGroupChat
+} from '../apis/ChatApi';
+import {
+  dialog_CheckDialogCapability
+} from '../apis/DialogApi';
 
-
-export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
-    if (api.name === 'appInstallDialog') {
+export const handleRunScenario = async (api: ApiComponent, func: string, input?: any) => {
+  switch (api.name) {
+    case 'appInstallDialog':
       switch (func) {
         case 'CheckAppInstallCapability':
           return await appInstallDialog_CheckAppInstallCapability();
@@ -17,7 +39,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else if (api.name === 'barCode') {
+    case 'barCode':
       switch (func) {
         case 'checkBarCodeCapability':
           return await barCode_checkBarCodeCapability();
@@ -30,7 +52,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else if (api.name === 'calendar') {
+    case 'calendar':
       switch (func) {
         case 'CheckCalendarCapability':
           return await calendar_CheckCalendarCapability();
@@ -39,7 +61,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else if (api.name === 'call') {
+    case 'call':
       switch (func) {
         case 'CheckCallCapability':
           return await call_CheckCallCapability();
@@ -48,7 +70,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else if (api.name === 'chat') {
+    case 'chat':
       switch (func) {
         case 'CheckChatCapability':
           return await chat_CheckChatCapability();
@@ -60,20 +82,17 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
           return await chat_OpenConversation(input);
         case 'CloseConversation':
           return await chat_CloseConversation();
-        //case 'GetChatMembers':
-          //return await chat_GetChatMembers(input);
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else if (api.name === 'dialog') {
+    case 'dialog':
       switch (func) {
         case 'CheckDialogCapability':
           return await dialog_CheckDialogCapability();
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
-    } else {
+    default:
       throw new Error(`Unknown API component ${api.title}`);
-    }
-  };
-  
+  }
+};
