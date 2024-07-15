@@ -17,7 +17,7 @@ steps:
     inputs:
       targetType: inline
       script: |
-        brew install xctesthtmlreport
+        arch -arm64 brew install xctesthtmlreport
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
       condition: always()
 
