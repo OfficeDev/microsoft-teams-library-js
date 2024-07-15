@@ -20,7 +20,6 @@ const AuthEnd = () => {
           tokenType: hashParams.get('token_type'),
           expiresIn: hashParams.get('expires_in'),
         };
-        localStorage.setItem('authResult', JSON.stringify(authResult));
         authentication.notifySuccess('authResult');
       } else {
         console.error('State does not match or access token missing');

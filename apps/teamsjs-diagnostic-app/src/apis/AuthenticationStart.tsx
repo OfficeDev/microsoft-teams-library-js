@@ -1,17 +1,10 @@
 import { app } from '@microsoft/teams-js';
+import { v4 as uuidv4 } from 'uuid';
 
 function toQueryString(queryParams: any) {
   return Object.keys(queryParams)
     .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(queryParams[key]))
     .join('&');
-}
-
-function _guid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 }
 
 export async function authenticateUser(): Promise<boolean> {
@@ -22,7 +15,7 @@ export async function authenticateUser(): Promise<boolean> {
       return false;
     }
 
-    const state = _guid();
+    const state = uuidv4();
     localStorage.setItem("simple.state", state);
     localStorage.removeItem("simple.error");
 
@@ -32,7 +25,7 @@ export async function authenticateUser(): Promise<boolean> {
       response_mode: 'fragment',
       scope: 'https://graph.microsoft.com/User.Read openid',
       redirect_uri: window.location.origin + '/auth-end',
-      nonce: _guid(),
+      nonce: uuidv4(),
       state: state,
       login_hint: context.user.loginHint,
     };
