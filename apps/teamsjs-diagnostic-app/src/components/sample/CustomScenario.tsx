@@ -9,55 +9,63 @@ import CallAPIs from '../../apis/CallApi';
 import ChatAPIs from '../../apis/ChatApi';
 import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
+import { TransformerContext } from '../../utils/TransformerContext';
+import { NoInputStrategy } from '../../utils/NoInputStrategy';
+import { TextInputStrategy } from '../../utils/TextInputStrategy';
+import { CheckboxInputStrategy } from '../../utils/CheckboxInputStrategy';
 
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
-  const [activeTab, setActiveTab] = useState<'default' | 'custom'>('default');
-  const [showTransformerDialog, setShowTransformerDialog] = useState<{ api: ApiComponent, index: number } | null>(null);
-
+  const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, inputType: string, input?: string }>>([]);
+  
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
-
-    for (let i = 0; i < customScenario.length; i++) {
-      const { api, func, input } = customScenario[i];
-      console.log(`Executing ${func}...`);
-
-      // Check if there's a transformer defined before this API call
-      if (i > 0) {
-        console.log('Applying Transformer...');
-        const transformedInput = await applyTransformer(customScenario[i - 1], api, input);
-        if (transformedInput !== undefined) {
-          console.log(`Transformed input for ${func}: ${transformedInput}`);
-        } else {
-          console.log(`No transformation needed for ${func}`);
+  
+    try {
+      const transformerContext = new TransformerContext(new NoInputStrategy());
+  
+      for (let i = 0; i < customScenario.length; i++) {
+        const { api, func, inputType, input } = customScenario[i];
+        console.log(`Executing ${func} of ${api.title}...`);
+  
+        if (i > 0) {
+          const prevApi = customScenario[i - 1];
+          const output = await handleRunScenario(prevApi.api, prevApi.func, prevApi.input);
+          console.log(`Output from previous API ${prevApi.func}:`, output);
+  
+          // Set the appropriate strategy based on the input type
+          switch (inputType) {
+            case 'text':
+              transformerContext.setStrategy(new TextInputStrategy());
+              break;
+            case 'checkbox':
+              transformerContext.setStrategy(new CheckboxInputStrategy());
+              break;
+            default:
+              transformerContext.setStrategy(new NoInputStrategy());
+              break;
+          }
+  
+          // Transform the output to be the input of the current API
+          const transformedInput = transformerContext.executeStrategy(output);
+          console.log(`Transformed input for ${func}:`, transformedInput);
+          customScenario[i].input = transformedInput;
         }
-      }
-
-      try {
+  
+        // Execute the current API
         const result = await handleRunScenario(api, func, input);
-        console.log(`Success: ${func} - ${result}`);
-      } catch (error: any) {
-        console.error(`Error: ${func} - ${error.message}`);
-        break;
+        console.log(`Success: ${func} -`, result);
       }
+    } catch (error: any) {
+      console.error('Error during scenario execution:', error.message);
     }
   };
+  
 
-  //ADD TO THIS!!
-  const applyTransformer = async (prevApi: { api: ApiComponent, func: string, input?: string }, currentApi: ApiComponent, input?: string) => {
-    // Placeholder for transformation logic
-    // Implement your specific transformation logic here
-    console.log(`Applying default transformation logic from ${prevApi.func} to ${currentApi.title}`);
-
-    // Concatenate the output of the previous API with the input of the current API
-    return `${prevApi.func} output -> ${input}`;
-  };
-
-  const addToScenario = (api: ApiComponent, func: string, input?: string) => {
+  const addToScenario = (api: ApiComponent, func: string, inputType: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
     if (customScenario.length < 5) {
-      setCustomScenario([...customScenario, { api, func, input }]);
+      setCustomScenario([...customScenario, { api, func, inputType, input }]);
     } else {
       console.log('Maximum limit reached. Cannot add more APIs to the scenario.');
     }
@@ -73,40 +81,12 @@ const CustomScenario: React.FC = () => {
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'API',
-    drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
+    drop: (item: { api: ApiComponent, func: string, inputType: string, input?: string }) => addToScenario(item.api, item.func, item.inputType, item.input),
     canDrop: () => customScenario.length < 5,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
   }), [customScenario]);
-
-  const handleTransformerClick = (api: ApiComponent, index: number) => {
-    setShowTransformerDialog({ api, index });
-  };
-
-  const handleTabClick = (tab: 'default' | 'custom') => {
-    setActiveTab(tab);
-  };
-
-  const renderTabContent = () => {
-    if (activeTab === 'default') {
-      return (
-        <div className="tab-content">
-          <p>Default transformation logic goes here.</p>
-        </div>
-      );
-    } else {
-      return (
-        <div className="tab-content">
-          <p>User-defined transformation logic editor goes here.</p>
-        </div>
-      );
-    }
-  };
-
-  const closeTransformerDialog = () => {
-    setShowTransformerDialog(null);
-  };
 
   const generateCustomScenario = () => {
     return customScenario.map((item, index) => (
@@ -115,21 +95,6 @@ const CustomScenario: React.FC = () => {
           <span>{`${item.api.title}, ${item.func}${item.input ? `(${item.input})` : ''}`}</span>
           <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
         </div>
-        {index < customScenario.length - 1 && (
-          <div className="transformer-trigger" onClick={() => handleTransformerClick(item.api, index)}>
-            Transformer
-          </div>
-        )}
-        {showTransformerDialog && showTransformerDialog.index === index && (
-          <div className="transformer-box">
-            <span onClick={closeTransformerDialog}>Close</span>
-            <div className="transformer-tabs">
-              <div className={`tab ${activeTab === 'default' ? 'active' : ''}`} onClick={() => handleTabClick('default')}>Default</div>
-              <div className={`tab ${activeTab === 'custom' ? 'active' : ''}`} onClick={() => handleTabClick('custom')}>Custom</div>
-            </div>
-            {renderTabContent()}
-          </div>
-        )}
       </React.Fragment>
     ));
   };
