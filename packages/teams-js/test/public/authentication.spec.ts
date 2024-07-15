@@ -1,10 +1,9 @@
-// import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as internalUtils from '../../src/internal/utils';
-import { FrameContexts, HostClientType } from '../../src/public';
+import { ErrorCode, FrameContexts, HostClientType, SdkError } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
@@ -14,8 +13,12 @@ import { Utils } from '../utils';
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Testing authentication capability', () => {
-  const errorMessage = 'mockError';
+  const errorMessage = 'Sample Error Message';
   const mockResult = 'someResult';
+  const sdkError: SdkError = {
+    errorCode: ErrorCode.INTERNAL_ERROR,
+    message: errorMessage,
+  };
   const mockResource = 'https://someresource/';
   const mockClaim = 'some_claim';
   const mockUser: authentication.UserProfile = {
@@ -837,7 +840,7 @@ describe('Testing authentication capability', () => {
               done();
             };
             const failureCallback = (reason: string): void => {
-              expect(reason).toBe(mockResult);
+              expect(reason).toMatch(new RegExp(sdkError.message!));
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -849,7 +852,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            await utils.respondToMessage(message, false, mockResult);
+            await utils.respondToMessage(message, false, sdkError);
           });
         });
 
@@ -861,8 +864,8 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          await utils.respondToMessage(message, false, mockResult);
-          await expect(promise).rejects.toThrowError(mockResult);
+          await utils.respondToMessage(message, false, sdkError);
+          await expect(promise).rejects.toThrowError(new RegExp(sdkError.message!));
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
@@ -1438,7 +1441,7 @@ describe('Testing authentication capability', () => {
               done();
             };
             const failureCallback = (reason: string): void => {
-              expect(reason).toBe(mockResult);
+              expect(reason).toMatch(new RegExp(sdkError.message!));
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -1453,7 +1456,7 @@ describe('Testing authentication capability', () => {
             await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
-                args: [false, mockResult],
+                args: [false, sdkError],
               },
             } as DOMMessageEvent);
           });
@@ -1470,10 +1473,10 @@ describe('Testing authentication capability', () => {
           await utils.respondToFramelessMessage({
             data: {
               id: message.id,
-              args: [false, mockResult],
+              args: [false, sdkError],
             },
           } as DOMMessageEvent);
-          await expect(promise).rejects.toThrowError(mockResult);
+          await expect(promise).rejects.toThrowError(new RegExp(errorMessage));
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
