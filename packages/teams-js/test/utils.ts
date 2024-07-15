@@ -310,7 +310,7 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
+  public sendMessageWithCustomOrigin = async (func: string, origin: string, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
@@ -318,13 +318,17 @@ export class Utils {
     }
 
     await this.processMessage({
-      origin: this.validOrigin,
+      origin: origin,
       source: this.mockWindow.parent,
       data: {
         func: func,
         args: args,
       },
     } as MessageEvent);
+  };
+
+  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
+    return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
 
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {
