@@ -4,14 +4,10 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { barCode } from '@microsoft/teams-js';
 
 export const barCode_checkBarCodeCapability = async () => {
-  console.log('Executing checkBarCodeCapability...');
-  // Implement logic for checkBarCodeCapability
   return `BarCode ${barCode.isSupported() ? 'is' : 'is not'} supported`;
 };
 
 export const barCode_scanBarCode = async (input?: string) => {
-  console.log('Executing scanBarCode with input:', input);
-  // Implement logic for scanBarCode
   if (!input) {
     throw new Error('BarCodeConfig is required');
   }
@@ -21,15 +17,11 @@ export const barCode_scanBarCode = async (input?: string) => {
 };
 
 export const barCode_hasBarCodePermission = async () => {
-  console.log('Executing hasBarCodePermission...');
-  // Implement logic for hasBarCodePermission
   const result = await barCode.hasPermission();
   return JSON.stringify(result);
 };
 
 export const barCode_requestBarCodePermission = async () => {
-  console.log('Executing requestBarCodePermission...');
-  // Implement logic for requestBarCodePermission
   const result = await barCode.requestPermission();
   return JSON.stringify(result);
 };

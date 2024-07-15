@@ -4,19 +4,16 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
 
 export const calendar_CheckCalendarCapability = async () => {
-  console.log('Executing CheckCalendarCapability...');
   return `Calendar module ${calendar.isSupported() ? 'is' : 'is not'} supported`;
 };
 
 export const calendar_ComposeMeeting = async (input?: string) => {
-  console.log('Executing ComposeMeeting with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await calendar.composeMeeting(parsedInput);
   return 'ComposeMeeting called';
 };
 
 export const calendar_OpenCalendarItem = async (input?: string) => {
-  console.log('Executing OpenCalendarItem with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await calendar.openCalendarItem(parsedInput);
   return 'OpenCalendarItem called';

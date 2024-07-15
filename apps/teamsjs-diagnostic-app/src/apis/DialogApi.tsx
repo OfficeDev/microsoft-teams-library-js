@@ -4,7 +4,6 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialog } from '@microsoft/teams-js';
 
 export const dialog_CheckDialogCapability = async () => {
-  console.log('Executing CheckDialogCapability...');
   return `Dialog module ${dialog.isSupported() ? 'is' : 'is not'} supported`;
 };
 

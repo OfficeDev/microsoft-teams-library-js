@@ -4,12 +4,10 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 
 export const appInstallDialog_CheckAppInstallCapability = async () => {
-  console.log('Executing CheckAppInstallCapability...');
   return `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`;
 };
 
 export const appInstallDialog_OpenAppInstallDialog = async (input?: string) => {
-  console.log('Executing OpenAppInstallDialog with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await appInstallDialog.openAppInstallDialog(parsedInput);
   return 'OpenAppInstallDialog called';

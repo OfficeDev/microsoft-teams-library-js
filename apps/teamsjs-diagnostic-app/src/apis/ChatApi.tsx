@@ -4,33 +4,28 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
 
 export const chat_CheckChatCapability = async () => {
-  console.log('Executing CheckChatCapability...');
   return `Chat module ${chat.isSupported() ? 'is' : 'is not'} supported`;
 };
 
 export const chat_OpenChat = async (input?: string) => {
-  console.log('Executing OpenChat with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await chat.openChat(parsedInput);
   return 'OpenChat called';
 };
 
 export const chat_OpenGroupChat = async (input?: string) => {
-  console.log('Executing OpenGroupChat with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await chat.openGroupChat(parsedInput);
   return 'OpenGroupChat called';
 };
 
 export const chat_OpenConversation = async (input?: string) => {
-  console.log('Executing OpenConversation with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   await conversations.openConversation(parsedInput);
   return 'OpenConversation called';
 };
 
 export const chat_CloseConversation = async () => {
-  console.log('Executing CloseConversation...');
   conversations.closeConversation();
   return 'Conversation Closed!';
 };

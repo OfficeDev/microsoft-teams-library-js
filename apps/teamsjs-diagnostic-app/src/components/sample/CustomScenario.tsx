@@ -21,19 +21,21 @@ const CustomScenario: React.FC = () => {
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
   
-    try {
-      const transformerContext = new TransformerContext(new NoInputStrategy());
+    const transformerContext = new TransformerContext(new NoInputStrategy());
   
+    try {
       for (let i = 0; i < customScenario.length; i++) {
         const { api, func, inputType, input } = customScenario[i];
+  
         console.log(`Executing ${func} of ${api.title}...`);
   
+        // Handle input transformation from previous API output
         if (i > 0) {
           const prevApi = customScenario[i - 1];
           const output = await handleRunScenario(prevApi.api, prevApi.func, prevApi.input);
+  
           console.log(`Output from previous API ${prevApi.func}:`, output);
   
-          // Set the appropriate strategy based on the input type
           switch (inputType) {
             case 'text':
               transformerContext.setStrategy(new TextInputStrategy());
@@ -46,9 +48,10 @@ const CustomScenario: React.FC = () => {
               break;
           }
   
-          // Transform the output to be the input of the current API
           const transformedInput = transformerContext.executeStrategy(output);
           console.log(`Transformed input for ${func}:`, transformedInput);
+  
+          // Update input for the current API
           customScenario[i].input = transformedInput;
         }
   
@@ -56,10 +59,12 @@ const CustomScenario: React.FC = () => {
         const result = await handleRunScenario(api, func, input);
         console.log(`Success: ${func} -`, result);
       }
+  
+      console.log('Custom scenario execution completed.');
     } catch (error: any) {
-      console.error('Error during scenario execution:', error.message);
+      console.error(`Error during scenario execution:`, error.message);
     }
-  };
+  };  
   
 
   const addToScenario = (api: ApiComponent, func: string, inputType: string, input?: string) => {

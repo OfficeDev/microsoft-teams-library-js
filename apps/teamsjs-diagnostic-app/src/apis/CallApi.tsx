@@ -4,12 +4,10 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
 
 export const call_CheckCallCapability = async () => {
-  console.log('Executing CheckCallCapability...');
   return `Call module ${call.isSupported() ? 'is' : 'is not'} supported`;
 };
 
 export const call_StartCall = async (input?: string) => {
-  console.log('Executing StartCall with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
   const result = await call.startCall(parsedInput);
   return `StartCall result: ${result}`;
