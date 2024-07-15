@@ -230,7 +230,7 @@ extends:
           - job: E2ETestAndroid
             displayName: 'E2E Test - Android'
             pool:
-              name: Azure Pipelines
+              name: Azure-Pipelines-1ESPT-ExDShared
               image: internal-macos12
               os: macOS
             steps:
@@ -241,7 +241,7 @@ extends:
           - job: E2ETestIOS
             displayName: 'E2E Test - IOS - Plan A'
             pool:
-              name: Azure Pipelines
+              name: Azure-Pipelines-1ESPT-ExDShared
               image: internal-macos12
               os: macOS
             steps:
@@ -253,7 +253,7 @@ extends:
           - job: E2ETestIOS2
             displayName: 'E2E Test - IOS - Plan B'
             pool:
-              name: Azure Pipelines
+              name: Azure-Pipelines-1ESPT-ExDShared
               image: internal-macos12
               os: macOS
             steps:
