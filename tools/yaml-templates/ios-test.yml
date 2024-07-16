@@ -102,13 +102,30 @@ steps:
 
   - bash: |
       # Boot the iOS simulator
-      xcrun simctl boot "iPhone 14 Pro Max" || true
-      xcrun simctl bootstatus "iPhone 14 Pro Max" -b
+      xcrun simctl boot "iPhone 14 Pro" || true
+      xcrun simctl bootstatus "iPhone 14 Pro" -b
 
       # Add the root certificate to the booted simulator's keychain
       xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
     displayName: '[iOS] Boot iOS Simulator and Add Root Certificate'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - bash: |
+      # Print environment variables
+      printenv
+      # List installed Xcode versions
+      ls -al /Applications | grep -i Xcode
+      echo "##[debug]Xcode version:"
+      xcodebuild -version
+      # List available Xcode Platform SDKs
+      echo "##[debug]Xcode Platform SDKs:"
+      find $(xcode-select -p)/Platforms -path '*/Developer/SDKs/*' -type d -maxdepth 4 -print -exec /usr/libexec/PlistBuddy -c 'Print :DisplayName' {}/SDKSettings.plist \;
+      # Check if nuget is installed
+      echo -n "##[debug]Is nuget installed? "; NUGET_PATH=$(which nuget); if [ "$NUGET_PATH" == "" ]; then echo "no, so sad"; exit 1; else echo "yes, at \"$NUGET_PATH\""; fi
+      # View git versions
+      git --version
+      git-lfs version
+    displayName: Print nvironment
 
   - task: Xcode@5
     displayName: 'iOS UI/E2E Tests with Xcode instead of bash'
@@ -119,7 +136,7 @@ steps:
       configuration: 'Release'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       destinationPlatformOption: 'iOS'
-      destinationSimulators: 'iPhone 14 Pro Max'
+      destinationSimulators: 'iPhone 14 Pro'
       publishJUnitResults: true
 
   - task: Bash@3
