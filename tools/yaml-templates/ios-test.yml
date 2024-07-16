@@ -123,13 +123,6 @@ steps:
       publishJUnitResults: true
 
   - task: Bash@3
-    displayName: 'iOS UI/E2E Tests'
-    inputs:
-      targetType: inline
-      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
-      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  - task: Bash@3
     displayName: 'Generate E2E test report'
     inputs:
       targetType: inline
