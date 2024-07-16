@@ -54,12 +54,24 @@
   background-color: #f44336;
 }
 
+.clear-logs-button:hover {
+  background-color: #ff6666;
+}
+
 .download-logs-button {
-  background-color: #4caf50;
+  background-color: #464eb8;
+}
+
+.download-logs-button:hover {
+  background-color: #787dc0;
 }
 
 .share-logs-button {
-  background-color: #2175f3;
+  background-color: #464eb8;
+}
+
+.share-logs-button:hover {
+  background-color: #787dc0;
 }
 
 .share-logs-dropdown {
@@ -95,7 +107,6 @@
   overflow: auto;
 }
 
-/* New styles for search input */
 .search-input-container {
   flex-grow: 1;
 }
