@@ -428,6 +428,14 @@ describe('Testing pages module', () => {
         subPageId: 'task456',
       };
 
+      const navigateToAppParamsWithChat: pages.NavigateToAppParams = {
+        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+        pageId: 'tasklist123',
+        webUrl: 'https://tasklist.example.com/123',
+        chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
+        subPageId: 'task456',
+      };
+
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
           new Error(errorLibraryNotInitialized),
@@ -502,6 +510,30 @@ describe('Testing pages module', () => {
               'executeDeepLink',
               MatcherType.ToBe,
               'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
+            );
+
+            await utils.respondToMessage(executeDeepLinkMessage!, true);
+            await promise;
+          });
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients', async () => {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({
+              apiVersion: 1,
+              isLegacyTeams: true,
+              supports: {
+                pages: {},
+              },
+            });
+
+            const promise = pages.navigateToApp(navigateToAppParamsWithChat);
+
+            const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
+            validateExpectedArgumentsInRequest(
+              executeDeepLinkMessage,
+              'executeDeepLink',
+              MatcherType.ToBe,
+              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22chatId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
             );
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
