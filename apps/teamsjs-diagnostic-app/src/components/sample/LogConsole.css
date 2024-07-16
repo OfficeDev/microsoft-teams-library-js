@@ -1,0 +1,84 @@
+.scenario-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.horizontal-box {
+  width: 1300px;
+  height: 600px;
+  overflow: auto;
+  background-color: lightgray;
+}
+
+.content {
+  width: 100%;
+  height: 100%;
+}
+
+.log-console {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: lightgray;
+}
+
+.log-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.clear-logs-button,
+.download-logs-button,
+.share-logs-button {
+  padding: 8px 16px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.clear-logs-button {
+  background-color: #f44336;
+}
+
+.download-logs-button {
+  background-color: #4caf50;
+}
+
+.share-logs-button {
+  background-color: #2175f3;
+}
+
+.share-logs-dropdown {
+  position: relative;
+}
+
+.share-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+.share-option {
+  display: block;
+  padding: 8px 16px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.share-option:hover {
+  background-color: #f0f0f0;
+}
+
+.log-statement {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  overflow: auto;
+}
