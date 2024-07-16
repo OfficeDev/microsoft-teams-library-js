@@ -17,55 +17,6 @@ import { CheckboxInputStrategy } from '../../utils/CheckboxInputStrategy';
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, inputType: string, input?: string }>>([]);
-  
-  const handleRunScenarioClick = async () => {
-    console.log('Running custom scenario...');
-  
-    const transformerContext = new TransformerContext(new NoInputStrategy());
-  
-    try {
-      for (let i = 0; i < customScenario.length; i++) {
-        const { api, func, inputType, input } = customScenario[i];
-  
-        console.log(`Executing ${func} of ${api.title}...`);
-  
-        // Handle input transformation from previous API output
-        if (i > 0) {
-          const prevApi = customScenario[i - 1];
-          const output = await handleRunScenario(prevApi.api, prevApi.func, prevApi.input);
-  
-          console.log(`Output from previous API ${prevApi.func}:`, output);
-  
-          switch (inputType) {
-            case 'text':
-              transformerContext.setStrategy(new TextInputStrategy());
-              break;
-            case 'checkbox':
-              transformerContext.setStrategy(new CheckboxInputStrategy());
-              break;
-            default:
-              transformerContext.setStrategy(new NoInputStrategy());
-              break;
-          }
-  
-          const transformedInput = transformerContext.executeStrategy(output);
-          console.log(`Transformed input for ${func}:`, transformedInput);
-  
-          // Update input for the current API
-          customScenario[i].input = transformedInput;
-        }
-  
-        // Execute the current API
-        const result = await handleRunScenario(api, func, input);
-        console.log(`Success: ${func} -`, result);
-      }
-  
-      console.log('Custom scenario execution completed.');
-    } catch (error: any) {
-      console.error(`Error during scenario execution:`, error.message);
-    }
-  };  
-  
 
   const addToScenario = (api: ApiComponent, func: string, inputType: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
@@ -127,6 +78,56 @@ const CustomScenario: React.FC = () => {
       </div>
     ));
   };
+
+  const handleRunScenarioClick = async () => {
+    console.log('Running custom scenario...');
+  
+    const transformerContext = new TransformerContext(new NoInputStrategy());
+  
+    try {
+      let previousOutput: any = null;
+  
+      for (let i = 0; i < customScenario.length; i++) {
+        const { api, func, inputType, input } = customScenario[i];
+  
+        console.log(`Executing ${func} of ${api.title}...`);
+  
+        // Handle input transformation from previous API output
+        if (previousOutput !== null) {
+          console.log(`Output from previous API ${customScenario[i - 1].func}:`, previousOutput);
+  
+          switch (inputType) {
+            case 'text':
+              transformerContext.setStrategy(new TextInputStrategy());
+              break;
+            case 'checkbox':
+              transformerContext.setStrategy(new CheckboxInputStrategy());
+              break;
+            default:
+              transformerContext.setStrategy(new NoInputStrategy());
+              break;
+          }
+  
+          const transformedInput = transformerContext.executeStrategy(previousOutput);
+          console.log(`Transformed input for ${func}:`, transformedInput);
+  
+          // Update input for the current API
+          customScenario[i].input = transformedInput;
+        }
+  
+        // Execute the current API
+        const result = await handleRunScenario(api, func, input);
+        console.log(`Result of ${func}:`, result);
+  
+        // Save the output for the next API call
+        previousOutput = result;
+      }
+  
+      console.log('Custom scenario execution completed.');
+    } catch (error: any) {
+      console.error(`Error during scenario execution:`, error.message);
+    }
+  };  
 
   return (
     <div className="scenario-container">

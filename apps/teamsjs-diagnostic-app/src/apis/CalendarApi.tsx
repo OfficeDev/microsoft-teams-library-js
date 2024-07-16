@@ -4,19 +4,41 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
 
 export const calendar_CheckCalendarCapability = async () => {
-  return `Calendar module ${calendar.isSupported() ? 'is' : 'is not'} supported`;
+  try {
+    console.log('Checking calendar capability...');
+    const isSupported = calendar.isSupported();
+    console.log(`Calendar module ${isSupported ? 'is' : 'is not'} supported`);
+    return `Calendar module ${isSupported ? 'is' : 'is not'} supported`;
+  } catch (error) {
+    console.error('Error in calendar_CheckCalendarCapability:', error);
+    throw error;
+  }
 };
 
 export const calendar_ComposeMeeting = async (input?: string) => {
-  const parsedInput = input ? JSON.parse(input) : {};
-  await calendar.composeMeeting(parsedInput);
-  return 'ComposeMeeting called';
+  try {
+    console.log('Composing meeting with input:', input);
+    const parsedInput = input ? JSON.parse(input) : {};
+    await calendar.composeMeeting(parsedInput);
+    console.log('ComposeMeeting called successfully');
+    return 'ComposeMeeting called';
+  } catch (error) {
+    console.error('Error in calendar_ComposeMeeting:', error);
+    throw error;
+  }
 };
 
 export const calendar_OpenCalendarItem = async (input?: string) => {
-  const parsedInput = input ? JSON.parse(input) : {};
-  await calendar.openCalendarItem(parsedInput);
-  return 'OpenCalendarItem called';
+  try {
+    console.log('Opening calendar item with input:', input);
+    const parsedInput = input ? JSON.parse(input) : {};
+    await calendar.openCalendarItem(parsedInput);
+    console.log('OpenCalendarItem called successfully');
+    return 'OpenCalendarItem called';
+  } catch (error) {
+    console.error('Error in calendar_OpenCalendarItem:', error);
+    throw error;
+  }
 };
 
 interface CalendarAPIsProps {

@@ -29,70 +29,101 @@ import {
 } from '../apis/DialogApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: any) => {
-  switch (api.name) {
-    case 'appInstallDialog':
-      switch (func) {
-        case 'CheckAppInstallCapability':
-          return await appInstallDialog_CheckAppInstallCapability();
-        case 'OpenAppInstallDialog':
-          return await appInstallDialog_OpenAppInstallDialog(input);
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    case 'barCode':
-      switch (func) {
-        case 'checkBarCodeCapability':
-          return await barCode_checkBarCodeCapability();
-        case 'scanBarCode':
-          return await barCode_scanBarCode(input);
-        case 'hasBarCodePermission':
-          return await barCode_hasBarCodePermission();
-        case 'requestBarCodePermission':
-          return await barCode_requestBarCodePermission();
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    case 'calendar':
-      switch (func) {
-        case 'CheckCalendarCapability':
-          return await calendar_CheckCalendarCapability();
-        case 'OpenCalendar':
-          return await calendar_OpenCalendarItem(input);
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    case 'call':
-      switch (func) {
-        case 'CheckCallCapability':
-          return await call_CheckCallCapability();
-        case 'StartCall':
-          return await call_StartCall(input);
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    case 'chat':
-      switch (func) {
-        case 'CheckChatCapability':
-          return await chat_CheckChatCapability();
-        case 'OpenChat':
-          return await chat_OpenChat(input);
-        case 'OpenGroupChat':
-          return await chat_OpenGroupChat(input);
-        case 'OpenConversation':
-          return await chat_OpenConversation(input);
-        case 'CloseConversation':
-          return await chat_CloseConversation();
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    case 'dialog':
-      switch (func) {
-        case 'CheckDialogCapability':
-          return await dialog_CheckDialogCapability();
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    default:
-      throw new Error(`Unknown API component ${api.title}`);
+  console.log(`Starting ${func} for ${api.title} with input:`, input);
+
+  try {
+    let result;
+    switch (api.name) {
+      case 'appInstallDialog':
+        switch (func) {
+          case 'CheckAppInstallCapability':
+            result = await appInstallDialog_CheckAppInstallCapability();
+            break;
+          case 'OpenAppInstallDialog':
+            result = await appInstallDialog_OpenAppInstallDialog(input);
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      case 'barCode':
+        switch (func) {
+          case 'checkBarCodeCapability':
+            result = await barCode_checkBarCodeCapability();
+            break;
+          case 'scanBarCode':
+            result = await barCode_scanBarCode(input);
+            break;
+          case 'hasBarCodePermission':
+            result = await barCode_hasBarCodePermission();
+            break;
+          case 'requestBarCodePermission':
+            result = await barCode_requestBarCodePermission();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      case 'calendar':
+        switch (func) {
+          case 'CheckCalendarCapability':
+            result = await calendar_CheckCalendarCapability();
+            break;
+          case 'OpenCalendar':
+            result = await calendar_OpenCalendarItem(input);
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      case 'call':
+        switch (func) {
+          case 'CheckCallCapability':
+            result = await call_CheckCallCapability();
+            break;
+          case 'StartCall':
+            result = await call_StartCall(input);
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      case 'chat':
+        switch (func) {
+          case 'CheckChatCapability':
+            result = await chat_CheckChatCapability();
+            break;
+          case 'OpenChat':
+            result = await chat_OpenChat(input);
+            break;
+          case 'OpenGroupChat':
+            result = await chat_OpenGroupChat(input);
+            break;
+          case 'OpenConversation':
+            result = await chat_OpenConversation(input);
+            break;
+          case 'CloseConversation':
+            result = await chat_CloseConversation();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      case 'dialog':
+        switch (func) {
+          case 'CheckDialogCapability':
+            result = await dialog_CheckDialogCapability();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+      default:
+        throw new Error(`Unknown API component ${api.title}`);
+    }
+    return result;
+  } catch (error) {
+    console.error(`Error executing ${func} of ${api.title}:`, error);
+    throw error;
   }
 };
