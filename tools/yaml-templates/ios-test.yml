@@ -102,8 +102,8 @@ steps:
 
   - bash: |
       # Boot the iOS simulator
-      xcrun simctl boot "iPhone 14 Pro" || true
-      xcrun simctl bootstatus "iPhone 14 Pro" -b
+      xcrun simctl boot "iPhone 14 Pro Max" || true
+      xcrun simctl bootstatus "iPhone 14 Pro Max" -b
 
       # Add the root certificate to the booted simulator's keychain
       xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
@@ -119,7 +119,7 @@ steps:
       configuration: 'Release'
       xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
       destinationPlatformOption: 'iOS'
-      destinationSimulators: 'iPhone 14 Pro'
+      destinationSimulators: 'iPhone 14 Pro Max'
       publishJUnitResults: true
 
   - task: Bash@3
