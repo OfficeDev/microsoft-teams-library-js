@@ -1079,8 +1079,14 @@ export enum DevicePermission {
 }
 
 /** @hidden */
+export interface M365ChatLicenseInformation {
+  hasM365ChatLicense: boolean;
+  // other fields may be added later
+}
+/** @hidden */
 export interface HostVersionsInfo {
   adaptiveCardSchemaVersion?: AdaptiveCardVersion;
+  m365ChatLicenseInfo?: M365ChatLicenseInformation;
 }
 
 /**
