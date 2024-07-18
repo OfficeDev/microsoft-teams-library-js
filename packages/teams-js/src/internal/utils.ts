@@ -280,8 +280,11 @@ export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
   if (params.webUrl) {
     url.searchParams.append('webUrl', params.webUrl);
   }
-  if (params.channelId || params.subPageId) {
-    url.searchParams.append('context', JSON.stringify({ channelId: params.channelId, subEntityId: params.subPageId }));
+  if (params.chatId || params.channelId || params.subPageId) {
+    url.searchParams.append(
+      'context',
+      JSON.stringify({ chatId: params.chatId, channelId: params.channelId, subEntityId: params.subPageId }),
+    );
   }
   return url.toString();
 }
