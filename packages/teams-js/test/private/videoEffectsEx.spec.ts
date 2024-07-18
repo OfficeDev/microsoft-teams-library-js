@@ -1,3 +1,5 @@
+import { TextDecoder, TextEncoder } from 'util';
+
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
@@ -7,6 +9,8 @@ import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { videoEffects } from '../../src/public/videoEffects';
 import { Utils } from '../utils';
+
+Object.assign(global, { TextDecoder, TextEncoder });
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
@@ -35,7 +39,7 @@ describe('videoEffectsEx', () => {
         _frame: videoEffectsEx.VideoBufferData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
-      ): void => {};
+      ): void => { };
       const videoFrameConfig: videoEffectsEx.VideoFrameConfig = {
         format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
@@ -391,6 +395,36 @@ describe('videoEffectsEx', () => {
           expect(msgRegisterAudioInferenceDiscardStatusChange?.args?.[0]).toBe(
             'video.mediaStream.audioInferenceDiscardStatusChange',
           );
+        });
+
+        it('should receive attributes with video frame', async () => {
+          expect.assertions(3);
+
+          // Arrange
+          const expectedFrameAttributes = window['FrameAttributes'] as ReadonlyMap<string, Uint8Array>;
+          let receivedFrameAttributes;
+          const videoFrameHandler = (data) => {
+            receivedFrameAttributes = data.attributes;
+            return Promise.resolve(data.videoFrame);
+          };
+
+          // Act
+          videoEffectsEx.registerForVideoFrame({
+            ...registerForVideoFrameParameters,
+            videoFrameHandler,
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'video.startVideoExtensibilityVideoStream',
+              args: [{ streamId: 'stream id', metadataInTexture: true }],
+            },
+          } as DOMMessageEvent);
+          await utils.flushPromises();
+
+          // Assert
+          expect(receivedFrameAttributes).not.toEqual(undefined);
+          expect(receivedFrameAttributes.size).toEqual(expectedFrameAttributes.size);
+          expect(receivedFrameAttributes).toEqual(expectedFrameAttributes);
         });
 
         it('should get and register stream with streamId received from startVideoExtensibilityVideoStream', async () => {
@@ -1169,6 +1203,52 @@ describe('videoEffectsEx', () => {
   });
 });
 
+function numToByteArray(num: number): Uint8Array {
+  return new Uint8Array((new Uint32Array([num])).buffer);
+}
+
+function generateOneTextureMetadataMock(attributes: ReadonlyMap<string, Uint8Array>, streamCount: number): Uint8Array {
+  const metadataHeaderSize = 12 * streamCount;
+
+  let streamId = 2;
+  const headerSegment = new Array<number>();
+  const dataSegment = new Array<number>();
+  const textEncoder = new TextEncoder();
+
+  const attributesData = new Array<number>();
+  attributesData.push(...numToByteArray(attributes.size));
+
+  attributes.forEach((attributeData, attributeId, _) => {
+    const stringBytes = textEncoder.encode(attributeId);
+    const paddingSize = 4 - (stringBytes.length % 4); // null terminator bytes length
+
+    headerSegment.push(streamId);
+    headerSegment.push(metadataHeaderSize + dataSegment.length);
+    headerSegment.push(attributeData.length);
+
+    attributesData.push(...numToByteArray(streamId++));
+    attributesData.push(...stringBytes);
+    attributesData.push(...(new Uint8Array(paddingSize)));
+
+    dataSegment.push(...attributeData);
+  });
+
+  headerSegment.push(0x4d444941); // ATTRIBUTE_ID_MAP_STREAM_ID
+  headerSegment.push(metadataHeaderSize + dataSegment.length);
+  headerSegment.push(attributesData.length);
+
+  dataSegment.push(...attributesData);
+
+  const headerBuffer = new Uint32Array(headerSegment);
+  const dataBuffer = new Uint8Array(dataSegment);
+
+  const metadata = new Uint8Array(headerBuffer.byteLength + dataBuffer.byteLength);
+  metadata.set(new Uint8Array(headerBuffer.buffer));
+  metadata.set(dataBuffer, headerBuffer.byteLength);
+
+  return metadata;
+}
+
 function mockMediaStreamAPI() {
   // Jest doesn't support MediaStream API yet, so we need to mock it.
   // Reference:
@@ -1195,6 +1275,33 @@ function mockMediaStreamAPI() {
     writable: true,
   });
 
+  const originalVideoFrame = global['VideoFrame'];
+
+  Object.defineProperty(global, 'VideoFrame', {
+    value: jest.fn().mockImplementation(() => ({})),
+    writable: true,
+  });
+
+  const frameAttributesMock = new Map<string, Uint8Array>();
+  frameAttributesMock.set('attribute-id-1', new Uint8Array([23, 45, 2, 75, 134]));
+  frameAttributesMock.set('attribute-id-2', new Uint8Array([76, 145, 9]));
+  frameAttributesMock.set('attribute-id-3', new Uint8Array([213, 78, 82, 237, 12, 34, 97, 6]));
+
+  window['FrameAttributes'] = frameAttributesMock;
+
+  const oneTextureHeaderMock = new Uint32Array([
+    0x6f746931, // ONE_TEXTURE_INPUT_ID
+    1, // version
+    2, // frameOffset
+    0, // frameFormat
+    100, // frameWidth
+    90, // frameHeight
+    92, // multiStreamHeaderRowOffset (frameRowOffset + frameHeight)
+    1 + frameAttributesMock.size, // multiStreamCount
+  ]);
+
+  const oneTextureMetadataMock = new Uint8Array(generateOneTextureMetadataMock(frameAttributesMock, oneTextureHeaderMock[7]));
+
   const originalReadableStream = window['ReadableStream'];
 
   Object.defineProperty(window, 'ReadableStream', {
@@ -1208,6 +1315,10 @@ function mockMediaStreamAPI() {
               timestamp: 0,
               codedWidth: 100,
               codedHeight: 100,
+              format: 'NV12',
+              copyTo: jest.fn()
+                .mockImplementationOnce((buffer) => new Uint32Array(buffer).set(oneTextureHeaderMock))
+                .mockImplementationOnce((buffer) => new Uint8Array(buffer).set(oneTextureMetadataMock)),
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               close: () => {},
             },
@@ -1273,6 +1384,11 @@ function mockMediaStreamAPI() {
 
   // restore original APIs
   return () => {
+    Object.defineProperty(global, 'VideoFrame', {
+      value: originalVideoFrame,
+      writable: true,
+    });
+
     Object.defineProperties(window, {
       MediaStream: {
         value: originalMediaStream,

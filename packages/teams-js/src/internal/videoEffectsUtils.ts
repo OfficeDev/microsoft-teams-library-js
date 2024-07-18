@@ -531,4 +531,3 @@ export function createEffectParameterChangeCallback(
 }
 
 export { VideoEffectCallBack as DefaultVideoEffectCallBack };
-export { OneTextureMetadata };
