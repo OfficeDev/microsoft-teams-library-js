@@ -7,13 +7,14 @@ parameters:
     type: string
 
 steps:
-  - bash: ls /Applications/
-    displayName: 'Path'
+  - bash:
+      ls /Applications/
+    displayName: "Path"
 
   # - bash:
   #     sudo rm -rf /Library/Developer/CommandLineTools
   #   displayName: "Remove CommandLineTools"
-
+  
   # - bash:
   #     xcode-select --install
   #   displayName: "Install CommandLineTools"
@@ -92,24 +93,28 @@ steps:
   #       npm install ios-sim -g
   #       ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.0"
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  
 
-  # - bash: wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
-  #   displayName: 'Download yeetd'
-  #   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  - bash:
+      wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+    displayName: "Download yeetd"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  # - bash: sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
-  #   displayName: 'Install yeetd'
-  #   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  - bash:
+      sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
+    displayName: "Install yeetd"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  # - script: |
-  #     # Shut down and clean up all simulators
-  #     xcrun simctl shutdown all
-  #     xcrun simctl erase all
-  #   displayName: 'Reset Simulators'
+  - script: |
+      # Shut down and clean up all simulators
+      xcrun simctl shutdown all
+      xcrun simctl erase all
+    displayName: 'Reset Simulators'
 
-  # - script: |
-  #     xcodebuild -downloadPlatform iOS
-  #   displayName: 'Download iPhone Simulators'
+  
+  - script: |
+      xcodebuild -downloadPlatform iOS
+    displayName: 'Download iPhone Simulators'
 
   # - task: Bash@3
   #   displayName: 'iPhone-12 Simulator Bootup'
@@ -117,13 +122,14 @@ steps:
   #     targetType: inline
   #     script: |
   #       ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-12, 16.0"
-
+  
   # - script: |
   #     # Start the simulators and ensure they are ready
   #     open -a Simulator
   #     xcrun simctl boot "iPhone 11"
   #     sleep 30
   #   displayName: 'Start Simulators'
+
 
   # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
   # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
@@ -140,14 +146,14 @@ steps:
   #     xcodeDeveloperDir: '/Applications/Xcode_16.0.app'
   #     xcodeBuildArguments: '-destination "platform=iOS Simulator,name=iPhone 15,OS=17.0" CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
 
-  # - task: Bash@3
-  #   displayName: 'List Available Simulators'
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       export DEVELOPER_DIR=/Applications/Xcode_15.4.app/Contents/Developer
-  #       xcrun simctl list devices
-  #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  - task: Bash@3
+    displayName: 'List Available Simulators'
+    inputs:
+      targetType: inline
+      script: |
+        export DEVELOPER_DIR=/Applications/Xcode_15.4.app/Contents/Developer
+        xcrun simctl list devices
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # - task: Bash@3
   #   displayName: 'iOS Build'
@@ -164,22 +170,22 @@ steps:
   #         build
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  # - task: Bash@3
-  #   displayName: 'iPhone-14 Bootup'
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       npm install ios-sim -g
-  #       ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.5"
-
-  # - task: Bash@3
-  #   displayName: 'Clean Up Xcode Directories'
-  #   inputs:
-  #     targetType: inline
-  #     script: |
-  #       rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport
-  #       rm -rf ~/Library/Developer/Xcode/iOS\ Device\ Logs
-  #       rm -rf ~/Library/Developer/Xcode/DerivedData
+  - task: Bash@3
+    displayName: 'iPhone-14 Bootup'
+    inputs:
+      targetType: inline
+      script: |
+        npm install ios-sim -g
+        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.5"
+  
+  - task: Bash@3
+    displayName: 'Clean Up Xcode Directories'
+    inputs:
+      targetType: inline
+      script: |
+        rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport
+        rm -rf ~/Library/Developer/Xcode/iOS\ Device\ Logs
+        rm -rf ~/Library/Developer/Xcode/DerivedData
 
   - task: Bash@3
     displayName: 'Disable Slow Animation'
@@ -195,11 +201,12 @@ steps:
   #     script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
+
   - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
     inputs:
       targetType: inline
-      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -verbose -screenshot-enabled=\"NO\" -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' -verbose -screenshot-enabled=\"NO\" -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   # - task: Xcode@5
@@ -215,7 +222,7 @@ steps:
   #     useXcpretty: true
   #     publishJUnitResults: true
   #     args: '-no-verify-emitted-module-interface -destination "platform=iOS Simulator,name=iPhone 15,OS=17.5" -verbose'
-
+        
   # - bash:
   #     /usr/bin/xcodebuild
   #     -configuration Release
