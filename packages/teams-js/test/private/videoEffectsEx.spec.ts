@@ -39,7 +39,7 @@ describe('videoEffectsEx', () => {
         _frame: videoEffectsEx.VideoBufferData,
         _notifyVideoFrameProcessed: () => void,
         _notifyError: (errorMessage: string) => void,
-      ): void => { };
+      ): void => {};
       const videoFrameConfig: videoEffectsEx.VideoFrameConfig = {
         format: videoEffects.VideoFrameFormat.NV12,
         requireCameraStream: false,
