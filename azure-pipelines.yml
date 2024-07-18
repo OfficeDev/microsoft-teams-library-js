@@ -34,13 +34,13 @@ extends:
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
-      image: windows-2022
+      image: 1es-windows-2022
       os: windows
     sdl:
-      codeql:
-        compiled:
-          enabled: false
-          justificationForDisabling: 'debugging a build failure'
+      # codeql:
+      #   compiled:
+      #     enabled: false
+      #     justificationForDisabling: 'debugging a build failure'
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
