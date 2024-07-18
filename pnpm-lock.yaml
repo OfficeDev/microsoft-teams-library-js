@@ -346,6 +346,9 @@ importers:
       axios:
         specifier: ^1.6.0
         version: 1.7.2
+      idb:
+        specifier: ^8.0.0
+        version: 8.0.0
       jspdf:
         specifier: ^2.5.1
         version: 2.5.1
@@ -5671,6 +5674,9 @@ packages:
 
   idb@7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
+
+  idb@8.0.0:
+    resolution: {integrity: sha512-l//qvlAKGmQO31Qn7xdzagVPPaHTxXx199MhrAFuVBTPqydcPYBWjkrbv4Y0ktB+GmWOiwHl237UUOrLmQxLvw==}
 
   identity-obj-proxy@3.0.0:
     resolution: {integrity: sha512-00n6YnVHKrinT9t0d9+5yZC6UBNJANpYEQvL2LlX6Ab9lnmxzIRcEmTPuyGScvl1+jKuCICX1Z0Ab1pPKKdikA==}
@@ -18043,6 +18049,8 @@ snapshots:
       postcss: 8.4.38
 
   idb@7.1.1: {}
+
+  idb@8.0.0: {}
 
   identity-obj-proxy@3.0.0:
     dependencies:
