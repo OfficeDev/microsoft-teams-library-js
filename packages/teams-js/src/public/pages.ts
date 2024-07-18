@@ -395,6 +395,12 @@ export namespace pages {
      * For apps installed as a channel tab, this ID can be supplied to indicate in which Teams channel the app should be opened
      */
     channelId?: string;
+
+    /**
+   * Optional ID of the chat or meeting where the app should be opened
+
+   */
+    chatId?: string;
   }
 
   /**

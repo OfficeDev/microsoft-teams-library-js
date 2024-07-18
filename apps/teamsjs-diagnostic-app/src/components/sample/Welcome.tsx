@@ -8,10 +8,10 @@ import {
   TabValue,
 } from "@fluentui/react-components";
 import "./Welcome.css";
-import { Scenario1 } from "./Scenario1";
+import Scenarios from "./Scenarios";
 import { useData } from "@microsoft/teamsfx-react";
 import { TeamsJs } from "./TeamsJs";
-import { WebHub } from "./WebHub";
+import { WebHost } from "./WebHost";
 import { TeamsFxContext } from "../Context";
 import { app } from "@microsoft/teams-js";
 
@@ -39,8 +39,8 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
       return userInfo;
     }
   });
-  const userName = loading || error ? "" : data!.displayName;
-  const hubName = useData(async () => {
+  const userName = loading || error || !data ? "" : data.displayName;
+  const hostName = useData(async () => {
     await app.initialize();
     const context = await app.getContext();
     return context.app.host.name;
@@ -50,7 +50,7 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
       <div className="narrow page-padding">
         <Image src="hello.png" />
         <h1 className="center">Congratulations{userName ? ", " + userName : ""}!</h1>
-        {hubName && <p className="center">The diagnostic app is running in {hubName}</p>}
+        {hostName && <p className="center">The diagnostic app is running in {hostName}</p>}
         <p className="center">The diagnostic app is running in your {friendlyEnvironmentName}</p>
 
         <div className="tabList">
@@ -61,15 +61,14 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
             <Tab id="Azure" value="azure">
               TeamsJS Logging
             </Tab>
-            <Tab id="Web Hub" value="webHub">
-              Web Hub SDK Logging
+            <Tab id="Web Host" value="webHost">
+              Web Host SDK Logging
             </Tab>
           </TabList>
           <div>
             {selectedValue === "local" && (
               <div>
-                <Scenario1 showFunction={showFunction} />
-        
+                <Scenarios showFunction={showFunction} />
               </div>
             )}
             {selectedValue === "azure" && (
@@ -77,9 +76,9 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
                 <TeamsJs />
               </div>
             )}
-            {selectedValue === "webHub" && (
+            {selectedValue === "webHost" && (
               <div>
-                <WebHub />
+                <WebHost />
               </div>
             )}
           </div>

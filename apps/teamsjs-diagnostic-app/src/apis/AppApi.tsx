@@ -7,10 +7,6 @@ export const registerOnResume = async (): Promise<string> => {
   
       app.lifecycle.registerOnResumeHandler((context: ResumeContext): void => {
         console.log('Successfully called with context: ' + JSON.stringify(context));
-        // Get the route from the context
-        // const route = new URL(context.contentUrl);
-        // Navigate to the correct path based on URL
-        // navigate(route.pathname);
         app.notifySuccess();
       });
   
@@ -18,8 +14,9 @@ export const registerOnResume = async (): Promise<string> => {
   
       return app.Messages.Success;
     } catch (error: any) {
-      console.error(`Failed to register resume handler: ${error.toString()}`);
-      throw new Error(`Failed to register resume handler: ${error.toString()}`);
+        const registerError = new Error(`Failed to register resume handler: ${error.toString()}`);
+        console.error(registerError.message);
+        throw registerError;
     }
   };
   

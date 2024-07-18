@@ -1,9 +1,9 @@
-import "./TeamsJs.css";
+import "./WebHost.css";
 
-export function TeamsJs(props: { docsUrl?: string }) {
+export function WebHost(props: { docsUrl?: string }) {
   return (
-    <div className="teamsjs log">
-      <h2>TeamsJS Logging</h2>
+    <div className="web host sdk logging">
+      <h2>Web Host SDK Logging</h2>
       <p>
         Check back later!
       </p>
