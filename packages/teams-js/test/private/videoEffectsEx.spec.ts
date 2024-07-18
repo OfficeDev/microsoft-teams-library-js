@@ -81,6 +81,7 @@ describe('videoEffectsEx', () => {
         const message = utils.findMessageByFunc('video.registerForVideoFrame') as MessageRequest;
         expect(message).not.toBeNull();
         expect(message?.args?.[0]).toHaveProperty('audioInferenceModel');
+        expect(message?.args?.[0]).toHaveProperty('requiredCapabilities');
         expect(message?.args?.[0].format).toBe(videoEffects.VideoFrameFormat.NV12);
         expect(message?.args?.[0].requireCameraStream).toBe(false);
       });

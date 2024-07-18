@@ -322,6 +322,7 @@ class OneTextureMetadata {
     }
 
     const map: Map<string, Uint8Array> = new Map();
+    const textDecoder = new TextDecoder('utf-8');
 
     let offset = 0;
     const count = data[offset] + (data[++offset] << 8) + (data[++offset] << 16) + (data[++offset] << 24);
@@ -334,8 +335,7 @@ class OneTextureMetadata {
         return value == 0 && index > offset;
       });
 
-      const decoder = new TextDecoder('utf-8');
-      const attributeId = decoder.decode(data.slice(++offset, nullTerminatorStartIndex));
+      const attributeId = textDecoder.decode(data.slice(++offset, nullTerminatorStartIndex));
 
       // Read attribute value from metadata map
       const metadata = this.metadataMap.get(streamId);
@@ -531,3 +531,4 @@ export function createEffectParameterChangeCallback(
 }
 
 export { VideoEffectCallBack as DefaultVideoEffectCallBack };
+export { OneTextureMetadata };
