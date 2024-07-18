@@ -14,6 +14,7 @@
     "@azure/msal-browser": "^2.37.0",
     "@azure/msal-react": "^1.5.7",
     "@microsoft/microsoft-graph-client": "^3.0.5",
+    "scheduler": "0.23.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "@fluentui/react": "^8.75.1",
