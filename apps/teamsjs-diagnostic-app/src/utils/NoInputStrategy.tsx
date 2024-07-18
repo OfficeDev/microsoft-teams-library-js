@@ -1,8 +1,8 @@
-import { TransformerStrategy } from './TransformerStrategy';
+import { InputStrategy } from './InputStrategy';
 
-export class NoInputStrategy implements TransformerStrategy {
-    transform(output: any): any {
-        // No transformation needed for no input
-        return null;
+export class NoInputStrategy implements InputStrategy {
+    execute(input: any): any {
+      // No transformation needed
+      return input;
     }
-}
+  }

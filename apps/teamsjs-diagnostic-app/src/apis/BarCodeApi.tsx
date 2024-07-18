@@ -1,29 +1,74 @@
-import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
+import { app, barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { barCode } from '@microsoft/teams-js';
+import { useState } from 'react';
+import { useDrag } from 'react-dnd';
 
 export const barCode_checkBarCodeCapability = async () => {
-  return `BarCode ${barCode.isSupported() ? 'is' : 'is not'} supported`;
+  console.log('Executing barCode_checkBarCodeCapability...');
+  const result = `BarCode ${barCode.isSupported() ? 'is' : 'is not'} supported`;
+  console.log('barCode_checkBarCodeCapability result:', result);
+  return result;
 };
 
 export const barCode_scanBarCode = async (input?: string) => {
+  console.log('Executing barCode_scanBarCode with input:', input);
   if (!input) {
+    console.error('Error: BarCodeConfig is required');
     throw new Error('BarCodeConfig is required');
   }
-  const parsedInput = JSON.parse(input);
-  const scannedCode = await barCode.scanBarCode(parsedInput);
-  return JSON.stringify(scannedCode);
+
+  let parsedInput: barCode.BarCodeConfig;
+  try {
+    parsedInput = JSON.parse(input);
+    console.log('Parsed input for barCode_scanBarCode:', parsedInput);
+  } catch (error) {
+    console.error('Error parsing input for barCode_scanBarCode:', error);
+    throw error;
+  }
+
+  // Ensure parsedInput conforms to BarCodeConfig
+  if (!parsedInput || typeof parsedInput !== 'object') {
+    console.error('Error: Parsed input is not a valid BarCodeConfig');
+    throw new Error('Parsed input is not a valid BarCodeConfig');
+  }
+
+  try {
+    console.log('Calling barCode.scanBarCode with parsed input:', JSON.stringify(parsedInput, null, 2));
+    const scannedCode = await barCode.scanBarCode(parsedInput);
+    const result = JSON.stringify(scannedCode);
+    console.log('barCode_scanBarCode result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in barCode_scanBarCode:', error);
+    throw error;
+  }
 };
 
-export const barCode_hasBarCodePermission = async () => {
-  const result = await barCode.hasPermission();
-  return JSON.stringify(result);
+export const barCode_hasBarCodePermission = async (): Promise <string> => {
+  console.log('Executing barCode_hasBarCodePermission...');
+  try {
+    const result = await barCode.hasPermission();
+    const resultString = JSON.stringify(result);
+    console.log('barCode_hasBarCodePermission result:', resultString);
+    return resultString;
+  } catch (error) {
+    console.log('Inside catch');
+    console.log('Error in barCode_hasBarCodePermission:', error);
+    throw error;
+  }
 };
 
 export const barCode_requestBarCodePermission = async () => {
-  const result = await barCode.requestPermission();
-  return JSON.stringify(result);
+  console.log('Executing barCode_requestBarCodePermission...');
+  try {
+    const result = await barCode.requestPermission();
+    const resultString = JSON.stringify(result);
+    console.log('barCode_requestBarCodePermission result:', resultString);
+    return resultString;
+  } catch (error) {
+    console.error('Error in barCode_requestBarCodePermission:', error);
+    throw error;
+  }
 };
 
 interface BarCodeAPIsProps {

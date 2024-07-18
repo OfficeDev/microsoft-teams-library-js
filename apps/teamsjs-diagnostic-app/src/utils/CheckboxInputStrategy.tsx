@@ -1,8 +1,7 @@
-import { TransformerStrategy } from './TransformerStrategy';
-
-export class CheckboxInputStrategy implements TransformerStrategy {
-    transform(output: any): any {
-        // Transform output to boolean for checkbox input
-        return Boolean(output);
+import { InputStrategy } from "./InputStrategy";
+export class CheckboxInputStrategy implements InputStrategy {
+    execute(input: any): any {
+      // Transform the input to a boolean format
+      return input ? true : false;
     }
-}
+  }

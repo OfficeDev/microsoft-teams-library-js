@@ -9,10 +9,10 @@ import CallAPIs from '../../apis/CallApi';
 import ChatAPIs from '../../apis/ChatApi';
 import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
-import { TransformerContext } from '../../utils/TransformerContext';
-import { NoInputStrategy } from '../../utils/NoInputStrategy';
-import { TextInputStrategy } from '../../utils/TextInputStrategy';
-import { CheckboxInputStrategy } from '../../utils/CheckboxInputStrategy';
+import { TransformerFactory } from '../../utils/TransformerFactory';
+import { app } from '@microsoft/teams-js';
+
+app.initialize();
 
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -81,53 +81,34 @@ const CustomScenario: React.FC = () => {
 
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
-  
-    const transformerContext = new TransformerContext(new NoInputStrategy());
-  
+
     try {
       let previousOutput: any = null;
-  
+
       for (let i = 0; i < customScenario.length; i++) {
         const { api, func, inputType, input } = customScenario[i];
-  
+
         console.log(`Executing ${func} of ${api.title}...`);
-  
-        // Handle input transformation from previous API output
+
         if (previousOutput !== null) {
-          console.log(`Output from previous API ${customScenario[i - 1].func}:`, previousOutput);
-  
-          switch (inputType) {
-            case 'text':
-              transformerContext.setStrategy(new TextInputStrategy());
-              break;
-            case 'checkbox':
-              transformerContext.setStrategy(new CheckboxInputStrategy());
-              break;
-            default:
-              transformerContext.setStrategy(new NoInputStrategy());
-              break;
-          }
-  
-          const transformedInput = transformerContext.executeStrategy(previousOutput);
+          const transformer = TransformerFactory.createStrategy(inputType);
+          const transformedInput = transformer.execute(previousOutput);
           console.log(`Transformed input for ${func}:`, transformedInput);
-  
-          // Update input for the current API
+
           customScenario[i].input = transformedInput;
         }
-  
-        // Execute the current API
+
         const result = await handleRunScenario(api, func, input);
         console.log(`Result of ${func}:`, result);
-  
-        // Save the output for the next API call
+
         previousOutput = result;
       }
-  
+
       console.log('Custom scenario execution completed.');
     } catch (error: any) {
       console.error(`Error during scenario execution:`, error.message);
     }
-  };  
+  };
 
   return (
     <div className="scenario-container">

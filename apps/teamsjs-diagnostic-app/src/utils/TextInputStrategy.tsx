@@ -1,8 +1,7 @@
-import { TransformerStrategy } from './TransformerStrategy';
-
-export class TextInputStrategy implements TransformerStrategy {
-    transform(output: any): any {
-        // Transform output to text input
-        return `${output}`;
+import { InputStrategy } from "./InputStrategy";
+export class TextInputStrategy implements InputStrategy {
+    execute(input: any): any {
+      // Transform the input to text format
+      return input.toString();
     }
-}
+  }
