@@ -3,14 +3,32 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 
-export const appInstallDialog_CheckAppInstallCapability = async () => {
-  return `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`;
+export const appInstallDialog_CheckAppInstallCapability = async (): Promise<string> => {
+  try {
+    console.log('Executing appInstallDialog_CheckAppInstallCapability...');
+    const result = `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`;
+    console.log('appInstallDialog_CheckAppInstallCapability result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in appInstallDialog_CheckAppInstallCapability:', error);
+    throw error;
+  }
 };
 
-export const appInstallDialog_OpenAppInstallDialog = async (input?: string) => {
-  const parsedInput = input ? JSON.parse(input) : {};
-  await appInstallDialog.openAppInstallDialog(parsedInput);
-  return 'OpenAppInstallDialog called';
+export const appInstallDialog_OpenAppInstallDialog = async (input?: string): Promise<string> => {
+  try {
+    console.log('Executing appInstallDialog_OpenAppInstallDialog with input:', input);
+    const parsedInput = input ? JSON.parse(input) : {};
+    console.log('Parsed input for appInstallDialog_OpenAppInstallDialog:', parsedInput);
+    
+    await appInstallDialog.openAppInstallDialog(parsedInput);
+    const result = 'OpenAppInstallDialog called';
+    console.log('appInstallDialog_OpenAppInstallDialog result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in appInstallDialog_OpenAppInstallDialog:', error);
+    throw error;
+  }
 };
 
 interface AppInstallDialogAPIsProps {
@@ -36,7 +54,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
