@@ -34,6 +34,13 @@ steps:
   #   displayName: "Select CommandLineTools"
 
   - checkout: self
+
+  - script: |
+      ls /Users/runner/work/_temp/
+      rm -rf /Users/runner/work/_temp/codeql3000
+      ls /Users/runner/work/_temp/
+    displayName: "checkout 2 path recycle"
+
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
     persistCredentials: true
