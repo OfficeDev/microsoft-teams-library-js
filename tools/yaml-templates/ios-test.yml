@@ -7,7 +7,7 @@ parameters:
     type: string
 
 steps:
-  - bash:
+  - script: |
       ls /Users/runner/work/_temp/codeql3000
       rm -rf /Users/runner/work/_temp/codeql3000
       ls /Users/runner/work/_temp/codeql3000
