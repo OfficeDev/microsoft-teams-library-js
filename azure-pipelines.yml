@@ -144,7 +144,7 @@ extends:
                 parameters:
                   appHostGitPath: AppHostingSdk
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
+              - bash: 'node tools/cli/runAppsWithE2ETests.js'
                 displayName: 'Run E2E integration tests'
                 condition: succeeded()
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -182,7 +182,7 @@ extends:
                     pnpm build-test-app-local
                   workingDirectory: '$(ClientSdkProjectDirectory)'
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
+              - bash: 'node tools/cli/runAppsWithE2ETests.js --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
                 displayName: 'Run E2E integration tests with local script tag'
                 condition: succeeded()
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'
