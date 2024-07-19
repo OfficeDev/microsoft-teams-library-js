@@ -78,7 +78,7 @@ steps:
 
       if [ -d "/Users/runner/work/_temp/codeql3000/d/working" ]; then
         echo "Removing /Users/runner/work/_temp/codeql3000/d/working"
-        rm -rf /Users/runner/work/_temp/codeql3000/d/working
+        sudo rm -rf /Users/runner/work/_temp/codeql3000/d/working
         sleep 5
       else
         echo "/Users/runner/work/_temp/codeql3000/d/working does not exist, skipping removal"
