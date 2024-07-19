@@ -45,7 +45,9 @@ steps:
   #     sudo xcode-select -s /Library/Developer/CommandLineTools
   #   displayName: "Select CommandLineTools"
 
-  - checkout: self
+  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
+    path: iOSHost
+    persistCredentials: true
 
   - bash: |
       echo "Initial listing of /Users/runner/work/_temp/"
@@ -95,9 +97,7 @@ steps:
       Contents: '/Users/runner/work/_temp/codeql3000/d' # string. Required. Contents. Default: myFileShare.
       RemoveSourceFolder: true # boolean. Remove SourceFolder. Default: false.
 
-  - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
-    path: iOSHost
-    persistCredentials: true
+  - checkout: self
 
   # - task: Bash@3
   #   displayName: 'Install XCTestHtmlReport for publishing result'
