@@ -3,45 +3,58 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
 
-export const chat_CheckChatCapability = async () => {
+export const chat_CheckChatCapability = async (): Promise<void> => {
   console.log('Executing CheckChatCapability...');
-  return `Chat module ${chat.isSupported() ? 'is' : 'is not'} supported`;
+  const isSupported = chat.isSupported();
+  console.log(`Chat module ${isSupported ? 'is' : 'is not'} supported`);
 };
 
-export const chat_OpenChat = async (input?: string) => {
+export const chat_OpenChat = async (input?: string): Promise<void> => {
   console.log('Executing OpenChat with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
-  await chat.openChat(parsedInput);
-  return 'OpenChat called';
+  
+  try {
+    await chat.openChat(parsedInput);
+    console.log('OpenChat successful');
+  } catch (error) {
+    console.error('Error executing OpenChat:', error);
+  }
 };
 
-export const chat_OpenGroupChat = async (input?: string) => {
+export const chat_OpenGroupChat = async (input?: string): Promise<void> => {
   console.log('Executing OpenGroupChat with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
-  await chat.openGroupChat(parsedInput);
-  return 'OpenGroupChat called';
+  
+  try {
+    await chat.openGroupChat(parsedInput);
+    console.log('OpenGroupChat successful');
+  } catch (error) {
+    console.error('Error executing OpenGroupChat:', error);
+  }
 };
 
-export const chat_OpenConversation = async (input?: string) => {
+export const chat_OpenConversation = async (input?: string): Promise<void> => {
   console.log('Executing OpenConversation with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
-  await conversations.openConversation(parsedInput);
-  return 'OpenConversation called';
+  
+  try {
+    await conversations.openConversation(parsedInput);
+    console.log('OpenConversation successful');
+  } catch (error) {
+    console.error('Error executing OpenConversation:', error);
+  }
 };
 
-export const chat_CloseConversation = async () => {
+export const chat_CloseConversation = async (): Promise<void> => {
   console.log('Executing CloseConversation...');
-  conversations.closeConversation();
-  return 'Conversation Closed!';
+  
+  try {
+    conversations.closeConversation();
+    console.log('CloseConversation successful');
+  } catch (error) {
+    console.error('Error executing CloseConversation:', error);
+  }
 };
-
-/*
-export const chat_GetChatMembers = async (input: string | undefined) => {
-  console.log('Executing GetChatMembers...');
-  const result = await conversations.getChatMembers();
-  return JSON.stringify(result);
-};*/
-
 interface ChatAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;

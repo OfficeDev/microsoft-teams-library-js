@@ -3,16 +3,27 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
 
-export const call_CheckCallCapability = async () => {
+export const call_CheckCallCapability = async (): Promise<void> => {
   console.log('Executing CheckCallCapability...');
-  return `Call module ${call.isSupported() ? 'is' : 'is not'} supported`;
+  const isSupported = call.isSupported();
+  console.log(`Call module ${isSupported ? 'is' : 'is not'} supported`);
 };
 
-export const call_StartCall = async (input?: string) => {
+export const call_StartCall = async (input?: string): Promise<void> => {
   console.log('Executing StartCall with input:', input);
   const parsedInput = input ? JSON.parse(input) : {};
-  const result = await call.startCall(parsedInput);
-  return `StartCall result: ${result}`;
+  
+  if (!parsedInput.targets || !Array.isArray(parsedInput.targets)) {
+    console.error('Invalid input: "targets" is required and should be an array.');
+    return;
+  }
+
+  try {
+    const result = await call.startCall(parsedInput);
+    console.log(`StartCall was successful! Result: ${result}`);
+  } catch (error) {
+    console.error('Error executing StartCall:', error);
+  }
 };
 
 interface CallAPIsProps {

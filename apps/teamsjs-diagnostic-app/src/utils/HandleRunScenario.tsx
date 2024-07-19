@@ -1,13 +1,33 @@
-import { appInstallDialog_CheckAppInstallCapability, appInstallDialog_OpenAppInstallDialog } from '../apis/AppInstallDialogApi';
-import { barCode_checkBarCodeCapability, barCode_hasBarCodePermission, barCode_requestBarCodePermission, barCode_scanBarCode } from '../apis/BarCodeApi';
-import { calendar_CheckCalendarCapability, calendar_OpenCalendarItem } from '../apis/CalendarApi';
-import { call_CheckCallCapability, call_StartCall } from '../apis/CallApi';
-import { chat_CheckChatCapability, chat_CloseConversation, chat_OpenChat, chat_OpenConversation, chat_OpenGroupChat } from '../apis/ChatApi';
+import {
+  appInstallDialog_CheckAppInstallCapability,
+  appInstallDialog_OpenAppInstallDialog
+} from '../apis/AppInstallDialogApi';
+import {
+  barCode_HasBarCodePermission,
+  barCode_RequestBarCodePermission,
+  barCode_ScanBarCode,
+} from '../apis/BarCodeApi';
+import {
+  calendar_CheckCalendarCapability,
+  calendar_ComposeMeeting,
+  calendar_OpenCalendarItem
+} from '../apis/CalendarApi';
+import {
+  call_CheckCallCapability,
+  call_StartCall
+} from '../apis/CallApi';
+import {
+  chat_CheckChatCapability,
+  chat_CloseConversation,
+  chat_OpenChat,
+  chat_OpenConversation,
+  chat_OpenGroupChat
+} from '../apis/ChatApi';
 import { dialog_CheckDialogCapability } from '../apis/DialogApi';
 import { ApiComponent } from '../components/sample/ApiComponents';
 
-
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
+  try {
     if (api.name === 'appInstallDialog') {
       switch (func) {
         case 'CheckAppInstallCapability':
@@ -19,14 +39,12 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
       }
     } else if (api.name === 'barCode') {
       switch (func) {
-        case 'checkBarCodeCapability':
-          return await barCode_checkBarCodeCapability();
         case 'scanBarCode':
-          return await barCode_scanBarCode(input);
+          return await barCode_ScanBarCode(input);
         case 'hasBarCodePermission':
-          return await barCode_hasBarCodePermission();
+          return await barCode_HasBarCodePermission();
         case 'requestBarCodePermission':
-          return await barCode_requestBarCodePermission();
+          return await barCode_RequestBarCodePermission();
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
@@ -34,7 +52,9 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
       switch (func) {
         case 'CheckCalendarCapability':
           return await calendar_CheckCalendarCapability();
-        case 'OpenCalendar':
+        case 'ComposeMeeting':
+          return await calendar_ComposeMeeting(input);
+        case 'OpenCalendarItem':
           return await calendar_OpenCalendarItem(input);
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
@@ -60,8 +80,6 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
           return await chat_OpenConversation(input);
         case 'CloseConversation':
           return await chat_CloseConversation();
-        //case 'GetChatMembers':
-          //return await chat_GetChatMembers(input);
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
@@ -75,5 +93,13 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
     } else {
       throw new Error(`Unknown API component ${api.title}`);
     }
-  };
-  
+  } catch (error) {
+    if (error instanceof Error) {
+      // Handle the error appropriately
+      console.log(error.message || 'An error occurred while executing the API function.');
+    } else {
+      // Handle unexpected error types
+      console.log('An unknown error occurred.');
+    }
+  }
+};

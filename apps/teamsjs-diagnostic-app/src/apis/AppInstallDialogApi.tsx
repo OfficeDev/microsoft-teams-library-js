@@ -5,19 +5,40 @@ import { appInstallDialog } from '@microsoft/teams-js';
 
 export const appInstallDialog_CheckAppInstallCapability = async () => {
   console.log('Executing CheckAppInstallCapability...');
-  return `AppInstallDialog module ${appInstallDialog.isSupported() ? 'is' : 'is not'} supported`;
+  try {
+    const isSupported = appInstallDialog.isSupported();
+    console.log(`AppInstallDialog module ${isSupported ? 'is' : 'is not'} supported`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
+    } else {
+      console.log(`Unknown error occurred`);
+    }
+  }
 };
 
 export const appInstallDialog_OpenAppInstallDialog = async (input?: string) => {
   console.log('Executing OpenAppInstallDialog with input:', input);
-  const parsedInput = input ? JSON.parse(input) : {};
-  await appInstallDialog.openAppInstallDialog(parsedInput);
-  return 'OpenAppInstallDialog called';
+  try {
+    const parsedInput = input ? JSON.parse(input) : {};
+    if (!parsedInput.appId) {
+      throw new Error('appId is required');
+    }
+    console.log('Parsed input:', parsedInput);
+    await appInstallDialog.openAppInstallDialog(parsedInput);
+    console.log('OpenAppInstallDialog called successfully');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(`Error: ${error.message}`);
+    } else {
+      console.log(`Unknown error occurred`);
+    }
+  }
 };
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, result: string) => void;
 }
 
 const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
@@ -38,7 +59,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
@@ -49,6 +70,28 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
       isDragging: monitor.isDragging(),
     }),
   }), [selectedFunction, inputValue]);
+
+  const handleDrop = async () => {
+    let result;
+    try {
+      if (selectedFunction === 'CheckAppInstallCapability') {
+        await appInstallDialog_CheckAppInstallCapability();
+        result = 'CheckAppInstallCapability executed successfully';
+      } else if (selectedFunction === 'OpenAppInstallDialog') {
+        await appInstallDialog_OpenAppInstallDialog(inputValue);
+        result = 'OpenAppInstallDialog executed successfully';
+      } else {
+        result = 'Function not implemented';
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        result = `Error: ${error.message}`;
+      } else {
+        result = 'Unknown error occurred';
+      }
+    }
+    onDropToScenarioBox(apiComponent, selectedFunction, result);
+  };
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

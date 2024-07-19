@@ -13,15 +13,21 @@ import { handleRunScenario } from './../../utils/HandleRunScenario';
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
+  const [scenarioStatus, setScenarioStatus] = useState<string>('');
 
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
+    setScenarioStatus('Running...');
+
     for (const { api, func, input } of customScenario) {
       try {
         const result = await handleRunScenario(api, func, input);
         console.log(`Success: ${func} - ${result}`);
+        setScenarioStatus('Success');
       } catch (error: any) {
         console.error(`Error: ${func} - ${error.message}`);
+        setScenarioStatus(`Failed: ${func} - ${error.message}`);
+        break; // Stop further execution if any API fails
       }
     }
   };
@@ -41,6 +47,7 @@ const CustomScenario: React.FC = () => {
 
   const clearScenario = () => {
     setCustomScenario([]);
+    setScenarioStatus('');
   };
 
   const [{ isOver }, drop] = useDrop(() => ({
