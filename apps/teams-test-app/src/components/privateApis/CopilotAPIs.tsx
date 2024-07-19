@@ -9,7 +9,7 @@ const CopilotAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'CheckIfUserOfTheM365ChatAppHasLicense',
       title: 'Check if logged in user has M365Chat license',
-      onClick: async () => `User ${copilot.license.isSupported() ? 'does' : 'does not'} have license`,
+      onClick: async () => `User ${copilot.license.isSupported() ? 'does' : 'does not'} have license for the M365 Chat app`,
     });
 
   return (

@@ -1,0 +1,13 @@
+{
+  "name": "copilot",
+  "platforms": "*",
+  "version": ">=2.22.0",
+  "testCases": [
+    {
+      "title": "copilot hasM365Chat license API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_CheckIfUserOfTheM365ChatAppHasLicense",
+      "expectedTestAppValue": "User does have a license for the M365 Chat app"
+    }
+  ]
+}
