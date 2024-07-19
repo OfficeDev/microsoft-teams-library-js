@@ -7,23 +7,23 @@ parameters:
     type: string
 
 steps:
-  - bash: |
-      echo "Initial listing of /Users/runner/work/_temp/"
-      ls /Users/runner/work/_temp/
-      sleep 5
+  # - bash: |
+  #     echo "Initial listing of /Users/runner/work/_temp/"
+  #     ls /Users/runner/work/_temp/
+  #     sleep 5
 
-      if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
-        echo "Removing /Users/runner/work/_temp/codeql3000"
-        rm -rf /Users/runner/work/_temp/codeql3000
-        sleep 5
-      else
-        echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
-      fi
+  #     if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
+  #       echo "Removing /Users/runner/work/_temp/codeql3000"
+  #       rm -rf /Users/runner/work/_temp/codeql3000
+  #       sleep 5
+  #     else
+  #       echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
+  #     fi
 
-      echo "Final listing of /Users/runner/work/_temp/"
-      ls /Users/runner/work/_temp/
-      sleep 5
-    displayName: "checkout 1 path recycle"
+  #     echo "Final listing of /Users/runner/work/_temp/"
+  #     ls /Users/runner/work/_temp/
+  #     sleep 5
+  #   displayName: "checkout 1 path recycle"
 
   # - bash:
   #     sudo rm -rf /Library/Developer/CommandLineTools
@@ -49,55 +49,55 @@ steps:
     path: iOSHost
     persistCredentials: true
 
-  - bash: |
-      echo "Initial listing of /Users/runner/work/_temp/"
-      ls /Users/runner/work/_temp/codeql3000/d
-      sleep 5
+  # - bash: |
+  #     echo "Initial listing of /Users/runner/work/_temp/"
+  #     ls /Users/runner/work/_temp/codeql3000/d
+  #     sleep 5
       
-      echo "file data: "
-      ls -la /Users/runner/work/_temp/codeql3000/d
+  #     echo "file data: "
+  #     ls -la /Users/runner/work/_temp/codeql3000/d
 
-      echo "file data inside working: "
-      ls -la /Users/runner/work/_temp/codeql3000/d/working
+  #     echo "file data inside working: "
+  #     ls -la /Users/runner/work/_temp/codeql3000/d/working
 
-      if [ -d "/Users/runner/work/_temp/codeql3000/d" ]; then
-        echo "Removing /Users/runner/work/_temp/codeql3000/d"
-        rm -rf /Users/runner/work/_temp/codeql3000/d
-        sleep 5
-      else
-        echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
-      fi
+  #     if [ -d "/Users/runner/work/_temp/codeql3000/d" ]; then
+  #       echo "Removing /Users/runner/work/_temp/codeql3000/d"
+  #       rm -rf /Users/runner/work/_temp/codeql3000/d
+  #       sleep 5
+  #     else
+  #       echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
+  #     fi
 
-      echo "Final listing of /Users/runner/work/_temp/codeql3000/d"
-      ls /Users/runner/work/_temp/codeql3000/d
-      sleep 5
-    displayName: "checkout 2 path recycle"
+  #     echo "Final listing of /Users/runner/work/_temp/codeql3000/d"
+  #     ls /Users/runner/work/_temp/codeql3000/d
+  #     sleep 5
+  #   displayName: "checkout 2 path recycle"
   
-  - bash: |
-      echo "Initial listing of /Users/runner/work/_temp/d/working"
-      ls /Users/runner/work/_temp/codeql3000/d/working
-      sleep 5
+  # - bash: |
+  #     echo "Initial listing of /Users/runner/work/_temp/d/working"
+  #     ls /Users/runner/work/_temp/codeql3000/d/working
+  #     sleep 5
 
-      if [ -d "/Users/runner/work/_temp/codeql3000/d/working" ]; then
-        echo "Removing /Users/runner/work/_temp/codeql3000/d/working"
-        sudo rm -rf /Users/runner/work/_temp/codeql3000/d/working
-        sleep 5
-      else
-        echo "/Users/runner/work/_temp/codeql3000/d/working does not exist, skipping removal"
-      fi
+  #     if [ -d "/Users/runner/work/_temp/codeql3000/d/working" ]; then
+  #       echo "Removing /Users/runner/work/_temp/codeql3000/d/working"
+  #       sudo rm -rf /Users/runner/work/_temp/codeql3000/d/working
+  #       sleep 5
+  #     else
+  #       echo "/Users/runner/work/_temp/codeql3000/d/working does not exist, skipping removal"
+  #     fi
 
-      echo "Final listing of /Users/runner/work/_temp/codeql3000/d/working"
-      ls /Users/runner/work/_temp/codeql3000/d/working
-      sleep 5
-    displayName: "checkout 3 path recycle"
+  #     echo "Final listing of /Users/runner/work/_temp/codeql3000/d/working"
+  #     ls /Users/runner/work/_temp/codeql3000/d/working
+  #     sleep 5
+  #   displayName: "checkout 3 path recycle"
 
-  - task: DeleteFiles@1
-    inputs:
-      #SourceFolder: # string. Source Folder. 
-      Contents: '/Users/runner/work/_temp/codeql3000/d' # string. Required. Contents. Default: myFileShare.
-      RemoveSourceFolder: true # boolean. Remove SourceFolder. Default: false.
+  # - task: DeleteFiles@1
+  #   inputs:
+  #     #SourceFolder: # string. Source Folder. 
+  #     Contents: '/Users/runner/work/_temp/codeql3000/d' # string. Required. Contents. Default: myFileShare.
+  #     RemoveSourceFolder: true # boolean. Remove SourceFolder. Default: false.
 
-  - checkout: self
+  # - checkout: self
 
   # - task: Bash@3
   #   displayName: 'Install XCTestHtmlReport for publishing result'
@@ -158,21 +158,21 @@ steps:
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
   
 
-  - bash:
-      wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
-    displayName: "Download yeetd"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  # - bash:
+  #     wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+  #   displayName: "Download yeetd"
+  #   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - bash:
-      sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
-    displayName: "Install yeetd"
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+  # - bash:
+  #     sudo installer -pkg yeetd-normal.pkg -target / && yeetd &
+  #   displayName: "Install yeetd"
+  #   workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - script: |
-      # Shut down and clean up all simulators
-      xcrun simctl shutdown all
-      xcrun simctl erase all
-    displayName: 'Reset Simulators'
+  # - script: |
+  #     # Shut down and clean up all simulators
+  #     xcrun simctl shutdown all
+  #     xcrun simctl erase all
+  #   displayName: 'Reset Simulators'
 
   
   - script: |
@@ -233,22 +233,22 @@ steps:
   #         build
   #     workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - task: Bash@3
-    displayName: 'iPhone-14 Bootup'
-    inputs:
-      targetType: inline
-      script: |
-        npm install ios-sim -g
-        ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.5"
+  # - task: Bash@3
+  #   displayName: 'iPhone-14 Bootup'
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       npm install ios-sim -g
+  #       ios-sim start --devicetypeid "com.apple.CoreSimulator.SimDeviceType.iPhone-15, 17.5"
   
-  - task: Bash@3
-    displayName: 'Clean Up Xcode Directories'
-    inputs:
-      targetType: inline
-      script: |
-        rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport
-        rm -rf ~/Library/Developer/Xcode/iOS\ Device\ Logs
-        rm -rf ~/Library/Developer/Xcode/DerivedData
+  # - task: Bash@3
+  #   displayName: 'Clean Up Xcode Directories'
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport
+  #       rm -rf ~/Library/Developer/Xcode/iOS\ Device\ Logs
+  #       rm -rf ~/Library/Developer/Xcode/DerivedData
 
   - task: Bash@3
     displayName: 'Disable Slow Animation'
