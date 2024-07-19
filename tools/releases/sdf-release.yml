@@ -7,7 +7,7 @@ resources:
       ref: refs/heads/main
   pipelines:
     - pipeline: microsoft-teams-library-js-pipeline
-      source: 'M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
+      source: 'microsoft-teams-library-js/M365 Platform/App SDK/OfficeDev.microsoft-teams-library-js'
       project: ISS
 variables:
   - name: System.Debug
