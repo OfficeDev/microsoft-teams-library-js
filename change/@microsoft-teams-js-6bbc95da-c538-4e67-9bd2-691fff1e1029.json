@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated `clipboard.isSupported` so that it does not depend on `navigator.clipboard` in frameless contexts.",
-  "packageName": "@microsoft/teams-js",
-  "email": "jeklouda@microsoft.com",
-  "dependentChangeType": "patch"
-}
