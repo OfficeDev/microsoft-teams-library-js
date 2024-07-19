@@ -34,7 +34,7 @@ extends:
   parameters:
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
-      image: 1es-windows-2022
+      image: windows-2022
       os: windows
     sdl:
       # codeql:
