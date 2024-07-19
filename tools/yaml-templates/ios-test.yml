@@ -35,11 +35,16 @@ steps:
 
   - checkout: self
 
-  - script: |
+  - bash: |
+      sleep 5
       ls /Users/runner/work/_temp/
+      sleep 5
       rm -rf /Users/runner/work/_temp/codeql3000
+      sleep 5
       ls /Users/runner/work/_temp/
+      sleep 5
     displayName: "checkout 2 path recycle"
+    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
