@@ -51,6 +51,12 @@ steps:
       echo "Initial listing of /Users/runner/work/_temp/"
       ls /Users/runner/work/_temp/codeql3000/d
       sleep 5
+      
+      echo "file data: "
+      ls -la /Users/runner/work/_temp/codeql3000/d
+
+      echo "file data inside working: "
+      ls -la /Users/runner/work/_temp/codeql3000/d/working
 
       if [ -d "/Users/runner/work/_temp/codeql3000/d" ]; then
         echo "Removing /Users/runner/work/_temp/codeql3000/d"
