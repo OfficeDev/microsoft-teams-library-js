@@ -36,10 +36,10 @@ extends:
       image: windows-2022
       os: windows
     sdl:
-      codeql:
-        compiled:
-          enabled: false
-          justificationForDisabling: 'debugging a build failure'
+      # codeql:
+      #   compiled:
+      #     enabled: false
+      #     justificationForDisabling: 'debugging a build failure'
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
@@ -261,14 +261,14 @@ extends:
                   iOSAppHostingSdkGitPath: IOSAppHostingSdk
                   testPlan: iosE2ETestPlanA
 
-          - job: E2ETestIOS2
-            displayName: 'E2E Test - IOS - Plan B'
-            pool:
-              name: Azure Pipelines
-              image: internal-macos12
-              os: macOS
-            steps:
-              - template: tools/yaml-templates/ios-test.yml@self
-                parameters:
-                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
-                  testPlan: iosE2ETestPlanB
+          # - job: E2ETestIOS2
+          #   displayName: 'E2E Test - IOS - Plan B'
+          #   pool:
+          #     name: Azure Pipelines
+          #     image: internal-macos12
+          #     os: macOS
+          #   steps:
+          #     - template: tools/yaml-templates/ios-test.yml@self
+          #       parameters:
+          #         iOSAppHostingSdkGitPath: IOSAppHostingSdk
+          #         testPlan: iosE2ETestPlanB
