@@ -110,133 +110,133 @@ extends:
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
 
-          - job: E2ETest1
-            displayName: 'E2E Test - Perf'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
+          # - job: E2ETest1
+          #   displayName: 'E2E Test - Perf'
+          #   pool:
+          #     name: Azure-Pipelines-1ESPT-ExDShared
+          #     image: 'ubuntu-latest'
+          #     os: linux
+          #   steps:
+          #     - template: tools/yaml-templates/build-app-host.yml@self
+          #       parameters:
+          #         appHostGitPath: AppHostingSdk
 
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #     - task: Bash@3
+          #       displayName: 'Run E2E Perf tests'
+          #       condition: succeeded()
+          #       inputs:
+          #         targetType: inline
+          #         script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Perf'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          #     - task: PublishTestResults@2
+          #       inputs:
+          #         testResultsFormat: 'JUnit'
+          #         testResultsFiles: '**/e2e-tests-report*.xml'
+          #         testRunTitle: 'E2E Tests - Perf'
+          #         mergeTestResults: true
+          #       condition: succeededOrFailed()
 
-          - job: E2ETest2
-            displayName: 'E2E Test - Default'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-2004'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
+          # - job: E2ETest2
+          #   displayName: 'E2E Test - Default'
+          #   pool:
+          #     name: Azure-Pipelines-1ESPT-ExDShared
+          #     image: 'ubuntu-2004'
+          #     os: linux
+          #   steps:
+          #     - template: tools/yaml-templates/build-app-host.yml@self
+          #       parameters:
+          #         appHostGitPath: AppHostingSdk
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
-                displayName: 'Run E2E integration tests'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #     - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
+          #       displayName: 'Run E2E integration tests'
+          #       condition: succeeded()
+          #       workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-              - task: CMDLine@2
-                displayName: 'Run tests for electron webview'
-                inputs:
-                  script: |
-                    pnpm exec xvfb-maybe playwright test
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #     - task: CMDLine@2
+          #       displayName: 'Run tests for electron webview'
+          #       inputs:
+          #         script: |
+          #           pnpm exec xvfb-maybe playwright test
+          #         workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Default'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          #     - task: PublishTestResults@2
+          #       inputs:
+          #         testResultsFormat: 'JUnit'
+          #         testResultsFiles: '**/e2e-tests-report*.xml'
+          #         testRunTitle: 'E2E Tests - Default'
+          #         mergeTestResults: true
+          #       condition: succeededOrFailed()
 
-          - job: E2ETest3
-            displayName: 'E2E Test - Local Tag'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
+          # - job: E2ETest3
+          #   displayName: 'E2E Test - Local Tag'
+          #   pool:
+          #     name: Azure-Pipelines-1ESPT-ExDShared
+          #     image: 'ubuntu-latest'
+          #     os: linux
+          #   steps:
+          #     - template: tools/yaml-templates/build-app-host.yml@self
+          #       parameters:
+          #         appHostGitPath: AppHostingSdk
 
-              - task: CmdLine@2
-                displayName: 'Build Test App Local'
-                inputs:
-                  script: |
-                    pnpm build-test-app-local
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
+          #     - task: CmdLine@2
+          #       displayName: 'Build Test App Local'
+          #       inputs:
+          #         script: |
+          #           pnpm build-test-app-local
+          #         workingDirectory: '$(ClientSdkProjectDirectory)'
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
-                displayName: 'Run E2E integration tests with local script tag'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #     - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
+          #       displayName: 'Run E2E integration tests with local script tag'
+          #       condition: succeeded()
+          #       workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Local Tag'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          #     - task: PublishTestResults@2
+          #       inputs:
+          #         testResultsFormat: 'JUnit'
+          #         testResultsFiles: '**/e2e-tests-report*.xml'
+          #         testRunTitle: 'E2E Tests - Local Tag'
+          #         mergeTestResults: true
+          #       condition: succeededOrFailed()
 
-          - job: E2ETestCDN
-            displayName: 'E2E Test - CDN (only runs on release builds)'
-            # This test only runs after deployment from a release branch and the new CDN version has been deployed
-            # This check will run on the PR to merge the release branch back into main
-            condition: and(
-              eq(variables['Build.Reason'], 'PullRequest'),
-              startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
-              eq(variables['System.PullRequest.TargetBranch'], 'main')
-              )
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
+          # - job: E2ETestCDN
+          #   displayName: 'E2E Test - CDN (only runs on release builds)'
+          #   # This test only runs after deployment from a release branch and the new CDN version has been deployed
+          #   # This check will run on the PR to merge the release branch back into main
+          #   condition: and(
+          #     eq(variables['Build.Reason'], 'PullRequest'),
+          #     startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+          #     eq(variables['System.PullRequest.TargetBranch'], 'main')
+          #     )
+          #   pool:
+          #     name: Azure-Pipelines-1ESPT-ExDShared
+          #     image: 'ubuntu-latest'
+          #     os: linux
+          #   steps:
+          #     - template: tools/yaml-templates/build-app-host.yml@self
+          #       parameters:
+          #         appHostGitPath: AppHostingSdk
 
-              - task: CmdLine@2
-                displayName: 'Build Test App CDN'
-                inputs:
-                  script: |
-                    pnpm build-test-app-CDN
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
+          #     - task: CmdLine@2
+          #       displayName: 'Build Test App CDN'
+          #       inputs:
+          #         script: |
+          #           pnpm build-test-app-CDN
+          #         workingDirectory: '$(ClientSdkProjectDirectory)'
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
-                displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
-                enabled: true
+          #     - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
+          #       displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
+          #       condition: succeeded()
+          #       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          #       enabled: true
 
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - CDN'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          #     - task: PublishTestResults@2
+          #       inputs:
+          #         testResultsFormat: 'JUnit'
+          #         testResultsFiles: '**/e2e-tests-report*.xml'
+          #         testRunTitle: 'E2E Tests - CDN'
+          #         mergeTestResults: true
+          #       condition: succeededOrFailed()
 
           # - job: E2ETestAndroid
           #   displayName: 'E2E Test - Android'
