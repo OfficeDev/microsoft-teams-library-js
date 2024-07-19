@@ -8,9 +8,9 @@ parameters:
 
 steps:
   - script: |
-      ls /Users/runner/work/_temp/codeql3000
+      ls /Users/runner/work/_temp/
       rm -rf /Users/runner/work/_temp/codeql3000
-      ls /Users/runner/work/_temp/codeql3000
+      ls /Users/runner/work/_temp/
     displayName: "Path"
 
   # - bash:
