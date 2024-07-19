@@ -64,6 +64,24 @@ steps:
       ls /Users/runner/work/_temp/codeql3000/d
       sleep 5
     displayName: "checkout 2 path recycle"
+  
+  - bash: |
+      echo "Initial listing of /Users/runner/work/_temp/d/working"
+      ls /Users/runner/work/_temp/codeql3000/d/working
+      sleep 5
+
+      if [ -d "/Users/runner/work/_temp/codeql3000/d/working" ]; then
+        echo "Removing /Users/runner/work/_temp/codeql3000/d/working"
+        rm -rf /Users/runner/work/_temp/codeql3000/d/working
+        sleep 5
+      else
+        echo "/Users/runner/work/_temp/codeql3000/d/working does not exist, skipping removal"
+      fi
+
+      echo "Final listing of /Users/runner/work/_temp/codeql3000/d/working"
+      ls /Users/runner/work/_temp/codeql3000/d/working
+      sleep 5
+    displayName: "checkout 3 path recycle"
 
   - task: DeleteFiles@1
     inputs:
