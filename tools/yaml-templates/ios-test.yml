@@ -8,11 +8,19 @@ parameters:
 
 steps:
   - bash: |
-      sleep 5
+      echo "Initial listing of /Users/runner/work/_temp/"
       ls /Users/runner/work/_temp/
       sleep 5
-      rm -rf /Users/runner/work/_temp/codeql3000
-      sleep 5
+
+      if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
+        echo "Removing /Users/runner/work/_temp/codeql3000"
+        rm -rf /Users/runner/work/_temp/codeql3000
+        sleep 5
+      else
+        echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
+      fi
+
+      echo "Final listing of /Users/runner/work/_temp/"
       ls /Users/runner/work/_temp/
       sleep 5
     displayName: "checkout 1 path recycle"
@@ -40,11 +48,19 @@ steps:
   - checkout: self
 
   - bash: |
-      sleep 5
+      echo "Initial listing of /Users/runner/work/_temp/"
       ls /Users/runner/work/_temp/
       sleep 5
-      rm -rf /Users/runner/work/_temp/codeql3000
-      sleep 5
+
+      if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
+        echo "Removing /Users/runner/work/_temp/codeql3000"
+        rm -rf /Users/runner/work/_temp/codeql3000
+        sleep 5
+      else
+        echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
+      fi
+
+      echo "Final listing of /Users/runner/work/_temp/"
       ls /Users/runner/work/_temp/
       sleep 5
     displayName: "checkout 2 path recycle"
