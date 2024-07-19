@@ -47,23 +47,29 @@ steps:
 
   - checkout: self
 
-  - bash: |
-      echo "Initial listing of /Users/runner/work/_temp/"
-      ls /Users/runner/work/_temp/
-      sleep 5
+  # - bash: |
+  #     echo "Initial listing of /Users/runner/work/_temp/"
+  #     ls /Users/runner/work/_temp/
+  #     sleep 5
 
-      if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
-        echo "Removing /Users/runner/work/_temp/codeql3000"
-        rm -rf /Users/runner/work/_temp/codeql3000
-        sleep 5
-      else
-        echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
-      fi
+  #     if [ -d "/Users/runner/work/_temp/codeql3000" ]; then
+  #       echo "Removing /Users/runner/work/_temp/codeql3000"
+  #       rm -rf /Users/runner/work/_temp/codeql3000
+  #       sleep 5
+  #     else
+  #       echo "/Users/runner/work/_temp/codeql3000 does not exist, skipping removal"
+  #     fi
 
-      echo "Final listing of /Users/runner/work/_temp/"
-      ls /Users/runner/work/_temp/
-      sleep 5
-    displayName: "checkout 2 path recycle"
+  #     echo "Final listing of /Users/runner/work/_temp/"
+  #     ls /Users/runner/work/_temp/
+  #     sleep 5
+  #   displayName: "checkout 2 path recycle"
+
+  - task: DeleteFiles@1
+    inputs:
+      #SourceFolder: # string. Source Folder. 
+      Contents: '/Users/runner/work/_temp/codeql3000' # string. Required. Contents. Default: myFileShare.
+      #RemoveSourceFolder: false # boolean. Remove SourceFolder. Default: false.
 
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
