@@ -31,6 +31,7 @@ const CustomScenario: React.FC = () => {
         console.error(`Failure: ${func} for ${api.title} - ${error.message}`);
         setScenarioStatus(`Failed: ${func} - ${error.message}`);
         isSuccess = false;
+        console.log('Custom scenario failed.');
         break; // Stop further execution if any API fails
       }
     }
@@ -38,8 +39,6 @@ const CustomScenario: React.FC = () => {
     if (isSuccess) {
       console.log('Custom scenario completed successfully.');
       setScenarioStatus('Success');
-    } else {
-      console.log('Custom scenario failed.');
     }
   };  
   

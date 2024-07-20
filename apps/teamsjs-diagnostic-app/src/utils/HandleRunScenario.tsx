@@ -1,6 +1,7 @@
 import {
   appInstallDialog_CheckAppInstallCapability,
-  appInstallDialog_OpenAppInstallDialog
+  appInstallDialog_OpenAppInstallDialog,
+  AppInstallDialogInput
 } from '../apis/AppInstallDialogApi';
 import {
   barCode_HasBarCodePermission,
@@ -35,7 +36,12 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
           result = await appInstallDialog_CheckAppInstallCapability();
           break;
         case 'OpenAppInstallDialog':
-          result = await appInstallDialog_OpenAppInstallDialog(input);
+          if (input) {
+            const parsedInput: AppInstallDialogInput = JSON.parse(input);
+            result = await appInstallDialog_OpenAppInstallDialog(parsedInput);
+          } else {
+            throw new Error('Input is required for OpenAppInstallDialog');
+          }
           break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
@@ -110,17 +116,14 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
     } else {
       throw new Error(`Unknown API component ${api.title}`);
     }
-
-    // Log the result if needed
     console.log(`Result for ${func} on ${api.title}:`, result);
     return result;
+
   } catch (error) {
     if (error instanceof Error) {
-      // Log the error message and rethrow it
       console.error(`Error occurred: ${error.message}`);
       throw error;
     } else {
-      // Log unexpected error types and rethrow
       console.error('An unknown error occurred.');
       throw new Error('An unknown error occurred.');
     }

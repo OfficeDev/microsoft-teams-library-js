@@ -3,36 +3,52 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 
+export interface AppInstallDialogInput {
+  appId: string;
+}
+
 export const appInstallDialog_CheckAppInstallCapability = async () => {
   console.log('Executing CheckAppInstallCapability...');
   try {
-    const isSupported = appInstallDialog.isSupported();
-    console.log(`AppInstallDialog module ${isSupported ? 'is' : 'is not'} supported`);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
+    const capabilityCheckResult = await appInstallDialog.isSupported();
+    if (capabilityCheckResult) {
+      console.log('App Install Dialog capability is supported.');
     } else {
-      console.log(`Unknown error occurred`);
+      console.log('App Install Dialog capability is not supported.');
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error checking App Install Dialog capability:', error.message);
     }
   }
 };
 
-export const appInstallDialog_OpenAppInstallDialog = async (input?: string) => {
+export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDialogInput): Promise<string> => {
   console.log('Executing OpenAppInstallDialog with input:', input);
   try {
-    const parsedInput = input ? JSON.parse(input) : {};
-    if (!parsedInput.appId) {
-      throw new Error('appId is required');
-    }
-    console.log('Parsed input:', parsedInput);
-    await appInstallDialog.openAppInstallDialog(parsedInput);
-    console.log('OpenAppInstallDialog called successfully');
-  } catch (error: unknown) {
+    const validateInput = (input: AppInstallDialogInput) => {
+      if (!input.appId) {
+        throw new Error('appId is required for OpenAppInstallDialog');
+      }
+      console.log('Input validation passed for appId:', input.appId);
+    };
+
+    validateInput(input);
+
+    const submit = async (input: AppInstallDialogInput): Promise<string> => {
+      console.log('Submitting OpenAppInstallDialog with appId:', input.appId);
+      const result = await appInstallDialog.openAppInstallDialog(input);
+      console.log('OpenAppInstallDialog called with result:', result);
+      return 'called';
+    };
+
+    return await submit(input);
+
+  } catch (error) {
     if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
+      console.error('Error in OpenAppInstallDialog:', error.message);
     }
+    return 'error';
   }
 };
 
@@ -71,27 +87,6 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     }),
   }), [selectedFunction, inputValue]);
 
-  const handleDrop = async () => {
-    let result;
-    try {
-      if (selectedFunction === 'CheckAppInstallCapability') {
-        await appInstallDialog_CheckAppInstallCapability();
-        result = 'CheckAppInstallCapability executed successfully';
-      } else if (selectedFunction === 'OpenAppInstallDialog') {
-        await appInstallDialog_OpenAppInstallDialog(inputValue);
-        result = 'OpenAppInstallDialog executed successfully';
-      } else {
-        result = 'Function not implemented';
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        result = `Error: ${error.message}`;
-      } else {
-        result = 'Unknown error occurred';
-      }
-    }
-    onDropToScenarioBox(apiComponent, selectedFunction, result);
-  };
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
