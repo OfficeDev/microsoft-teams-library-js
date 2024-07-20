@@ -47,7 +47,7 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
     return () => {
       console.log = originalConsoleLog;
     };
-  }, [maxLogs, captureConsoleLogs]); // Re-run effect if maxLogs prop changes
+  }, [maxLogs]); // Re-run effect if maxLogs prop changes
 
   useEffect(() => {
     if (searchTerm === '') {
