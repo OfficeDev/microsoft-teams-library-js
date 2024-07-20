@@ -156,10 +156,11 @@
   background-color: #f44336;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 3px 6px;
   cursor: pointer;
-  border-radius: 70%;
+  border-radius: 50%;
   margin-left: auto;
+  font-size: 12px;
 }
 
 .remove-api-button:hover {
@@ -168,4 +169,73 @@
 
 .scenario1-button:hover {
   background-color: #45a049;
+}
+
+.transformer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.transformer-label {
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.transformer-trigger {
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+}
+
+.transformer-dialog {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.transformer-dialog.active {
+  display: block;
+  width: 400px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.tab {
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+  margin-right: 5px;
+}
+
+.tab:hover {
+  background-color: #ccc;
+}
+
+.tab.active {
+  background-color: #bbb;
+}
+
+.tab-content {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: #f9f9f9;
+  min-height: 50px;
 }

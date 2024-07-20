@@ -9,6 +9,10 @@ import CallAPIs from '../../apis/CallApi';
 import ChatAPIs from '../../apis/ChatApi';
 import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
+import { TransformerFactory } from '../../utils/TransformerFactory';
+import { app } from '@microsoft/teams-js';
+
+app.initialize();
 
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -45,7 +49,7 @@ const CustomScenario: React.FC = () => {
   const addToScenario = (api: ApiComponent, func: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
     if (customScenario.length < 5) {
-      setCustomScenario([...customScenario, { api, func, input }]);
+      setCustomScenario([...customScenario, { api, func, inputType, input }]);
     } else {
       console.log('Maximum limit reached. Cannot add more APIs to the scenario.');
     }
@@ -62,12 +66,23 @@ const CustomScenario: React.FC = () => {
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'API',
-    drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
+    drop: (item: { api: ApiComponent, func: string, inputType: string, input?: string }) => addToScenario(item.api, item.func, item.inputType, item.input),
     canDrop: () => customScenario.length < 5,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
   }), [customScenario]);
+
+  const generateCustomScenario = () => {
+    return customScenario.map((item, index) => (
+      <React.Fragment key={index}>
+        <div className="dropped-api">
+          <span>{`${item.api.title}, ${item.func}${item.input ? `(${item.input})` : ''}`}</span>
+          <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
+        </div>
+      </React.Fragment>
+    ));
+  };
 
   const generateVerticalBoxes = () => {
     const filteredApis = apiComponents.filter(api =>
@@ -105,12 +120,7 @@ const CustomScenario: React.FC = () => {
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">
-              {customScenario.map((item, index) => (
-                <div key={index} className="dropped-api">
-                  <span>{`${item.api.title}, ${item.func}${item.input ? `(${item.input})` : ''}`}</span>
-                  <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
-                </div>
-              ))}
+              {generateCustomScenario()}
             </div>
           </div>
           <button className="clear-all-button" onClick={clearScenario}>Clear All</button>

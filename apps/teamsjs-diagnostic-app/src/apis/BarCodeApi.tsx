@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
+import { app, barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { barCode } from '@microsoft/teams-js';
+import { useState } from 'react';
+import { useDrag } from 'react-dnd';
 
 const validateScanBarCodeInput = (config: any): boolean => {
   if (typeof config !== 'object' || Array.isArray(config)) {

@@ -76,6 +76,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
   };
 
   const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
