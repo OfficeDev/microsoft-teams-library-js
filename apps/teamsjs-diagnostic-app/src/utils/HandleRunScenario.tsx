@@ -28,78 +28,101 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
+    let result;
     if (api.name === 'appInstallDialog') {
       switch (func) {
         case 'CheckAppInstallCapability':
-          return await appInstallDialog_CheckAppInstallCapability();
+          result = await appInstallDialog_CheckAppInstallCapability();
+          break;
         case 'OpenAppInstallDialog':
-          return await appInstallDialog_OpenAppInstallDialog(input);
+          result = await appInstallDialog_OpenAppInstallDialog(input);
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else if (api.name === 'barCode') {
       switch (func) {
         case 'scanBarCode':
-          return await barCode_ScanBarCode(input);
+          result = await barCode_ScanBarCode(input);
+          break;
         case 'hasBarCodePermission':
-          return await barCode_HasBarCodePermission();
+          result = await barCode_HasBarCodePermission();
+          break;
         case 'requestBarCodePermission':
-          return await barCode_RequestBarCodePermission();
+          result = await barCode_RequestBarCodePermission();
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else if (api.name === 'calendar') {
       switch (func) {
         case 'CheckCalendarCapability':
-          return await calendar_CheckCalendarCapability();
+          result = await calendar_CheckCalendarCapability();
+          break;
         case 'ComposeMeeting':
-          return await calendar_ComposeMeeting(input);
+          result = await calendar_ComposeMeeting(input);
+          break;
         case 'OpenCalendarItem':
-          return await calendar_OpenCalendarItem(input);
+          result = await calendar_OpenCalendarItem(input);
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else if (api.name === 'call') {
       switch (func) {
         case 'CheckCallCapability':
-          return await call_CheckCallCapability();
+          result = await call_CheckCallCapability();
+          break;
         case 'StartCall':
-          return await call_StartCall(input);
+          result = await call_StartCall(input);
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else if (api.name === 'chat') {
       switch (func) {
         case 'CheckChatCapability':
-          return await chat_CheckChatCapability();
+          result = await chat_CheckChatCapability();
+          break;
         case 'OpenChat':
-          return await chat_OpenChat(input);
+          result = await chat_OpenChat(input);
+          break;
         case 'OpenGroupChat':
-          return await chat_OpenGroupChat(input);
+          result = await chat_OpenGroupChat(input);
+          break;
         case 'OpenConversation':
-          return await chat_OpenConversation(input);
+          result = await chat_OpenConversation(input);
+          break;
         case 'CloseConversation':
-          return await chat_CloseConversation();
+          result = await chat_CloseConversation();
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else if (api.name === 'dialog') {
       switch (func) {
         case 'CheckDialogCapability':
-          return await dialog_CheckDialogCapability();
+          result = await dialog_CheckDialogCapability();
+          break;
         default:
           throw new Error(`Unknown function ${func} for ${api.title}`);
       }
     } else {
       throw new Error(`Unknown API component ${api.title}`);
     }
+
+    // Log the result if needed
+    console.log(`Result for ${func} on ${api.title}:`, result);
+    return result;
   } catch (error) {
     if (error instanceof Error) {
-      // Handle the error appropriately
-      console.log(error.message || 'An error occurred while executing the API function.');
+      // Log the error message and rethrow it
+      console.error(`Error occurred: ${error.message}`);
+      throw error;
     } else {
-      // Handle unexpected error types
-      console.log('An unknown error occurred.');
+      // Log unexpected error types and rethrow
+      console.error('An unknown error occurred.');
+      throw new Error('An unknown error occurred.');
     }
   }
 };

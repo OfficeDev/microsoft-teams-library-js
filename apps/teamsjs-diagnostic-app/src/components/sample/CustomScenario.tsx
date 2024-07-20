@@ -18,20 +18,31 @@ const CustomScenario: React.FC = () => {
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
     setScenarioStatus('Running...');
-
+  
+    let isSuccess = true;
+  
     for (const { api, func, input } of customScenario) {
+      console.log(`Executing ${func} for ${api.title} with input: ${input}`);
+  
       try {
-        const result = await handleRunScenario(api, func, input);
-        console.log(`Success: ${func} - ${result}`);
-        setScenarioStatus('Success');
+        await handleRunScenario(api, func, input);
+        console.log(`Success: ${func} for ${api.title}`);
       } catch (error: any) {
-        console.error(`Error: ${func} - ${error.message}`);
+        console.error(`Failure: ${func} for ${api.title} - ${error.message}`);
         setScenarioStatus(`Failed: ${func} - ${error.message}`);
+        isSuccess = false;
         break; // Stop further execution if any API fails
       }
     }
-  };
-
+  
+    if (isSuccess) {
+      console.log('Custom scenario completed successfully.');
+      setScenarioStatus('Success');
+    } else {
+      console.log('Custom scenario failed.');
+    }
+  };  
+  
   const addToScenario = (api: ApiComponent, func: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
     if (customScenario.length < 5) {
