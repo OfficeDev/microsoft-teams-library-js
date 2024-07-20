@@ -46,20 +46,12 @@
                   })
                 );
               } else {
-<<<<<<< HEAD
-                microsoftTeams.authentication.notifyFailure("Get empty response.");
-              }
-            })
-            .catch((error) => {
-              microsoftTeams.authentication.notifyFailure(JSON.stringify(error));
-=======
                 microsoftTeams.authentication.notifyFailure("Got empty response.");
               }
             })
             .catch((error) => {
               const errorMessage = `Error occurred in auth-end.html: ${JSON.stringify(error)}`;
               microsoftTeams.authentication.notifyFailure(errorMessage);
->>>>>>> 4bfc260535a505cea5b9f82300d7c988f8b61659
             });
         });
       });

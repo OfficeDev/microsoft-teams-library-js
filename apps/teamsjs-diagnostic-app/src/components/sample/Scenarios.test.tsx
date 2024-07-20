@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import AppInitializationScenario from './AppInitializationScenario';
 
 jest.mock('@microsoft/teams-js', () => ({
@@ -18,23 +18,33 @@ jest.mock('../../apis/AuthenticationStart', () => ({
 
 describe('App Initialization Component', () => {
   afterEach(() => {
-     // Clear all mock functions after each test
+    // Clear all mock functions after each test
     jest.clearAllMocks();
   });
 
-  test('app initialization scenario', async () => {
+  test('app initialization scenario', () => {
     render(<AppInitializationScenario />);
 
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 
-    await waitFor(() => {
-      console.log('waiting for successMessage');
-      const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
-      expect(successMessage).not.toBeNull();
-    }, {
-      timeout: 5000,
+    return new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        clearTimeout(timeout);
+        reject(new Error('Timeout waiting for success message'));
+      }, 5000);
+
+      const checkSuccessMessage = () => {
+        const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
+        if (successMessage) {
+          clearTimeout(timeout);
+          resolve();
+        } else {
+          setTimeout(checkSuccessMessage, 100); // Check every 100ms
+        }
+      };
+
+      checkSuccessMessage();
     });
   });
 
-  // Add more test cases later
 });
