@@ -4,21 +4,18 @@ import { jsPDF } from 'jspdf';
 
 interface LogConsoleProps {
   initialLogs?: string[];
-  maxLogs?: number; // Allow passing maximum logs as prop
 }
 
-const DEFAULT_MAX_LOGS = 100;
+const MAX_LOGS = 100;
 
-const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEFAULT_MAX_LOGS }) => {
+const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
   const [logStatements, setLogStatements] = useState<string[]>(initialLogs);
-  const [filteredLogs, setFilteredLogs] = useState<string[]>(initialLogs);
-  const [searchTerm, setSearchTerm] = useState('');
   const [showShareOptions, setShowShareOptions] = useState(false);
 
   const captureConsoleLogs = (...args: any[]) => {
     const timestampedLog = `${new Date()} - ${args.join(' ')}`;
     setLogStatements(prevLogs => {
-      const updatedLogs = [...prevLogs.slice(-maxLogs + 1), timestampedLog];
+      const updatedLogs = [...prevLogs.slice(-MAX_LOGS + 1), timestampedLog];
       sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
       return updatedLogs;
     });
@@ -29,10 +26,9 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
       const storedLogs = sessionStorage.getItem('logStatements');
       if (storedLogs) {
         const parsedLogs = JSON.parse(storedLogs);
-        // Ensure maximum logs loaded based on maxLogs prop
-        const cappedLogs = parsedLogs.slice(-maxLogs);
+        // Ensure maximum 100 logs loaded
+        const cappedLogs = parsedLogs.slice(-MAX_LOGS);
         setLogStatements(cappedLogs);
-        setFilteredLogs(cappedLogs);
       }
     };
 
@@ -47,20 +43,10 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
     return () => {
       console.log = originalConsoleLog;
     };
-  }, [maxLogs]); // Re-run effect if maxLogs prop changes
-
-  useEffect(() => {
-    if (searchTerm === '') {
-      setFilteredLogs(logStatements);
-    } else {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase();
-      setFilteredLogs(logStatements.filter(log => log.toLowerCase().includes(lowerCaseSearchTerm)));
-    }
-  }, [searchTerm, logStatements]);
+  }, []);
 
   const handleClearLogs = () => {
     setLogStatements([]);
-    setFilteredLogs([]);
     sessionStorage.removeItem('logStatements');
   };
 
@@ -103,40 +89,29 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
         <div className="content">
           <div className="log-console">
             <div className="log-actions">
-              <div className="search-input-container">
-                <input
-                  type="text"
-                  placeholder="Search logs..."
-                  className="search-input"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="action-buttons">
-                <button onClick={handleClearLogs} className="clear-logs-button">
-                  Clear Logs
+              <button onClick={handleClearLogs} className="clear-logs-button">
+                Clear Logs
+              </button>
+              <button onClick={handleDownloadLogs} className="download-logs-button">
+                Download Logs
+              </button>
+              <div className="share-logs-dropdown">
+                <button onClick={() => setShowShareOptions(!showShareOptions)} className="share-logs-button">
+                  Share Logs
                 </button>
-                <button onClick={handleDownloadLogs} className="download-logs-button">
-                  Download Logs
-                </button>
-                <div className="share-logs-dropdown">
-                  <button onClick={() => setShowShareOptions(!showShareOptions)} className="share-logs-button">
-                    Share Logs
-                  </button>
-                  {showShareOptions && (
-                    <div className="share-options">
-                      <button onClick={() => handleShareLogs('teams')} className="share-option">
-                        Share to Teams
-                      </button>
-                      <button onClick={() => handleShareLogs('outlook')} className="share-option">
-                        Share to Outlook
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {showShareOptions && (
+                  <div className="share-options">
+                    <button onClick={() => handleShareLogs('teams')} className="share-option">
+                      Share to Teams
+                    </button>
+                    <button onClick={() => handleShareLogs('outlook')} className="share-option">
+                      Share to Outlook
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-            {filteredLogs.map((statement, index) => (
+            {logStatements.map((statement, index) => (
               <div key={index} className="log-statement">
                 {statement}
               </div>
