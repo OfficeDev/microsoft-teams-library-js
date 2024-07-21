@@ -1,65 +1,49 @@
-import { app, barCode } from '@microsoft/teams-js';
+import { barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { useState } from 'react';
 import { useDrag } from 'react-dnd';
 
-const validateScanBarCodeInput = (config: any): boolean => {
-  if (typeof config !== 'object' || Array.isArray(config)) {
-    console.log('Validation failed: configuration should be an object.');
-    return false;
-  }
-  if (config.timeOutIntervalInSec && (typeof config.timeOutIntervalInSec !== 'number' || config.timeOutIntervalInSec < 1 || config.timeOutIntervalInSec > 60)) {
-    console.log('Validation failed: timeout interval should be a number between 1 and 60.');
-    return false;
-  }
-  console.log('Validation passed.');
-  return true;
-};
-
-export const barCode_HasBarCodePermission = async () => {
-  console.log('Executing CheckPermission...');
+export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
+  console.log('Executing CheckBarCodeCapability...');
   try {
-    const hasPermission = await barCode.hasPermission();
-    console.log(`Permission status: ${hasPermission ? 'Granted' : 'Denied'}`);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
-    }
+    barCode.isSupported();
+    console.log('BarCode capability is supported.');
+  } catch (error) {
+    console.log('Error checking BarCode capability:', error);
   }
 };
 
-export const barCode_RequestBarCodePermission = async () => {
-  console.log('Executing RequestPermission...');
+export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): Promise<string> => {
+  console.log('Executing ScanBarCode with config:', JSON.stringify(config, null, 2));
+
   try {
-    const isPermissionGranted = await barCode.requestPermission();
-    console.log(`Permission request result: ${isPermissionGranted ? 'Granted' : 'Denied'}`);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
-    }
+    const scannedCode = await barCode.scanBarCode(config);
+    console.log('Scanned code result:', scannedCode);
+    return scannedCode;
+
+  } catch (error) {
+    console.log('Error scanning BarCode:', JSON.stringify(error, null, 2));
+    throw error;
   }
 };
 
-export const barCode_ScanBarCode = async (input?: string) => {
-  console.log('Executing ScanBarCode with input:', input);
+export const barCode_HasBarCodePermission = async (): Promise<void> => {
+  console.log('Executing HasBarCodePermission...');
   try {
-    const barCodeConfig = input ? JSON.parse(input) : {};
-    if (!validateScanBarCodeInput(barCodeConfig)) {
-      throw new Error('Invalid barcode configuration');
-    }
-    console.log('Parsed barcode configuration:', barCodeConfig);
-    const scannedCode = await barCode.scanBarCode(barCodeConfig);
-    console.log(`Scanned barcode: ${scannedCode}`);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
-    }
+    const result = await barCode.hasPermission();
+    console.log('BarCode permission has been granted.');
+  } catch (error) {
+    console.log('Error checking BarCode permission:', error);
+  }
+};
+
+export const barCode_RequestBarCodePermission = async (): Promise<void> => {
+  console.log('Executing RequestBarCodePermission...');
+  try {
+    await barCode.requestPermission();
+    console.log('BarCode permission request successful.');
+  } catch (error) {
+    console.log('Error requesting BarCode permission:', error);
   }
 };
 
@@ -75,7 +59,7 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'scanBarCode') {
+    if (selectedFunc === 'ScanBarCode') {
       setInputValue(apiComponent.defaultInput || '');
     } else {
       setInputValue('');
@@ -91,37 +75,12 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
     item: () => ({
       api: apiComponent,
       func: selectedFunction,
-      input: selectedFunction === 'scanBarCode' ? inputValue : '',
+      input: selectedFunction === 'ScanBarCode' ? inputValue : '',
     }),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }), [selectedFunction, inputValue]);
-
-  const handleDrop = async () => {
-    let result;
-    try {
-      if (selectedFunction === 'CheckPermission') {
-        await barCode_HasBarCodePermission
-        result = 'CheckPermission executed successfully';
-      } else if (selectedFunction === 'RequestPermission') {
-        await barCode_RequestBarCodePermission
-        result = 'RequestPermission executed successfully';
-      } else if (selectedFunction === 'scanBarCode') {
-        await barCode_ScanBarCode(inputValue);
-        result = 'scanBarCode executed successfully';
-      } else {
-        result = 'Function not implemented';
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        result = `Error: ${error.message}`;
-      } else {
-        result = 'Unknown error occurred';
-      }
-    }
-    onDropToScenarioBox(apiComponent, selectedFunction, result);
-  };
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
@@ -140,13 +99,13 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
             </option>
           ))}
         </select>
-        {selectedFunction === 'scanBarCode' && (
+        {selectedFunction === 'ScanBarCode' && (
           <div className="input-container">
             <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter barcode configuration JSON"
+              placeholder="Enter barcode configuration"
             />
             <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>

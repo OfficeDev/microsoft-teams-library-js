@@ -23,7 +23,7 @@ const apiComponents: ApiComponent[] = [
   {
     title: 'Bar Code API',
     name: 'barCode',
-    options: ['checkBarCodeCapability', 'scanBarCode', 'hasBarCodePermission', 'requestBarCodePermission'],
+    options: ['CheckBarCodeCapability', 'ScanBarCode', 'HasBarCodePermission', 'RequestBarCodePermission'],
     defaultInput: '{}',
     inputType: 'text',
     onClick: () => console.log('Barcode API called'),

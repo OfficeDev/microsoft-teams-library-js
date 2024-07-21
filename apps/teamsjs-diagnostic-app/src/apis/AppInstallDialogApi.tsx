@@ -18,7 +18,7 @@ export const appInstallDialog_CheckAppInstallCapability = async () => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.error('Error checking App Install Dialog capability:', error.message);
+      console.log('Error checking App Install Dialog capability:', error.message);
     }
   }
 };
@@ -28,6 +28,7 @@ export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDia
   try {
     const validateInput = (input: AppInstallDialogInput) => {
       if (!input.appId) {
+        console.log('appId is required for OpenAppInstallDialog');
         throw new Error('appId is required for OpenAppInstallDialog');
       }
       console.log('Input validation passed for appId:', input.appId);
@@ -46,7 +47,7 @@ export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDia
 
   } catch (error) {
     if (error instanceof Error) {
-      console.error('Error in OpenAppInstallDialog:', error.message);
+      console.log('Error in OpenAppInstallDialog:', error.message);
     }
     return 'error';
   }
@@ -75,7 +76,6 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({

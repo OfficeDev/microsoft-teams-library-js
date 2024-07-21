@@ -1,9 +1,11 @@
+import { barCode } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
   AppInstallDialogInput
 } from '../apis/AppInstallDialogApi';
 import {
+  barCode_CheckBarCodeCapability,
   barCode_HasBarCodePermission,
   barCode_RequestBarCodePermission,
   barCode_ScanBarCode,
@@ -30,93 +32,143 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
     let result;
-    if (api.name === 'appInstallDialog') {
-      switch (func) {
-        case 'CheckAppInstallCapability':
-          result = await appInstallDialog_CheckAppInstallCapability();
-          break;
-        case 'OpenAppInstallDialog':
-          if (input) {
-            const parsedInput: AppInstallDialogInput = JSON.parse(input);
-            result = await appInstallDialog_OpenAppInstallDialog(parsedInput);
-          } else {
-            throw new Error('Input is required for OpenAppInstallDialog');
-          }
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else if (api.name === 'barCode') {
-      switch (func) {
-        case 'scanBarCode':
-          result = await barCode_ScanBarCode(input);
-          break;
-        case 'hasBarCodePermission':
-          result = await barCode_HasBarCodePermission();
-          break;
-        case 'requestBarCodePermission':
-          result = await barCode_RequestBarCodePermission();
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else if (api.name === 'calendar') {
-      switch (func) {
-        case 'CheckCalendarCapability':
-          result = await calendar_CheckCalendarCapability();
-          break;
-        case 'ComposeMeeting':
-          result = await calendar_ComposeMeeting(input);
-          break;
-        case 'OpenCalendarItem':
-          result = await calendar_OpenCalendarItem(input);
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else if (api.name === 'call') {
-      switch (func) {
-        case 'CheckCallCapability':
-          result = await call_CheckCallCapability();
-          break;
-        case 'StartCall':
-          result = await call_StartCall(input);
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else if (api.name === 'chat') {
-      switch (func) {
-        case 'CheckChatCapability':
-          result = await chat_CheckChatCapability();
-          break;
-        case 'OpenChat':
-          result = await chat_OpenChat(input);
-          break;
-        case 'OpenGroupChat':
-          result = await chat_OpenGroupChat(input);
-          break;
-        case 'OpenConversation':
-          result = await chat_OpenConversation(input);
-          break;
-        case 'CloseConversation':
-          result = await chat_CloseConversation();
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else if (api.name === 'dialog') {
-      switch (func) {
-        case 'CheckDialogCapability':
-          result = await dialog_CheckDialogCapability();
-          break;
-        default:
-          throw new Error(`Unknown function ${func} for ${api.title}`);
-      }
-    } else {
-      throw new Error(`Unknown API component ${api.title}`);
+
+    switch (api.name) {
+      case 'appInstallDialog':
+        switch (func) {
+          case 'CheckAppInstallCapability':
+            result = await appInstallDialog_CheckAppInstallCapability();
+            break;
+          case 'OpenAppInstallDialog':
+            if (input) {
+              const parsedInput: AppInstallDialogInput = JSON.parse(input);
+              result = await appInstallDialog_OpenAppInstallDialog(parsedInput);
+            } else {
+              throw new Error('Input is required for OpenAppInstallDialog');
+            }
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      case 'barCode':
+        switch (func) {
+          case 'CheckBarCodeCapability':
+            result = await barCode_CheckBarCodeCapability();
+            break;
+          case 'ScanBarCode':
+            if (input) {
+              try {
+                const parsedInput: barCode.BarCodeConfig = JSON.parse(input);
+                result = await barCode_ScanBarCode(parsedInput);
+              } catch (error) {
+                throw new Error('Invalid input format for ScanBarCode');
+              }
+            } else {
+              throw new Error('Input is required for ScanBarCode');
+            }
+            break;  
+          case 'HasBarCodePermission':
+            result = await barCode_HasBarCodePermission();
+            break;
+          case 'RequestBarCodePermission':
+            result = await barCode_RequestBarCodePermission();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      case 'calendar':
+        switch (func) {
+          case 'CheckCalendarCapability':
+            result = await calendar_CheckCalendarCapability();
+            break;
+          case 'ComposeMeeting':
+            if (input) {
+              result = await calendar_ComposeMeeting(input);
+            } else {
+              throw new Error('Input is required for ComposeMeeting');
+            }
+            break;
+          case 'OpenCalendarItem':
+            if (input) {
+              result = await calendar_OpenCalendarItem(input);
+            } else {
+              throw new Error('Input is required for OpenCalendarItem');
+            }
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      case 'call':
+        switch (func) {
+          case 'CheckCallCapability':
+            result = await call_CheckCallCapability();
+            break;
+          case 'StartCall':
+            if (input) {
+              result = await call_StartCall(input);
+            } else {
+              throw new Error('Input is required for StartCall');
+            }
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      case 'chat':
+        switch (func) {
+          case 'CheckChatCapability':
+            result = await chat_CheckChatCapability();
+            break;
+          case 'OpenChat':
+            if (input) {
+              result = await chat_OpenChat(input);
+            } else {
+              throw new Error('Input is required for OpenChat');
+            }
+            break;
+          case 'OpenGroupChat':
+            if (input) {
+              result = await chat_OpenGroupChat(input);
+            } else {
+              throw new Error('Input is required for OpenGroupChat');
+            }
+            break;
+          case 'OpenConversation':
+            if (input) {
+              result = await chat_OpenConversation(input);
+            } else {
+              throw new Error('Input is required for OpenConversation');
+            }
+            break;
+          case 'CloseConversation':
+            result = await chat_CloseConversation();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      case 'dialog':
+        switch (func) {
+          case 'CheckDialogCapability':
+            result = await dialog_CheckDialogCapability();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown API component ${api.title}`);
     }
-    console.log(`Result for ${func} on ${api.title}:`, result);
+
     return result;
 
   } catch (error) {

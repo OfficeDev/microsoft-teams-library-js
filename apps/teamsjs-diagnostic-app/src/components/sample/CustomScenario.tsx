@@ -9,7 +9,6 @@ import CallAPIs from '../../apis/CallApi';
 import ChatAPIs from '../../apis/ChatApi';
 import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
-import { TransformerFactory } from '../../utils/TransformerFactory';
 import { app } from '@microsoft/teams-js';
 
 app.initialize();
@@ -26,7 +25,6 @@ const CustomScenario: React.FC = () => {
     let isSuccess = true;
   
     for (const { api, func, input } of customScenario) {
-      console.log(`Executing ${func} for ${api.title} with input: ${input}`);
   
       try {
         await handleRunScenario(api, func, input);
@@ -44,12 +42,12 @@ const CustomScenario: React.FC = () => {
       console.log('Custom scenario completed successfully.');
       setScenarioStatus('Success');
     }
-  };  
-  
+  };
+
   const addToScenario = (api: ApiComponent, func: string, input?: string) => {
     console.log(`Adding ${func} for ${api.title} with input: ${input}`);
     if (customScenario.length < 5) {
-      setCustomScenario([...customScenario, { api, func, inputType, input }]);
+      setCustomScenario([...customScenario, { api, func, input }]);
     } else {
       console.log('Maximum limit reached. Cannot add more APIs to the scenario.');
     }
@@ -66,7 +64,7 @@ const CustomScenario: React.FC = () => {
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'API',
-    drop: (item: { api: ApiComponent, func: string, inputType: string, input?: string }) => addToScenario(item.api, item.func, item.inputType, item.input),
+    drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
     canDrop: () => customScenario.length < 5,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
