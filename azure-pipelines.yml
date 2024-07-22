@@ -256,8 +256,9 @@ extends:
             templateContext:
               sdl:
                 codeql:
-                  enabled: false
-                  justificationForDisabling: 'Disabling scan for non-default branches'
+                  compiled:
+                    enabled: false
+                    justificationForDisabling: 'Because of issue in iOS UI tests. Reported to 1ES team.'
 
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
