@@ -253,6 +253,9 @@ extends:
               name: Azure Pipelines
               image: internal-macos12
               os: macOS
+            variables:
+              Codeql.BuildIdentifier: test
+              Codeql.SkipTaskAutoInjection: true
             templateContext:
               sdl:
                 codeql:
