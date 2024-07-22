@@ -36,10 +36,8 @@ extends:
       image: windows-2022
       os: windows
     sdl:
-      # codeql:
-      #   compiled:
-      #     enabled: false
-      #     justificationForDisabling: 'debugging a build failure'
+      codeql:
+        enabledOnNonDefaultBranches: false
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
