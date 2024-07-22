@@ -63,11 +63,22 @@ const apiComponents: ApiComponent[] = [
     title: 'Chat API',
     name: 'chat',
     options: ['CheckChatCapability', 'OpenChat', 'OpenGroupChat', 'OpenConversation', 'CloseConversation', 'GetChatMembers'],
-    defaultInput: JSON.stringify({
-      user: 'testUpn',
-      message: 'testMessage',
-    }),
     inputType: 'text',
+    defaultInput: JSON.stringify({
+      OpenChat: {
+        user: 'testUpn',
+        message: 'testMessage',
+      },
+      OpenGroupChat: {
+        users: ['testUpn1', 'testUpn2'],
+        message: 'testMessage',
+      },
+      OpenConversation: {
+        entityId: 'entityId1',
+        title: 'title1',
+        subEntityId: 'subEntityId1',
+      },
+    }),
     onClick: () => console.log('Chat API called'),
   },
   {

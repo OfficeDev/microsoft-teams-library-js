@@ -3,56 +3,91 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
 
-export const chat_CheckChatCapability = async (): Promise<void> => {
+export const chat_CheckChatCapability = async (): Promise<string> => {
   console.log('Executing CheckChatCapability...');
-  const isSupported = chat.isSupported();
-  console.log(`Chat module ${isSupported ? 'is' : 'is not'} supported`);
-};
-
-export const chat_OpenChat = async (input?: string): Promise<void> => {
-  console.log('Executing OpenChat with input:', input);
-  const parsedInput = input ? JSON.parse(input) : {};
-  
   try {
-    await chat.openChat(parsedInput);
-    console.log('OpenChat successful');
+    chat.isSupported();
+    console.log(`Chat capability is supported`);
+    return `Chat capability is supported`;
   } catch (error) {
-    console.error('Error executing OpenChat:', error);
+    console.log('Error checking Chat capability:', error);
+    throw error;
   }
 };
 
-export const chat_OpenGroupChat = async (input?: string): Promise<void> => {
-  console.log('Executing OpenGroupChat with input:', input);
-  const parsedInput = input ? JSON.parse(input) : {};
-  
+export const chat_OpenChat = async (input: string): Promise<string> => {
+  console.log('Executing OpenChat...');
   try {
-    await chat.openGroupChat(parsedInput);
-    console.log('OpenGroupChat successful');
+    const chatParams = JSON.parse(input);
+    if (!chatParams.user) {
+      console.log('User is required')
+      throw new Error('User is required');
+    }
+
+    await chat.openChat({ user: chatParams.user, message: chatParams.message });
+    console.log('Chat opened successfully');
+    return 'chat.openChat() was called';
   } catch (error) {
-    console.error('Error executing OpenGroupChat:', error);
+    console.log('Error opening chat:', error);
+    throw error;
   }
 };
 
-export const chat_OpenConversation = async (input?: string): Promise<void> => {
-  console.log('Executing OpenConversation with input:', input);
-  const parsedInput = input ? JSON.parse(input) : {};
-  
+export const chat_OpenGroupChat = async (input: string): Promise<string> => {
+  console.log('Executing OpenGroupChat...');
   try {
-    await conversations.openConversation(parsedInput);
-    console.log('OpenConversation successful');
+    const groupChatParams = JSON.parse(input);
+    if (!Array.isArray(groupChatParams.users) || groupChatParams.users.length === 0) {
+      console.log('Users array is required and must contain at least one user');
+      throw new Error('Users array is required and must contain at least one user');
+    }
+    
+    await chat.openGroupChat({ users: groupChatParams.users, message: groupChatParams.message });
+    console.log('Group chat opened successfully');
+    return 'chat.openGroupChat() was called';
   } catch (error) {
-    console.error('Error executing OpenConversation:', error);
+    console.log('Error opening group chat:', error);
+    throw error;
   }
 };
 
-export const chat_CloseConversation = async (): Promise<void> => {
+export const chat_OpenConversation = async (input: string): Promise<string> => {
+  console.log('Executing OpenConversation with input...');
+  try {
+    const conversationParams = JSON.parse(input);
+    if (!conversationParams.entityId || !conversationParams.title || !conversationParams.subEntityId) {
+      throw new Error('entityId, title, and subEntityId are required');
+    }
+    await conversations.openConversation(conversationParams);
+    console.log('Conversations opened successfully')
+    return 'Conversation Opened';
+  } catch (error) {
+    console.log('Error opening conversation:', error);
+    throw error;
+  }
+};
+
+export const chat_CloseConversation = async (): Promise<string> => {
   console.log('Executing CloseConversation...');
-  
   try {
-    conversations.closeConversation();
-    console.log('CloseConversation successful');
+    await conversations.closeConversation();
+    console.log('Conversation closed successfully');
+    return 'Conversation Closed';
   } catch (error) {
-    console.error('Error executing CloseConversation:', error);
+    console.log('Error closing conversation:', error);
+    throw error;
+  }
+};
+
+export const chat_GetChatMembers = async (): Promise<string> => {
+  console.log('Executing GetChatMembers...');
+  try {
+    const members = await conversations.getChatMembers();
+    console.log('Chat members retrieved successfully:', members);
+    return JSON.stringify(members);
+  } catch (error) {
+    console.log('Error getting chat members:', error);
+    throw error;
   }
 };
 interface ChatAPIsProps {
@@ -67,23 +102,32 @@ const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'OpenChat' || selectedFunc === 'OpenGroupChat' || selectedFunc === 'OpenConversation') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
+    setInputValue('');  // Reset input value when function changes
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const handleDefaultButtonClick = () => {
+    if (selectedFunction && apiComponent.defaultInput) {
+      const defaultInputs = JSON.parse(apiComponent.defaultInput);
+      setInputValue(defaultInputs[selectedFunction] ? JSON.stringify(defaultInputs[selectedFunction]) : '');
+    }
+  };
+
+  // Determine if the input box should be shown based on the selected function
+  const showInputBox = selectedFunction && apiComponent.inputType === 'text' &&
+    (selectedFunction === 'OpenChat' || 
+     selectedFunction === 'OpenGroupChat' || 
+     selectedFunction === 'OpenConversation');
+
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
       func: selectedFunction,
-      input: selectedFunction === 'OpenChat' || selectedFunction === 'OpenGroupChat' || selectedFunction === 'OpenConversation' ? inputValue : '',
+      input: showInputBox ? inputValue : '',
     }),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -107,15 +151,15 @@ const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }
             </option>
           ))}
         </select>
-        {(selectedFunction === 'OpenChat' || selectedFunction === 'OpenGroupChat' || selectedFunction === 'OpenConversation') && (
+        {showInputBox && (
           <div className="input-container">
             <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for the selected function"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
-            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
+            <button onClick={handleDefaultButtonClick}>Default</button>
           </div>
         )}
       </div>

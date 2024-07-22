@@ -5,9 +5,15 @@ import { dialog } from '@microsoft/teams-js';
 
 export const dialog_CheckDialogCapability = async () => {
   console.log('Executing CheckDialogCapability...');
-  console.log(`Dialog module ${dialog.isSupported() ? 'is' : 'is not'} supported`);
+  try {
+    dialog.isSupported();
+    console.log(`Dialog capability is supported`);
+    return `Dialog capability is supported`;
+  } catch (error) {
+    console.log('Error checking Dialog capability:', error);
+    throw error;
+  }
 };
-
 interface DialogAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;

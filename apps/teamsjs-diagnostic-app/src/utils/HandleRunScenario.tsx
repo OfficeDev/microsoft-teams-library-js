@@ -22,6 +22,7 @@ import {
 import {
   chat_CheckChatCapability,
   chat_CloseConversation,
+  chat_GetChatMembers,
   chat_OpenChat,
   chat_OpenConversation,
   chat_OpenGroupChat
@@ -149,6 +150,9 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
             break;
           case 'CloseConversation':
             result = await chat_CloseConversation();
+            break;
+          case 'GetChatMembers':
+            result = await chat_GetChatMembers();
             break;
           default:
             throw new Error(`Unknown function ${func} for ${api.title}`);
