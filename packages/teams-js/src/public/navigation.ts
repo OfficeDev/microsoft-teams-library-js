@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { TabInstance } from './interfaces';
+import { FocusActionItem, TabInstance } from './interfaces';
 import {
   backStackNavigateBackHelper,
   navigateCrossDomainHelper,
@@ -30,10 +30,10 @@ export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) =
  *
  * @param navigateForward - Determines the direction to focus in teams app.
  */
-export function returnFocus(navigateForward?: boolean): void {
+export function returnFocus(focusActionItem?: FocusActionItem): void {
   returnFocusHelper(
     getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_ReturnFocus),
-    navigateForward,
+    focusActionItem,
   );
 }
 

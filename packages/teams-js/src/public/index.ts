@@ -23,6 +23,7 @@ export {
   DialogSize,
   ErrorCode,
   FileOpenPreference,
+  FocusActionItem,
   FrameContext,
   FrameInfo,
   LoadContext,
