@@ -17,6 +17,7 @@ const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
   const [scenarioStatus, setScenarioStatus] = useState<string>('');
+  const [showAddScenario, setShowAddScenario] = useState<boolean>(false);
 
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
@@ -122,6 +123,8 @@ const CustomScenario: React.FC = () => {
             </div>
           </div>
           <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
+          {/* Plus Sign Button */}
+          <button className="plus-sign-button" onClick={() => setShowAddScenario(true)}>+</button>
         </div>
       </div>
 
@@ -135,6 +138,33 @@ const CustomScenario: React.FC = () => {
         />
         <div className="all-api-box">{generateVerticalBoxes()}</div>
       </div>
+
+      {showAddScenario && (
+        <div className="add-dialog active">
+          <div className="addScenario-content">
+            <h2>Create New Scenario</h2>
+            <label htmlFor="scenario-name">Scenario Name:</label>
+            <input
+              type="text"
+              id="scenario-name"
+              placeholder="Enter scenario name"
+            />
+            <div className="api-selection">
+              {apiComponents.map((api, index) => (
+                <div key={index}>
+                  <input type="checkbox" id={`api-${index}`} />
+                  <label htmlFor={`api-${index}`}>{api.title}</label>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setShowAddScenario(false)}>Cancel</button>
+            <button onClick={() => {
+              // IIMPLEMENT SAVE LOGIC HERE!!
+              setShowAddScenario(false);
+            }}>Save</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
