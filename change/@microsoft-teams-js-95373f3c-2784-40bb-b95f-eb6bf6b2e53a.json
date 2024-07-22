@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Fixed `dialog.url.submit` api to support only `FrameContext.content`.",
-  "packageName": "@microsoft/teams-js",
-  "email": "lakhveerkaur@microsoft.com",
-  "dependentChangeType": "patch"
-}
