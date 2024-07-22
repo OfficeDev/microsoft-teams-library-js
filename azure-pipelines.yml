@@ -39,7 +39,12 @@ extends:
       os: windows
     sdl:
       codeql:
-        enabledOnNonDefaultBranches: false
+        ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+          enabledOnNonDefaultBranches: true
+        ${{ else }}:
+          compiled:
+            enabled: false
+            justificationForDisabling: 'Disabling scan for non-default branches'
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
