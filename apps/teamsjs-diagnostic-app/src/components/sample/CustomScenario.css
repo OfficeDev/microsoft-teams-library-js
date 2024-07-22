@@ -359,3 +359,73 @@
 .addScenario-content button:hover {
   background-color: #3b3f92;
 }
+
+.saved-scenarios-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.saved-scenarios-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.saved-scenarios-content h2 {
+  margin-top: 0;
+}
+
+.saved-scenarios-content ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.saved-scenarios-content li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.saved-scenarios-content button {
+  background-color: #464eb8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.saved-scenarios-content button:hover {
+  background-color: #3b3f92;
+}
+
+.saved-scenarios-content .delete-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.saved-scenarios-content .delete-button:hover {
+  background-color: #ff6666;
+}
+
+.button-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

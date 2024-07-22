@@ -18,6 +18,12 @@ const CustomScenario: React.FC = () => {
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
   const [scenarioStatus, setScenarioStatus] = useState<string>('');
   const [showAddScenario, setShowAddScenario] = useState<boolean>(false);
+  const [newScenarioName, setNewScenarioName] = useState<string>('');
+  const [selectedApis, setSelectedApis] = useState<{ [key: string]: boolean }>({});
+  const [selectedFunctions, setSelectedFunctions] = useState<{ [key: string]: string }>({});
+  const [apiInputs, setApiInputs] = useState<{ [key: string]: string }>({});
+  const [savedScenarios, setSavedScenarios] = useState<Array<{ name: string, scenario: Array<{ api: ApiComponent, func: string, input?: string }> }>>([]);
+  const [showScenarioList, setShowScenarioList] = useState<boolean>(false);
 
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
@@ -61,6 +67,40 @@ const CustomScenario: React.FC = () => {
   const clearScenario = () => {
     setCustomScenario([]);
     setScenarioStatus('');
+  };
+
+  const saveScenario = () => {
+    if (!newScenarioName) {
+      console.log('Scenario name is required.');
+      return;
+    }
+
+    const newScenario = {
+      name: newScenarioName,
+      scenario: apiComponents
+        .filter(api => selectedApis[api.title])
+        .map(api => ({
+          api,
+          func: selectedFunctions[api.title] || '',
+          input: apiInputs[api.title] || '',
+        })),
+    };
+
+    if (newScenario.scenario.length > 0) {
+      setSavedScenarios([...savedScenarios, newScenario]);
+      setShowAddScenario(false);
+      setNewScenarioName('');
+      setSelectedApis({});
+      setSelectedFunctions({});
+      setApiInputs({});
+    } else {
+      console.log('No APIs selected.');
+    }
+  };
+
+  const loadScenario = (scenario: { name: string, scenario: Array<{ api: ApiComponent, func: string, input?: string }> }) => {
+    setCustomScenario(scenario.scenario);
+    setShowScenarioList(false);
   };
 
   const [{ isOver }, drop] = useDrop(() => ({
@@ -107,6 +147,22 @@ const CustomScenario: React.FC = () => {
     ));
   };
 
+  const handleFunctionSelection = (apiTitle: string, func: string) => {
+    setSelectedFunctions(prev => ({ ...prev, [apiTitle]: func }));
+  };
+
+  const handleApiSelection = (apiTitle: string, isChecked: boolean) => {
+    setSelectedApis(prev => ({ ...prev, [apiTitle]: isChecked }));
+  };
+
+  const handleInputChange = (apiTitle: string, input: string) => {
+    setApiInputs(prev => ({ ...prev, [apiTitle]: input }));
+  };
+
+  const handleDeleteScenario = (index: number) => {
+    setSavedScenarios(savedScenarios.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="scenario-container">
       <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'transparent' }}>
@@ -122,9 +178,11 @@ const CustomScenario: React.FC = () => {
               {generateCustomScenario()}
             </div>
           </div>
+          <div className= "button-group-vertical">
           <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
-          {/* Plus Sign Button */}
           <button className="plus-sign-button" onClick={() => setShowAddScenario(true)}>+</button>
+          <button className="scenario-list-button" onClick={() => setShowScenarioList(true)}>Saved Scenarios</button>
+          </div>
         </div>
       </div>
 
@@ -148,24 +206,65 @@ const CustomScenario: React.FC = () => {
               type="text"
               id="scenario-name"
               placeholder="Enter scenario name"
+              value={newScenarioName}
+              onChange={(e) => setNewScenarioName(e.target.value)}
             />
             <div className="api-selection">
               {apiComponents.map((api, index) => (
-                <div key={index}>
-                  <input type="checkbox" id={`api-${index}`} />
-                  <label htmlFor={`api-${index}`}>{api.title}</label>
+                <div key={index} className="api-item">
+                  <input
+                    type="checkbox"
+                    id={api.title}
+                    checked={selectedApis[api.title] || false}
+                    onChange={(e) => handleApiSelection(api.title, e.target.checked)}
+                  />
+                  <label htmlFor={api.title}>{api.title}</label>
+                  {selectedApis[api.title] && (
+                    <div className="function-selection">
+                      <select
+                        aria-label="Select function"
+                        value={selectedFunctions[api.title] || ''}
+                        onChange={(e) => handleFunctionSelection(api.title, e.target.value)}
+                      >
+                        <option value="" disabled>Select function</option>
+                        {api.options.map((func, idx) => (
+                          <option key={idx} value={func}>{func}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        placeholder="Input"
+                        value={apiInputs[api.title] || ''}
+                        onChange={(e) => handleInputChange(api.title, e.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
+            <button onClick={saveScenario}>Save Scenario</button>
             <button onClick={() => setShowAddScenario(false)}>Cancel</button>
-            <button onClick={() => {
-              // IIMPLEMENT SAVE LOGIC HERE!!
-              setShowAddScenario(false);
-            }}>Save</button>
           </div>
         </div>
       )}
-    </div>
+
+      {showScenarioList && (
+            <div className="saved-scenarios-dialog active">
+              <div className="saved-scenarios-content">
+                <h2>Saved Scenarios</h2>
+                <ul>
+                  {savedScenarios.map((scenario, index) => (
+                    <li key={index}>
+                      <button onClick={() => loadScenario(scenario)}>{scenario.name}</button>
+                      <button className="delete-button" onClick={() => handleDeleteScenario(index)}>X</button>
+                    </li>
+                  ))}
+                </ul>
+                <button onClick={() => setShowScenarioList(false)}>Close</button>
+              </div>
+            </div>
+          )}
+        </div>
   );
 };
 
