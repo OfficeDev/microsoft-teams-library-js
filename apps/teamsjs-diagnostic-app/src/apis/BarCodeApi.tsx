@@ -9,7 +9,7 @@ export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
     barCode.isSupported();
     console.log('BarCode capability is supported.');
   } catch (error) {
-    console.log('Error checking BarCode capability:', error);
+    console.log('Error checking BarCode capability:', JSON.stringify(error, null, 2));
   }
 };
 
@@ -33,7 +33,7 @@ export const barCode_HasBarCodePermission = async (): Promise<void> => {
     const result = await barCode.hasPermission();
     console.log('BarCode permission has been granted.');
   } catch (error) {
-    console.log('Error checking BarCode permission:', error);
+    console.log('Error checking BarCode permission:', JSON.stringify(error, null, 2));
   }
 };
 
@@ -43,7 +43,7 @@ export const barCode_RequestBarCodePermission = async (): Promise<void> => {
     await barCode.requestPermission();
     console.log('BarCode permission request successful.');
   } catch (error) {
-    console.log('Error requesting BarCode permission:', error);
+    console.log('Error requesting BarCode permission:', JSON.stringify(error, null, 2));
   }
 };
 
@@ -59,11 +59,7 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'ScanBarCode') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
+    setInputValue('');
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

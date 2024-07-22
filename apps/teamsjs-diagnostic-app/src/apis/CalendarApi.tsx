@@ -3,64 +3,44 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
 
-const validateComposeMeetingInput = (config: any): boolean => {
-  if (typeof config !== 'object' || Array.isArray(config)) {
-    console.log('Validation failed: configuration should be an object.');
-    return false;
-  }
-  if (config.startTime && isNaN(Date.parse(config.startTime))) {
-    console.log('Validation failed: startTime is not a valid date.');
-    return false;
-  }
-  if (config.endTime && isNaN(Date.parse(config.endTime))) {
-    console.log('Validation failed: endTime is not a valid date.');
-    return false;
-  }
-  if (config.attendees && !Array.isArray(config.attendees)) {
-    console.log('Validation failed: attendees should be an array.');
-    return false;
-  }
-  console.log('Validation passed.');
-  return true;
-};
-
-export const calendar_CheckCalendarCapability = async () => {
-  console.log(`Calendar module ${calendar.isSupported() ? 'is' : 'is not'} supported`);
-}
-
-export const calendar_OpenCalendarItem = async (input?: string) => {
-  console.log('Executing openCalendarItem with input:', input);
+export const calendar_CheckCalendarCapability = async (): Promise<string> => {
+  console.log('Executing CheckCalendarCapability...');
   try {
-    const openCalendarItemParams = input ? JSON.parse(input) : { itemId: '' };
-    if (!openCalendarItemParams.itemId) {
-      throw new Error('Item ID is required to open a calendar item');
-    }
-    await calendar.openCalendarItem(openCalendarItemParams);
-    console.log('openCalendarItem executed successfully');
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
-    }
+    calendar.isSupported();
+    console.log(`Calendar capability is supported`);
+    return `Calendar capability is supported`;
+  } catch (error) {
+    console.log('Error checking Calendar capability:', error);
+    throw error;
   }
 };
 
-export const calendar_ComposeMeeting = async (input?: string) => {
-  console.log('Executing composeMeeting with input:', input);
+export const calendar_ComposeMeeting = async (input: string): Promise<string> => {
+  console.log('Executing ComposeMeeting with input:', input);
   try {
-    const composeMeetingParams = input ? JSON.parse(input) : {};
-    if (!validateComposeMeetingInput(composeMeetingParams)) {
-      throw new Error('Invalid meeting configuration');
+    const meetingDetails = JSON.parse(input);
+    await calendar.composeMeeting(meetingDetails);
+    console.log('Meeting composed successfully.');
+    return 'Completed';
+  } catch (error) {
+    console.log('Error composing meeting:', error);
+    throw error;
+  }
+};
+
+export const calendar_OpenCalendarItem = async (input: string): Promise<string> => {
+  console.log('Executing OpenCalendarItem with input:', input);
+  try {
+    const calendarItemDetails = JSON.parse(input);
+    if (!calendarItemDetails.itemId) {
+      throw new Error('itemId is required');
     }
-    await calendar.composeMeeting(composeMeetingParams);
-    console.log('composeMeeting executed successfully');
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error: ${error.message}`);
-    } else {
-      console.log(`Unknown error occurred`);
-    }
+    await calendar.openCalendarItem(calendarItemDetails);
+    console.log('Calendar item opened successfully.');
+    return 'Completed';
+  } catch (error) {
+    console.log('Error opening calendar item:', error);
+    throw error;
   }
 };
 
@@ -76,50 +56,31 @@ const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScena
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'ComposeMeeting') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
+    setInputValue('');  // Set the input value to an empty string initially
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const handleDefaultButtonClick = () => {
+    if (selectedFunction && apiComponent.defaultInput) {
+      const defaultInputs = JSON.parse(apiComponent.defaultInput);
+      setInputValue(defaultInputs[selectedFunction] ? JSON.stringify(defaultInputs[selectedFunction]) : '');
+    }
+  };
+
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: 'API',
     item: () => ({
       api: apiComponent,
       func: selectedFunction,
-      input: selectedFunction === 'ComposeMeeting' ? inputValue : '',
+      input: selectedFunction && apiComponent.inputType === 'text' ? inputValue : '',
     }),
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }), [selectedFunction, inputValue]);
-
-  const handleDrop = async () => {
-    let result;
-    try {
-      if (selectedFunction === 'openCalendarItem') {
-        await calendar_OpenCalendarItem(inputValue);
-        result = 'openCalendarItem executed successfully';
-      } else if (selectedFunction === 'ComposeMeeting') {
-        await calendar_ComposeMeeting(inputValue);
-        result = 'ComposeMeeting executed successfully';
-      } else {
-        result = 'Function not implemented';
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        result = `Error: ${error.message}`;
-      } else {
-        result = 'Unknown error occurred';
-      }
-    }
-    onDropToScenarioBox(apiComponent, selectedFunction, result);
-  };
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
@@ -138,15 +99,15 @@ const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScena
             </option>
           ))}
         </select>
-        {selectedFunction === 'ComposeMeeting' && (
+        {selectedFunction && apiComponent.inputType === 'text' && selectedFunction !== 'CheckCalendarCapability' && (
           <div className="input-container">
             <input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for ComposeMeeting"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
-            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
+            <button onClick={handleDefaultButtonClick}>Default</button>
           </div>
         )}
       </div>

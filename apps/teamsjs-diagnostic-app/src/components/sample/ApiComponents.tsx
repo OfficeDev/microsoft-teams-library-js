@@ -32,15 +32,20 @@ const apiComponents: ApiComponent[] = [
     title: 'Calendar API',
     name: 'calendar',
     options: ['CheckCalendarCapability', 'ComposeMeeting', 'OpenCalendarItem'],
-    defaultInput: JSON.stringify({
-      attendees: ['attendees'],
-      startTime: 'startTime',
-      endTime: 'endTime',
-      subject: 'subject',
-      content: 'content',
-    }),
     inputType: 'text',
     onClick: () => console.log('Calendar API called'),
+    defaultInput: JSON.stringify({
+      ComposeMeeting: {
+        attendees: ['attendees'],
+        startTime: 'startTime',
+        endTime: 'endTime',
+        subject: 'subject',
+        content: 'content',
+      },
+      OpenCalendarItem: {
+        itemId: '123',
+      },
+    }),
   },
   {
     title: 'Call API',

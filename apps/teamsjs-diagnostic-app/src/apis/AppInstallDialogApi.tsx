@@ -52,7 +52,6 @@ export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDia
     return 'error';
   }
 };
-
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (apiComponent: ApiComponent, func: string, result: string) => void;
@@ -65,11 +64,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'OpenAppInstallDialog') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
+    setInputValue('');
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
