@@ -260,7 +260,7 @@ const CustomScenario: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => setShowScenarioList(false)}>Close</button>
+                <button className="close-button" onClick={() => setShowScenarioList(false)}>Close</button>
               </div>
             </div>
           )}

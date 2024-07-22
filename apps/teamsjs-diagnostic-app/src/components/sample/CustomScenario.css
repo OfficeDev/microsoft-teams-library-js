@@ -424,6 +424,16 @@
   background-color: #ff6666;
 }
 
+.saved-scenarios-content .close-button {
+  background-color: gray;
+  color: white;
+  border: none;
+}
+
+.saved-scenarios-content .close-button:hover {
+  background-color: lightgray;
+}
+
 .button-group-vertical {
   display: flex;
   flex-direction: column;

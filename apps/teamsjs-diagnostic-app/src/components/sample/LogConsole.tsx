@@ -15,10 +15,14 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
   const [searchTerm, setSearchTerm] = useState('');
   const [showShareOptions, setShowShareOptions] = useState(false);
 
+  // Function to capture console logs with line numbers
   const captureConsoleLogs = (...args: any[]) => {
-    const timestampedLog = `${new Date()} - ${args.join(' ')}`;
     setLogStatements(prevLogs => {
-      const updatedLogs = [...prevLogs.slice(-maxLogs + 1), timestampedLog];
+      const lineNumber = prevLogs.length + 1;
+      const timestamp = new Date();
+      const logMessage = args.join(' ');
+      const formattedLog = `${lineNumber}| ${timestamp} - ${logMessage}`;
+      const updatedLogs = [...prevLogs.slice(-maxLogs + 1), formattedLog];
       sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
       return updatedLogs;
     });
@@ -29,7 +33,6 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
       const storedLogs = sessionStorage.getItem('logStatements');
       if (storedLogs) {
         const parsedLogs = JSON.parse(storedLogs);
-        // Ensure maximum logs loaded based on maxLogs prop
         const cappedLogs = parsedLogs.slice(-maxLogs);
         setLogStatements(cappedLogs);
         setFilteredLogs(cappedLogs);
@@ -47,7 +50,7 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
     return () => {
       console.log = originalConsoleLog;
     };
-  }, [maxLogs]); // Re-run effect if maxLogs prop changes
+  }, [maxLogs]);
 
   useEffect(() => {
     if (searchTerm === '') {
@@ -67,13 +70,13 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
   const handleDownloadLogs = () => {
     const doc = new jsPDF();
     let yOffset = 10;
-    const maxLineWidth = 180; // Maximum line width in mm
+    const maxLineWidth = 180;
     const lineHeight = 10;
 
     logStatements.forEach((log, index) => {
       const splitText = doc.splitTextToSize(log, maxLineWidth);
       splitText.forEach((line: string | string[]) => {
-        if (yOffset > 280) {  // Adjust page break threshold
+        if (yOffset > 280) {
           doc.addPage();
           yOffset = 10;
         }
@@ -136,11 +139,16 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
                 </div>
               </div>
             </div>
-            {filteredLogs.map((statement, index) => (
-              <div key={index} className="log-statement">
-                {statement}
-              </div>
-            ))}
+            {filteredLogs.map((statement, index) => {
+              const parts = statement.split('|').map(part => part.trim());
+              return (
+                <div key={index} className="log-statement">
+                  <span className="log-line-number">{parts[0]}</span>  
+                  <span className="log-timestamp">{parts[1]}</span> - 
+                  <span className="log-message">{parts[2]}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
