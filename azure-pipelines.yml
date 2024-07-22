@@ -253,6 +253,8 @@ extends:
               name: Azure Pipelines
               image: internal-macos12
               os: macOS
+            variables:
+              OneES_DefaultRepoBranch: 'refs/heads/main'
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:

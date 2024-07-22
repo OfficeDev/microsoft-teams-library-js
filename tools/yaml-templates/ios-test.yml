@@ -7,10 +7,10 @@ parameters:
     type: string
 
 steps:
+  - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
     persistCredentials: true
-  - checkout: self
 
   - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
