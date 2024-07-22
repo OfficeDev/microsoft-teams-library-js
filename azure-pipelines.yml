@@ -38,13 +38,6 @@ extends:
       image: windows-2022
       os: windows
     sdl:
-      codeql:
-        ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          enabledOnNonDefaultBranches: true
-        ${{ else }}:
-          compiled:
-            enabled: false
-            justificationForDisabling: 'Disabling scan for non-default branches'
       eslint:
         configuration: 'required'
         parser: '@typescript-eslint/parser'
@@ -260,8 +253,12 @@ extends:
               name: Azure Pipelines
               image: internal-macos12
               os: macOS
-            variables:
-              OneES_DefaultRepoBranch: 'refs/heads/main'
+            templateContext:
+              sdl:
+                codeql:
+                  enabled: false
+                  justificationForDisabling: 'Disabling scan for non-default branches'
+
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
                 parameters:
