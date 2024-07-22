@@ -30,10 +30,11 @@ export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): P
 export const barCode_HasBarCodePermission = async (): Promise<void> => {
   console.log('Executing HasBarCodePermission...');
   try {
-    const result = await barCode.hasPermission();
+    await barCode.hasPermission();
     console.log('BarCode permission has been granted.');
   } catch (error) {
     console.log('Error checking BarCode permission:', JSON.stringify(error, null, 2));
+    throw error;
   }
 };
 
@@ -44,6 +45,7 @@ export const barCode_RequestBarCodePermission = async (): Promise<void> => {
     console.log('BarCode permission request successful.');
   } catch (error) {
     console.log('Error requesting BarCode permission:', JSON.stringify(error, null, 2));
+    throw error;
   }
 };
 

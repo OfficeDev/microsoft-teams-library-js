@@ -20,6 +20,7 @@ export const appInstallDialog_CheckAppInstallCapability = async () => {
     if (error instanceof Error) {
       console.log('Error checking App Install Dialog capability:', error.message);
     }
+    throw error;
   }
 };
 
@@ -49,7 +50,7 @@ export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDia
     if (error instanceof Error) {
       console.log('Error in OpenAppInstallDialog:', error.message);
     }
-    return 'error';
+    throw error;
   }
 };
 interface AppInstallDialogAPIsProps {

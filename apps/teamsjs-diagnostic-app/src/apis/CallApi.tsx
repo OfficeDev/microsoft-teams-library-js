@@ -3,26 +3,38 @@ import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
 
-export const call_CheckCallCapability = async (): Promise<void> => {
+export const call_CheckCallCapability = async (): Promise<string> => {
   console.log('Executing CheckCallCapability...');
-  const isSupported = call.isSupported();
-  console.log(`Call module ${isSupported ? 'is' : 'is not'} supported`);
+  try {
+    call.isSupported();
+    console.log(`Call capability is supported`);
+    return `Call capability is supported`;
+  } catch (error) {
+    console.log('Error checking Call capability:', error);
+    throw error;
+  }
 };
 
-export const call_StartCall = async (input?: string): Promise<void> => {
+export const call_StartCall = async (input: string): Promise<string> => {
   console.log('Executing StartCall with input:', input);
-  const parsedInput = input ? JSON.parse(input) : {};
-  
-  if (!parsedInput.targets || !Array.isArray(parsedInput.targets)) {
-    console.error('Invalid input: "targets" is required and should be an array.');
-    return;
-  }
 
   try {
-    const result = await call.startCall(parsedInput);
-    console.log(`StartCall was successful! Result: ${result}`);
+    const validateInput = (input: string) => {
+      if (!input) {
+        console.log('Input is required for StartCall');
+        throw new Error('Input is required for StartCall');
+      }
+      console.log('Input validation passed');
+    };
+
+    validateInput(input);
+
+    const result = await call.startCall({ targets: [input] });
+    console.log('StartCall result:', result);
+    return 'Call started successfully';
   } catch (error) {
-    console.error('Error executing StartCall:', error);
+    console.log('Error in StartCall:', error);
+    throw error;
   }
 };
 
@@ -38,11 +50,7 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'StartCall') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
+    setInputValue('');
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
