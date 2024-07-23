@@ -4,14 +4,22 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const call_CheckCallCapability = async (): Promise<string> => {
+export const call_CheckCallCapability = async (): Promise<void> => {
   console.log('Executing CheckCallCapability...');
   try {
-    call.isSupported();
-    console.log(`Call capability is supported`);
-    return `Call capability is supported`;
+    const result = await call.isSupported();
+    if (result) {
+      console.log('Call capability is supported.');
+    } else {
+      console.log('Call capability is not supported.');
+      throw new Error('Call capability is not supported');
+    }
   } catch (error) {
-    console.log('Error checking Call capability:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking Call capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
     throw error;
   }
 };

@@ -4,14 +4,22 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialog } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const dialog_CheckDialogCapability = async () => {
+export const dialog_CheckDialogCapability = async (): Promise<void> => {
   console.log('Executing CheckDialogCapability...');
   try {
-    dialog.isSupported();
-    console.log(`Dialog capability is supported`);
-    return `Dialog capability is supported`;
+    const result = await dialog.isSupported();
+    if (result) {
+      console.log('Dialog capability is supported.');
+    } else {
+      console.log('Dialog capability is not supported.');
+      throw new Error('Dialog capability is not supported');
+    }
   } catch (error) {
-    console.log('Error checking Dialog capability:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking Dialog capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
     throw error;
   }
 };

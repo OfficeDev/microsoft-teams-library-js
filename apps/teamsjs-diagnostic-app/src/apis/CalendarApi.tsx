@@ -4,14 +4,22 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const calendar_CheckCalendarCapability = async (): Promise<string> => {
+export const calendar_CheckCalendarCapability = async (): Promise<void> => {
   console.log('Executing CheckCalendarCapability...');
   try {
-    calendar.isSupported();
-    console.log(`Calendar capability is supported`);
-    return `Calendar capability is supported`;
+    const result = await calendar.isSupported();
+    if (result) {
+      console.log('Calendar capability is supported.');
+    } else {
+      console.log('Calendar capability is not supported.');
+      throw new Error('Calendar capability is not supported');
+    }
   } catch (error) {
-    console.log('Error checking Calendar capability:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking Calendar capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
     throw error;
   }
 };

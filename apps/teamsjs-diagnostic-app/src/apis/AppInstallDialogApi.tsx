@@ -9,18 +9,21 @@ export interface AppInstallDialogInput {
   appId: string;
 }
 
-export const appInstallDialog_CheckAppInstallCapability = async () => {
+export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void> => {
   console.log('Executing CheckAppInstallCapability...');
   try {
-    const capabilityCheckResult = await appInstallDialog.isSupported();
-    if (capabilityCheckResult) {
+    const result = await appInstallDialog.isSupported();
+    if (result) {
       console.log('App Install Dialog capability is supported.');
     } else {
       console.log('App Install Dialog capability is not supported.');
+      throw new Error('App Install Dialog capability is not supported');
     }
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking App Install Dialog capability:', errorMessage);
     if (error instanceof Error) {
-      console.log('Error checking App Install Dialog capability:', error.message);
+      console.error('Stack trace:', error.stack);
     }
     throw error;
   }

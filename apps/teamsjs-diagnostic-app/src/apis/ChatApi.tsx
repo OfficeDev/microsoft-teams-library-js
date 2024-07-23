@@ -4,14 +4,22 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const chat_CheckChatCapability = async (): Promise<string> => {
+export const chat_CheckChatCapability = async (): Promise<void> => {
   console.log('Executing CheckChatCapability...');
   try {
-    chat.isSupported();
-    console.log(`Chat capability is supported`);
-    return `Chat capability is supported`;
+    const result = await chat.isSupported();
+    if (result) {
+      console.log('Chat capability is supported.');
+    } else {
+      console.log('Chat capability is not supported.');
+      throw new Error('Chat capability is not supported');
+    }
   } catch (error) {
-    console.log('Error checking Chat capability:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking Chat capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
     throw error;
   }
 };

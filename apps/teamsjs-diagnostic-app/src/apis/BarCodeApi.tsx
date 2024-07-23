@@ -6,11 +6,22 @@ import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
   console.log('Executing CheckBarCodeCapability...');
+  
   try {
-    barCode.isSupported();
-    console.log('BarCode capability is supported.');
+    const result = barCode.isSupported();
+    if (result) {
+      console.log('BarCode capability is supported.');
+    } else {
+      console.log('BarCode capability is not supported.');
+      throw new Error('BarCode capability is not supported');
+    }
   } catch (error) {
-    console.log('Error checking BarCode capability:', JSON.stringify(error, null, 2));
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking BarCode capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
+    throw error;
   }
 };
 
