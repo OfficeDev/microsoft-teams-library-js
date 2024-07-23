@@ -130,7 +130,7 @@ export namespace stageView {
      */
     export function close(): Promise<void> {
       return new Promise((resolve) => {
-        ensureInitialized(runtime, FrameContexts.stage);
+        ensureInitialized(runtime, FrameContexts.content);
 
         if (!isSupported()) {
           throw errorNotSupportedOnPlatform;
@@ -138,7 +138,7 @@ export namespace stageView {
 
         resolve(
           sendAndHandleSdkError(
-            getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Close),
+            getApiVersionTag(stageViewTelemetryVersionNumber, ApiName.StageView_Self_Close),
             'stageView.self.close',
           ),
         );

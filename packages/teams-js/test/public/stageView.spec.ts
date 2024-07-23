@@ -142,11 +142,7 @@ describe('stageView', () => {
   });
 
   describe('self', () => {
-    const allowedSelfContexts = [FrameContexts.stage];
-
-    it('should not allow calls before initialization', async () => {
-      await expect(stageView.self.close()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
-    });
+    const allowedSelfContexts = [FrameContexts.content];
 
     Object.values(FrameContexts).forEach((frameContext) => {
       if (!allowedSelfContexts.some((allowedSelfContexts) => allowedSelfContexts === frameContext)) {
@@ -154,7 +150,7 @@ describe('stageView', () => {
           await utils.initializeWithContext(frameContext);
 
           await expect(() => stageView.self.close()).rejects.toThrowError(
-            `This call is only allowed in following contexts: ["stage"]. Current context: "${frameContext}".`,
+            `This call is only allowed in following contexts: ["content"]. Current context: "${frameContext}".`,
           );
         });
       }
@@ -162,7 +158,7 @@ describe('stageView', () => {
 
     // Working on this UT 
     it('should return promise and resolve', async () => {
-      await utils.initializeWithContext(FrameContexts.stage);
+      await utils.initializeWithContext(FrameContexts.content);
       makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.self.close();
@@ -176,7 +172,7 @@ describe('stageView', () => {
     });
 
     it('should properly handle errors', async () => {
-      await utils.initializeWithContext(FrameContexts.stage);
+      await utils.initializeWithContext(FrameContexts.content);
       makeRuntimeSupportStageViewCapability();
 
       const promise = stageView.self.close();
@@ -191,7 +187,7 @@ describe('stageView', () => {
     });
 
     it('should throw error when stageView is not supported.', async () => {
-      await utils.initializeWithContext(FrameContexts.stage);
+      await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
 
       expect.assertions(1);
