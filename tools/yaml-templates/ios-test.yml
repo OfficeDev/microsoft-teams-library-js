@@ -7,6 +7,13 @@ parameters:
     type: string
 
 steps:
+  - script: |
+      echo "OneES_DefaultRepoBranch current value is set to $OneES_DefaultRepoBranch"
+      echo "Overriding OneES_DefaultRepoBranch"
+      export OneES_DefaultRepoBranch=/test/branch
+      echo "OneES_DefaultRepoBranch is set to $OneES_DefaultRepoBranch"
+    displayName: 'Set environment variable'
+
   - checkout: self
   - checkout: ${{ parameters.iOSAppHostingSdkGitPath }}
     path: iOSHost
