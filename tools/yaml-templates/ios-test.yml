@@ -20,38 +20,38 @@ steps:
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
       condition: always()
 
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '18.x'
-    displayName: 'Install Node.js'
+  # - task: NodeTool@0
+  #   inputs:
+  #     versionSpec: '18.x'
+  #   displayName: 'Install Node.js'
 
-  - task: Cache@2
-    inputs:
-      key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache pnpm
+  # - task: Cache@2
+  #   inputs:
+  #     key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
+  #     path: $(Pipeline.Workspace)/.pnpm-store
+  #   displayName: Cache pnpm
 
-  - task: CmdLine@2
-    displayName: 'Setup pnpm'
-    inputs:
-      script: |
-        corepack enable
-        corepack prepare pnpm@9.0.6 --activate
-        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  # - task: CmdLine@2
+  #   displayName: 'Setup pnpm'
+  #   inputs:
+  #     script: |
+  #       corepack enable
+  #       corepack prepare pnpm@9.0.6 --activate
+  #       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
-  - task: CmdLine@2
-    displayName: 'Install client sdk dependencies'
-    inputs:
-      script: |
-        pnpm install
-      workingDirectory: '$(ClientSdkProjectDirectory)'
+  # - task: CmdLine@2
+  #   displayName: 'Install client sdk dependencies'
+  #   inputs:
+  #     script: |
+  #       pnpm install
+  #     workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - task: CmdLine@2
-    displayName: 'Build client sdk'
-    inputs:
-      script: |
-        pnpm build-force-blazor
-      workingDirectory: '$(ClientSdkProjectDirectory)'
+  # - task: CmdLine@2
+  #   displayName: 'Build client sdk'
+  #   inputs:
+  #     script: |
+  #       pnpm build-force-blazor
+  #     workingDirectory: '$(ClientSdkProjectDirectory)'
 
   - task: DownloadSecureFile@1
     name: localhostRootCertificate
