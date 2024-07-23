@@ -6,9 +6,9 @@ interface LogConsoleProps {
   maxLogs?: number; // Allow passing maximum logs as prop
 }
 
-const DEFAULT_MAX_LOGS = 100;
+const MAX_LOGS = 1000;
 
-const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEFAULT_MAX_LOGS }) => {
+const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
   const [logStatements, setLogStatements] = useState<string[]>(initialLogs);
   const [filteredLogs, setFilteredLogs] = useState<string[]>(initialLogs);
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,7 +21,7 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
       const timestamp = new Date();
       const logMessage = args.join(' ');
       const formattedLog = `${lineNumber}| ${timestamp} - ${logMessage}`;
-      const updatedLogs = [...prevLogs.slice(-maxLogs + 1), formattedLog];
+      const updatedLogs = [...prevLogs.slice(-MAX_LOGS + 1), formattedLog];
       sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
       return updatedLogs;
     });
@@ -32,9 +32,9 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
       const storedLogs = sessionStorage.getItem('logStatements');
       if (storedLogs) {
         const parsedLogs = JSON.parse(storedLogs);
-        const cappedLogs = parsedLogs.slice(-maxLogs);
+        // Ensure maximum logs loaded
+        const cappedLogs = parsedLogs.slice(-MAX_LOGS);
         setLogStatements(cappedLogs);
-        setFilteredLogs(cappedLogs);
       }
     };
 
