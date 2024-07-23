@@ -28,10 +28,13 @@ const CustomScenario: React.FC = () => {
     for (const { api, func, input } of customScenario) {
   
       try {
+        console.log("Enter");
         await handleRunScenario(api, func, input);
         console.log(`Success: ${func} for ${api.title}`);
+        console.log("Exit");
       } catch (error: any) {
-        console.error(`Failure: ${func} for ${api.title} - ${error.message}`);
+        console.log(`Failure: ${func} for ${api.title} - ${error.message}`);
+        console.log("Exit");
         setScenarioStatus(`Failed: ${func} - ${error.message}`);
         isSuccess = false;
         console.log('Custom scenario failed.');

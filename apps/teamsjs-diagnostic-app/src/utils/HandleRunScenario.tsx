@@ -52,7 +52,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
             throw new Error(`Unknown function ${func} for ${api.title}`);
         }
         break;
-        
+
         case 'barCode':
           switch (func) {
             case 'CheckBarCodeCapability':
