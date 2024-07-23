@@ -1,65 +1,94 @@
 import React, { useState } from 'react';
 import './CustomScenario.css';
-
-import apiComponents from './ApiComponents';
+import { useDrop } from 'react-dnd';
+import apiComponents, { ApiComponent } from './ApiComponents';
+import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
+import BarCodeAPIs from '../../apis/BarCodeApi';
 
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
+
+  const handleRunScenario = async () => {
+    console.log('Running custom scenario...');
+    for (const { api, func, input } of customScenario) {
+      console.log(`Executing ${func} for ${api.title} with input: ${input}`);
+      // Execute the API function based on the selected function and input
+    }
+  };
+
+  const addToScenario = (api: ApiComponent, func: string, input?: string) => {
+    console.log(`Adding ${func} for ${api.title} with input: ${input}`);
+    setCustomScenario([...customScenario, { api, func, input }]);
+  };
+
+  const removeApiFromScenario = (index: number) => {
+    setCustomScenario(customScenario.filter((_, i) => i !== index));
+  };
+
+  const clearScenario = () => {
+    setCustomScenario([]);
+  };
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'API',
+    drop: (item: { api: ApiComponent, func: string, input?: string }) => addToScenario(item.api, item.func, item.input),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
 
   const generateVerticalBoxes = () => {
     const filteredApis = apiComponents.filter(api =>
       api.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const options = ['Option 1', 'Option 2', 'Option 3'];
-    return filteredApis.map((api, index) => (
+    return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
-        <div className="api-container">
-          <div className="api-header">{api.title}</div>
-          <div className="dropdown-menu">
-            <label htmlFor={`select-${index}`} className="sr-only">
-              Select an option for API {index}
-            </label>
-            <select id={`select-${index}`} className="box-dropdown">
-              {options.map((option, optionIndex) => (
-                <option key={optionIndex} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        {api.title === 'App Install Dialog API' ? (
+          <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : api.title === 'Bar Code API' ? (
+          <BarCodeAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
+        ) : null}
       </div>
     ));
   };
 
   return (
     <div className="scenario-container">
-        <div className="scenario2-container">
-            <div className="scenario2-header">
-                <h2>Custom Scenario</h2>
-                <p>Click the button to run your custom scenario.</p>
-            </div>
-            <div className="custom-scenario-box">
-                <button className="scenario1-button">Run Scenario</button>
-                <button className="set-scenario-button">+</button>
-                <div className="api-section">
-                <div className="api-header">APIs Being Run:</div>
-                </div>
-            </div>
-            </div>
-        
-        <div className="all-api-container">
-          <input
-            type="text"
-            className="search-bar"
-            placeholder="Search APIs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="all-api-box">{generateVerticalBoxes()}</div>
+      <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'transparent' }}>
+        <div className="scenario2-header">
+          <h2>Custom Scenario</h2>
+          <p>Drag and drop API components here to build your custom scenario.</p>
         </div>
-    </div >
+        <div className="custom-scenario-box">
+          <button className="scenario1-button" onClick={handleRunScenario}>Run Scenario</button>
+          <div className="api-section">
+            <div className="api-header">APIs Being Run:</div>
+            <div className="vertical-box-container">
+              {customScenario.map((item, index) => (
+                <div key={index} className="dropped-api">
+                  <span>{`${item.api.title}, ${item.func}${item.input ? `(${item.input})` : ''}`}</span>
+                  <button onClick={() => removeApiFromScenario(index)} className="remove-api-button">X</button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
+        </div>
+      </div>
+
+      <div className="all-api-container">
+        <input
+          type="text"
+          className="search-bar"
+          placeholder="Search APIs..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <div className="all-api-box">{generateVerticalBoxes()}</div>
+      </div>
+    </div>
   );
 };
 
