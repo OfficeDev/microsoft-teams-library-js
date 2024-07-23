@@ -9,3 +9,4 @@ export * from './ChatApi';
 export * from './DialogApi';
 export * from './DialogCardApi';
 export * from './PagesApi';
+export * from './ProfileApi';

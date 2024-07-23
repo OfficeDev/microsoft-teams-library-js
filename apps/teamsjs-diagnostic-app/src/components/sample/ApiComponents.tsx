@@ -7,6 +7,7 @@ import CallAPIs from '../../apis/CallApi';
 import CalendarAPIs from '../../apis/CalendarApi';
 import DialogCardAPIs from '../../apis/DialogCardApi';
 import PagesAPIs from '../../apis/PagesApi';
+import ProfileAPIs from '../../apis/ProfileApi';
 
 export interface ApiComponent {
   title: string;
@@ -178,7 +179,32 @@ const apiComponents: ApiComponent[] = [
     }),
     onClick: () => console.log('Pages API called'),
     renderComponent: (props) => <PagesAPIs {...props} />
-  }
+  },
+  {
+    title: 'Profile API',
+    name: 'profile',
+    functions: [
+      { name: 'CheckProfileCapability', requiresInput: false },
+      { name: 'ShowProfile', requiresInput: true },
+    ],
+    defaultInput: JSON.stringify({
+      modality: 'Card',
+      persona: {
+        identifiers: {
+          Smtp: 'test@microsoft.com',
+        },
+      },
+      targetElementBoundingRect: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+      },
+      triggerType: 'MouseClick',
+    }),
+    onClick: () => console.log('Profile API called'),
+    renderComponent: (props) => <ProfileAPIs {...props} />
+  },
 ];
 
 export default apiComponents;

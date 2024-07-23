@@ -1,4 +1,4 @@
-import { AdaptiveCardDialogInfo, barCode } from '@microsoft/teams-js';
+import { AdaptiveCardDialogInfo, barCode, profile } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
@@ -29,6 +29,7 @@ import { dialog_CheckDialogCapability } from '../apis/DialogApi';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialogCard_CheckDialogAdaptiveCardCapability, dialogCard_OpenAdaptiveCardDialog } from '../apis/DialogCardApi';
 import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, pages_NavigateToApp, pages_RegisterFocusEnterHandler, pages_RegisterFullScreenChangeHandler, pages_SetCurrentFrame, pages_ShareDeepLink } from '../apis/PagesApi';
+import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/ProfileApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -256,10 +257,38 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         }
         break;
 
-      default:
-        throw new Error(`Unknown API component ${api.title}`);
-    }
+    case 'profile':
+    switch (func) {
+      case 'CheckProfileCapability':
+        result = await profile_CheckProfileCapability
+        break;
+        case 'ShowProfile':
+      try {
+        if (!input) {
+          throw new Error('Input value for ShowProfile is missing.');
+        }
 
+        const showProfileRequest: profile.ShowProfileRequest = JSON.parse(input);
+
+        await profile_ShowProfile(showProfileRequest);
+        result = 'Profile displayed successfully.';
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          result = `Error displaying profile: ${error.message}`;
+        } else {
+          result = `Unknown error occurred: ${String(error)}`;
+        }
+      }
+      break;
+
+    default:
+      result = `Function ${func} is not recognized for profile API.`;
+      break;
+  }
+  break;
+          
+
+    }
     return result;
 
   } catch (error) {
