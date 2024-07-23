@@ -68,7 +68,7 @@
 }
 
 .api-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 10px;
   font-weight: bold;
 }
@@ -111,7 +111,7 @@
 }
 
 .box-dropdown {
-  margin-left: auto;
+  align-items: left;
 }
 
 .box-title {
@@ -120,6 +120,11 @@
 
 .box-dropdown {
   margin-left: 10px;
+}
+
+.input-container{
+  margin-left: 10px;
+  margin-top: 5px;
 }
 
 .scenario2-header {

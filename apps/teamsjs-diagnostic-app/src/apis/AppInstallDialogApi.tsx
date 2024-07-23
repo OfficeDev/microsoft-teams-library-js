@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 import * as microsoftTeams from '@microsoft/teams-js';
@@ -16,7 +15,7 @@ export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void
     if (result) {
       console.log('App Install Dialog module is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.');
     } else {
-      console.log('App Instal lDialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
+      console.log('App Install Dialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
       throw new Error('AppInstallDialog capability is not supported');
     }
   } catch (error) {

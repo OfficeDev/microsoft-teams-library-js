@@ -1,7 +1,6 @@
 import { barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { useState } from 'react';
-import { useDrag } from 'react-dnd';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const barCode_CheckBarCodeCapability = async (): Promise<void> => {

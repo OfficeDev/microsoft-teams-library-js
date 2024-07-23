@@ -28,6 +28,7 @@ import {
 import { dialog_CheckDialogCapability } from '../apis/DialogApi';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialogCard_CheckDialogAdaptiveCardCapability, dialogCard_OpenAdaptiveCardDialog } from '../apis/DialogCardApi';
+import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, pages_NavigateToApp, pages_RegisterFocusEnterHandler, pages_RegisterFullScreenChangeHandler, pages_SetCurrentFrame, pages_ShareDeepLink } from '../apis/PagesApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -184,6 +185,76 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
               throw new Error(`Unknown function ${func} for ${api.title}`);
           }
           break;
+
+    case 'pages':
+        switch (func) {
+          case 'CheckCapability':
+            result = await pages_CheckCapability();
+            break;
+            case 'NavigateCrossDomain':
+              if (typeof input === 'string') {
+                try {
+                  await pages_NavigateCrossDomain(input);
+                } catch (error) {
+                  console.log('Invalid input format for NavigateCrossDomain', error);
+                  throw new Error('Invalid input format for NavigateCrossDomain');
+                }
+              } else {
+                throw new Error('Input must be a string for NavigateCrossDomain');
+              }
+              break;
+          case 'NavigateToApp':
+            if (input) {
+              try {
+                const parsedInput = JSON.parse(input);
+                result = await pages_NavigateToApp(parsedInput);
+              } catch (error) {
+                console.log('Invalid input format for NavigateToApp');
+                throw new Error('Invalid input format for NavigateToApp');
+              }
+            } else {
+              throw new Error('Input is required for NavigateToApp');
+            }
+            break;
+          case 'ShareDeepLink':
+            if (input) {
+              try {
+                const parsedInput = JSON.parse(input);
+                result = await pages_ShareDeepLink(parsedInput);
+              } catch (error) {
+                console.log('Invalid input format for ShareDeepLink');
+                throw new Error('Invalid input format for ShareDeepLink');
+              }
+            } else {
+              throw new Error('Input is required for ShareDeepLink');
+            }
+            break;
+          case 'SetCurrentFrame':
+            if (input) {
+              try {
+                const parsedInput = JSON.parse(input);
+                result = await pages_SetCurrentFrame(parsedInput);
+              } catch (error) {
+                console.log('Invalid input format for SetCurrentFrame');
+                throw new Error('Invalid input format for SetCurrentFrame');
+              }
+            } else {
+              throw new Error('Input is required for SetCurrentFrame');
+            }
+            break;
+          case 'GetConfig':
+            result = await pages_GetConfig();
+            break;
+          case 'RegisterFocusEnterHandler':
+            result = await pages_RegisterFocusEnterHandler();
+            break;
+          case 'RegisterFullScreenChangeHandler':
+            result = await pages_RegisterFullScreenChangeHandler();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
 
       default:
         throw new Error(`Unknown API component ${api.title}`);

@@ -8,3 +8,4 @@ export * from './CallApi';
 export * from './ChatApi';
 export * from './DialogApi';
 export * from './DialogCardApi';
+export * from './PagesApi';

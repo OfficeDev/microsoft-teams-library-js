@@ -6,6 +6,7 @@ import ChatAPIs from '../../apis/ChatApi';
 import CallAPIs from '../../apis/CallApi';
 import CalendarAPIs from '../../apis/CalendarApi';
 import DialogCardAPIs from '../../apis/DialogCardApi';
+import PagesAPIs from '../../apis/PagesApi';
 
 export interface ApiComponent {
   title: string;
@@ -140,6 +141,44 @@ const apiComponents: ApiComponent[] = [
     onClick: () => console.log('DialogCard API called'),
     renderComponent: (props) => <DialogCardAPIs {...props} />
   },
+  {
+    title: 'Pages API',
+    name: 'pages',
+    functions: [
+      { name: 'CheckCapability', requiresInput: false },
+      { name: 'GetConfig', requiresInput: false },
+      { name: 'NavigateCrossDomain', requiresInput: true },
+      { name: 'NavigateToApp', requiresInput: true },
+      { name: 'ShareDeepLink', requiresInput: true },
+      { name: 'RegisterFocusEnterHandler', requiresInput: false },
+      { name: 'SetCurrentFrame', requiresInput: true },
+      { name: 'RegisterFullScreenChangeHandler', requiresInput: false }
+    ],
+    defaultInput: JSON.stringify({
+      NavigateCrossDomain: 'https://localhost:4000',
+      NavigateToApp: {
+        appId: 'appIdA',
+        pageId: 'pageIdB',
+        webUrl: 'webUrlC',
+        subPageId: 'subPageIdD',
+        channelId: 'channelIdE',
+      },
+    ShareDeepLink: {
+        subEntityId: 'subEntityIdA',
+        subEntityLabel: 'subEntityLabelB',
+        subEntityWebUrl: 'subEntityWebUrlC',
+        subPageId: 'subPageIdD',
+        subPageLabel: 'subPageLabelE',
+        subPageWebUrl: 'subPageWebUrlF',
+      },
+      SetCurrentFrame: {
+        websiteUrl: 'https://www.bing.com',
+        contentUrl: 'https://www.bing.com',
+      },
+    }),
+    onClick: () => console.log('Pages API called'),
+    renderComponent: (props) => <PagesAPIs {...props} />
+  }
 ];
 
 export default apiComponents;

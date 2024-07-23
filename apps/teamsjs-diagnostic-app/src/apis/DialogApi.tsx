@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialog } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
