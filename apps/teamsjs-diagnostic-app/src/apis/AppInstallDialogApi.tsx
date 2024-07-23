@@ -14,10 +14,10 @@ export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void
   try {
     const result = await appInstallDialog.isSupported();
     if (result) {
-      console.log('App Install Dialog capability is supported.');
+      console.log('AppInstallDialog capability is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.');
     } else {
-      console.log('App Install Dialog capability is not supported.');
-      throw new Error('App Install Dialog capability is not supported');
+      console.log('AppInstallDialog capability is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
+      throw new Error('AppInstallDialog capability is not supported');
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -32,7 +32,7 @@ export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void
 export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) {
   return new Promise<void>((resolve, reject) => {
     if (!input.appId) {
-      console.error('App ID is missing');
+      console.log('App ID is missing');
       return reject('App ID is required');
     }
 
@@ -48,7 +48,7 @@ export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) 
         url: `https://teams.microsoft.com/l/app/${appId}`,
       });
 
-      console.log('App install dialog started successfully');
+      console.log('App install dialog opened successfully');
       resolve();
     } catch (error) {
       console.error('Error opening app install dialog:', error);

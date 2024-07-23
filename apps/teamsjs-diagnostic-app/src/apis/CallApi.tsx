@@ -9,9 +9,9 @@ export const call_CheckCallCapability = async (): Promise<void> => {
   try {
     const result = await call.isSupported();
     if (result) {
-      console.log('Call capability is supported.');
+      console.log('Call capability is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.');
     } else {
-      console.log('Call capability is not supported.');
+      console.log('Call capability is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
       throw new Error('Call capability is not supported');
     }
   } catch (error) {
@@ -39,7 +39,7 @@ export const call_StartCall = async (input: string): Promise<string> => {
     validateInput(input);
 
     const result = await call.startCall({ targets: [input] });
-    console.log('StartCall result:', result);
+    console.log('Call started successfully. StartCall result:', result);
     return 'Call started successfully';
   } catch (error) {
     console.log('Error in StartCall:', error);

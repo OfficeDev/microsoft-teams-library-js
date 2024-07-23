@@ -11,7 +11,7 @@ export const calendar_CheckCalendarCapability = async (): Promise<void> => {
     if (result) {
       console.log('Calendar capability is supported.');
     } else {
-      console.log('Calendar capability is not supported.');
+      console.log('Calendar capability is not supported. Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
       throw new Error('Calendar capability is not supported');
     }
   } catch (error) {
@@ -33,6 +33,7 @@ export const calendar_ComposeMeeting = async (input: string): Promise<string> =>
     return 'Completed';
   } catch (error) {
     console.log('Error composing meeting:', error);
+    console.log('Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
     throw error;
   }
 };
@@ -49,6 +50,7 @@ export const calendar_OpenCalendarItem = async (input: string): Promise<string> 
     return 'Completed';
   } catch (error) {
     console.log('Error opening calendar item:', error);
+    console.log('Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
     throw error;
   }
 };

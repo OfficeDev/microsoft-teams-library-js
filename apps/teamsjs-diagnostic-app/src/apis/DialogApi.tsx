@@ -9,9 +9,9 @@ export const dialog_CheckDialogCapability = async (): Promise<void> => {
   try {
     const result = await dialog.isSupported();
     if (result) {
-      console.log('Dialog capability is supported.');
+      console.log('Dialog capability is supported. Dialog is supported on all platforms besides M365 Mobile and Outlook Mobile.');
     } else {
-      console.log('Dialog capability is not supported.');
+      console.log('Dialog capability is not supported. Dialog is not supported on M365 Mobile or Outlook Mobile.');
       throw new Error('Dialog capability is not supported');
     }
   } catch (error) {

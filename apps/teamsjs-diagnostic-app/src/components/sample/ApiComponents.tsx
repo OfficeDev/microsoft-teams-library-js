@@ -37,7 +37,6 @@ const apiComponents: ApiComponent[] = [
       { name: 'CheckBarCodeCapability', requiresInput: false },
       { name: 'ScanBarCode', requiresInput: true },
       { name: 'HasBarCodePermission', requiresInput: false },
-      { name: 'RequestBarCodePermission', requiresInput: false },
     ],
     defaultInput: '{}',
     onClick: () => console.log('Barcode API called'),
@@ -90,7 +89,6 @@ const apiComponents: ApiComponent[] = [
       { name: 'OpenGroupChat', requiresInput: true },
       { name: 'OpenConversation', requiresInput: true },
       { name: 'CloseConversation', requiresInput: false },
-      { name: 'GetChatMembers', requiresInput: false },
     ],
     defaultInput: JSON.stringify({
       OpenChat: {

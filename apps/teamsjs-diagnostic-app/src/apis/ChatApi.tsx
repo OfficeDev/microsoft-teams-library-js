@@ -9,9 +9,9 @@ export const chat_CheckChatCapability = async (): Promise<void> => {
   try {
     const result = await chat.isSupported();
     if (result) {
-      console.log('Chat capability is supported.');
+      console.log('Chat capability is supported. Chat is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop (Version 2205 or later), and Teams Mobile.');
     } else {
-      console.log('Chat capability is not supported.');
+      console.log('Chat capability is not supported. Chat is not supported on M365 Web, M365 Desktop, Outlook Desktop (Versions older than 2205), M365 Mobile, or Outlook Mobile.');
       throw new Error('Chat capability is not supported');
     }
   } catch (error) {
@@ -84,18 +84,6 @@ export const chat_CloseConversation = async (): Promise<string> => {
     return 'Conversation Closed';
   } catch (error) {
     console.log('Error closing conversation:', error);
-    throw error;
-  }
-};
-
-export const chat_GetChatMembers = async (): Promise<string> => {
-  console.log('Executing GetChatMembers...');
-  try {
-    const members = await conversations.getChatMembers();
-    console.log('Chat members retrieved successfully:', members);
-    return JSON.stringify(members);
-  } catch (error) {
-    console.log('Error getting chat members:', error);
     throw error;
   }
 };

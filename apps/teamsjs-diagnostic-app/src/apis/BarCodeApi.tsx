@@ -12,8 +12,9 @@ export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
     if (result) {
       console.log('BarCode capability is supported.');
     } else {
-      console.log('BarCode capability is not supported.');
-      throw new Error('BarCode capability is not supported');
+      console.log('BarCode capability is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
+      console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
+      throw new Error('BarCode capability is not supported.');
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -35,6 +36,8 @@ export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): P
 
   } catch (error) {
     console.log('Error scanning BarCode:', JSON.stringify(error, null, 2));
+    console.log('ScanBarCode functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
+    console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
     throw error;
   }
 };
@@ -46,17 +49,9 @@ export const barCode_HasBarCodePermission = async (): Promise<void> => {
     console.log('BarCode permission has been granted.');
   } catch (error) {
     console.log('Error checking BarCode permission:', JSON.stringify(error, null, 2));
-    throw error;
-  }
-};
+    console.log('HasBarCodePermission functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
+    console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
 
-export const barCode_RequestBarCodePermission = async (): Promise<void> => {
-  console.log('Executing RequestBarCodePermission...');
-  try {
-    await barCode.requestPermission();
-    console.log('BarCode permission request successful.');
-  } catch (error) {
-    console.log('Error requesting BarCode permission:', JSON.stringify(error, null, 2));
     throw error;
   }
 };
