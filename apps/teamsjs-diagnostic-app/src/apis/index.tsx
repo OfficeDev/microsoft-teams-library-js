@@ -6,7 +6,6 @@ export * from './BarCodeApi';
 export * from './CalendarApi';
 export * from './CallApi';
 export * from './ChatApi';
-export * from './ClipboardApi';
 export * from './CustomApi';
 export * from './DialogApi';
 export * from './DialogCardApi';

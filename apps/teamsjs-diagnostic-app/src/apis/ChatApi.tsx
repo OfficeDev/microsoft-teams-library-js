@@ -29,7 +29,7 @@ export const chat_OpenChat = async (input: string): Promise<string> => {
   try {
     const chatParams = JSON.parse(input);
     if (!chatParams.user) {
-      console.log('User is required')
+      console.log('User is required');
       throw new Error('User is required');
     }
 
@@ -68,7 +68,7 @@ export const chat_OpenConversation = async (input: string): Promise<string> => {
       throw new Error('entityId, title, and subEntityId are required');
     }
     await conversations.openConversation(conversationParams);
-    console.log('Conversations opened successfully')
+    console.log('Conversations opened successfully');
     return 'Conversation Opened';
   } catch (error) {
     console.log('Error opening conversation:', error);
@@ -99,6 +99,7 @@ export const chat_GetChatMembers = async (): Promise<string> => {
     throw error;
   }
 };
+
 interface ChatAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
@@ -107,6 +108,12 @@ interface ChatAPIsProps {
 const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
+
+  const functionsRequiringInput = [
+    'OpenChat', 
+    'OpenGroupChat', 
+    'OpenConversation'
+  ]; // List of functions requiring input
 
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
@@ -126,10 +133,7 @@ const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }
   };
 
   // Determine if the input box should be shown based on the selected function
-  const showInputBox = selectedFunction && apiComponent.inputType === 'text' &&
-    (selectedFunction === 'OpenChat' || 
-     selectedFunction === 'OpenGroupChat' || 
-     selectedFunction === 'OpenConversation');
+  const showInputBox = selectedFunction && functionsRequiringInput.includes(selectedFunction);
 
   const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
@@ -144,9 +148,9 @@ const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }
           value={selectedFunction}
         >
           <option value="">Select a function</option>
-          {apiComponent.options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
+          {apiComponent.functions.map((func, index) => (
+            <option key={index} value={func.name}>
+              {func.name}
             </option>
           ))}
         </select>

@@ -62,6 +62,8 @@ const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScena
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
 
+  const functionsRequiringInput = ['ComposeMeeting', 'OpenCalendarItem'];
+
   const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunc = event.target.value;
     setSelectedFunction(selectedFunc);
@@ -92,13 +94,13 @@ const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScena
           value={selectedFunction}
         >
           <option value="">Select a function</option>
-          {apiComponent.options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
+          {apiComponent.functions.map((func, index) => (
+            <option key={index} value={func.name}>
+              {func.name}
             </option>
           ))}
         </select>
-        {selectedFunction && apiComponent.inputType === 'text' && selectedFunction !== 'CheckCalendarCapability' && (
+        {selectedFunction && functionsRequiringInput.includes(selectedFunction) && (
           <div className="input-container">
             <input
               type="text"

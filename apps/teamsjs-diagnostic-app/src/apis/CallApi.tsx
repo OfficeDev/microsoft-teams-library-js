@@ -79,9 +79,9 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
           value={selectedFunction}
         >
           <option value="">Select a function</option>
-          {apiComponent.options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
+          {apiComponent.functions.map((func, index) => (
+            <option key={index} value={func.name}>
+              {func.name}
             </option>
           ))}
         </select>
