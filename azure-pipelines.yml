@@ -255,14 +255,15 @@ extends:
               os: macOS
             variables:
               Codeql.BuildIdentifier: test
+              Codeql.ADO.System.JobName: E2ETestIOS
               Codeql.SkipTaskAutoInjection: true
-              ob_sdl_codeql_compiled_enabled: false
-              sdl.codeql.compiled.enabled: false
+              ob_sdl_codeql_compiled_enabled: False
+              sdl.codeql.compiled.enabled: False
             templateContext:
               sdl:
                 codeql:
                   compiled:
-                    enabled: false
+                    enabled: False
                     justificationForDisabling: 'Because of issue in iOS UI tests. Reported to 1ES team.'
 
             steps:
