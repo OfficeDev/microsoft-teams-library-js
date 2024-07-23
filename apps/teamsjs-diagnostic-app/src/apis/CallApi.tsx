@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const call_CheckCallCapability = async (): Promise<string> => {
   console.log('Executing CheckCallCapability...');
@@ -57,17 +58,7 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction === 'StartCall' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const chat_CheckChatCapability = async (): Promise<string> => {
   console.log('Executing CheckChatCapability...');
@@ -122,17 +123,7 @@ const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }
      selectedFunction === 'OpenGroupChat' || 
      selectedFunction === 'OpenConversation');
 
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: showInputBox ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

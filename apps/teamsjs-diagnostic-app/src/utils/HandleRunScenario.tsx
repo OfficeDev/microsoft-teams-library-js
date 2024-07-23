@@ -52,58 +52,58 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
             throw new Error(`Unknown function ${func} for ${api.title}`);
         }
         break;
-
-      case 'barCode':
-        switch (func) {
-          case 'CheckBarCodeCapability':
-            result = await barCode_CheckBarCodeCapability();
-            break;
-          case 'ScanBarCode':
-            if (input) {
-              try {
-                const parsedInput: barCode.BarCodeConfig = JSON.parse(input);
-                result = await barCode_ScanBarCode(parsedInput);
-              } catch (error) {
-                throw new Error('Invalid input format for ScanBarCode');
+        
+        case 'barCode':
+          switch (func) {
+            case 'CheckBarCodeCapability':
+              result = await barCode_CheckBarCodeCapability();
+              break;
+            case 'ScanBarCode':
+              if (input) {
+                try {
+                  const parsedInput: barCode.BarCodeConfig = JSON.parse(input);
+                  result = await barCode_ScanBarCode(parsedInput);
+                } catch (error) {
+                  throw new Error('Invalid input format for ScanBarCode');
+                }
+              } else {
+                throw new Error('Input is required for ScanBarCode');
               }
-            } else {
-              throw new Error('Input is required for ScanBarCode');
-            }
-            break;  
-          case 'HasBarCodePermission':
-            result = await barCode_HasBarCodePermission();
-            break;
-          case 'RequestBarCodePermission':
-            result = await barCode_RequestBarCodePermission();
-            break;
-          default:
-            throw new Error(`Unknown function ${func} for ${api.title}`);
-        }
-        break;
-
-      case 'calendar':
-        switch (func) {
-          case 'CheckCalendarCapability':
-            result = await calendar_CheckCalendarCapability();
-            break;
-          case 'ComposeMeeting':
-            if (input) {
-              result = await calendar_ComposeMeeting(input);
-            } else {
-              throw new Error('Input is required for ComposeMeeting');
-            }
-            break;
-          case 'OpenCalendarItem':
-            if (input) {
-              result = await calendar_OpenCalendarItem(input);
-            } else {
-              throw new Error('Input is required for OpenCalendarItem');
-            }
-            break;
-          default:
-            throw new Error(`Unknown function ${func} for ${api.title}`);
-        }
-        break;
+              break;  
+            case 'HasBarCodePermission':
+              result = await barCode_HasBarCodePermission();
+              break;
+            case 'RequestBarCodePermission':
+              result = await barCode_RequestBarCodePermission();
+              break;
+            default:
+              throw new Error(`Unknown function ${func} for ${api.title}`);
+          }
+          break;
+  
+        case 'calendar':
+          switch (func) {
+            case 'CheckCalendarCapability':
+              result = await calendar_CheckCalendarCapability();
+              break;
+            case 'ComposeMeeting':
+              if (input) {
+                result = await calendar_ComposeMeeting(input);
+              } else {
+                throw new Error('Input is required for ComposeMeeting');
+              }
+              break;
+            case 'OpenCalendarItem':
+              if (input) {
+                result = await calendar_OpenCalendarItem(input);
+              } else {
+                throw new Error('Input is required for OpenCalendarItem');
+              }
+              break;
+            default:
+              throw new Error(`Unknown function ${func} for ${api.title}`);
+          }
+          break;  
 
       case 'call':
         switch (func) {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
+import * as microsoftTeams from '@microsoft/teams-js';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export interface AppInstallDialogInput {
   appId: string;
@@ -24,35 +26,34 @@ export const appInstallDialog_CheckAppInstallCapability = async () => {
   }
 };
 
-export const appInstallDialog_OpenAppInstallDialog = async (input: AppInstallDialogInput): Promise<string> => {
-  console.log('Executing OpenAppInstallDialog with input:', input);
-  try {
-    const validateInput = (input: AppInstallDialogInput) => {
-      if (!input.appId) {
-        console.log('appId is required for OpenAppInstallDialog');
-        throw new Error('appId is required for OpenAppInstallDialog');
-      }
-      console.log('Input validation passed for appId:', input.appId);
-    };
-
-    validateInput(input);
-
-    const submit = async (input: AppInstallDialogInput): Promise<string> => {
-      console.log('Submitting OpenAppInstallDialog with appId:', input.appId);
-      const result = await appInstallDialog.openAppInstallDialog(input);
-      console.log('OpenAppInstallDialog called with result:', result);
-      return 'called';
-    };
-
-    return await submit(input);
-
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log('Error in OpenAppInstallDialog:', error.message);
+export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) {
+  return new Promise<void>((resolve, reject) => {
+    if (!input.appId) {
+      console.error('App ID is missing');
+      return reject('App ID is required');
     }
-    throw error;
-  }
-};
+
+    console.log(`Starting OpenAppInstallDialog with appId: ${input.appId}`);
+
+    try {
+      const appId = input.appId;
+      // SDK/API call to open install dialog
+      microsoftTeams.tasks.startTask({
+        title: 'Install App',
+        height: 600,
+        width: 400,
+        url: `https://teams.microsoft.com/l/app/${appId}`,
+      });
+
+      console.log('App install dialog started successfully');
+      resolve();
+    } catch (error) {
+      console.error('Error opening app install dialog:', error);
+      reject(error);
+    }
+  });
+}
+
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (apiComponent: ApiComponent, func: string, result: string) => void;
@@ -72,18 +73,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction === 'OpenAppInstallDialog' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
-
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

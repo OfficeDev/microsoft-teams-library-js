@@ -144,7 +144,7 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
               return (
                 <div key={index} className="log-statement">
                   <span className="log-line-number">{parts[0]}</span>  
-                  <span className="log-timestamp">{parts[1]}</span> - 
+                  <span className="log-timestamp">{parts[1]}</span>
                   <span className="log-message">{parts[2]}</span>
                 </div>
               );

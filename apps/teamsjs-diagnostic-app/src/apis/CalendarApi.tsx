@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const calendar_CheckCalendarCapability = async (): Promise<string> => {
   console.log('Executing CheckCalendarCapability...');
@@ -70,17 +71,7 @@ const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScena
     }
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction && apiComponent.inputType === 'text' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

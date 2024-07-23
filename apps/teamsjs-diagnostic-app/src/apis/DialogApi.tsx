@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDrag } from 'react-dnd';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialog } from '@microsoft/teams-js';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const dialog_CheckDialogCapability = async () => {
   console.log('Executing CheckDialogCapability...');
@@ -26,17 +27,7 @@ const DialogAPIs: React.FC<DialogAPIsProps> = ({ apiComponent, onDropToScenarioB
     setSelectedFunction(event.target.value);
   };
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction]);
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction});
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>

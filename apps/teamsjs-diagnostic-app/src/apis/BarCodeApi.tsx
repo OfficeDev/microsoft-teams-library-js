@@ -2,6 +2,7 @@ import { barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { useState } from 'react';
 import { useDrag } from 'react-dnd';
+import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
   console.log('Executing CheckBarCodeCapability...');
@@ -68,17 +69,7 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
     setInputValue(event.target.value);
   };
 
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction === 'ScanBarCode' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
+  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
 
   return (
     <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
