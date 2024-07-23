@@ -1,7 +1,7 @@
 {
   "name": "copilot",
   "platforms": "*",
-  "version": ">=2.22.0",
+  "version": ">=2.25.0",
   "testCases": [
     {
       "title": "copilot hasM365Chat license API Call - Success",
