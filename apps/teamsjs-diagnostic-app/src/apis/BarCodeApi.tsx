@@ -52,7 +52,7 @@ export const barCode_RequestBarCodePermission = async (): Promise<void> => {
 
 interface BarCodeAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, result: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
 const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {

@@ -93,7 +93,7 @@ export const chat_GetChatMembers = async (): Promise<string> => {
 };
 interface ChatAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
 const ChatAPIs: React.FC<ChatAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {

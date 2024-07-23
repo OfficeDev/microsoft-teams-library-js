@@ -2,12 +2,6 @@ import React, { useState } from 'react';
 import './CustomScenario.css';
 import { useDrop } from 'react-dnd';
 import apiComponents, { ApiComponent } from './ApiComponents';
-import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
-import BarCodeAPIs from '../../apis/BarCodeApi';
-import CalendarAPIs from '../../apis/CalendarApi';
-import CallAPIs from '../../apis/CallApi';
-import ChatAPIs from '../../apis/ChatApi';
-import DialogAPIs from '../../apis/DialogApi';
 import { handleRunScenario } from './../../utils/HandleRunScenario';
 import { app } from '@microsoft/teams-js';
 
@@ -127,25 +121,19 @@ const CustomScenario: React.FC = () => {
     const filteredApis = apiComponents.filter(api =>
       api.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
+  
     return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
-        {api.title === 'App Install Dialog API' ? (
-          <AppInstallDialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : api.title === 'Bar Code API' ? (
-          <BarCodeAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : api.title === 'Calendar API' ? (
-          <CalendarAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : api.title === 'Call API' ? (
-          <CallAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : api.title === 'Chat API' ? (
-          <ChatAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : api.title === 'Dialog API' ? (
-          <DialogAPIs apiComponent={api} onDropToScenarioBox={addToScenario} />
-        ) : null}
+        {api.renderComponent ? (
+          api.renderComponent({ apiComponent: api, onDropToScenarioBox: addToScenario })
+        ) : (
+          <div>
+            <h3>{api.title}</h3>
+          </div>
+        )}
       </div>
     ));
-  };
+  };  
 
   const handleFunctionSelection = (apiTitle: string, func: string) => {
     setSelectedFunctions(prev => ({ ...prev, [apiTitle]: func }));
@@ -249,22 +237,27 @@ const CustomScenario: React.FC = () => {
       )}
 
       {showScenarioList && (
-            <div className="saved-scenarios-dialog active">
-              <div className="saved-scenarios-content">
-                <h2>Saved Scenarios</h2>
-                <ul>
-                  {savedScenarios.map((scenario, index) => (
-                    <li key={index}>
-                      <button onClick={() => loadScenario(scenario)}>{scenario.name}</button>
-                      <button className="delete-button" onClick={() => handleDeleteScenario(index)}>X</button>
-                    </li>
-                  ))}
-                </ul>
-                <button className="close-button" onClick={() => setShowScenarioList(false)}>Close</button>
-              </div>
-            </div>
-          )}
+        <div className="scenario-list active">
+          <div className="scenario-list-content">
+            <h2>Saved Scenarios</h2>
+            {savedScenarios.length > 0 ? (
+              <ul>
+                {savedScenarios.map((scenario, index) => (
+                  <li key={index}>
+                    <span>{scenario.name}</span>
+                    <button onClick={() => loadScenario(scenario)}>Load</button>
+                    <button onClick={() => handleDeleteScenario(index)}>Delete</button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No saved scenarios.</p>
+            )}
+            <button onClick={() => setShowScenarioList(false)}>Close</button>
+          </div>
         </div>
+      )}
+    </div>
   );
 };
 

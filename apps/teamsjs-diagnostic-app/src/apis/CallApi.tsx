@@ -41,7 +41,7 @@ export const call_StartCall = async (input: string): Promise<string> => {
 
 interface CallAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
 const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {

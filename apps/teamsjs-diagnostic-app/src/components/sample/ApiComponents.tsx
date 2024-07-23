@@ -1,3 +1,11 @@
+import React from 'react';
+import AppInstallDialogAPIs from './../../apis/AppInstallDialogApi';
+import BarCodeAPIs from './../../apis/BarCodeApi';
+import DialogAPIs from '../../apis/DialogApi';
+import ChatAPIs from '../../apis/ChatApi';
+import CallAPIs from '../../apis/CallApi';
+import CalendarAPIs from '../../apis/CalendarApi';
+
 export interface ApiComponent {
   title: string;
   name: string;
@@ -7,6 +15,7 @@ export interface ApiComponent {
   defaultCheckboxState?: boolean;
   label?: string;
   options: string[];
+  renderComponent?: (props: { apiComponent: ApiComponent; onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void }) => JSX.Element;
 }
 
 const apiComponents: ApiComponent[] = [
@@ -19,6 +28,7 @@ const apiComponents: ApiComponent[] = [
     }),
     inputType: 'text',
     onClick: () => console.log('App Install Dialog API called'),
+    renderComponent: (props) => <AppInstallDialogAPIs {...props} />
   },
   {
     title: 'Bar Code API',
@@ -27,6 +37,7 @@ const apiComponents: ApiComponent[] = [
     defaultInput: '{}',
     inputType: 'text',
     onClick: () => console.log('Barcode API called'),
+    renderComponent: (props) => <BarCodeAPIs {...props} />
   },
   {
     title: 'Calendar API',
@@ -46,6 +57,7 @@ const apiComponents: ApiComponent[] = [
         itemId: '123',
       },
     }),
+    renderComponent: (props) => <CalendarAPIs {...props} />
   },
   {
     title: 'Call API',
@@ -58,6 +70,7 @@ const apiComponents: ApiComponent[] = [
     }),
     inputType: 'text',
     onClick: () => console.log('Call API called'),
+    renderComponent: (props) => <CallAPIs {...props} />
   },
   {
     title: 'Chat API',
@@ -80,6 +93,7 @@ const apiComponents: ApiComponent[] = [
       },
     }),
     onClick: () => console.log('Chat API called'),
+    renderComponent: (props) => <ChatAPIs {...props} />
   },
   {
     title: 'Dialog API',
@@ -87,6 +101,7 @@ const apiComponents: ApiComponent[] = [
     options: ['CheckDialogCapability'],
     inputType: 'none',
     onClick: () => console.log('Dialog API called'),
+    renderComponent: (props) => <DialogAPIs {...props} />
   },
   // Add more API components as needed
 ];

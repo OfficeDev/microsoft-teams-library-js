@@ -17,7 +17,7 @@ export const dialog_CheckDialogCapability = async () => {
 };
 interface DialogAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
 const DialogAPIs: React.FC<DialogAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
