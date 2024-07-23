@@ -439,3 +439,20 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.default-input2 {
+  border-radius: 5px;
+  width: 95px;
+  height: 30px;
+  padding: 0;
+  font-size: 13px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 8px;
+  box-sizing: border-box; 
+  line-height: 40px;
+}
+

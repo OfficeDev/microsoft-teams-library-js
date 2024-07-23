@@ -243,7 +243,7 @@ const CustomScenario: React.FC = () => {
                             value={apiInputs[api.title] || ''}
                             onChange={(e) => handleInputChange(api.title, e.target.value)}
                           />
-                          <button onClick={() => handleAddDefaultInput(api.title)}>Default</button>
+                          <button className="default-input2" onClick={() => handleAddDefaultInput(api.title)}>Default Input</button>
                         </div>
                       )}
                     </div>
@@ -269,7 +269,7 @@ const CustomScenario: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => setShowScenarioList(false)}>Close</button>
+                <button className="close-button" onClick={() => setShowScenarioList(false)}>Close</button>
               </div>
             </div>
           )}
