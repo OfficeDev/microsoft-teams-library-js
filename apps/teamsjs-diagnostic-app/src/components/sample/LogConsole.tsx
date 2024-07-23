@@ -49,7 +49,7 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEF
     return () => {
       console.log = originalConsoleLog;
     };
-  }, [maxLogs]);
+  }, []);
 
   useEffect(() => {
     if (searchTerm === '') {
