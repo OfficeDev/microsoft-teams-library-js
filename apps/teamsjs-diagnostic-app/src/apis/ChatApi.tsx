@@ -9,10 +9,10 @@ export const chat_CheckChatCapability = async (): Promise<void> => {
   try {
     const result = await chat.isSupported();
     if (result) {
-      console.log('Chat capability is supported. Chat is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop (Version 2205 or later), and Teams Mobile.');
+      console.log('Chat module is supported. Chat is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop (Version 2205 or later), and Teams Mobile.');
     } else {
-      console.log('Chat capability is not supported. Chat is not supported on M365 Web, M365 Desktop, Outlook Desktop (Versions older than 2205), M365 Mobile, or Outlook Mobile.');
-      throw new Error('Chat capability is not supported');
+      console.log('Chat module is not supported. Chat is not supported on M365 Web, M365 Desktop, Outlook Desktop (Versions older than 2205), M365 Mobile, or Outlook Mobile.');
+      throw new Error('Chat module is not supported');
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

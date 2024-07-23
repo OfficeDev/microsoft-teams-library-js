@@ -5,6 +5,7 @@ import DialogAPIs from '../../apis/DialogApi';
 import ChatAPIs from '../../apis/ChatApi';
 import CallAPIs from '../../apis/CallApi';
 import CalendarAPIs from '../../apis/CalendarApi';
+import DialogCardAPIs from '../../apis/DialogCardApi';
 
 export interface ApiComponent {
   title: string;
@@ -117,7 +118,28 @@ const apiComponents: ApiComponent[] = [
     onClick: () => console.log('Dialog API called'),
     renderComponent: (props) => <DialogAPIs {...props} />
   },
-  // Add more API components as needed
+  {
+    title: 'DialogCard API',
+    name: 'dialogCard',
+    functions: [
+      { name: 'CheckDialogAdaptiveCardCapability', requiresInput: false },
+      { name: 'OpenAdaptiveCardDialog', requiresInput: true },
+    ],
+    defaultInput: JSON.stringify({
+      card: {
+        type: "AdaptiveCard",
+        version: "1.0",
+        body: [
+          {
+            type: "TextBlock",
+            text: "Hello, Adaptive Card!"
+          }
+        ]
+      }
+    }),
+    onClick: () => console.log('DialogCard API called'),
+    renderComponent: (props) => <DialogCardAPIs {...props} />
+  },
 ];
 
 export default apiComponents;

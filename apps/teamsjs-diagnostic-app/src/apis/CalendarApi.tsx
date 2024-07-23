@@ -9,9 +9,9 @@ export const calendar_CheckCalendarCapability = async (): Promise<void> => {
   try {
     const result = await calendar.isSupported();
     if (result) {
-      console.log('Calendar capability is supported.');
+      console.log('Calendar module is supported.');
     } else {
-      console.log('Calendar capability is not supported. Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
+      console.log('Calendar module is not supported. Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
       throw new Error('Calendar capability is not supported');
     }
   } catch (error) {

@@ -9,10 +9,10 @@ export const call_CheckCallCapability = async (): Promise<void> => {
   try {
     const result = await call.isSupported();
     if (result) {
-      console.log('Call capability is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.');
+      console.log('Call module is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.');
     } else {
-      console.log('Call capability is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-      throw new Error('Call capability is not supported');
+      console.log('Call module is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
+      throw new Error('Call module is not supported');
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

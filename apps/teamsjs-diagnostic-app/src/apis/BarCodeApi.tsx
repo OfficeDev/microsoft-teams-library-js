@@ -10,9 +10,9 @@ export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
   try {
     const result = barCode.isSupported();
     if (result) {
-      console.log('BarCode capability is supported.');
+      console.log('BarCode module is supported.');
     } else {
-      console.log('BarCode capability is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
+      console.log('BarCode module is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
       console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
       throw new Error('BarCode capability is not supported.');
     }

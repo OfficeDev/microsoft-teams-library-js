@@ -1,4 +1,4 @@
-import { barCode } from '@microsoft/teams-js';
+import { AdaptiveCardDialogInfo, barCode } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
@@ -27,6 +27,7 @@ import {
 } from '../apis/ChatApi';
 import { dialog_CheckDialogCapability } from '../apis/DialogApi';
 import { ApiComponent } from '../components/sample/ApiComponents';
+import { dialogCard_CheckDialogAdaptiveCardCapability, dialogCard_OpenAdaptiveCardDialog } from '../apis/DialogCardApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -160,6 +161,29 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
             throw new Error(`Unknown function ${func} for ${api.title}`);
         }
         break;
+
+        case 'dialogCard':
+        switch (func) {
+          case 'CheckDialogAdaptiveCardCapability':
+            result = await dialogCard_CheckDialogAdaptiveCardCapability();
+            break;
+            case 'OpenAdaptiveCardDialog':
+              if (input) {
+                try {
+                  const parsedInput: AdaptiveCardDialogInfo = JSON.parse(input);
+                  result = await dialogCard_OpenAdaptiveCardDialog(parsedInput);
+                } catch (error) {
+                  console.log('Invalid input format for OpenAdaptiveCardDialog');
+                  throw new Error('Invalid input format for OpenAdaptiveCardDialog');
+                }
+              } else {
+                throw new Error('Input is required for OpenAdaptiveCardDialog');
+              }
+              break;
+            default:
+              throw new Error(`Unknown function ${func} for ${api.title}`);
+          }
+          break;
 
       default:
         throw new Error(`Unknown API component ${api.title}`);

@@ -14,9 +14,9 @@ export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void
   try {
     const result = await appInstallDialog.isSupported();
     if (result) {
-      console.log('AppInstallDialog capability is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.');
+      console.log('App Install Dialog module is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.');
     } else {
-      console.log('AppInstallDialog capability is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
+      console.log('App Instal lDialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
       throw new Error('AppInstallDialog capability is not supported');
     }
   } catch (error) {
