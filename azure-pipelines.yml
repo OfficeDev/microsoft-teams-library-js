@@ -256,6 +256,8 @@ extends:
             variables:
               Codeql.BuildIdentifier: test
               Codeql.SkipTaskAutoInjection: true
+              ob_sdl_codeql_compiled_enabled: false
+              sdl.codeql.compiled.enabled: false
             templateContext:
               sdl:
                 codeql:
