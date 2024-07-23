@@ -1,7 +1,7 @@
 .scenario-container {
   display: flex;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 2px;
 }
 
 .horizontal-box {
@@ -105,6 +105,7 @@
   padding: 5px;
   border-bottom: 1px solid #ccc;
   overflow: auto;
+  margin-bottom: 8px;
 }
 
 .search-input-container {
@@ -117,4 +118,10 @@
   max-width: 300px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.log-line-number {
+  color: #888;
+  margin-right: 15px;
+  font-weight: bold;
 }

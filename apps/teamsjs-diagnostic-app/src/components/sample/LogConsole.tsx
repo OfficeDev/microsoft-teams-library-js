@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import './LogConsole.css';
-import { jsPDF } from 'jspdf';
 
 interface LogConsoleProps {
   initialLogs?: string[];
+  maxLogs?: number; // Allow passing maximum logs as prop
 }
 
-const MAX_LOGS = 100;
+const DEFAULT_MAX_LOGS = 100;
 
-const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
+const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [], maxLogs = DEFAULT_MAX_LOGS }) => {
   const [logStatements, setLogStatements] = useState<string[]>(initialLogs);
+  const [filteredLogs, setFilteredLogs] = useState<string[]>(initialLogs);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showShareOptions, setShowShareOptions] = useState(false);
 
+  // Function to capture console logs with line numbers
   const captureConsoleLogs = (...args: any[]) => {
-    const timestampedLog = `${new Date()} - ${args.join(' ')}`;
     setLogStatements(prevLogs => {
-      const updatedLogs = [...prevLogs.slice(-MAX_LOGS + 1), timestampedLog];
+      const lineNumber = prevLogs.length + 1;
+      const timestamp = new Date();
+      const logMessage = args.join(' ');
+      const formattedLog = `${lineNumber}| ${timestamp} - ${logMessage}`;
+      const updatedLogs = [...prevLogs.slice(-maxLogs + 1), formattedLog];
       sessionStorage.setItem('logStatements', JSON.stringify(updatedLogs));
       return updatedLogs;
     });
@@ -26,9 +32,9 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
       const storedLogs = sessionStorage.getItem('logStatements');
       if (storedLogs) {
         const parsedLogs = JSON.parse(storedLogs);
-        // Ensure maximum 100 logs loaded
-        const cappedLogs = parsedLogs.slice(-MAX_LOGS);
+        const cappedLogs = parsedLogs.slice(-maxLogs);
         setLogStatements(cappedLogs);
+        setFilteredLogs(cappedLogs);
       }
     };
 
@@ -43,32 +49,34 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
     return () => {
       console.log = originalConsoleLog;
     };
-  }, []);
+  }, [maxLogs]);
+
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredLogs(logStatements);
+    } else {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      setFilteredLogs(logStatements.filter(log => log.toLowerCase().includes(lowerCaseSearchTerm)));
+    }
+  }, [searchTerm, logStatements]);
 
   const handleClearLogs = () => {
     setLogStatements([]);
+    setFilteredLogs([]);
     sessionStorage.removeItem('logStatements');
   };
 
   const handleDownloadLogs = () => {
-    const doc = new jsPDF();
-    let yOffset = 10;
-    const maxLineWidth = 180; // Maximum line width in mm
-    const lineHeight = 10;
-
-    logStatements.forEach((log, index) => {
-      const splitText = doc.splitTextToSize(log, maxLineWidth);
-      splitText.forEach((line: string | string[]) => {
-        if (yOffset > 280) {  // Adjust page break threshold
-          doc.addPage();
-          yOffset = 10;
-        }
-        doc.text(line, 10, yOffset);
-        yOffset += lineHeight;
-      });
-    });
-
-    doc.save('log_statements.pdf');
+    const logsText = logStatements.join('\n');
+    const blob = new Blob([logsText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'log_statements.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   const handleShareLogs = (option: 'teams' | 'outlook') => {
@@ -89,33 +97,49 @@ const LogConsole: React.FC<LogConsoleProps> = ({ initialLogs = [] }) => {
         <div className="content">
           <div className="log-console">
             <div className="log-actions">
-              <button onClick={handleClearLogs} className="clear-logs-button">
-                Clear Logs
-              </button>
-              <button onClick={handleDownloadLogs} className="download-logs-button">
-                Download Logs
-              </button>
-              <div className="share-logs-dropdown">
-                <button onClick={() => setShowShareOptions(!showShareOptions)} className="share-logs-button">
-                  Share Logs
+              <div className="search-input-container">
+                <input
+                  type="text"
+                  placeholder="Search logs..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="action-buttons">
+                <button onClick={handleClearLogs} className="clear-logs-button">
+                  Clear Logs
                 </button>
-                {showShareOptions && (
-                  <div className="share-options">
-                    <button onClick={() => handleShareLogs('teams')} className="share-option">
-                      Share to Teams
-                    </button>
-                    <button onClick={() => handleShareLogs('outlook')} className="share-option">
-                      Share to Outlook
-                    </button>
-                  </div>
-                )}
+                <button onClick={handleDownloadLogs} className="download-logs-button">
+                  Download Logs
+                </button>
+                <div className="share-logs-dropdown">
+                  <button onClick={() => setShowShareOptions(!showShareOptions)} className="share-logs-button">
+                    Share Logs
+                  </button>
+                  {showShareOptions && (
+                    <div className="share-options">
+                      <button onClick={() => handleShareLogs('teams')} className="share-option">
+                        Share to Teams
+                      </button>
+                      <button onClick={() => handleShareLogs('outlook')} className="share-option">
+                        Share to Outlook
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            {logStatements.map((statement, index) => (
-              <div key={index} className="log-statement">
-                {statement}
-              </div>
-            ))}
+            {filteredLogs.map((statement, index) => {
+              const parts = statement.split('|').map(part => part.trim());
+              return (
+                <div key={index} className="log-statement">
+                  <span className="log-line-number">{parts[0]}</span>  
+                  <span className="log-timestamp">{parts[1]}</span>
+                  <span className="log-message">{parts[2]}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
