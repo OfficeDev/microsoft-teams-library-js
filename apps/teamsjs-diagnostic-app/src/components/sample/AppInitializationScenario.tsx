@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './AppInitializationScenario.css'
 import { app } from '@microsoft/teams-js';
-import { registerOnResume } from '../../apis/AppApi';
+import { getContextV2, registerBeforeSuspendOrTerminateHandler, registerOnResume, registerOnThemeChangeHandlerV2 } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
 
 const AppInitializationScenario: React.FC = () => {
@@ -11,24 +11,30 @@ const AppInitializationScenario: React.FC = () => {
     app.initialize();
   }, []);
 
-  const runAppInitializationScenario = async () => {
-    try {
-      console.log('Running App Initialization Scenario...');
-      console.log('Attempting to register on resume handler...');
-      await registerOnResume();
-      console.log('Attempting to authenticate user...');
-      const authSuccess = await authenticateUser();
-      if (authSuccess) {
-        console.log('App Initialization Scenario successfully completed');
-        setSuccessMessage('App Initialization Scenario successfully completed');
-      } else {
-        console.log('User not authenticated');
-        showSignInPopup();
-      }
-    } catch (error: any) {
-      console.log(`App initialization scenario failed. ${error.message}`);
+const runAppInitializationScenario = async () => {
+  try {
+    console.log('Running App Initialization Scenario...');
+    await registerOnResume();
+    await getContextV2();
+    await registerOnThemeChangeHandlerV2();
+    await registerBeforeSuspendOrTerminateHandler(3000);
+
+    // Authenticate user
+    console.log('Attempting to authenticate user...');
+    const authSuccess = await authenticateUser();
+    if (authSuccess) {
+      console.log("User authenticated")
+      console.log('App Initialization Scenario successfully completed');
+      setSuccessMessage('App Initialization Scenario successfully completed');
+    } else {
+      console.log('User not authenticated');
+      showSignInPopup();
     }
-  };
+  } catch (error: any) {
+    console.error(`App initialization scenario failed. ${error.message}`);
+  }
+};
+
 
   const showSignInPopup = () => {
     console.log('Showing sign-in popup...');
