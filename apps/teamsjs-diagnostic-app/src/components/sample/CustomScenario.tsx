@@ -177,6 +177,10 @@ const CustomScenario: React.FC = () => {
     setNewScenarioName('');
   };  
 
+  const handlePreviewClick = () => {
+    window.open('https://learn.microsoft.com/en-us/javascript/api/@microsoft/teams-js/?view=msteams-client-js-latest', '_blank');
+  };
+
   return (
     <div className="scenario-container">
       <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'transparent' }}>
@@ -193,9 +197,9 @@ const CustomScenario: React.FC = () => {
             </div>
           </div>
           <div className= "button-group-vertical">
-          <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
-          <button className="plus-sign-button" onClick={() => setShowAddScenario(true)}>+</button>
-          <button className="scenario-list-button" onClick={() => setShowScenarioList(true)}>Saved Scenarios</button>
+            <button className="clear-all-button" onClick={clearScenario}>Clear All</button>
+            <button className="plus-sign-button" onClick={() => setShowAddScenario(true)}>+</button>
+            <button className="scenario-list-button" onClick={() => setShowScenarioList(true)}>Saved Scenarios</button>
           </div>
         </div>
       </div>
@@ -208,86 +212,81 @@ const CustomScenario: React.FC = () => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        <button aria-label="Definitions" title="Definitions" className="btn btn-icon" onClick={handlePreviewClick}>
+          <i className="fa-solid fa-book-open"></i>
+        </button>
         <div className="all-api-box">{generateVerticalBoxes()}</div>
       </div>
 
       {showAddScenario && (
-            <div className="add-dialog active">
-              <div className="addScenario-content">
-                <div className="dialog-header">
-                  <h2>Create New Scenario</h2>
-                  <button className="clear-all-button2" onClick={handleClearAll}>Clear All</button>
-                </div>
-                <label htmlFor="scenario-name">Scenario Name:</label>
-                <input
-                  type="text"
-                  id="scenario-name"
-                  placeholder="Enter scenario name"
-                  value={newScenarioName}
-                  onChange={(e) => setNewScenarioName(e.target.value)}
-                />
-                <div className="api-selection">
-                  {apiComponents.map((api, index) => (
-                    <div key={index} className="api-item">
-                      <input
-                        type="checkbox"
-                        id={api.title}
-                        checked={selectedApis[api.title] || false}
-                        onChange={(e) => handleApiSelection(api.title, e.target.checked)}
-                      />
-                      <label htmlFor={api.title}>{api.title}</label>
-                      {selectedApis[api.title] && (
-                        <div className="function-input-group">
-                          <select
-                            aria-label="Select function"
-                            value={selectedFunctions[api.title] || ''}
-                            onChange={(e) => handleFunctionSelection(api.title, e.target.value)}
-                          >
-                            <option value="">Select Function</option>
-                            {api.functions.map((func, i) => (
-                              <option key={i} value={func.name}>{func.name}</option> 
-                            ))}
-                          </select>
-                          {selectedFunctions[api.title] && api.functions.find(func => func.name === selectedFunctions[api.title])?.requiresInput && (
-                            <div>
-                              <input
-                                type="text"
-                                placeholder="Enter input"
-                                value={apiInputs[api.title] || ''}
-                                onChange={(e) => handleInputChange(api.title, e.target.value)}
-                              />
-                              <button className="default-input2" onClick={() => handleAddDefaultInput(api.title)}>Default Input</button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <button onClick={saveScenario}>Save Scenario</button>
-                <button onClick={() => setShowAddScenario(false)}>Cancel</button>
-              </div>
+        <div className="add-dialog active">
+          <div className="addScenario-content">
+            <div className="dialog-header">
+              <h2>Create New Scenario</h2>
+              <button className="clear-all-button" onClick={() => setShowAddScenario(false)}>X</button>
             </div>
-          )}
-
+            <input
+              type="text"
+              className="scenario-name-input"
+              placeholder="Scenario Name"
+              value={newScenarioName}
+              onChange={(e) => setNewScenarioName(e.target.value)}
+            />
+            <div className="api-list">
+              {apiComponents.map((api) => (
+                <div key={api.title} className="api-item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!!selectedApis[api.title]}
+                      onChange={(e) => handleApiSelection(api.title, e.target.checked)}
+                    />
+                    {api.title}
+                  </label>
+                  {selectedApis[api.title] && (
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Function"
+                        value={selectedFunctions[api.title] || ''}
+                        onChange={(e) => handleFunctionSelection(api.title, e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Input"
+                        value={apiInputs[api.title] || ''}
+                        onChange={(e) => handleInputChange(api.title, e.target.value)}
+                        onFocus={() => handleAddDefaultInput(api.title)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button className="save-scenario-button" onClick={saveScenario}>Save Scenario</button>
+            <button className="clear-all-button" onClick={handleClearAll}>Clear All</button>
+          </div>
+        </div>
+      )}
 
       {showScenarioList && (
-            <div className="saved-scenarios-dialog active">
-              <div className="saved-scenarios-content">
-                <h2>Saved Scenarios</h2>
-                <ul>
-                  {savedScenarios.map((scenario, index) => (
-                    <li key={index}>
-                      <button onClick={() => loadScenario(scenario)}>{scenario.name}</button>
-                      <button className="delete-button" onClick={() => handleDeleteScenario(index)}>X</button>
-                    </li>
-                  ))}
-                </ul>
-                <button className="close-button" onClick={() => setShowScenarioList(false)}>Close</button>
-              </div>
-            </div>
-          )}
+        <div className="scenario-list-dialog">
+          <div className="dialog-header">
+            <h2>Saved Scenarios</h2>
+            <button className="clear-all-button" onClick={() => setShowScenarioList(false)}>X</button>
+          </div>
+          <ul>
+            {savedScenarios.map((scenario, index) => (
+              <li key={index}>
+                <span>{scenario.name}</span>
+                <button className="load-scenario-button" onClick={() => loadScenario(scenario)}>Load</button>
+                <button className="delete-scenario-button" onClick={() => handleDeleteScenario(index)}>Delete</button>
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
+    </div>
   );
 };
 

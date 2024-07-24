@@ -131,14 +131,6 @@
   gap: 20px;
 }
 
-.search-bar {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 .dropped-api {
   display: flex;
   flex-wrap: wrap;
@@ -484,4 +476,38 @@
 
 .clear-all-button2:hover {
   background-color: darkred;
+}
+
+.search-bar {
+  width: calc(100% - 40px); /* Adjust width to fit the button */
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 50px; /* Ensure space for the button */
+  margin-bottom: 10px;
+}
+
+.btn-icon {
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: #464eb8;
+}
+
+.btn-icon i {
+  font-size: 20px;
 }
