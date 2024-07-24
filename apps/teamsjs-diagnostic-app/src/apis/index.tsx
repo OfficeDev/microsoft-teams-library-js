@@ -9,6 +9,7 @@ export * from './ChatApi';
 export * from './ClipboardApi';
 export * from './DialogApi';
 export * from './DialogCardApi';
+export * from './GeolocationApi';
 export * from './PagesApi';
 export * from './ProfileApi';
 export * from './SearchApi';

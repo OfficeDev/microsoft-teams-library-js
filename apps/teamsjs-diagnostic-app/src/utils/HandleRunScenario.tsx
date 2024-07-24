@@ -32,6 +32,7 @@ import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, page
 import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/ProfileApi';
 import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
 import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_CopyText, clipboard_Paste } from '../apis/ClipboardApi';
+import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation } from '../apis/GeolocationApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -367,7 +368,29 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         }
         break;
 
+        case 'geolocation':
+        switch (func) {
+          case 'CheckGeoLocationCapability':
+            result = await geolocation_CheckGeoLocationCapability();
+            break;
+            case 'CheckGeoLocationMapCapability':
+              result = await geolocation_CheckGeoLocationMapCapability();
+              break;
+          case 'GetCurrentLocation':
+            result = await geolocation_GetCurrentLocation();
+            break;
+          case 'ChooseLocation':
+            result = await geolocation_ChooseLocation();
+            break;
+          default:
+            throw new Error(`Unknown function ${func} for ${api.title}`);
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown API ${api.name}`);
     }
+
     return result;
 
   } catch (error) {

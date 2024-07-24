@@ -10,6 +10,7 @@ import PagesAPIs from '../../apis/PagesApi';
 import ProfileAPIs from '../../apis/ProfileApi';
 import SearchAPIs from '../../apis/SearchApi';
 import ClipboardAPIs from '../../apis/ClipboardApi';
+import DialogCardBotAPIs from '../../apis/GeolocationApi';
 
 export interface ApiComponent {
   title: string;
@@ -232,6 +233,18 @@ const apiComponents: ApiComponent[] = [
     }),    
     onClick: () => console.log('Clipboard API called'),
     renderComponent: (props) => <ClipboardAPIs {...props} />
+  },
+  {
+    title: 'GeolocationAPI',
+    name: 'geolocation',
+    functions: [
+      { name: 'CheckGeoLocationCapability', requiresInput: false },
+      { name: 'CheckGeoLocationMapCapability', requiresInput: false },
+      { name: 'GetCurrentLocation', requiresInput: false },
+      { name: 'ChooseLocation', requiresInput: false },
+    ],
+    onClick: () => console.log('DialogCardBot API called'),
+    renderComponent: (props) => <DialogCardBotAPIs {...props} />
   },
 ];
 
