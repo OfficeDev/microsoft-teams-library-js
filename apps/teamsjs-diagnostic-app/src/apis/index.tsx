@@ -18,3 +18,4 @@ export * from './StageViewApi';
 export * from './PeopleApi';
 export * from './MenusApi';
 export * from './PagesTabsApi';
+export * from './TeamsCoreApi';

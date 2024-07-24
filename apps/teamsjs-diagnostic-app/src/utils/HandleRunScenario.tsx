@@ -38,6 +38,7 @@ import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../
 import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/PeopleApi';
 import { menus_CheckMenusCapability, menus_SetNavBarMenu, menus_SetUpViews, menus_ShowActionMenu } from '../apis/MenusApi';
 import { pagesTabs_CheckPagesTabsCapability, pagesTabs_GetMruTabInstances, pagesTabs_GetTabInstances, pagesTabs_NavigateToTab } from '../apis/PagesTabsApi';
+import { teamsCore_CheckTeamsCoreCapability, teamsCore_EnablePrintCapability, teamsCore_Print, teamsCore_RegisterBeforeUnloadHandler, teamsCore_RegisterOnLoadHandler } from '../apis/TeamsCoreApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -582,7 +583,55 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                       default:
                         throw new Error(`Unknown function ${func} for ${api.title}`);
                     }
-                    break;                  
+                    break;    
+                    
+                    case 'teamsCore':
+                      switch (func) {
+                        case 'CheckTeamsCoreCapability':
+                          result = await teamsCore_CheckTeamsCoreCapability();
+                          break;
+                        case 'EnablePrintCapability':
+                          try {
+                            result = await teamsCore_EnablePrintCapability();
+                          } catch (error) {
+                            console.log('Error during EnablePrintCapability operation:', error);
+                            throw new Error('Error during EnablePrintCapability operation');
+                          }
+                          break;
+                        case 'Print':
+                          try {
+                            result = await teamsCore_Print();
+                          } catch (error) {
+                            console.log('Error during Print operation:', error);
+                            throw new Error('Error during Print operation');
+                          }
+                          break;
+                        case 'RegisterOnLoadHandler':
+                          try {
+                            result = await teamsCore_RegisterOnLoadHandler();
+                          } catch (error) {
+                            console.log('Error during RegisterOnLoadHandler operation:', error);
+                            throw new Error('Error during RegisterOnLoadHandler operation');
+                          }
+                          break;
+                        case 'RegisterBeforeUnloadHandler':
+                          try {
+                            const parsedInput = input ? JSON.parse(input) : '';
+                            result = await teamsCore_RegisterBeforeUnloadHandler(parsedInput);
+                          } catch (error) {
+                            if (error instanceof SyntaxError) {
+                              console.log('Invalid input format for RegisterBeforeUnloadHandler:', error);
+                              throw new Error('Invalid input format for RegisterBeforeUnloadHandler');
+                            } else {
+                              console.log('Error during RegisterBeforeUnloadHandler operation:', error);
+                              throw new Error('Error during RegisterBeforeUnloadHandler operation');
+                            }
+                          }
+                          break;
+                        default:
+                          throw new Error(`Unknown function ${func} for ${api.title}`);
+                      }
+                      break;                    
     }
 
     return result;

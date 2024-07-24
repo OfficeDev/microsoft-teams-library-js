@@ -17,6 +17,7 @@ import { stageView } from '@microsoft/teams-js';
 import PeopleAPIs from '../../apis/PeopleApi';
 import MenusAPIs from '../../apis/MenusApi';
 import PagesTabsAPIs from '../../apis/PagesTabsApi';
+import TeamsCoreAPIs from '../../apis/TeamsCoreApi';
 
 export interface ApiComponent {
   title: string;
@@ -357,6 +358,20 @@ const apiComponents: ApiComponent[] = [
     }),
     onClick: () => console.log('PagesTabs API called'),
     renderComponent: (props) => <PagesTabsAPIs {...props} />
+  },
+  {
+    title: 'TeamsCore API',
+    name: 'teamsCore',
+    functions: [
+      { name: 'CheckTeamsCoreCapability', requiresInput: false },
+      { name: 'EnablePrintCapability', requiresInput: false },
+      { name: 'Print', requiresInput: false },
+      { name: 'RegisterOnLoadHandler', requiresInput: false },
+      { name: 'RegisterBeforeUnloadHandler', requiresInput: true }
+    ],
+    defaultInput: '4',
+    onClick: () => console.log('TeamsCore API called'),
+    renderComponent: (props) => <TeamsCoreAPIs {...props} />
   },
 ];
 
