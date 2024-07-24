@@ -8,6 +8,7 @@ import CalendarAPIs from '../../apis/CalendarApi';
 import DialogCardAPIs from '../../apis/DialogCardApi';
 import PagesAPIs from '../../apis/PagesApi';
 import ProfileAPIs from '../../apis/ProfileApi';
+import SearchAPIs from '../../apis/SearchApi';
 
 export interface ApiComponent {
   title: string;
@@ -204,6 +205,16 @@ const apiComponents: ApiComponent[] = [
     }),
     onClick: () => console.log('Profile API called'),
     renderComponent: (props) => <ProfileAPIs {...props} />
+  },
+  {
+    title: 'Search API',
+    name: 'search',
+    functions: [
+      { name: 'RegisterHandlers', requiresInput: false },
+      { name: 'CloseSearch', requiresInput: false }
+    ],
+    onClick: () => console.log('Search API called'),
+    renderComponent: (props) => <SearchAPIs {...props} />
   },
 ];
 

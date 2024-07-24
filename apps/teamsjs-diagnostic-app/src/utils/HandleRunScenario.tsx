@@ -30,6 +30,7 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialogCard_CheckDialogAdaptiveCardCapability, dialogCard_OpenAdaptiveCardDialog } from '../apis/DialogCardApi';
 import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, pages_NavigateToApp, pages_RegisterFocusEnterHandler, pages_RegisterFullScreenChangeHandler, pages_SetCurrentFrame, pages_ShareDeepLink } from '../apis/PagesApi';
 import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/ProfileApi';
+import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -260,7 +261,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
     case 'profile':
     switch (func) {
       case 'CheckProfileCapability':
-        result = await profile_CheckProfileCapability
+        result = await profile_CheckProfileCapability;
         break;
         case 'ShowProfile':
       try {
@@ -286,8 +287,25 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
       break;
   }
   break;
-          
 
+  case 'search':
+    switch (func) {
+      case 'RegisterHandlers':
+        result = await search_RegisterHandlers();
+        break;
+      case 'CloseSearch':
+          try {
+            result = await search_CloseSearch();
+          } catch (error) {
+            console.error('Error closing search:', error);
+            throw error;
+          }
+          break;
+          default:
+            result = `Function ${func} is not recognized for profile API.`;
+            break;
+      }
+      break;
     }
     return result;
 
