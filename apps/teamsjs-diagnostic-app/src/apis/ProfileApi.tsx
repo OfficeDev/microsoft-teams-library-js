@@ -87,7 +87,7 @@ const ProfileAPIs: React.FC<ProfileAPIsProps> = ({ apiComponent, onDropToScenari
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for ShowProfile"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
             <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>

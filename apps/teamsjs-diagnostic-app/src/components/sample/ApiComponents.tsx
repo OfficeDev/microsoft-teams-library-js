@@ -9,6 +9,7 @@ import DialogCardAPIs from '../../apis/DialogCardApi';
 import PagesAPIs from '../../apis/PagesApi';
 import ProfileAPIs from '../../apis/ProfileApi';
 import SearchAPIs from '../../apis/SearchApi';
+import ClipboardAPIs from '../../apis/ClipboardApi';
 
 export interface ApiComponent {
   title: string;
@@ -215,6 +216,22 @@ const apiComponents: ApiComponent[] = [
     ],
     onClick: () => console.log('Search API called'),
     renderComponent: (props) => <SearchAPIs {...props} />
+  },
+  {
+    title: 'Clipboard API',
+    name: 'clipboard',
+    functions: [
+      { name: 'CheckClipboardCapability', requiresInput: false },
+      { name: 'CopyText', requiresInput: true },
+      { name: 'CopyImage', requiresInput: true },
+      { name: 'Paste', requiresInput: false }
+    ],
+    defaultInput: JSON.stringify({
+      CopyText: { text: 'copy this test' },
+      CopyImage: { mimeType: 'image/jpeg' }
+    }),    
+    onClick: () => console.log('Clipboard API called'),
+    renderComponent: (props) => <ClipboardAPIs {...props} />
   },
 ];
 

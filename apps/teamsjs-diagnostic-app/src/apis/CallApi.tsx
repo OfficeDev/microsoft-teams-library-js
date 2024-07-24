@@ -90,7 +90,7 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for StartCall"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
             <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>

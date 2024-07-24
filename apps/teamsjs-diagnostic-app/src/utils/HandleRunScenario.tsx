@@ -31,6 +31,7 @@ import { dialogCard_CheckDialogAdaptiveCardCapability, dialogCard_OpenAdaptiveCa
 import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, pages_NavigateToApp, pages_RegisterFocusEnterHandler, pages_RegisterFullScreenChangeHandler, pages_SetCurrentFrame, pages_ShareDeepLink } from '../apis/PagesApi';
 import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/ProfileApi';
 import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
+import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_CopyText, clipboard_Paste } from '../apis/ClipboardApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -306,6 +307,66 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
             break;
       }
       break;
+
+      case 'clipboard':
+        switch (func) {
+          case 'CheckClipboardCapability':
+            try {
+              result = await clipboard_CheckClipboardCapability();
+            } catch (error) {
+              console.log('Error checking clipboard capability:', error);
+              throw error;
+            }
+            break;
+            case 'CopyText':
+              if (input) {
+                try {
+                  const parsedInput = JSON.parse(input);
+                  if (typeof parsedInput === 'object' && 'text' in parsedInput) {
+                    result = await clipboard_CopyText(parsedInput);
+                  } else {
+                    throw new Error('Error: Parsed input for CopyText is not valid');
+                  }
+                } catch (error) {
+                  console.error('Error copying text:', error);
+                  throw error
+                }
+              } else {
+                throw new Error('Error: Input is required for CopyText');
+              }
+              break;
+            case 'CopyImage':
+              if (input) {
+                try {
+                  const parsedInput = JSON.parse(input);
+                  if (typeof parsedInput === 'object' && 'mimeType' in parsedInput) {
+                    result = await clipboard_CopyImage(parsedInput);
+                  } else {
+                    throw new Error('Error: Parsed input for CopyImage is not valid');
+                  }
+                } catch (error) {
+                  console.log('Error copying image:', error);
+                  throw error;
+                }
+              } else {
+                throw new Error('Error: Input is required for CopyImage');
+              }
+          break;
+          case 'Paste':
+            try {
+              result = await clipboard_Paste();
+            } catch (error) {
+              console.error('Error pasting from clipboard:', error);
+              result = `Error: ${error}`;
+            }
+            break;
+          default:
+            console.error('Unknown function:', func);
+            result = `Unknown function: ${func}`;
+            break;
+        }
+        break;
+
     }
     return result;
 

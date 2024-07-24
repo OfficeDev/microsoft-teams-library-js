@@ -102,7 +102,7 @@ const DialogCardAPIs: React.FC<DialogCardAPIsProps> = ({ apiComponent, onDropToS
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for OpenAdaptiveCardDialog"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
             <button onClick={handleDefaultInput}>
               Default

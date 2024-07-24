@@ -99,7 +99,7 @@ const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenari
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter barcode configuration"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
             <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>

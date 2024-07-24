@@ -100,7 +100,7 @@ const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponen
               type="text"
               value={inputValue}
               onChange={handleInputChange}
-              placeholder="Enter input for OpenAppInstallDialog"
+              placeholder={`Enter input for ${selectedFunction}`}
             />
             <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
           </div>
