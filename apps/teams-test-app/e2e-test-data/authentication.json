@@ -17,6 +17,54 @@
       "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getUser",
       "expectedTestAppValue": "Success: {\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    },
+    {
+      "title": "getUser API Call - Failure (Not full trust)",
+      "version": ">2.25.0",
+      "hostSdkVersion": {
+        "web": "<=3.1.0"
+      },
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
+      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
+    },
+    {
+      "title": "getUser API Call - Failure (Not full trust and not Microsoft owned)",
+      "version": ">2.25.0",
+      "hostSdkVersion": {
+        "web": ">3.1.0"
+      },
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
+      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
+    },
+    {
+      "title": "getUser API Call - Success (Full trust app)",
+      "version": ">2.25.0",
+      "hostSdkVersion": {
+        "web": ">3.1.0"
+      },
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": true, \"isMicrosoftOwned\": false}"]],
+      "expectedTestAppValue": "{\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    },
+    {
+      "title": "getUser API Call - Success (Full trust and Microsoft owned app)",
+      "version": ">2.25.0",
+      "hostSdkVersion": {
+        "web": ">3.1.0"
+      },
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": true, \"isMicrosoftOwned\": true}"]],
+      "expectedTestAppValue": "{\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
     }
   ]
 }

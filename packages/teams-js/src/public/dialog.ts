@@ -91,10 +91,7 @@ export function botUrlOpenHelper(
 }
 
 export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
-  // FrameContext content should not be here because dialog.submit can be called only from inside of a dialog (FrameContext task)
-  // but it's here because Teams mobile incorrectly returns FrameContext.content when calling app.getFrameContext().
-  // FrameContexts.content will be removed once the bug is fixed.
-  ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
+  ensureInitialized(runtime, FrameContexts.task);
   if (!dialog.url.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
