@@ -12,6 +12,8 @@ import SearchAPIs from '../../apis/SearchApi';
 import ClipboardAPIs from '../../apis/ClipboardApi';
 import GeolocationAPIs from '../../apis/GeolocationApi';
 import SharingAPIs from '../../apis/SharingApi';
+import StageViewAPIs from '../../apis/StageViewApi';
+import { stageView } from '@microsoft/teams-js';
 
 export interface ApiComponent {
   title: string;
@@ -266,6 +268,25 @@ const apiComponents: ApiComponent[] = [
     }),    
     onClick: () => console.log('Sharing API called'),
     renderComponent: (props) => <SharingAPIs {...props} />
+  },
+  {
+    title: 'StageView API',
+    name: 'stageView',
+    functions: [
+      { name: 'CheckStageViewCapability', requiresInput: false },
+      { name: 'OpenStageView', requiresInput: true }
+    ],
+    defaultInput: JSON.stringify({
+      appId: 'appId1',
+      contentUrl: 'contentUrl1',
+      threadId: 'threadId1',
+      title: 'title1',
+      websiteUrl: 'websiteUrl1',
+      entityId: 'entityId1',
+      openMode: stageView.StageViewOpenMode.modal,
+    }), 
+    onClick: () => console.log('StageView API called'),
+    renderComponent: (props) => <StageViewAPIs {...props} />
   },
 ];
 

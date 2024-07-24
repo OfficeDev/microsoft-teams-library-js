@@ -1,4 +1,4 @@
-import { AdaptiveCardDialogInfo, barCode, profile } from '@microsoft/teams-js';
+import { AdaptiveCardDialogInfo, barCode, profile, stageView } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
@@ -34,6 +34,7 @@ import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
 import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_CopyText, clipboard_Paste } from '../apis/ClipboardApi';
 import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation } from '../apis/GeolocationApi';
 import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis/SharingApi';
+import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../apis/StageViewApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -413,6 +414,38 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
   
         default:
           throw new Error(`Unknown API ${api.name}`);
+
+          case 'stageView':
+            switch (func) {
+              case 'CheckStageViewCapability':
+                result = await stageView_CheckStageViewCapability();
+                break;
+              case 'OpenStageView':
+                if (input) {
+                  try {
+                    const parsedInput = JSON.parse(input);
+                    const { appId, contentUrl, threadId, title, websiteUrl, entityId, openMode } = parsedInput;
+                    result = await stageView_OpenStageView({
+                      appId,
+                      contentUrl,
+                      threadId,
+                      title,
+                      websiteUrl,
+                      entityId,
+                      openMode: openMode || stageView.StageViewOpenMode.modal
+                    });
+                  } catch (error) {
+                    console.error('Invalid input format for OpenStageView', error);
+                    throw new Error('Invalid input format for OpenStageView');
+                  }
+                } else {
+                  throw new Error('Input is required for OpenStageView');
+                }
+                break;
+              default:
+                throw new Error(`Unknown function ${func} for ${api.title}`);
+            }
+            break;
     }
 
     return result;

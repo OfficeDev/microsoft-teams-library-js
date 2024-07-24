@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { sharing, SdkError} from '@microsoft/teams-js';
+import { SdkError, stageView } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-interface ShareWebContentInput {
-  content: {
-    type: 'URL';
-    url: string;
-    message?: string;
-    preview?: boolean;
-  }[];
-}
+interface StageViewInput {
+    appId: string;
+    contentUrl: string;
+    threadId: string;
+    title: string;
+    websiteUrl?: string;
+    entityId?: string;
+    openMode?: stageView.StageViewOpenMode;
+  }
 
-export const sharing_CheckSharingCapability = async (): Promise<void> => {
-    console.log('Executing CheckSharingCapability...');
+export const stageView_CheckStageViewCapability = async (): Promise<void> => {
+    console.log('Executing CheckStageViewCapability...');
     
     try {
-      const result = sharing.isSupported();
+      const result = stageView.isSupported();
       if (result) {
-        console.log('Sharing module is supported. Sharing is supported on Teams Web, Teams Desktop, and Teams (versions under 23247.720.2421.8365) Mobile');
+        console.log('Stage View module is supported. Stage View is supported on Teams Web and Teams Desktop.');
       } else {
-        console.log('Sharing module is not supported. Sharing is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-        throw new Error('Sharing capability is not supported');
+        console.log('Stage View module is not supported. Stage View is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, Teams Mobile, M365 Mobile, or Outlook Mobile.');
+        throw new Error('StageView capability is not supported');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Error checking Sharing capability:', errorMessage);
+      console.error('Error checking Stage View capability:', errorMessage);
       if (error instanceof Error) {
         console.error('Stack trace:', error.stack);
       }
@@ -33,39 +34,38 @@ export const sharing_CheckSharingCapability = async (): Promise<void> => {
     }
   };
 
-  export const sharing_ShareWebContent = async (input: ShareWebContentInput): Promise<string> => {
-    console.log('Executing ShareWebContent...');
+  export const stageView_OpenStageView = async (input: StageViewInput): Promise<string> => {
+    console.log('Executing OpenStageView...');
     try {
-      if (!input.content || input.content.length === 0) {
-        throw new Error('content is required');
+        if (!input.appId) {
+            throw new Error('appId are required.');
+          }
+          if (!input.contentUrl) {
+            throw new Error('contentUrl are required.');
+          }
+          if (!input.threadId) {
+            throw new Error('threadId are required.');
+          }
+          if (!input.title) {
+            throw new Error('title are required.');
+          }
+    
+        await stageView.open(input);
+        return 'Success';
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.log('Error opening stage view:', errorMessage);
+        throw error;
       }
-      for (const contentItem of input.content) {
-        if (contentItem.type !== 'URL') {
-          console.log("Each of the content items has to have type property with value 'URL'.");
-          throw new Error("Must have type property with value 'URL'.");
-        }
-        if (!contentItem.url) {
-          console.log('Each of the content items has to have url property set.');
-          throw new Error('Must have url property set.');
-        }
-      }
-  
-      await sharing.shareWebContent(input);
-      return 'Success';
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log('Error sharing web content:', errorMessage);
-      throw error;
-    }
   };
 
 
-interface SharingAPIsProps {
+interface StageViewAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const SharingAPIs: React.FC<SharingAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
+const StageViewAPIs: React.FC<StageViewAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -98,7 +98,7 @@ const SharingAPIs: React.FC<SharingAPIsProps> = ({ apiComponent, onDropToScenari
             </option>
           ))}
         </select>
-        {selectedFunction === 'ShareWebContent' && (
+        {selectedFunction === 'OpenStageView' && (
           <div className="input-container">
             <input
               type="text"
@@ -114,4 +114,4 @@ const SharingAPIs: React.FC<SharingAPIsProps> = ({ apiComponent, onDropToScenari
   );
 };
 
-export default SharingAPIs;
+export default StageViewAPIs;
