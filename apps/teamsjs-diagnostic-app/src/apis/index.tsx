@@ -16,3 +16,5 @@ export * from './SearchApi';
 export * from './SharingApi';
 export * from './StageViewApi';
 export * from './PeopleApi';
+export * from './MenusApi';
+export * from './PagesTabsApi';

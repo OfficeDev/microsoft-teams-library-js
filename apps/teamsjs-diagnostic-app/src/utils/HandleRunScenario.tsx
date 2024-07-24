@@ -37,6 +37,7 @@ import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis
 import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../apis/StageViewApi';
 import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/PeopleApi';
 import { menus_CheckMenusCapability, menus_SetNavBarMenu, menus_SetUpViews, menus_ShowActionMenu } from '../apis/MenusApi';
+import { pagesTabs_CheckPagesTabsCapability, pagesTabs_GetMruTabInstances, pagesTabs_GetTabInstances, pagesTabs_NavigateToTab } from '../apis/PagesTabsApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -529,6 +530,58 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                       throw new Error(`Unknown function ${func} for ${api.title}`);
                   }
                   break;
+                  
+                  case 'pagesTabs':
+                    switch (func) {
+                      case 'CheckPagesTabsCapability':
+                        result = await pagesTabs_CheckPagesTabsCapability();
+                        break;
+                      case 'NavigateToTab':
+                        try {
+                          const parsedInput = input ? JSON.parse(input) : undefined;
+                          result = await pagesTabs_NavigateToTab(parsedInput);
+                        } catch (error) {
+                          if (error instanceof SyntaxError) {
+                            console.log('Invalid input format for NavigateToTab');
+                            throw new Error('Invalid input format for NavigateToTab');
+                          } else {
+                            console.log('Error during NavigateToTab operation');
+                            throw new Error('Error during NavigateToTab operation');
+                          }
+                        }
+                        break;
+                      case 'GetTabInstances':
+                        try {
+                          const parsedInput = input ? JSON.parse(input) : undefined;
+                          result = await pagesTabs_GetTabInstances(parsedInput);
+                        } catch (error) {
+                          if (error instanceof SyntaxError) {
+                            console.log('Invalid input format for GetTabInstances');
+                            throw new Error('Invalid input format for GetTabInstances');
+                          } else {
+                            console.log('Error during GetTabInstances operation');
+                            throw new Error('Error during GetTabInstances operation');
+                          }
+                        }
+                        break;
+                      case 'GetMruTabInstances':
+                        try {
+                          const parsedInput = input ? JSON.parse(input) : undefined;
+                          result = await pagesTabs_GetMruTabInstances(parsedInput);
+                        } catch (error) {
+                          if (error instanceof SyntaxError) {
+                            console.log('Invalid input format for GetMruTabInstances');
+                            throw new Error('Invalid input format for GetMruTabInstances');
+                          } else {
+                            console.log('Error during GetMruTabInstances operation');
+                            throw new Error('Error during GetMruTabInstances operation');
+                          }
+                        }
+                        break;
+                      default:
+                        throw new Error(`Unknown function ${func} for ${api.title}`);
+                    }
+                    break;                  
     }
 
     return result;

@@ -16,6 +16,7 @@ import StageViewAPIs from '../../apis/StageViewApi';
 import { stageView } from '@microsoft/teams-js';
 import PeopleAPIs from '../../apis/PeopleApi';
 import MenusAPIs from '../../apis/MenusApi';
+import PagesTabsAPIs from '../../apis/PagesTabsApi';
 
 export interface ApiComponent {
   title: string;
@@ -325,6 +326,37 @@ const apiComponents: ApiComponent[] = [
     }),
     onClick: () => console.log('Menus API called'),
     renderComponent: (props) => <MenusAPIs {...props} />
+  },
+  {
+    title: 'PagesTabs API',
+    name: 'pagesTabs',
+    functions: [
+      { name: 'CheckPagesTabsCapability', requiresInput: false },
+      { name: 'NavigateToTab', requiresInput: true },
+      { name: 'GetTabInstances', requiresInput: true },
+      { name: 'GetMruTabInstances', requiresInput: true },
+    ],
+    defaultInput: JSON.stringify({
+      NavigateToTab: {
+        tabName: 'tab1',
+        internalTabInstanceId: 'internalTab1',
+        lastViewUnixEpochTime: '0',
+        entityId: 'entity1',
+        channelid: 'channel1',
+        channelName: 'channelName1',
+        channelIsFavorite: false,
+        teamId: 'team1',
+        teamName: 'teamName1',
+        teamIsFavorite: false,
+        groupId: 'group1',
+        url: 'https://localhost:4000',
+        websiteUrl: 'https://localhost:4000',
+      },
+      GetTabInstances: { favoriteChannelOnly: false, favoriteTeamsOnly: false },
+      GetMruTabInstances: { favoriteChannelOnly: false, favoriteTeamsOnly: false }
+    }),
+    onClick: () => console.log('PagesTabs API called'),
+    renderComponent: (props) => <PagesTabsAPIs {...props} />
   },
 ];
 
