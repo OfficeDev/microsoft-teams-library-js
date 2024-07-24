@@ -121,10 +121,13 @@ const CustomScenario: React.FC = () => {
   };
 
   const generateVerticalBoxes = () => {
-    const filteredApis = apiComponents.filter(api =>
-      api.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  
+    const filteredApis = apiComponents
+      .filter(api =>
+        api.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      // Alphabetical sorting
+      .sort((a, b) => a.title.localeCompare(b.title));
+    
     return filteredApis.map((api: ApiComponent, index: number) => (
       <div key={index} className="vertical-box">
         {api.renderComponent ? (
