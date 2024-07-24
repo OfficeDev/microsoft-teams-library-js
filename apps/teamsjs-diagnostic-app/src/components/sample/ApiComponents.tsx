@@ -10,7 +10,7 @@ import PagesAPIs from '../../apis/PagesApi';
 import ProfileAPIs from '../../apis/ProfileApi';
 import SearchAPIs from '../../apis/SearchApi';
 import ClipboardAPIs from '../../apis/ClipboardApi';
-import DialogCardBotAPIs from '../../apis/GeolocationApi';
+import GeolocationAPIs from '../../apis/GeolocationApi';
 
 export interface ApiComponent {
   title: string;
@@ -243,8 +243,8 @@ const apiComponents: ApiComponent[] = [
       { name: 'GetCurrentLocation', requiresInput: false },
       { name: 'ChooseLocation', requiresInput: false },
     ],
-    onClick: () => console.log('DialogCardBot API called'),
-    renderComponent: (props) => <DialogCardBotAPIs {...props} />
+    onClick: () => console.log('Geolocation API called'),
+    renderComponent: (props) => <GeolocationAPIs {...props} />
   },
 ];
 
