@@ -18,6 +18,7 @@ import PeopleAPIs from '../../apis/PeopleApi';
 import MenusAPIs from '../../apis/MenusApi';
 import PagesTabsAPIs from '../../apis/PagesTabsApi';
 import TeamsCoreAPIs from '../../apis/TeamsCoreApi';
+import SecondaryBrowserAPIs from '../../apis/SecondaryBrowserApi';
 
 export interface ApiComponent {
   title: string;
@@ -372,6 +373,17 @@ const apiComponents: ApiComponent[] = [
     defaultInput: '4',
     onClick: () => console.log('TeamsCore API called'),
     renderComponent: (props) => <TeamsCoreAPIs {...props} />
+  },
+  {
+    title: 'SecondaryBrowser API',
+    name: 'secondaryBrowser',
+    functions: [
+      { name: 'CheckSecondaryBrowserCapability', requiresInput: false },
+      { name: 'Open', requiresInput: true },
+    ],
+    defaultInput: '"https://www.bing.com"',
+    onClick: () => console.log('SecondaryBrowser API called'),
+    renderComponent: (props) => <SecondaryBrowserAPIs {...props} />
   },
 ];
 

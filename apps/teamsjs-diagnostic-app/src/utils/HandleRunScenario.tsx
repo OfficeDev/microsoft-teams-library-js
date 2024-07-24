@@ -39,6 +39,7 @@ import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/Peopl
 import { menus_CheckMenusCapability, menus_SetNavBarMenu, menus_SetUpViews, menus_ShowActionMenu } from '../apis/MenusApi';
 import { pagesTabs_CheckPagesTabsCapability, pagesTabs_GetMruTabInstances, pagesTabs_GetTabInstances, pagesTabs_NavigateToTab } from '../apis/PagesTabsApi';
 import { teamsCore_CheckTeamsCoreCapability, teamsCore_EnablePrintCapability, teamsCore_Print, teamsCore_RegisterBeforeUnloadHandler, teamsCore_RegisterOnLoadHandler } from '../apis/TeamsCoreApi';
+import { secondaryBrowser_CheckSecondaryBrowserCapability, secondaryBrowser_Open } from '../apis';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -631,7 +632,25 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                         default:
                           throw new Error(`Unknown function ${func} for ${api.title}`);
                       }
-                      break;                    
+                      break;   
+                  
+                      case 'secondaryBrowser':
+                      switch (func) {
+                        case 'CheckSecondaryBrowserCapability':
+                          result = await secondaryBrowser_CheckSecondaryBrowserCapability();
+                          break;
+                        case 'Open':
+                          try {
+                            const parsedInput = input ? JSON.parse(input) : '';
+                            result = await secondaryBrowser_Open(parsedInput)
+                          } catch (error) {
+                            throw new Error('Error during Open operation');
+                          }
+                          break;
+                          default:
+                          throw new Error(`Unknown function ${func} for ${api.title}`);
+                      }
+                      break;
     }
 
     return result;
