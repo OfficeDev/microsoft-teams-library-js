@@ -14,6 +14,7 @@ import GeolocationAPIs from '../../apis/GeolocationApi';
 import SharingAPIs from '../../apis/SharingApi';
 import StageViewAPIs from '../../apis/StageViewApi';
 import { stageView } from '@microsoft/teams-js';
+import PeopleAPIs from '../../apis/PeopleApi';
 
 export interface ApiComponent {
   title: string;
@@ -287,6 +288,22 @@ const apiComponents: ApiComponent[] = [
     }), 
     onClick: () => console.log('StageView API called'),
     renderComponent: (props) => <StageViewAPIs {...props} />
+  },
+  {
+    title: 'People API',
+    name: 'people',
+    functions: [
+      { name: 'CheckPeopleCapability', requiresInput: false },
+      { name: 'SelectPeople', requiresInput: true }
+    ],
+    defaultInput: JSON.stringify({
+      title: 'Select people',
+      setSelected: ['id1', 'id2', 'id3'],
+      openOrgWideSearchInChatOrChannel: true,
+      singleSelect: true,
+    }),
+    onClick: () => console.log('People API called'),
+    renderComponent: (props) => <PeopleAPIs {...props} />
   },
 ];
 

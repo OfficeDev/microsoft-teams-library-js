@@ -1,4 +1,4 @@
-import { AdaptiveCardDialogInfo, barCode, profile, stageView } from '@microsoft/teams-js';
+import { AdaptiveCardDialogInfo, barCode, people, profile, stageView } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
@@ -35,6 +35,7 @@ import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_Copy
 import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation } from '../apis/GeolocationApi';
 import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis/SharingApi';
 import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../apis/StageViewApi';
+import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/PeopleApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -446,6 +447,35 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                 throw new Error(`Unknown function ${func} for ${api.title}`);
             }
             break;
+
+            case 'people':
+              switch (func) {
+                case 'CheckPeopleCapability':
+                  result = await people_CheckPeopleCapability();
+                  break;
+                case 'SelectPeople':
+                    try {
+                      // Check if input is provided and is a valid JSON string
+                      const parsedInput = input ? JSON.parse(input) : undefined;
+                  
+                      result = await people_SelectPeople(parsedInput);
+                  
+                    } catch (error) {
+                      if (error instanceof SyntaxError) {
+                        console.log('Invalid input format for SelectPeople');
+                        throw new Error('Invalid input format for SelectPeople');
+                      } else {
+                        console.log('Error during SelectPeople operation');
+                        throw new Error('Error during SelectPeople operation');
+                      }
+                    }
+                    break;
+                  
+                  default:
+                    throw new Error(`Unknown function ${func} for ${api.title}`);
+                  
+              }
+              break;
     }
 
     return result;

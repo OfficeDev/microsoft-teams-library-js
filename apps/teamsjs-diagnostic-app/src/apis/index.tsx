@@ -13,3 +13,6 @@ export * from './GeolocationApi';
 export * from './PagesApi';
 export * from './ProfileApi';
 export * from './SearchApi';
+export * from './SharingApi';
+export * from './StageViewApi';
+export * from './PeopleApi';
