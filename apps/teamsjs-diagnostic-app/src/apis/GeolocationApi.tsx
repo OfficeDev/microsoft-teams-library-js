@@ -8,9 +8,9 @@ export const geolocation_CheckGeoLocationCapability = async (): Promise<void> =>
   try {
     const result = await geoLocation.isSupported();
     if (result) {
-      console.log('Geolocation module is supported. Geolocation Map is supported on Teams Web, Teams Desktop, and Teams Mobile.');
+      console.log('Geolocation module is supported. Geolocation Map is supported on new Teams (Version 23247.720.2421.8365 and above) Web, M365 Web, new Teams (Version 23247.720.2421.8365 and above) Desktop, M365 Desktop, and Outlook Desktop.');
     } else {
-      console.log('Geolocation module is not supported. Geolocation is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
+      console.log('Geolocation module is not supported. Geolocation is not supported on Teams versions less than 23247.720.2421.8365 on Web, Outlook Web, Teams versions less than 23247.720.2421.8365 on DEsktop, or Mobile.');
       throw new Error('Geolocation capability is not supported');
     }
   } catch (error) {
@@ -28,9 +28,9 @@ export const geolocation_CheckGeoLocationMapCapability = async (): Promise<void>
   try {
     const result = await geoLocation.map.isSupported();
     if (result) {
-      console.log('Geolocation Map module is supported. Geolocation Map is supported on Teams Web, Teams Desktop, and Teams Mobile.');
+      console.log('Geolocation Map module is supported. Geolocation Map is supported on new Teams (Version 23247.720.2421.8365 and above) Web and new Teams (Version 23247.720.2421.8365 and above) Desktop.');
     } else {
-      console.log('Geolocation Map module is not supported. Geolocation is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
+      console.log('Geolocation Map module is not supported. Geolocation Map is only supported on new Teams (Version 23247.720.2421.8365 and above) Web and new Teams (Version 23247.720.2421.8365 and above) Desktop.');
       throw new Error('Geolocation capability is not supported');
     }
   } catch (error) {
