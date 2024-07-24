@@ -33,6 +33,7 @@ import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/Pro
 import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
 import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_CopyText, clipboard_Paste } from '../apis/ClipboardApi';
 import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation } from '../apis/GeolocationApi';
+import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis/SharingApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -387,8 +388,31 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
         }
         break;
 
-      default:
-        throw new Error(`Unknown API ${api.name}`);
+        case 'sharing':
+          switch (func) {
+            case 'CheckSharingCapability':
+              result = await sharing_CheckSharingCapability();
+              break;
+            case 'ShareWebContent':
+              if (input) {
+                try {
+                  const parsedInput = JSON.parse(input);
+                  result = await sharing_ShareWebContent(parsedInput);
+                } catch (error) {
+                  console.log('Invalid input format for ShareWebContent');
+                  throw new Error('Invalid input format for ShareWebContent');
+                }
+              } else {
+                throw new Error('Input is required for ShareWebContent');
+              }
+              break;
+            default:
+              throw new Error(`Unknown function ${func} for ${api.title}`);
+          }
+          break;
+  
+        default:
+          throw new Error(`Unknown API ${api.name}`);
     }
 
     return result;

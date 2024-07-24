@@ -11,6 +11,7 @@ import ProfileAPIs from '../../apis/ProfileApi';
 import SearchAPIs from '../../apis/SearchApi';
 import ClipboardAPIs from '../../apis/ClipboardApi';
 import GeolocationAPIs from '../../apis/GeolocationApi';
+import SharingAPIs from '../../apis/SharingApi';
 
 export interface ApiComponent {
   title: string;
@@ -245,6 +246,26 @@ const apiComponents: ApiComponent[] = [
     ],
     onClick: () => console.log('Geolocation API called'),
     renderComponent: (props) => <GeolocationAPIs {...props} />
+  },
+  {
+    title: 'Sharing API',
+    name: 'sharing',
+    functions: [
+      { name: 'CheckSharingCapability', requiresInput: false },
+      { name: 'ShareWebContent', requiresInput: true }
+    ],
+    defaultInput: JSON.stringify({
+      content: [
+        {
+          type: 'URL',
+          url: 'https://www.bing.com',
+          message: 'Bing message',
+          preview: false,
+        },
+      ],
+    }),    
+    onClick: () => console.log('Sharing API called'),
+    renderComponent: (props) => <SharingAPIs {...props} />
   },
 ];
 
