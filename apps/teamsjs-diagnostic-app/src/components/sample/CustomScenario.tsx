@@ -219,64 +219,66 @@ const CustomScenario: React.FC = () => {
       </div>
 
       {showAddScenario && (
-            <div className="add-dialog active">
-              <div className="addScenario-content">
-                <div className="dialog-header">
-                  <h2>Create New Scenario</h2>
-                  <button className="clear-all-button2" onClick={handleClearAll}>Clear All</button>
-                </div>
-                <label htmlFor="scenario-name">Scenario Name:</label>
-                <input
-                  type="text"
-                  id="scenario-name"
-                  placeholder="Enter scenario name"
-                  value={newScenarioName}
-                  onChange={(e) => setNewScenarioName(e.target.value)}
-                />
-                <div className="api-selection">
-                  {apiComponents.map((api, index) => (
-                    <div key={index} className="api-item">
+  <div className="add-dialog active">
+    <div className="addScenario-content">
+      <div className="dialog-header">
+        <h2>Create New Scenario</h2>
+        <button className="clear-all-button2" onClick={handleClearAll}>Clear All</button>
+      </div>
+      <label htmlFor="scenario-name">Scenario Name:</label>
+      <input
+        type="text"
+        id="scenario-name"
+        placeholder="Enter scenario name"
+        value={newScenarioName}
+        onChange={(e) => setNewScenarioName(e.target.value)}
+      />
+      <div className="api-selection">
+        {apiComponents
+        //Alphabetical order
+          .sort((a, b) => a.title.localeCompare(b.title))
+          .map((api, index) => (
+            <div key={index} className="api-item">
+              <input
+                type="checkbox"
+                id={api.title}
+                checked={selectedApis[api.title] || false}
+                onChange={(e) => handleApiSelection(api.title, e.target.checked)}
+              />
+              <label htmlFor={api.title}>{api.title}</label>
+              {selectedApis[api.title] && (
+                <div className="function-input-group">
+                  <select
+                    aria-label="Select function"
+                    value={selectedFunctions[api.title] || ''}
+                    onChange={(e) => handleFunctionSelection(api.title, e.target.value)}
+                  >
+                    <option value="">Select Function</option>
+                    {api.functions.map((func, i) => (
+                      <option key={i} value={func.name}>{func.name}</option>
+                    ))}
+                  </select>
+                  {selectedFunctions[api.title] && api.functions.find(func => func.name === selectedFunctions[api.title])?.requiresInput && (
+                    <div>
                       <input
-                        type="checkbox"
-                        id={api.title}
-                        checked={selectedApis[api.title] || false}
-                        onChange={(e) => handleApiSelection(api.title, e.target.checked)}
+                        type="text"
+                        placeholder="Enter input"
+                        value={apiInputs[api.title] || ''}
+                        onChange={(e) => handleInputChange(api.title, e.target.value)}
                       />
-                      <label htmlFor={api.title}>{api.title}</label>
-                      {selectedApis[api.title] && (
-                        <div className="function-input-group">
-                          <select
-                            aria-label="Select function"
-                            value={selectedFunctions[api.title] || ''}
-                            onChange={(e) => handleFunctionSelection(api.title, e.target.value)}
-                          >
-                            <option value="">Select Function</option>
-                            {api.functions.map((func, i) => (
-                              <option key={i} value={func.name}>{func.name}</option> 
-                            ))}
-                          </select>
-                          {selectedFunctions[api.title] && api.functions.find(func => func.name === selectedFunctions[api.title])?.requiresInput && (
-                            <div>
-                              <input
-                                type="text"
-                                placeholder="Enter input"
-                                value={apiInputs[api.title] || ''}
-                                onChange={(e) => handleInputChange(api.title, e.target.value)}
-                              />
-                              <button className="default-input2" onClick={() => handleAddDefaultInput(api.title)}>Default Input</button>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      <button className="default-input2" onClick={() => handleAddDefaultInput(api.title)}>Default Input</button>
                     </div>
-                  ))}
+                  )}
                 </div>
-                <button onClick={saveScenario}>Save Scenario</button>
-                <button onClick={() => setShowAddScenario(false)}>Cancel</button>
-              </div>
+              )}
             </div>
-          )}
-
+          ))}
+      </div>
+      <button onClick={saveScenario}>Save Scenario</button>
+      <button onClick={() => setShowAddScenario(false)}>Cancel</button>
+    </div>
+  </div>
+)}
 
       {showScenarioList && (
             <div className="saved-scenarios-dialog active">

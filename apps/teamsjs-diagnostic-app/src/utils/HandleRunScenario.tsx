@@ -530,7 +530,7 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                       throw new Error(`Unknown function ${func} for ${api.title}`);
                   }
                   break;
-                  
+
                   case 'pagesTabs':
                     switch (func) {
                       case 'CheckPagesTabsCapability':
@@ -539,13 +539,14 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                       case 'NavigateToTab':
                         try {
                           const parsedInput = input ? JSON.parse(input) : undefined;
+                          console.log('Parsed input:', parsedInput);
                           result = await pagesTabs_NavigateToTab(parsedInput);
                         } catch (error) {
                           if (error instanceof SyntaxError) {
-                            console.log('Invalid input format for NavigateToTab');
+                            console.log('Invalid input format for NavigateToTab:', error);
                             throw new Error('Invalid input format for NavigateToTab');
                           } else {
-                            console.log('Error during NavigateToTab operation');
+                            console.log('Error during NavigateToTab operation:', error);
                             throw new Error('Error during NavigateToTab operation');
                           }
                         }
