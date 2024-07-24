@@ -15,6 +15,7 @@ import SharingAPIs from '../../apis/SharingApi';
 import StageViewAPIs from '../../apis/StageViewApi';
 import { stageView } from '@microsoft/teams-js';
 import PeopleAPIs from '../../apis/PeopleApi';
+import MenusAPIs from '../../apis/MenusApi';
 
 export interface ApiComponent {
   title: string;
@@ -304,6 +305,26 @@ const apiComponents: ApiComponent[] = [
     }),
     onClick: () => console.log('People API called'),
     renderComponent: (props) => <PeopleAPIs {...props} />
+  },
+  {
+    title: 'Menus API',
+    name: 'menus',
+    functions: [
+      { name: 'CheckMenusCapability', requiresInput: false },
+      { name: 'SetUpViews', requiresInput: true },
+      { name: 'SetNavBarMenu', requiresInput: true },
+      { name: 'ShowActionMenu', requiresInput: true },
+    ],
+    defaultInput: JSON.stringify({
+      SetUpViews: { id: 'AAA', title: 'BBB', contentDescription: 'CCC' },
+      SetNavBarMenu: { id: 'AAA', title: 'BBB', icon: 'CCC', enabled: true, selected: false },
+      ShowActionMenu: {
+        title: 'Title',
+        items: [{ id: 'AAA', title: 'BBB', icon: 'CCC', enabled: true, selected: false }]
+      }
+    }),
+    onClick: () => console.log('Menus API called'),
+    renderComponent: (props) => <MenusAPIs {...props} />
   },
 ];
 

@@ -36,6 +36,7 @@ import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMap
 import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis/SharingApi';
 import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../apis/StageViewApi';
 import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/PeopleApi';
+import { menus_CheckMenusCapability, menus_SetNavBarMenu, menus_SetUpViews, menus_ShowActionMenu } from '../apis/MenusApi';
 
 export const handleRunScenario = async (api: ApiComponent, func: string, input?: string) => {
   try {
@@ -476,6 +477,58 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
                   
               }
               break;
+
+              case 'menus':
+                switch (func) {
+                  case 'CheckMenusCapability':
+                    result = await menus_CheckMenusCapability();
+                    break;
+                  case 'SetUpViews':
+                    try {
+                      const parsedInput = input ? JSON.parse(input) : undefined;
+                      result = await menus_SetUpViews(parsedInput);
+                    } catch (error) {
+                      if (error instanceof SyntaxError) {
+                        console.log('Invalid input format for SetUpViews');
+                        throw new Error('Invalid input format for SetUpViews');
+                      } else {
+                        console.log('Error during SetUpViews operation');
+                        throw new Error('Error during SetUpViews operation');
+                      }
+                    }
+                    break;
+                  case 'SetNavBarMenu':
+                    try {
+                      const parsedInput = input ? JSON.parse(input) : undefined;
+                      result = await menus_SetNavBarMenu(parsedInput);
+                    } catch (error) {
+                      if (error instanceof SyntaxError) {
+                        console.log('Invalid input format for SetNavBarMenu');
+                        throw new Error('Invalid input format for SetNavBarMenu');
+                      } else {
+                        console.log('Error during SetNavBarMenu operation');
+                        throw new Error('Error during SetNavBarMenu operation');
+                      }
+                    }
+                    break;
+                    case 'ShowActionMenu':
+                      try {
+                        const parsedInput = input ? JSON.parse(input) : undefined;
+                        result = await menus_ShowActionMenu(parsedInput);
+                      } catch (error) {
+                        if (error instanceof SyntaxError) {
+                          console.log('Invalid input format for ShowActionMenu');
+                          throw new Error('Invalid input format for ShowActionMenu');
+                        } else {
+                          console.log('Error during ShowActionMenu operation');
+                          throw new Error('Error during ShowActionMenu operation');
+                        }
+                      }
+                      break;
+                    default:
+                      throw new Error(`Unknown function ${func} for ${api.title}`);
+                  }
+                  break;
     }
 
     return result;
