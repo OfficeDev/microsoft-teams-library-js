@@ -117,6 +117,7 @@ describe('AppSDK-privateAPIs', () => {
     'https://www.microsoft365.com',
     'https://tasks.office.com',
     'https://www.example.com',
+    'https://testofwildcard.cloud.microsoft',
   ];
 
   supportedDomains.forEach((supportedDomain) => {
