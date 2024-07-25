@@ -1,4 +1,3 @@
-import React from 'react';
 import AppInstallDialogAPIs from './../../apis/AppInstallDialogApi';
 import BarCodeAPIs from './../../apis/BarCodeApi';
 import DialogAPIs from '../../apis/DialogApi';

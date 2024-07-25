@@ -10,7 +10,6 @@ app.initialize();
 const CustomScenario: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [customScenario, setCustomScenario] = useState<Array<{ api: ApiComponent, func: string, input?: string }>>([]);
-  const [scenarioStatus, setScenarioStatus] = useState<string>('');
   const [showAddScenario, setShowAddScenario] = useState<boolean>(false);
   const [newScenarioName, setNewScenarioName] = useState<string>('');
   const [selectedApis, setSelectedApis] = useState<{ [key: string]: boolean }>({});
@@ -21,7 +20,6 @@ const CustomScenario: React.FC = () => {
 
   const handleRunScenarioClick = async () => {
     console.log('Running custom scenario...');
-    setScenarioStatus('Running...');
   
     let isSuccess = true;
   
@@ -35,7 +33,6 @@ const CustomScenario: React.FC = () => {
       } catch (error: any) {
         console.log(`Failure: ${func} for ${api.title} - ${error.message}`);
         console.log("Exit");
-        setScenarioStatus(`Failed: ${func} - ${error.message}`);
         isSuccess = false;
         console.log('Custom scenario failed.');
         break; // Stop further execution if any API fails
@@ -44,7 +41,6 @@ const CustomScenario: React.FC = () => {
   
     if (isSuccess) {
       console.log('Custom scenario completed successfully.');
-      setScenarioStatus('Success');
     }
   };
 
@@ -63,7 +59,6 @@ const CustomScenario: React.FC = () => {
 
   const clearScenario = () => {
     setCustomScenario([]);
-    setScenarioStatus('');
   };
 
   const saveScenario = () => {
