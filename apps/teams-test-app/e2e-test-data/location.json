@@ -33,7 +33,7 @@
     {
       "title": "showLocation API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS","ANDROID"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_showLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
