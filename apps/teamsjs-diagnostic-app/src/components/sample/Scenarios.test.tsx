@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AppInitializationScenario from './AppInitializationScenario';
 
@@ -25,7 +26,7 @@ describe('App Initialization Component', () => {
   });
 
   test('app initialization scenario', async () => {
-    render(<AppInitializationScenario />);
+    render(<AppInitializationScenario showSuccessMessage={true} />);
 
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 

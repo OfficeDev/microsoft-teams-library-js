@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="1" failures="0" errors="0" time="6.678">
-  <testsuite name="App Initialization Component" errors="0" failures="0" skipped="0" timestamp="2024-07-25T17:29:16" time="5.591" tests="1">
-    <testcase classname="src\components\sample\Scenarios.test.tsx" name="App Initialization Component app initialization scenario" time="0.134">
+<testsuites name="jest tests" tests="1" failures="0" errors="0" time="11.734">
+  <testsuite name="App Initialization Component" errors="0" failures="0" skipped="0" timestamp="2024-07-25T18:00:10" time="10.712" tests="1">
+    <testcase classname="src\components\sample\Scenarios.test.tsx" name="App Initialization Component app initialization scenario" time="0.122">
     </testcase>
   </testsuite>
 </testsuites>

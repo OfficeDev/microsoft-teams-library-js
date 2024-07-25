@@ -1,40 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import './AppInitializationScenario.css'
+import './AppInitializationScenario.css';
 import { app } from '@microsoft/teams-js';
 import { getContextV2, registerBeforeSuspendOrTerminateHandler, registerOnResume, registerOnThemeChangeHandlerV2 } from '../../apis/AppApi';
 import { authenticateUser } from '../../apis/AuthenticationStart';
 
-const AppInitializationScenario: React.FC = () => {
+interface AppInitializationScenarioProps {
+  showSuccessMessage?: boolean;
+}
+
+const AppInitializationScenario: React.FC<AppInitializationScenarioProps> = ({ showSuccessMessage = false }) => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     app.initialize();
   }, []);
 
-const runAppInitializationScenario = async () => {
-  try {
-    console.log('Running App Initialization Scenario...');
-    await registerOnResume();
-    await getContextV2();
-    await registerOnThemeChangeHandlerV2();
-    await registerBeforeSuspendOrTerminateHandler(3000);
+  const runAppInitializationScenario = async () => {
+    try {
+      console.log('Running App Initialization Scenario...');
+      await registerOnResume();
+      await getContextV2();
+      await registerOnThemeChangeHandlerV2();
+      await registerBeforeSuspendOrTerminateHandler(3000);
 
-    // Authenticate user
-    console.log('Attempting to authenticate user...');
-    const authSuccess = await authenticateUser();
-    if (authSuccess) {
-      console.log("User authenticated")
-      console.log('App Initialization Scenario successfully completed');
-      setSuccessMessage('App Initialization Scenario successfully completed');
-    } else {
-      console.log('User not authenticated');
-      showSignInPopup();
+      // Authenticate user
+      console.log('Attempting to authenticate user...');
+      const authSuccess = await authenticateUser();
+      if (authSuccess) {
+        console.log("User authenticated");
+        console.log('App Initialization Scenario successfully completed');
+        setSuccessMessage('App Initialization Scenario successfully completed');
+      } else {
+        console.log('User not authenticated');
+        showSignInPopup();
+      }
+    } catch (error: any) {
+      console.error(`App initialization scenario failed. ${error.message}`);
     }
-  } catch (error: any) {
-    console.error(`App initialization scenario failed. ${error.message}`);
-  }
-};
-
+  };
 
   const showSignInPopup = () => {
     console.log('Showing sign-in popup...');
@@ -46,7 +49,7 @@ const runAppInitializationScenario = async () => {
       <p>Click the button to run the app initialization scenario.</p>
       <div className="scenario-container">
         <div className="scenario1-box">
-        <button
+          <button
             className="scenario1-button"
             onClick={runAppInitializationScenario}
             type="button"
@@ -66,8 +69,8 @@ const runAppInitializationScenario = async () => {
             </div>
           </div>
         </div>
-        </div>
-        {successMessage && <div>{successMessage}</div>}
+      </div>
+      {showSuccessMessage && successMessage && <div>{successMessage}</div>}
     </div>
   );
 };
