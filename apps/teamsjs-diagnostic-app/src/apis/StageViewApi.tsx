@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { SdkError, stageView } from '@microsoft/teams-js';
+import { stageView } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 interface StageViewInput {

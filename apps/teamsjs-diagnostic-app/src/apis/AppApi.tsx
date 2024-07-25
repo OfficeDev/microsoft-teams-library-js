@@ -1,9 +1,5 @@
 import {
   app,
-  Context,
-  executeDeepLink,
-  getContext,
-  registerOnThemeChangeHandler,
   ResumeContext,
 } from '@microsoft/teams-js';
 

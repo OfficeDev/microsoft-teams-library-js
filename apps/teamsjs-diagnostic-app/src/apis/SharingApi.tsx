@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { sharing, SdkError} from '@microsoft/teams-js';
+import { sharing } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
 interface ShareWebContentInput {

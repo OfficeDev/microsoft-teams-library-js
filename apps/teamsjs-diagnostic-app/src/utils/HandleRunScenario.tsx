@@ -1,4 +1,4 @@
-import { AdaptiveCardDialogInfo, barCode, people, profile, stageView } from '@microsoft/teams-js';
+import { AdaptiveCardDialogInfo, barCode, profile, stageView } from '@microsoft/teams-js';
 import {
   appInstallDialog_CheckAppInstallCapability,
   appInstallDialog_OpenAppInstallDialog,
