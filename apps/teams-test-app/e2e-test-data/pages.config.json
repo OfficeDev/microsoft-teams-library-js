@@ -32,6 +32,7 @@
     {
       "title": "setValidityState API Call - Success - true",
       "type": "callResponse",
+      "platformsExcluded":["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_config_setValidityState",
       "inputValue": true,
@@ -49,6 +50,7 @@
     {
       "title": "setValidityState API Call - Success - false",
       "type": "callResponse",
+      "platformsExcluded":["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_config_setValidityState",
       "inputValue": false,
@@ -58,7 +60,7 @@
     {
       "title": "settings.save event without registration",
       "type": "raiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "eventName": "settings.save",
       "eventData": {
         "webhookUrl": "sampleWebhook"
@@ -68,14 +70,14 @@
     {
       "title": "settings.remove event without registration",
       "type": "raiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "eventName": "settings.remove",
       "expectedAlertValue": "onRemoveSuccess called"
     },
     {
       "title": "registerOnSaveHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_config_registerOnSaveHandler",
       "eventName": "settings.save",
       "eventData": {
@@ -87,7 +89,7 @@
     {
       "title": "registerOnRemoveHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_config_registerOnRemoveHandler",
       "eventName": "settings.remove",
       "expectedAlertValue": "onRemoveSuccess called",
@@ -97,7 +99,7 @@
       "title": "registerOnRemoveHandler API Call - Handler Failure",
       "type": "registerAndRaiseEvent",
       "version": ">2.0.0",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_config_registerOnRemoveHandlerFailure",
       "eventName": "settings.remove",
       "eventData": null,
@@ -108,7 +110,7 @@
       "title": "registerChangeConfigsHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
       "version": ">2.0.0-beta.0",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "testUrlParams": [["frameContext", "content"]],
       "boxSelector": "#box_config_registerChangeConfigsHandler",
       "eventName": "changeSettings",

@@ -46,6 +46,7 @@
       "title": "openChat2 API Call - Success",
       "type": "callResponse",
       "version": ">2.2.0 && <=2.17.0",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_openChat2",
       "inputValue": {
         "user": ["testUpn"],

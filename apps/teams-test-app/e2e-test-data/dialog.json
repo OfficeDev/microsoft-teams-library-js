@@ -1,6 +1,6 @@
 {
   "name": "Dialog",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "checkIsSupported": {
     "domElementName": "checkCapabilityDialog"
   },
@@ -8,6 +8,7 @@
     {
       "title": "dialogResize API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "testUrlParams": [["frameContext", "task"]],
       "boxSelector": "#box_dialogResize",
       "inputValue": {

@@ -18,19 +18,16 @@
       "type": "callResponse",
       "version": ">2.0.0-beta.2",
       "boxSelector": "#box_sendCommandToPairedMeetingRoom",
-      "inputValue": {
-        "commandName": "someCommandName"
-      },
+      "inputValue": "someCommandName",
       "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with ##JSON_INPUT_VALUE##"
     },
     {
       "title": "sendCommandToPairedMeetingRoom API Call - Success",
       "type": "callResponse",
       "version": "2.0.0-beta.2",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_sendCommandToPairedMeetingRoom",
-      "inputValue": {
-        "commandName": "someCommandName"
-      },
+      "inputValue":  "someCommandName",
       "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with \"{\\\"commandName\\\":\\\"someCommandName\\\"}\""
     },
     {

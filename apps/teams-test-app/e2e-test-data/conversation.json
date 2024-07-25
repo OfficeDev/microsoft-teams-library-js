@@ -100,7 +100,7 @@
     {
       "title": "openConversation API Call - with closeConversation",
       "version": "2.0.0-beta.2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_openConversation",
       "type": "registerAndRaiseEvent",
       "inputValue": {

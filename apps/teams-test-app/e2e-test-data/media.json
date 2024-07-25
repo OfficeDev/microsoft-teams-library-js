@@ -61,6 +61,7 @@
     {
       "title": "viewImagesWithUrls API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_viewImagesWithUrls",
       "inputValue": "first, second",

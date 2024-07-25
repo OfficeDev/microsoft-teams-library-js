@@ -1,6 +1,6 @@
 {
   "name": "GeoLocation",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "version": ">=2.1.0",
   "checkIsSupported": {
     "capabilityName": "GeoLocation",
