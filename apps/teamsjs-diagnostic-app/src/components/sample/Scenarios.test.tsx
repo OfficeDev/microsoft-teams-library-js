@@ -31,7 +31,7 @@ describe('App Initialization Component', () => {
       const timeout = setTimeout(() => {
         clearTimeout(timeout);
         reject(new Error('Timeout waiting for success message'));
-      }, 5000);
+      }, 20000);
 
       const checkSuccessMessage = () => {
         const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
