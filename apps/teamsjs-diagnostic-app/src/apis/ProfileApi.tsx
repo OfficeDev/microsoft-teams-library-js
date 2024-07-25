@@ -1,57 +1,54 @@
 import React, { useState } from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { call } from '@microsoft/teams-js';
+import { profile } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const call_CheckCallCapability = async (): Promise<void> => {
-  console.log('Executing CheckCallCapability...');
-  try {
-    const result = await call.isSupported();
-    if (result) {
-      console.log('Call module is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.');
-    } else {
-      console.log('Call module is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-      throw new Error('Call module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Call capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
-};
-
-export const call_StartCall = async (input: string): Promise<string> => {
-  console.log('Executing StartCall with input:', input);
-
-  try {
-    const validateInput = (input: string) => {
-      if (!input) {
-        console.log('Input is required for StartCall');
-        throw new Error('Input is required for StartCall');
+export const profile_CheckProfileCapability = async (): Promise<void> => {
+    console.log('Executing CheckProfileCapability...');
+    try {
+      const result = await profile.isSupported();
+      if (result) {
+        console.log('Profile module is supported. Profile is supported on new Teams (Version 23247.720.2421.8365 and above) Web, Outlook Web, new Teams (Version 23247.720.2421.8365 and above) Desktop, and Outlook Desktop');
+      } else {
+        console.log('Profile module is not supported.Profile is not supported on Teams versions under 23247.720.2421.8365, M365, or any Mobile platforms.');
+        throw new Error('Profile capability is not supported');
       }
-      console.log('Input validation passed');
-    };
-
-    validateInput(input);
-
-    const result = await call.startCall({ targets: [input] });
-    console.log('Call started successfully. StartCall result:', result);
-    return 'Call started successfully';
-  } catch (error) {
-    console.log('Error in StartCall:', error);
-    throw error;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error checking Profile capability:', errorMessage);
+      if (error instanceof Error) {
+        console.error('Stack trace:', error.stack);
+      }
+      throw error;
+    }
+  };
+  
+  export function profile_ShowProfile(input: profile.ShowProfileRequest) {
+    return new Promise<void>((resolve, reject) => {
+      if (!input) {
+        console.log('ShowProfileRequest input is missing');
+        return reject('ShowProfileRequest is required');
+      }
+  
+      console.log('Starting ShowProfile with input:', input);
+  
+      try {
+        profile.showProfile(input);
+        console.log('Profile displayed successfully');
+        resolve();
+      } catch (error) {
+        console.error('Error displaying profile:', error);
+        reject(error);
+      }
+    });
   }
-};
 
-interface CallAPIsProps {
+interface ProfileAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
+const ProfileAPIs: React.FC<ProfileAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -84,7 +81,7 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
             </option>
           ))}
         </select>
-        {selectedFunction === 'StartCall' && (
+        {selectedFunction === 'ShowProfile' && (
           <div className="input-container">
             <input
               type="text"
@@ -100,4 +97,4 @@ const CallAPIs: React.FC<CallAPIsProps> = ({ apiComponent, onDropToScenarioBox }
   );
 };
 
-export default CallAPIs;
+export default ProfileAPIs;

@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { AdaptiveCardDialogInfo, dialog } from '@microsoft/teams-js';
+import { secondaryBrowser } from '@microsoft/teams-js';
 import { useDragAndDrop } from '../utils/UseDragAndDrop';
 
-export const dialogCard_CheckDialogAdaptiveCardCapability = async (): Promise<void> => {
-  console.log('Executing checkDialogAdaptiveCardCapability...');
+export const secondaryBrowser_CheckSecondaryBrowserCapability = async (): Promise<void> => {
+  console.log('Executing CheckSecondaryBrowserCapability...');
   try {
-    const isSupported = dialog.adaptiveCard.isSupported();
-    console.log('Dialog Adaptive Card support check result:', isSupported);
+    const isSupported = secondaryBrowser.isSupported();
     if (isSupported) {
-      console.log('Dialog Adaptive Card module is supported. Dialog Adaptive Card is supported on all platforms except M365 Mobile and Outlook Mobile.');
+      console.log('Secondary Browser module is supported. Secondary Browser is supported on M365 Mobile and Outlook Mobile.');
     } else {
-      console.log('Dialog Adaptive Card module is not supported. Dialog Adaptive Card is not supported on M365 Mobile or Outlook Mobile.');
-      throw new Error('Dialog Adaptive Card module is not supported');
+      console.log('Secondary Browser module is not supported. Secondary Browser is only supported on M365 Mobile and Outlook Mobile.');
+      throw new Error('Secondary Browser module is not supported');
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.log('Error checking Dialog Adaptive Card capability:', errorMessage);
+    console.log('Error checking Secondary Browser capability:', errorMessage);
     if (error instanceof Error) {
       console.log('Stack trace:', error.stack);
     }
@@ -24,41 +23,30 @@ export const dialogCard_CheckDialogAdaptiveCardCapability = async (): Promise<vo
   }
 };
 
-export const dialogCard_OpenAdaptiveCardDialog = (input: AdaptiveCardDialogInfo): Promise<void> => {
-  console.log('Executing openAdaptiveCardDialog with input:', input);
-  return new Promise((resolve, reject) => {
-    try {
-      console.log('Opening adaptive card dialog...');
-      const onComplete = (resultObj: dialog.ISdkResponse): void => {
-        if (resultObj.err) {
-          if (resultObj.err === 'User cancelled/closed the task module.') {
-            console.log('User cancelled/closed the task module.');
-            resolve();
-          } else {
-            console.log('Error in adaptive card dialog result:', resultObj.err);
-            reject(resultObj.err);
-          }
-        } else {
-          console.log('Adaptive card dialog result:', resultObj.result);
-          resolve();
-        }
-      };
-      dialog.adaptiveCard.open(input, onComplete);
-      console.log('Adaptive card dialog opened successfully');
-    } catch (error) {
-      console.log('Error opening adaptive card dialog:', error);
-      reject(error);
-      throw error;
-    }
-  });
+export const secondaryBrowser_Open = async (input: string): Promise<void> => {
+  console.log('Executing Open...');
+  try{
+    if (typeof input !== 'string') {
+        throw new Error('Input should be a string');
+      }
+      // validate that input should also be a valid URL
+      new URL(input);
+      await secondaryBrowser.open(new URL(input));
+  }catch (error){
+    console.log('Error opening secondary browser:', JSON.stringify(error, null, 2));
+    console.log('Secondary Browser module is not supported. Secondary Browser is only supported on M365 Mobile and Outlook Mobile.');
+    throw error;
+  }
+  
+  
 };
 
-interface DialogCardAPIsProps {
+interface SecondaryBrowserAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const DialogCardAPIs: React.FC<DialogCardAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
+const SecondaryBrowserAPIs: React.FC<SecondaryBrowserAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -96,7 +84,7 @@ const DialogCardAPIs: React.FC<DialogCardAPIsProps> = ({ apiComponent, onDropToS
             </option>
           ))}
         </select>
-        {selectedFunction === 'OpenAdaptiveCardDialog' && (
+        {selectedFunction === 'Open' && (
           <div className="input-container">
             <input
               type="text"
@@ -114,4 +102,4 @@ const DialogCardAPIs: React.FC<DialogCardAPIsProps> = ({ apiComponent, onDropToS
   );
 };
 
-export default DialogCardAPIs;
+export default SecondaryBrowserAPIs;
