@@ -62,13 +62,13 @@ steps:
     displayName: 'Download localhost certificate'
     inputs:
       secureFile: 'localhostCA.pem'
-  
+
   - task: DownloadSecureFile@1
     name: localhostSSLCertificate
     displayName: 'Download localhost certificate'
     inputs:
       secureFile: 'localhost.test.crt'
-            
+
   - task: DownloadSecureFile@1
     name: localhostSSLKey
     displayName: 'Download localhost key'
@@ -110,7 +110,7 @@ steps:
 
       # Add the root certificate to the booted simulator's keychain
       xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
-    displayName: "[iOS] Boot iOS Simulator and Add Root Certificate"
+    displayName: '[iOS] Boot iOS Simulator and Add Root Certificate'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - task: Bash@3
@@ -153,11 +153,11 @@ steps:
     displayName: Preparations for publishing results
     condition: always()
 
-  - task: 1ES.PublishPipelineArtifact@1
-    inputs:
-      path: '$(agent.buildDirectory)/Logs'
-      artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
-    condition: always()
+  # - task: 1ES.PublishPipelineArtifact@1
+  #   inputs:
+  #     path: '$(agent.buildDirectory)/Logs'
+  #     artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
+  #   condition: always()
 
   - task: CodeQL3000Finalize@0
     condition: always()
