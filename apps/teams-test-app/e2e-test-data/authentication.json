@@ -55,6 +55,18 @@
       "expectedTestAppValue": "{\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
     },
     {
+      "title": "getUser API Call - Success (Microsoft owned app)",
+      "version": ">2.25.0",
+      "hostSdkVersion": {
+        "web": ">3.1.0"
+      },
+      "type": "callResponse",
+      "platformsExcluded": ["iOS"],
+      "boxSelector": "#box_getUser",
+      "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": true}"]],
+      "expectedTestAppValue": "{\"oid\":\"mockoid\",\"tid\":\"mocktid\",\"upn\":\"mockupn\",\"loginHint\":\"mockLoginHint\",\"displayName\":\"mockName\",\"dataResidency\":\"public\"}"
+    },
+    {
       "title": "getUser API Call - Success (Full trust and Microsoft owned app)",
       "version": ">2.25.0",
       "hostSdkVersion": {
