@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './CustomScenario.css';
 import { useDrop } from 'react-dnd';
 import apiComponents, { ApiComponent } from './ApiComponents';
-import { handleRunScenario } from './../../utils/HandleRunScenario';
+import { handleRunScenario } from '../../utils/HandleRunScenario';
 import { app } from '@microsoft/teams-js';
 
 app.initialize();
