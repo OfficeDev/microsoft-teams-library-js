@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AppInitializationScenario from './AppInitializationScenario';
 
 jest.mock('@microsoft/teams-js', () => ({
@@ -9,7 +8,10 @@ jest.mock('@microsoft/teams-js', () => ({
 }));
 
 jest.mock('../../apis/AppApi', () => ({
+  getContextV2: jest.fn(() => Promise.resolve({})),
+  registerBeforeSuspendOrTerminateHandler: jest.fn(() => Promise.resolve()),
   registerOnResume: jest.fn(() => Promise.resolve()),
+  registerOnThemeChangeHandlerV2: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('../../apis/AuthenticationStart', () => ({
@@ -22,29 +24,19 @@ describe('App Initialization Component', () => {
     jest.clearAllMocks();
   });
 
-  test('app initialization scenario', () => {
+  test('app initialization scenario', async () => {
     render(<AppInitializationScenario />);
 
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 
-    return new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        clearTimeout(timeout);
-        reject(new Error('Timeout waiting for success message'));
-      }, 20000);
-
-      const checkSuccessMessage = () => {
+    await waitFor(
+      () => {
         const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
-        if (successMessage) {
-          clearTimeout(timeout);
-          resolve();
-        } else {
-          setTimeout(checkSuccessMessage, 100); // Check every 100ms
+        if (!successMessage) {
+          throw new Error('Success message not found');
         }
-      };
-
-      checkSuccessMessage();
-    });
+      },
+      { timeout: 5000 }
+    );
   });
-
 });
