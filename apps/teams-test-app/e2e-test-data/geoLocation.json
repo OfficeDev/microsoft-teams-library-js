@@ -40,6 +40,18 @@
       "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
     },
     {
+      "title": "getCurrentLocation API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_getCurrentLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "expectedAlertValue": ["getCurrentLocation is called"],
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2,\"timestamp\":200}"
+    },
+    {
       "title": "getCurrentLocation API Call - Failure",
       "type": "callResponse",
       "version": ">2.16.0",
