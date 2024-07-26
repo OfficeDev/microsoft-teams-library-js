@@ -4,6 +4,10 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
+  - name: VSTS_HTTP_RETRY
+    value: '5'
+  - name: VSTS_HTTP_TIMEOUT
+    value: '120'
 
 trigger:
   branches:
@@ -48,6 +52,13 @@ jobs:
     pool:
       vmImage: 'internal-macos12'
     steps:
+      - script: |
+          echo "VSTS_HTTP_RETRY: $VSTS_HTTP_RETRY"
+          echo "VSTS_HTTP_TIMEOUT: $VSTS_HTTP_TIMEOUT"
+        displayName: 'Display Environment Variables'
+        env:
+          VSTS_HTTP_RETRY: '5'
+          VSTS_HTTP_TIMEOUT: '120'
       - template: tools/yaml-templates/ios-test.yml@self
         parameters:
           iOSAppHostingSdkGitPath: IOSAppHostingSdk
