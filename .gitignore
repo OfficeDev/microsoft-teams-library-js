@@ -78,4 +78,5 @@ appPackage/build
 devTools/
 
 # Ignore Jest JUnit test results
-test-results/unit/unit-tests-report.xml
+apps/teamsjs-diagnostic-app/test-results/unit/unit-tests-report.xml
+
