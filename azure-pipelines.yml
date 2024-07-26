@@ -135,6 +135,7 @@ extends:
 
           - job: E2ETest2
             displayName: 'E2E Test - Default'
+            timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
               image: 'ubuntu-2004'
@@ -166,6 +167,7 @@ extends:
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
+            timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
               image: 'ubuntu-latest'
