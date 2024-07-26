@@ -9,8 +9,14 @@
   width: 1px;
 }
 
+.scenario-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 .custom-scenario-box {
-  width: 425px;
+  width: 29vw;
   height: 400px;
   background-color: white;
   border: 3px solid #4f52b0ff;
@@ -42,11 +48,11 @@
   background: #555;
 }
 
-.all-api-container {
+.scenario-container .all-api-container {
   display: flex;
   flex-direction: column;
   position: relative;
-  align-items: flex-start;
+  align-items: center;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 600px;
@@ -54,13 +60,14 @@
   border: 3px solid #4f52b0ff;
   padding: 20px;
   height: 400px;
+  width: 29vw;
   margin-top: 88px;
   border-radius: 8px;
   box-shadow: 4px 4px 8px #4f52b0ff;
 }
 
 .all-api-box {
-  width: 400px;
+  width: 26vw;
   height: 400px;
   overflow: auto;
 }  
@@ -118,6 +125,7 @@
   border-radius: 4px;
   margin-bottom: 5px;
   box-shadow: 1px 1px 2px #4f52b0ff;
+  overflow: auto;
   
 }
 

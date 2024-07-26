@@ -1,11 +1,11 @@
 .scenario-container {
   display: flex;
   gap: 20px;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 
 .horizontal-box {
-  width: 1300px;
+  width: 90vw;
   height: 600px;
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
 }
 
 .log-console {
-  margin-top: 20px;
+  margin-top: 15px;
   padding: 20px;
   background-color: white;
   display: flex;
