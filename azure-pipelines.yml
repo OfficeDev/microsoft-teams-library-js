@@ -8,6 +8,8 @@ variables:
     value: '5'
   - name: VSTS_HTTP_TIMEOUT
     value: '120'
+  - name: AZP_AGENT_USE_LEGACY_HTTP
+    value: 'true'
 
 trigger:
   branches:
@@ -55,6 +57,7 @@ jobs:
       - script: |
           echo "VSTS_HTTP_RETRY: $VSTS_HTTP_RETRY"
           echo "VSTS_HTTP_TIMEOUT: $VSTS_HTTP_TIMEOUT"
+          echo "AZP_AGENT_USE_LEGACY_HTTP: $AZP_AGENT_USE_LEGACY_HTTP"
         displayName: 'Display Environment Variables'
         env:
           VSTS_HTTP_RETRY: '5'
