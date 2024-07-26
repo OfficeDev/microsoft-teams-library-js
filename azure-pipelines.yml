@@ -52,6 +52,7 @@ jobs:
   - job: E2ETestIOS
     displayName: 'E2E Test - IOS'
     pool:
+      name: Azure Pipelines
       vmImage: 'internal-macos12'
     steps:
       - script: |
