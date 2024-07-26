@@ -20,9 +20,9 @@ steps:
       workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
       condition: always()
 
-  - task: CodeQL3000Init@0
-    inputs:
-      Enabled: true
+  # - task: CodeQL3000Init@0
+  #   inputs:
+  #     Enabled: true
 
   # - task: NodeTool@0
   #   inputs:
@@ -159,5 +159,5 @@ steps:
   #     artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
   #   condition: always()
 
-  - task: CodeQL3000Finalize@0
-    condition: always()
+  # - task: CodeQL3000Finalize@0
+  #   condition: always()
