@@ -154,7 +154,7 @@ steps:
     displayName: Preparations for publishing results
     condition: always()
 
-  - task: 1ES.PublishPipelineArtifact@1
+  - task: PublishPipelineArtifact@1
     inputs:
       path: '$(agent.buildDirectory)/Logs'
       artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
