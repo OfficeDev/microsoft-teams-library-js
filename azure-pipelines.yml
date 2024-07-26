@@ -133,37 +133,43 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETest2
-            displayName: 'E2E Test - Default'
-            timeoutInMinutes: 90
+          - job: E2ETests_Web_Npm_StandardWeb_A-M
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [A-M]'
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
               image: 'ubuntu-2004'
               os: linux
             steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
+              - template: tools/yaml-templates/web-e2e-tests@self
                 parameters:
                   appHostGitPath: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[A-M],[a-m]}'
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
-                displayName: 'Run E2E integration tests'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+          - job: E2ETests_Web_Npm_StandardWeb_N-Z0-9
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [N-Z][0-9]'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[N-Z],[n-z][0-9]}'
 
-              - task: CMDLine@2
-                displayName: 'Run tests for electron webview'
-                inputs:
-                  script: |
-                    pnpm exec xvfb-maybe playwright test
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Default'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          - job: E2ETests_Web_Npm_Electron
+            displayName: 'E2E Tests - Web - Via NPM - Electron Hosted'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
+                  hostingEnvironmentType: 'electron'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
