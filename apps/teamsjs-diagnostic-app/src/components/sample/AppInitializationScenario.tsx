@@ -60,10 +60,10 @@ const AppInitializationScenario: React.FC<AppInitializationScenarioProps> = ({ s
           <div className="api-section">
             <div className="api-header">APIs Being Run:</div>
             <div className="vertical-box-container">
-              <div className="vertical-box">
+              <div className="vertical-box1">
                 <span className="box-title">1. app</span>
               </div>
-              <div className="vertical-box">
+              <div className="vertical-box1">
                 <span className="box-title">2. authentication</span>
               </div>
             </div>

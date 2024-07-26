@@ -12,7 +12,8 @@
 .custom-scenario-box {
   width: 425px;
   height: 400px;
-  background-color: lightgray;
+  background-color: white;
+  border: 3px solid #4f52b0ff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,6 +21,8 @@
   position: relative;
   overflow-y: auto;
   overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 4px 4px 8px #4f52b0ff;
 }
 
 .custom-scenario-box::-webkit-scrollbar {
@@ -45,11 +48,15 @@
   position: relative;
   align-items: flex-start;
   overflow-y: auto;
+  overflow-x: hidden;
   max-height: 600px;
-  background-color: lightgray;
+  background-color: white;
+  border: 3px solid #4f52b0ff;
   padding: 20px;
   height: 400px;
   margin-top: 88px;
+  border-radius: 8px;
+  box-shadow: 4px 4px 8px #4f52b0ff;
 }
 
 .all-api-box {
@@ -77,8 +84,9 @@
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  background-color: #464eb8;
-  color: white;
+  background-color: #4f52b0ff;
+  color: #f5f5f5;
+  text-decoration-thickness: 2px;
   margin-bottom: 10px;
 }
 
@@ -102,12 +110,32 @@
 
 .vertical-box {
   width: 100%;
-  background-color: white;
+  background-color: rgb(239, 239, 239);
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 4px;
+  margin-bottom: 5px;
+  box-shadow: 1px 1px 2px #4f52b0ff;
+  
+}
+
+.vertical-box:hover{
+  background-color: rgb(209, 209, 209);
+}
+
+.vertical-box-container .dropped-api {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  background-color: rgb(239, 239, 239);
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .box-dropdown {
@@ -129,18 +157,6 @@
 
 .scenario2-header {
   gap: 20px;
-}
-
-.dropped-api {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  overflow-x: auto;
 }
 
 .dropped-api span {
@@ -460,9 +476,47 @@
   align-items: center;
 }
 
-.clear-all-button2 {
-  background-color: red;
-  color: white;
+.clear-all-button {
+  background-color: #fae5e3ff;
+  color: #c22a25ff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  width: 125px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration-thickness: 3px;
+}
+
+.clear-all-button:hover {
+  background-color: rgb(250, 239, 238);
+}
+
+.scenario-list-button {
+  background-color: rgb(240, 234, 255);
+  color: #464eb8;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  width: 125px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration-thickness: 3px;
+}
+
+.scenario-list-button:hover {
+  background-color: rgb(245, 240, 255);
+}
+
+.dialog-header .clear-all-button2 {
+  background-color: #fae5e3ff;
+  color: #c22a25ff;
   border: none;
   border-radius: 5px;
   padding: 5px 10px;
@@ -474,17 +528,17 @@
   justify-content: center;
 }
 
-.clear-all-button2:hover {
-  background-color: darkred;
+.dialog-header .clear-all-button2:hover {
+  background-color: rgb(250, 239, 238);
 }
 
 .search-bar {
-  width: calc(100% - 40px); /* Adjust width to fit the button */
+  width: calc(100% - 40px);
   padding: 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: 50px; /* Ensure space for the button */
+  margin-right: 50px;
   margin-bottom: 10px;
 }
 
@@ -495,8 +549,7 @@
   width: 34px;
   height: 34px;
   padding: 0;
-  background-color: white;
-  border: none;
+  background-color: rgb(189, 191, 240);
   cursor: pointer;
   border-radius: 5px;
   display: flex;
@@ -505,7 +558,7 @@
 }
 
 .btn-icon:hover {
-  background-color: #464eb8;
+  background-color: rgb(221, 221, 240);
 }
 
 .btn-icon i {

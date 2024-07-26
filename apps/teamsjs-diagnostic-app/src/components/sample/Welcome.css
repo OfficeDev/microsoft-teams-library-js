@@ -33,6 +33,11 @@
 
 .center {
   text-align: center;
+  color: #4f52b0ff;
+}
+
+.center1{
+  text-align: center;
 }
 
 .sections > * {

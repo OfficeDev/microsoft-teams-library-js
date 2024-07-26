@@ -50,8 +50,8 @@ export function Welcome(props: { showFunction?: boolean; environment?: string })
       <div className="narrow page-padding">
         <Image src="hello.png" />
         <h1 className="center">Congratulations{userName ? ", " + userName : ""}!</h1>
-        {hostName && <p className="center">The diagnostic app is running in {hostName}</p>}
-        <p className="center">The diagnostic app is running in your {friendlyEnvironmentName}</p>
+        {hostName && <p className="center1">The diagnostic app is running in {hostName}</p>}
+        <p className="center1">The diagnostic app is running in your {friendlyEnvironmentName}</p>
 
         <div className="tabList">
           <TabList selectedValue={selectedValue} onTabSelect={onTabSelect}>

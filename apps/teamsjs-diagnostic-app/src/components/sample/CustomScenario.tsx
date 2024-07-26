@@ -181,7 +181,7 @@ const CustomScenario: React.FC = () => {
       <div className="scenario2-container" ref={drop} style={{ backgroundColor: isOver ? 'lightgreen' : 'transparent' }}>
         <div className="scenario2-header">
           <h2>Custom Scenario</h2>
-          <p>Drag and drop API components here to build your custom scenario.</p>
+          <p>Drag and drop APIs here to build your custom scenario.</p>
         </div>
         <div className="custom-scenario-box">
           <button className="scenario1-button" onClick={handleRunScenarioClick}>Run Scenario</button>
