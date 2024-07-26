@@ -76,3 +76,6 @@ appPackage/build
 
 # Dev tool directories
 devTools/
+
+# Ignore Jest JUnit test results
+test-results/unit/unit-tests-report.xml
