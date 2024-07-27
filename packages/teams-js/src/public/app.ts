@@ -5,9 +5,11 @@
 import {
   Communication,
   initializeCommunication,
+  sendAndGetHostName,
   sendAndHandleStatusAndReason,
   sendAndUnwrap,
   sendMessageToParent,
+  sendMessageToParentAsync,
   uninitializeCommunication,
 } from '../internal/communication';
 import { defaultSDKVersionForCompatCheck } from '../internal/constants';
@@ -729,6 +731,22 @@ export namespace app {
    */
   export function isInitialized(): boolean {
     return GlobalVars.initializeCompleted;
+  }
+
+  /**
+   * Gets the host name where the app is running. If the app is not running in a hosted environment,
+   * it will return `App is not running inside iframe.` message or error message.
+   * @returns A promise that resolves to the host name.
+   */
+  export async function getHostName(): Promise<string> {
+    if (GlobalVars.initializeCompleted) {
+      return await sendMessageToParentAsync(
+        getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetHostName),
+        'getHostName',
+      );
+    } else {
+      return await sendAndGetHostName(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_GetHostName));
+    }
   }
 
   /**

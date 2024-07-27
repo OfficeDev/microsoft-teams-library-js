@@ -21,6 +21,10 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
+    app.getHostName().then((hostName) => {
+      console.log('%cHost Name: ', 'background-color: blue', hostName);
+    });
+    console.log('App Initialization');
     app.initialize(validMessageOrigins);
   }
 }
