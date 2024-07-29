@@ -11,11 +11,11 @@ export async function prefetchOriginsFromCDN(): Promise<void> {
 }
 
 function isValidOriginsCacheEmpty(): boolean {
-  return validOriginsCache.length !== 0;
+  return validOriginsCache.length === 0;
 }
 
 async function getValidOriginsListFromCDN(): Promise<string[]> {
-  if (isValidOriginsCacheEmpty()) {
+  if (!isValidOriginsCacheEmpty()) {
     return validOriginsCache;
   }
   if (!inServerSideRenderingEnvironment()) {
