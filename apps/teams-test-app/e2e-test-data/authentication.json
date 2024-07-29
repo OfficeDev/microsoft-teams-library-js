@@ -22,7 +22,7 @@
       "title": "getUser API Call - Failure (Not full trust)",
       "version": ">2.25.0",
       "hostSdkVersion": {
-        "web": ">3.0.2"
+        "web": "<=3.0.2"
       },
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
