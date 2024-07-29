@@ -11,7 +11,7 @@ overrides:
   follow-redirects: ^1.15.6
   glob-parent: ^5.1.2
   jsdom: ^24.0.0
-  ip: '>=1.1.9'
+  ip: '>=2.0.1'
   lodash: ^4.17.21
   merge: ^2.1.1
   minimist: ^0.2.4
@@ -27,6 +27,9 @@ overrides:
   url-parse: ^1.5.0
   word-wrap: ^1.2.4
   y18n: ^4.0.1
+  nth-check@<2.0.1: '>=2.0.1'
+  '@azure/identity@<4.2.1': '>=4.2.1'
+  fast-xml-parser@<4.4.1: '>=4.4.1'
 
 importers:
 
@@ -304,10 +307,10 @@ importers:
         specifier: ^9.54.2
         version: 9.54.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(scheduler@0.23.0)
       '@microsoft/teamsfx':
-        specifier: ^2.2.0
+        specifier: ^2.3.2
         version: 2.3.2(@microsoft/teams-js@2.24.0)(encoding@0.1.13)
       '@microsoft/teamsfx-react':
-        specifier: ^3.0.0
+        specifier: ^3.1.2
         version: 3.1.2(@fluentui/react-components@9.54.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(scheduler@0.23.0))(@microsoft/microsoft-graph-client@3.0.7)(@microsoft/teams-js@2.24.0)(@microsoft/teamsfx@2.3.2(@microsoft/teams-js@2.24.0)(encoding@0.1.13))(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/dom':
         specifier: ^10.0.0
@@ -498,6 +501,7 @@ packages:
   '@azure/core-http@3.0.4':
     resolution: {integrity: sha512-Fok9VVhMdxAFOtqiiAtg74fL0UJkt0z3D+ouUUxcRLzZNBioPRAMJFVxiWoJljYpXsRi4GDQHzQHDc9AiYaIUQ==}
     engines: {node: '>=14.0.0'}
+    deprecated: deprecating as we migrated to core v2
 
   '@azure/core-lro@2.7.2':
     resolution: {integrity: sha512-0YIpccoX8m/k00O7mDDMdJpbr6mf1yWo2dfmxt5A8XVZVVMz2SSKaEbMCeJRvgQ0IaSlqhjT47p4hVIRRy90xw==}
@@ -523,9 +527,9 @@ packages:
     resolution: {integrity: sha512-AfalUQ1ZppaKuxPPMsFEUdX6GZPB3d9paR9d/TTL7Ow2De8cJaC7ibi7kWVlFAVPCYo31OcnGymc0R89DX8Oaw==}
     engines: {node: '>=18.0.0'}
 
-  '@azure/identity@2.1.0':
-    resolution: {integrity: sha512-BPDz1sK7Ul9t0l9YKLEa8PHqWU4iCfhGJ+ELJl6c8CP3TpJt2urNCbm0ZHsthmxRsYoMPbz2Dvzj30zXZVmAFw==}
-    engines: {node: '>=12.0.0'}
+  '@azure/identity@4.4.0':
+    resolution: {integrity: sha512-oG6oFNMxUuoivYg/ElyZWVSZfw42JQyHbrp+lR7VJ1BYWsGzt34NwyDw3miPp1QI7Qm5+4KAd76wGsbHQmkpkg==}
+    engines: {node: '>=18.0.0'}
 
   '@azure/keyvault-keys@4.8.0':
     resolution: {integrity: sha512-jkuYxgkw0aaRfk40OQhFqDIupqblIOIlYESWB6DKCVDxQet1pyv86Tfk9M+5uFM0+mCs6+MUHU+Hxh3joiUn4Q==}
@@ -535,10 +539,6 @@ packages:
     resolution: {integrity: sha512-l170uE7bsKpIU6B/giRc9i4NI0Mj+tANMMMxf7Zi/5cKzEqPayP7+X1WPrG7e+91JgY8N+7K7nF2WOi7iVhXvg==}
     engines: {node: '>=18.0.0'}
 
-  '@azure/msal-browser@2.39.0':
-    resolution: {integrity: sha512-kks/n2AJzKUk+DBqZhiD+7zeQGBl+WpSOQYzWy6hff3bU0ZrYFqr4keFLlzB5VKuKZog0X59/FGHb1RPBDZLVg==}
-    engines: {node: '>=0.8.0'}
-
   '@azure/msal-browser@3.17.0':
     resolution: {integrity: sha512-csccKXmW2z7EkZ0I3yAoW/offQt+JECdTIV/KrnRoZyM7wCSsQWODpwod8ZhYy7iOyamcHApR9uCh0oD1M+0/A==}
     engines: {node: '>=0.8.0'}
@@ -547,22 +547,22 @@ packages:
     resolution: {integrity: sha512-Lrk1ozoAtaP/cp53May3v6HtcFSVxdFrg2Pa/1xu5oIvsIwhxW6zSPibKefCOVgd5osgykMi5jjcZHv8XkzZEQ==}
     engines: {node: '>=0.8.0'}
 
-  '@azure/msal-common@13.3.3':
-    resolution: {integrity: sha512-n278DdCXKeiWhLwhEL7/u9HRMyzhUXLefeajiknf6AmEedoiOiv2r5aRJ7LXdT3NGPyubkdIbthaJlVtmuEqvA==}
-    engines: {node: '>=0.8.0'}
-
   '@azure/msal-common@14.12.0':
     resolution: {integrity: sha512-IDDXmzfdwmDkv4SSmMEyAniJf6fDu3FJ7ncOjlxkDuT85uSnLEhZi3fGZpoR7T4XZpOMx9teM9GXBgrfJgyeBw==}
     engines: {node: '>=0.8.0'}
 
-  '@azure/msal-common@7.6.0':
-    resolution: {integrity: sha512-XqfbglUTVLdkHQ8F9UQJtKseRr3sSnr9ysboxtoswvaMVaEfvyLtMoHv9XdKUfOc0qKGzNgRFd9yRjIWVepl6Q==}
+  '@azure/msal-common@14.14.0':
+    resolution: {integrity: sha512-OxcOk9H1/1fktHh6//VCORgSNJc2dCQObTm6JNmL824Z6iZSO6eFo/Bttxe0hETn9B+cr7gDouTQtsRq3YPuSQ==}
     engines: {node: '>=0.8.0'}
 
   '@azure/msal-node@1.18.4':
     resolution: {integrity: sha512-Kc/dRvhZ9Q4+1FSfsTFDME/v6+R2Y1fuMty/TfwqE5p9GTPw08BPbKgeWinE8JRHRp+LemjQbUZsn4Q4l6Lszg==}
     engines: {node: 10 || 12 || 14 || 16 || 18}
     deprecated: A newer major version of this library is available. Please upgrade to the latest available version.
+
+  '@azure/msal-node@2.12.0':
+    resolution: {integrity: sha512-jmk5Im5KujRA2AcyCb0awA3buV8niSrwXZs+NBJWIvxOz76RvNlusGIqi43A0h45BPUy93Qb+CPdpJn82NFTIg==}
+    engines: {node: '>=16'}
 
   '@babel/code-frame@7.24.7':
     resolution: {integrity: sha512-BcYH1CVJBO9tvyIZ2jVeXgSIMvGZ2FDRvDdOIVQyuklNKSsx+eppDEBq/g47Ayw+RqNFE+URvOShmf+f/qwAlA==}
@@ -5086,8 +5086,8 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
-  fast-xml-parser@4.4.0:
-    resolution: {integrity: sha512-kLY3jFlwIYwBNDojclKsNAC12sfD6NwW74QB2CoNGPvtVxjliYehVunB3HYyNi+n4Tt1dAcgwYvmKF/Z18flqg==}
+  fast-xml-parser@4.4.1:
+    resolution: {integrity: sha512-xkjOecfnKGkSsOwtZ5Pz7Us/T6mrbPQrq0nh+aCO5V9nk5NLWmasAHumTKjiPJPWANe+kAZ84Jc8ooJkzZ88Sw==}
     hasBin: true
 
   fastest-levenshtein@1.0.16:
@@ -7016,9 +7016,6 @@ packages:
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
-
-  nth-check@1.0.2:
-    resolution: {integrity: sha512-WeBOdju8SnzPN5vTUJYxYUxLeXpCaVP5i5e0LF8fg7WORF2Wd7wFX/pk0tYZk7s8T+J7VLy0Da6J1+wCT0AtHg==}
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -9761,7 +9758,7 @@ snapshots:
       '@azure/abort-controller': 2.1.2
       tslib: 2.6.3
 
-  '@azure/identity@2.1.0':
+  '@azure/identity@4.4.0':
     dependencies:
       '@azure/abort-controller': 1.1.0
       '@azure/core-auth': 1.7.2
@@ -9770,15 +9767,13 @@ snapshots:
       '@azure/core-tracing': 1.1.2
       '@azure/core-util': 1.9.0
       '@azure/logger': 1.1.2
-      '@azure/msal-browser': 2.39.0
-      '@azure/msal-common': 7.6.0
-      '@azure/msal-node': 1.18.4
+      '@azure/msal-browser': 3.17.0
+      '@azure/msal-node': 2.12.0
       events: 3.3.0
       jws: 4.0.0
       open: 8.4.2
       stoppable: 1.1.0
       tslib: 2.6.3
-      uuid: 8.3.2
     transitivePeerDependencies:
       - supports-color
 
@@ -9802,25 +9797,25 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  '@azure/msal-browser@2.39.0':
-    dependencies:
-      '@azure/msal-common': 13.3.3
-
   '@azure/msal-browser@3.17.0':
     dependencies:
       '@azure/msal-common': 14.12.0
 
   '@azure/msal-common@13.3.1': {}
 
-  '@azure/msal-common@13.3.3': {}
-
   '@azure/msal-common@14.12.0': {}
 
-  '@azure/msal-common@7.6.0': {}
+  '@azure/msal-common@14.14.0': {}
 
   '@azure/msal-node@1.18.4':
     dependencies:
       '@azure/msal-common': 13.3.1
+      jsonwebtoken: 9.0.2
+      uuid: 8.3.2
+
+  '@azure/msal-node@2.12.0':
+    dependencies:
+      '@azure/msal-common': 14.14.0
       jsonwebtoken: 9.0.2
       uuid: 8.3.2
 
@@ -12642,12 +12637,12 @@ snapshots:
 
   '@microsoft/load-themed-styles@1.10.295': {}
 
-  '@microsoft/microsoft-graph-client@3.0.7(@azure/identity@2.1.0)(@azure/msal-browser@3.17.0)':
+  '@microsoft/microsoft-graph-client@3.0.7(@azure/identity@4.4.0)(@azure/msal-browser@3.17.0)':
     dependencies:
       '@babel/runtime': 7.24.7
       tslib: 2.6.3
     optionalDependencies:
-      '@azure/identity': 2.1.0
+      '@azure/identity': 4.4.0
       '@azure/msal-browser': 3.17.0
 
   '@microsoft/recognizers-text-choice@1.1.4':
@@ -12716,7 +12711,7 @@ snapshots:
     dependencies:
       '@fluentui/react': 8.119.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@fluentui/react-components': 9.54.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(scheduler@0.23.0)
-      '@microsoft/microsoft-graph-client': 3.0.7(@azure/identity@2.1.0)(@azure/msal-browser@3.17.0)
+      '@microsoft/microsoft-graph-client': 3.0.7(@azure/identity@4.4.0)(@azure/msal-browser@3.17.0)
       '@microsoft/teams-js': 2.24.0
       '@microsoft/teamsfx': 2.3.2(@microsoft/teams-js@2.24.0)(encoding@0.1.13)
       react: 18.3.1
@@ -12727,11 +12722,11 @@ snapshots:
 
   '@microsoft/teamsfx@2.3.2(@microsoft/teams-js@2.24.0)(encoding@0.1.13)':
     dependencies:
-      '@azure/identity': 2.1.0
+      '@azure/identity': 4.4.0
       '@azure/msal-browser': 3.17.0
       '@azure/msal-node': 1.18.4
       '@microsoft/adaptivecards-tools': 1.3.4
-      '@microsoft/microsoft-graph-client': 3.0.7(@azure/identity@2.1.0)(@azure/msal-browser@3.17.0)
+      '@microsoft/microsoft-graph-client': 3.0.7(@azure/identity@4.4.0)(@azure/msal-browser@3.17.0)
       '@microsoft/teams-js': 2.24.0
       axios: 1.7.2
       botbuilder: 4.22.2(encoding@0.1.13)
@@ -14033,7 +14028,7 @@ snapshots:
       btoa-lite: 1.0.0
       d3-format: 1.4.5
       dayjs: 1.11.11
-      fast-xml-parser: 4.4.0
+      fast-xml-parser: 4.4.1
       jspath: 0.4.0
       lodash.isequal: 4.5.0
       lru-cache: 5.1.1
@@ -14633,7 +14628,7 @@ snapshots:
   botframework-connector@4.22.2(encoding@0.1.13):
     dependencies:
       '@azure/core-http': 3.0.4(encoding@0.1.13)
-      '@azure/identity': 2.1.0
+      '@azure/identity': 4.4.0
       '@azure/msal-node': 1.18.4
       base64url: 3.0.1
       botbuilder-stdlib: 4.22.2-internal
@@ -15199,7 +15194,7 @@ snapshots:
       boolbase: 1.0.0
       css-what: 3.4.2
       domutils: 1.7.0
-      nth-check: 1.0.2
+      nth-check: 2.1.1
 
   css-select@4.3.0:
     dependencies:
@@ -16196,7 +16191,7 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fast-xml-parser@4.4.0:
+  fast-xml-parser@4.4.1:
     dependencies:
       strnum: 1.0.5
 
@@ -18789,10 +18784,6 @@ snapshots:
     dependencies:
       path-key: 3.1.1
 
-  nth-check@1.0.2:
-    dependencies:
-      boolbase: 1.0.0
-
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
@@ -20806,7 +20797,7 @@ snapshots:
 
   tedious@14.7.0:
     dependencies:
-      '@azure/identity': 2.1.0
+      '@azure/identity': 4.4.0
       '@azure/keyvault-keys': 4.8.0
       '@js-joda/core': 5.6.3
       '@types/es-aggregate-error': 1.0.6

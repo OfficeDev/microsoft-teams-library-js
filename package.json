@@ -106,7 +106,7 @@
       "follow-redirects": "^1.15.6",
       "glob-parent": "^5.1.2",
       "jsdom": "^24.0.0",
-      "ip": ">=1.1.9",
+      "ip": ">=2.0.1",
       "lodash": "^4.17.21",
       "merge": "^2.1.1",
       "minimist": "^0.2.4",
@@ -121,7 +121,10 @@
       "underscore": "1.12.1",
       "url-parse": "^1.5.0",
       "word-wrap": "^1.2.4",
-      "y18n": "^4.0.1"
+      "y18n": "^4.0.1",
+      "nth-check@<2.0.1": ">=2.0.1",
+      "@azure/identity@<4.2.1": ">=4.2.1",
+      "fast-xml-parser@<4.4.1": ">=4.4.1"
     },
     "overrides-explanation": {
       "WHAT IS THIS SECTION": "pnpm ignores this section and comments aren't allowed in JSON files. This section documents why the above overrides have been put in place. If you add an override, describe it in this section.",
