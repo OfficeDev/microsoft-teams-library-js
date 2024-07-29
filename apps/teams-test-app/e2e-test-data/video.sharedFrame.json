@@ -15,7 +15,7 @@
     {
       "title": "videoEx.sharedFrame.registerForVideoFrame - Success",
       "type": "callResponse",
-      "version": ">2.12.0",
+      "version": "<=2.25.0",
       "boxSelector": "#box_videoExSharedFrameRegisterForVideoFrame1",
       "hostSdkVersion": {
         "web": "<=4.0.0"
@@ -27,7 +27,7 @@
     {
       "title": "videoEx.sharedFrame.registerForVideoFrame - Success",
       "type": "callResponse",
-      "version": ">2.12.0",
+      "version": ">2.25.0",
       "boxSelector": "#box_videoExSharedFrameRegisterForVideoFrame1",
       "hostSdkVersion": {
         "web": ">4.0.0"
