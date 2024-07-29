@@ -22,7 +22,7 @@
       "title": "getUser API Call - Failure (Not full trust)",
       "version": ">2.25.0",
       "hostSdkVersion": {
-        "web": ">3.0.2  <3.1 || > 3.1.0"
+        "web": ">3.0.2"
       },
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
@@ -34,7 +34,7 @@
       "title": "getUser API Call - Failure (Not full trust and not Microsoft owned)",
       "version": ">2.25.0",
       "hostSdkVersion": {
-        "web": ">3.0.2  <3.1 || > 3.1.0"
+        "web": ">3.0.2"
       },
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
@@ -46,7 +46,7 @@
       "title": "getUser API Call - Success (Full trust app)",
       "version": ">2.25.0",
       "hostSdkVersion": {
-        "web": ">3.0.2  <3.1 || > 3.1.0"
+        "web": ">3.0.2"
       },
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
@@ -58,7 +58,7 @@
       "title": "getUser API Call - Success (Full trust and Microsoft owned app)",
       "version": ">2.25.0",
       "hostSdkVersion": {
-        "web": ">3.0.2  <3.1 || > 3.1.0"
+        "web": ">3.0.2"
       },
       "type": "callResponse",
       "platformsExcluded": ["iOS"],
