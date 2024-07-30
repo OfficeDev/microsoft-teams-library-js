@@ -208,12 +208,12 @@ const CustomScenario: React.FC = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <button aria-label="Definitions" title="Definitions" className="btn btn-icon" onClick={handlePreviewClick}>
-          <i className="fa-solid fa-book-open"></i>
+          🕮
         </button>
         <div className="all-api-box">{generateVerticalBoxes()}</div>
       </div>
 
-      {showAddScenario && (
+    {showAddScenario && (
   <div className="add-dialog active">
     <div className="addScenario-content">
       <div className="dialog-header">
