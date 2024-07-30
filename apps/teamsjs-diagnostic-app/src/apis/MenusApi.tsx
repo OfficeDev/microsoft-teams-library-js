@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { menus } from '@microsoft/teams-js';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const menus_CheckMenusCapability = async (): Promise<void> => {
   console.log('Executing CheckMenusCapability...');
@@ -89,74 +89,26 @@ export const menus_ShowActionMenu = async (input: string): Promise<string> => {
   }
 };
 
-interface MenusAPIsProps {
+
+const functionsRequiringInput = [
+  'SetUpViews',
+  'SetNavBarMenu',
+  'ShowActionMenu'
+]; // List of functions requiring input
+
+interface MenuAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const MenusAPIs: React.FC<MenusAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const functionsRequiringInput = [
-    'SetUpViews',
-    'SetNavBarMenu',
-    'ShowActionMenu'
-  ]; // List of functions requiring input
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');  // Reset input value when function changes
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleDefaultButtonClick = () => {
-    if (selectedFunction && apiComponent.defaultInput) {
-      const defaultInputs = JSON.parse(apiComponent.defaultInput);
-      setInputValue(defaultInputs[selectedFunction] ? JSON.stringify(defaultInputs[selectedFunction]) : '');
-    }
-  };
-
-  // Determine if the input box should be shown based on the selected function
-  const showInputBox = selectedFunction && functionsRequiringInput.includes(selectedFunction);
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const MenuAPIs: React.FC<MenuAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {showInputBox && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={handleDefaultButtonClick}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 
-export default MenusAPIs;
+export default MenuAPIs;

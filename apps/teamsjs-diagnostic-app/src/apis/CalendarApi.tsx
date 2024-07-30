@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const calendar_CheckCalendarCapability = async (): Promise<void> => {
   console.log('Executing CheckCalendarCapability...');
@@ -54,67 +54,24 @@ export const calendar_OpenCalendarItem = async (input: string): Promise<string> 
   }
 };
 
+const functionsRequiringInput = [
+  'ComposeMeeting', 
+  'OpenCalendarItem', 
+]; // List of functions requiring input
+
 interface CalendarAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const CalendarAPIs: React.FC<CalendarAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const functionsRequiringInput = ['ComposeMeeting', 'OpenCalendarItem'];
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');  // Set the input value to an empty string initially
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleDefaultButtonClick = () => {
-    if (selectedFunction && apiComponent.defaultInput) {
-      const defaultInputs = JSON.parse(apiComponent.defaultInput);
-      setInputValue(defaultInputs[selectedFunction] ? JSON.stringify(defaultInputs[selectedFunction]) : '');
-    }
-  };
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const CalendarAPIs: React.FC<CalendarAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {selectedFunction && functionsRequiringInput.includes(selectedFunction) && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={handleDefaultButtonClick}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 
-export default CalendarAPIs;
+export default CalendarAPIs;;

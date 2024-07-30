@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { AdaptiveCardDialogInfo, dialog } from '@microsoft/teams-js';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const dialogCard_CheckDialogAdaptiveCardCapability = async (): Promise<void> => {
   console.log('Executing checkDialogAdaptiveCardCapability...');
@@ -53,64 +53,22 @@ export const dialogCard_OpenAdaptiveCardDialog = (input: AdaptiveCardDialogInfo)
   });
 };
 
+const functionsRequiringInput = [
+  'OpenAdaptiveCardDialog'
+]; // List of functions requiring input
+
 interface DialogCardAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const DialogCardAPIs: React.FC<DialogCardAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleDefaultInput = () => {
-    const defaultInput = apiComponent.defaultInput || '';
-    setInputValue(defaultInput);
-  };
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const DialogCardAPIs: React.FC<DialogCardAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {selectedFunction === 'OpenAdaptiveCardDialog' && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={handleDefaultInput}>
-              Default
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 import * as microsoftTeams from '@microsoft/teams-js';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export interface AppInstallDialogInput {
   appId: string;
@@ -56,57 +56,22 @@ export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) 
   });
 }
 
+const functionsRequiringInput = [
+  'OpenAppInstalDialog'
+]; // List of functions requiring input
+
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {selectedFunction === 'OpenAppInstallDialog' && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 

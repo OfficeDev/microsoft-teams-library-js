@@ -247,6 +247,8 @@ const apiComponents: ApiComponent[] = [
     functions: [
       { name: 'CheckGeoLocationCapability', requiresInput: false },
       { name: 'CheckGeoLocationMapCapability', requiresInput: false },
+      { name: 'HasGeoLocationPermission', requiresInput: false },
+      { name: 'RequestGeoLocationPermission', requiresInput: false },
       { name: 'GetCurrentLocation', requiresInput: false },
       { name: 'ChooseLocation', requiresInput: false },
     ],

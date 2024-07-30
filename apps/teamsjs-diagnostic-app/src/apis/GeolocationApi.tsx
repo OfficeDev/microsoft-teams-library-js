@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
 import { geoLocation } from '@microsoft/teams-js';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const geolocation_CheckGeoLocationCapability = async (): Promise<void> => {
   console.log('Executing CheckGeoLocationCapability...');
@@ -91,38 +91,12 @@ interface GeolocationAPIsProps {
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const GeolocationAPIs: React.FC<GeolocationAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');  // Reset input value when function changes
-  };
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const GeolocationAPIs: React.FC<GeolocationAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+    />
   );
 };
 

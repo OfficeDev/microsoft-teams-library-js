@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { secondaryBrowser } from '@microsoft/teams-js';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const secondaryBrowser_CheckSecondaryBrowserCapability = async (): Promise<void> => {
   console.log('Executing CheckSecondaryBrowserCapability...');
@@ -38,64 +38,22 @@ export const secondaryBrowser_Open = async (input: string): Promise<void> => {
     throw error;
   }
 };
+const functionsRequiringInput = [
+  'Open'
+]; // List of functions requiring input
+
 interface SecondaryBrowserAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const SecondaryBrowserAPIs: React.FC<SecondaryBrowserAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleDefaultInput = () => {
-    const defaultInput = apiComponent.defaultInput || '';
-    setInputValue(defaultInput);
-  };
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const SecondaryBrowserAPIs: React.FC<SecondaryBrowserAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {selectedFunction === 'Open' && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={handleDefaultInput}>
-              Default
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 

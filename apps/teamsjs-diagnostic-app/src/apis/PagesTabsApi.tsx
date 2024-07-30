@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useDragAndDrop } from '../utils/UseDragAndDrop';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { pages } from '@microsoft/teams-js';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
 
 export const pagesTabs_CheckPagesTabsCapability = async (): Promise<void> => {
   console.log('Executing CheckPagesTabsCapability...');
@@ -52,73 +52,23 @@ export const pagesTabs_GetMruTabInstances = async (input: any): Promise<void> =>
   }
 };
 
+const functionsRequiringInput = [
+  'NavigateToTab', 
+  'GetTabInstances', 
+  'GetMruTabInstances',
+];
 interface PagesTabsAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const PagesTabsAPIs: React.FC<PagesTabsAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const functionsRequiringInput = [
-    'NavigateToTab', 
-    'GetTabInstances', 
-    'GetMruTabInstances',
-  ];
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    setInputValue('');
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleDefaultButtonClick = () => {
-    if (selectedFunction && apiComponent.defaultInput) {
-      const defaultInputs = JSON.parse(apiComponent.defaultInput);
-      setInputValue(defaultInputs[selectedFunction] ? JSON.stringify(defaultInputs[selectedFunction]) : '');
-    }
-  };
-
-  // Determine if the input box should be shown based on the selected function
-  const showInputBox = selectedFunction && functionsRequiringInput.includes(selectedFunction);
-
-  const { isDragging, drag } = useDragAndDrop('API', { api: apiComponent, func: selectedFunction, input: inputValue });
-
+const PagesTabsAPIs: React.FC<PagesTabsAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.functions.map((func, index) => (
-            <option key={index} value={func.name}>
-              {func.name}
-            </option>
-          ))}
-        </select>
-        {showInputBox && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder={`Enter input for ${selectedFunction}`}
-            />
-            <button onClick={handleDefaultButtonClick}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 

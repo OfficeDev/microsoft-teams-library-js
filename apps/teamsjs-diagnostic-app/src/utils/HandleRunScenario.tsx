@@ -32,7 +32,7 @@ import { pages_CheckCapability, pages_GetConfig, pages_NavigateCrossDomain, page
 import { profile_CheckProfileCapability, profile_ShowProfile } from '../apis/ProfileApi';
 import { search_CloseSearch, search_RegisterHandlers } from '../apis/SearchApi';
 import { clipboard_CheckClipboardCapability, clipboard_CopyImage, clipboard_CopyText, clipboard_Paste } from '../apis/ClipboardApi';
-import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation } from '../apis/GeolocationApi';
+import { geolocation_CheckGeoLocationCapability, geolocation_CheckGeoLocationMapCapability, geolocation_ChooseLocation, geolocation_GetCurrentLocation, geolocation_HasGeoLocationPermission, geolocation_RequestGeoLocationPermission } from '../apis/GeolocationApi';
 import { sharing_CheckSharingCapability, sharing_ShareWebContent } from '../apis/SharingApi';
 import { stageView_CheckStageViewCapability, stageView_OpenStageView } from '../apis/StageViewApi';
 import { people_CheckPeopleCapability, people_SelectPeople } from '../apis/PeopleApi';
@@ -380,9 +380,15 @@ export const handleRunScenario = async (api: ApiComponent, func: string, input?:
           case 'CheckGeoLocationCapability':
             result = await geolocation_CheckGeoLocationCapability();
             break;
-            case 'CheckGeoLocationMapCapability':
+          case 'CheckGeoLocationMapCapability':
               result = await geolocation_CheckGeoLocationMapCapability();
               break;
+          case 'HasGeoLocationPermission':
+            result = await geolocation_HasGeoLocationPermission;
+            break;
+          case 'RequestGeoLocationPermission':
+            result = await geolocation_RequestGeoLocationPermission;
+            break;
           case 'GetCurrentLocation':
             result = await geolocation_GetCurrentLocation();
             break;

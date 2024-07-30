@@ -57,8 +57,8 @@ export const registerBeforeSuspendOrTerminateHandler = async (delay: number): Pr
   console.log("Calling registerBeforeSuspendOrTerminateHandler API");
 
   try {
-    if (typeof delay !== 'number') {
-      throw new Error('Delay should be a number');
+    if (typeof delay !== 'number' || isNaN(delay) || delay < 0) {
+      throw new Error('Delay should be a non-negative number');
     }
 
     app.lifecycle.registerBeforeSuspendOrTerminateHandler(() => {
