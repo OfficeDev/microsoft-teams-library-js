@@ -15,3 +15,8 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
+  - task: CmdLine@2
+    displayName: 'Configure host machine'
+    inputs:
+      script: |
+        dir
