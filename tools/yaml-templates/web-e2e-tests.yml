@@ -2,7 +2,7 @@
 # Can be reused for any additional e2e tests and then paired with a node script with different parameters for which type of e2e test needs to run.
 
 parameters:
-  - name: 'appHostGitPath'
+  - name: AppHostingSdk
     default: none
     type: string
   - name: hostingEnvironmentType
@@ -15,12 +15,6 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
-  - task: CmdLine@2
-    displayName: 'Configure host machine'
-    inputs:
-      script: |
-        dir tools/yaml-templates
-
   - template: build-app-host.yml
     parameters:
-      appHostGitPath: appHostGitPath
+      appHostGitPath: AppHostingSdk
