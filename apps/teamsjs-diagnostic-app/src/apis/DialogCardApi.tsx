@@ -2,26 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { AdaptiveCardDialogInfo, dialog } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const dialogCard_CheckDialogAdaptiveCardCapability = async (): Promise<void> => {
-  console.log('Executing checkDialogAdaptiveCardCapability...');
-  try {
-    const isSupported = dialog.adaptiveCard.isSupported();
-    console.log('Dialog Adaptive Card support check result:', isSupported);
-    if (isSupported) {
-      console.log('Dialog Adaptive Card module is supported. Dialog Adaptive Card is supported on all platforms except M365 Mobile and Outlook Mobile.');
-    } else {
-      console.log('Dialog Adaptive Card module is not supported. Dialog Adaptive Card is not supported on M365 Mobile or Outlook Mobile.');
-      throw new Error('Dialog Adaptive Card module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.log('Error checking Dialog Adaptive Card capability:', errorMessage);
-    if (error instanceof Error) {
-      console.log('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = 'dialogCard';
+  const moduleName = 'DialogCard';
+  const supportedMessage = 'Dialog Adaptive Card module is supported. Dialog Adaptive Card is supported on all platforms except M365 Mobile and Outlook Mobile.';
+  const notSupportedMessage = 'Dialog Adaptive Card module is not supported. Dialog Adaptive Card is not supported on M365 Mobile or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const dialogCard_OpenAdaptiveCardDialog = (input: AdaptiveCardDialogInfo): Promise<void> => {

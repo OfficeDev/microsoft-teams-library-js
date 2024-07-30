@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { menus } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const menus_CheckMenusCapability = async (): Promise<void> => {
-  console.log('Executing CheckMenusCapability...');
-  try {
-    const result = await menus.isSupported();
-    if (result) {
-      console.log('Menus module is supported. Menus is supported on Teams Desktop and Teams Mobile, Versions below 23247.720.2421.8365');
-    } else {
-      console.log('Menus module is not supported. Menus is not supported on Teams Versions 23247.720.2421.8365 and above, M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-      throw new Error('Menus module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Menus capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = 'menus';
+  const moduleName = 'Menus';
+  const supportedMessage = 'Menus module is supported. Menus is supported on Teams Desktop and Teams Mobile, Versions below 23247.720.2421.8365.';
+  const notSupportedMessage = 'Menus module is not supported. Menus is not supported on Teams Versions 23247.720.2421.8365 and above, M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const menus_SetUpViews = async (input: string): Promise<string> => {
@@ -88,7 +78,6 @@ export const menus_ShowActionMenu = async (input: string): Promise<string> => {
     throw error;
   }
 };
-
 
 const functionsRequiringInput = [
   'SetUpViews',

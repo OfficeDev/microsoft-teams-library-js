@@ -1,27 +1,25 @@
 import { barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport, checkPermission } from '../utils/CheckCapabilityUtils';
 
 export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
-  console.log('Executing CheckBarCodeCapability...');
+  const module = barCode;
+  const moduleName = 'BarCode';
+  const supportedMessage = 'BarCode module is supported.';
+  const notSupportedMessage = 'BarCode module is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile. Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.';
   
-  try {
-    const result = barCode.isSupported();
-    if (result) {
-      console.log('BarCode module is supported.');
-    } else {
-      console.log('BarCode module is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
-      console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
-      throw new Error('BarCode capability is not supported.');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking BarCode capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
+};
+
+export const barCode_HasBarCodePermission = async (): Promise<void> => {
+  const module = barCode;
+  const moduleName = 'BarCode';
+  const permissionGrantedMessage = 'BarCode permission has been granted.';
+  const errorMessage = 'HasBarCodePermission functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.';
+  const additionalNotes = 'Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.';
+  
+  await checkPermission(module, moduleName, permissionGrantedMessage, errorMessage, additionalNotes);
 };
 
 export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): Promise<string> => {
@@ -36,20 +34,6 @@ export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): P
     console.log('Error scanning BarCode:', JSON.stringify(error, null, 2));
     console.log('ScanBarCode functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
     console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
-    throw error;
-  }
-};
-
-export const barCode_HasBarCodePermission = async (): Promise<void> => {
-  console.log('Executing HasBarCodePermission...');
-  try {
-    await barCode.hasPermission();
-    console.log('BarCode permission has been granted.');
-  } catch (error) {
-    console.log('Error checking BarCode permission:', JSON.stringify(error, null, 2));
-    console.log('HasBarCodePermission functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
-    console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
-
     throw error;
   }
 };

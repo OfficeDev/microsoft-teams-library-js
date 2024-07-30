@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { teamsCore } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const teamsCore_CheckTeamsCoreCapability = async (): Promise<void> => {
-  console.log('Executing CheckTeamsCoreCapability...');
-  try {
-    const result = await teamsCore.isSupported();
-    if (result) {
-      console.log('Teams Core module is supported. Teams Core is supported on Teams Web, Outlook Web, Teams Desktop, and Teams Mobile.');
-    } else {
-      console.log('Teams Core module is not supported. Teams Core is only supported on Teams Web, Outlook Web, Teams Desktop, and Teams Mobile.');
-      throw new Error('Teams Core module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Teams Core capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = 'teamsCore';
+  const moduleName = 'TeamsCore';
+  const supportedMessage = 'Teams Core module is supported. Teams Core is supported on Teams Web, Outlook Web, Teams Desktop, and Teams Mobile.';
+  const notSupportedMessage = 'STeams Core module is not supported. Teams Core is only supported on Teams Web, Outlook Web, Teams Desktop, and Teams Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const teamsCore_EnablePrintCapability = async (): Promise<void> => {

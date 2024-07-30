@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { call } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const call_CheckCallCapability = async (): Promise<void> => {
-  console.log('Executing CheckCallCapability...');
-  try {
-    const result = await call.isSupported();
-    if (result) {
-      console.log('Call module is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.');
-    } else {
-      console.log('Call module is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-      throw new Error('Call module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Call capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = call;
+  const moduleName = 'Call';
+  const supportedMessage = 'Call module is supported. Call is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop, and Teams Mobile.';
+  const notSupportedMessage = 'Call module is not supported. Call is not supported on M365 Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const call_StartCall = async (input: string): Promise<string> => {

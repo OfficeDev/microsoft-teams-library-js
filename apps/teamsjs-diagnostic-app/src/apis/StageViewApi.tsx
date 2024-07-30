@@ -2,6 +2,7 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { stageView } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 interface StageViewInput {
   appId: string;
@@ -14,24 +15,12 @@ interface StageViewInput {
 }
 
 export const stageView_CheckStageViewCapability = async (): Promise<void> => {
-  console.log('Executing CheckStageViewCapability...');
-
-  try {
-    const result = stageView.isSupported();
-    if (result) {
-      console.log('Stage View module is supported. Stage View is supported on Teams Web and Teams Desktop.');
-    } else {
-      console.log('Stage View module is not supported. Stage View is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, Teams Mobile, M365 Mobile, or Outlook Mobile.');
-      throw new Error('StageView capability is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Stage View capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = 'stageView';
+  const moduleName = 'StageView';
+  const supportedMessage = 'Stage View module is supported. Stage View is supported on Teams Web and Teams Desktop.';
+  const notSupportedMessage = 'Stage View module is not supported. Stage View is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, Teams Mobile, M365 Mobile, or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const stageView_OpenStageView = async (input: StageViewInput): Promise<string> => {

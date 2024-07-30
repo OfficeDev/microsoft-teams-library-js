@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { clipboard } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const clipboard_CheckClipboardCapability = async (): Promise<void> => {
-  console.log('Executing CheckClipboardCapability...');
-  try {
-    const result = clipboard.isSupported();
-    if (result) {
-      console.log('Clipboard module is supported. Clipboard is supported on new Teams (Version 23247.720.2421.8365 and above) Web, M365 Web, Outlook Web, new Teams (Version 23247.720.2421.8365 and above) Desktop, M365 Desktop, Outlook Desktop, M365 Mobile, and Outlook IOS.');
-    } else {
-      console.log('Clipboard module is not supported.Clipboard is not supported on versions of Team below 23247.720.2421.8365 or Outlook Android.');
-      throw new Error('Clipboard capability is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Clipboard capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = clipboard;
+  const moduleName = 'Clipboard';
+  const supportedMessage = 'Clipboard module is supported. Clipboard is supported on new Teams (Version 23247.720.2421.8365 and above) Web, M365 Web, Outlook Web, new Teams (Version 23247.720.2421.8365 and above) Desktop, M365 Desktop, Outlook Desktop, M365 Mobile, and Outlook IOS.';
+  const notSupportedMessage = 'Clipboard module is not supported.Clipboard is not supported on versions of Team below 23247.720.2421.8365 or Outlook Android.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const clipboard_CopyText = async ({ text }: { text: string }): Promise<string> => {

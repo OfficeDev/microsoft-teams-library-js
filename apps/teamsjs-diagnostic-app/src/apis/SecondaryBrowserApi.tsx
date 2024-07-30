@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { secondaryBrowser } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const secondaryBrowser_CheckSecondaryBrowserCapability = async (): Promise<void> => {
-  console.log('Executing CheckSecondaryBrowserCapability...');
-  try {
-    const isSupported = secondaryBrowser.isSupported();
-    if (isSupported) {
-      console.log('Secondary Browser module is supported. Secondary Browser is supported on M365 Mobile and Outlook Mobile.');
-    } else {
-      console.log('Secondary Browser module is not supported. Secondary Browser is only supported on M365 Mobile and Outlook Mobile.');
-      throw new Error('Secondary Browser module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.log('Error checking Secondary Browser capability:', errorMessage);
-    if (error instanceof Error) {
-      console.log('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = 'secondaryBrowser';
+  const moduleName = 'SecondaryBrowser';
+  const supportedMessage = 'Secondary Browser module is supported. Secondary Browser is supported on M365 Mobile and Outlook Mobile.';
+  const notSupportedMessage = 'Secondary Browser module is not supported. Secondary Browser is only supported on M365 Mobile and Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const secondaryBrowser_Open = async (input: string): Promise<void> => {

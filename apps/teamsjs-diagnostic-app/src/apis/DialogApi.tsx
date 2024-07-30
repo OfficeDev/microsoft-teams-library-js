@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { dialog } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const dialog_CheckDialogCapability = async (): Promise<void> => {
-  console.log('Executing CheckDialogCapability...');
-  try {
-    const result = await dialog.isSupported();
-    if (result) {
-      console.log('Dialog module is supported. Dialog is supported on all platforms except M365 Mobile and Outlook Mobile.');
-    } else {
-      console.log('Dialog module is not supported. Dialog is not supported on M365 Mobile or Outlook Mobile.');
-      throw new Error('Dialog module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Dialog capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = dialog;
+  const moduleName = 'Dialog';
+  const supportedMessage = 'Dialog module is supported. Dialog is supported on all platforms except M365 Mobile and Outlook Mobile.';
+  const notSupportedMessage = 'Dialog module is not supported. Dialog is not supported on M365 Mobile or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 interface DialogAPIsProps {
   apiComponent: ApiComponent;

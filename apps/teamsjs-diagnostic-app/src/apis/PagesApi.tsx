@@ -2,21 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { pages } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const pages_CheckCapability = async (): Promise<void> => {
-    console.log('Executing CheckCapability...');
-    try {
-        const result = pages.isSupported();
-        if (result) {
-            console.log('Pages module is supported. Pages is supported on all platforms.');
-        } else {
-            console.log('Pages module is not supported.');
-            throw new Error('Pages capability is not supported');
-        }
-    } catch (error) {
-        console.error('Error checking Pages capability:', error);
-        throw error;
-    }
+    const module = 'pages';
+    const moduleName = 'Pages';
+    const supportedMessage = 'Pages module is supported. Pages is supported on all platforms.';
+    const notSupportedMessage = 'Pages module is not supported.';
+  
+    await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const pages_NavigateCrossDomain = async (url: string): Promise<void> => {

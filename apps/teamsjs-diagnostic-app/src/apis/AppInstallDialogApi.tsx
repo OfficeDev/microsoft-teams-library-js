@@ -3,29 +3,19 @@ import { ApiComponent } from '../components/sample/ApiComponents';
 import { appInstallDialog } from '@microsoft/teams-js';
 import * as microsoftTeams from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export interface AppInstallDialogInput {
   appId: string;
 }
 
 export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void> => {
-  console.log('Executing CheckAppInstallCapability...');
-  try {
-    const result = await appInstallDialog.isSupported();
-    if (result) {
-      console.log('App Install Dialog module is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.');
-    } else {
-      console.log('App Install Dialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.');
-      throw new Error('AppInstallDialog capability is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking App Install Dialog capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = appInstallDialog;
+  const moduleName = 'AppInstallDialog';
+  const supportedMessage = 'App Install Dialog module is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.';
+  const notSupportedMessage = 'App Install Dialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) {

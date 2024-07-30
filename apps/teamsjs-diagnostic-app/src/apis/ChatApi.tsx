@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { chat, conversations } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const chat_CheckChatCapability = async (): Promise<void> => {
-  console.log('Executing CheckChatCapability...');
-  try {
-    const result = await chat.isSupported();
-    if (result) {
-      console.log('Chat module is supported. Chat is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop (Version 2205 or later), and Teams Mobile.');
-    } else {
-      console.log('Chat module is not supported. Chat is not supported on M365 Web, M365 Desktop, Outlook Desktop (Versions older than 2205), M365 Mobile, or Outlook Mobile.');
-      throw new Error('Chat module is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Chat capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = chat;
+  const moduleName = 'Chat';
+  const supportedMessage = 'Chat module is supported. Chat is supported on Teams Web, Outlook Web, Teams Desktop, Outlook Desktop (Version 2205 or later), and Teams Mobile.';
+  const notSupportedMessage = 'Chat module is not supported. Chat is not supported on M365 Web, M365 Desktop, Outlook Desktop (Versions older than 2205), M365 Mobile, or Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const chat_OpenChat = async (input: string): Promise<string> => {

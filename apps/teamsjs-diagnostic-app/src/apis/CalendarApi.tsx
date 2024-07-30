@@ -2,25 +2,15 @@ import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
 import { calendar } from '@microsoft/teams-js';
 import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
 
 export const calendar_CheckCalendarCapability = async (): Promise<void> => {
-  console.log('Executing CheckCalendarCapability...');
-  try {
-    const result = await calendar.isSupported();
-    if (result) {
-      console.log('Calendar module is supported.');
-    } else {
-      console.log('Calendar module is not supported. Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.');
-      throw new Error('Calendar capability is not supported');
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Error checking Calendar capability:', errorMessage);
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
-    }
-    throw error;
-  }
+  const module = calendar;
+  const moduleName = 'Calendar';
+  const supportedMessage = 'Calendar module is supported. Calendar is supported on Outlook Web, Outlook Desktop, and Outlook Mobile.';
+  const notSupportedMessage = 'Calendar module is not supported. Calendar is only supported on the following platforms: Outlook Web, Outlook Desktop, and Outlook Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
 
 export const calendar_ComposeMeeting = async (input: string): Promise<string> => {

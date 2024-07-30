@@ -49,7 +49,7 @@ const CustomScenario: React.FC = () => {
     if (customScenario.length < 5) {
       setCustomScenario([...customScenario, { api, func, input }]);
     } else {
-      console.log('Maximum limit reached. Cannot add more APIs to the scenario.');
+      console.log('Maximum limit reached. Cannot add more than 5 APIs to the scenario.');
     }
   };
 
