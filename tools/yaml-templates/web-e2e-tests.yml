@@ -19,7 +19,7 @@ steps:
   - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
 
-  - template: build-app-host.yml@self
+  - template: build-app-host.yml
     parameters:
       appHostGitPath: appHostGitPath
 
