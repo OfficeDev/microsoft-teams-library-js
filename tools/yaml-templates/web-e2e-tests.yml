@@ -16,6 +16,7 @@ parameters:
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
   - task: CmdLine@2
-    displayName: 'Thing THING'
+    displayName: 'Configure host machine'
     inputs:
-    script: dir tools/yaml-templates
+      script: |
+        dir
