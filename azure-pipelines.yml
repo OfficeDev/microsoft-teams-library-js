@@ -141,29 +141,11 @@ extends:
               image: 'ubuntu-2004'
               os: linux
             steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
+              - template: tools/yaml-templates/web-e2e-tests@self
                 parameters:
                   appHostGitPath: AppHostingSdk
-
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
-                displayName: 'Run E2E integration tests'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: CMDLine@2
-                displayName: 'Run tests for electron webview'
-                inputs:
-                  script: |
-                    pnpm exec xvfb-maybe playwright test
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Default'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[A-M],[a-m]}'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
