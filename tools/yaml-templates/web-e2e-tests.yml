@@ -16,7 +16,6 @@ parameters:
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
   - task: CmdLine@2
-    displayName: 'H!!!!!!!!!!!!!!!!!!B'
+    displayName: 'Thing THING'
     inputs:
-    script: |
-      dir tools/yaml-templates
+    script: dir tools/yaml-templates
