@@ -37,10 +37,7 @@ export const secondaryBrowser_Open = async (input: string): Promise<void> => {
     console.log('Secondary Browser module is not supported. Secondary Browser is only supported on M365 Mobile and Outlook Mobile.');
     throw error;
   }
-  
-  
 };
-
 interface SecondaryBrowserAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;

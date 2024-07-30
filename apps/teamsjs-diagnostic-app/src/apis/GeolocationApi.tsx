@@ -43,6 +43,28 @@ export const geolocation_CheckGeoLocationMapCapability = async (): Promise<void>
   }
 };
 
+export const geolocation_HasGeoLocationPermission = async (): Promise<void> => {
+  console.log('Executing HasGeoLocationPermission...');
+  try {
+    const result = await geoLocation.hasPermission();
+    console.log('GeoLocation permission status:', result);
+  } catch (error) {
+    console.log('Error checking GeoLocation permission:', JSON.stringify(error, null, 2));
+    throw error;
+  }
+};
+
+export const geolocation_RequestGeoLocationPermission = async (): Promise<void> => {
+  console.log('Executing RequestGeoLocationPermission...');
+  try {
+    const result = await geoLocation.requestPermission();
+    console.log('GeoLocation permission request result:', result);
+  } catch (error) {
+    console.log('Error requesting GeoLocation permission:', JSON.stringify(error, null, 2));
+    throw error;
+  }
+};
+
 export const geolocation_GetCurrentLocation = async (): Promise<void> => {
   console.log('Executing GetCurrentLocation...');
     try {
@@ -64,7 +86,6 @@ export const geolocation_ChooseLocation = async (): Promise<void> => {
       throw error;
     }
 };
-
 interface GeolocationAPIsProps {
   apiComponent: ApiComponent;
   onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;

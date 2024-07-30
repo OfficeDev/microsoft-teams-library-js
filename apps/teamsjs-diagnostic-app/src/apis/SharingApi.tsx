@@ -13,52 +13,51 @@ interface ShareWebContentInput {
 }
 
 export const sharing_CheckSharingCapability = async (): Promise<void> => {
-    console.log('Executing CheckSharingCapability...');
-    
-    try {
-      const result = sharing.isSupported();
-      if (result) {
-        console.log('Sharing module is supported. Sharing is supported on Teams Web, Teams Desktop, and Teams (versions under 23247.720.2421.8365) Mobile');
-      } else {
-        console.log('Sharing module is not supported. Sharing is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
-        throw new Error('Sharing capability is not supported');
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Error checking Sharing capability:', errorMessage);
-      if (error instanceof Error) {
-        console.error('Stack trace:', error.stack);
-      }
-      throw error;
-    }
-  };
+  console.log('Executing CheckSharingCapability...');
 
-  export const sharing_ShareWebContent = async (input: ShareWebContentInput): Promise<string> => {
-    console.log('Executing ShareWebContent...');
-    try {
-      if (!input.content || input.content.length === 0) {
-        throw new Error('content is required');
-      }
-      for (const contentItem of input.content) {
-        if (contentItem.type !== 'URL') {
-          console.log("Each of the content items has to have type property with value 'URL'.");
-          throw new Error("Must have type property with value 'URL'.");
-        }
-        if (!contentItem.url) {
-          console.log('Each of the content items has to have url property set.');
-          throw new Error('Must have url property set.');
-        }
-      }
-  
-      await sharing.shareWebContent(input);
-      return 'Success';
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log('Error sharing web content:', errorMessage);
-      throw error;
+  try {
+    const result = sharing.isSupported();
+    if (result) {
+      console.log('Sharing module is supported. Sharing is supported on Teams Web, Teams Desktop, and Teams (versions under 23247.720.2421.8365) Mobile');
+    } else {
+      console.log('Sharing module is not supported. Sharing is not supported on M365 Web, Outlook Web, M365 Desktop, Outlook Desktop, M365 Mobile, or Outlook Mobile.');
+      throw new Error('Sharing capability is not supported');
     }
-  };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error checking Sharing capability:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Stack trace:', error.stack);
+    }
+    throw error;
+  }
+};
 
+export const sharing_ShareWebContent = async (input: ShareWebContentInput): Promise<string> => {
+  console.log('Executing ShareWebContent...');
+  try {
+    if (!input.content || input.content.length === 0) {
+      throw new Error('content is required');
+    }
+    for (const contentItem of input.content) {
+      if (contentItem.type !== 'URL') {
+        console.log("Each of the content items has to have type property with value 'URL'.");
+        throw new Error("Must have type property with value 'URL'.");
+      }
+      if (!contentItem.url) {
+        console.log('Each of the content items has to have url property set.');
+        throw new Error('Must have url property set.');
+      }
+    }
+
+    await sharing.shareWebContent(input);
+    return 'Success';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('Error sharing web content:', errorMessage);
+    throw error;
+  }
+};
 
 interface SharingAPIsProps {
   apiComponent: ApiComponent;

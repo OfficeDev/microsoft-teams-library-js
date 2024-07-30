@@ -62,49 +62,48 @@ export const clipboard_CopyImage = async ({ mimeType }: { mimeType: string }): P
   }
 };
 
-  export const clipboard_Paste = async (): Promise<string> => {
-    console.log('Executing Paste...');
-    try {
-      const result = await clipboard.read();
-      let pasteResult = '';
-  
-      if (result.type.startsWith('text')) {
-        const reader = new FileReader();
-        reader.readAsText(result);
-        pasteResult = await new Promise<string>((resolve, reject) => {
-          reader.onloadend = () => {
-            if (reader.result) {
-              resolve(reader.result as string);
-            } else {
-              reject('Failed to read text from clipboard');
-            }
-          };
-        });
-        console.log('Text pasted from clipboard:', pasteResult);
-      } else if (result.type.startsWith('image')) {
-        const image = document.createElement('img');
-        image.src = URL.createObjectURL(result);
-        image.style.height = '150px';
-        image.style.width = '150px';
-        const root = document.getElementById('root');
-        if (root) {
-          root.appendChild(image);
-        }
-        pasteResult = `Pasted image with id: ${image.id}`;
-        console.log(pasteResult);
-      } else {
-        pasteResult = 'No contents read from clipboard';
-        console.log(pasteResult);
-      }
-  
-      return pasteResult;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Error pasting from clipboard:', errorMessage);
-      throw error;
-    }
-  };  
+export const clipboard_Paste = async (): Promise<string> => {
+  console.log('Executing Paste...');
+  try {
+    const result = await clipboard.read();
+    let pasteResult = '';
 
+    if (result.type.startsWith('text')) {
+      const reader = new FileReader();
+      reader.readAsText(result);
+      pasteResult = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          if (reader.result) {
+            resolve(reader.result as string);
+          } else {
+            reject('Failed to read text from clipboard');
+          }
+        };
+      });
+      console.log('Text pasted from clipboard:', pasteResult);
+    } else if (result.type.startsWith('image')) {
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(result);
+      image.style.height = '150px';
+      image.style.width = '150px';
+      const root = document.getElementById('root');
+      if (root) {
+        root.appendChild(image);
+      }
+      pasteResult = `Pasted image with id: ${image.id}`;
+      console.log(pasteResult);
+    } else {
+      pasteResult = 'No contents read from clipboard';
+      console.log(pasteResult);
+    }
+
+    return pasteResult;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error pasting from clipboard:', errorMessage);
+    throw error;
+  }
+};
 
 interface ClipboardAPIsProps {
   apiComponent: ApiComponent;

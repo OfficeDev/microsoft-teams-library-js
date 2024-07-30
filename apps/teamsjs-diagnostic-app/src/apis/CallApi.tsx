@@ -29,7 +29,7 @@ export const call_StartCall = async (input: string): Promise<string> => {
   try {
     const validateInput = (input: string) => {
       if (!input) {
-        console.log('Input is required for StartCall');
+        console.log('Input is required for StartCall. Input includes a comma-separated list of user IDs representing the participants of the call, list of modalities for the call (defaults to [“audio”]), and an optional parameter that informs about the source of the deep link.');
         throw new Error('Input is required for StartCall');
       }
       console.log('Input validation passed');

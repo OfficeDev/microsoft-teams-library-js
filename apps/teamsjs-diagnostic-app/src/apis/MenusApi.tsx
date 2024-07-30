@@ -24,71 +24,70 @@ export const menus_CheckMenusCapability = async (): Promise<void> => {
 };
 
 export const menus_SetUpViews = async (input: string): Promise<string> => {
-    console.log('Executing SetUpViews...');
-    try {
-      const views: menus.ViewConfiguration[] = JSON.parse(input);
-      views.forEach(viewConfig => {
-        if (!viewConfig.id || !viewConfig.title) {
-          throw new Error('ID and Title are required for each viewConfiguration');
-        }
-      });
-      await menus.setUpViews(views, (id) => {
-        console.log('Handler called with id:', id);
-        return true;
-      });
-      return 'SetUpViews completed successfully';
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log('Error setting up views:', errorMessage);
-      throw error;
-    }
-  };
-  
-  export const menus_SetNavBarMenu = async (input: string): Promise<string> => {
-    console.log('Executing SetNavBarMenu...');
-    try {
-      const menuItems: menus.MenuItem[] = JSON.parse(input);
-      menuItems.forEach(menuItem => {
-        if (!menuItem.id || !menuItem.title || !menuItem.icon) {
-          throw new Error('ID, Title, and Icon are required for each menuItem');
-        }
-      });
-      await menus.setNavBarMenu(menuItems, (id) => {
-        console.log('Handler called with id:', id);
-        return true;
-      });
-      return 'SetNavBarMenu completed successfully';
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log('Error setting up nav bar menu:', errorMessage);
-      throw error;
-    }
-  };
-  
-  export const menus_ShowActionMenu = async (input: string): Promise<string> => {
-    console.log('Executing ShowActionMenu...');
-    try {
-      const actionMenuParams: menus.ActionMenuParameters = JSON.parse(input);
-      if (!actionMenuParams.title || !actionMenuParams.items) {
-        throw new Error('Title and Items are required for actionMenuParameters');
+  console.log('Executing SetUpViews...');
+  try {
+    const views: menus.ViewConfiguration[] = JSON.parse(input);
+    views.forEach(viewConfig => {
+      if (!viewConfig.id || !viewConfig.title) {
+        throw new Error('ID and Title are required for each viewConfiguration');
       }
-      actionMenuParams.items.forEach(menuItem => {
-        if (!menuItem.id || !menuItem.title || !menuItem.icon) {
-          throw new Error('ID, Title, and Icon are required for each menuItem');
-        }
-      });
-      await menus.showActionMenu(actionMenuParams, (id) => {
-        console.log('Handler called with id:', id);
-        return true;
-      });
-      return 'ShowActionMenu completed successfully';
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.log('Error showing action menu:', errorMessage);
-      throw error;
+    });
+    await menus.setUpViews(views, (id) => {
+      console.log('Handler called with id:', id);
+      return true;
+    });
+    return 'SetUpViews completed successfully';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('Error setting up views:', errorMessage);
+    throw error;
+  }
+};
+
+export const menus_SetNavBarMenu = async (input: string): Promise<string> => {
+  console.log('Executing SetNavBarMenu...');
+  try {
+    const menuItems: menus.MenuItem[] = JSON.parse(input);
+    menuItems.forEach(menuItem => {
+      if (!menuItem.id || !menuItem.title || !menuItem.icon) {
+        throw new Error('ID, Title, and Icon are required for each menuItem');
+      }
+    });
+    await menus.setNavBarMenu(menuItems, (id) => {
+      console.log('Handler called with id:', id);
+      return true;
+    });
+    return 'SetNavBarMenu completed successfully';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('Error setting up nav bar menu:', errorMessage);
+    throw error;
+  }
+};
+
+export const menus_ShowActionMenu = async (input: string): Promise<string> => {
+  console.log('Executing ShowActionMenu...');
+  try {
+    const actionMenuParams: menus.ActionMenuParameters = JSON.parse(input);
+    if (!actionMenuParams.title || !actionMenuParams.items) {
+      throw new Error('Title and Items are required for actionMenuParameters');
     }
-  };
-  
+    actionMenuParams.items.forEach(menuItem => {
+      if (!menuItem.id || !menuItem.title || !menuItem.icon) {
+        throw new Error('ID, Title, and Icon are required for each menuItem');
+      }
+    });
+    await menus.showActionMenu(actionMenuParams, (id) => {
+      console.log('Handler called with id:', id);
+      return true;
+    });
+    return 'ShowActionMenu completed successfully';
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('Error showing action menu:', errorMessage);
+    throw error;
+  }
+};
 
 interface MenusAPIsProps {
   apiComponent: ApiComponent;
@@ -100,8 +99,8 @@ const MenusAPIs: React.FC<MenusAPIsProps> = ({ apiComponent, onDropToScenarioBox
   const [inputValue, setInputValue] = useState<string>('');
 
   const functionsRequiringInput = [
-    'SetUpViews', 
-    'SetNavBarMenu', 
+    'SetUpViews',
+    'SetNavBarMenu',
     'ShowActionMenu'
   ]; // List of functions requiring input
 

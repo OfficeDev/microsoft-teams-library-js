@@ -32,7 +32,7 @@ export const dialogCard_OpenAdaptiveCardDialog = (input: AdaptiveCardDialogInfo)
       const onComplete = (resultObj: dialog.ISdkResponse): void => {
         if (resultObj.err) {
           if (resultObj.err === 'User cancelled/closed the task module.') {
-            console.log('User cancelled/closed the task module.');
+            console.log('User cancelled/closed the dialog');
             resolve();
           } else {
             console.log('Error in adaptive card dialog result:', resultObj.err);
