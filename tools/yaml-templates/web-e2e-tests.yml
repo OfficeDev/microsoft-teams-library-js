@@ -1,9 +1,10 @@
 parameters:
-  - name: appHostGitPath
+  - name: appHostGitPath2
     default: none
     type: string
   - name: hostingEnvironmentType
     type: string
+    default: 'standardWeb'
     values:
       - 'electron'
       - 'standardWeb'
@@ -14,7 +15,7 @@ parameters:
 steps:
   - template: tools/yaml-templates/build-app-host.yml@self
     parameters:
-      appHostGitPath: appHostGitPath
+      appHostGitPath: appHostGitPath2
 
   - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"'
     displayName: 'Run E2E integration tests (${{parameters.testPrefixPattern}})'

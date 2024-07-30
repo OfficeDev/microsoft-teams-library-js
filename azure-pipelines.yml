@@ -144,8 +144,6 @@ extends:
               - template: tools/yaml-templates/web-e2e-tests@self
                 parameters:
                   appHostGitPath: AppHostingSdk
-                  hostingEnvironmentType: 'standardWeb'
-                  testPrefixPattern: '{[A-M],[a-m]}'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
