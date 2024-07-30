@@ -47,7 +47,7 @@ export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) 
 }
 
 const functionsRequiringInput = [
-  'OpenAppInstalDialog'
+  'OpenAppInstallDialog'
 ]; // List of functions requiring input
 
 interface AppInstallDialogAPIsProps {

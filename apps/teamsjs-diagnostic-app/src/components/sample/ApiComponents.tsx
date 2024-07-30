@@ -39,7 +39,8 @@ const apiComponents: ApiComponent[] = [
       { name: 'OpenAppInstallDialog', requiresInput: true },
       { name: 'CheckAppInstallCapability', requiresInput: false },
     ],
-    defaultInput: JSON.stringify({ appId: '957f8a7e-fbcd-411d-b69f-acb7eb58b515' }),
+    defaultInput: JSON.stringify({ 
+      OpenAppInstallDialog: {appId: '957f8a7e-fbcd-411d-b69f-acb7eb58b515'} }),
     onClick: () => console.log('App Install Dialog API called'),
     renderComponent: (props) => <AppInstallDialogAPIs {...props} />
   },
@@ -51,7 +52,8 @@ const apiComponents: ApiComponent[] = [
       { name: 'ScanBarCode', requiresInput: true },
       { name: 'HasBarCodePermission', requiresInput: false },
     ],
-    defaultInput: '{}',
+    defaultInput: JSON.stringify({
+      ScanBarCode: '{}' }),
     onClick: () => console.log('Barcode API called'),
     renderComponent: (props) => <BarCodeAPIs {...props} />
   },
@@ -86,9 +88,11 @@ const apiComponents: ApiComponent[] = [
       { name: 'StartCall', requiresInput: true },
     ],
     defaultInput: JSON.stringify({
-      targets: ['user1', 'user2'],
-      requestedModalities: ['video'],
-      source: 'source',
+      StartCall: {
+        targets: ['user1', 'user2'],
+        requestedModalities: ['video'],
+        source: 'source',
+      }
     }),
     onClick: () => console.log('Call API called'),
     renderComponent: (props) => <CallAPIs {...props} />
@@ -138,6 +142,7 @@ const apiComponents: ApiComponent[] = [
       { name: 'OpenAdaptiveCardDialog', requiresInput: true },
     ],
     defaultInput: JSON.stringify({
+      OpenAdaptiveCardDialog:{
       card: {
         type: "AdaptiveCard",
         version: "1.0",
@@ -148,7 +153,7 @@ const apiComponents: ApiComponent[] = [
           }
         ]
       }
-    }),
+  } }),
     onClick: () => console.log('DialogCard API called'),
     renderComponent: (props) => <DialogCardAPIs {...props} />
   },
@@ -198,6 +203,7 @@ const apiComponents: ApiComponent[] = [
       { name: 'ShowProfile', requiresInput: true },
     ],
     defaultInput: JSON.stringify({
+      ShowProfile: {
       modality: 'Card',
       persona: {
         identifiers: {
@@ -211,7 +217,7 @@ const apiComponents: ApiComponent[] = [
         height: 0,
       },
       triggerType: 'MouseClick',
-    }),
+  } }),
     onClick: () => console.log('Profile API called'),
     renderComponent: (props) => <ProfileAPIs {...props} />
   },
@@ -263,6 +269,7 @@ const apiComponents: ApiComponent[] = [
       { name: 'ShareWebContent', requiresInput: true }
     ],
     defaultInput: JSON.stringify({
+      ShareWebContent: {
       content: [
         {
           type: 'URL',
@@ -271,7 +278,7 @@ const apiComponents: ApiComponent[] = [
           preview: false,
         },
       ],
-    }),    
+  } }),    
     onClick: () => console.log('Sharing API called'),
     renderComponent: (props) => <SharingAPIs {...props} />
   },
@@ -283,6 +290,7 @@ const apiComponents: ApiComponent[] = [
       { name: 'OpenStageView', requiresInput: true }
     ],
     defaultInput: JSON.stringify({
+      OpenStageView: {
       appId: 'appId1',
       contentUrl: 'contentUrl1',
       threadId: 'threadId1',
@@ -290,7 +298,7 @@ const apiComponents: ApiComponent[] = [
       websiteUrl: 'websiteUrl1',
       entityId: 'entityId1',
       openMode: stageView.StageViewOpenMode.modal,
-    }), 
+  } }), 
     onClick: () => console.log('StageView API called'),
     renderComponent: (props) => <StageViewAPIs {...props} />
   },
@@ -302,11 +310,12 @@ const apiComponents: ApiComponent[] = [
       { name: 'SelectPeople', requiresInput: true }
     ],
     defaultInput: JSON.stringify({
+      SelectPeople: {
       title: 'Select people',
       setSelected: ['id1', 'id2', 'id3'],
       openOrgWideSearchInChatOrChannel: true,
       singleSelect: true,
-    }),
+    } }),
     onClick: () => console.log('People API called'),
     renderComponent: (props) => <PeopleAPIs {...props} />
   },
@@ -371,7 +380,8 @@ const apiComponents: ApiComponent[] = [
       { name: 'RegisterOnLoadHandler', requiresInput: false },
       { name: 'RegisterBeforeUnloadHandler', requiresInput: true }
     ],
-    defaultInput: '4',
+    defaultInput: JSON.stringify ({ 
+      RegisterBeforeUnloadHandler: '4' }),
     onClick: () => console.log('TeamsCore API called'),
     renderComponent: (props) => <TeamsCoreAPIs {...props} />
   },
@@ -382,7 +392,7 @@ const apiComponents: ApiComponent[] = [
       { name: 'CheckSecondaryBrowserCapability', requiresInput: false },
       { name: 'Open', requiresInput: true },
     ],
-    defaultInput: '"https://www.bing.com"',
+    defaultInput: JSON.stringify({ Open: "https://www.bing.com" }),
     onClick: () => console.log('SecondaryBrowser API called'),
     renderComponent: (props) => <SecondaryBrowserAPIs {...props} />
   },
