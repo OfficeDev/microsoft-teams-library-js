@@ -15,6 +15,3 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
-  - checkout: self
-  - checkout: ${{ parameters.appHostGitPath }}
-    persistCredentials: true
