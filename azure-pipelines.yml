@@ -133,6 +133,38 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
+          - job: E2ETest2
+            displayName: 'E2E Test - Default'
+            timeoutInMinutes: 90
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/build-app-host.yml@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
+
+              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true'
+                displayName: 'Run E2E integration tests'
+                condition: succeeded()
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+              - task: CMDLine@2
+                displayName: 'Run tests for electron webview'
+                inputs:
+                  script: |
+                    pnpm exec xvfb-maybe playwright test
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+              - task: PublishTestResults@2
+                inputs:
+                  testResultsFormat: 'JUnit'
+                  testResultsFiles: '**/e2e-tests-report*.xml'
+                  testRunTitle: 'E2E Tests - Default'
+                  mergeTestResults: true
+                condition: succeededOrFailed()
+
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
             timeoutInMinutes: 90
