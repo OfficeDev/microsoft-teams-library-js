@@ -21,4 +21,4 @@ steps:
       script: |
         dir tools/yaml-templates
 
-  - template: tools/yaml-templates/web2.yml
+  - template: web2.yml
