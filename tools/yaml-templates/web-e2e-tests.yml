@@ -19,4 +19,4 @@ steps:
     displayName: 'Configure host machine'
     inputs:
       script: |
-        dir
+        dir tools/yaml-templates/build-app-host.yml
