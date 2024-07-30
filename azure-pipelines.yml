@@ -141,7 +141,7 @@ extends:
               image: 'ubuntu-2004'
               os: linux
             steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk
 
