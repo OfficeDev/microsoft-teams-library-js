@@ -10,7 +10,7 @@ parameters:
       - 'standardWeb'
 steps:
   - task: CmdLine@2
-    displayName: 'H!!!!!!!!!!!!!!!!!!B'
+    displayName: 'Configure host machine'
     inputs:
       script: |
         dir
