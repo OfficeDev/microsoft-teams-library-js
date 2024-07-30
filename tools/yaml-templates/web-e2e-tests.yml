@@ -18,3 +18,24 @@ steps:
   - template: build-app-host.yml
     parameters:
       appHostGitPath: AppHostingSdk
+
+  - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"'
+    displayName: 'Run E2E integration tests (${{parameters.testPrefixPattern}})'
+    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'standardWeb'))
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: CMDLine@2
+    displayName: 'Run tests for electron webview'
+    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'electron'))
+    inputs:
+      script: |
+        pnpm exec xvfb-maybe playwright test
+      workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/e2e-tests-report*.xml'
+      testRunTitle: 'E2E Tests - Default'
+      mergeTestResults: true
+    condition: succeededOrFailed()
