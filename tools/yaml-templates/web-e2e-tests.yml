@@ -19,10 +19,6 @@ steps:
   - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
 
-  - template: build-app-host.yml@self
-    parameters:
-      appHostGitPath: appHostGitPath
-
   - task: NodeTool@0
     inputs:
       versionSpec: '18.x'
