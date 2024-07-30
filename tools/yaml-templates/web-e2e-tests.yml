@@ -1,121 +1,38 @@
-# This does all the steps for cloning both app sdk and app host sdk repos and building them, then configuring the app host.
-# Can be reused for any additional e2e tests and then paired with a node script with different parameters for which type of e2e test needs to run.
-
 parameters:
-  - name: 'appHostGitPath'
+  - name: appHostGitPath
     default: none
     type: string
+  - name: hostingEnvironmentType
+    type: string
+    values:
+      - 'electron'
+      - 'standardWeb'
+  - name: testPrefixPattern
+    type: string
+    default: '{[A-Z],[a-z],[0-9]}'
 
 steps:
-  - checkout: self
-  - checkout: ${{ parameters.appHostGitPath }}
-    persistCredentials: true
+  - template: tools/yaml-templates/build-app-host.yml@self
+    parameters:
+      appHostGitPath: appHostGitPath
 
-  - script: |
-      if command -v google-chrome &> /dev/null; then
-        # Uninstall the existing Chrome
-        sudo apt remove google-chrome-stable --purge -y
-      else
-        echo "Google Chrome is not installed on your system."
-      fi
-
-      CHROME_VERSION="116.0.5845.179"
-
-      # Download the specific Chrome version package
-      wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-
-      # Install the downloaded package
-      sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-
-      # Update package dependencies
-      sudo apt install -f -y
-
-      echo "Google Chrome version ${CHROME_VERSION} has been installed."
-
-      rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-    displayName: 'Fix Chrome browser on V116'
-
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '18.x'
-    displayName: 'Install Node.js'
-
-  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
-  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
-  #   'command_name | operating_system | lockfile'
-  # in our case it is 'pnpm | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-  # and for the path is the directory which needs to be cached.
-  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
-  - task: Cache@2
-    inputs:
-      key: 'pnpm_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache app host node_modules pnpm
-
-  - task: Cache@2
-    inputs:
-      key: 'pnpm_v1 | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-      path: $(Pipeline.Workspace)/.pnpm-store
-    displayName: Cache client sdk node_modules pnpm
-
-  - script: |
-      corepack enable
-      corepack prepare pnpm@9.0.6 --activate
-      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
-    displayName: 'Setup pnpm'
-
-  # Cypress needs to run a post_install script, when `node_modules` are cached, therefore the cypress binary file
-  # should be cached, as cypress doesn't supports running post_install script after node_modules are cached.
-  # The below task caches the Cypress binary.
-  - task: Cache@2
-    inputs:
-      key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: /home/cloudtest/.cache/Cypress
-      cacheHitVar: CYPRESS_CACHE_RESTORED
-    displayName: 'Cache Cypress binary'
-
-  - task: npmAuthenticate@0
-    inputs:
-      workingFile: '$(AppHostingSdkProjectDirectory)/.npmrc'
-
-  # Below script task checks if Cypress cache is hit or not.
-  # If Cypress cache is found skip cypress install.
-  - script: |
-      CYPRESS_INSTALL_BINARY=0
-      sed -i '/"preinstall":/d' package.json
-      pnpm install --frozen-lockfile
-    displayName: Install app hosting dependencies (skip Cypress install)
-    workingDirectory: '$(AppHostingSdkProjectDirectory)'
-    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
-
-  # If Cypress cache is not found include cypress install.
-  - script: |
-      rm -rf $(pnpm store path)
-      sed -i '/"preinstall":/d' package.json
-      pnpm install --frozen-lockfile
-    displayName: Install app hosting dependencies (include Cypress install)
-    workingDirectory: '$(AppHostingSdkProjectDirectory)'
-    condition: eq(variables.CYPRESS_CACHE_RESTORED, 'false')
-
-  - script: |
-      pnpm build
-    displayName: 'Build app hosting sdk'
+  - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"'
+    displayName: 'Run E2E integration tests (${{parameters.testPrefixPattern}})'
+    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - script: |
-      pnpm install
-    displayName: 'Install client sdk dependencies'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - script: |
-      pnpm build-force-blazor
-    displayName: 'Build client sdk'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
-
-  - task: CmdLine@2
-    displayName: 'Configure host machine'
+  - task: CMDLine@2
+    displayName: 'Run tests for electron webview'
+    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'electron'))
     inputs:
       script: |
-        sudo chmod -R 755 ./ 
-        pnpm run setup
+        pnpm exec xvfb-maybe playwright test
       workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/e2e-tests-report*.xml'
+      testRunTitle: 'E2E Tests - Default'
+      mergeTestResults: true
+    condition: succeededOrFailed()
