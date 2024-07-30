@@ -21,6 +21,6 @@ steps:
       script: |
         dir tools/yaml-templates
 
-  - template: tools/yaml-templates/build-app-host.yml@self
+  - template: build-app-host.yml
     parameters:
       appHostGitPath: appHostGitPath
