@@ -135,6 +135,10 @@ extends:
 
           - job: E2ETest2
             displayName: 'E2E Test - Default'
+            env:
+              ACTIONS_RUNNER_DEBUG: true
+              ACTIONS_STEP_DEBUG: true
+
             timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
