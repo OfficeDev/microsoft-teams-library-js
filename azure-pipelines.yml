@@ -142,8 +142,6 @@ extends:
               os: linux
             steps:
               - template: tools/yaml-templates/web-e2e-tests@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
