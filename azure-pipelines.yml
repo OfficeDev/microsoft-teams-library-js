@@ -133,8 +133,8 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETests_Web_Npm_StandardWeb_A_M
-            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [A-M]'
+          - job: E2ETests_Web_Npm_StandardWeb_A_D
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [0-9][A-D]'
             timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
@@ -145,7 +145,49 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'standardWeb'
-                  testPrefixPattern: '{[A-M],[a-m]}'
+                  testPrefixPattern: '{[0-9],[A-D],[a-d]}'
+
+          - job: E2ETests_Web_Npm_StandardWeb_E
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [E]'
+            timeoutInMinutes: 90
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[E],[e]}'
+
+          - job: E2ETests_Web_Npm_StandardWeb_F_M
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [F-M]'
+            timeoutInMinutes: 90
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[F-M],[f-m]}'
+
+          - job: E2ETests_Web_Npm_StandardWeb_N_Z
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [N-Z]'
+            timeoutInMinutes: 90
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[N-Z],[n-z]}'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
