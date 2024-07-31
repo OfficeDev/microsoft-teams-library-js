@@ -144,6 +144,7 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'npm'
                   testPrefixPattern: '{[0-9],[A-D],[a-d]}'
 
           - job: E2ETests_Web_Npm_StandardWeb_E
@@ -157,6 +158,7 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'npm'
                   testPrefixPattern: '{[E],[e]}'
 
           - job: E2ETests_Web_Npm_StandardWeb_F_M
@@ -170,6 +172,7 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'npm'
                   testPrefixPattern: '{[F-M],[f-m]}'
 
           - job: E2ETests_Web_Npm_StandardWeb_N_Z
@@ -183,6 +186,7 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'npm'
                   testPrefixPattern: '{[N-Z],[n-z]}'
 
           - job: E2ETests_Web_Npm_Electron_All
@@ -196,6 +200,7 @@ extends:
                 parameters:
                   AppHostingSdk: AppHostingSdk
                   hostingEnvironmentType: 'electron'
+                  teamsJsReferenceType: 'npm'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'

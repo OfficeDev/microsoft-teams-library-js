@@ -10,6 +10,11 @@ parameters:
     values:
       - 'electron'
       - 'standardWeb'
+  - name: teamsJsReferenceType
+    type: string
+    values:
+      - 'npm'
+      - 'scriptTag'
   - name: testPrefixPattern
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
@@ -18,8 +23,20 @@ steps:
     parameters:
       appHostGitPath: AppHostingSdk
 
-  - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"'
-    displayName: 'Run E2E integration tests (${{parameters.testPrefixPattern}})'
+  - task: CmdLine@2
+    displayName: 'Build Test App Local'
+    condition: and(succeeded(), eq('${{ parameters.teamsJsReferenceType }}', 'scriptTag'))
+    inputs:
+      script: |
+        pnpm build-test-app-local
+      workingDirectory: '$(ClientSdkProjectDirectory)'
+
+  - bash: >
+      node tools/cli/runAppsWithE2ETests.js
+      --useDataFromLocal=true
+      --testPrefixPattern "${{parameters.testPrefixPattern}}"
+      --envType=test
+    displayName: 'Run web hosted E2E integration tests (${{parameters.testPrefixPattern}})'
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
@@ -28,7 +45,7 @@ steps:
       node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "{[]}"
       # This runs the Electron tests, which currently cannot be filtered
       pnpm exec xvfb-maybe playwright test
-    displayName: 'Run tests for electron webview'
+    displayName: 'Run Electron E2E tests'
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
