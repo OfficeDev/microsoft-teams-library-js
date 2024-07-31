@@ -14,6 +14,8 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 steps:
-  - template: tools/yaml-templates/build-app-host.yml@self
-    parameters:
-      appHostGitPath: appHostGitPath
+  - task: CmdLine@2
+    displayName: 'Configure host machine'
+    inputs:
+      script: |
+        dir tools/yaml-templates
