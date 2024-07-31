@@ -133,8 +133,8 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETest2
-            displayName: 'E2E Test - Default'
+          - job: E2ETests_Web_Npm_StandardWeb_A-M
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [A-M]'
             timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
@@ -144,7 +144,8 @@ extends:
               - template: tools/yaml-templates/web-e2e-tests.yml@self
                 parameters:
                   AppHostingSdk: AppHostingSdk
-                  HostingEnvironmentType: standardWeb
+                  hostingEnvironmentType: 'standardWeb'
+                  testPrefixPattern: '{[A-M],[a-m]}'
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
