@@ -82,6 +82,20 @@ export interface TabInstance {
    * Website URL of this tab
    */
   websiteUrl?: string;
+
+  appId?: string;
+
+  order?: number;
+
+  tabPermission?: TabPermission;
+}
+
+export interface TabPermission {
+  canUpdateConfig?: boolean;
+
+  canHaveTabConversation?: boolean;
+
+  definedDevicePermissions?: string[];
 }
 
 /**

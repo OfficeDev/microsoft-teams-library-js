@@ -1,18 +1,15 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ErrorCode, SdkError, TabInstance } from '../public';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { ErrorCode, SdkError } from '../public';
+import { TabInformation, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 
-// Open questions
-// 1. According to Debo, `TabInstance` from the public API looks like it would work. Helen asked Debo to follow up about getting more recent fields added.
-// 2. I didn't see any reason to add a `getTabs` function because `pages.tabs.getTabInstances`. Any reason that won't work for you?
-// 3. I've added an `AppTypes[]` param to `addAndConfigureApp` to allow for the host to show different app types to the user. Helen going to see if there are more types to add here to start.
-// 4. I've added empty, private `validate` functions for the threadId and TabInstance. Any validation that is possible will help prevent against
-//    bad data being sent to the host. If you have any validation that can be done, please add it there. If you *can* use restrictive types like UUID
-//    or something, that would be even better.
-
-// TODO: Add unit tests
-// TODO: Add E2E tests
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -20,12 +17,10 @@ import { runtime } from '../public/runtime';
  * @beta
  * Limited to Microsoft-internal use
  *
- * TODO: Brief description of what this capability does. For example:
- * This capability allows an app to associate other apps with a host entity, such as a Teams channel or chat, and configure them as needed.
  */
 export namespace hostEntity {
   export enum AppTypes {
-    meeting = 'meeting',
+    edu = 'EDU',
   }
 
   /**
@@ -34,46 +29,44 @@ export namespace hostEntity {
    * @beta
    * Limited to Microsoft-internal use
    *
-   * TODO: Brief description of what this capability does. For example:
-   * This capability allows an app to associate other tab apps with a host entity, such as a Teams channel or chat, and configure them as needed.
    */
   export namespace tab {
+    export interface HostEntity {
+      threadId: string;
+
+      messageId?: string;
+    }
     /**
      * @hidden
      * @internal
      * @beta
      * Limited to Microsoft-internal use
      *
-     * TODO: Add full description of what this function does, ie "Launches host-owned UI that lets a user select an app, installs it if required,
-     * runs through app configuration if required, and then associates the app with the threadId provided. If external docs exist, link to them here"
+     * @param threadId
      *
-     * @param hostEntityId Info about where this value comes from, links to external docs if available, etc. For example:
-     * The id of the host entity that your app wants to associate another app with. In Teams this would be the threadId <link to docs and more explanation>
-     *
-     * @param appTypes what type of applications to show the user
+     * @param appTypes
      *
      * @returns The TabInstance of the newly associated app
      *
-     * @throws TODO: Description of errors that can be thrown from this function
+     * @throws Description of errors that can be thrown from this function
      */
-    export function addAndConfigure(hostEntityId: string, appTypes: AppTypes[]): Promise<TabInstance> {
-      ensureInitialized(runtime); // TODO: add frameContext checks if this is limited to certain contexts such as content
+    export function addAndConfigure(hostEntity: HostEntity, appTypes?: AppTypes[]): Promise<TabInstance> {
+      ensureInitialized(runtime);
 
       if (!isSupported()) {
-        throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+        throw errorNotSupportedOnPlatform;
       }
 
-      validateThreadId(hostEntityId);
+      validateThreadId(hostEntity?.threadId);
 
       return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
-        'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'associatedApps.tab.addAndConfigureApp',
-        [hostEntityId, appTypes],
+        [hostEntity, appTypes],
       ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
-          // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
           const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+          throw error;
         }
         return response as TabInstance;
       });
@@ -85,35 +78,68 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * TODO: Add full description of what this function does, ie "Allows the user to go through the tab config process again for the specified app. If
-     * no config process exists, X happens, etc."
+     * @param tab
      *
-     * @param tab fill in details
-     * @param threadId Info about where this comes from, links to external docs if available, etc.
+     * @param threadId
      *
      * @returns The TabInstance of the newly configured app
      *
-     * @throws TODO: Description of errors that can be thrown from this function
+     * @throws Description of errors that can be thrown from this function
      */
-    export function reconfigure(tab: TabInstance, threadId: string): Promise<TabInstance> {
-      ensureInitialized(runtime); // TODO: add frameContext checks if this is limited to certain contexts such as content
+    export function getTabs(hostEntity: HostEntity): Promise<TabInformation> {
+      ensureInitialized(runtime);
 
       if (!isSupported()) {
-        throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+        throw errorNotSupportedOnPlatform;
       }
 
-      validateTab(tab);
-      validateThreadId(threadId);
+      validateThreadId(hostEntity?.threadId);
+
+      return sendMessageToParentAsync<[boolean, TabInformation | SdkError]>(
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getTabs),
+        'associatedApps.tab.getTabs',
+        [hostEntity],
+      ).then(([wasSuccessful, response]: [boolean, TabInformation | SdkError]) => {
+        if (!wasSuccessful) {
+          const error = response as SdkError;
+          throw error;
+        }
+        return response as TabInformation;
+      });
+    }
+
+    /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     *
+     * @param tab
+     *
+     * @param threadId
+     *
+     * @returns The TabInstance of the newly configured app
+     *
+     * @throws Description of errors that can be thrown from this function
+     */
+    export function reconfigure(tab: TabInstance, hostEntity: HostEntity): Promise<TabInstance> {
+      ensureInitialized(runtime);
+
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
+      }
+
+      validateTab(tab.internalTabInstanceId);
+      validateThreadId(hostEntity?.threadId);
 
       return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
-        'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'associatedApps.tab.reconfigure',
-        [tab, threadId],
+        [tab, hostEntity],
       ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
-          // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
           const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+          throw error;
         }
         return response as TabInstance;
       });
@@ -125,34 +151,31 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * TODO: Add full description of what this function does, ie "Renames the tab associated with an app"
+     * @param tab
+     * @param threadId
      *
-     * @param tab fill in details
-     * @param threadId Info about where this comes from, links to external docs if available, etc.
+     * @returns
      *
-     * @returns The TabInstance of the newly renamed app tab
-     *
-     * @throws TODO: Description of errors that can be thrown from this function
+     * @throws
      */
-    export function rename(tab: TabInstance, threadId: string): Promise<TabInstance> {
-      ensureInitialized(runtime); // TODO: add frameContext checks if this is limited to certain contexts such as content
+    export function rename(tab: TabInstance, hostEntity: HostEntity): Promise<TabInstance> {
+      ensureInitialized(runtime);
 
       if (!isSupported()) {
-        throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+        throw errorNotSupportedOnPlatform;
       }
 
-      validateTab(tab);
-      validateThreadId(threadId);
+      validateTab(tab?.internalTabInstanceId);
+      validateThreadId(hostEntity?.threadId);
 
       return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
-        'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'associatedApps.tab.rename',
-        [tab, threadId],
+        [tab, hostEntity],
       ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
         if (!wasSuccessful) {
-          // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
           const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+          throw error;
         }
         return response as TabInstance;
       });
@@ -164,33 +187,31 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * TODO: Add full description of what this function does, ie "Removes a tab associated with an app, must be called on an app tab, etc."
+     * @param tab
+     * @param threadId
      *
-     * @param tab fill in details
-     * @param threadId Info about where this comes from, links to external docs if available, etc.
-     *
-     * @throws TODO: Description of errors that can be thrown from this function
+     * @throws Description of errors that can be thrown from this function
      */
-    export function remove(tab: TabInstance, threadId: string): Promise<void> {
-      ensureInitialized(runtime); // TODO: add frameContext checks if this is limited to certain contexts such as content
+    export function remove(tabId: string, hostEntity: HostEntity): Promise<boolean> {
+      ensureInitialized(runtime);
 
       if (!isSupported()) {
-        throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+        throw errorNotSupportedOnPlatform;
       }
 
-      validateTab(tab);
-      validateThreadId(threadId);
+      validateTab(tabId);
+      validateThreadId(hostEntity?.threadId);
 
       return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
-        'apiVersionTag', // TODO: see uses of getApiVersionTag in other files to do this correctly
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'associatedApps.tab.remove',
-        [tab, threadId],
+        [tabId, hostEntity],
       ).then(([wasSuccessful, response]: [boolean, SdkError]) => {
         if (!wasSuccessful) {
-          // TODO: Can handle error codes differently here, for example if you don't want "user cancelled" to throw
           const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+          throw error;
         }
+        return true;
       });
     }
 
@@ -201,34 +222,27 @@ export namespace hostEntity {
      * Limited to Microsoft-internal use
      */
     export function isSupported(): boolean {
-      throw new Error('Not implemented');
+      return ensureInitialized(runtime) && runtime.supports.hostEntity?.tab ? true : false;
     }
 
-    function validateThreadId(threadId: string) {
-      // TODO: Any checks you can do on threadId to guarantee valid (not null, not empty, not undefined, format if possible, etc.)
-      /*
-      if (threadId is not valid) {
-        throw new Error(`${threadId} is not a valid threadId`);
+    function validateThreadId(threadId: string): void {
+      if (!threadId || threadId.length == 0) {
+        const error: SdkError = {
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'ThreadId cannot be null or empty',
+        };
+        throw error;
       }
-      */
     }
 
-    function validateTab(tabInstance: TabInstance) {
-      // TODO: Any checks you can do on TabInstance to guarantee valid (not null, not empty, not undefined, all required properties set to legal values, etc.)
-      /*
-      if (tabInstance is not valid) {
-        throw new Error(`TabInstance ${tabInstance.internalTabInstanceId} is not a valid, extra detail if available`);
+    function validateTab(tabId?: string): void {
+      if (!tabId || tabId.length === 0) {
+        const error: SdkError = {
+          errorCode: ErrorCode.INVALID_ARGUMENTS,
+          message: 'TabId cannot be null or empty',
+        };
+        throw error;
       }
-      */
     }
-  }
-  /**
-   * @hidden
-   * @internal
-   * @beta
-   * Limited to Microsoft-internal use
-   */
-  export function isSupported(): boolean {
-    throw new Error('Not implemented');
   }
 }
