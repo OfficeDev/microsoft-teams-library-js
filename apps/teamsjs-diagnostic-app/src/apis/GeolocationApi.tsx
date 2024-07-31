@@ -8,7 +8,7 @@ export const geolocation_CheckGeoLocationCapability = async (): Promise<void> =>
   const module = 'geolocation';
   const moduleName = 'Geolocation';
   const supportedMessage = 'Geolocation module is supported. Geolocation Map is supported on new Teams (Version 23247.720.2421.8365 and above) Web, M365 Web, new Teams (Version 23247.720.2421.8365 and above) Desktop, M365 Desktop, and Outlook Desktop.';
-  const notSupportedMessage = 'Geolocation module is not supported. Geolocation is not supported on Teams versions less than 23247.720.2421.8365 on Web, Outlook Web, Teams versions less than 23247.720.2421.8365 on DEsktop, or Mobile.';
+  const notSupportedMessage = 'Geolocation module is not supported. Geolocation is not supported on Teams versions less than 23247.720.2421.8365 on Web, Outlook Web, Teams versions less than 23247.720.2421.8365 on Desktop, or Mobile.';
   
   await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
 };
