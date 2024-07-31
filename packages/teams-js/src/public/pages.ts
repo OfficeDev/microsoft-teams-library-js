@@ -1,10 +1,8 @@
 import {
-  Communication,
   sendAndHandleSdkError,
   sendAndHandleStatusAndReason,
   sendAndHandleStatusAndReasonWithDefaultError,
   sendAndUnwrap,
-  sendMessageEventToChild,
   sendMessageToParent,
 } from '../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../internal/handlers';
@@ -606,8 +604,6 @@ export namespace pages {
       const saveEventType = new SaveEventImpl(result);
       if (saveHandler) {
         saveHandler(saveEventType);
-      } else if (Communication.childWindow) {
-        sendMessageEventToChild('settings.save', [result]);
       } else {
         // If no handler is registered, we assume success.
         saveEventType.notifySuccess();
@@ -716,8 +712,6 @@ export namespace pages {
       const removeEventType = new RemoveEventImpl();
       if (removeHandler) {
         removeHandler(removeEventType);
-      } else if (Communication.childWindow) {
-        sendMessageEventToChild('settings.remove', []);
       } else {
         // If no handler is registered, we assume success.
         removeEventType.notifySuccess();
@@ -849,12 +843,7 @@ export namespace pages {
 
     function handleBackButtonPress(): void {
       if (!backButtonPressHandler || !backButtonPressHandler()) {
-        if (Communication.childWindow) {
-          // If the current window did not handle it let the child window
-          sendMessageEventToChild('backButtonPress', []);
-        } else {
-          navigateBack();
-        }
+        navigateBack();
       }
     }
 
