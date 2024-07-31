@@ -202,6 +202,20 @@ extends:
                   hostingEnvironmentType: 'electron'
                   teamsJsReferenceType: 'npm'
 
+          - job: E2ETests_Web_ScriptTag_StandardWeb_E
+            displayName: 'E2E Tests - Web - Via Script Tag - Standard Web Hosted - [E]'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'scriptTag'
+                  testPrefixPattern: '{[E],[e]}'
+
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
             timeoutInMinutes: 90

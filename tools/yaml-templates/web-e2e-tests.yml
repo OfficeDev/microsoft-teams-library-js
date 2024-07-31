@@ -35,7 +35,7 @@ steps:
       node tools/cli/runAppsWithE2ETests.js
       --useDataFromLocal=true
       --testPrefixPattern "${{parameters.testPrefixPattern}}"
-      --envType=test
+      --envType=$([[ '${{ parameters.teamsJsReferenceType }}' == 'npm' ]] && echo 'test' || echo 'localScriptTag')
     displayName: 'Run web hosted E2E integration tests (${{parameters.testPrefixPattern}})'
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
