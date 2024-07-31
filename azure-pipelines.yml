@@ -133,7 +133,7 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETests_Web_Npm_StandardWeb_A-M
+          - job: E2ETests_Web_Npm_StandardWeb_A_M
             displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [A-M]'
             timeoutInMinutes: 90
             pool:
