@@ -133,43 +133,17 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETests_Web_Npm_StandardWeb_A-M
-            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [A-M]'
+          - job: E2ETest2
+            displayName: 'E2E Test - Default'
+            timeoutInMinutes: 90
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
               image: 'ubuntu-2004'
               os: linux
             steps:
-              - template: tools/yaml-templates/web-e2e-tests@self
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
                 parameters:
-                  AppHostingSdk: AppHostingSdk
-                  hostingEnvironmentType: 'standardWeb'
-                  testPrefixPattern: '{[A-M],[a-m]}'
-
-          - job: E2ETests_Web_Npm_StandardWeb_N-Z0-9
-            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [N-Z][0-9]'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-2004'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/web-e2e-tests@self
-                parameters:
-                  AppHostingSdk: AppHostingSdk
-                  hostingEnvironmentType: 'standardWeb'
-                  testPrefixPattern: '{[N-Z],[n-z][0-9]}'
-
-          - job: E2ETests_Web_Npm_Electron
-            displayName: 'E2E Tests - Web - Via NPM - Electron Hosted'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-2004'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/web-e2e-tests@self
-                parameters:
-                  AppHostingSdk: AppHostingSdk
-                  hostingEnvironmentType: 'electron'
+                  appHostGitPath: AppHostingSdk
 
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
