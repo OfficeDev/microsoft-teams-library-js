@@ -7,7 +7,6 @@ parameters:
     type: string
   - name: hostingEnvironmentType
     type: string
-    default: 'electron'
     values:
       - 'electron'
       - 'standardWeb'
@@ -21,12 +20,12 @@ steps:
 
   - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"'
     displayName: 'Run E2E integration tests (${{parameters.testPrefixPattern}})'
-    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'standardWeb'))
+    condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - task: CMDLine@2
     displayName: 'Run tests for electron webview'
-    condition: and(succeeded(), eq(parameters.hostingEnvironmentType, 'electron'))
+    condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
     inputs:
       script: |
         pnpm exec xvfb-maybe playwright test
