@@ -7,7 +7,6 @@ parameters:
     type: string
   - name: hostingEnvironmentType
     type: string
-    default: 'electron'
     values:
       - 'electron'
       - 'standardWeb'
