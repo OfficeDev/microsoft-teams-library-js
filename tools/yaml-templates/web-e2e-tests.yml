@@ -25,7 +25,7 @@ steps:
 
   - bash: |
       # This sets up the server but runs no tests
-      node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"
+      node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "{[]}"
       # This runs the Electron tests, which currently cannot be filtered
       pnpm exec xvfb-maybe playwright test
     displayName: 'Run tests for electron webview'
