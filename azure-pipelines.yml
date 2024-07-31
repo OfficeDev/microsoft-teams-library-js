@@ -189,18 +189,6 @@ extends:
                   hostingEnvironmentType: 'standardWeb'
                   testPrefixPattern: '{[N-Z],[n-z]}'
 
-          - job: E2ETests_Web_Npm_Electron
-            displayName: 'E2E Tests - Web - Via NPM - Electron Hosted [All Tests]'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-2004'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/web-e2e-tests@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
-                  hostingEnvironmentType: 'electron'
-
           - job: E2ETest3
             displayName: 'E2E Test - Local Tag'
             timeoutInMinutes: 90
