@@ -23,13 +23,14 @@ steps:
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-  - task: CMDLine@2
+  - bash: |
+      # This sets up the server but runs no tests
+      node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "${{parameters.testPrefixPattern}}"
+      # This runs the Electron tests, which currently cannot be filtered
+      pnpm exec xvfb-maybe playwright test
     displayName: 'Run tests for electron webview'
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
-    inputs:
-      script: |
-        pnpm exec xvfb-maybe playwright test
-      workingDirectory: '$(AppHostingSdkProjectDirectory)'
+    workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
   - task: PublishTestResults@2
     inputs:
