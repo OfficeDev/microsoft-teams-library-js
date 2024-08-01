@@ -20,7 +20,8 @@ parameters:
     default: '{[A-Z],[a-z],[0-9]}'
 
 variables:
-  envType: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
+  - name: envType
+    value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
 
 steps:
   - template: build-app-host.yml
