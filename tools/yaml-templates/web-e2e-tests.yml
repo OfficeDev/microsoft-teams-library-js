@@ -18,6 +18,10 @@ parameters:
   - name: testPrefixPattern
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
+
+variables:
+  envType: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
+
 steps:
   - template: build-app-host.yml
     parameters:
@@ -35,7 +39,7 @@ steps:
       node tools/cli/runAppsWithE2ETests.js
       --useDataFromLocal=true
       --testPrefixPattern "${{parameters.testPrefixPattern}}"
-      --envType=$([[ '${{ parameters.teamsJsReferenceType }}' == 'npm' ]] && echo 'test' || echo 'localScriptTag')
+      --envType=${{ variables.envType }}
     displayName: 'Run web hosted E2E integration tests (${{parameters.testPrefixPattern}})'
     condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
