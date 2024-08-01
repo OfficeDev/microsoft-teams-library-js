@@ -19,6 +19,7 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 
+job:
 pool:
   name: Azure-Pipelines-1ESPT-ExDShared
   image: 'ubuntu-2004'
