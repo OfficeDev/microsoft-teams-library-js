@@ -29,7 +29,7 @@ export namespace copilot {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return (ensureInitialized(runtime) && runtime.hostVersionsInfo?.m365ChatLicenseInfo?.hasM365ChatLicense) ?? false;
+      return (ensureInitialized(runtime) &&  (runtime.hostVersionsInfo?.m365ChatLicenseInfo ?? false) && runtime.hostVersionsInfo?.m365ChatLicenseInfo?.m365ChatLicenseType !== M365ChatLicenseType.None);
     }
 
     /**
@@ -43,10 +43,10 @@ export namespace copilot {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function getM365ChatLicenseType(): M365ChatLicenseType {
-      if (ensureInitialized(runtime)) {
+      if (isSupported()) {
         return runtime.hostVersionsInfo?.m365ChatLicenseInfo?.m365ChatLicenseType ?? M365ChatLicenseType.None;
       }
-      return M365ChatLicenseType.None;
+      throw new Error('M365Chat license is not supported');
     }
   }
 }

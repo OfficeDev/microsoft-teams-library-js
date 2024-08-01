@@ -1080,17 +1080,16 @@ export enum DevicePermission {
 
 /** @hidden */
 export interface M365ChatLicenseInformation {
-  hasM365ChatLicense: boolean;
   m365ChatLicenseType: M365ChatLicenseType;
   // other fields may be added later
 }
 
 /** @hidden */
 export enum M365ChatLicenseType {
+  None = 'none',
+  WebAndWork = 'webAndWork',
   WebOnly = 'webOnly',
   WorkOnly = 'workOnly',
-  WebAndWork = 'webAndWork',
-  None = 'none',
 }
 
 /** @hidden */
