@@ -14,7 +14,7 @@ export const dialogCard_CheckDialogAdaptiveCardCapability = async (): Promise<vo
 };
 
 export const dialogCard_OpenAdaptiveCardDialog = (input: AdaptiveCardDialogInfo): Promise<void> => {
-  console.log('Executing openAdaptiveCardDialog with input:', input);
+  console.log('Executing openAdaptiveCardDialog with input:', JSON.stringify(input, null, 2));
   return new Promise((resolve, reject) => {
     try {
       console.log('Opening adaptive card dialog...');
