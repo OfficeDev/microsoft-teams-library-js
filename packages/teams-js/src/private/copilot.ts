@@ -1,5 +1,6 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { M365ChatLicenseType } from '../public/interfaces';
+import { errorNotSupportedOnPlatform } from '../public/constants';
+import { AppEligibilityInformation } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -17,7 +18,7 @@ export namespace copilot {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export namespace license {
+  export namespace eligibility {
     /**
      * @hidden
      * @internal
@@ -29,7 +30,7 @@ export namespace copilot {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return (ensureInitialized(runtime) &&  (runtime.hostVersionsInfo?.m365ChatLicenseInfo ?? false) && runtime.hostVersionsInfo?.m365ChatLicenseInfo?.m365ChatLicenseType !== M365ChatLicenseType.None);
+      return ensureInitialized(runtime) && !!runtime.hostVersionsInfo?.appEligibilityInformation;
     }
 
     /**
@@ -38,15 +39,16 @@ export namespace copilot {
      * Limited to Microsoft-internal use
      * @beta
      * This function is called by M365Chat app.
-     * @returns the type of the M365Chat license the user associated with the app has.
+     * @returns the eligibility information the user associated with the app contains.
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
-    export function getM365ChatLicenseType(): M365ChatLicenseType {
-      if (isSupported()) {
-        return runtime.hostVersionsInfo?.m365ChatLicenseInfo?.m365ChatLicenseType ?? M365ChatLicenseType.None;
+    export function getEligibilityInfo(): AppEligibilityInformation {
+      ensureInitialized(runtime);
+      if (!isSupported()) {
+        throw errorNotSupportedOnPlatform;
       }
-      throw new Error('M365Chat license is not supported');
+      return runtime.hostVersionsInfo!.appEligibilityInformation!;
     }
   }
 }

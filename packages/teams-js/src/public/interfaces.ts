@@ -1078,24 +1078,20 @@ export enum DevicePermission {
   Media = 'media',
 }
 
-/** @hidden */
-export interface M365ChatLicenseInformation {
-  m365ChatLicenseType: M365ChatLicenseType;
-  // other fields may be added later
-}
-
-/** @hidden */
-export enum M365ChatLicenseType {
-  None = 'none',
-  WebAndWork = 'webAndWork',
-  WebOnly = 'webOnly',
-  WorkOnly = 'workOnly',
-}
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @beta
+ */
+export interface AppEligibilityInformation {}
 
 /** @hidden */
 export interface HostVersionsInfo {
   adaptiveCardSchemaVersion?: AdaptiveCardVersion;
-  m365ChatLicenseInfo?: M365ChatLicenseInformation;
+  appEligibilityInformation?: AppEligibilityInformation;
 }
 
 /**
