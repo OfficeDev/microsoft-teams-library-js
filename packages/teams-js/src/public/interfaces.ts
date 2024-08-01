@@ -83,19 +83,35 @@ export interface TabInstance {
    */
   websiteUrl?: string;
 
+  /**
+   * AppId of this tab
+   */
   appId?: string;
 
+  /**
+   * Order of this tab
+   */
   order?: number;
 
-  tabPermission?: TabPermission;
-}
+  /**
+   * Permissions for this tab
+   */
+  tabPermission?: {
+    /**
+     * Indicates whether the tab config can be updated
+     */
+    canUpdateConfig?: boolean;
 
-export interface TabPermission {
-  canUpdateConfig?: boolean;
+    /**
+     * Indicates if tab can have conversation
+     */
+    canHaveTabConversation?: boolean;
 
-  canHaveTabConversation?: boolean;
-
-  definedDevicePermissions?: string[];
+    /**
+     * Device permissions for this app
+     */
+    definedDevicePermissions?: string[];
+  };
 }
 
 /**

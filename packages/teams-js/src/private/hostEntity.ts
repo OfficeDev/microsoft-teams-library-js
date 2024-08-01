@@ -2,12 +2,12 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { TabInformation, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
-import { errorNotSupportedOnPlatform } from '../public/constants';
 
 /**
- * v1 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
@@ -17,6 +17,7 @@ const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * @beta
  * Limited to Microsoft-internal use
  *
+ * This capability allows an app to associate apps with a host entity, such as a Teams channel or chat, and configure them as needed.
  */
 export namespace hostEntity {
   export enum AppTypes {
@@ -29,26 +30,37 @@ export namespace hostEntity {
    * @beta
    * Limited to Microsoft-internal use
    *
+   * CRUD operations for tabs associated with apps
    */
   export namespace tab {
     export interface HostEntity {
+      /**
+       * Id of the host entity like channel, chat or meeting
+       */
       threadId: string;
 
+      /**
+       * Id of message in which channel meeting is created
+       */
       messageId?: string;
     }
+
     /**
      * @hidden
      * @internal
      * @beta
      * Limited to Microsoft-internal use
      *
-     * @param threadId
+     * Launches host-owned UI that lets a user select an app, installs it if required,
+     * runs through app configuration if required, and then associates the app with the threadId provided
      *
-     * @param appTypes
+     * @param hostEntity Ids of the host entity like channel, chat or meeting
+     *
+     * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown
      *
      * @returns The TabInstance of the newly associated app
      *
-     * @throws Description of errors that can be thrown from this function
+     * @throws Error if user cancels operation or installing, configuring or adding tab fails
      */
     export function addAndConfigure(hostEntity: HostEntity, appTypes?: AppTypes[]): Promise<TabInstance> {
       ensureInitialized(runtime);
@@ -78,13 +90,13 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * @param tab
+     * Returns all tab instances associated with a host entity
      *
-     * @param threadId
+     * @param hostEntity Ids of the host entity like channel, chat or meeting
      *
-     * @returns The TabInstance of the newly configured app
+     * @returns Object with array of TabInstance's associated with a host entity
      *
-     * @throws Description of errors that can be thrown from this function
+     * @throws Error if fetching tabs fail
      */
     export function getTabs(hostEntity: HostEntity): Promise<TabInformation> {
       ensureInitialized(runtime);
@@ -114,13 +126,13 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * @param tab
+     * Launches host-owned UI that lets a user re-configure the contentUrl of the tab
      *
-     * @param threadId
+     * @param hostEntity Ids of the host entity like channel, chat or meeting
      *
-     * @returns The TabInstance of the newly configured app
+     * @returns The TabInstance of the updated tab
      *
-     * @throws Description of errors that can be thrown from this function
+     * @throws Error if user cancels operation or re-configuring tab fails
      */
     export function reconfigure(tab: TabInstance, hostEntity: HostEntity): Promise<TabInstance> {
       ensureInitialized(runtime);
@@ -151,12 +163,13 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * @param tab
-     * @param threadId
+     * Launches host-owned UI that lets a user rename the tab
      *
-     * @returns
+     * @param hostEntity Ids of the host entity like channel, chat or meeting
      *
-     * @throws
+     * @returns The TabInstance of the updated tab
+     *
+     * @throws Error if user cancels operation or updating tab fails
      */
     export function rename(tab: TabInstance, hostEntity: HostEntity): Promise<TabInstance> {
       ensureInitialized(runtime);
@@ -187,10 +200,13 @@ export namespace hostEntity {
      * @beta
      * Limited to Microsoft-internal use
      *
-     * @param tab
-     * @param threadId
+     * Launches host-owned UI that lets a user remove the tab
      *
-     * @throws Description of errors that can be thrown from this function
+     * @param hostEntity Ids of the host entity like channel, chat or meeting
+     *
+     * @returns Boolean. Returns true if removing tab was successful
+     *
+     * @throws Error if user cancels operation or removing tab fails
      */
     export function remove(tabId: string, hostEntity: HostEntity): Promise<boolean> {
       ensureInitialized(runtime);
@@ -225,6 +241,12 @@ export namespace hostEntity {
       return ensureInitialized(runtime) && runtime.supports.hostEntity?.tab ? true : false;
     }
 
+    /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     */
     function validateThreadId(threadId: string): void {
       if (!threadId || threadId.length == 0) {
         const error: SdkError = {
@@ -235,6 +257,12 @@ export namespace hostEntity {
       }
     }
 
+    /**
+     * @hidden
+     * @internal
+     * @beta
+     * Limited to Microsoft-internal use
+     */
     function validateTab(tabId?: string): void {
       if (!tabId || tabId.length === 0) {
         const error: SdkError = {

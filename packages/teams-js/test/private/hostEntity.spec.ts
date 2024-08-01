@@ -1,10 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
 import { hostEntity } from '../../src/private/hostEntity';
 import { ErrorCode, FrameContexts, TabInstance } from '../../src/public';
 import { app } from '../../src/public/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
-import { GlobalVars } from '../../src/internal/globalVars';
 
 describe('hostEntity', () => {
   let utils = new Utils();
