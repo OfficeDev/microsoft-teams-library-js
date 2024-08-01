@@ -134,7 +134,6 @@ extends:
                 condition: succeededOrFailed()
 
           - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            displayName: 'TEMPLATE - E2E Tests - Web - Via NPM - Standard Web Hosted - [0-9][A-D]'
             parameters:
               AppHostingSdk: AppHostingSdk
               hostingEnvironmentType: 'standardWeb'
