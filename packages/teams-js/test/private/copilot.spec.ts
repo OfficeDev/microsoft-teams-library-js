@@ -1,17 +1,25 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { copilot } from '../../src/private/copilot';
 import { app } from '../../src/public/app';
-import { FrameContexts } from '../../src/public/constants';
-import { M365ChatLicenseType } from '../../src/public/interfaces';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { EduType, LegalAgeGroupClassification, Persona, UserCohort } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
+
+const mockedAppEligibilityInformation = {
+  cohort: UserCohort.M365CopilotPremium,
+  persona: Persona.Student,
+  ageGroup: LegalAgeGroupClassification.Adult,
+  isCodeEnabledRegion: true,
+  isCopilotEligible: true,
+  isOptedOutByAdmin: false,
+  eduType: EduType.None,
+};
 
 const copilotRuntimeConfig: Runtime = {
   apiVersion: 4,
   hostVersionsInfo: {
-    m365ChatLicenseInfo: {
-      m365ChatLicenseType: M365ChatLicenseType.WebAndWork,
-    },
+    appEligibilityInformation: mockedAppEligibilityInformation,
   },
   supports: {
     pages: {
@@ -39,21 +47,21 @@ describe('copilot', () => {
     }
   });
 
-  describe('license', () => {
+  describe('eligibility', () => {
     it('should throw if called before initialization', () => {
       utils.uninitializeRuntimeConfig();
-      expect(() => copilot.license.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-      expect(() => copilot.license.getM365ChatLicenseType()).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(new Error(errorLibraryNotInitialized));
     });
-    it('should return true if the user has copilotLicense and the type of license', async () => {
+    it('should return EligibilityInfo if the app is MChat app', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(copilotRuntimeConfig);
-      expect(copilot.license.isSupported()).toBeTruthy();
-      expect(copilot.license.getM365ChatLicenseType()).toBe(M365ChatLicenseType.WebAndWork);
+      expect(copilot.eligibility.isSupported()).toBeTruthy();
+      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
     });
-    it('if the m365ChatLicenseType is not set by the host or missing; isSupported() returns false and getM365ChatLicenseType throws error', async () => {
+    it('should throw if the value is not set by the host or missing ', async () => {
       await utils.initializeWithContext(FrameContexts.content);
-      const copilotRuntimeConfigWithOutM365ChatLicense: Runtime = {
+      const copilotRuntimeConfigWithOutEligibilityInformation: Runtime = {
         apiVersion: 4,
         supports: {
           pages: {
@@ -67,34 +75,13 @@ describe('copilot', () => {
           logs: {},
         },
       };
-      utils.setRuntimeConfig(copilotRuntimeConfigWithOutM365ChatLicense);
-      expect(copilot.license.isSupported()).toBeFalsy();
-      expect(() => copilot.license.getM365ChatLicenseType()).toThrowError(new Error('M365Chat license is not supported'));
-    });
-    it('if the m365ChatLicenseType is NONE; isSupported() returns false and getM365ChatLicenseType throws error ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const copilotRuntimeConfigWithCopilotLicenseFalse: Runtime = {
-        apiVersion: 4,
-        hostVersionsInfo: {
-          m365ChatLicenseInfo: {
-            m365ChatLicenseType: M365ChatLicenseType.None,
-          },
-        },
-        supports: {
-          pages: {
-            appButton: {},
-            tabs: {},
-            config: {},
-            backStack: {},
-            fullTrust: {},
-          },
-          teamsCore: {},
-          logs: {},
-        },
-      };
-      utils.setRuntimeConfig(copilotRuntimeConfigWithCopilotLicenseFalse);
-      expect(copilot.license.isSupported()).toBeFalsy();
-      expect(() => copilot.license.getM365ChatLicenseType()).toThrowError(new Error('M365Chat license is not supported'));
+      utils.setRuntimeConfig(copilotRuntimeConfigWithOutEligibilityInformation);
+      expect(copilot.eligibility.isSupported()).toBeFalsy();
+      try {
+        copilot.eligibility.getEligibilityInfo();
+      } catch (e) {
+        expect(e).toEqual(errorNotSupportedOnPlatform);
+      }
     });
   });
 });

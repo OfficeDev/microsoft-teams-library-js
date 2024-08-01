@@ -1078,24 +1078,56 @@ export enum DevicePermission {
   Media = 'media',
 }
 
-/** @hidden */
-export interface M365ChatLicenseInformation {
-  m365ChatLicenseType: M365ChatLicenseType;
-  // other fields may be added later
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @beta
+ */
+export interface AppEligibilityInformation {
+  cohort: UserCohort;
+  persona: Persona;
+  ageGroup: LegalAgeGroupClassification;
+  isCodeEnabledRegion: boolean;
+  isCopilotEligible: boolean;
+  isOptedOutByAdmin: boolean;
+  eduType: EduType;
 }
 
-/** @hidden */
-export enum M365ChatLicenseType {
+export enum Persona {
   None = 'none',
-  WebAndWork = 'webAndWork',
-  WebOnly = 'webOnly',
-  WorkOnly = 'workOnly',
+  Student = 'student',
+  Faculty = 'faculty',
+}
+
+export enum UserCohort {
+  None = 'none',
+  M365Copilot = 'm365Copilot',
+  M365CopilotPremium = 'm365CopilotPremium',
+  M365CopilotBasic = 'm365CopilotBasic',
+}
+
+// https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#legalagegroupclassification-values
+export enum LegalAgeGroupClassification {
+  Null = 'null',
+  MinorWithoutParentalConsent = 'minorWithoutParentalConsent',
+  MinorWithParentalConsent = 'MinorWithParentalConsent',
+  MinorNoParentalConsentRequired = 'minorNoParentalConsentRequired',
+  Adult = 'adult',
+  NonAdult = 'nonAdult',
+}
+
+export enum EduType {
+  None = 'none',
+  HigherEducation = 'higherEducation',
 }
 
 /** @hidden */
 export interface HostVersionsInfo {
   adaptiveCardSchemaVersion?: AdaptiveCardVersion;
-  m365ChatLicenseInfo?: M365ChatLicenseInformation;
+  appEligibilityInformation?: AppEligibilityInformation;
 }
 
 /**

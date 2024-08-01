@@ -297,7 +297,6 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly webStorage?: {};
   };
 }
-
 // Constant used to set the runtime configuration
 const _uninitializedRuntime: UninitializedRuntime = {
   apiVersion: -1,
