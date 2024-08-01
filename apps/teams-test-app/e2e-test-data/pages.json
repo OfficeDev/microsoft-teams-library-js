@@ -21,11 +21,9 @@
       "title": "returnFocus API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_returnFocus",
-      "inputValue": {
-        "onLandmark": "onLandmark"
-      },
-      "expectedAlertValue": "returnFocus called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "Current focus action item state is onView"
+      "checkboxState": true,
+      "expectedAlertValue": "returnFocus called with true",
+      "expectedTestAppValue": "Current navigateForward state is true"
     },
     {
       "title": "setCurrentFrame API Call - Success",
@@ -114,8 +112,8 @@
       "version": "1.x || >2.0.0-beta.2",
       "boxSelector": "#box_registerFocusEnterHandler",
       "eventName": "focusEnter",
-      "eventData": "onView",
-      "expectedTestAppValue": "successfully called with focusActionItem:onView"
+      "eventData": true,
+      "expectedTestAppValue": "successfully called with navigateForward:true"
     }
   ]
 }

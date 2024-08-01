@@ -245,25 +245,6 @@ export interface SecondaryId {
 }
 
 /**
- * Contains focus action item for register focus handler and return focus callback
- */
-
-export enum FocusActionItem {
-  /**
-   * Focus on the next landmark
-   */
-  OnLandmark = 'OnLandmark',
-  /**
-   * Focus on view
-   */
-  onView = 'OnView',
-  /**
-   * Focus on edit
-   */
-  onEdit = 'OnEdit',
-}
-
-/**
  * These correspond with field names in the MSGraph.
  * See [commonly accessed resources](https://learn.microsoft.com/graph/api/resources/onedrive?view=graph-rest-1.0#commonly-accessed-resources).
  * @beta

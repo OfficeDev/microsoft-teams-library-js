@@ -9,7 +9,6 @@ import { FrameContexts } from './constants';
 import {
   Context,
   DeepLinkParameters,
-  FocusActionItem,
   FrameContext,
   LoadContext,
   TabInformation,
@@ -251,7 +250,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  *
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
-export function registerFocusEnterHandler(handler: (FocusActionItem: FocusActionItem) => FocusActionItem): void {
+export function registerFocusEnterHandler(handler: (navigateForward: boolean) => boolean): void {
   registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFocusEnterHandler),
     'focusEnter',

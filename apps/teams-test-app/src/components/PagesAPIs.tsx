@@ -1,6 +1,5 @@
 import {
   DeepLinkParameters,
-  FocusActionItem,
   FrameInfo,
   navigateCrossDomain,
   pages,
@@ -14,7 +13,7 @@ import {
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetConfig = (): React.ReactElement =>
@@ -141,29 +140,20 @@ const ShareDeepLink = (): ReactElement =>
   });
 
 const ReturnFocus = (): React.ReactElement =>
-  ApiWithTextInput<FocusActionItem>({
+  ApiWithCheckboxInput({
     name: 'returnFocus',
     title: 'Return Focus',
+    label: 'navigateForward',
     onClick: {
-      validateInput: (input) => {
-        if (!input) {
-          throw new Error('input is required.');
-        }
+      withPromise: async (input) => {
+        await pages.returnFocus(input);
+        return 'Current navigateForward state is ' + input;
       },
-      submit: {
-        withPromise: async (input) => {
-          await pages.returnFocus(input);
-          return 'called return focus';
-        },
-        withCallback: (input) => {
-          returnFocus(input);
-          return 'called return focus';
-        },
+      withCallback: (input) => {
+        returnFocus(input);
+        return 'Current navigateForward state is ' + input;
       },
     },
-    defaultInput: JSON.stringify({
-      onLandmark: 'onLandmark',
-    }),
   });
 
 const RegisterFocusEnterHandler = (): React.ReactElement =>
@@ -172,16 +162,16 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     title: 'Register On Focus Enter Handler',
     onClick: {
       withPromise: async (setResult) => {
-        pages.registerFocusEnterHandler((focusActionItem) => {
-          setResult('successfully called with focusActionItem:' + focusActionItem);
-          return focusActionItem;
+        pages.registerFocusEnterHandler((navigateForward) => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
         });
         return 'registered';
       },
       withCallback: (setResult) => {
-        registerFocusEnterHandler((focusActionItem) => {
-          setResult('successfully called with focusActionItem:' + focusActionItem);
-          return focusActionItem;
+        registerFocusEnterHandler((navigateForward) => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
         });
         setResult('registered');
       },
