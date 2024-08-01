@@ -133,6 +133,28 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
+          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+            displayName: 'TEMPLATE - E2E Tests - Web - Via NPM - Standard Web Hosted - [0-9][A-D]'
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              hostingEnvironmentType: 'standardWeb'
+              teamsJsReferenceType: 'npm'
+              testPrefixPattern: '{[0-9],[A-D],[a-d]}'
+
+          - job: E2ETests_Web_Npm_StandardWeb_A_D_Job_Template
+            displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [0-9][A-D]'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/web-e2e-tests.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
+                  hostingEnvironmentType: 'standardWeb'
+                  teamsJsReferenceType: 'npm'
+                  testPrefixPattern: '{[0-9],[A-D],[a-d]}'
+
           - job: E2ETests_Web_Npm_StandardWeb_A_D
             displayName: 'E2E Tests - Web - Via NPM - Standard Web Hosted - [0-9][A-D]'
             pool:
