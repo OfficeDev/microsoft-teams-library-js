@@ -20,7 +20,7 @@ export function profile_ShowProfile(input: profile.ShowProfileRequest) {
       return reject('ShowProfileRequest is required');
     }
 
-    console.log('Starting ShowProfile with input:', input);
+    console.log('Starting ShowProfile with input:', JSON.stringify(input, null, 2));
 
     try {
       profile.showProfile(input);
