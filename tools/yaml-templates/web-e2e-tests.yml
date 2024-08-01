@@ -1,6 +1,10 @@
 # This does all the steps for cloning both app sdk and app host sdk repos and building them, then configuring the app host.
 # Can be reused for any additional e2e tests and then paired with a node script with different parameters for which type of e2e test needs to run.
 
+variables:
+  - name: envType
+    value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
+
 parameters:
   - name: AppHostingSdk
     default: none
@@ -18,10 +22,6 @@ parameters:
   - name: testPrefixPattern
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
-
-variables:
-  - name: envType
-    value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
 
 steps:
   - template: build-app-host.yml
