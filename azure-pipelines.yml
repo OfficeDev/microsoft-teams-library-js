@@ -139,6 +139,7 @@ extends:
               hostingEnvironmentType: 'standardWeb'
               teamsJsReferenceType: 'npm'
               testPrefixPattern: '{[0-9],[A-D],[a-d]}'
+              newParam: ['first', 'second', 'third']
 
           - template: tools/yaml-templates/web-e2e-tests-job.yml@self
             parameters:
