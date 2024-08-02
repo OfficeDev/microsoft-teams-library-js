@@ -20,7 +20,7 @@ parameters:
     default: '{[A-Z],[a-z],[0-9]}'
 
 jobs:
-  - job: E2ETestsWeb_${{ replace(replace(replace(replace(replace(replace(parameters.testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+  - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(parameters.testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
     displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{parameters.testPrefixPattern}}'
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
