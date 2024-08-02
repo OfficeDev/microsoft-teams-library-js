@@ -99,10 +99,9 @@ const AddCloudStorageFolder = (): React.ReactElement =>
           if (error) {
             setResult(JSON.stringify(error));
           } else {
-            const result = { folders, isFolderAdded };
-
             const hostClientType = (await app.getContext()).app.host.clientType;
             if (hostClientType === HostClientType.android) {
+              const result = { isFolderAdded, folders };
               // Sort the result object properties before returning for the android test app
               const sortedResult = Object.keys(result)
                 .sort()
@@ -112,7 +111,7 @@ const AddCloudStorageFolder = (): React.ReactElement =>
                 }, {});
               setResult(JSON.stringify(sortedResult));
             } else {
-              setResult(JSON.stringify(result));
+              setResult(JSON.stringify({ isFolderAdded, folders }));
             }
           }
         };
