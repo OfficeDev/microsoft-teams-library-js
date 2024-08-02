@@ -28,7 +28,7 @@
       "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getUser",
       "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false}"]],
-      "expectedTestAppValue": "asdfasdfasdfasdf"
+      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
     },
     {
       "title": "getUser API Call - Failure (Not full trust and not Microsoft owned)",
@@ -40,7 +40,7 @@
       "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getUser",
       "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
-      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
+      "expectedTestAppValue": "adasdfasdfasdfasdf"
     },
     {
       "title": "getUser API Call - Success (Full trust app)",
