@@ -1,5 +1,5 @@
-# This does all the steps for cloning both app sdk and app host sdk repos and building them, then configuring the app host.
-# Can be reused for any additional e2e tests and then paired with a node script with different parameters for which type of e2e test needs to run.
+# This template handles running E2E tests (including all necessary setup steps) from the host SDK repo for various environments.
+# It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
 
 parameters:
   - name: AppHostingSdk
@@ -33,11 +33,6 @@ jobs:
               value: 'test'
             ${{ else }}:
               value: 'localScriptTag'
-          - name: reportFileName
-            ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
-              value: 'e2e-tests-report'
-            ${{ else }}:
-              value: 'e2e-tests-report-local-script-tag'
         steps:
           - template: build-app-host.yml
             parameters:
