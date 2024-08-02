@@ -15,17 +15,14 @@ parameters:
     values:
       - 'npm'
       - 'scriptTag'
-  - name: testPrefixPattern
-    type: string
-    default: '{[A-Z],[a-z],[0-9]}'
-  - name: newParam
+  - name: testPrefixPatternGroups
     type: object
-    default: []
+    default: ['{[A-Z],[a-z],[0-9]}']
 
 jobs:
-  - ${{each newValue in parameters.newParam}}:
-      - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(newValue, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
-        displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{newValue}}'
+  - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
+      - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+        displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
         pool:
           name: Azure-Pipelines-1ESPT-ExDShared
           image: 'ubuntu-2004'
@@ -57,9 +54,9 @@ jobs:
           - bash: >
               node tools/cli/runAppsWithE2ETests.js
               --useDataFromLocal=true
-              --testPrefixPattern "${{newValue}}"
+              --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
-            displayName: 'Run web hosted E2E integration tests (${{newValue}})'
+            displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
