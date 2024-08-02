@@ -1086,43 +1086,7 @@ export enum DevicePermission {
  *
  * @beta
  */
-export interface AppEligibilityInformation {
-  cohort: UserCohort;
-  persona: Persona;
-  ageGroup: LegalAgeGroupClassification;
-  isCodeEnabledRegion: boolean;
-  isCopilotEligible: boolean;
-  isOptedOutByAdmin: boolean;
-  eduType: EduType;
-}
-
-export enum Persona {
-  None = 'none',
-  Student = 'student',
-  Faculty = 'faculty',
-}
-
-export enum UserCohort {
-  None = 'none',
-  M365Copilot = 'm365Copilot',
-  M365CopilotPremium = 'm365CopilotPremium',
-  M365CopilotBasic = 'm365CopilotBasic',
-}
-
-// https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#legalagegroupclassification-values
-export enum LegalAgeGroupClassification {
-  Null = 'null',
-  MinorWithoutParentalConsent = 'minorWithoutParentalConsent',
-  MinorWithParentalConsent = 'MinorWithParentalConsent',
-  MinorNoParentalConsentRequired = 'minorNoParentalConsentRequired',
-  Adult = 'adult',
-  NonAdult = 'nonAdult',
-}
-
-export enum EduType {
-  None = 'none',
-  HigherEducation = 'higherEducation',
-}
+export interface AppEligibilityInformation {}
 
 /** @hidden */
 export interface HostVersionsInfo {
