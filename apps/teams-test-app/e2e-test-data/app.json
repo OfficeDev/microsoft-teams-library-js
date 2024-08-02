@@ -1,6 +1,6 @@
 {
   "name": "App",
-  "platforms": ["*"],
+  "platforms": ["iOS","Web"],
   "testCases": [
     {
       "title": "openLink API Call - Success",

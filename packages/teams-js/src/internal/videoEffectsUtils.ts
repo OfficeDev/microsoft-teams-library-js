@@ -286,6 +286,7 @@ class OneTextureMetadata {
   // Stream id for audio inference metadata, which is the 4-byte ASCII string "1dia" hardcoded by the host
   // (1dia stands for "audio inference data version 1")
   private readonly AUDIO_INFERENCE_RESULT_STREAM_ID = 0x31646961;
+  private readonly ATTRIBUTE_ID_MAP_STREAM_ID = 0x4d444941;
   public constructor(metadataBuffer: ArrayBuffer, streamCount: number) {
     const metadataDataView = new Uint32Array(metadataBuffer);
     for (let i = 0, index = 0; i < streamCount; i++) {
@@ -299,6 +300,58 @@ class OneTextureMetadata {
 
   public get audioInferenceResult(): Uint8Array | undefined {
     return this.metadataMap.get(this.AUDIO_INFERENCE_RESULT_STREAM_ID);
+  }
+
+  /**
+   * @hidden
+   * Additional attributes on the video frame are string-indexed, with their stream Id dynamically generated.
+   * The mapping of attribute Ids to their stream Ids is itself stored as frame metadata with layout:
+   *
+   * | attribute count  | attribute stream Id  | attribute id                                              | ...   |
+   * | :---:            | :---:                | :---:                                                     | :---: |
+   * | 4 bytes          | 4 bytes              | variable length string (null terminated, 4 byte aligned)  | ...   |
+   *
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  public get attributes(): ReadonlyMap<string, Uint8Array> | undefined {
+    const data = this.metadataMap.get(this.ATTRIBUTE_ID_MAP_STREAM_ID);
+    if (data === undefined) {
+      return undefined;
+    }
+
+    const map: Map<string, Uint8Array> = new Map();
+    const textDecoder = new TextDecoder('utf-8');
+
+    let offset = 0;
+    const count = data[offset] + (data[++offset] << 8) + (data[++offset] << 16) + (data[++offset] << 24);
+
+    for (let i = 0; i < count && offset < data.length - 1; i++) {
+      const streamId = data[++offset] + (data[++offset] << 8) + (data[++offset] << 16) + (data[++offset] << 24);
+
+      // Find start of null-terminator for the subsequent variable-length string entry
+      const nullTerminatorStartIndex = data.findIndex((value, index, _) => {
+        return value == 0 && index > offset;
+      });
+
+      const attributeId = textDecoder.decode(data.slice(++offset, nullTerminatorStartIndex));
+
+      // Read attribute value from metadata map
+      const metadata = this.metadataMap.get(streamId);
+      if (metadata !== undefined) {
+        map.set(attributeId, metadata);
+      }
+
+      // Variable length attribute Id strings are null-terminated to a 4-byte alignment
+      const stringByteLength = nullTerminatorStartIndex - offset;
+      const paddingSize = 4 - (stringByteLength % 4);
+
+      // Set offset to index of last trailing zero
+      offset = nullTerminatorStartIndex + (paddingSize - 1);
+    }
+
+    return map;
   }
 }
 
@@ -325,9 +378,9 @@ class TransformerWithMetadata {
     const timestamp = originalFrame.timestamp;
     if (timestamp !== null) {
       try {
-        const { videoFrame, metadata: { audioInferenceResult } = {} } =
+        const { videoFrame, metadata: { audioInferenceResult, attributes } = {} } =
           await this.extractVideoFrameAndMetadata(originalFrame);
-        const frameProcessedByApp = await this.videoFrameHandler({ videoFrame, audioInferenceResult });
+        const frameProcessedByApp = await this.videoFrameHandler({ videoFrame, audioInferenceResult, attributes });
         // the current typescript version(4.6.4) dosn't support webcodecs API fully, we have to do type conversion here.
         const processedFrame = new VideoFrame(frameProcessedByApp as unknown as CanvasImageSource, {
           // we need the timestamp to be unchanged from the oirginal frame, so we explicitly set it here.
@@ -373,7 +426,10 @@ class TransformerWithMetadata {
    */
   private extractVideoFrameAndMetadata = async (
     texture: VideoFrame,
-  ): Promise<{ videoFrame: VideoFrame; metadata: { audioInferenceResult?: Uint8Array } }> => {
+  ): Promise<{
+    videoFrame: VideoFrame;
+    metadata: { audioInferenceResult?: Uint8Array; attributes?: ReadonlyMap<string, Uint8Array> };
+  }> => {
     if (inServerSideRenderingEnvironment()) {
       throw errorNotSupportedOnPlatform;
     }
@@ -427,6 +483,7 @@ class TransformerWithMetadata {
       }) as VideoFrame,
       metadata: {
         audioInferenceResult: this.shouldDiscardAudioInferenceResult ? undefined : metadata.audioInferenceResult,
+        attributes: metadata.attributes,
       },
     };
   };
