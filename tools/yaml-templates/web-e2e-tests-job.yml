@@ -28,7 +28,10 @@ jobs:
       os: linux
     variables:
       - name: envType
-        value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
+        ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
+          value: 'test'
+        ${{ else }}:
+          value: 'localScriptTag'
     steps:
       - template: build-app-host.yml
         parameters:
