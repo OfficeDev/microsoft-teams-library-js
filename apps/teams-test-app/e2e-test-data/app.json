@@ -39,7 +39,7 @@
     {
       "title": "openLink composeMeeting API Call - Success",
       "type": "callResponse",
-      "boxSelector": "#box_e.jxecuteDeepLink2",
+      "boxSelector": "#box_executeDeepLink2",
       "inputValue": "https://teams.microsoft.com/l/meeting/new?subject=testSubject&attendees=testAttendee1,testAttendee2&startTime=testStartTime&endTime=testEndTime&content=testContent",
       "expectedAlertValue": "composeMeeting called with {\"attendees\":[\"testAttendee1\",\"testAttendee2\"],\"startTime\":\"testStartTime\",\"endTime\":\"testEndTime\",\"subject\":\"testSubject\",\"content\":\"testContent\"}",
       "expectedTestAppValue": "Completed"
