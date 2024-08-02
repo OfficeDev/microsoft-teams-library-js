@@ -21,14 +21,13 @@ parameters:
 
 jobs:
   - job: E2ETestsWeb
-    variables:
-      - name: envType
-        value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
     displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{parameters.testPrefixPattern}}'
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: 'ubuntu-2004'
       os: linux
+    variables:
+      envType: stuff
     steps:
       - template: build-app-host.yml
         parameters:
