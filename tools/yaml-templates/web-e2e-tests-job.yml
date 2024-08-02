@@ -19,6 +19,10 @@ parameters:
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
 
+variables:
+  - name: envType
+    value: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
+
 jobs:
   - job: E2ETestsWeb
     displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{parameters.testPrefixPattern}}'
