@@ -1,4 +1,4 @@
-import { FileOpenPreference, files, SdkError } from '@microsoft/teams-js';
+import { app, FileOpenPreference, files, HostClientType, SdkError } from '@microsoft/teams-js';
 import React, { ChangeEvent, ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -91,21 +91,29 @@ const AddCloudStorageFolder = (): React.ReactElement =>
         }
       },
       submit: async (input, setResult) => {
-
-        const callback = (error: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
+        const callback = async (
+          error: SdkError,
+          isFolderAdded: boolean,
+          folders: files.CloudStorageFolder[],
+        ): Promise<void> => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {
             const result = { folders, isFolderAdded };
 
-            // Sort the result object properties before returning
-            const sortedResult = Object.keys(result)
-              .sort()
-              .reduce((acc, key) => {
-                acc[key] = result[key];
-                return acc;
-              }, {});
-            setResult(JSON.stringify(sortedResult));
+            const hostClientType = (await app.getContext()).app.host.clientType;
+            if (hostClientType === HostClientType.android) {
+              // Sort the result object properties before returning for the android test app
+              const sortedResult = Object.keys(result)
+                .sort()
+                .reduce((acc, key) => {
+                  acc[key] = result[key];
+                  return acc;
+                }, {});
+              setResult(JSON.stringify(sortedResult));
+            } else {
+              setResult(JSON.stringify(result));
+            }
           }
         };
 
