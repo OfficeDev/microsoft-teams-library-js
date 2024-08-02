@@ -172,39 +172,28 @@ extends:
               AppHostingSdk: AppHostingSdk
               hostingEnvironmentType: 'standardWeb'
               teamsJsReferenceType: 'scriptTag'
+              testPrefixPattern: '{[0-9],[A-D],[a-d]}'
+
+          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              hostingEnvironmentType: 'standardWeb'
+              teamsJsReferenceType: 'scriptTag'
               testPrefixPattern: '{[E],[e]}'
 
-          - job: E2ETest3
-            displayName: 'E2E Test - Local Tag'
-            timeoutInMinutes: 90
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-latest'
-              os: linux
-            steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
-                parameters:
-                  appHostGitPath: AppHostingSdk
+          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              hostingEnvironmentType: 'standardWeb'
+              teamsJsReferenceType: 'scriptTag'
+              testPrefixPattern: '{[F-M],[f-m]}'
 
-              - task: CmdLine@2
-                displayName: 'Build Test App Local'
-                inputs:
-                  script: |
-                    pnpm build-test-app-local
-                  workingDirectory: '$(ClientSdkProjectDirectory)'
-
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-local-script-tag --envType=localScriptTag'
-                displayName: 'Run E2E integration tests with local script tag'
-                condition: succeeded()
-                workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Local Tag'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
+          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              hostingEnvironmentType: 'standardWeb'
+              teamsJsReferenceType: 'scriptTag'
+              testPrefixPattern: '{[N-Z],[n-z]}'
 
           - job: E2ETestCDN
             displayName: 'E2E Test - CDN (only runs on release builds)'

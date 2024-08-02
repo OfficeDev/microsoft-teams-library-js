@@ -43,7 +43,7 @@ jobs:
           appHostGitPath: AppHostingSdk
 
       - task: CmdLine@2
-        displayName: 'Build Test App Local'
+        displayName: 'Build Local Test App to Reference via Script Tag'
         condition: and(succeeded(), eq('${{ parameters.teamsJsReferenceType }}', 'scriptTag'))
         inputs:
           script: |
