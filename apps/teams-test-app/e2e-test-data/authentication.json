@@ -40,7 +40,7 @@
       "platformsExcluded": ["iOS"],
       "boxSelector": "#box_getUser",
       "testUrlParams": [["appDefOverrides", "{\"isFullTrustApp\": false, \"isMicrosoftOwned\": false}"]],
-      "expectedTestAppValue": "adasdfasdfasdfasdf"
+      "expectedTestAppValue": "Error: Error: Error returned, code = 500, message = App does not have the required permissions for this operation"
     },
     {
       "title": "getUser API Call - Success (Full trust app)",
