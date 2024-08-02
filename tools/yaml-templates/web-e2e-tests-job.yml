@@ -18,7 +18,9 @@ parameters:
   - name: testPrefixPattern
     type: string
     default: '{[A-Z],[a-z],[0-9]}'
-  - newParam: []
+  - name: newParam
+    type: object
+    default: []
 
 jobs:
   - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(parameters.testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
