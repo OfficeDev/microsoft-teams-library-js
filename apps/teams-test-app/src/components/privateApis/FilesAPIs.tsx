@@ -80,31 +80,47 @@ const GetCloudStorageFolders = (): React.ReactElement =>
     defaultInput: '"channelId1"',
   });
 
-const AddCloudStorageFolder = (): React.ReactElement =>
-  ApiWithTextInput<string>({
-    name: 'addCloudStorageFolder2',
-    title: 'Add Cloud Storage Folders',
-    onClick: {
-      validateInput: (input) => {
-        if (!input && typeof input !== 'string') {
-          throw new Error('input is required and it has be a string.');
-        }
-      },
-      submit: async (input, setResult) => {
-        const callback = (error: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
-          if (error) {
-            setResult(JSON.stringify(error));
-          } else {
-            setResult(JSON.stringify({ isFolderAdded, folders }));
+  const AddCloudStorageFolder = (): React.ReactElement =>
+    ApiWithTextInput<string>({
+      name: 'addCloudStorageFolder2',
+      title: 'Add Cloud Storage Folders',
+      onClick: {
+        validateInput: (input) => {
+          if (!input && typeof input !== 'string') {
+            throw new Error('input is required and it has to be a string.');
           }
-        };
-
-        await files.addCloudStorageFolder(input, callback);
-        return '';
+        },
+        submit: async (input, setResult) => {
+          // Sort the input value
+          const sortedInput = input
+            .split(',')
+            .map((item) => item.trim())
+            .sort()
+            .join(',');
+   
+          const callback = (error: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
+            if (error) {
+              setResult(JSON.stringify(error));
+            } else {
+              const result = { folders, isFolderAdded };
+   
+              // Sort the result object properties before returning
+              const sortedResult = Object.keys(result)
+                .sort()
+                .reduce((acc, key) => {
+                  acc[key] = result[key];
+                  return acc;
+                }, {});
+              setResult(JSON.stringify(sortedResult));
+            }
+          };
+   
+          await files.addCloudStorageFolder(sortedInput, callback);
+          return '';
+        },
       },
-    },
-    defaultInput: '"channelId1"',
-  });
+      defaultInput: '"channelId1"',
+    });;
 
 interface DeleteCloudStorageParams {
   channelId: string;
