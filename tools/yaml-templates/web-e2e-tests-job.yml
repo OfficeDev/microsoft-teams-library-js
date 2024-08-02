@@ -27,7 +27,7 @@ jobs:
       image: 'ubuntu-2004'
       os: linux
     variables:
-      envType: stuff
+      envType: ${{ if eq(parameters.teamsJsReferenceType, 'npm') }} then 'test' else 'localScriptTag'
     steps:
       - template: build-app-host.yml
         parameters:
