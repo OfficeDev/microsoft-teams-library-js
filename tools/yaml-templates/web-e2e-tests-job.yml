@@ -42,7 +42,7 @@ jobs:
           value: 'e2e-tests-report-local-script-tag'
     steps:
       - ${{each newValue in parameters.newParam}}:
-          - scripts: 'echo ${{ newValue }}'
+          - script: 'echo ${{ newValue }}'
 
       - template: build-app-host.yml
         parameters:
