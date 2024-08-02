@@ -32,6 +32,11 @@ jobs:
           value: 'test'
         ${{ else }}:
           value: 'localScriptTag'
+      - name: reportFileName
+        ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
+          value: 'e2e-tests-report'
+        ${{ else }}:
+          value: 'e2e-tests-report-local-script-tag'
     steps:
       - template: build-app-host.yml
         parameters:
