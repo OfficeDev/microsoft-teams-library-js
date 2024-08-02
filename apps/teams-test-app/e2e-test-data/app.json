@@ -1,12 +1,12 @@
 {
   "name": "App",
-  "platforms": ["iOS","WEB"],
+  "platforms": ["*"],
   "testCases": [
     {
       "title": "openLink API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "inputValue": "https://bing.com",
       "expectedWindowOpenTarget": "https://bing.com"
     },
@@ -14,7 +14,7 @@
       "title": "openLink startCall API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "inputValue": "https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test",
       "expectedAlertValue": "startCall called with {\"targets\":[\"testUser1\",\"testUser2\"],\"requestedModalities\":[\"audio\",\"video\"],\"source\":\"test\"}",
       "expectedTestAppValue": "Completed"
@@ -23,7 +23,7 @@
       "title": "openLink openAppInstallDialog API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "inputValue": "https://teams.microsoft.com/l/app/testAppId",
       "expectedAlertValue": "openAppInstallDialog called with {\"appId\":\"testAppId\"}",
       "expectedTestAppValue": "Completed"
@@ -39,7 +39,7 @@
     {
       "title": "openLink composeMeeting API Call - Success",
       "type": "callResponse",
-      "boxSelector": "#box_executeDeepLink2",
+      "boxSelector": "#box_e.jxecuteDeepLink2",
       "inputValue": "https://teams.microsoft.com/l/meeting/new?subject=testSubject&attendees=testAttendee1,testAttendee2&startTime=testStartTime&endTime=testEndTime&content=testContent",
       "expectedAlertValue": "composeMeeting called with {\"attendees\":[\"testAttendee1\",\"testAttendee2\"],\"startTime\":\"testStartTime\",\"endTime\":\"testEndTime\",\"subject\":\"testSubject\",\"content\":\"testContent\"}",
       "expectedTestAppValue": "Completed"
@@ -66,7 +66,7 @@
       "title": "openLink stageView.open API Call with thread id - Success",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%2C%22threadId%22%3A%22TestThreadId%22%7D",
       "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"threadId\":\"TestThreadId\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
       "expectedTestAppValue": "Completed"
@@ -75,7 +75,7 @@
       "title": "openLink stageView.open API Call without thread id - Success",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%7D",
       "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
       "expectedTestAppValue": "Completed"
@@ -83,6 +83,7 @@
     {
       "title": "openLink appLink domain doesn't match API Call - executeDeepLink called",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_executeDeepLink2",
       "inputValue": "https://contoso.com/l/entity/testAppId/tasklist123",
       "expectedWindowOpenTarget": "https://contoso.com/l/entity/testAppId/tasklist123",

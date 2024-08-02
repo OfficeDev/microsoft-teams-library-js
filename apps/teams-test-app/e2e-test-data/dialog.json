@@ -20,6 +20,7 @@
     {
       "title": "dialogSubmit API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "testUrlParams": [["frameContext", "task"]],
       "boxSelector": "#box_dialogSubmitWithInput",
       "inputValue": {

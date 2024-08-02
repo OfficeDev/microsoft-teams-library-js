@@ -9,6 +9,7 @@
     {
       "title": "openChat API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "version": ">2.0.0-beta.3 && <=2.17.0",
       "boxSelector": "#box_openChat",
       "inputValue": {

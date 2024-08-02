@@ -1,6 +1,6 @@
 {
   "name": "Media",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "testCases": [
     {
       "title": "selectMedia API Call - Success",
@@ -24,10 +24,19 @@
     {
       "title": "getMedia API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_getMedia",
       "inputValue": {},
       "expectedAlertValue": ["selectMedia called with ##JSON_INPUT_VALUE##", "getMedia called with \"ABCDEFGHIJKL\""],
       "expectedTestAppValue": "Received Blob (length: 74163)"
+    },
+    {
+      "title": "getMedia API Call - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web","iOS"],
+      "boxSelector": "#box_getMedia",
+      "inputValue": {},
+      "expectedTestAppValue": "{\"errorCode\":500,\"message\":\"An internal server error occurred\"}"
     },
     {
       "title": "viewImagesWithIds API Call - Success",

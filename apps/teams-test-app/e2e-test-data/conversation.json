@@ -23,7 +23,7 @@
       "title": "getChatMembers API Call - Success",
       "type": "callResponse",
       "version": ">2.0.0-beta.3",
-      "platformsExcluded": ["Web"],
+      "platformsExcluded": ["Web","Android"],
       "boxSelector": "#box_getChatMembers",
       "expectedAlertValue": "getChatMembers called",
       "expectedTestAppValue": "{\"members\":[{\"principalName\":\"TestUser\"}]}"
@@ -54,7 +54,7 @@
     {
       "title": "openConversation API Call - with startConversation",
       "version": "2.0.0-beta.2",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_openConversation",
       "type": "registerAndRaiseEvent",
       "inputValue": {

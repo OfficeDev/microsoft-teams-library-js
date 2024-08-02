@@ -1,6 +1,6 @@
 {
   "name": "MeetingRoom",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "version": ">2.0.0-beta.0",
   "checkIsSupported": {
     "expectedOutput": "MeetingRoom is not supported"
