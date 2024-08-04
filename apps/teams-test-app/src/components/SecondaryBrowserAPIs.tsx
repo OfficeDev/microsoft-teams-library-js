@@ -1,4 +1,4 @@
-import { app, HostClientType, secondaryBrowser } from '@microsoft/teams-js';
+import { secondaryBrowser } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -8,16 +8,7 @@ const CheckSecondaryBrowserCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'CheckSecondaryBrowserCapability',
     title: 'Check SecondaryBrowser Capability',
-    onClick: async () => {
-      const hostClientType = (await app.getContext()).app.host.clientType;
-      let browserModule = 'secondaryBrowser';
-
-      if (hostClientType === HostClientType.android) {
-        browserModule = 'SecondaryBrowser';
-      }
-
-      return `${browserModule} module ${secondaryBrowser.isSupported() ? 'is' : 'is not'} supported`;
-    },
+    onClick: async () => `secondaryBrowser module ${secondaryBrowser.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const Open = (): React.ReactElement =>
@@ -29,7 +20,6 @@ const Open = (): React.ReactElement =>
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
-
         // validate that input should also be a valid URL
         new URL(input);
       },

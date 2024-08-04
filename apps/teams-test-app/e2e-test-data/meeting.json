@@ -1,6 +1,6 @@
 {
   "name": "Meeting",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "testUrlParams": [["frameContext", "sidePanel"]],
   "testCases": [
     {
@@ -278,8 +278,8 @@
     {
       "title": "shareAppContentToStage API Call with shareOptions (TJS>=2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
-      "version": ">=2.19.0",
       "platformsExcluded":["Android"],
+      "version": ">=2.19.0",
       "hostSdkVersion": {
         "web": ">=2.8.0"
       },
