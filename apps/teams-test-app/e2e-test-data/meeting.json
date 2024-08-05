@@ -23,7 +23,6 @@
       "title": "getMeetingDetails API Call - Success",
       "version": "<=2.22.0",
       "type": "callResponse",
-      "platformsExcluded": ["Android"],
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called",
       "expectedTestAppValue": "{\"details\":{\"id\":\"testDetailsId\",\"scheduledStartTime\":\"testStartTime\",\"scheduledEndTime\":\"testEndTime\",\"joinUrl\":\"testJoinUrl\",\"title\":\"testTitle\",\"type\":\"Unknown\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
@@ -31,6 +30,7 @@
     {
       "title": "getMeetingDetails API Call - Success",
       "version": ">2.22.0",
+      "platformsExcluded": ["Android"],
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: undefined",
