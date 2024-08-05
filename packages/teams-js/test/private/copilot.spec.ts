@@ -7,7 +7,7 @@ import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runti
 import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {
-  cohort: UserCohort.M365CopilotPremium,
+  cohort: UserCohort.MicrosoftCopilot,
   persona: Persona.Student,
   ageGroup: LegalAgeGroupClassification.Adult,
   isCodeEnabledRegion: true,
