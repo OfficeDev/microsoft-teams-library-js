@@ -7,16 +7,17 @@ import { ModuleWrapper } from '../utils/ModuleWrapper';
 const CopilotAPIs = (): ReactElement => {
   const CheckCopilotEligibilityCapability = (): ReactElement =>
     ApiWithoutInput({
-      name: 'CheckCopilotEligibilityCapability',
+      name: 'checkCopilotEligibilityCapability',
       title: 'Check if Copilot.Eligibility is supported',
-      onClick: async () => `Copilot.Eligibility ${copilot.eligibility.isSupported() ? 'is' : 'is not'} supported`,
+      onClick: async () =>
+        `Copilot.Eligibility module ${copilot.eligibility.isSupported() ? 'is' : 'is not'} supported`,
     });
 
   const GetEligibilityInfo = (): ReactElement =>
     ApiWithoutInput({
-      name: 'GetEligibilityInfo',
+      name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      onClick: async () => `EligibilityInfo: ${copilot.eligibility.getEligibilityInfo()}`,
+      onClick: async () => `${JSON.stringify(copilot.eligibility.getEligibilityInfo())}`,
     });
 
   return (

@@ -24,8 +24,8 @@ export namespace copilot {
      * @internal
      * Limited to Microsoft-internal use
      * @beta
-     * This function is called by M365Chat app.
-     * @returns true if a user had M365Chat license and false otherwise
+     * This function is called by M365Chat app
+     * @returns boolean to represent whether externalAppCommands capability is supported
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
@@ -38,8 +38,8 @@ export namespace copilot {
      * @internal
      * Limited to Microsoft-internal use
      * @beta
-     * This function is called by M365Chat app.
-     * @returns the eligibility information the user associated with the app contains.
+     * This function is called by M365Chat app
+     * @returns the M365Chat eligibility information about the user
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
