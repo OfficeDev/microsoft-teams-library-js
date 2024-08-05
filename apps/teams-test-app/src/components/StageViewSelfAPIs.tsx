@@ -8,7 +8,7 @@ const CheckStageViewSelfCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'checkStageViewSelfCapability',
     title: 'Check StageView Self Capability',
-    onClick: async () => `StageView Self ${stageView.isSupported() ? 'is' : 'is not'} supported`,
+    onClick: async () => `StageView Self ${stageView.self.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const CloseStageView = (): ReactElement =>
