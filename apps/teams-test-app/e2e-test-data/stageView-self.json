@@ -11,6 +11,9 @@
       "title": "close API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_stageView.self.close",
+      "hostSdkVersion": {
+        "web": ">3.1.0"
+      },
       "inputValue": {
         "appId": "appId",
         "contentUrl": "contentUrl",
