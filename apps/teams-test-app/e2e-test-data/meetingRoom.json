@@ -45,21 +45,6 @@
     {
       "title": "registerMeetingRoomStatesUpdateHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
-      "platformsExcluded": ["Android"],
-      "boxSelector": "#box_registerMeetingRoomStatesUpdateHandler",
-      "eventName": "meetingRoomStatesUpdate",
-      "eventData": {
-        "toggleMute": true,
-        "toggleCamera": true,
-        "toggleCaptions": true,
-        "stageLayout": ["Gallery"],
-        "leaveMeeting": true
-      },
-      "expectedTestAppValue": "States of meeting room update ##JSON_EVENT_DATA##"
-    },
-    {
-      "title": "registerMeetingRoomStatesUpdateHandler API Call - Handler",
-      "type": "registerAndRaiseEvent",
       "platformsExcluded": ["iOS","Web"],
       "boxSelector": "#box_registerMeetingRoomStatesUpdateHandler",
       "eventName": "meetingRoomStatesUpdate",
@@ -68,6 +53,21 @@
         "toggleCamera": true,
         "toggleCaptions": true,
         "stageLayout": "Gallery",
+        "leaveMeeting": true
+      },
+      "expectedTestAppValue": "States of meeting room update ##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "registerMeetingRoomStatesUpdateHandler API Call - Handler",
+      "type": "registerAndRaiseEvent",
+      "platformsExcluded": ["Android"],
+      "boxSelector": "#box_registerMeetingRoomStatesUpdateHandler",
+      "eventName": "meetingRoomStatesUpdate",
+      "eventData": {
+        "toggleMute": true,
+        "toggleCamera": true,
+        "toggleCaptions": true,
+        "stageLayout": ["Gallery"],
         "leaveMeeting": true
       },
       "expectedTestAppValue": "States of meeting room update ##JSON_EVENT_DATA##"
