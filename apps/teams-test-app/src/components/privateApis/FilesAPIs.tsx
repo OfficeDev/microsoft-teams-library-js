@@ -99,6 +99,7 @@ const AddCloudStorageFolder = (): React.ReactElement =>
           if (error) {
             setResult(JSON.stringify(error));
           } else {
+            //This ensures the output is sorted correctly in the Android Test app, as specified by the JSON test data file.
             const hostClientType = (await app.getContext()).app.host.clientType;
             if (hostClientType === HostClientType.android) {
               const result = { isFolderAdded, folders };
