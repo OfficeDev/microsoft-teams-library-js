@@ -1,23 +1,39 @@
-import AppInstallDialogAPIs from '../../apis/AppInstallDialogApi';
-import BarCodeAPIs from './../../apis/BarCodeApi';
-import CalendarAPIs from './../../apis/CalendarApi';
-import CallAPIs from './../../apis/CallApi';
-import ChatAPIs from './../../apis/ChatApi';
-import ClipboardAPIs from './../../apis/ClipboardApi';
-import CustomAPIs from './../../apis/CustomApi';
-import DialogAPIs from './../../apis/DialogApi';
-import DialogCardAPIs from './../../apis/DialogCardApi';
+export interface ApiComponent {
+  title: string;
+  name: string;
+  inputType: 'text' | 'checkbox' | 'none';
+  onClick: any;
+  defaultInput?: string;
+  defaultCheckboxState?: boolean;
+  label?: string;
+  options: string[];
+}
 
-const apiComponents = [
-  { component: AppInstallDialogAPIs, title: 'AppInstallDialogAPIs' },
-  { component: BarCodeAPIs, title: 'BarCodeAPIs' },
-  { component: CalendarAPIs, title: 'CalendarAPIs' },
-  { component: CallAPIs, title: 'CallAPIs' },
-  { component: ChatAPIs, title: 'ChatAPIs' },
-  { component: ClipboardAPIs, title: 'ClipboardAPIs' },
-  { component: CustomAPIs, title: 'CustomAPIs' },
-  { component: DialogAPIs, title: 'DialogAPIs' },
-  { component: DialogCardAPIs, title: 'DialogCardAPIs' },
+const apiComponents: ApiComponent[] = [
+  {
+    title: 'App Install Dialog API',
+    name: 'appInstallDialog',
+    options: ['OpenAppInstallDialog', 'CheckAppInstallCapability'],
+    defaultInput: 'default input for OpenAppInstallDialog',
+    inputType: 'text',
+    onClick: () => console.log('App Install Dialog API called'),
+  },
+  {
+    title: 'Bar Code API',
+    name: 'barCode',
+    options: ['checkBarCodeCapability', 'scanBarCode', 'hasBarCodePermission', 'requestBarCodePermission'],
+    defaultInput: '{}',
+    inputType: 'text',
+    onClick: () => console.log('Barcode API called'),
+    },
+  {
+    title: 'Calendar APIs',
+    name: 'calendar',
+    inputType: 'none',
+    onClick: () => console.log('Calendar API clicked'),
+    options: ['Option X', 'Option Y', 'Option Z']
+  },
+  // Add more API components
 ];
 
 export default apiComponents;
