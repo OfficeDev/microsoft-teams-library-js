@@ -22,7 +22,6 @@
     {
       "title": "getMeetingDetails API Call - Success",
       "version": "<=2.22.0",
-      "platformsExcluded": ["Android"],
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called",
@@ -32,6 +31,7 @@
       "title": "getMeetingDetails API Call - Success",
       "version": ">2.22.0",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: undefined",
       "expectedTestAppValue": "{\"details\":{\"id\":\"testDetailsId\",\"scheduledStartTime\":\"testStartTime\",\"scheduledEndTime\":\"testEndTime\",\"joinUrl\":\"testJoinUrl\",\"title\":\"testTitle\",\"type\":\"Unknown\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
@@ -228,6 +228,7 @@
     {
       "title": "shareAppContentToStage API Call (TJS >=2.19.0, host SDK>=2.8.0) - Success",
       "type": "callResponse",
+      "platformsExcluded":["Android"],
       "version": ">=2.19.0",
       "hostSdkVersion": {
         "web": ">=2.8.0"
