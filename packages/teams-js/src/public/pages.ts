@@ -401,6 +401,11 @@ export namespace pages {
 
    */
     chatId?: string;
+
+    /**
+     * Optional comma separated user principal names when navigating to a draft chat where the app should be opened
+     */
+    users?: string;
   }
 
   /**
