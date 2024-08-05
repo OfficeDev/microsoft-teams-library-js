@@ -393,20 +393,6 @@
       "expectedTestAppValue": "updateMicState called with micState: isMicMuted:true"
     },
     {
-      "title": "joinMeeting API Call - Error",
-      "type": "callResponse",
-      "platformsExcluded": ["Android"],
-      "version": ">2.20.0",
-      "hostSdkVersion": {
-        "web": ">2.12.0"
-      },
-      "boxSelector": "#box_joinMeeting",
-      "inputValue": {
-        "source": "Other"
-      },
-      "expectedTestAppValue": "Error: Error: joinWebUrl not passed"
-    },
-    {
       "title": "joinMeeting API Call - Success",
       "type": "callResponse",
       "platformsExcluded": ["Android"],
@@ -421,7 +407,20 @@
       },
       "expectedAlertValue": "joinMeeting called with joinWebUrl: https://www.example.com/",
       "expectedTestAppValue": "joinMeeting called with joinWebUrl: https://www.example.com/"
+    },
+    {
+      "title": "joinMeeting API Call - Error",
+      "type": "callResponse",
+      "platformsExcluded": ["Android"],
+      "version": ">2.20.0",
+      "hostSdkVersion": {
+        "web": ">2.12.0"
+      },
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "source": "Other"
+      },
+      "expectedTestAppValue": "Error: Error: joinWebUrl not passed"
     }
-   
   ]
 }
