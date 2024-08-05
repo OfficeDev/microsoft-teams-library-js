@@ -758,6 +758,14 @@ export interface Context {
    * They help pre-fill the dialog with necessary information (`dialogParameters`) along with other details.
    */
   dialogParameters?: Record<string, string>;
+
+  /**
+   * @deprecated
+   * As of 2.0.0, please use {@link app.AppInfo.appId | app.Context.app.appId} instead
+   *
+   * App id that is used by Hosts to distinguish between different apps sideloaded or in store
+   */
+  appId: string;
 }
 
 /** Represents the parameters used to share a deep link. */

@@ -237,6 +237,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId1',
       entityId: 'someEntityId1',
       userObjectId: 'someUserObjectId1',
+      appId: 'someAppId',
     };
     const expectedContext1: app.Context = {
       app: {
@@ -248,6 +249,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId1',
@@ -267,6 +269,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId2',
       entityId: 'someEntityId2',
       userObjectId: 'someUserObjectId2',
+      appId: 'someAppId',
     };
     const expectedContext2: app.Context = {
       app: {
@@ -278,6 +281,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId2',
@@ -297,6 +301,7 @@ describe('AppSDK-privateAPIs', () => {
       channelId: 'someChannelId3',
       entityId: 'someEntityId3',
       userObjectId: 'someUserObjectId3',
+      appId: 'someAppId',
     };
     const expectedContext3: app.Context = {
       app: {
@@ -308,6 +313,7 @@ describe('AppSDK-privateAPIs', () => {
           clientType: HostClientType.web,
           sessionId: '',
         },
+        appId: 'someAppId',
       },
       page: {
         id: 'someEntityId3',
@@ -360,6 +366,7 @@ describe('AppSDK-privateAPIs', () => {
       userClickTime: 1000,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
       userFileOpenPreference: FileOpenPreference.Web,
+      appId: 'someappId',
     };
 
     // Get many responses to the same message
