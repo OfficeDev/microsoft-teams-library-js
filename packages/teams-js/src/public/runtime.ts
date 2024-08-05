@@ -506,7 +506,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   // we can just effectively consider them always supported (on the specified platforms)
   '1.0.0': [
     {
-      capability: { pages: { appButton: {}, tabs: {} }, stageView: {} },
+      capability: { pages: { appButton: {}, tabs: {} }, stageView: { self: {} } },
       hostClientTypes: v1NonMobileHostClientTypes,
     },
   ],
