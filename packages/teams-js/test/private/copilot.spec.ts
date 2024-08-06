@@ -10,7 +10,7 @@ const mockedAppEligibilityInformation = {
   cohort: 0,
   persona: Persona.Student,
   ageGroup: LegalAgeGroupClassification.Adult,
-  isCodeEnabledRegion: true,
+  isCopilotEnabledRegion: true,
   isCopilotEligible: true,
   isOptedOutByAdmin: false,
   eduType: EduType.None,
