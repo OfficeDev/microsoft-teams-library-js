@@ -1110,7 +1110,7 @@ export interface AppEligibilityInformation {
    */
   isCopilotEligible: boolean;
   /**
-   * Indicates if the tenant admin has opted the user out of Copilot. Relevant to MicrosoftCopilotBasic users only.
+   * Indicates if the tenant admin has opted the user out of Copilot.
    */
   isOptedOutByAdmin: boolean;
   /**
@@ -1160,10 +1160,6 @@ export enum UserCohort {
    * User’s tenant has an IC3 SKU. They will have the “Web” tab experience only.
    */
   MicrosoftCopilot = 'microsoftCopilot',
-  /**
-   * User is eligible for some Chat experience, but does not meet requirements for M365Copilot or MicrosoftCopilot. They will have the “Web” tab experience only.
-   */
-  MicrosoftCopilotBasic = 'microsoftCopilotBasic ',
 }
 
 /**
