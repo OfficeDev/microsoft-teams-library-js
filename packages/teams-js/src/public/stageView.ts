@@ -127,7 +127,7 @@ export namespace stageView {
      * @returns Promise that resolves or rejects with an error once the stage view is closed.
      *
      * @beta
-     * @throws Error if stageView.self.close is not supported in the current context
+     * @throws Error if stageView.self.close is not supported in the current context or if `app.initialize()` has not resolved successfully.
      */
     export function close(): Promise<void> {
       return new Promise((resolve) => {
