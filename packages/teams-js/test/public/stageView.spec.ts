@@ -156,7 +156,6 @@ describe('stageView', () => {
       }
     });
 
-    // Working on this UT 
     it('should return promise and resolve', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       makeRuntimeSupportStageViewCapability();
