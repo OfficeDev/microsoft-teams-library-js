@@ -16,9 +16,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0",
-    "@microsoft/teamsfx": "^2.0.0",
-    "@microsoft/microsoft-graph-client": "^3.0.1",
+    "@azure/functions": "^4.5.0",
+    "@microsoft/teamsfx": "^2.3.2",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
     "isomorphic-fetch": "^3.0.0"
   },
   "devDependencies": {
