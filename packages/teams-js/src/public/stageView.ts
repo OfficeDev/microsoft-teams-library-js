@@ -123,7 +123,7 @@ export namespace stageView {
    */
   export namespace self {
     /**
-     * Closes the current stage view.
+     * Closes the current stage view. This function will be a no-op if called from outside of a stage view.
      * @returns Promise that resolves or rejects with an error once the stage view is closed.
      *
      * @beta
