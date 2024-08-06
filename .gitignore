@@ -80,3 +80,6 @@ devTools/
 # Ignore Jest JUnit test results
 apps/teamsjs-diagnostic-app/test-results/unit/unit-tests-report.xml
 
+#Ignore package locks
+apps/teamsjs-diagnostic-app/package-lock.json
+apps/teamsjs-diagnostic-app/api/package-lock.json
