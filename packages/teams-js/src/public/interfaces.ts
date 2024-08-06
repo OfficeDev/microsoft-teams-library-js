@@ -1104,7 +1104,7 @@ export interface AppEligibilityInformation {
   /**
    * Implementation may change to be based on tenant-home region rather than IP.
    */
-  isCodeEnabledRegion: boolean;
+  isCopilotEnabledRegion: boolean;
   /**
    * Indicates that the user is eligible for some AAD authenticated Copilot experience.
    */
@@ -1203,6 +1203,10 @@ export enum LegalAgeGroupClassification {
    * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
    */
   NonAdult = 'nonAdult',
+  /**
+   * Value is not found.
+   */
+  Unknown = 'unknown',
 }
 
 /**
