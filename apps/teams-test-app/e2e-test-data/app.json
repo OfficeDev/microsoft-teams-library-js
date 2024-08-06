@@ -63,6 +63,30 @@
       "expectedTestAppValue": "Completed"
     },
     {
+      "title": "openLink stageView.open API Call with thread id - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "hostSdkVersion": {
+        "web": "<4.0.1"
+      },
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%2C%22threadId%22%3A%22TestThreadId%22%7D",
+      "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"threadId\":\"TestThreadId\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
+      "title": "openLink stageView.open API Call without thread id - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_executeDeepLink2",
+      "hostSdkVersion": {
+        "web": "<4.0.1"
+      },
+      "platformsExcluded": ["iOS"],
+      "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%7D",
+      "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
+      "expectedTestAppValue": "Completed"
+    },
+    {
       "title": "openLink appLink domain doesn't match API Call - executeDeepLink called",
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
