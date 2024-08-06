@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="1" failures="0" errors="0" time="6.519">
-  <testsuite name="App Initialization Component" errors="0" failures="0" skipped="0" timestamp="2024-07-10T01:27:47" time="5.251" tests="1">
-    <testcase classname="src\components\sample\Scenarios.test.tsx" name="App Initialization Component app initialization scenario" time="0.234">
-    </testcase>
-  </testsuite>
-</testsuites>
