@@ -1092,7 +1092,7 @@ export interface AppEligibilityInformation {
    * Describes the user’s chat experience based on their eligible licenses & their tenant’s eligible licenses.
    * A user will be in at most one cohort.
    */
-  cohort: UserCohort;
+  cohort: number;
   /**
    * Describes additional traits of the user that contribute to FRE experience, etc.
    */
@@ -1110,7 +1110,7 @@ export interface AppEligibilityInformation {
    */
   isCopilotEligible: boolean;
   /**
-   * Indicates if the tenant admin has opted the user out of Copilot. Relevant to MicrosoftCopilotBasic users only.
+   * Indicates if the tenant admin has opted the user out of Copilot.
    */
   isOptedOutByAdmin: boolean;
   /**
@@ -1137,33 +1137,6 @@ export enum Persona {
    * User has a faculty license
    */
   Faculty = 'faculty',
-}
-
-/**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- *
- * @beta
- */
-export enum UserCohort {
-  /**
-   * User is ineligible (minor student, GOV, etc.)
-   */
-  None = 'none',
-  /**
-   * User has an AI SKU. They should see the Work + Web tab.
-   */
-  M365Copilot = 'm365Copilot',
-  /**
-   * User’s tenant has an IC3 SKU. They will have the “Web” tab experience only.
-   */
-  MicrosoftCopilot = 'microsoftCopilot',
-  /**
-   * User is eligible for some Chat experience, but does not meet requirements for M365Copilot or MicrosoftCopilot. They will have the “Web” tab experience only.
-   */
-  MicrosoftCopilotBasic = 'microsoftCopilotBasic ',
 }
 
 /**
