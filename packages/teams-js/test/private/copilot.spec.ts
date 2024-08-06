@@ -1,13 +1,13 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { copilot } from '../../src/private/copilot';
+import { Cohort, EduType, LegalAgeGroupClassification, Persona } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { EduType, LegalAgeGroupClassification, Persona } from '../../src/private/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {
-  cohort: 0,
+  cohort: Cohort.BCAIS,
   persona: Persona.Student,
   ageGroup: LegalAgeGroupClassification.Adult,
   isCopilotEnabledRegion: true,

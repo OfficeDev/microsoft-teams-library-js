@@ -286,7 +286,7 @@ export interface AppEligibilityInformation {
    * Describes the user’s chat experience based on their eligible licenses & their tenant’s eligible licenses.
    * A user will be in at most one cohort.
    */
-  cohort: number;
+  cohort: Cohort;
   /**
    * Describes additional traits of the user that contribute to FRE experience, etc.
    */
@@ -311,6 +311,21 @@ export interface AppEligibilityInformation {
    * For EDU tenants only. Indicates if the tenant is higher ed or K12.
    */
   eduType: EduType;
+}
+
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @beta
+ */
+export enum Cohort {
+  None = 'none',
+  BCAIS = 'bcais',
+  BCWAF = 'bcwaf',
+  BCWBF = 'bcwbf',
 }
 
 /**
