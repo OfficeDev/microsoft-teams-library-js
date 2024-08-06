@@ -1,72 +1,67 @@
-import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
+import React from 'react';
 import { ApiComponent } from '../components/sample/ApiComponents';
+import { appInstallDialog } from '@microsoft/teams-js';
+import * as microsoftTeams from '@microsoft/teams-js';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport } from '../utils/CheckCapabilityUtils';
+
+export interface AppInstallDialogInput {
+  appId: string;
+}
+
+export const appInstallDialog_CheckAppInstallCapability = async (): Promise<void> => {
+  const module = appInstallDialog;
+  const moduleName = 'AppInstallDialog';
+  const supportedMessage = 'App Install Dialog module is supported. AppInstall Dialog is supported on Teams Web, Teams Desktop, and Teams Mobile.';
+  const notSupportedMessage = 'App Install Dialog module is not supported. AppInstallDialog is not supported on Outlook Web, Outlook Desktop, Outlook Mobile, or M365 Mobile.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
+};
+
+export function appInstallDialog_OpenAppInstallDialog(input: { appId: string }) {
+  return new Promise<void>((resolve, reject) => {
+    if (!input.appId) {
+      console.log('App ID is missing');
+      return reject('App ID is required');
+    }
+
+    console.log(`Starting OpenAppInstallDialog with appId: ${input.appId}`);
+
+    try {
+      const appId = input.appId;
+      // SDK/API call to open install dialog
+      microsoftTeams.tasks.startTask({
+        title: 'Install App',
+        height: 600,
+        width: 400,
+        url: `https://teams.microsoft.com/l/app/${appId}`,
+      });
+
+      console.log('App install dialog opened successfully');
+      resolve();
+    } catch (error) {
+      console.error('Error opening app install dialog:', error);
+      reject(error);
+    }
+  });
+}
+
+const functionsRequiringInput = [
+  'OpenAppInstallDialog'
+]; // List of functions requiring input
 
 interface AppInstallDialogAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'OpenAppInstallDialog') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction === 'OpenAppInstallDialog' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
-
+const AppInstallDialogAPIs: React.FC<AppInstallDialogAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        {selectedFunction === 'OpenAppInstallDialog' && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder="Enter input for OpenAppInstallDialog"
-            />
-            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 
