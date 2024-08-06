@@ -63,14 +63,10 @@ export function navigateToTab(tabInstance: TabInstance, onComplete?: onCompleteH
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link pages.navigateCrossDomain pages.navigateCrossDomain(url: string): Promise\<void\>} instead.
- *
- * Navigates the frame to a new cross-domain URL. The domain of this URL must match at least one of the
- * valid domains specified in the validDomains block of the manifest; otherwise, an exception will be
- * thrown. This function needs to be used only when navigating the frame to a URL in a different domain
- * than the current one in a way that keeps the app informed of the change and allows the SDK to
- * continue working.
- *
+ * As of 2.0.0, this API is deprecated and can be replaced by the standard JavaScript
+ * API, window.location.href, when navigating the app to a new cross-domain URL. Any URL
+ * that is redirected to must be listed in the validDomains block of the manifest. Please
+ * remove any calls to this API.
  * @param url - The URL to navigate the frame to.
  * @param onComplete - The callback to invoke when the action is complete.
  */

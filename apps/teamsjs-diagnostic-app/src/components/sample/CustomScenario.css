@@ -1,0 +1,151 @@
+.sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.custom-scenario-box {
+  width: 400px;
+  height: 400px;
+  background-color: lightgray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+}
+
+.all-api-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: flex-start;
+  overflow-y: auto;
+  max-height: 600px;
+  background-color: lightgray;
+  padding: 20px;
+  height: 400px;
+  margin-top: 88px;
+}
+
+.all-api-box {
+  width: 400px;
+  height: 400px;
+  overflow: auto;
+}  
+
+
+.set-scenario-button {
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.api-header {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.scenario1-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #464eb8;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.api-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.vertical-box-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: calc(100% - 40px);
+  margin-bottom: 20px;
+}
+
+.vertical-box {
+  width: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.box-dropdown {
+  margin-left: auto;
+}
+
+.box-title {
+  flex-grow: 1;
+}
+
+.box-dropdown {
+  margin-left: 10px;
+}
+
+
+.scenario2-header {
+  gap: 20px;
+}
+
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.dropped-api {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.dropped-api span {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.remove-api-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 70%;
+}
+
+.remove-api-button:hover {
+  background-color: #ff6666;
+}
+
+.scenario1-button:hover {
+  background-color: #45a049;
+}
