@@ -2,7 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { errorNotSupportedOnPlatform } from '../public/constants';
 import { TabInformation, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
@@ -63,7 +63,7 @@ export namespace hostEntity {
      * @throws Error if user cancels operation or installing, configuring or adding tab fails
      */
     export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<TabInstance> {
-      ensureInitialized(runtime, FrameContexts.content);
+      ensureInitialized(runtime);
 
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
