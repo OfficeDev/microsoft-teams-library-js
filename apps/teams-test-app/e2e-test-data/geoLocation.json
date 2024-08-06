@@ -29,7 +29,7 @@
       "expectedTestAppValue": "true"
     },
     {
-      "title": "getCurrentLocation API Call - AndroidPlatform - Success",
+      "title": "Android getCurrentLocation API Call - Success",
       "type": "callResponse",
       "platformsExcluded": ["Web"],
       "boxSelector": "#box_getCurrentLocation",
