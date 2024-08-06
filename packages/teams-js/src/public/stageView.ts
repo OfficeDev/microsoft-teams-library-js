@@ -117,7 +117,7 @@ export namespace stageView {
   }
 
   /**
-   * Namespace to for actions that can be taken on the stage view itself.
+   * Namespace for actions that can be taken by the stage view itself.
    *
    * @beta
    */
