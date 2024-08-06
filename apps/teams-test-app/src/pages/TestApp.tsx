@@ -19,6 +19,7 @@ import DialogUrlAPIs from '../components/DialogUrlAPIs';
 import DialogUrlBotAPIs from '../components/DialogUrlBotAPIs';
 import DialogUrlParentCommunicationAPIs from '../components/DialogUrlParentCommunicationAPIs';
 import GeoLocationAPIs from '../components/GeoLocationAPIs';
+import HostEntityTabAPIs from '../components/HostEntityTabAPIs';
 import Links from '../components/Links';
 import LocationAPIs from '../components/LocationAPIs';
 import LogAPIs from '../components/LogsAPIs';
@@ -94,6 +95,7 @@ export const TestApp: React.FC = () => {
         <FilesAPIs />
         <FullTrustAPIs />
         <GeoLocationAPIs />
+        <HostEntityTabAPIs />
         <Links />
         <LocationAPIs />
         <LogAPIs />

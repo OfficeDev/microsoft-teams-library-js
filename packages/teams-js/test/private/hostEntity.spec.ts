@@ -89,7 +89,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.addAndConfigure(mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.addAndConfigureApp');
+          const message = utils.findMessageByFunc('associatedApps.tab.addAndConfigure');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity, null]);
           if (message) {
@@ -331,19 +331,19 @@ describe('hostEntity', () => {
       });
     });
 
-    describe('getTabs', () => {
-      it('hostEntity.tab.getTabs should not allow calls before initialization', () => {
-        expect(() => hostEntity.tab.getTabs({ threadId: 'threadId' })).toThrowError(
+    describe('getAll', () => {
+      it('hostEntity.tab.getAll should not allow calls before initialization', () => {
+        expect(() => hostEntity.tab.getAll({ threadId: 'threadId' })).toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
 
       Object.values(FrameContexts).forEach((context) => {
-        it(`hostEntity.tab.getTabs should throw error when hostEntity is not supported when initialized with ${context}`, async () => {
+        it(`hostEntity.tab.getAll should throw error when hostEntity is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           try {
-            await hostEntity.tab.getTabs({ threadId: 'threadId' });
+            await hostEntity.tab.getAll({ threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual({
               errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
@@ -351,11 +351,11 @@ describe('hostEntity', () => {
           }
         });
 
-        it(`hostEntity.tab.getTabs should throw error when hostEntity.tabs is not supported when initialized with ${context}`, async () => {
+        it(`hostEntity.tab.getAll should throw error when hostEntity.tabs is not supported when initialized with ${context}`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: {} } });
           try {
-            await hostEntity.tab.getTabs({ threadId: 'threadId' });
+            await hostEntity.tab.getAll({ threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual({
               errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
@@ -363,12 +363,12 @@ describe('hostEntity', () => {
           }
         });
 
-        it(`hostEntity.tab.getTabs should throw error when threadId is passed as empty and initialized with ${context} context`, async () => {
+        it(`hostEntity.tab.getAll should throw error when threadId is passed as empty and initialized with ${context} context`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.getTabs({ threadId: '' });
+            await hostEntity.tab.getAll({ threadId: '' });
           } catch (e) {
             expect(e).toEqual({
               errorCode: ErrorCode.INVALID_ARGUMENTS,
@@ -377,12 +377,12 @@ describe('hostEntity', () => {
           }
         });
 
-        it(`hostEntity.tab.getTabs should be pass message with the expected parameters and initialized with ${context} context`, async () => {
+        it(`hostEntity.tab.getAll should be pass message with the expected parameters and initialized with ${context} context`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
-          const promise = hostEntity.tab.getTabs(mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.getTabs');
+          const promise = hostEntity.tab.getAll(mockHostEntity);
+          const message = utils.findMessageByFunc('associatedApps.tab.getAll');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity]);
           if (message) {

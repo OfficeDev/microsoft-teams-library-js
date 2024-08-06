@@ -1,0 +1,80 @@
+{
+  "name": "Host entity Tabs",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "capabilityName": "HostEntityTab",
+    "expectedOutput": "HostEntity.tabs module is supported"
+  },
+  "testCases": [
+    {
+      "title": "getAll API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAll",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "getAll called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"teamTabs\":[{\"tabName\":\"dummy1\",\"internalTabInstanceId\":\"1\"},{\"tabName\":\"dummy2\",\"internalTabInstanceId\":\"2\"}]}"
+    },
+    {
+      "title": "addAndConfigure API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_addAndConfigure",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "addAndConfigure called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"tabName\":\"dummy1\",\"internalTabInstanceId\":\"1\"}"
+    },
+    {
+      "title": "reconfigure API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_reconfigure",
+      "inputValue": {
+        "tab": {
+          "internalTabInstanceId": "tabId",
+          "tabName": "Tab name",
+          "url": "contentUrl"
+        },
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "reconfigure called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"tabName\":\"Tab name\",\"internalTabInstanceId\":\"tabId\",\"url\":\"contentUrl\"}"
+    },
+    {
+      "title": "rename API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_rename",
+      "inputValue": {
+        "tab": {
+          "internalTabInstanceId": "tabId",
+          "tabName": "New tab name"
+        },
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "rename called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "{\"tabName\":\"New tab name\",\"internalTabInstanceId\":\"1\"}"
+    },
+    {
+      "title": "remove API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_remove",
+      "inputValue": {
+        "tabId": "tabId",
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "remove called with ##JSON_INPUT_VALUE##",
+      "expectedTestAppValue": "true"
+    }
+  ]
+}
