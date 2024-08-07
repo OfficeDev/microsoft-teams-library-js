@@ -19,6 +19,7 @@ export {
   openFilePreview,
 } from './privateAPIs';
 export { conversations } from './conversations';
+export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
 export { externalAppCommands } from './externalAppCommands';

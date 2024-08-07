@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import { AppEligibilityInformation } from '../private/interfaces';
 import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { FrameContexts } from './constants';
 
@@ -1081,6 +1082,7 @@ export enum DevicePermission {
 /** @hidden */
 export interface HostVersionsInfo {
   adaptiveCardSchemaVersion?: AdaptiveCardVersion;
+  appEligibilityInformation?: AppEligibilityInformation;
 }
 
 /**
