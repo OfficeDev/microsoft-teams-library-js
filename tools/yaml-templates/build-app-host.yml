@@ -32,7 +32,7 @@ steps:
       sudo apt install -f -y
       echo "Google Chrome version ${CHROME_VERSION} has been installed."
       rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-    displayName: 'Fix Chrome browser on V116'
+    displayName: 'Fix Chrome browser on V127'
 
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
   # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
