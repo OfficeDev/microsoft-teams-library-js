@@ -2,7 +2,7 @@
  * This function can be used to validate if a string is a "valid" app id.
  * Valid is a relative term, in this case. Truly valid app ids are UUIDs as documented in the schema:
  * https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema#id
- * However, there are some older internal/hard-coded apps which violate this schema and use names like com.microsoft.youtube.
+ * However, there are some older internal/hard-coded apps which violate this schema and use names like com.microsoft.teamspace.tab.youtube.
  * For compatibility with these legacy apps, we unfortunately cannot securely and completely validate app ids as UUIDs. Based
  * on this, the validation is limited to checking for script tags, length, and non-printable characters.
  *
