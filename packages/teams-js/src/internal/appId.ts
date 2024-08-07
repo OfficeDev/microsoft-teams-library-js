@@ -17,7 +17,7 @@ export class AppId {
    * @param appIdAsString An app id represented as a string
    * @throws Error with a message describing the exact validation violation
    */
-  constructor(private readonly appIdAsString: string) {
+  public constructor(private readonly appIdAsString: string) {
     validateStringAsAppId(appIdAsString);
   }
 

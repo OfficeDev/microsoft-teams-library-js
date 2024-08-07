@@ -2,8 +2,8 @@ import {
   doesStringContainNonPrintableCharacters,
   doesStringContainScriptTags,
   isStringWithinAppIdLengthLimits,
-  minimumValidAppIdLength,
   maximumValidAppIdLength,
+  minimumValidAppIdLength,
   validateStringAsAppId,
 } from '../../src/internal/appIdValidation';
 
