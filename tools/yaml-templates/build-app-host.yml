@@ -5,6 +5,9 @@ parameters:
   - name: 'appHostGitPath'
     default: none
     type: string
+  - name: 'startBlazorServer'
+    type: boolean
+    default: true
 
 steps:
   - checkout: self
@@ -87,6 +90,7 @@ steps:
       pnpm build-force-blazor
     displayName: 'Build client sdk'
     workingDirectory: '$(ClientSdkProjectDirectory)'
+    condition: eq('${{ parameters.startBlazorServer }}', true)
 
   - task: CmdLine@2
     displayName: 'Configure host machine'
