@@ -62,6 +62,7 @@ import Version from '../components/Version';
 import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
+import OfflineAPIs from '../components/OfflineAPIs';
 
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
@@ -129,6 +130,7 @@ export const TestApp: React.FC = () => {
         <VideoAPIs />
         <VideoExAPIs />
         <VisualMediaAPIs />
+        <OfflineAPIs />
       </div>
       <Version />
     </>
