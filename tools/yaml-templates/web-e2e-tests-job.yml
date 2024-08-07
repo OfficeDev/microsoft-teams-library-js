@@ -63,30 +63,3 @@ jobs:
               testRunTitle: 'E2E Tests - Web'
               mergeTestResults: true
             condition: succeededOrFailed()
-
-  - job: PlaywrightTests
-    displayName: 'Playwright E2E Tests'
-    pool:
-      name: Azure-Pipelines-1ESPT-ExDShared
-      image: 'ubuntu-2004'
-      os: linux
-    steps:
-      - template: build-app-host.yml
-        parameters:
-          appHostGitPath: AppHostingSdk
-          startBlazorServer: false
-
-      - task: CMDLine@2
-        displayName: 'Run Playwright E2E tests'
-        inputs:
-          script: |
-            pnpm exec xvfb-maybe playwright test
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/playwright-report/*.xml'
-          testRunTitle: 'E2E Tests - Playwright'
-          mergeTestResults: true
-        condition: succeededOrFailed()

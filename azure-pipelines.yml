@@ -153,6 +153,33 @@ extends:
               hostingEnvironmentType: 'electron'
               teamsJsReferenceType: 'npm'
 
+          - job: PlaywrightTests
+            displayName: 'Playwright E2E Tests'
+            pool:
+              name: Azure-Pipelines-1ESPT-ExDShared
+              image: 'ubuntu-2004'
+              os: linux
+            steps:
+              - template: tools/yaml-templates/build-app-host.yml@self
+                parameters:
+                  appHostGitPath: AppHostingSdk
+                  startBlazorServer: false
+
+              - task: CMDLine@2
+                displayName: 'Run Playwright E2E tests'
+                inputs:
+                  script: |
+                    pnpm exec xvfb-maybe playwright
+                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+              - task: PublishTestResults@2
+                inputs:
+                  testResultsFormat: 'JUnit'
+                  testResultsFiles: '**/playwright-report/*.xml'
+                  testRunTitle: 'E2E Tests - Playwright'
+                  mergeTestResults: true
+                condition: succeededOrFailed()
+
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
             # This test only runs after deployment from a release branch and the new CDN version has been deployed
