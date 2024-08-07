@@ -165,6 +165,13 @@ extends:
                   appHostGitPath: AppHostingSdk
                   startBlazorServer: false
 
+              - task: CmdLine@2
+                displayName: 'Build Local Test App to Reference via Script Tag'
+                inputs:
+                  script: |
+                    pnpm build-test-app-local
+                  workingDirectory: '$(ClientSdkProjectDirectory)'
+
               - task: CMDLine@2
                 displayName: 'Run Playwright E2E tests'
                 inputs:
