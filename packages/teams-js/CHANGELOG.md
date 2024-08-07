@@ -13,11 +13,11 @@ Wed, 07 Aug 2024 19:24:31 GMT
 - Added `self` capability that will allow the stage to perform an operation on itself (eg. close). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
 - Added support for any `*.cloud.microsoft` domain to be a valid host
 - Added new fields to `VideoFrameConfig` and `VideoFrameData` to allow specifying additional capabilities to be applied to a video frame and reading arbitrary attributes on a video frame respectively. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
-- Add `chatId` in `pages.navigateToApp` api for deep link support in chat
+- Added `chatId` in `pages.navigateToApp` api for deep link support in chat
 
 ### Patches
 
-- Added in WXP domain for unified store
+- Added WXP domain for unified store to the dynamic domain list
 - Fixed behavior of the `isValidOriginsCacheEmpty` function whose name was backwards of what it was actually doing
 - Updated error handling of malformed/missing origin URLs
 - Updated `authentication.getUser` to properly unwrap `SdkError` returned from host into a message
