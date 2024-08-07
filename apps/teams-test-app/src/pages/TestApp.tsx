@@ -55,6 +55,7 @@ import SearchAPIs from '../components/SearchAPIs';
 import SecondaryBrowserAPIs from '../components/SecondaryBrowserAPIs';
 import SharingAPIs from '../components/SharingAPIs';
 import StageViewAPIs from '../components/StageViewAPIs';
+import StageViewSelfAPIs from '../components/StageViewSelfAPIs';
 import TeamsCoreAPIs from '../components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from '../components/ThirdPartyCloudStorageAPIs';
 import CookieAccessComponent from '../components/ThirdPatryCookies';
@@ -123,6 +124,7 @@ export const TestApp: React.FC = () => {
         <SharingAPIs />
         <WebStorageAPIs />
         <StageViewAPIs />
+        <StageViewSelfAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
         <ThirdPartyCloudStorageAPIs />

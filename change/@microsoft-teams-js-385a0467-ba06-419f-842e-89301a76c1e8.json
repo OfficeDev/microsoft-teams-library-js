@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added `self` capability that will allow the stage to perform an operation on itself (eg. close). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "packageName": "@microsoft/teams-js",
+  "email": "dechowdhury@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}

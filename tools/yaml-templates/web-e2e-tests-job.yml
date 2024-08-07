@@ -47,7 +47,7 @@ jobs:
               workingDirectory: '$(ClientSdkProjectDirectory)'
 
           - bash: >
-              node tools/cli/runAppsWithE2ETests.js
+              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
               --useDataFromLocal=true
               --testPrefixPattern "${{testPrefixPattern}}"
               --envType=${{ variables.envType }}
@@ -57,7 +57,7 @@ jobs:
 
           - bash: |
               # This sets up the server but runs no tests
-              node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "{[]}"
+              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --testPrefixPattern "{[]}"
               # This runs the Electron tests, which currently cannot be filtered
               pnpm exec xvfb-maybe playwright test
             displayName: 'Run Electron E2E tests'

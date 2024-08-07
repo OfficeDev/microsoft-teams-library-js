@@ -122,7 +122,7 @@ extends:
                 condition: succeeded()
                 inputs:
                   targetType: inline
-                  script: 'node tools/cli/runAppsWithE2ETests.js --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
                   workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
               - task: PublishTestResults@2
@@ -178,7 +178,7 @@ extends:
                     pnpm build-test-app-CDN
                   workingDirectory: '$(ClientSdkProjectDirectory)'
 
-              - bash: 'node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
+              - bash: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
                 displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
                 condition: succeeded()
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'

@@ -67,6 +67,10 @@
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
       "platformsExcluded": ["iOS","Android"],
+      "hostSdkVersion": {
+        "web": "<4.0.1"
+      },
+   
       "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%2C%22threadId%22%3A%22TestThreadId%22%7D",
       "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"threadId\":\"TestThreadId\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
       "expectedTestAppValue": "Completed"
@@ -76,6 +80,9 @@
       "type": "callResponse",
       "boxSelector": "#box_executeDeepLink2",
       "platformsExcluded": ["iOS","Android"],
+      "hostSdkVersion": {
+        "web": "<4.0.1"
+      },
       "inputValue": "https://teams.microsoft.com/l/stage/testAppId/0?context=%7B%22contentUrl%22%3A%22testContentUrl%22%2C%22websiteUrl%22%3A%22testWebsiteUrl%22%2C%22title%22%3A%22TestTitle%22%7D",
       "expectedAlertValue": "stageView.open called with {\"appId\":\"testAppId\",\"contentUrl\":\"testContentUrl\",\"title\":\"TestTitle\",\"websiteUrl\":\"testWebsiteUrl\"}",
       "expectedTestAppValue": "Completed"
