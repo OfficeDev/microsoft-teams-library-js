@@ -55,14 +55,16 @@ jobs:
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-          - bash: |
-              # This sets up the server but runs no tests
-              node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "{[]}"
-              # This runs the Electron tests, which currently cannot be filtered
-              pnpm exec xvfb-maybe playwright test
+          - task: CMDLine@2
             displayName: 'Run Electron E2E tests'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
-            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+            inputs:
+              script: |
+                # This sets up the server but runs no tests
+                node tools/cli/runAppsWithE2ETests.js --useDataFromLocal=true --testPrefixPattern "{[]}"
+                # This runs the Electron tests, which currently cannot be filtered
+                pnpm exec xvfb-maybe playwright test
+              workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - task: PublishTestResults@2
             inputs:
