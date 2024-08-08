@@ -28,6 +28,7 @@
     {
       "title": "openFilePreview API Call - Success",
       "type": "callResponse",
+      "platformsExcluded":["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_openFilePreview",
       "inputValue": {
@@ -59,7 +60,7 @@
     {
       "title": "getCloudStorageFolders API Call - Failure (Not Full Trust)",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": ">2.0.0-beta.5",
       "boxSelector": "#box_getCloudStorageFolders2",
       "inputValue": "testChannelId",
@@ -69,6 +70,7 @@
     {
       "title": "getCloudStorageFolders API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_getCloudStorageFolders",
       "inputValue": "testChannelId",
@@ -87,6 +89,7 @@
     {
       "title": "addCloudStorageFolder API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_addCloudStorageFolder",
       "inputValue": "testChannelId",
@@ -115,7 +118,7 @@
       "title": "copyMoveFiles API Call - Success",
       "version": ">2.0.0-beta.2",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_copyMoveFiles",
       "inputValue": {
         "selectedFiles": [
@@ -147,7 +150,7 @@
     {
       "title": "openCloudStorageFile API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_openCloudStorageFile",
       "inputValue": {
         "file": {
@@ -166,7 +169,7 @@
     {
       "title": "getExternalProviders API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": ">2.0.0",
       "boxSelector": "#box_getExternalProviders",
       "checkboxState": true,
@@ -176,7 +179,7 @@
     {
       "title": "getCloudStorageFolderContents API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": ">2.0.0-beta.2",
       "boxSelector": "#box_getCloudStorageFolderContents",
       "inputValue": {

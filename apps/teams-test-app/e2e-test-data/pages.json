@@ -12,7 +12,7 @@
     {
       "title": "getConfig API Call - Default Response",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_config_getConfig",
       "modulesToDisable": ["pageConfigToggle"],
       "expectedTestAppValue": "{\"contentUrl\":\"https://localhost:4000\",\"entityId\":\"serverUrl\",\"suggestedDisplayName\":\"Server Url\"}"
@@ -28,6 +28,7 @@
     {
       "title": "setCurrentFrame API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_setCurrentFrame",
       "inputValue": {
         "contentUrl": "https://localhost:4000/app",
@@ -62,6 +63,7 @@
     {
       "title": "navigateCrossDomain API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Android"],
       "version": "2.0.0-beta.2",
       "boxSelector": "#box_navigateCrossDomain",
       "inputValue": "https://teams-test-tab.azurewebsites.net",
@@ -71,7 +73,7 @@
     {
       "title": "shareDeepLink API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": "<=2.1.0",
       "boxSelector": "#box_core\\.shareDeepLink",
       "inputValue": {
@@ -85,7 +87,7 @@
     {
       "title": "shareDeepLink API Call - Success",
       "type": "callResponse",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": ">2.1.0",
       "boxSelector": "#box_pages\\.shareDeepLink",
       "inputValue": {
@@ -99,7 +101,7 @@
     {
       "title": "registerFullScreenChangeHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "boxSelector": "#box_registerFullScreenChangeHandler",
       "eventName": "fullScreenChange",
       "eventData": true,
@@ -108,7 +110,7 @@
     {
       "title": "registerFocusEnterHandler API Call - Handler",
       "type": "registerAndRaiseEvent",
-      "platformsExcluded": ["iOS"],
+      "platformsExcluded": ["iOS","Android"],
       "version": "1.x || >2.0.0-beta.2",
       "boxSelector": "#box_registerFocusEnterHandler",
       "eventName": "focusEnter",
