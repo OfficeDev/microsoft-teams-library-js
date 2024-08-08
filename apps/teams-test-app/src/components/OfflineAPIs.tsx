@@ -13,7 +13,7 @@ const CheckOfflineCapability = (): React.ReactElement =>
   });
 
   const EnableOfflineMode = (): React.ReactElement =>
-    ApiWithTextInput<offline.OfflineParams>({
+    ApiWithTextInput<offline.OfflineModeParams>({
       name: 'CheckOfflineCapability',
       title: 'CheckOfflineCapability',
       onClick: {
@@ -24,8 +24,8 @@ const CheckOfflineCapability = (): React.ReactElement =>
         },
         submit: {
           withPromise: async (input) => {
-            await offline.enableOfflineMode(input);
-            return 'opened';
+             await offline.enableOfflineMode(input);
+            return 'enabled';
           },
           withCallback: (input, setResult) => {
             const callback = (error?: SdkError): void => {
@@ -33,7 +33,6 @@ const CheckOfflineCapability = (): React.ReactElement =>
                 setResult(JSON.stringify(error));
               }
             };
-            // remove after updating e2e tests
             offline
               .enableOfflineMode(input)
               .then()
@@ -41,7 +40,8 @@ const CheckOfflineCapability = (): React.ReactElement =>
           },
         },
       },
-      defaultInput: '"https://www.microsoft.com"',
+      defaultInput: JSON.stringify({
+        invalidationUrl: 'https://localhost:4000'}),
     });
 
 
