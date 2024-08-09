@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added in WXP domain for unified store",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}
