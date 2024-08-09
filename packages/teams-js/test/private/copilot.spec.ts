@@ -1,8 +1,8 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { copilot } from '../../src/private/copilot';
-import { Cohort, EduType, LegalAgeGroupClassification, Persona } from '../../src/private/interfaces';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { Cohort, EduType, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -13,7 +13,7 @@ const mockedAppEligibilityInformation = {
   isCopilotEnabledRegion: true,
   isCopilotEligible: true,
   isOptedOutByAdmin: false,
-  eduType: EduType.None,
+  eduType: EduType.HigherEducation,
 };
 
 const copilotRuntimeConfig: Runtime = {
@@ -53,7 +53,7 @@ describe('copilot', () => {
       expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
       expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(new Error(errorLibraryNotInitialized));
     });
-    it('should return EligibilityInfo if the app is MChat app', async () => {
+    it('should return EligibilityInfo if the host provided eligibility information', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(copilotRuntimeConfig);
       expect(copilot.eligibility.isSupported()).toBeTruthy();
@@ -61,27 +61,13 @@ describe('copilot', () => {
     });
     it('should throw if the value is not set by the host or missing ', async () => {
       await utils.initializeWithContext(FrameContexts.content);
-      const copilotRuntimeConfigWithOutEligibilityInformation: Runtime = {
-        apiVersion: 4,
-        supports: {
-          pages: {
-            appButton: {},
-            tabs: {},
-            config: {},
-            backStack: {},
-            fullTrust: {},
-          },
-          teamsCore: {},
-          logs: {},
-        },
+      const copilotRuntimeConfigWithoutEligibilityInformation = {
+        ...copilotRuntimeConfig,
+        hostVersionsInfo: undefined,
       };
-      utils.setRuntimeConfig(copilotRuntimeConfigWithOutEligibilityInformation);
+      utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
       expect(copilot.eligibility.isSupported()).toBeFalsy();
-      try {
-        copilot.eligibility.getEligibilityInfo();
-      } catch (e) {
-        expect(e).toEqual(errorNotSupportedOnPlatform);
-      }
+      expect(copilot.eligibility.getEligibilityInfo()).rejects.toEqual(errorNotSupportedOnPlatform);
     });
   });
 });
