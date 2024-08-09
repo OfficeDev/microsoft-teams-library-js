@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Used app and authentication apis for diagnostic app functionality.",
-  "packageName": "@microsoft/teams-js",
-  "email": "t-avvellozzi",
-  "dependentChangeType": "patch"
-}

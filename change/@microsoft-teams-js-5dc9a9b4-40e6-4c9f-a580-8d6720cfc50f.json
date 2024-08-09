@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Add `chatId` in `pages.navigateToApp` api for deep link support in chat",
-  "packageName": "@microsoft/teams-js",
-  "email": "153236114+arsa-MSFT@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

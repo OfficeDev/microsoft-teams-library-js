@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated error handling of malformed/missing origin URLs",
-  "packageName": "@microsoft/teams-js",
-  "email": "prmarcin@microsoft.com",
-  "dependentChangeType": "patch"
-}
