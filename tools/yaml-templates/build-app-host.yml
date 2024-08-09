@@ -16,6 +16,24 @@ steps:
       versionSpec: '18.x'
     displayName: 'Install Node.js'
 
+  - script: |
+      if command -v google-chrome &> /dev/null; then
+        # Uninstall the existing Chrome
+        sudo apt remove google-chrome-stable --purge -y
+      else
+        echo "Google Chrome is not installed on your system."
+      fi
+      CHROME_VERSION="127.0.6533.88"
+      # Download the specific Chrome version package
+      wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+      # Install the downloaded package
+      sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+      # Update package dependencies
+      sudo apt install -f -y
+      echo "Google Chrome version ${CHROME_VERSION} has been installed."
+      rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+    displayName: 'Fix Chrome browser on V127'
+
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
   # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
   #   'command_name | operating_system | lockfile'
