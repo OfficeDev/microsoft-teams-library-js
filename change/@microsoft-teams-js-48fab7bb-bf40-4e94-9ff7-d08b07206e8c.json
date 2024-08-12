@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated `authentication.getUser` to properly unwrap `SdkError` returned from host into a message",
+  "comment": "Updated documentation on usage of `versionAndPlatformAgnosticTeamsRuntimeConfig` and `mapTeamsVersionToSupportedCapabilities`",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"

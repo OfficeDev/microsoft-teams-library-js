@@ -1,72 +1,58 @@
-import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
+import { barCode } from '@microsoft/teams-js';
 import { ApiComponent } from '../components/sample/ApiComponents';
+import ApiComponentWrapper from '../utils/ApiComponentWrapper';
+import { checkCapabilitySupport, checkPermission } from '../utils/CheckCapabilityUtils';
+
+export const barCode_CheckBarCodeCapability = async (): Promise<void> => {
+  const module = barCode;
+  const moduleName = 'BarCode';
+  const supportedMessage = 'BarCode module is supported.';
+  const notSupportedMessage = 'BarCode module is not supported. BarCode is not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile. Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.';
+  
+  await checkCapabilitySupport(module, moduleName, supportedMessage, notSupportedMessage);
+};
+
+export const barCode_HasBarCodePermission = async (): Promise<void> => {
+  const module = barCode;
+  const moduleName = 'BarCode';
+  const permissionGrantedMessage = 'BarCode permission has been granted.';
+  const errorMessage = 'HasBarCodePermission functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile. Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.';
+  
+  await checkPermission(module, moduleName, permissionGrantedMessage, errorMessage);
+};
+
+export const barCode_ScanBarCode = async (config: barCode.BarCodeConfig = {}): Promise<string> => {
+  console.log('Executing ScanBarCode with config:', JSON.stringify(config, null, 2));
+
+  try {
+    const scannedCode = await barCode.scanBarCode(config);
+    console.log('Scanned code result:', scannedCode);
+    return scannedCode;
+
+  } catch (error) {
+    console.log('Error scanning BarCode:', JSON.stringify(error, null, 2));
+    console.log('ScanBarCode functionality is currently not supported on Teams, M365, or Outlook on Web, Desktop, or Mobile.');
+    console.log ('Note: BarCode API is in Beta and provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.');
+    throw error;
+  }
+};
+
+const functionsRequiringInput = [
+  'ScanBarCode'
+]; // List of functions requiring input
 
 interface BarCodeAPIsProps {
   apiComponent: ApiComponent;
-  onDropToScenarioBox: (apiComponent: ApiComponent, func: string, input: string) => void;
+  onDropToScenarioBox: (api: ApiComponent, func: string, input?: string) => void;
 }
 
-const BarCodeAPIs: React.FC<BarCodeAPIsProps> = ({ apiComponent, onDropToScenarioBox }) => {
-  const [selectedFunction, setSelectedFunction] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
-
-  const handleFunctionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFunc = event.target.value;
-    setSelectedFunction(selectedFunc);
-    if (selectedFunc === 'scanBarCode') {
-      setInputValue(apiComponent.defaultInput || '');
-    } else {
-      setInputValue('');
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
-
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'API',
-    item: () => ({
-      api: apiComponent,
-      func: selectedFunction,
-      input: selectedFunction === 'scanBarCode' ? inputValue : '',
-    }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [selectedFunction, inputValue]);
-
+const BarCodeAPIs: React.FC<BarCodeAPIsProps> = (props) => {
   return (
-    <div className="api-container" ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <div className="api-header">{apiComponent.title}</div>
-      <div className="dropdown-menu">
-        <select
-          aria-label={`Select a function for ${apiComponent.title}`}
-          className="box-dropdown"
-          onChange={handleFunctionChange}
-          value={selectedFunction}
-        >
-          <option value="">Select a function</option>
-          {apiComponent.options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        {selectedFunction === 'scanBarCode' && (
-          <div className="input-container">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder="Enter text input for scanBarCode"
-            />
-            <button onClick={() => setInputValue(apiComponent.defaultInput || '')}>Default</button>
-          </div>
-        )}
-      </div>
-    </div>
+    <ApiComponentWrapper
+      apiComponent={props.apiComponent}
+      onDropToScenarioBox={props.onDropToScenarioBox}
+      functionsRequiringInput={functionsRequiringInput}
+    />
   );
 };
 

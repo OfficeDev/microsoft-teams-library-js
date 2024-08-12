@@ -14,12 +14,6 @@ const AuthEnd = () => {
         console.error('Authentication error:', hashParams.get('error'));
         authentication.notifyFailure('AuthenticationFailed');
       } else if (hashParams.get('access_token') && hashParams.get('state') === state) {
-        const authResult = {
-          idToken: hashParams.get('id_token'),
-          accessToken: hashParams.get('access_token'),
-          tokenType: hashParams.get('token_type'),
-          expiresIn: hashParams.get('expires_in'),
-        };
         authentication.notifySuccess('authResult');
       } else {
         console.error('State does not match or access token missing');
@@ -31,7 +25,7 @@ const AuthEnd = () => {
     };
 
     handleAuthResponse();
-  }, []);
+  }, [navigate]);
 
   return <div>Handling authentication response...</div>;
 };
