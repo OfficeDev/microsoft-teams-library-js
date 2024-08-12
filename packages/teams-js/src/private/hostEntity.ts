@@ -2,7 +2,6 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
-import { errorNotSupportedOnPlatform } from '../public/constants';
 import { TabInformation, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
