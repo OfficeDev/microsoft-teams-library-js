@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": " Adding new APIs for adding and configuring, removing, renaming, re-configuring and fetching all tabs. This will be used in M365 calendar.",
+  "comment": " Added 1P-only `hostEntity` capability for adding and configuring, removing, renaming, re-configuring and fetching all tabs.",
   "packageName": "@microsoft/teams-js",
   "email": "rideshmu@microsoft.com_msteamsmdb",
   "dependentChangeType": "patch"
