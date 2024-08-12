@@ -45,9 +45,6 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly geoLocation?: {
       readonly map?: {};
     };
-    readonly hostEntity?: {
-      readonly tab?: {};
-    };
     readonly location?: {};
     readonly logs?: {};
     readonly mail?: {};
@@ -108,9 +105,6 @@ interface IRuntimeV2 extends IBaseRuntime {
     };
     readonly geoLocation?: {
       readonly map?: {};
-    };
-    readonly hostEntity?: {
-      readonly tab?: {};
     };
     readonly interactive?: {};
     readonly secondaryBrowser?: {};
@@ -178,9 +172,6 @@ interface IRuntimeV3 extends IBaseRuntime {
     readonly externalAppCardActions?: {};
     readonly geoLocation?: {
       readonly map?: {};
-    };
-    readonly hostEntity?: {
-      readonly tab?: {};
     };
     readonly interactive?: {};
     readonly secondaryBrowser?: {};
@@ -384,9 +375,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
         parentCommunication: {},
       },
       update: {},
-    },
-    hostEntity: {
-      tab: {},
     },
     interactive: {},
     logs: {},

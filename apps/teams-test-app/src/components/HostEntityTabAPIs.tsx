@@ -5,7 +5,7 @@ import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const AddAndConfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ hostEntityIds: hostEntity.tab.HostEntityIds; appTypes?: hostEntity.AppTypes[] }>({
+  ApiWithTextInput<{ hostEntityIds: hostEntity.HostEntityIds; appTypes?: hostEntity.AppTypes[] }>({
     name: 'addAndConfigure',
     title: 'Add a tab',
     onClick: {
@@ -28,7 +28,7 @@ const AddAndConfigure = (): React.ReactElement =>
   });
 
 const Reconfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.tab.HostEntityIds }>({
+  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'reconfigure',
     title: 'Reconfigure a tab',
     onClick: {
@@ -61,7 +61,7 @@ const Reconfigure = (): React.ReactElement =>
   });
 
 const Rename = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.tab.HostEntityIds }>({
+  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'rename',
     title: 'Rename a tab',
     onClick: {
@@ -93,7 +93,7 @@ const Rename = (): React.ReactElement =>
   });
 
 const Remove = (): React.ReactElement =>
-  ApiWithTextInput<{ tabId: string; hostEntityIds: hostEntity.tab.HostEntityIds }>({
+  ApiWithTextInput<{ tabId: string; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'remove',
     title: 'Remove a tab',
     onClick: {
@@ -121,7 +121,7 @@ const Remove = (): React.ReactElement =>
   });
 
 const GetAll = (): React.ReactElement =>
-  ApiWithTextInput<{ hostEntityIds: hostEntity.tab.HostEntityIds }>({
+  ApiWithTextInput<{ hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'getAll',
     title: 'Get tabs',
     onClick: {

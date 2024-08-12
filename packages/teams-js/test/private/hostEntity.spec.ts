@@ -52,9 +52,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.addAndConfigure({ threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -64,9 +64,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.addAndConfigure({ threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -77,10 +77,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.addAndConfigure({ threadId: '' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'ThreadId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
+            );
           }
         });
 
@@ -89,7 +88,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.addAndConfigure(mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.addAndConfigure');
+          const message = utils.findMessageByFunc('hostEntity.tab.addAndConfigure');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity, null]);
           if (message) {
@@ -115,9 +114,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -127,9 +126,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -140,10 +139,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.reconfigure(mockTab, { threadId: '' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'ThreadId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
+            );
           }
         });
 
@@ -154,10 +152,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.reconfigure({ internalTabInstanceId: '', tabName: 'name' }, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'TabId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
+            );
           }
         });
 
@@ -166,7 +163,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.reconfigure(mockTab, mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.reconfigure');
+          const message = utils.findMessageByFunc('hostEntity.tab.reconfigure');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockTab, mockHostEntity]);
           if (message) {
@@ -192,9 +189,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.rename(mockTab, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -204,9 +201,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.rename(mockTab, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -217,10 +214,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.rename(mockTab, { threadId: '' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'ThreadId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
+            );
           }
         });
 
@@ -231,10 +227,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.rename({ internalTabInstanceId: '', tabName: 'name' }, { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'TabId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
+            );
           }
         });
 
@@ -243,7 +238,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.rename(mockTab, mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.rename');
+          const message = utils.findMessageByFunc('hostEntity.tab.rename');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockTab, mockHostEntity]);
           if (message) {
@@ -268,9 +263,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.remove('tabId', { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -280,9 +275,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.remove('tabId', { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -293,10 +288,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.reconfigure(mockTab, { threadId: '' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'ThreadId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
+            );
           }
         });
 
@@ -307,10 +301,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.remove('', { threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'TabId cannot be null or empty',
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
+            );
           }
         });
 
@@ -319,7 +312,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.remove('tabId', mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.remove');
+          const message = utils.findMessageByFunc('hostEntity.tab.remove');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual(['tabId', mockHostEntity]);
           if (message) {
@@ -345,9 +338,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.getAll({ threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -357,9 +350,9 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.getAll({ threadId: 'threadId' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM,
-            });
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
+            );
           }
         });
 
@@ -370,10 +363,10 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.getAll({ threadId: '' });
           } catch (e) {
-            expect(e).toEqual({
-              errorCode: ErrorCode.INVALID_ARGUMENTS,
-              message: 'ThreadId cannot be null or empty',
-            });
+            console.log(e);
+            expect(e).toEqual(
+              new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
+            );
           }
         });
 
@@ -382,7 +375,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           const promise = hostEntity.tab.getAll(mockHostEntity);
-          const message = utils.findMessageByFunc('associatedApps.tab.getAll');
+          const message = utils.findMessageByFunc('hostEntity.tab.getAll');
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity]);
           if (message) {

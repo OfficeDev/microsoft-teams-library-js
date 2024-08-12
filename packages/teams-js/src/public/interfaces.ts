@@ -93,25 +93,13 @@ export interface TabInstance {
    */
   order?: number;
 
+  // TODO: look into canUpdateConfig
+  // canUpdateConfig
+
   /**
-   * Permissions for this tab
+   * Type of the tab. Static tabs cannot be configured
    */
-  tabPermission?: {
-    /**
-     * Indicates whether the tab config can be updated
-     */
-    canUpdateConfig?: boolean;
-
-    /**
-     * Indicates if tab can have conversation
-     */
-    canHaveTabConversation?: boolean;
-
-    /**
-     * Device permissions for this app
-     */
-    definedDevicePermissions?: string[];
-  };
+  tabType?: 'ConfigurableTab' | 'StaticTab';
 }
 
 /**

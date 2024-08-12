@@ -3,21 +3,9 @@
   "platforms": "Web",
   "checkIsSupported": {
     "capabilityName": "HostEntityTab",
-    "expectedOutput": "HostEntity.tabs module is supported"
+    "expectedOutput": "Host entity tab module is not supported"
   },
   "testCases": [
-    {
-      "title": "getAll API Call - Success",
-      "type": "callResponse",
-      "boxSelector": "#box_getAll",
-      "inputValue": {
-        "hostEntityIds": {
-          "threadId": "threadId"
-        }
-      },
-      "expectedAlertValue": "getAll called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "{\"teamTabs\":[{\"tabName\":\"dummy1\",\"internalTabInstanceId\":\"1\"},{\"tabName\":\"dummy2\",\"internalTabInstanceId\":\"2\"}]}"
-    },
     {
       "title": "addAndConfigure API Call - Success",
       "type": "callResponse",
@@ -27,8 +15,20 @@
           "threadId": "threadId"
         }
       },
-      "expectedAlertValue": "addAndConfigure called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "{\"tabName\":\"dummy1\",\"internalTabInstanceId\":\"1\"}"
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\"}"
+    },
+    {
+      "title": "getAll API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAll",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "getAll called with {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"teamTabs\":[{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\"}]}"
     },
     {
       "title": "reconfigure API Call - Success",
@@ -37,15 +37,14 @@
       "inputValue": {
         "tab": {
           "internalTabInstanceId": "tabId",
-          "tabName": "Tab name",
-          "url": "contentUrl"
+          "url": "new contentUrl"
         },
         "hostEntityIds": {
           "threadId": "threadId"
         }
       },
-      "expectedAlertValue": "reconfigure called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "{\"tabName\":\"Tab name\",\"internalTabInstanceId\":\"tabId\",\"url\":\"contentUrl\"}"
+      "expectedAlertValue": "reconfigure called with {\"internalTabInstanceId\":\"tabId\",\"url\":\"new contentUrl\"} and {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"new contentUrl\"}"
     },
     {
       "title": "rename API Call - Success",
@@ -54,14 +53,14 @@
       "inputValue": {
         "tab": {
           "internalTabInstanceId": "tabId",
-          "tabName": "New tab name"
+          "tabName": "new name"
         },
         "hostEntityIds": {
           "threadId": "threadId"
         }
       },
-      "expectedAlertValue": "rename called with ##JSON_INPUT_VALUE##",
-      "expectedTestAppValue": "{\"tabName\":\"New tab name\",\"internalTabInstanceId\":\"1\"}"
+      "expectedAlertValue": "rename called with {\"internalTabInstanceId\":\"tabId\",\"tabName\":\"new name\"} and {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"new name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\"}"
     },
     {
       "title": "remove API Call - Success",
@@ -73,7 +72,7 @@
           "threadId": "threadId"
         }
       },
-      "expectedAlertValue": "remove called with ##JSON_INPUT_VALUE##",
+      "expectedAlertValue": "remove called with \"tabId\" and {\"threadId\":\"threadId\"}",
       "expectedTestAppValue": "true"
     }
   ]
