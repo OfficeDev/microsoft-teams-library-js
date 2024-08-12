@@ -15,7 +15,15 @@ import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
+import {
+  FrameInfo,
+  ShareDeepLinkParameters,
+  TabInformation,
+  TabInstance,
+  TabInstanceParameters,
+  EnterFocusActionItem,
+  ReturnFocusActionItem,
+} from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -66,12 +74,16 @@ export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabI
   });
 }
 
-export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
+export function returnFocusHelper(
+  apiVersionTag: string,
+  navigateForward?: boolean,
+  returnFocusActionItem?: ReturnFocusActionItem,
+): void {
   ensureInitialized(runtime);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward]);
+  sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward, returnFocusActionItem]);
 }
 
 export function getTabInstancesHelper(
@@ -178,8 +190,12 @@ export namespace pages {
    * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
-  export function returnFocus(navigateForward?: boolean): void {
-    returnFocusHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus), navigateForward);
+  export function returnFocus(navigateForward?: boolean, returnFocusActionItem?: ReturnFocusActionItem): void {
+    returnFocusHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus),
+      navigateForward,
+      returnFocusActionItem,
+    );
   }
 
   /**
@@ -194,7 +210,9 @@ export namespace pages {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
+  export function registerFocusEnterHandler(
+    handler: (navigateForward: boolean, enterFocusActionItem?: EnterFocusActionItem) => void,
+  ): void {
     registerHandlerHelper(
       getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFocusEnterHandler),
       'focusEnter',

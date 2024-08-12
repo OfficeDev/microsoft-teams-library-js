@@ -1112,3 +1112,38 @@ export interface ClipboardParams {
   /** Blob content in Base64 string format */
   content: string;
 }
+
+/**
+ * @hidden
+ * List of enter focus action items
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum EnterFocusActionItem {
+  /**
+   * Determines the direction to focus in app.
+   */
+  PreviousLandmark,
+  NextLandmark,
+  /**
+   * Determines if the focus should go to the particular content of the app.
+   */
+  Read,
+  Compose,
+}
+
+/**
+ * Return focus action items
+ */
+export enum ReturnFocusActionItem {
+  /**
+   * Determines the direction to focus in host.
+   */
+  PreviousLandmark,
+  NextLandmark,
+  /**
+   * Determines if the focus should go to the left rail of teams
+   */
+  GoToLeftRail,
+}

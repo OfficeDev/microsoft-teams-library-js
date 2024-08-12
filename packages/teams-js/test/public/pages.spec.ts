@@ -5,7 +5,14 @@ import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
+import {
+  FrameInfo,
+  ShareDeepLinkParameters,
+  TabInstance,
+  TabInstanceParameters,
+  EnterFocusActionItem,
+  ReturnFocusActionItem,
+} from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
@@ -56,7 +63,22 @@ describe('Testing pages module', () => {
           pages.returnFocus(true);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true, undefined);
+        });
+
+        it(`pages.returnFocus should successfully return focus when returnFocusActionItem is set and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          pages.returnFocus(true, ReturnFocusActionItem.NextLandmark);
+
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          validateExpectedArgumentsInRequest(
+            returnFocusMessage,
+            'returnFocus',
+            MatcherType.ToBe,
+            true,
+            ReturnFocusActionItem.NextLandmark,
+          );
         });
 
         it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
@@ -65,7 +87,7 @@ describe('Testing pages module', () => {
           pages.returnFocus(false);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, false);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, false, undefined);
         });
       });
     });
@@ -2069,7 +2091,7 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args.length).toBe(2);
           expect(returnFocusMessage.args[0]).toBe(true);
         });
 
@@ -2080,7 +2102,7 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(1);
+          expect(returnFocusMessage.args.length).toBe(2);
           expect(returnFocusMessage.args[0]).toBe(false);
         });
       });
@@ -2126,6 +2148,23 @@ describe('Testing pages module', () => {
             data: {
               func: 'focusEnter',
               args: [true],
+            },
+          } as DOMMessageEvent);
+          expect(handlerInvoked).toBeTruthy();
+        });
+
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusActionItem set to nextLandmark and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          let handlerInvoked = false;
+          pages.registerFocusEnterHandler((x: boolean, enterFocusActionItems: EnterFocusActionItem) => {
+            handlerInvoked = true;
+            return true;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'focusEnter',
+              args: [true, EnterFocusActionItem.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();
