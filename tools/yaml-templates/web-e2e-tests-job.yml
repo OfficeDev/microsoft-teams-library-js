@@ -58,7 +58,7 @@ jobs:
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - bash: |
-              pnpm exec ts-node tools/cli/testAppManagerCli.ts --envType=electron
+              pnpm exec ts-node tools/cli/testAppManagerCli.ts --envType=test
               # This runs the Electron integration-layer tests, which currently cannot be filtered
               pnpm exec xvfb-maybe playwright test
             displayName: 'Run Electron Integration-Layer tests'
