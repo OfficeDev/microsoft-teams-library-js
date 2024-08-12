@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { TabInstance, ReturnFocusActionItem } from './interfaces';
+import { ReturnFocusActionItem, TabInstance } from './interfaces';
 import {
   backStackNavigateBackHelper,
   navigateCrossDomainHelper,

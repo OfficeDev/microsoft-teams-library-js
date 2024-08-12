@@ -16,13 +16,13 @@ import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import {
+  EnterFocusActionItem,
   FrameInfo,
+  ReturnFocusActionItem,
   ShareDeepLinkParameters,
   TabInformation,
   TabInstance,
   TabInstanceParameters,
-  EnterFocusActionItem,
-  ReturnFocusActionItem,
 } from './interfaces';
 import { runtime } from './runtime';
 

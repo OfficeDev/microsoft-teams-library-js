@@ -9,11 +9,11 @@ import { FrameContexts } from './constants';
 import {
   Context,
   DeepLinkParameters,
+  EnterFocusActionItem,
   FrameContext,
   LoadContext,
   TabInformation,
   TabInstanceParameters,
-  EnterFocusActionItem,
 } from './interfaces';
 import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
 import { pages } from './pages';

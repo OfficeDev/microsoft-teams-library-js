@@ -5,10 +5,10 @@ import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constan
 import { FrameContexts } from '../../src/public/constants';
 import {
   Context,
+  EnterFocusActionItem,
   FrameContext,
   LoadContext,
   TabInstanceParameters,
-  EnterFocusActionItem,
 } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {

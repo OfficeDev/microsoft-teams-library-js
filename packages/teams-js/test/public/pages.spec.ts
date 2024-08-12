@@ -6,12 +6,12 @@ import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import {
+  EnterFocusActionItem,
   FrameInfo,
+  ReturnFocusActionItem,
   ShareDeepLinkParameters,
   TabInstance,
   TabInstanceParameters,
-  EnterFocusActionItem,
-  ReturnFocusActionItem,
 } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
