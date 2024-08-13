@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Removed Beta/Preview tag on `{namespace}` capability. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "packageName": "@microsoft/teams-js",
+  "email": "153236114+arsa-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
