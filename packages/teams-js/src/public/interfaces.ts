@@ -1122,15 +1122,18 @@ export interface AppEligibilityInformation {
    * Indicates if the tenant admin has opted the user out of Copilot.
    */
   isOptedOutByAdmin: boolean;
+  /**
+   * Education Eligibility Information for the app user
+   */
+  UserClassification: UserClassification;
 }
 
 /**
  * @hidden
- * Eligibility Information for the app user.
  *
  * @beta
  */
-export interface UserClassificationWithEduType extends AppEligibilityInformation {
+export interface UserClassificationWithEduType {
   /**
    * For EDU tenants only. Indicates if the tenant is higher ed or K12.
    */
@@ -1143,17 +1146,15 @@ export interface UserClassificationWithEduType extends AppEligibilityInformation
 
 /**
  * @hidden
- * Eligibility Information for the app user.
  *
  * @beta
  */
-export interface UserClassificationWithOtherType extends AppEligibilityInformation {
+export interface UserClassificationWithOtherType {
   persona: Persona.Other;
 }
 
 /**
  * @hidden
- * Eligibility Information for the app user.
  *
  * @beta
  */
