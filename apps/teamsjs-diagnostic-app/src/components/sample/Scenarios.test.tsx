@@ -9,7 +9,10 @@ jest.mock('@microsoft/teams-js', () => ({
 }));
 
 jest.mock('../../apis/AppApi', () => ({
+  getContextV2: jest.fn(() => Promise.resolve({})),
+  registerBeforeSuspendOrTerminateHandler: jest.fn(() => Promise.resolve()),
   registerOnResume: jest.fn(() => Promise.resolve()),
+  registerOnThemeChangeHandlerV2: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('../../apis/AuthenticationStart', () => ({
@@ -18,23 +21,23 @@ jest.mock('../../apis/AuthenticationStart', () => ({
 
 describe('App Initialization Component', () => {
   afterEach(() => {
-     // Clear all mock functions after each test
+    // Clear all mock functions after each test
     jest.clearAllMocks();
   });
 
   test('app initialization scenario', async () => {
-    render(<AppInitializationScenario />);
+    render(<AppInitializationScenario showSuccessMessage={true} />);
 
     fireEvent.click(screen.getByTestId('run-scenario-button'));
 
-    await waitFor(() => {
-      console.log('waiting for successMessage');
-      const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
-      expect(successMessage).not.toBeNull();
-    }, {
-      timeout: 5000,
-    });
+    await waitFor(
+      () => {
+        const successMessage = screen.queryByText(/App Initialization Scenario successfully completed/i);
+        if (!successMessage) {
+          throw new Error('Success message not found');
+        }
+      },
+      { timeout: 5000 }
+    );
   });
-
-  // Add more test cases later
 });

@@ -1,0 +1,73 @@
+# This template handles running E2E tests (including all necessary setup steps) from the host SDK repo for various environments.
+# It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
+
+parameters:
+  - name: AppHostingSdk
+    default: none
+    type: string
+  - name: hostingEnvironmentType
+    type: string
+    values:
+      - 'electron'
+      - 'standardWeb'
+  - name: teamsJsReferenceType
+    type: string
+    values:
+      - 'npm'
+      - 'scriptTag'
+  - name: testPrefixPatternGroups
+    type: object
+    default: ['{[A-Z],[a-z],[0-9]}']
+
+jobs:
+  - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
+      - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+        displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: 'ubuntu-2004'
+          os: linux
+        variables:
+          - name: envType
+            ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
+              value: 'test'
+            ${{ else }}:
+              value: 'localScriptTag'
+        steps:
+          - template: build-app-host.yml
+            parameters:
+              appHostGitPath: AppHostingSdk
+
+          - task: CmdLine@2
+            displayName: 'Build Local Test App to Reference via Script Tag'
+            condition: and(succeeded(), eq('${{ parameters.teamsJsReferenceType }}', 'scriptTag'))
+            inputs:
+              script: |
+                pnpm build-test-app-local
+              workingDirectory: '$(ClientSdkProjectDirectory)'
+
+          - bash: >
+              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts
+              --useDataFromLocal=true
+              --testPrefixPattern "${{testPrefixPattern}}"
+              --envType=${{ variables.envType }}
+            displayName: 'Run web hosted E2E integration tests (${{testPrefixPattern}})'
+            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'standardWeb'))
+            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+          - bash: |
+              # This sets up the server but runs no tests
+              pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --testPrefixPattern "{[]}"
+              # This runs the Electron tests, which currently cannot be filtered
+              pnpm exec xvfb-maybe playwright test
+            displayName: 'Run Electron E2E tests'
+            condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
+            workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/e2e-tests-report*.xml'
+              testRunTitle: 'E2E Tests - Default'
+              mergeTestResults: true
+            condition: succeededOrFailed()
