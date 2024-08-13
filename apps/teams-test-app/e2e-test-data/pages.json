@@ -21,9 +21,12 @@
       "title": "returnFocus API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_returnFocus",
-      "checkboxState": true,
-      "expectedAlertValue": "returnFocus called with true",
-      "expectedTestAppValue": "Current navigateForward state is true"
+      "inputValue": {
+        "navigateForward": "false",
+        "returnFocusActionItem": "GoToLeftRail"
+      },
+      "expectedAlertValue": "returnFocus called with {\"navigateForward\":false,\"returnFocusActionItem\":\"GoToLeftRail\"}",
+      "expectedTestAppValue": "Current navigateForward state is false and returnFocusActionItem is GoToLeftRail"
     },
     {
       "title": "setCurrentFrame API Call - Success",
@@ -112,8 +115,11 @@
       "version": "1.x || >2.0.0-beta.2",
       "boxSelector": "#box_registerFocusEnterHandler",
       "eventName": "focusEnter",
-      "eventData": true,
-      "expectedTestAppValue": "successfully called with navigateForward:true"
+      "eventData": {
+        "navigateForward": true,
+        "enterFocusActionItem": "Compose"
+      },
+      "expectedTestAppValue": "successfully called with navigateForward:false and enterFocusActionItem:Compose"
     }
   ]
 }

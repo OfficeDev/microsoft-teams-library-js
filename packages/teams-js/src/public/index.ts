@@ -39,6 +39,8 @@ export {
   TaskInfo,
   TeamInformation,
   UrlDialogInfo,
+  EnterFocusActionItem,
+  ReturnFocusActionItem,
 } from './interfaces';
 export { app } from './app';
 export { appInstallDialog } from './appInstallDialog';

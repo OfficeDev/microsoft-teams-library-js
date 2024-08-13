@@ -6,6 +6,7 @@ import {
   registerFocusEnterHandler,
   registerFullScreenHandler,
   returnFocus,
+  ReturnFocusActionItem,
   setFrameContext,
   settings,
   shareDeepLink,
@@ -13,7 +14,7 @@ import {
 } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
-import { ApiWithCheckboxInput, ApiWithoutInput, ApiWithTextInput } from './utils';
+import { ApiWithoutInput, ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 
 const GetConfig = (): React.ReactElement =>
@@ -140,20 +141,43 @@ const ShareDeepLink = (): ReactElement =>
   });
 
 const ReturnFocus = (): React.ReactElement =>
-  ApiWithCheckboxInput({
+  ApiWithTextInput<{
+    navigateForward: boolean;
+    returnFocusActionItem?: ReturnFocusActionItem;
+  }>({
     name: 'returnFocus',
     title: 'Return Focus',
-    label: 'navigateForward',
     onClick: {
-      withPromise: async (input) => {
-        await pages.returnFocus(input);
-        return 'Current navigateForward state is ' + input;
+      validateInput: (input) => {
+        if (!input) {
+          throw new Error('input is required.');
+        }
       },
-      withCallback: (input) => {
-        returnFocus(input);
-        return 'Current navigateForward state is ' + input;
+      submit: {
+        withPromise: async (input) => {
+          await pages.returnFocus(input.navigateForward, input?.returnFocusActionItem);
+          return (
+            'Current navigateForward state is ' +
+            input.navigateForward +
+            ' and returnFocusActionItem is ' +
+            input?.returnFocusActionItem
+          );
+        },
+        withCallback: (input) => {
+          returnFocus(input.navigateForward, input?.returnFocusActionItem);
+          return (
+            'Current navigateForward state is ' +
+            input.navigateForward +
+            ' and returnFocusActionItem is ' +
+            input?.returnFocusActionItem
+          );
+        },
       },
     },
+    defaultInput: JSON.stringify({
+      navigateForward: false,
+      returnFocusActionItem: 'GoToLeftRail',
+    }),
   });
 
 const RegisterFocusEnterHandler = (): React.ReactElement =>
@@ -162,10 +186,11 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     title: 'Register On Focus Enter Handler',
     onClick: {
       withPromise: async (setResult) => {
-        pages.registerFocusEnterHandler((navigateForward) => {
-          setResult('successfully called with navigateForward:' + navigateForward);
-          return true;
-        });
+        const handler = (input): void => {
+          const res = `successfully called with navigateForward:${input?.navigateForward} and enterFocusActionItem:${input?.enterFocusActionItem}`;
+          setResult(res);
+        };
+        pages.registerFocusEnterHandler(handler);
         return 'registered';
       },
       withCallback: (setResult) => {
