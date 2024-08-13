@@ -1,7 +1,7 @@
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { runtime } from '../public/runtime';
 import { AppEligibilityInformation } from '../public/interfaces';
+import { runtime } from '../public/runtime';
 
 /**
  * @beta

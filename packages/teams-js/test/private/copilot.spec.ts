@@ -8,12 +8,14 @@ import { Utils } from '../utils';
 
 const mockedAppEligibilityInformation = {
   cohort: Cohort.BCAIS,
-  persona: Persona.Student,
   ageGroup: LegalAgeGroupClassification.Adult,
   isCopilotEnabledRegion: true,
   isCopilotEligible: true,
   isOptedOutByAdmin: false,
-  eduType: EduType.HigherEducation,
+  userClassification: {
+    persona: Persona.Student,
+    eduType: EduType.HigherEducation,
+  },
 };
 
 const copilotRuntimeConfig: Runtime = {
@@ -67,7 +69,9 @@ describe('copilot', () => {
       };
       utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
       expect(copilot.eligibility.isSupported()).toBeFalsy();
-      expect(copilot.eligibility.getEligibilityInfo()).rejects.toEqual(errorNotSupportedOnPlatform);
+      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(
+        expect.objectContaining(errorNotSupportedOnPlatform),
+      );
     });
   });
 });
