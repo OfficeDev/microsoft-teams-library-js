@@ -1138,9 +1138,12 @@ export enum EnterFocusActionItem {
  */
 export enum ReturnFocusActionItem {
   /**
-   * Determines the direction to focus in host.
+   * Determines the direction to focus in host for previous landmark.
    */
   PreviousLandmark,
+  /**
+   * Determines the direction to focus in host for next landmark.
+   */
   NextLandmark,
   /**
    * Determines if the focus should go to the left rail of teams
