@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added a new parameter to `getContext()` API called `appId` for App ID used in deeplinks and by hosts to identify apps",
+  "comment": "Added a new parameter to `app.getContext` called `appId` which contains the current application's AppId. This value is used in deeplinks and by hosts to identify apps",
   "packageName": "@microsoft/teams-js",
   "email": "vikramtha@microsoft.com",
   "dependentChangeType": "patch"
