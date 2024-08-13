@@ -116,7 +116,7 @@
       "boxSelector": "#box_registerFocusEnterHandler",
       "eventName": "focusEnter",
       "eventData": {
-        "navigateForward": true,
+        "navigateForward": false,
         "enterFocusActionItem": "Compose"
       },
       "expectedTestAppValue": "successfully called with navigateForward:false and enterFocusActionItem:Compose"
