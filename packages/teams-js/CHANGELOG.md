@@ -1,8 +1,37 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 05 Jun 2024 20:49:06 GMT and should not be manually modified.
+This log was last generated on Wed, 07 Aug 2024 19:24:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.26.0
+
+Wed, 07 Aug 2024 19:24:31 GMT
+
+### Minor changes
+
+- Added `self` capability that will allow the stage to perform an operation on itself (eg. close). The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added support for any `*.cloud.microsoft` domain to be a valid host
+- Added new fields to `VideoFrameConfig` and `VideoFrameData` to allow specifying additional capabilities to be applied to a video frame and reading arbitrary attributes on a video frame respectively. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
+- Added `chatId` in `pages.navigateToApp` api for deep link support in chat
+
+### Patches
+
+- Added WXP domain for unified store to the dynamic domain list
+- Fixed behavior of the `isValidOriginsCacheEmpty` function whose name was backwards of what it was actually doing
+- Updated error handling of malformed/missing origin URLs
+- Updated `authentication.getUser` to properly unwrap `SdkError` returned from host into a message
+- Used app and authentication apis for diagnostic app functionality.
+
+## 2.25.0
+
+Wed, 03 Jul 2024 18:11:19 GMT
+
+### Patches
+
+- Fixed `dialog.url.submit` api to support only `FrameContext.content`.
+- Updated `clipboard.isSupported` so that it does not depend on `navigator.clipboard` in frameless contexts.
+- Updated whitespace in `clipboard.ts` file to match conventions
 
 ## 2.24.0
 

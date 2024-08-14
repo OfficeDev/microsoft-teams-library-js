@@ -11,30 +11,6 @@ steps:
   - checkout: ${{ parameters.appHostGitPath }}
     persistCredentials: true
 
-  - script: |
-      if command -v google-chrome &> /dev/null; then
-        # Uninstall the existing Chrome
-        sudo apt remove google-chrome-stable --purge -y
-      else
-        echo "Google Chrome is not installed on your system."
-      fi
-
-      CHROME_VERSION="116.0.5845.179"
-
-      # Download the specific Chrome version package
-      wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-
-      # Install the downloaded package
-      sudo dpkg -i google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-
-      # Update package dependencies
-      sudo apt install -f -y
-
-      echo "Google Chrome version ${CHROME_VERSION} has been installed."
-
-      rm google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
-    displayName: 'Fix Chrome browser on V116'
-
   - task: NodeTool@0
     inputs:
       versionSpec: '18.x'
@@ -81,7 +57,9 @@ steps:
   # Below script task checks if Cypress cache is hit or not.
   # If Cypress cache is found skip cypress install.
   - script: |
-      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      CYPRESS_INSTALL_BINARY=0
+      sed -i '/"preinstall":/d' package.json
+      pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (skip Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
@@ -89,6 +67,7 @@ steps:
   # If Cypress cache is not found include cypress install.
   - script: |
       rm -rf $(pnpm store path)
+      sed -i '/"preinstall":/d' package.json
       pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (include Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'

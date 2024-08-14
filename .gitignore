@@ -46,3 +46,40 @@ obj/
 
 #VS Code Local Files
 *.sln
+
+# TypeScript output
+out
+
+# Dependency directories
+node_modules
+
+# Azure Functions artifacts
+bin
+obj
+appsettings.json
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# TeamsFx files
+env/.env.*.user
+.env.local
+build
+appPackage/build
+.deployment
+.localConfigs
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# Dev tool directories
+devTools/
+
+# Ignore Jest JUnit test results
+apps/teamsjs-diagnostic-app/test-results/unit/unit-tests-report.xml
+
+#Ignore package locks
+apps/teamsjs-diagnostic-app/package-lock.json
+apps/teamsjs-diagnostic-app/api/package-lock.json

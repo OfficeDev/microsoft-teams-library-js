@@ -37,6 +37,7 @@ import PagesCurrentAppAPIs from '../components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from '../components/PagesTabsAPIs';
 import PeopleAPIs from '../components/PeopleAPIs';
 import ChatAPIs from '../components/privateApis/ChatAPIs';
+import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppCardActionsAPIs from '../components/privateApis/ExternalAppCardActionsAPIs';
 import ExternalAppCommandsAPIs from '../components/privateApis/ExternalAppCommandsAPIs';
@@ -55,6 +56,7 @@ import SearchAPIs from '../components/SearchAPIs';
 import SecondaryBrowserAPIs from '../components/SecondaryBrowserAPIs';
 import SharingAPIs from '../components/SharingAPIs';
 import StageViewAPIs from '../components/StageViewAPIs';
+import StageViewSelfAPIs from '../components/StageViewSelfAPIs';
 import TeamsCoreAPIs from '../components/TeamsCoreAPIs';
 import ThirdPartyCloudStorageAPIs from '../components/ThirdPartyCloudStorageAPIs';
 import CookieAccessComponent from '../components/ThirdPatryCookies';
@@ -80,6 +82,7 @@ export const TestApp: React.FC = () => {
         <ChatAPIs />
         <ClipboardAPIs />
         <CookieAccessComponent />
+        <CopilotAPIs />
         <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />
@@ -123,6 +126,7 @@ export const TestApp: React.FC = () => {
         <SharingAPIs />
         <WebStorageAPIs />
         <StageViewAPIs />
+        <StageViewSelfAPIs />
         <TeamsCoreAPIs />
         <TeamsAPIs />
         <ThirdPartyCloudStorageAPIs />
