@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
 import { app } from '../../src/public';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
 import { webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
@@ -89,12 +89,74 @@ describe('webStorage', () => {
       await testForReturnValue(false);
     });
 
+    async function getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+      hostClientType: HostClientType,
+      hostName: HostName,
+    ): Promise<boolean> {
+      await utils.initializeWithContext(FrameContexts.content, hostClientType);
+      utils.setRuntimeConfig({ apiVersion: 4, isLegacyTeams: true, supports: { webStorage: {} } });
+
+      const webStoragePromise = webStorage.isWebStorageClearedOnUserLogOut();
+
+      const getContextMessage = utils.findMessageByFunc('getContext');
+      if (getContextMessage === null) {
+        throw new Error(`Could not find getContext message!`);
+      }
+
+      const contextResponse: app.Context = {
+        app: {
+          host: {
+            clientType: hostClientType,
+            name: hostName,
+            sessionId: '',
+          },
+          locale: 'en-us',
+          sessionId: '',
+          theme: 'default',
+        },
+        dialogParameters: {},
+        page: {
+          frameContext: FrameContexts.content,
+          id: '',
+        },
+      };
+
+      await utils.respondToMessage(getContextMessage!, contextResponse);
+
+      return webStoragePromise;
+    }
+
     it('should return true if the host is Teams iOS and the Teams fallback runtime is being used', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+        HostClientType.ios,
+        HostName.teams,
+      );
+
+      expect(result).toStrictEqual(true);
+    });
+
+    it('should return true if the host is Teams iPadOS and the Teams fallback runtime is being used', async () => {
+      expect.assertions(1);
+
+      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+        HostClientType.ipados,
+        HostName.teams,
+      );
+
+      expect(result).toStrictEqual(true);
     });
 
     it('should return true if the host is Teams Android and the Teams fallback runtime is being used', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+        HostClientType.android,
+        HostName.teams,
+      );
+
+      expect(result).toStrictEqual(true);
     });
 
     it('should return false if the host is Outlook Android and the Teams fallback runtime is being used', async () => {
@@ -105,11 +167,27 @@ describe('webStorage', () => {
       expect(true);
     });
 
-    it('should return the value provided in the message response if the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
+    it('should return the true if true is provided in the message response and the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
       expect(true);
     });
 
-    it('should return the value provided in the message response if the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
+    it('should return the false if false is provided in the message response and the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
+    });
+
+    it('should return the true if true is provided in the message response and the host is Teams iPadOS and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
+    });
+
+    it('should return the false if false is provided in the message response and the host is Teams iPadOS and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
+    });
+
+    it('should return the true if true is provided in the message response and the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
+    });
+
+    it('should return the false if false is provided in the message response and the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
       expect(true);
     });
   });

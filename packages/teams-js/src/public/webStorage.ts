@@ -29,7 +29,9 @@ export namespace webStorage {
 
     if (
       runtime.isLegacyTeams &&
-      (GlobalVars.hostClientType === HostClientType.android || GlobalVars.hostClientType === HostClientType.ios) &&
+      (GlobalVars.hostClientType === HostClientType.android ||
+        GlobalVars.hostClientType === HostClientType.ios ||
+        GlobalVars.hostClientType === HostClientType.ipados) &&
       (await getHostName()) === HostName.teams
     ) {
       // On Teams Mobile, they haven't yet implemented this capability. However, for compatibility reasons, we need
