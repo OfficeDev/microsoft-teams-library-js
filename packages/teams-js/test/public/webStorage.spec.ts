@@ -274,7 +274,27 @@ describe('webStorage', () => {
     });
 
     it('should not call getContext from the host more than once when it is called a second time if the host is Teams mobile and the Teams fallback runtime is being used', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
+      );
+
+      utils.messages = utils.messages.filter((message) => message.func !== ApiName.PublicAPIs_GetContext);
+      // In this call, we should not receive a getContext call so this function will fail if there's no getContext message
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        undefined,
+      );
+
+      expect(result).toStrictEqual(true);
     });
   });
 });
