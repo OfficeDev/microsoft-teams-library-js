@@ -4,7 +4,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { app } from './app';
 import { errorNotSupportedOnPlatform, HostClientType, HostName } from './constants';
-import { runtime } from './runtime';
+import { getRuntimeConfigSource, runtime, RuntimeConfigSource } from './runtime';
 
 /**
  * Contains functionality enabling apps to query properties about how the host manages web storage (`Window.LocalStorage`)
@@ -28,6 +28,7 @@ export namespace webStorage {
     }
 
     if (
+      getRuntimeConfigSource() === RuntimeConfigSource.TeamsFallback &&
       (GlobalVars.hostClientType === HostClientType.android || GlobalVars.hostClientType === HostClientType.ios) &&
       (await getHostName()) === HostName.teams
     ) {
@@ -35,6 +36,10 @@ export namespace webStorage {
       // to act as if they do. If they did implement it, they would return true, so that's what we do here.
       // Getting Teams Mobile to implement this is a work-in-progress. Once they do implement it, we can remove this
       // whole if-block. Until then, we cannot send the message to them because they will not understand it.
+      // Once they do implement it, this if-block will automatically not apply because the runtime config source will no
+      // longer be TeamsFallback. So, we don't need to worry about removing this if block "at the right time". We can
+      // just keep it here until Teams Mobile implements this capability and uses the host SDK everywhere, at which
+      // point we can remove this whole if-block at our leisure.
       return true;
     }
 

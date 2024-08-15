@@ -88,5 +88,9 @@ describe('webStorage', () => {
     it('should return false if host returns false', async () => {
       await testForReturnValue(false);
     });
+
+    it('should return true if the host is Teams iOS', async () => {
+      await testForReturnValue(true);
+    });
   });
 });
