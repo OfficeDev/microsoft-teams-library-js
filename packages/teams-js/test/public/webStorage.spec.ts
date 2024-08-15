@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
 import { app } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
-import { webStorage } from '../../src/public/webStorage';
+import { clearWebStorageCachedHostNameForTests, webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
 describe('webStorage', () => {
@@ -45,6 +45,10 @@ describe('webStorage', () => {
   });
 
   describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
+    afterEach(() => {
+      clearWebStorageCachedHostNameForTests();
+    });
+
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
 
@@ -160,7 +164,14 @@ describe('webStorage', () => {
     });
 
     it('should return false if the host is Outlook Android and the Teams fallback runtime is being used', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+        HostClientType.android,
+        HostName.outlook,
+      );
+
+      expect(result).toStrictEqual(false);
     });
 
     it('should return false if the host is Outlook iOS and the Teams fallback runtime is being used', async () => {

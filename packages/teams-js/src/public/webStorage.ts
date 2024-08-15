@@ -51,9 +51,6 @@ export namespace webStorage {
     );
   }
 
-  // It is safe to cache the host name because the host cannot change at runtime
-  let cachedHostName: HostName | null = null;
-
   async function getHostName(): Promise<HostName> {
     if (cachedHostName === null) {
       cachedHostName = (await app.getContext()).app.host.name;
@@ -73,4 +70,12 @@ export namespace webStorage {
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.webStorage !== undefined;
   }
+}
+
+// It is safe to cache the host name because the host cannot change at runtime
+let cachedHostName: HostName | null = null;
+
+// ...except during unit tests, where we will change it at runtime regularly for testing purposes
+export function clearWebStorageCachedHostNameForTests(): void {
+  cachedHostName = null;
 }
