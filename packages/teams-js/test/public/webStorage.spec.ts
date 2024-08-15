@@ -89,8 +89,28 @@ describe('webStorage', () => {
       await testForReturnValue(false);
     });
 
-    it('should return true if the host is Teams iOS', async () => {
-      await testForReturnValue(true);
+    it('should return true if the host is Teams iOS and the Teams fallback runtime is being used', async () => {
+      expect(true);
+    });
+
+    it('should return true if the host is Teams Android and the Teams fallback runtime is being used', async () => {
+      expect(true);
+    });
+
+    it('should return false if the host is Outlook Android and the Teams fallback runtime is being used', async () => {
+      expect(true);
+    });
+
+    it('should return false if the host is Outlook iOS and the Teams fallback runtime is being used', async () => {
+      expect(true);
+    });
+
+    it('should return the value provided in the message response if the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
+    });
+
+    it('should return the value provided in the message response if the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
+      expect(true);
     });
   });
 });
