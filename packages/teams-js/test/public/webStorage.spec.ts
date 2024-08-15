@@ -59,7 +59,7 @@ describe('webStorage', () => {
         .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
     });
 
-    it('should throw errorNotSupportedOnPlatform if webStorage not supported in runtime config', async () => {
+    it('should throw errorNotSupportedOnPlatform if webStorage not supported in runtime config and isLegacyTeams is undefined', async () => {
       expect.assertions(1);
 
       await utils.initializeWithContext(FrameContexts.content);
@@ -70,135 +70,147 @@ describe('webStorage', () => {
         .catch((e) => expect(e).toMatchObject(errorNotSupportedOnPlatform));
     });
 
-    async function testForReturnValue(returnValueToTest: boolean): Promise<void> {
-      expect.assertions(1);
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
-
-      const apiCallPromise = webStorage.isWebStorageClearedOnUserLogOut();
-      const apiCallMessage = utils.findMessageByActionName(ApiName.WebStorage_IsWebStorageClearedOnUserLogOut);
-
-      const messageResponseData = returnValueToTest;
-      await utils.respondToMessage(apiCallMessage, messageResponseData);
-
-      const result = await apiCallPromise;
-      expect(result).toStrictEqual(returnValueToTest);
+    const enum RuntimeSource {
+      LegacyTeams,
+      NotLegacyTeams,
     }
 
-    it('should return true if host returns true', async () => {
-      await testForReturnValue(true);
-    });
+    const enum GetContextCallExpectation {
+      GetContextShouldBeCalled,
+      GetContextShouldNotBeCalled,
+    }
 
-    it('should return false if host returns false', async () => {
-      await testForReturnValue(false);
-    });
-
-    async function getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+    async function callAndAnswerIsWebStorageClearedOnUserLogOut(
       hostClientType: HostClientType,
       hostName: HostName,
+      runtimeSource: RuntimeSource,
+      getContextCallExpectation: GetContextCallExpectation,
+      webStorageMessageResponse: undefined | boolean, // undefined means no web storage message should be sent, a boolean value indicates how to respond when it is sent
     ): Promise<boolean> {
       await utils.initializeWithContext(FrameContexts.content, hostClientType);
-      utils.setRuntimeConfig({ apiVersion: 4, isLegacyTeams: true, supports: { webStorage: {} } });
+      utils.setRuntimeConfig({
+        apiVersion: 4,
+        isLegacyTeams: runtimeSource === RuntimeSource.LegacyTeams,
+        supports: { webStorage: {} },
+      });
 
       const webStoragePromise = webStorage.isWebStorageClearedOnUserLogOut();
 
-      const getContextMessage = utils.findMessageByFunc('getContext');
-      if (getContextMessage === null) {
-        throw new Error(`Could not find getContext message!`);
+      if (getContextCallExpectation === GetContextCallExpectation.GetContextShouldBeCalled) {
+        const getContextMessage = utils.findMessageByActionName(ApiName.PublicAPIs_GetContext);
+
+        const contextResponse: app.Context = {
+          app: {
+            host: {
+              clientType: hostClientType,
+              name: hostName,
+              sessionId: '',
+            },
+            locale: 'en-us',
+            sessionId: '',
+            theme: 'default',
+          },
+          dialogParameters: {},
+          page: {
+            frameContext: FrameContexts.content,
+            id: '',
+          },
+        };
+
+        await utils.respondToMessage(getContextMessage!, contextResponse);
       }
 
-      const contextResponse: app.Context = {
-        app: {
-          host: {
-            clientType: hostClientType,
-            name: hostName,
-            sessionId: '',
-          },
-          locale: 'en-us',
-          sessionId: '',
-          theme: 'default',
-        },
-        dialogParameters: {},
-        page: {
-          frameContext: FrameContexts.content,
-          id: '',
-        },
-      };
-
-      await utils.respondToMessage(getContextMessage!, contextResponse);
+      if (webStorageMessageResponse !== undefined) {
+        const webStorageMessage = utils.findMessageByActionName(ApiName.WebStorage_IsWebStorageClearedOnUserLogOut);
+        await utils.respondToMessage(webStorageMessage, webStorageMessageResponse);
+      }
 
       return webStoragePromise;
     }
 
-    it('should return true if the host is Teams iOS and the Teams fallback runtime is being used', async () => {
+    it('should return true; HOST: Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true', async () => {
       expect.assertions(1);
 
-      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
         HostClientType.ios,
         HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
       );
 
       expect(result).toStrictEqual(true);
     });
 
-    it('should return true if the host is Teams iPadOS and the Teams fallback runtime is being used', async () => {
+    it('should return true; HOST: Teams, PLATFORM: iPadOS, TEAMS_LEGACY_RUNTIME: true', async () => {
       expect.assertions(1);
 
-      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
         HostClientType.ipados,
         HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
       );
 
       expect(result).toStrictEqual(true);
     });
 
-    it('should return true if the host is Teams Android and the Teams fallback runtime is being used', async () => {
+    it('should return true; HOST: Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: true', async () => {
       expect.assertions(1);
 
-      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
         HostClientType.android,
         HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
       );
 
       expect(result).toStrictEqual(true);
     });
 
-    it('should return false if the host is Outlook Android and the Teams fallback runtime is being used', async () => {
+    it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true, host returns: true', async () => {
       expect.assertions(1);
 
-      const result = await getIsWebStorageClearedOnUserLogOutResponseForHostAndPlatform(
-        HostClientType.android,
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
         HostName.outlook,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
       );
 
-      expect(result).toStrictEqual(false);
+      expect(result).toStrictEqual(hostResponse);
     });
 
-    it('should return false if the host is Outlook iOS and the Teams fallback runtime is being used', async () => {
+    it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
       expect(true);
     });
 
-    it('should return the true if true is provided in the message response and the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
+    it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
       expect(true);
     });
 
-    it('should return the false if false is provided in the message response and the host is Teams iOS and the Teams fallback runtime is NOT being used', async () => {
+    it('should return true; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
       expect(true);
     });
 
-    it('should return the true if true is provided in the message response and the host is Teams iPadOS and the Teams fallback runtime is NOT being used', async () => {
+    it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
       expect(true);
     });
 
-    it('should return the false if false is provided in the message response and the host is Teams iPadOS and the Teams fallback runtime is NOT being used', async () => {
+    it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
       expect(true);
     });
 
-    it('should return the true if true is provided in the message response and the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
+    it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
       expect(true);
     });
 
-    it('should return the false if false is provided in the message response and the host is Teams Android and the Teams fallback runtime is NOT being used', async () => {
+    it('should not call getContext from the host more than once when it is called a second time if the host is Teams mobile and the Teams fallback runtime is being used', async () => {
       expect(true);
     });
   });
