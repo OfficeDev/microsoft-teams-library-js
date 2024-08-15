@@ -676,25 +676,7 @@ export function generateVersionBasedTeamsRuntimeConfig(
 }
 
 const applyRuntimeConfigLogger = runtimeLogger.extend('applyRuntimeConfig');
-
-export const enum RuntimeConfigSource {
-  HostProvided, // The host provided the runtime config
-  TeamsFallback, // The host did not provide the runtime config, so we used the Teams fallback
-}
-
-let runtimeConfigSource: RuntimeConfigSource | undefined = undefined;
-
-/*
- * Indicates from whence the runtime config that is currently in use came
- * @returns The source of the runtime config or undefined if no runtime config has yet been applied
- */
-export function getRuntimeConfigSource(): RuntimeConfigSource | undefined {
-  return runtimeConfigSource;
-}
-
-export function applyRuntimeConfig(runtimeConfig: IBaseRuntime, source: RuntimeConfigSource): void {
-  runtimeConfigSource = source;
-
+export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
   // Some hosts that have not adopted runtime versioning send a string for apiVersion, so we should handle those as v1 inputs
   if (typeof runtimeConfig.apiVersion === 'string') {
     applyRuntimeConfigLogger('Trying to apply runtime with string apiVersion, processing as v1: %o', runtimeConfig);

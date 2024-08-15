@@ -7,7 +7,6 @@ import {
   applyRuntimeConfig,
   fastForwardRuntime,
   generateVersionBasedTeamsRuntimeConfig,
-  getRuntimeConfigSource,
   IBaseRuntime,
   ICapabilityReqs,
   isRuntimeInitialized,
@@ -15,7 +14,6 @@ import {
   mapTeamsVersionToSupportedCapabilities,
   Runtime,
   runtime,
-  RuntimeConfigSource,
   setUnitializedRuntime,
   upgradeChain,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
@@ -47,19 +45,6 @@ describe('runtime', () => {
       expect(latestRuntimeApiVersion).toEqual(runtime.apiVersion);
     });
 
-    it('applyRuntime properly remembers and returns the runtime config source', () => {
-      const runtimeV3 = {
-        apiVersion: 3,
-        isLegacyTeams: false,
-        supports: {
-          appEntity: {},
-        },
-      };
-      const runtimeConfigSource: RuntimeConfigSource = RuntimeConfigSource.HostProvided;
-      applyRuntimeConfig(runtimeV4, runtimeConfigSource);
-      expect(getRuntimeConfigSource()).toEqual(runtimeConfigSource);
-    });
-
     it('applyRuntime fast-forwards v4 runtime config to latest version', () => {
       const runtimeV4 = {
         apiVersion: 4,
@@ -77,7 +62,7 @@ describe('runtime', () => {
           },
         },
       };
-      applyRuntimeConfig(runtimeV4, RuntimeConfigSource.HostProvided);
+      applyRuntimeConfig(runtimeV4);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
         // eslint-disable-next-line strict-null-checks/all
@@ -93,7 +78,7 @@ describe('runtime', () => {
           appEntity: {},
         },
       };
-      applyRuntimeConfig(runtimeV3, RuntimeConfigSource.HostProvided);
+      applyRuntimeConfig(runtimeV3);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
         // eslint-disable-next-line strict-null-checks/all
@@ -128,7 +113,7 @@ describe('runtime', () => {
         },
         update: {},
       };
-      applyRuntimeConfig(runtimeV2, RuntimeConfigSource.HostProvided);
+      applyRuntimeConfig(runtimeV2);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
       if (isRuntimeInitialized(runtime)) {
         /* eslint-disable-next-line strict-null-checks/all, @typescript-eslint/no-explicit-any*/ /* must use any here since appNotification isn't supposed to be a property anymore */
@@ -173,7 +158,7 @@ describe('runtime', () => {
         isLegacyTeams: false,
         supports: {},
       };
-      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime, RuntimeConfigSource.HostProvided);
+      applyRuntimeConfig(runtimeWithStringVersion as unknown as IBaseRuntime);
       expect(runtime.apiVersion).toEqual(latestRuntimeApiVersion);
     });
 

@@ -32,7 +32,6 @@ import {
   IBaseRuntime,
   mapTeamsVersionToSupportedCapabilities,
   runtime,
-  RuntimeConfigSource,
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from './runtime';
 import { version } from './version';
@@ -121,7 +120,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
             if (!givenRuntimeConfig || !givenRuntimeConfig.apiVersion) {
               throw new Error('Received runtime config is invalid');
             }
-            runtimeConfig && applyRuntimeConfig(givenRuntimeConfig, RuntimeConfigSource.HostProvided);
+            runtimeConfig && applyRuntimeConfig(givenRuntimeConfig);
           } catch (e) {
             if (e instanceof SyntaxError) {
               try {
@@ -141,7 +140,7 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                     'givenRuntimeConfig string was successfully parsed. However, it parsed to value of null',
                   );
                 } else {
-                  applyRuntimeConfig(givenRuntimeConfig, RuntimeConfigSource.HostProvided);
+                  applyRuntimeConfig(givenRuntimeConfig);
                 }
               } catch (e) {
                 if (e instanceof SyntaxError) {
@@ -151,7 +150,6 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
                       versionAndPlatformAgnosticTeamsRuntimeConfig,
                       mapTeamsVersionToSupportedCapabilities,
                     ),
-                    RuntimeConfigSource.TeamsFallback,
                   );
                 } else {
                   throw e;

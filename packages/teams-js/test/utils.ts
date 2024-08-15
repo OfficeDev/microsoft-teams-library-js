@@ -7,7 +7,7 @@ import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
 import { app } from '../src/public/app';
-import { applyRuntimeConfig, IBaseRuntime, RuntimeConfigSource, setUnitializedRuntime } from '../src/public/runtime';
+import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {
   const message = {
@@ -346,7 +346,7 @@ export class Utils {
    * To be called after initializeWithContext to set the runtimeConfig
    */
   public setRuntimeConfig = (runtimeConfig: IBaseRuntime): void => {
-    applyRuntimeConfig(runtimeConfig, RuntimeConfigSource.HostProvided);
+    applyRuntimeConfig(runtimeConfig);
   };
 
   /**
