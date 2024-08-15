@@ -216,9 +216,9 @@ describe('webStorage', () => {
 
       const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
         HostClientType.android,
-        HostName.places,
+        HostName.orange,
         RuntimeSource.NotLegacyTeams,
-        GetContextCallExpectation.GetContextShouldBeCalled,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
         hostResponse,
       );
 
@@ -226,15 +226,51 @@ describe('webStorage', () => {
     });
 
     it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.places,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.teamsModern,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.office,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should not call getContext from the host more than once when it is called a second time if the host is Teams mobile and the Teams fallback runtime is being used', async () => {
