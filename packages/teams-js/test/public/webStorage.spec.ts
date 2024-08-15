@@ -178,15 +178,51 @@ describe('webStorage', () => {
     });
 
     it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.office,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.outlookWin32,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should return true; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
-      expect(true);
+      expect.assertions(1);
+
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.places,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
     });
 
     it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
