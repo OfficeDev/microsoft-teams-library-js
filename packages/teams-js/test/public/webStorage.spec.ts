@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
-import { app } from '../../src/public';
+import { app, Context } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
 import { clearWebStorageCachedHostNameForTests, webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
@@ -99,29 +99,20 @@ describe('webStorage', () => {
       if (getContextCallExpectation === GetContextCallExpectation.GetContextShouldBeCalled) {
         const getContextMessage = utils.findMessageByActionName(ApiName.PublicAPIs_GetContext);
 
-        const contextResponse: app.Context = {
-          app: {
-            host: {
-              clientType: hostClientType,
-              name: hostName,
-              sessionId: '',
-            },
-            locale: 'en-us',
-            sessionId: '',
-            theme: 'default',
-          },
-          dialogParameters: {},
-          page: {
-            frameContext: FrameContexts.content,
-            id: '',
-          },
+        const contextResponse: Context = {
+          entityId: '',
+          hostName,
+          hostClientType,
+          locale: 'en-us',
         };
 
         await utils.respondToMessage(getContextMessage!, contextResponse);
       }
 
       if (webStorageMessageResponse !== undefined) {
-        const webStorageMessage = utils.findMessageByActionName(ApiName.WebStorage_IsWebStorageClearedOnUserLogOut);
+        const webStorageMessage = await utils.waitUntilMessageIsSent(
+          ApiName.WebStorage_IsWebStorageClearedOnUserLogOut,
+        );
         await utils.respondToMessage(webStorageMessage, webStorageMessageResponse);
       }
 
