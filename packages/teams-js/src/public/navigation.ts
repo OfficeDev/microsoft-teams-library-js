@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { ReturnFocusType, TabInstance } from './interfaces';
+import { TabInstance } from './interfaces';
 import {
   backStackNavigateBackHelper,
   navigateCrossDomainHelper,
@@ -24,17 +24,16 @@ const navigationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean, returnFocusType?: ReturnFocusType): void} instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.returnFocus pages.returnFocus(navigateForward?: boolean): void} instead.
  *
  * Return focus to the main Teams app. Will focus search bar if navigating foward and app bar if navigating back.
  *
  * @param navigateForward - Determines the direction to focus in teams app.
  */
-export function returnFocus(navigateForward?: boolean, returnFocusType?: ReturnFocusType): void {
+export function returnFocus(navigateForward?: boolean): void {
   returnFocusHelper(
     getApiVersionTag(navigationTelemetryVersionNumber, ApiName.Navigation_ReturnFocus),
     navigateForward,
-    returnFocusType,
   );
 }
 

@@ -15,15 +15,7 @@ import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
-import {
-  EnterFocusType,
-  FrameInfo,
-  ReturnFocusType,
-  ShareDeepLinkParameters,
-  TabInformation,
-  TabInstance,
-  TabInstanceParameters,
-} from './interfaces';
+import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -79,13 +71,26 @@ export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabI
 export function returnFocusHelper(
   apiVersionTag: string,
   navigateForward?: boolean,
-  returnFocusType?: ReturnFocusType,
+  returnFocusType?: pages.ReturnFocusType,
 ): void {
   ensureInitialized(runtime);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward, returnFocusType]);
+  if (navigateForward === undefined && returnFocusType === undefined) {
+    sendMessageToParent(apiVersionTag, 'returnFocus', [false]);
+  }
+  if (typeof navigateForward === 'boolean') {
+    sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward]);
+  } else {
+    switch (returnFocusType) {
+      case pages.ReturnFocusType.PreviousLandmark:
+      case pages.ReturnFocusType.GoToActivityFeed:
+        sendMessageToParent(apiVersionTag, 'returnFocus', [false, returnFocusType]);
+      case pages.ReturnFocusType.NextLandmark:
+        sendMessageToParent(apiVersionTag, 'returnFocus', [true, returnFocusType]);
+    }
+  }
 }
 
 export function getTabInstancesHelper(
@@ -186,17 +191,78 @@ export namespace pages {
   export type removeEventType = (evt: pages.config.RemoveEvent) => void;
 
   /**
+   * @hidden
+   * List of enter focus action items
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum EnterFocusType {
+    /**
+     * Determines the previous direction to focus in app when hot keys entered.
+     */
+    PreviousLandmark = 0,
+    /**
+     * Determines the next direction to focus in app when hot keys entered.
+     */
+    NextLandmark = 1,
+    /**
+     * Determines if the focus should go to the particular content of the app.
+     * Read - Focus should go to the content of the app.
+     */
+    Read = 2,
+    /**
+     * Determines if the focus should go to the particular content of the app.
+     * Compose - Focus should go to the compose area (such as textbox) of the app.
+     */
+    Compose = 3,
+  }
+
+  /**
+   * Return focus action items
+   */
+  export enum ReturnFocusType {
+    /**
+     * Determines the direction to focus in host for previous landmark.
+     */
+    PreviousLandmark = 0,
+    /**
+     * Determines the direction to focus in host for next landmark.
+     */
+    NextLandmark = 1,
+    /**
+     * Determines if the focus should go to the left rail of teams
+     */
+    GoToActivityFeed = 2,
+  }
+
+  /**
+   * @deprecated
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
    * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
    * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
-   * @param returnFocusType - Determines the type of focus to return to in the host.
    */
-  export function returnFocus(navigateForward?: boolean, returnFocusType?: ReturnFocusType): void {
+  export function returnFocus(navigateForward?: boolean): void {
     returnFocusHelper(
       getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus),
       navigateForward,
+      undefined,
+    );
+  }
+
+  /**
+   * Return focus to the host. Will move focus forward, backward or activity feed based on where the application container falls in
+   * the F6/tab order in the host.
+   * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
+   * effect and will be a no-op when called.
+   * @param returnFocusType - Determines the type of focus to return to in the host.
+   */
+  export function returnFocus(returnFocusType: ReturnFocusType): void {
+    returnFocusHelper(
+      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus),
+      undefined,
       returnFocusType,
     );
   }

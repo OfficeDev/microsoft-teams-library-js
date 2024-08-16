@@ -5,14 +5,7 @@ import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import {
-  EnterFocusType,
-  FrameInfo,
-  ReturnFocusType,
-  ShareDeepLinkParameters,
-  TabInstance,
-  TabInstanceParameters,
-} from '../../src/public/interfaces';
+import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import { pages } from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
@@ -2157,14 +2150,14 @@ describe('Testing pages module', () => {
           await utils.initializeWithContext(context);
 
           let handlerInvoked = false;
-          pages.registerFocusEnterHandler((x: boolean, enterFocusType: EnterFocusType) => {
+          pages.registerFocusEnterHandler((x: boolean, enterFocusType: pages.EnterFocusType) => {
             handlerInvoked = true;
             return true;
           });
           await utils.respondToFramelessMessage({
             data: {
               func: 'focusEnter',
-              args: [true, EnterFocusType.NextLandmark],
+              args: [true, pages.EnterFocusType.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();

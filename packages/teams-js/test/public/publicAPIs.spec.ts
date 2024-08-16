@@ -3,7 +3,7 @@ import * as utilFunc from '../../src/internal/utils';
 import { app } from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
-import { Context, EnterFocusType, FrameContext, LoadContext, TabInstanceParameters } from '../../src/public/interfaces';
+import { Context, FrameContext, LoadContext, TabInstanceParameters } from '../../src/public/interfaces';
 import * as microsoftTeams from '../../src/public/publicAPIs';
 import {
   enablePrintCapability,
@@ -271,19 +271,6 @@ describe('MicrosoftTeams-publicAPIs', () => {
 
     let handlerInvoked = false;
     registerFocusEnterHandler((_x: boolean) => {
-      handlerInvoked = true;
-      return true;
-    });
-
-    await utils.sendMessage('focusEnter');
-    expect(handlerInvoked).toBe(true);
-  });
-
-  it('should successfully register a focus enter handler when EnterFocusType is marked and return true', async () => {
-    await utils.initializeWithContext(FrameContexts.content);
-
-    let handlerInvoked = false;
-    registerFocusEnterHandler((_x: boolean, _enterFocusType: EnterFocusType) => {
       handlerInvoked = true;
       return true;
     });
