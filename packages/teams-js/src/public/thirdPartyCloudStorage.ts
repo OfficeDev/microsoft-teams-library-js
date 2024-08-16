@@ -124,10 +124,14 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Defines the callback function received from Third Party App
+   * @param {FilesFor3PStorage} files - array which will store all the files.
+   * @param {SdkError} error - sdk error
    * @beta
    */
   export interface DragAndDropFileCallback {
-    /** Callback from third party app */
+    /**
+     * Callback from third party app
+     */
     (files: FilesFor3PStorage[], error?: SdkError): void;
   }
 
@@ -136,7 +140,8 @@ export namespace thirdPartyCloudStorage {
   /**
    * Get drag-and-drop files using a callback.
    *
-   * @param {string} dragAndDropInput - Teams thread id or Teams conversation id from a Teams chat/channel
+   * @param {string} dragAndDropInput - unique id which is a combination of replyToId + threadId of teams chat and channel.
+   *  Both ReplyToId and threadId can be fetched from application context.
    * @param {DragAndDropFileCallback} dragAndDropFileCallback - callback
    *   A callback function to handle the result of the operation
    * @beta
