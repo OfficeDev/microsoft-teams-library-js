@@ -162,14 +162,14 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     title: 'Register On Focus Enter Handler',
     onClick: {
       withPromise: async (setResult) => {
-        pages.registerFocusEnterHandler((navigateForward) => {
+        pages.registerFocusEnterHandler((navigateForward, enterFocusType) => {
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });
         return 'registered';
       },
       withCallback: (setResult) => {
-        registerFocusEnterHandler((navigateForward) => {
+        registerFocusEnterHandler((navigateForward, enterFocusType) => {
           setResult('successfully called with navigateForward:' + navigateForward);
           return true;
         });

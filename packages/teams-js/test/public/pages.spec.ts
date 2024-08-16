@@ -6,9 +6,9 @@ import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import {
-  EnterFocusActionItem,
+  EnterFocusType,
   FrameInfo,
-  ReturnFocusActionItem,
+  ReturnFocusType,
   ShareDeepLinkParameters,
   TabInstance,
   TabInstanceParameters,
@@ -66,10 +66,10 @@ describe('Testing pages module', () => {
           validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true, undefined);
         });
 
-        it(`pages.returnFocus should successfully return focus when returnFocusActionItem is set and initialized with ${context} context`, async () => {
+        it(`pages.returnFocus should successfully return focus when ReturnFocusType is set and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
-          pages.returnFocus(true, ReturnFocusActionItem.NextLandmark);
+          pages.returnFocus(true, ReturnFocusType.NextLandmark);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           validateExpectedArgumentsInRequest(
@@ -77,7 +77,7 @@ describe('Testing pages module', () => {
             'returnFocus',
             MatcherType.ToBe,
             true,
-            ReturnFocusActionItem.NextLandmark,
+            ReturnFocusType.NextLandmark,
           );
         });
 
@@ -2153,18 +2153,18 @@ describe('Testing pages module', () => {
           expect(handlerInvoked).toBeTruthy();
         });
 
-        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusActionItem set to nextLandmark and initialized with ${context} context`, async () => {
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusType set to nextLandmark and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
           let handlerInvoked = false;
-          pages.registerFocusEnterHandler((x: boolean, enterFocusActionItems: EnterFocusActionItem) => {
+          pages.registerFocusEnterHandler((x: boolean, enterFocusType: EnterFocusType) => {
             handlerInvoked = true;
             return true;
           });
           await utils.respondToFramelessMessage({
             data: {
               func: 'focusEnter',
-              args: [true, EnterFocusActionItem.NextLandmark],
+              args: [true, EnterFocusType.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();

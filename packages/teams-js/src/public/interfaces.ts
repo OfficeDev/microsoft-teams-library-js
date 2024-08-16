@@ -1120,7 +1120,7 @@ export interface ClipboardParams {
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum EnterFocusActionItem {
+export enum EnterFocusType {
   /**
    * Determines the direction to focus in app.
    */
@@ -1128,6 +1128,8 @@ export enum EnterFocusActionItem {
   NextLandmark,
   /**
    * Determines if the focus should go to the particular content of the app.
+   * Read - Focus should go to the content of the app.
+   * Compose - Focus should go to the compose area (such as textbox) of the app.
    */
   Read,
   Compose,
@@ -1136,7 +1138,7 @@ export enum EnterFocusActionItem {
 /**
  * Return focus action items
  */
-export enum ReturnFocusActionItem {
+export enum ReturnFocusType {
   /**
    * Determines the direction to focus in host for previous landmark.
    */
@@ -1148,5 +1150,5 @@ export enum ReturnFocusActionItem {
   /**
    * Determines if the focus should go to the left rail of teams
    */
-  GoToLeftRail,
+  GoToActivityFeed,
 }

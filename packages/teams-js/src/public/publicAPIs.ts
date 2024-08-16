@@ -9,7 +9,7 @@ import { FrameContexts } from './constants';
 import {
   Context,
   DeepLinkParameters,
-  EnterFocusActionItem,
+  EnterFocusType,
   FrameContext,
   LoadContext,
   TabInformation,
@@ -244,7 +244,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link pages.registerFocusEnterHandler pages.registerFocusEnterHandler(handler: (navigateForward: boolean, enterFocusActionItem: EnterFocusActionItem) => void): void} instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.registerFocusEnterHandler pages.registerFocusEnterHandler(handler: (navigateForward: boolean, enterFocusType: EnterFocusType) => void): void} instead.
  *
  * @hidden
  * Registers a handler when focus needs to be passed from teams to the place of choice on app.
@@ -252,7 +252,7 @@ export function registerBeforeUnloadHandler(handler: (readyToUnload: callbackFun
  * @param handler - The handler to invoked by the app when they want the focus to be in the place of their choice.
  */
 export function registerFocusEnterHandler(
-  handler: (navigateForward: boolean, enterFocusActionItem?: EnterFocusActionItem) => boolean,
+  handler: (navigateForward: boolean, enterFocusType?: EnterFocusType) => boolean,
 ): void {
   registerHandlerHelper(
     getApiVersionTag(publicAPIsTelemetryVersionNumber, ApiName.PublicAPIs_RegisterFocusEnterHandler),
