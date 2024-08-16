@@ -52,7 +52,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
         const returnFocusMessage = utils.findMessageByFunc('returnFocus');
         expect(returnFocusMessage).not.toBeNull();
-        expect(returnFocusMessage.args.length).toBe(2);
+        expect(returnFocusMessage.args.length).toBe(1);
         expect(returnFocusMessage.args[0]).toBe(true);
       });
 
@@ -63,7 +63,7 @@ describe('MicrosoftTeams-Navigation', () => {
 
         const returnFocusMessage = utils.findMessageByFunc('returnFocus');
         expect(returnFocusMessage).not.toBeNull();
-        expect(returnFocusMessage.args.length).toBe(2);
+        expect(returnFocusMessage.args.length).toBe(1);
         expect(returnFocusMessage.args[0]).toBe(false);
       });
     });

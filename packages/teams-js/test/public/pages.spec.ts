@@ -56,13 +56,13 @@ describe('Testing pages module', () => {
           pages.returnFocus(true);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true, undefined);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
         });
 
         it(`pages.returnFocus should successfully return focus when ReturnFocusType is set and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
-          pages.returnFocus(true, ReturnFocusType.NextLandmark);
+          pages.returnFocus(pages.ReturnFocusType.NextLandmark);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           validateExpectedArgumentsInRequest(
@@ -70,7 +70,7 @@ describe('Testing pages module', () => {
             'returnFocus',
             MatcherType.ToBe,
             true,
-            ReturnFocusType.NextLandmark,
+            pages.ReturnFocusType.NextLandmark,
           );
         });
 
@@ -80,7 +80,7 @@ describe('Testing pages module', () => {
           pages.returnFocus(false);
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
-          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, false, undefined);
+          validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, false);
         });
       });
     });
@@ -2084,7 +2084,7 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(2);
+          expect(returnFocusMessage.args.length).toBe(1);
           expect(returnFocusMessage.args[0]).toBe(true);
         });
 
@@ -2095,7 +2095,7 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           expect(returnFocusMessage).not.toBeNull();
-          expect(returnFocusMessage.args.length).toBe(2);
+          expect(returnFocusMessage.args.length).toBe(1);
           expect(returnFocusMessage.args[0]).toBe(false);
         });
       });

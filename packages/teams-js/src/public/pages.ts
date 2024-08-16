@@ -68,29 +68,12 @@ export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabI
 /**
  * @hidden
  */
-export function returnFocusHelper(
-  apiVersionTag: string,
-  navigateForward?: boolean,
-  returnFocusType?: pages.ReturnFocusType,
-): void {
+export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
   ensureInitialized(runtime);
   if (!pages.isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  if (navigateForward === undefined && returnFocusType === undefined) {
-    sendMessageToParent(apiVersionTag, 'returnFocus', [false]);
-  }
-  if (typeof navigateForward === 'boolean') {
-    sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward]);
-  } else {
-    switch (returnFocusType) {
-      case pages.ReturnFocusType.PreviousLandmark:
-      case pages.ReturnFocusType.GoToActivityFeed:
-        sendMessageToParent(apiVersionTag, 'returnFocus', [false, returnFocusType]);
-      case pages.ReturnFocusType.NextLandmark:
-        sendMessageToParent(apiVersionTag, 'returnFocus', [true, returnFocusType]);
-    }
-  }
+  sendMessageToParent(apiVersionTag, 'returnFocus', [navigateForward]);
 }
 
 export function getTabInstancesHelper(
@@ -244,13 +227,7 @@ export namespace pages {
    * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
-  export function returnFocus(navigateForward?: boolean): void {
-    returnFocusHelper(
-      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus),
-      navigateForward,
-      undefined,
-    );
-  }
+  export function returnFocus(navigateForward?: boolean): void;
 
   /**
    * Return focus to the host. Will move focus forward, backward or activity feed based on where the application container falls in
@@ -259,12 +236,31 @@ export namespace pages {
    * effect and will be a no-op when called.
    * @param returnFocusType - Determines the type of focus to return to in the host.
    */
-  export function returnFocus(returnFocusType: ReturnFocusType): void {
-    returnFocusHelper(
-      getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus),
-      undefined,
-      returnFocusType,
-    );
+  export function returnFocus(returnFocusType: pages.ReturnFocusType): void;
+
+  /**
+   * @hidden
+   */
+  export function returnFocus(arg1?: boolean | pages.ReturnFocusType): void {
+    const apiVersionTag = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus);
+    ensureInitialized(runtime);
+    if (!pages.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (arg1 === undefined) {
+      sendMessageToParent(apiVersionTag, 'returnFocus', [false]);
+    }
+    if (typeof arg1 === 'boolean') {
+      sendMessageToParent(apiVersionTag, 'returnFocus', [arg1]);
+    } else {
+      switch (arg1) {
+        case pages.ReturnFocusType.PreviousLandmark:
+        case pages.ReturnFocusType.GoToActivityFeed:
+          sendMessageToParent(apiVersionTag, 'returnFocus', [false, arg1]);
+        case pages.ReturnFocusType.NextLandmark:
+          sendMessageToParent(apiVersionTag, 'returnFocus', [true, arg1]);
+      }
+    }
   }
 
   /**
