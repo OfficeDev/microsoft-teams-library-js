@@ -38,6 +38,7 @@ import PagesCurrentAppAPIs from '../components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from '../components/PagesTabsAPIs';
 import PeopleAPIs from '../components/PeopleAPIs';
 import ChatAPIs from '../components/privateApis/ChatAPIs';
+import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppCardActionsAPIs from '../components/privateApis/ExternalAppCardActionsAPIs';
 import ExternalAppCommandsAPIs from '../components/privateApis/ExternalAppCommandsAPIs';
@@ -82,6 +83,7 @@ export const TestApp: React.FC = () => {
         <ChatAPIs />
         <ClipboardAPIs />
         <CookieAccessComponent />
+        <CopilotAPIs />
         <CustomAPIs />
         <DialogAPIs />
         <DialogCardAPIs />

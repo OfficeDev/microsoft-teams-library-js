@@ -1099,6 +1099,7 @@ export enum DevicePermission {
 /** @hidden */
 export interface HostVersionsInfo {
   adaptiveCardSchemaVersion?: AdaptiveCardVersion;
+  appEligibilityInformation?: AppEligibilityInformation;
 }
 
 /**
@@ -1109,6 +1110,155 @@ export interface AdaptiveCardVersion {
   majorVersion: number;
   /** Represents the minor version number. */
   minorVersion: number;
+}
+
+/**
+ * @hidden
+ * Eligibility Information for the app user.
+ *
+ * @beta
+ */
+export interface AppEligibilityInformation {
+  /**
+   * Describes the user’s age group, which can have implications on which product they are able to use.
+   */
+  ageGroup: LegalAgeGroupClassification | null;
+  /**
+   * Describes the user’s chat experience based on their eligible licenses & their tenant’s eligible licenses.
+   * A user will be in at most one cohort.
+   */
+  cohort: Cohort | null;
+  /**
+   * Indicates that the user is eligible for Microsoft Entra ID Authenticated Copilot experience.
+   */
+  isCopilotEligible: boolean;
+  /**
+   * Implementation may change to be based on tenant-home region rather than IP.
+   */
+  isCopilotEnabledRegion: boolean;
+  /**
+   * Indicates if the tenant admin has opted the user out of Copilot.
+   */
+  isOptedOutByAdmin: boolean;
+  /**
+   * Education Eligibility Information for the app user
+   */
+  userClassification: UserClassification;
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export interface UserClassificationWithEduType {
+  /**
+   * For EDU tenants only. Indicates if the tenant is higher ed or K12.
+   */
+  eduType: EduType;
+  /**
+   * Describes additional traits of the user that contribute to FRE experience, etc.
+   */
+  persona: Persona.Faculty | Persona.Student;
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export interface UserClassificationWithOtherType {
+  persona: Persona.Other;
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export type UserClassification = UserClassificationWithEduType | UserClassificationWithOtherType;
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export enum Cohort {
+  BCAIS = 'bcais',
+  BCWAF = 'bcwaf',
+  BCWBF = 'bcwbf',
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export enum Persona {
+  /**
+   * User has a faculty license
+   */
+  Faculty = 'faculty',
+  /**
+   * User has a student license
+   */
+  Student = 'student',
+  /**
+   * When user is not a faculty or student
+   */
+  Other = 'other',
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+// https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#legalagegroupclassification-values
+export enum LegalAgeGroupClassification {
+  /**
+   * The user is considered an adult based on the age-related regulations of their country or region.
+   */
+  Adult = 'adult',
+  /**
+   * The user is a minor but is from a country or region that has no age-related regulations.
+   */
+  MinorNoParentalConsentRequired = 'minorNoParentalConsentRequired',
+  /**
+   * Reserved for future use
+   */
+  MinorWithoutParentalConsent = 'minorWithoutParentalConsent',
+  /**
+   * The user is considered a minor based on the age-related regulations of their country or region, and the administrator
+   * of the account obtained appropriate consent from a parent or guardian.
+   */
+  MinorWithParentalConsent = 'minorWithParentalConsent',
+  /**
+   * The user is from a country or region that has additional age-related regulations, such as the United States,
+   * United Kingdom, European Union, or South Korea, and the user's age is between a minor and an adult age
+   * (as stipulated based on country or region). Generally, this means that teenagers are considered as notAdult in regulated countries.
+   */
+  NonAdult = 'nonAdult',
+}
+
+/**
+ * @hidden
+ *
+ * @beta
+ */
+export enum EduType {
+  /**
+   * User is from a tenant labeled as “HigherEd”
+   */
+  HigherEducation = 'higherEducation',
+  /**
+   * User is from a tenant labeled as “K12”
+   */
+  K12 = 'k12',
+  /**
+   * User is from a tenant labeled as “Others” (e.g. research institutions)
+   */
+  Other = 'other',
 }
 
 /**
