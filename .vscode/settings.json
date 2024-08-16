@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["adal", "teamspace", "uninitialize", "xvfb"],
+  "cSpell.words": ["adal", "ipados", "teamspace", "uninitialize", "xvfb"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,
