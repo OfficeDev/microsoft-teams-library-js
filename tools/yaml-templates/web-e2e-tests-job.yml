@@ -58,10 +58,10 @@ jobs:
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
           - bash: |
-              pnpm exec ts-node tools/cli/testAppManagerCli.ts --envType=test
-              # This runs the Electron integration-layer tests, which currently cannot be filtered
+              pnpm exec ts-node tools/cli/serverManagerCli.ts --envType=orange --serverUrl=https://local.teams.office.com:8080
+              # This runs the Electron-integration layer tests, which currently cannot be filtered
               pnpm exec xvfb-maybe playwright test
-            displayName: 'Run Electron Integration-Layer tests'
+            displayName: 'Run Electron-Integration Layer tests'
             condition: and(succeeded(), eq('${{ parameters.hostingEnvironmentType }}', 'electron'))
             workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
