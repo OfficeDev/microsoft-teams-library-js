@@ -1,3 +1,4 @@
+import { AppId } from '../internal/appId';
 import {
   Communication,
   sendAndHandleSdkError,
@@ -299,7 +300,9 @@ export namespace pages {
    * @param params Parameters for the navigation
    * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
    */
-  export function navigateToApp(params: NavigateToAppParams): Promise<void> {
+  export function navigateToApp(params: NavigateToAppParams): Promise<void>;
+  export function navigateToApp(params: AppNavigationParameters): Promise<void>;
+  export function navigateToApp(params: NavigateToAppParams | AppNavigationParameters): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
         runtime,
@@ -384,6 +387,43 @@ export namespace pages {
      * Fallback URL to open if the navigation cannot be completed within the host (e.g. if the target app is not installed)
      */
     webUrl?: string;
+
+    /**
+     * Developer-defined ID describing the content to navigate to within the page. This ID is passed to the application
+     * via the {@link app.PageInfo.subPageId} property on the {@link app.Context} object (retrieved by calling {@link app.getContext})
+     */
+    subPageId?: string;
+
+    /**
+     * For apps installed as a channel tab, this ID can be supplied to indicate in which Teams channel the app should be opened
+     */
+    channelId?: string;
+
+    /**
+   * Optional ID of the chat or meeting where the app should be opened
+
+   */
+    chatId?: string;
+  }
+
+  /**
+   * Type-safer version of parameters for pages.NavigateToApp
+   */
+  export interface AppNavigationParameters {
+    /**
+     * ID of the app to navigate to
+     */
+    appId: AppId;
+
+    /**
+     * Developer-defined ID of the page to navigate to within the app (formerly called `entityId`)
+     */
+    pageId: string;
+
+    /**
+     * Fallback URL to open if the navigation cannot be completed within the host (e.g. if the target app is not installed)
+     */
+    webUrl?: URL;
 
     /**
      * Developer-defined ID describing the content to navigate to within the page. This ID is passed to the application
