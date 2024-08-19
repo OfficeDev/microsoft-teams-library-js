@@ -1,6 +1,6 @@
 {
   "name": "MeetingRoom",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "version": ">2.0.0-beta.0",
   "checkIsSupported": {
     "expectedOutput": "MeetingRoom is not supported"
@@ -18,19 +18,16 @@
       "type": "callResponse",
       "version": ">2.0.0-beta.2",
       "boxSelector": "#box_sendCommandToPairedMeetingRoom",
-      "inputValue": {
-        "commandName": "someCommandName"
-      },
+      "inputValue": "someCommandName",
       "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with ##JSON_INPUT_VALUE##"
     },
     {
       "title": "sendCommandToPairedMeetingRoom API Call - Success",
       "type": "callResponse",
       "version": "2.0.0-beta.2",
+      "platformsExcluded": ["Android"],
       "boxSelector": "#box_sendCommandToPairedMeetingRoom",
-      "inputValue": {
-        "commandName": "someCommandName"
-      },
+      "inputValue":  "someCommandName",
       "expectedAlertValue": "sendCommandToPairedMeetingRoom is called with \"{\\\"commandName\\\":\\\"someCommandName\\\"}\""
     },
     {
@@ -54,7 +51,7 @@
         "toggleMute": true,
         "toggleCamera": true,
         "toggleCaptions": true,
-        "stageLayout": ["Gallery"],
+        "stageLayout": "Gallery",
         "leaveMeeting": true
       },
       "expectedTestAppValue": "States of meeting room update ##JSON_EVENT_DATA##"

@@ -20,7 +20,6 @@ const Open = (): React.ReactElement =>
         if (typeof input !== 'string') {
           throw new Error('Input should be a string');
         }
-
         // validate that input should also be a valid URL
         new URL(input);
       },

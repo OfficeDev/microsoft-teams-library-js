@@ -1,4 +1,4 @@
-import { FileOpenPreference, files, SdkError } from '@microsoft/teams-js';
+import { app, FileOpenPreference, files, HostClientType, SdkError } from '@microsoft/teams-js';
 import React, { ChangeEvent, ReactElement } from 'react';
 
 import { noHostSdkMsg } from '../../App';
@@ -87,15 +87,33 @@ const AddCloudStorageFolder = (): React.ReactElement =>
     onClick: {
       validateInput: (input) => {
         if (!input && typeof input !== 'string') {
-          throw new Error('input is required and it has be a string.');
+          throw new Error('input is required and it has to be a string.');
         }
       },
       submit: async (input, setResult) => {
-        const callback = (error: SdkError, isFolderAdded: boolean, folders: files.CloudStorageFolder[]): void => {
+        const callback = async (
+          error: SdkError,
+          isFolderAdded: boolean,
+          folders: files.CloudStorageFolder[],
+        ): Promise<void> => {
           if (error) {
             setResult(JSON.stringify(error));
           } else {
-            setResult(JSON.stringify({ isFolderAdded, folders }));
+            //This ensures the output is sorted correctly in the Android Test app, as specified by the JSON test data file.
+            const hostClientType = (await app.getContext()).app.host.clientType;
+            if (hostClientType === HostClientType.android) {
+              const result = { isFolderAdded, folders };
+              // Sort the result object properties before returning for the android test app
+              const sortedResult = Object.keys(result)
+                .sort()
+                .reduce((acc, key) => {
+                  acc[key] = result[key];
+                  return acc;
+                }, {});
+              setResult(JSON.stringify(sortedResult));
+            } else {
+              setResult(JSON.stringify({ isFolderAdded, folders }));
+            }
           }
         };
 

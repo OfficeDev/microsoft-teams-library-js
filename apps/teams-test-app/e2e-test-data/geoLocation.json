@@ -1,6 +1,6 @@
 {
   "name": "GeoLocation",
-  "platforms": "Web",
+  "platforms": ["Web","Android"],
   "version": ">=2.1.0",
   "checkIsSupported": {
     "capabilityName": "GeoLocation",
@@ -29,8 +29,21 @@
       "expectedTestAppValue": "true"
     },
     {
+      "title": "getCurrentLocation API Call - AndroidSpecific - Success",
+      "type": "callResponse",
+      "platformsExcluded": ["Web"],
+      "boxSelector": "#box_getCurrentLocation",
+      "requestPermissionBeforeThisCall": {
+        "boxSelector": "#box_requestGeoLocationPermission",
+        "consentPermission": true
+      },
+      "expectedAlertValue": ["getCurrentLocation is called"],
+      "expectedTestAppValue": "{\"latitude\":51.50735,\"longitude\":-0.127758,\"accuracy\":2.01,\"timestamp\":200}"
+    },
+    {
       "title": "getCurrentLocation API Call - Success",
       "type": "callResponse",
+      "platformsExcluded": ["Web","Android"],
       "boxSelector": "#box_getCurrentLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
