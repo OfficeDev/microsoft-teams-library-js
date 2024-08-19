@@ -257,8 +257,10 @@ export namespace pages {
         case pages.ReturnFocusType.PreviousLandmark:
         case pages.ReturnFocusType.GoToActivityFeed:
           sendMessageToParent(apiVersionTag, 'returnFocus', [false, arg1]);
+          break;
         case pages.ReturnFocusType.NextLandmark:
           sendMessageToParent(apiVersionTag, 'returnFocus', [true, arg1]);
+          break;
       }
     }
   }

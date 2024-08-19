@@ -26,6 +26,14 @@
       "expectedTestAppValue": "Current navigateForward state is true"
     },
     {
+      "title": "returnFocus With Type API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_returnFocusWithType",
+      "inputValue": 2,
+      "expectedAlertValue": "returnFocus called with false",
+      "expectedTestAppValue": "Current state is 2"
+    },
+    {
       "title": "setCurrentFrame API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_setCurrentFrame",

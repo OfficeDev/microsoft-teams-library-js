@@ -156,6 +156,23 @@ const ReturnFocus = (): React.ReactElement =>
     },
   });
 
+const ReturnFocusWithType = (): React.ReactElement =>
+  ApiWithTextInput<pages.ReturnFocusType>({
+    name: 'returnFocusWithType',
+    title: 'Return Focus With Type',
+    onClick: {
+      validateInput: (input) => {
+        if (!input) {
+          throw new Error('input is required.');
+        }
+      },
+      submit: async (input) => {
+        await pages.returnFocus(input);
+        return 'Current state is ' + input;
+      },
+    },
+  });
+
 const RegisterFocusEnterHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerFocusEnterHandler',
@@ -239,6 +256,7 @@ const PagesAPIs = (): ReactElement => (
     <NavigateToApp />
     <ShareDeepLink />
     <ReturnFocus />
+    <ReturnFocusWithType />
     <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
