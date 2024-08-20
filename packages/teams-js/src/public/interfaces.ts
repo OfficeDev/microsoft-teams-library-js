@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
+import { app } from './app';
 import { ChannelType, DialogDimension, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { FrameContexts } from './constants';
+import { geoLocation } from './geoLocation';
+import { runtime } from './runtime';
 
 /**
  * Represents information about tabs for an app
@@ -1008,12 +1011,40 @@ export function isSdkError(err: unknown): err is SdkError {
   return (err as SdkError)?.errorCode !== undefined;
 }
 
+// Imagine this was in the offline capability and not here.
+// Developers could call this to check ahead of time if a function is supported offline before calling it.
+// tree shaking? Could make a version of this in each capability but gets hard to use in the communication layer in an abstract way? Maybe that's fine,
+// can just check runtime
+/* eslint-disable @typescript-eslint/ban-types*/
+/** Imagine this was documentation */
+export function isSupportedOffline(f: Function): boolean {
+  switch (f) {
+    case app.initialize:
+    case app.notifyAppLoaded:
+    case app.notifySuccess:
+      // This could be for functions that we want to say they are supported even if they aren't in the runtime
+      return true;
+    case geoLocation.getCurrentLocation:
+      return runtime.offlineSupportedFunctions?.includes('location.getLocation') ?? false;
+    case geoLocation.hasPermission:
+      return runtime.offlineSupportedFunctions?.includes('permissions.has') ?? false;
+    case geoLocation.requestPermission:
+      return runtime.offlineSupportedFunctions?.includes('permissions.request') ?? false;
+    default:
+      return false;
+  }
+}
+
 /** Error codes used to identify different types of errors that can occur while developing apps. */
 export enum ErrorCode {
   /**
    * API not supported in the current platform.
    */
   NOT_SUPPORTED_ON_PLATFORM = 100,
+  /**
+   * API not supported when no internet connection is available.
+   */
+  OFFLINE_FUNCTIONALITY_NOT_SUPPORTED = 101,
   /**
    * Internal error encountered while performing the required operation.
    */

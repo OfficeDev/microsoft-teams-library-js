@@ -4,8 +4,8 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { SdkError } from '../public/interfaces';
-import { latestRuntimeApiVersion } from '../public/runtime';
+import { ErrorCode, SdkError } from '../public/interfaces';
+import { latestRuntimeApiVersion, runtime } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -420,6 +420,21 @@ function sendMessageToParentHelper(
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
+
+  // May want to move this lower down into sendRequestToTargetWindowHelper so that it can be used more easily for delayed messages
+  const isOffline = true;
+  if (
+    actionName !== 'initialize' &&
+    actionName !== 'appInitialization.appLoaded' &&
+    actionName !== 'appInitialization.success' &&
+    isOffline &&
+    !runtime.offlineSupportedFunctions?.includes(actionName)
+  ) {
+    // initialize is sort of a special snowflake because it gets called before we have a runtime object, what about things you can call before runtime but aren't sent until we have a response?
+    throw new Error(
+      `${ErrorCode.OFFLINE_FUNCTIONALITY_NOT_SUPPORTED}, ${actionName} not in ${JSON.stringify(runtime.offlineSupportedFunctions)}`,
+    );
+  }
 
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);

@@ -14,6 +14,7 @@ export interface IBaseRuntime {
   readonly hostVersionsInfo?: HostVersionsInfo;
   readonly isLegacyTeams?: boolean;
   readonly supports?: {};
+  offlineSupportedFunctions?: string[];
 }
 
 /**
@@ -297,6 +298,7 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly image?: {};
     };
     readonly webStorage?: {};
+    offlineSupportedFunctions?: string[]; // this should be readonly but makes it difficult for prototyping
   };
 }
 // Constant used to set the runtime configuration
@@ -686,9 +688,11 @@ export function applyRuntimeConfig(runtimeConfig: IBaseRuntime): void {
     };
   }
   applyRuntimeConfigLogger('Fast-forwarding runtime %o', runtimeConfig);
-  const ffRuntimeConfig = fastForwardRuntime(runtimeConfig);
+  const ffRuntimeConfig: IRuntimeV4 = fastForwardRuntime(runtimeConfig);
+  ffRuntimeConfig.offlineSupportedFunctions = ['location.getLocation', 'permissions.has', 'permissions.request']; // Func value, may be able to use telemetry data instead but a little more convoluted
   applyRuntimeConfigLogger('Applying runtime %o', ffRuntimeConfig);
   runtime = deepFreeze(ffRuntimeConfig);
+  console.log(`runtime: ${JSON.stringify(runtime)}`);
 }
 
 export function setUnitializedRuntime(): void {
