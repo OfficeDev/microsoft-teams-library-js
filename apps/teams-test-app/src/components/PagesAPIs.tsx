@@ -162,8 +162,8 @@ const ReturnFocusWithType = (): React.ReactElement =>
     title: 'Return Focus With Type',
     onClick: {
       validateInput: (input) => {
-        if (!input) {
-          throw new Error('input is required.');
+        if (!(input in pages.ReturnFocusType)) {
+          throw new Error('input is not type enum.');
         }
       },
       submit: async (input) => {
@@ -171,6 +171,7 @@ const ReturnFocusWithType = (): React.ReactElement =>
         return 'Current state is ' + input;
       },
     },
+    defaultInput: '2',
   });
 
 const RegisterFocusEnterHandler = (): React.ReactElement =>

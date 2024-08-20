@@ -22,7 +22,7 @@
       "type": "callResponse",
       "boxSelector": "#box_returnFocus",
       "checkboxState": true,
-      "expectedAlertValue": "returnFocus called with true",
+      "expectedAlertValue": "returnFocus called with {\"navigateForward\":true}",
       "expectedTestAppValue": "Current navigateForward state is true"
     },
     {
@@ -30,7 +30,7 @@
       "type": "callResponse",
       "boxSelector": "#box_returnFocusWithType",
       "inputValue": 2,
-      "expectedAlertValue": "returnFocus called with false",
+      "expectedAlertValue": "returnFocus called with {\"navigateForward\":false,\"focusType\":2}",
       "expectedTestAppValue": "Current state is 2"
     },
     {

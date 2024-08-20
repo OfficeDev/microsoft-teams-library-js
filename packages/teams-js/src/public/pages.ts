@@ -214,7 +214,7 @@ export namespace pages {
      */
     NextLandmark = 1,
     /**
-     * Determines if the focus should go to the left rail of teams
+     * Determines if the focus should go to the host's activity feed
      */
     GoToActivityFeed = 2,
   }
@@ -230,7 +230,7 @@ export namespace pages {
   export function returnFocus(navigateForward?: boolean): void;
 
   /**
-   * Return focus to the host. Will move focus forward, backward or activity feed based on where the application container falls in
+   * Return focus to the host. Will attempt to send focus to the appropriate part of the host (as specified by returnFocusType) based on where the application container falls in
    * the F6/tab order in the host.
    * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
    * effect and will be a no-op when called.
