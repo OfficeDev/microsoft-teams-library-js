@@ -4,6 +4,10 @@ variables:
     value: 6eff390d-80c0-4456-81b6-6abafa71e768
   - name: tags
     value: production
+  - name: Codeql.PublishDatabaseLog
+    value: true
+  - name: Codeql.Cadence
+    value: 0
 
 trigger:
   branches:
@@ -45,6 +49,7 @@ jobs:
 
   - job: E2ETestIOS
     displayName: 'E2E Test - IOS'
+    cancelTimeoutInMinutes: 45
     pool:
       vmImage: 'internal-macos12'
     steps:
