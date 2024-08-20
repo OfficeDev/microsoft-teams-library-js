@@ -2,7 +2,12 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
-import { TabInformation, TabInstance } from '../public/interfaces';
+import {
+  ConfigurableTabInstance,
+  HostEntityTabInstance,
+  HostEntityTabInstances,
+  isSdkError,
+} from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -23,17 +28,24 @@ export namespace hostEntity {
     edu = 'EDU',
   }
 
-  export interface HostEntityIds {
-    /**
-     * Id of the host entity like channel, chat and meetings
-     */
+  /**
+   * Id of the teams entity like channel, chat
+   */
+  interface TeamsEntityId {
     threadId: string;
-
-    /**
-     * Id of message in which channel meeting is created
-     */
-    parentMessageId?: string;
   }
+
+  /**
+   * Id of message in which channel meeting is created
+   */
+  export interface TeamsChannelMeetingEntityIds extends TeamsEntityId {
+    parentMessageId: string;
+  }
+
+  /**
+   * Id of the host entity
+   */
+  export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;
 
   /**
    * @hidden
@@ -58,12 +70,15 @@ export namespace hostEntity {
      * @param appTypes What type of applications to show the user. If EDU is passed as appType, only apps supported by EDU tenant are shown.
      * If no value is passed, all apps are shown.
      *
-     * @returns The TabInstance of the newly associated app
+     * @returns The HostEntityTabInstance of the newly associated app
      *
      * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation or installing
      * or configuring or adding tab fails
      */
-    export function addAndConfigure(hostEntityIds: HostEntityIds, appTypes?: AppTypes[]): Promise<TabInstance> {
+    export function addAndConfigure(
+      hostEntityIds: HostEntityIds,
+      appTypes?: AppTypes[],
+    ): Promise<HostEntityTabInstance> {
       ensureInitialized(runtime);
 
       if (!isSupported()) {
@@ -72,16 +87,19 @@ export namespace hostEntity {
 
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
+      if (appTypes && appTypes.length === 0) {
+        throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
+      }
+
+      return sendMessageToParentAsync<[HostEntityTabInstance | SdkError]>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'hostEntity.tab.addAndConfigure',
         [hostEntityIds, appTypes],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
-        if (!wasSuccessful) {
-          const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+      ).then(([response]: [HostEntityTabInstance | SdkError]) => {
+        if (isSdkError(response)) {
+          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
         }
-        return response as TabInstance;
+        return response as HostEntityTabInstance;
       });
     }
 
@@ -95,29 +113,28 @@ export namespace hostEntity {
      *
      * @param hostEntityIds Ids of the host entity like channel, chat or meeting
      *
-     * @returns Object with array of TabInstance's associated with a host entity
+     * @returns Object with array of HostEntityTabInstance's associated with a host entity
      *
      * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid or fetching tabs fails
      */
-    export function getAll(hostEntityIds: HostEntityIds): Promise<TabInformation> {
+    export function getAll(hostEntityIds: HostEntityIds): Promise<HostEntityTabInstances> {
       ensureInitialized(runtime);
 
       if (!isSupported()) {
         throw new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`);
       }
 
-      validateThreadId(hostEntityIds?.threadId);
+      validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInformation | SdkError]>(
+      return sendMessageToParentAsync<[HostEntityTabInstances | SdkError]>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
         'hostEntity.tab.getAll',
         [hostEntityIds],
-      ).then(([wasSuccessful, response]: [boolean, TabInformation | SdkError]) => {
-        if (!wasSuccessful) {
-          const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+      ).then(([response]: [HostEntityTabInstances | SdkError]) => {
+        if (isSdkError(response)) {
+          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
         }
-        return response as TabInformation;
+        return response as HostEntityTabInstances;
       });
     }
 
@@ -129,14 +146,19 @@ export namespace hostEntity {
      *
      * Launches host-owned UI that lets a user re-configure the contentUrl of the tab
      *
+     * @param tab Configurable tab instance that needs to be updated
+     *
      * @param hostEntityIds Ids of the host entity like channel, chat or meeting
      *
-     * @returns The TabInstance of the updated tab
+     * @returns The HostEntityTabInstance of the updated tab
      *
      * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation,
      * re-configuring tab fails or if tab is a static tab
      */
-    export function reconfigure(tab: TabInstance, hostEntityIds: HostEntityIds): Promise<TabInstance> {
+    export function reconfigure(
+      tab: ConfigurableTabInstance,
+      hostEntityIds: HostEntityIds,
+    ): Promise<ConfigurableTabInstance> {
       ensureInitialized(runtime);
 
       if (!isSupported()) {
@@ -144,18 +166,17 @@ export namespace hostEntity {
       }
 
       validateTab(tab);
-      validateThreadId(hostEntityIds?.threadId);
+      validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
+      return sendMessageToParentAsync<[ConfigurableTabInstance | SdkError]>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'hostEntity.tab.reconfigure',
         [tab, hostEntityIds],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
-        if (!wasSuccessful) {
-          const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+      ).then(([response]: [ConfigurableTabInstance | SdkError]) => {
+        if (isSdkError(response)) {
+          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
         }
-        return response as TabInstance;
+        return response as ConfigurableTabInstance;
       });
     }
 
@@ -167,14 +188,19 @@ export namespace hostEntity {
      *
      * Launches host-owned UI that lets a user rename the tab
      *
+     * @param tab Configurable tab instance that needs to be updated
+     *
      * @param hostEntityIds Ids of the host entity like channel, chat or meeting
      *
-     * @returns The TabInstance of the updated tab
+     * @returns The HostEntityTabInstance of the updated tab
      *
      * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation,
      * re-naming tab fails or if tab is a static tab
      */
-    export function rename(tab: TabInstance, hostEntityIds: HostEntityIds): Promise<TabInstance> {
+    export function rename(
+      tab: ConfigurableTabInstance,
+      hostEntityIds: HostEntityIds,
+    ): Promise<ConfigurableTabInstance> {
       ensureInitialized(runtime);
 
       if (!isSupported()) {
@@ -184,16 +210,15 @@ export namespace hostEntity {
       validateTab(tab);
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
+      return sendMessageToParentAsync<[ConfigurableTabInstance | SdkError]>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'hostEntity.tab.rename',
         [tab, hostEntityIds],
-      ).then(([wasSuccessful, response]: [boolean, TabInstance | SdkError]) => {
-        if (!wasSuccessful) {
-          const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+      ).then(([response]: [ConfigurableTabInstance | SdkError]) => {
+        if (isSdkError(response)) {
+          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
         }
-        return response as TabInstance;
+        return response as ConfigurableTabInstance;
       });
     }
 
@@ -205,6 +230,8 @@ export namespace hostEntity {
      *
      * Launches host-owned UI that lets a user remove the tab
      *
+     * @param tab tab instance that needs to be updated. Can be static tab or configurable tab.
+     *
      * @param hostEntityIds Ids of the host entity like channel, chat or meeting
      *
      * @returns Boolean. Returns true if removing tab was successful
@@ -212,27 +239,23 @@ export namespace hostEntity {
      * @throws Error if host does not support this capability, library as not been initialized successfully, input parameters are invalid, user cancels operation or
      * removing tab fails
      */
-    export function remove(tabId: string, hostEntityIds: HostEntityIds): Promise<boolean> {
+    export function remove(tab: HostEntityTabInstance, hostEntityIds: HostEntityIds): Promise<boolean> {
       ensureInitialized(runtime);
 
       if (!isSupported()) {
         throw new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`);
       }
 
-      if (!tabId) {
-        throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`);
-      }
+      validateThreadId(hostEntityIds.threadId);
+      validateTab(tab);
 
-      validateThreadId(hostEntityIds?.threadId);
-
-      return sendMessageToParentAsync<[boolean, TabInstance | SdkError]>(
+      return sendMessageToParentAsync<[boolean | SdkError]>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'hostEntity.tab.remove',
-        [tabId, hostEntityIds],
-      ).then(([wasSuccessful, response]: [boolean, SdkError]) => {
-        if (!wasSuccessful) {
-          const error = response as SdkError;
-          throw new Error(`Error code: ${error.errorCode}, message: ${error.message ?? 'None'}`);
+        [tab, hostEntityIds],
+      ).then(([response]: [boolean | SdkError]) => {
+        if (isSdkError(response)) {
+          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
         }
         return true;
       });
@@ -245,12 +268,12 @@ export namespace hostEntity {
      * Limited to Microsoft-internal use
      *
      * Checks if the hostEntity.tab capability is supported by the host
-     * @returns boolean to represent whether the hostEntity.tab capability is supported
+     * @returns boolean to represent whether the histEntity and hostEntity.tab capability is supported
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && runtime.supports.hostEntity?.tab ? true : false;
+      return ensureInitialized(runtime) && hostEntity.isSupported() && runtime.supports.hostEntity?.tab ? true : false;
     }
 
     /**
@@ -277,7 +300,7 @@ export namespace hostEntity {
      * Checks if the tabId is defined
      * @throws Error if tabId is null, undefined or empty
      */
-    function validateTab(tab?: TabInstance): void {
+    function validateTab(tab: HostEntityTabInstance): void {
       if (!tab?.internalTabInstanceId || tab.internalTabInstanceId.length === 0) {
         throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`);
       }

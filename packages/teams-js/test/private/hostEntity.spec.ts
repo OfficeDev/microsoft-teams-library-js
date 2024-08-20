@@ -1,8 +1,9 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { hostEntity } from '../../src/private/hostEntity';
-import { ErrorCode, FrameContexts, TabInstance } from '../../src/public';
+import { ErrorCode, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
+import { ConfigurableTabInstance, StaticTabInstance } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -22,7 +23,13 @@ describe('hostEntity', () => {
   });
 
   describe('tab', () => {
-    const mockTab: TabInstance = {
+    const mockConfigurableTab: ConfigurableTabInstance = {
+      tabType: 'ConfigurableTab',
+      internalTabInstanceId: 'tabId',
+      tabName: 'name',
+    };
+    const mockCStaticTab: StaticTabInstance = {
+      tabType: 'StaticTab',
       internalTabInstanceId: 'tabId',
       tabName: 'name',
     };
@@ -92,17 +99,17 @@ describe('hostEntity', () => {
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity, null]);
           if (message) {
-            utils.respondToMessage(message, true, mockTab);
+            utils.respondToMessage(message, mockConfigurableTab);
           }
 
-          return expect(promise).resolves.toEqual(mockTab);
+          return expect(promise).resolves.toEqual(mockConfigurableTab);
         });
       });
     });
 
     describe('reconfigure', () => {
       it('hostEntity.tab.reconfigure should not allow calls before initialization', () => {
-        expect(() => hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' })).toThrowError(
+        expect(() => hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: 'threadId' })).toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
@@ -112,7 +119,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           try {
-            await hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' });
+            await hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -124,7 +131,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: {} } });
           try {
-            await hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' });
+            await hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -137,7 +144,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.reconfigure(mockTab, { threadId: '' });
+            await hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: '' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
@@ -150,7 +157,10 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.reconfigure({ internalTabInstanceId: '', tabName: 'name' }, { threadId: 'threadId' });
+            await hostEntity.tab.reconfigure(
+              { internalTabInstanceId: '', tabName: 'name', tabType: 'ConfigurableTab' },
+              { threadId: 'threadId' },
+            );
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
@@ -162,22 +172,22 @@ describe('hostEntity', () => {
           expect.assertions(3);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
-          const promise = hostEntity.tab.reconfigure(mockTab, mockHostEntity);
+          const promise = hostEntity.tab.reconfigure(mockConfigurableTab, mockHostEntity);
           const message = utils.findMessageByFunc('hostEntity.tab.reconfigure');
           expect(message).not.toBeNull();
-          expect(message?.args).toEqual([mockTab, mockHostEntity]);
+          expect(message?.args).toEqual([mockConfigurableTab, mockHostEntity]);
           if (message) {
-            utils.respondToMessage(message, true, mockTab);
+            utils.respondToMessage(message, mockConfigurableTab);
           }
 
-          return expect(promise).resolves.toEqual(mockTab);
+          return expect(promise).resolves.toEqual(mockConfigurableTab);
         });
       });
     });
 
     describe('rename', () => {
       it('hostEntity.tab.rename should not allow calls before initialization', () => {
-        expect(() => hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' })).toThrowError(
+        expect(() => hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: 'threadId' })).toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
@@ -187,7 +197,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           try {
-            await hostEntity.tab.rename(mockTab, { threadId: 'threadId' });
+            await hostEntity.tab.rename(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -199,7 +209,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: {} } });
           try {
-            await hostEntity.tab.rename(mockTab, { threadId: 'threadId' });
+            await hostEntity.tab.rename(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -212,7 +222,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.rename(mockTab, { threadId: '' });
+            await hostEntity.tab.rename(mockConfigurableTab, { threadId: '' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
@@ -225,7 +235,10 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.rename({ internalTabInstanceId: '', tabName: 'name' }, { threadId: 'threadId' });
+            await hostEntity.tab.rename(
+              { internalTabInstanceId: '', tabName: 'name', tabType: 'ConfigurableTab' },
+              { threadId: 'threadId' },
+            );
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
@@ -237,21 +250,21 @@ describe('hostEntity', () => {
           expect.assertions(3);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
-          const promise = hostEntity.tab.rename(mockTab, mockHostEntity);
+          const promise = hostEntity.tab.rename(mockConfigurableTab, mockHostEntity);
           const message = utils.findMessageByFunc('hostEntity.tab.rename');
           expect(message).not.toBeNull();
-          expect(message?.args).toEqual([mockTab, mockHostEntity]);
+          expect(message?.args).toEqual([mockConfigurableTab, mockHostEntity]);
           if (message) {
-            utils.respondToMessage(message, true, mockTab);
+            utils.respondToMessage(message, mockConfigurableTab);
           }
 
-          return expect(promise).resolves.toEqual(mockTab);
+          return expect(promise).resolves.toEqual(mockConfigurableTab);
         });
       });
     });
     describe('remove', () => {
       it('hostEntity.tab.remove should not allow calls before initialization', () => {
-        expect(() => hostEntity.tab.reconfigure(mockTab, { threadId: 'threadId' })).toThrowError(
+        expect(() => hostEntity.tab.reconfigure(mockConfigurableTab, { threadId: 'threadId' })).toThrowError(
           new Error(errorLibraryNotInitialized),
         );
       });
@@ -261,7 +274,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
           try {
-            await hostEntity.tab.remove('tabId', { threadId: 'threadId' });
+            await hostEntity.tab.remove(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -273,7 +286,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: {} } });
           try {
-            await hostEntity.tab.remove('tabId', { threadId: 'threadId' });
+            await hostEntity.tab.remove(mockConfigurableTab, { threadId: 'threadId' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.NOT_SUPPORTED_ON_PLATFORM}, message: Not supported on platform`),
@@ -286,7 +299,7 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.reconfigure(mockTab, { threadId: '' });
+            await hostEntity.tab.remove(mockConfigurableTab, { threadId: '' });
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
@@ -299,7 +312,10 @@ describe('hostEntity', () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
           try {
-            await hostEntity.tab.remove('', { threadId: 'threadId' });
+            await hostEntity.tab.remove(
+              { tabName: 'name', internalTabInstanceId: '', tabType: 'StaticTab' },
+              { threadId: 'threadId' },
+            );
           } catch (e) {
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: TabId cannot be null or empty`),
@@ -311,12 +327,12 @@ describe('hostEntity', () => {
           expect.assertions(3);
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { hostEntity: { tab: {} } } });
-          const promise = hostEntity.tab.remove('tabId', mockHostEntity);
+          const promise = hostEntity.tab.remove(mockConfigurableTab, mockHostEntity);
           const message = utils.findMessageByFunc('hostEntity.tab.remove');
           expect(message).not.toBeNull();
-          expect(message?.args).toEqual(['tabId', mockHostEntity]);
+          expect(message?.args).toEqual([mockConfigurableTab, mockHostEntity]);
           if (message) {
-            utils.respondToMessage(message, true, true);
+            utils.respondToMessage(message, true);
           }
 
           return expect(promise).resolves.toEqual(true);
@@ -379,10 +395,10 @@ describe('hostEntity', () => {
           expect(message).not.toBeNull();
           expect(message?.args).toEqual([mockHostEntity]);
           if (message) {
-            utils.respondToMessage(message, true, [mockTab]);
+            utils.respondToMessage(message, [mockConfigurableTab, mockCStaticTab]);
           }
 
-          return expect(promise).resolves.toEqual([mockTab]);
+          return expect(promise).resolves.toEqual([mockConfigurableTab, mockCStaticTab]);
         });
       });
     });

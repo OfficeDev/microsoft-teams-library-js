@@ -1,4 +1,4 @@
-import { hostEntity, TabInstance } from '@microsoft/teams-js';
+import { ConfigurableTabInstance, hostEntity, HostEntityTabInstance } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -28,7 +28,7 @@ const AddAndConfigure = (): React.ReactElement =>
   });
 
 const Reconfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'reconfigure',
     title: 'Reconfigure a tab',
     onClick: {
@@ -52,6 +52,7 @@ const Reconfigure = (): React.ReactElement =>
         tabName: 'Tab name',
         appId: 'appId',
         url: 'contentUrl',
+        tabType: 'ConfigurableTab',
       },
       hostEntityIds: {
         threadId: 'threadId',
@@ -61,7 +62,7 @@ const Reconfigure = (): React.ReactElement =>
   });
 
 const Rename = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: TabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'rename',
     title: 'Rename a tab',
     onClick: {
@@ -84,6 +85,7 @@ const Rename = (): React.ReactElement =>
         internalTabInstanceId: 'tabId',
         tabName: 'New tab name',
         appId: 'appId',
+        tabType: 'ConfigurableTab',
       },
       hostEntityIds: {
         threadId: 'threadId',
@@ -93,12 +95,12 @@ const Rename = (): React.ReactElement =>
   });
 
 const Remove = (): React.ReactElement =>
-  ApiWithTextInput<{ tabId: string; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: HostEntityTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'remove',
     title: 'Remove a tab',
     onClick: {
       validateInput: (input) => {
-        if (!input.tabId) {
+        if (!input.tab?.internalTabInstanceId) {
           throw new Error('tabId is required');
         }
 
@@ -107,12 +109,17 @@ const Remove = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await hostEntity.tab.remove(input.tabId, input.hostEntityIds);
+        const result = await hostEntity.tab.remove(input.tab, input.hostEntityIds);
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
-      tabId: 'tabId',
+      tab: {
+        internalTabInstanceId: 'tabId',
+        tabName: 'New tab name',
+        appId: 'appId',
+        tabType: 'ConfigurableTab',
+      },
       hostEntityIds: {
         threadId: 'threadId',
         messageId: 'messageId',
