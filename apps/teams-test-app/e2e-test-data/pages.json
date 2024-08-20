@@ -22,6 +22,10 @@
       "type": "callResponse",
       "boxSelector": "#box_returnFocus",
       "checkboxState": true,
+      "version": ">2.27.0",
+      "hostSdkVersion": {
+        "web": ">=4.2.0"
+      },
       "expectedAlertValue": "returnFocus called with {\"navigateForward\":true}",
       "expectedTestAppValue": "Current navigateForward state is true"
     },
@@ -30,6 +34,10 @@
       "type": "callResponse",
       "boxSelector": "#box_returnFocusWithType",
       "inputValue": 2,
+      "version": ">2.27.0",
+      "hostSdkVersion": {
+        "web": ">=4.2.0"
+      },
       "expectedAlertValue": "returnFocus called with {\"navigateForward\":false,\"focusType\":2}",
       "expectedTestAppValue": "Current state is 2"
     },
