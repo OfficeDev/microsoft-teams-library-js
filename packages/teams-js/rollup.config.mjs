@@ -16,7 +16,7 @@ const baseConfig = createBasicConfig();
 export default {
   input: './src/index.ts',
   output: {
-    dir: 'dist/rollup',
+    dir: 'dist',
     name: 'MicrosoftTeams.min.js',
     format: 'es',
     preserveModules: true,
