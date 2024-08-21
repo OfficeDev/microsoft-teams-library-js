@@ -6,10 +6,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
-import dts from 'rollup-plugin-dts';
 import merge from 'deepmerge';
+import replace from '@rollup/plugin-replace';
 import sri from 'rollup-plugin-sri';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import { RollupFilemanager } from 'filemanager-plugin';
+import version from './package.json' assert { type: 'json' };
 
 const baseConfig = createBasicConfig();
 
@@ -39,21 +41,37 @@ export default {
         moduleDirectories: ['node_modules'],
       },
     }),
+    replace({
+      preventAssignment: true,
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      PACKAGE_VERSION: JSON.stringify(version.version),
+    }),
     typescript(),
     json(),
     commonjs(),
     sri(),
     nodePolyfills(),
+    RollupFilemanager({
+      events: {
+        onEnd: {
+          copy: [
+            {
+              source: './dist/packages/teams-js/**/*.js',
+              destination: '../../apps/blazor-test-app/wwwroot/js/',
+              isFlat: false,
+            },
+          ],
+        },
+      },
+    }),
+    {
+      apply: (compiler) => {
+        compiler.hooks.done.tap('wsi-test', () => {
+          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosoftTeams-manifest.json'), 'utf-8'));
+          // If for some reason hash was not generated for the assets, this test will fail in build.
+          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
+        });
+      },
+    },
   ],
 };
-//{
-//  input: './dist/rollup/dts/index.d.ts',
-//  output: {
-//    format: 'es',
-//    dir: 'dist/rollup/MicrosoftTeams.d.ts',
-//    name: 'MicrosoftTeams.d.ts',
-//    entryFileNames: '[name].d.ts',
-//  },
-//  plugins: [dts()],
-//},
-//

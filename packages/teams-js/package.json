@@ -12,7 +12,7 @@
   "typings": "./dist/rollup/dts/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "pnpm lint && webpack && pnpm docs:validate",
+    "build": "pnpm clean && pnpm lint && rollup -c && pnpm docs:validate",
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",

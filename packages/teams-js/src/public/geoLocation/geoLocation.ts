@@ -2,7 +2,7 @@ import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
-import { DevicePermission, ErrorCode } from '../interfaces';
+import { DevicePermission } from '../interfaces';
 import { runtime } from '../runtime';
 import * as map from './map';
 

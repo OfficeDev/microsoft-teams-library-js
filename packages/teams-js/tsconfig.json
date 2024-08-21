@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.common.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "declarationDir": "./dist/dts",
+    "declarationDir": "./dist/packages/teams-js/dts",
     "lib": ["DOM", "ES2015", "ES5"],
     "module": "es6",
     "moduleResolution": "node",
@@ -10,7 +10,7 @@
     "noImplicitAny": false,
     "noEmitOnError": false,
     "noImplicitReturns": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "declaration": true,
     "strictNullChecks": true,
     "resolveJsonModule": true
