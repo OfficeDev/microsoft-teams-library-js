@@ -6,7 +6,7 @@
     "expectedOutput": "Host entity tab module is not supported"
   },
   "hostSdkVersion": {
-    "web": ">4.0.1"
+    "web": ">4.1.0"
   },
   "testCases": [
     {
