@@ -1,4 +1,4 @@
-import { ConfigurableTabInstance, hostEntity, HostEntityTabInstance } from '@microsoft/teams-js';
+import { hostEntity } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from './utils';
@@ -28,7 +28,7 @@ const AddAndConfigure = (): React.ReactElement =>
   });
 
 const Reconfigure = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: hostEntity.tab.ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'reconfigure',
     title: 'Reconfigure a tab',
     onClick: {
@@ -62,7 +62,7 @@ const Reconfigure = (): React.ReactElement =>
   });
 
 const Rename = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: hostEntity.tab.ConfigurableTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'rename',
     title: 'Rename a tab',
     onClick: {
@@ -95,7 +95,7 @@ const Rename = (): React.ReactElement =>
   });
 
 const Remove = (): React.ReactElement =>
-  ApiWithTextInput<{ tab: HostEntityTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
+  ApiWithTextInput<{ tab: hostEntity.tab.HostEntityTabInstance; hostEntityIds: hostEntity.HostEntityIds }>({
     name: 'remove',
     title: 'Remove a tab',
     onClick: {

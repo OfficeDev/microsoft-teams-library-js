@@ -2,12 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode, SdkError } from '../public';
-import {
-  ConfigurableTabInstance,
-  HostEntityTabInstance,
-  HostEntityTabInstances,
-  isSdkError,
-} from '../public/interfaces';
+import { isSdkError, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -56,6 +51,32 @@ export namespace hostEntity {
    * CRUD operations for tabs associated with apps
    */
   export namespace tab {
+    /**
+     * Represents information about a static tab instance
+     */
+    export interface StaticTabInstance extends TabInstance {
+      tabType: 'StaticTab';
+    }
+
+    /**
+     * Represents information about a configurable tab instance
+     */
+    export interface ConfigurableTabInstance extends TabInstance {
+      tabType: 'ConfigurableTab';
+    }
+
+    /**
+     * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Cab be a configurable tab or static tab.
+     */
+    export type HostEntityTabInstance = StaticTabInstance | ConfigurableTabInstance;
+
+    /**
+     * Represents all tabs associated with a host entity like chat, channel or meeting
+     */
+    export interface HostEntityTabInstances {
+      allTabs: HostEntityTabInstance[];
+    }
+
     /**
      * @hidden
      * @internal

@@ -3,7 +3,6 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { hostEntity } from '../../src/private/hostEntity';
 import { ErrorCode, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
-import { ConfigurableTabInstance, StaticTabInstance } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -23,12 +22,12 @@ describe('hostEntity', () => {
   });
 
   describe('tab', () => {
-    const mockConfigurableTab: ConfigurableTabInstance = {
+    const mockConfigurableTab: hostEntity.tab.ConfigurableTabInstance = {
       tabType: 'ConfigurableTab',
       internalTabInstanceId: 'tabId',
       tabName: 'name',
     };
-    const mockCStaticTab: StaticTabInstance = {
+    const mockCStaticTab: hostEntity.tab.StaticTabInstance = {
       tabType: 'StaticTab',
       internalTabInstanceId: 'tabId',
       tabName: 'name',

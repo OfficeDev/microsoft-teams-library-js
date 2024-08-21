@@ -95,32 +95,6 @@ export interface TabInstance {
 }
 
 /**
- * Represents information about a static tab instance
- */
-export interface StaticTabInstance extends TabInstance {
-  tabType: 'StaticTab';
-}
-
-/**
- * Represents information about a configurable tab instance
- */
-export interface ConfigurableTabInstance extends TabInstance {
-  tabType: 'ConfigurableTab';
-}
-
-/**
- * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Cab be a configurable tab or static tab.
- */
-export type HostEntityTabInstance = StaticTabInstance | ConfigurableTabInstance;
-
-/**
- * Represents all tabs associated with a host entity like chat, channel or meeting
- */
-export interface HostEntityTabInstances {
-  allTabs: HostEntityTabInstance[];
-}
-
-/**
  * Indicates information about the tab instance for filtering purposes.
  */
 export interface TabInstanceParameters {
