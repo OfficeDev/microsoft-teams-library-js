@@ -1,4 +1,4 @@
-import { validateStringAsAppId } from './appIdValidation';
+import { validateStringAsAppId } from '../internal/appIdValidation';
 
 /**
  * A strongly-typed class used to represent a "valid" app id.
