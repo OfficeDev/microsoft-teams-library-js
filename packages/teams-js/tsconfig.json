@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.common.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "declarationDir": "./dts",
+    "declarationDir": "./dist/dts",
     "lib": ["DOM", "ES2015", "ES5"],
     "module": "es6",
     "moduleResolution": "node",
