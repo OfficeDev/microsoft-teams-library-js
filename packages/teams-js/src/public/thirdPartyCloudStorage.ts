@@ -124,13 +124,13 @@ export namespace thirdPartyCloudStorage {
 
   /**
    * Defines the callback function received from Third Party App
-   * @param {FilesFor3PStorage} files - array which will store all the files.
-   * @param {SdkError} error - sdk error
    * @beta
    */
   export interface DragAndDropFileCallback {
     /**
-     * Callback from third party app
+     * Defination of the callback which is received from third party app when calling {@link thirdPartyCloudStorage.getDragAndDropFiles}
+     * An array of dragdropped files {@link thirdPartyCloudStorage.FilesFor3PStorage}
+     * Error encountered during the API call {@link SdkError}
      */
     (files: FilesFor3PStorage[], error?: SdkError): void;
   }
