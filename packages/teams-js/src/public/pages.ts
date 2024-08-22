@@ -1,4 +1,3 @@
-import { AppId } from '../public/appId';
 import {
   Communication,
   sendAndHandleSdkError,
@@ -14,6 +13,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
+import { AppId } from '../public/appId';
 import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
@@ -301,6 +301,14 @@ export namespace pages {
    * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
    */
   export function navigateToApp(params: AppNavigationParameters): Promise<void>;
+  /**
+   * Used to navigate to apps other than your own.
+   *
+   * If you are looking to navigate within your own app, use {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
+   *
+   * @param params Parameters for the navigation
+   * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
+   */
   export function navigateToApp(params: NavigateToAppParams): Promise<void>;
   export function navigateToApp(params: AppNavigationParameters | NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
