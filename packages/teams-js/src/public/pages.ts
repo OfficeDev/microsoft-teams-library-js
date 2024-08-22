@@ -376,7 +376,10 @@ export namespace pages {
   }
 
   /**
-   * Parameters for the NavigateToApp API
+   * @deprecated
+   * This interface has been deprecated in favor of a more type-safe interface using {@link pages.AppNavigationParameters}
+   *
+   * Parameters for the pages.navigateToApp function
    */
   export interface NavigateToAppParams {
     /**
@@ -413,7 +416,7 @@ export namespace pages {
   }
 
   /**
-   * Type-safer version of parameters for pages.NavigateToApp
+   * Type-safer version of parameters for the pages.navigateToApp function
    */
   export interface AppNavigationParameters {
     /**
