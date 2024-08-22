@@ -32,3 +32,4 @@ export { remoteCamera } from './remoteCamera';
 export { appEntity } from './appEntity';
 export { teams } from './teams';
 export { videoEffectsEx } from './videoEffectsEx';
+export { hostEntity } from './hostEntity';

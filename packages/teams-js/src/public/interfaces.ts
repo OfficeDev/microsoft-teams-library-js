@@ -82,6 +82,16 @@ export interface TabInstance {
    * Website URL of this tab
    */
   websiteUrl?: string;
+
+  /**
+   * AppId of this tab
+   */
+  appId?: string;
+
+  /**
+   * Order of this tab. Order is 1-indexed.
+   */
+  order?: number;
 }
 
 /**
