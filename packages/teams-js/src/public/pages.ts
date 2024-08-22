@@ -299,17 +299,8 @@ export namespace pages {
    *
    * @param params Parameters for the navigation
    * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
+   * @throws `Error` if the app ID is not valid or `params.webUrl` is defined but not a valid URL
    */
-  export function navigateToApp(params: AppNavigationParameters): Promise<void>;
-  /**
-   * Used to navigate to apps other than your own.
-   *
-   * If you are looking to navigate within your own app, use {@link pages.currentApp.navigateToDefaultPage} or {@link pages.currentApp.navigateTo}
-   *
-   * @param params Parameters for the navigation
-   * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
-   */
-  export function navigateToApp(params: NavigateToAppParams): Promise<void>;
   export function navigateToApp(params: AppNavigationParameters | NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
@@ -456,28 +447,6 @@ export namespace pages {
 
    */
     chatId?: string;
-  }
-
-  function isAppNavigationParametersObject(
-    obj: AppNavigationParameters | NavigateToAppParams,
-  ): obj is AppNavigationParameters {
-    return obj.appId instanceof AppId;
-  }
-
-  function convertNavigateToAppParamsToAppNavigationParameters(params: NavigateToAppParams): AppNavigationParameters {
-    return {
-      ...params,
-      appId: new AppId(params.appId),
-      webUrl: params.webUrl ? new URL(params.webUrl) : undefined,
-    };
-  }
-
-  function convertAppNavigationParametersToNavigateToAppParams(params: AppNavigationParameters): NavigateToAppParams {
-    return {
-      ...params,
-      appId: params.appId.toString(),
-      webUrl: params.webUrl ? params.webUrl.toString() : undefined,
-    };
   }
 
   /**
@@ -1188,4 +1157,30 @@ export namespace pages {
         : false;
     }
   }
+}
+
+export function isAppNavigationParametersObject(
+  obj: pages.AppNavigationParameters | pages.NavigateToAppParams,
+): obj is pages.AppNavigationParameters {
+  return obj.appId instanceof AppId;
+}
+
+export function convertNavigateToAppParamsToAppNavigationParameters(
+  params: pages.NavigateToAppParams,
+): pages.AppNavigationParameters {
+  return {
+    ...params,
+    appId: new AppId(params.appId),
+    webUrl: params.webUrl ? new URL(params.webUrl) : undefined,
+  };
+}
+
+export function convertAppNavigationParametersToNavigateToAppParams(
+  params: pages.AppNavigationParameters,
+): pages.NavigateToAppParams {
+  return {
+    ...params,
+    appId: params.appId.toString(),
+    webUrl: params.webUrl ? params.webUrl.toString() : undefined,
+  };
 }

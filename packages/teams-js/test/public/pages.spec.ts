@@ -6,7 +6,12 @@ import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
-import { pages } from '../../src/public/pages';
+import {
+  convertAppNavigationParametersToNavigateToAppParams,
+  convertNavigateToAppParamsToAppNavigationParameters,
+  isAppNavigationParametersObject,
+  pages,
+} from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import {
@@ -436,6 +441,11 @@ describe('Testing pages module', () => {
         subPageId: 'task456',
       };
 
+      const typeSafeAppNavigationParams: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParams);
+      const typeSafeAppNavigationParamsWithChat: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParamsWithChat);
+
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
           new Error(errorLibraryNotInitialized),
@@ -474,7 +484,9 @@ describe('Testing pages module', () => {
             await expect(promise).resolves.toBe(undefined);
           });
 
-          it('pages.navigateToApp should successfully send the navigateToApp message', async () => {
+          async function validateNavigateToAppMessage(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
 
@@ -485,14 +497,26 @@ describe('Testing pages module', () => {
               navigateToAppMessage,
               'pages.navigateToApp',
               MatcherType.ToStrictEqual,
-              navigateToAppParams,
+              isAppNavigationParametersObject(navigateToAppParams)
+                ? convertAppNavigationParametersToNavigateToAppParams(navigateToAppParams)
+                : navigateToAppParams,
             );
 
             await utils.respondToMessage(navigateToAppMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send the navigateToApp message using serialized parameter', async () => {
+            validateNavigateToAppMessage(navigateToAppParams);
           });
 
-          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
+          it('pages.navigateToApp should successfully send the navigateToApp message using type-safe parameter', async () => {
+            validateNavigateToAppMessage(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeams(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({
               apiVersion: 1,
@@ -514,9 +538,19 @@ describe('Testing pages module', () => {
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(navigateToAppParams);
           });
 
-          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients', async () => {
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeamsWithChat(
+            navigateToAppParamsWithChat: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({
               apiVersion: 1,
@@ -538,6 +572,13 @@ describe('Testing pages module', () => {
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(navigateToAppParamsWithChat);
+          });
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(typeSafeAppNavigationParamsWithChat);
           });
         } else {
           it(`pages.navigateToApp should not allow calls from ${context} context`, async () => {
