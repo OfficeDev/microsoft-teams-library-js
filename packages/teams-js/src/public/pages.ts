@@ -1,4 +1,4 @@
-import { AppId } from '../internal/appId';
+import { AppId } from '../public/appId';
 import {
   Communication,
   sendAndHandleSdkError,
@@ -300,9 +300,9 @@ export namespace pages {
    * @param params Parameters for the navigation
    * @returns a `Promise` that will resolve if the navigation was successful or reject if it was not
    */
-  export function navigateToApp(params: NavigateToAppParams): Promise<void>;
   export function navigateToApp(params: AppNavigationParameters): Promise<void>;
-  export function navigateToApp(params: NavigateToAppParams | AppNavigationParameters): Promise<void> {
+  export function navigateToApp(params: NavigateToAppParams): Promise<void>;
+  export function navigateToApp(params: AppNavigationParameters | NavigateToAppParams): Promise<void> {
     return new Promise<void>((resolve) => {
       ensureInitialized(
         runtime,
@@ -317,10 +317,17 @@ export namespace pages {
         throw errorNotSupportedOnPlatform;
       }
       const apiVersionTag: string = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_NavigateToApp);
+
       if (runtime.isLegacyTeams) {
-        resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', createTeamsAppLink(params)));
+        const typeSafeParameters: AppNavigationParameters = !isAppNavigationParametersObject(params)
+          ? convertNavigateToAppParamsToAppNavigationParameters(params)
+          : params;
+        resolve(sendAndHandleStatusAndReason(apiVersionTag, 'executeDeepLink', createTeamsAppLink(typeSafeParameters)));
       } else {
-        resolve(sendAndHandleStatusAndReason(apiVersionTag, 'pages.navigateToApp', params));
+        const serializedParameters: NavigateToAppParams = isAppNavigationParametersObject(params)
+          ? convertAppNavigationParametersToNavigateToAppParams(params)
+          : params;
+        resolve(sendAndHandleStatusAndReason(apiVersionTag, 'pages.navigateToApp', serializedParameters));
       }
     });
   }
@@ -441,6 +448,28 @@ export namespace pages {
 
    */
     chatId?: string;
+  }
+
+  function isAppNavigationParametersObject(
+    obj: AppNavigationParameters | NavigateToAppParams,
+  ): obj is AppNavigationParameters {
+    return obj.appId instanceof AppId;
+  }
+
+  function convertNavigateToAppParamsToAppNavigationParameters(params: NavigateToAppParams): AppNavigationParameters {
+    return {
+      ...params,
+      appId: new AppId(params.appId),
+      webUrl: params.webUrl ? new URL(params.webUrl) : undefined,
+    };
+  }
+
+  function convertAppNavigationParametersToNavigateToAppParams(params: AppNavigationParameters): NavigateToAppParams {
+    return {
+      ...params,
+      appId: params.appId.toString(),
+      webUrl: params.webUrl ? params.webUrl.toString() : undefined,
+    };
   }
 
   /**
