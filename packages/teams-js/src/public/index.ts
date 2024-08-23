@@ -25,6 +25,7 @@ export {
   FileOpenPreference,
   FrameContext,
   FrameInfo,
+  isSupportedOffline,
   LoadContext,
   LocaleInfo,
   M365ContentAction,
