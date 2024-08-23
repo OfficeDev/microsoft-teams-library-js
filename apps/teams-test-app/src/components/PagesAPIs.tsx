@@ -178,7 +178,7 @@ const RegisterFocusEnterHandler = (): React.ReactElement =>
     name: 'registerFocusEnterHandler',
     title: 'Register On Focus Enter Handler',
     onClick: async (setResult) => {
-      const handler = (navigateForward: boolean, _): boolean => {
+      const handler = (navigateForward: boolean): boolean => {
         setResult('successfully called with navigateForward:' + navigateForward);
         return true;
       };
