@@ -247,6 +247,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly geoLocation?: {
       readonly map?: {};
     };
+    readonly hostEntity?: {
+      readonly tab?: {};
+    };
     readonly interactive?: {};
     readonly secondaryBrowser?: {};
     readonly location?: {};
