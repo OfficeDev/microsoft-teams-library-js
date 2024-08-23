@@ -1,5 +1,5 @@
-import { AppId } from '../../src/internal/appId';
 import { maximumValidAppIdLength } from '../../src/internal/appIdValidation';
+import { AppId } from '../../src/public/appId';
 
 // Since there are plenty of tests validating the individual validation functionality, these tests are intentionally not as
 // comprehensive as those. It executes a few basic tests and also validates that the error messages thrown are as expected.
