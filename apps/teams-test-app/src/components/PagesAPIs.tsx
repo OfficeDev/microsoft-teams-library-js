@@ -3,6 +3,7 @@ import {
   FrameInfo,
   navigateCrossDomain,
   pages,
+  registerFocusEnterHandler,
   registerFullScreenHandler,
   returnFocus,
   setFrameContext,
@@ -155,35 +156,25 @@ const ReturnFocus = (): React.ReactElement =>
     },
   });
 
-const ReturnFocusWithType = (): React.ReactElement =>
-  ApiWithTextInput<pages.ReturnFocusType>({
-    name: 'returnFocusWithType',
-    title: 'Return Focus With Type',
-    onClick: {
-      validateInput: (input) => {
-        if (!(input in pages.ReturnFocusType)) {
-          throw new Error('input is not type enum.');
-        }
-      },
-      submit: async (input) => {
-        await pages.returnFocus(input);
-        return 'Current state is ' + input;
-      },
-    },
-    defaultInput: '2',
-  });
-
 const RegisterFocusEnterHandler = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'registerFocusEnterHandler',
     title: 'Register On Focus Enter Handler',
-    onClick: async (setResult) => {
-      const handler = (navigateForward: boolean): boolean => {
-        setResult('successfully called with navigateForward:' + navigateForward);
-        return true;
-      };
-      pages.registerFocusEnterHandler(handler);
-      return 'registered';
+    onClick: {
+      withPromise: async (setResult) => {
+        pages.registerFocusEnterHandler((navigateForward) => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        return 'registered';
+      },
+      withCallback: (setResult) => {
+        registerFocusEnterHandler((navigateForward) => {
+          setResult('successfully called with navigateForward:' + navigateForward);
+          return true;
+        });
+        setResult('registered');
+      },
     },
   });
 
@@ -248,7 +239,6 @@ const PagesAPIs = (): ReactElement => (
     <NavigateToApp />
     <ShareDeepLink />
     <ReturnFocus />
-    <ReturnFocusWithType />
     <RegisterFocusEnterHandler />
     <SetCurrentFrame />
     <RegisterFullScreenChangeHandler />
