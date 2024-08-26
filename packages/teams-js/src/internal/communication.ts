@@ -119,12 +119,19 @@ export function initializeCommunication(
     // Send the initialized message to any origin, because at this point we most likely don't know the origin
     // of the parent window, and this message contains no data that could pose a security risk.
     Communication.parentOrigin = '*';
+    window.performance.mark('send-message-to-parent-async-start');
     return sendMessageToParentAsync<[FrameContexts, string, string, string]>(apiVersionTag, 'initialize', [
       version,
       latestRuntimeApiVersion,
       validMessageOrigins,
     ]).then(
       ([context, clientType, runtimeConfig, clientSupportedSDKVersion]: [FrameContexts, string, string, string]) => {
+        window.performance.mark('send-message-to-parent-async-end');
+        window.performance.measure(
+          'initialize-post-message',
+          'send-message-to-parent-async-start',
+          'send-message-to-parent-async-end',
+        );
         tryPolyfillWithNestedAppAuthBridge(clientSupportedSDKVersion, Communication.currentWindow, {
           onMessage: processAuthBridgeMessage,
           sendPostMessage: sendNestedAuthRequestToTopWindow,
@@ -399,6 +406,7 @@ function sendRequestToTargetWindowHelper(
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
       logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuidAsString);
+      window.performance.mark(`target-window-post-message-${request.id}`);
       targetWindow.postMessage(request, targetOrigin);
     } else {
       logger(`Adding message %i to ${targetWindowName} message queue`, request.uuidAsString);
@@ -436,6 +444,13 @@ const processMessageLogger = communicationLogger.extend('processMessage');
  * Limited to Microsoft-internal use
  */
 async function processMessage(evt: DOMMessageEvent): Promise<void> {
+  const serializedResponse = evt.data as SerializedMessageResponse;
+  window.performance.mark(`target-window-post-message-end-${serializedResponse.id}`);
+  window.performance.measure(
+    `target-window-${serializedResponse.id}`,
+    `target-window-post-message-${serializedResponse.id}`,
+    `target-window-post-message-end-${serializedResponse.id}`,
+  );
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
     processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);

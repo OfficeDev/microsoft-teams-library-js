@@ -21,7 +21,11 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
-    app.initialize(validMessageOrigins);
+    window.performance.mark('test-app-initialize-start');
+    app.initialize(validMessageOrigins).then(() => {
+      window.performance.mark('test-app-initialize-stop');
+      window.performance.measure('test-app-initialize', 'test-app-initialize-start', 'test-app-initialize-stop');
+    });
   }
 }
 

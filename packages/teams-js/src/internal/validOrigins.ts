@@ -19,6 +19,9 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
     return validOriginsCache;
   }
   if (!inServerSideRenderingEnvironment()) {
+    window.performance.mark('cdn-retrieve-start');
+    // The default timeout appears to be undefined (possibly infinite?)
+    //fetch(validOriginsCdnEndpoint, { signal: AbortSignal.timeout(1000) })
     return fetch(validOriginsCdnEndpoint)
       .then((response) => {
         if (!response.ok) {
@@ -27,8 +30,12 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
         return response.json().then((validOriginsCDN) => {
           if (isValidOriginsJSONValid(JSON.stringify(validOriginsCDN))) {
             validOriginsCache = validOriginsCDN.validOrigins;
+            window.performance.mark('cdn-retrieve-end');
+            window.performance.measure('cdn-retrieve-download-success', 'cdn-retrieve-start', 'cdn-retrieve-end');
             return validOriginsCache;
           } else {
+            window.performance.mark('cdn-retrieve-invalid');
+            window.performance.measure('cdn-retrieve-invalid-list', 'cdn-retrieve-start', 'cdn-retrieve-invalid');
             throw new Error('Valid Origins List Is Invalid');
           }
         });
@@ -36,6 +43,8 @@ async function getValidOriginsListFromCDN(): Promise<string[]> {
       .catch((e) => {
         validateOriginLogger('validOrigins fetch call to CDN failed with error: %s. Defaulting to fallback list', e);
         validOriginsCache = validOriginsFallback;
+        window.performance.mark('cdn-retrieve-fail');
+        window.performance.measure('cdn-retrieve-download-failed', 'cdn-retrieve-start', 'cdn-retrieve-fail');
         return validOriginsCache;
       });
   } else {
