@@ -21,6 +21,7 @@ export {
 export { conversations } from './conversations';
 export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
+export { externalAppAuthenticationForCEC } from './externalAppAuthenticationForCEC';
 export { externalAppCardActions } from './externalAppCardActions';
 export { externalAppCommands } from './externalAppCommands';
 export { files } from './files';
