@@ -35,6 +35,11 @@ export namespace stageView {
     threadId: string;
 
     /**
+     * The messageId identifies a particular channel meeting within the channel as specified by the threadId above.
+     */
+    messageId?: string;
+
+    /**
      * The title to give the stage view.
      */
     title?: string;
