@@ -35,7 +35,7 @@ export namespace stageView {
     threadId: string;
 
     /**
-     * The messageId identifies a particular channel meeting within the channel as specified by the threadId above.
+     * The messageId identifies a particular channel meeting within the channel as specified by the threadId above. This should be used only when trying to open the stage view for a channel meeting. It will be a no-op for other scenarios
      */
     messageId?: string;
 
