@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added optional field `messageId` to open `stageView` in new modes if supported by host",
+  "packageName": "@microsoft/teams-js",
+  "email": "dechowdhury@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}
