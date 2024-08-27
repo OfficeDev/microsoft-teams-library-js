@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added optional field `messageId` to `stageView.open`. messageId points to the root message of the channel meeting. It's a unique identifier of the meeting on that channel. `messageId` allows opening the stageView in a channel meeting",
+  "comment": "Added optional field `messageId` to `stageView.open`. Passing `messageId` to `stageView.open` allows opening the stageView in a channel meeting",
   "packageName": "@microsoft/teams-js",
   "email": "dechowdhury@microsoft.com_msteamsmdb",
   "dependentChangeType": "patch"
