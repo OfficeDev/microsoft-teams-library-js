@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Removing validations not valid for content fields",
+  "packageName": "@microsoft/teams-js",
+  "email": "shmayura@microsoft.com",
+  "dependentChangeType": "patch"
+}
