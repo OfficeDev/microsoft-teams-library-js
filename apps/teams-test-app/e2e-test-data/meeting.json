@@ -35,11 +35,11 @@
     },
     {
       "title": "getMeetingDetailsVerbose API Call - Success",
-      "version": ">2.22.0",
+      "version": ">2.26.0",
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetailsVerbose",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
-      "expectedTestAppValue": "{\"details\":{\"scheduledStartTime\":\"testStartTime\",\"joinUrl\":\"testJoinUrl\",\"type\":\"oneOnOneCall\",\"originalCaller\":\"testCallerId\",\"dialedEntity\":\"testDnis\",\"trackingId\":\"testTrackingId\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
+      "expectedTestAppValue": "{\"details\":{\"scheduledStartTime\":\"testStartTime\",\"joinUrl\":\"testJoinUrl\",\"type\":\"oneOnOneCall\",\"originalCaller\":{\"phoneNumber\":\"testCallerPhoneNumber\",\"email\":\"testCallerEmail\"},\"dialedEntity\":{\"phoneNumber\":\"testCalleePhoneNumber\",\"email\":\"testCalleeEmail\"},\"trackingId\":\"testTrackingId\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
     },
     {
       "title": "getAuthenticationTokenForAnonymousUser API Call - Success",

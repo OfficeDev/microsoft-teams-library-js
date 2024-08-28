@@ -97,6 +97,23 @@ export namespace meeting {
   /**
    * @hidden
    * Hide from docs
+   * Data structure to represent call participant identifiers
+   */
+  interface ICallParticipantIdentifiers {
+    /**
+     * Phone number of a PSTN caller
+     */
+    phoneNumber?: string;
+
+    /**
+     * Email of a VoIP caller
+     */
+    email?: string;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
    * Data structure to represent call details
    */
   export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
@@ -104,7 +121,7 @@ export namespace meeting {
      * @hidden
      * Phone number of a PSTN caller or email of a VoIP caller
      */
-    originalCaller?: string;
+    originalCaller?: ICallParticipantIdentifiers;
 
     /**
      * @hidden
