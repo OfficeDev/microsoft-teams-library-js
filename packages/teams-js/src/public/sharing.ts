@@ -213,9 +213,9 @@ export namespace sharing {
       title: string;
       /** Reference of the shared content */
       contentReference: string;
-      /** Id of the thread where the content was shared. This is a UUID */
+      /** Id of the thread where the content was shared. */
       threadId: string;
-      /** Id of the user who shared the content. This is a UUID */
+      /** Id of the user who shared the content. */
       author: string;
       /** Type of the shared content.
        * For sharing to Teams stage scenarios, this value would be `ShareToStage`
