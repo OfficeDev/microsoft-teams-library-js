@@ -119,13 +119,13 @@ export namespace meeting {
   export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
     /**
      * @hidden
-     * Phone number of a PSTN caller or email of a VoIP caller
+     * originalCaller object
      */
     originalCaller?: ICallParticipantIdentifiers;
 
     /**
      * @hidden
-     * Phone number of a PSTN callee or email of a VoIP callee
+     * dialedEntity object
      */
     dialedEntity?: never;
 
