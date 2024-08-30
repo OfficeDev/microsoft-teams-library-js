@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Fixed a bug where `null` values in `RuntimeConfig` would cause `app.initialize` to fail and updated `AppEligibilityInformation` interface to be consistent with interface defined in host SDK library.",
+  "comment": "Fixed a bug with `AppEligibilityInformation` that could cause `app.initialize` to fail.",
   "packageName": "@microsoft/teams-js",
   "email": "erinha@users.noreply.github.com",
   "dependentChangeType": "patch"
