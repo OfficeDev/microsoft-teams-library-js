@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Modified `getMeetingDetailsVerbose` API return interface so that the `originalCaller` and `dialedEntity` properties are of a new type `ICallParticipantIdentifiers",
+  "packageName": "@microsoft/teams-js",
+  "email": "johnsle@microsoft.com",
+  "dependentChangeType": "patch"
+}
