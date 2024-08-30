@@ -1135,7 +1135,7 @@ export interface AppEligibilityInformation {
   /**
    * Education Eligibility Information for the app user
    */
-  userClassification: UserClassification;
+  userClassification: UserClassification | null;
 }
 
 /**
