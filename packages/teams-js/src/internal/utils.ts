@@ -504,3 +504,17 @@ export function validateUuid(id: string | undefined | null): void {
     throw new Error('id must be a valid UUID');
   }
 }
+
+/**
+ * Cache if performance timers are available to avoid redoing this on each function call.
+ */
+const supportsPerformanceTimers = 'performance' in window && 'now' in window.performance;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ * @returns current timestamp in milliseconds
+ */
+export function getCurrentTimestamp(): number {
+  return supportsPerformanceTimers ? window.performance.now() + window.performance.timeOrigin : new Date().getTime();
+}
