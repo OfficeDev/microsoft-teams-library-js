@@ -39,11 +39,14 @@ export class Utils {
   public parentWindow: Window;
   public topWindow: Window;
 
+  public respondWithTimestamp: boolean;
+
   private onMessageSent: null | ((messageRequest: MessageRequest) => void) = null;
 
   public constructor() {
     this.messages = [];
     this.childMessages = [];
+    this.respondWithTimestamp = false;
 
     this.parentWindow = {
       postMessage: (serializedMessage: SerializedMessageRequest, targetOrigin: string): void => {
@@ -147,6 +150,10 @@ export class Utils {
   }
 
   public processMessage: null | ((ev: MessageEvent) => Promise<void>);
+
+  public setRespondWithTimestamp(respondWithTimestamp: boolean): void {
+    this.respondWithTimestamp = respondWithTimestamp;
+  }
 
   public initializeWithContext = async (
     frameContext: string,
@@ -263,9 +270,10 @@ export class Utils {
 
   public respondToMessageWithPorts = async (
     message: MessageRequest | NestedAppAuthRequest,
-    args: unknown[] = [],
+    args: unknown[],
     ports: MessagePort[] = [],
   ): Promise<void> => {
+    const timestamp = this.respondWithTimestamp ? { timestamp: performance.now() + performance.timeOrigin } : {};
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,
@@ -276,6 +284,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as DOMMessageEvent;
@@ -288,6 +297,7 @@ export class Utils {
           id: message.id,
           uuidAsString: getMessageUUIDString(message),
           args: args,
+          ...timestamp,
         } as SerializedMessageResponse,
         ports,
       } as unknown as MessageEvent);

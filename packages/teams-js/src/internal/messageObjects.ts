@@ -46,6 +46,7 @@ export interface SerializedMessageResponse {
   uuidAsString?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
+  timestamp?: number;
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 

@@ -508,7 +508,7 @@ export function validateUuid(id: string | undefined | null): void {
 /**
  * Cache if performance timers are available to avoid redoing this on each function call.
  */
-const supportsPerformanceTimers = 'performance' in window && 'now' in window.performance;
+const supportsPerformanceTimers = !!performance && 'now' in performance;
 
 /**
  * @internal
@@ -516,5 +516,5 @@ const supportsPerformanceTimers = 'performance' in window && 'now' in window.per
  * @returns current timestamp in milliseconds
  */
 export function getCurrentTimestamp(): number {
-  return supportsPerformanceTimers ? window.performance.now() + window.performance.timeOrigin : new Date().getTime();
+  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : new Date().getTime();
 }

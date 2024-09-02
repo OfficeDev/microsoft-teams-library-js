@@ -64,6 +64,16 @@ const OpenLink = (): ReactElement =>
     defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
   });
 
+const RegisterHostToAppPerformanceMetricsHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerHostToAppPerformanceMetricsHandler',
+    title: 'Register Host to App performance metrics handler',
+    onClick: async (setResult) => {
+      app.registerHostToAppPerformanceMetricsHandler((v) => setResult(JSON.stringify(v)));
+      return '';
+    },
+  });
+
 const RegisterOnThemeChangeHandler = (): ReactElement =>
   ApiWithoutInput({
     name: 'registerOnThemeChangeHandler',
@@ -128,6 +138,7 @@ const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
+    <RegisterHostToAppPerformanceMetricsHandler />
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />

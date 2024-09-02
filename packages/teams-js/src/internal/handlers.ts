@@ -2,7 +2,7 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { LoadContext, ResumeContext } from '../public/interfaces';
+import { HostToAppPerformanceMetrics, LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
@@ -31,6 +31,7 @@ class HandlersPrivate {
   public static beforeUnloadHandler: null | ((readyToUnload: () => void) => boolean) = null;
   public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
   public static resumeHandler: null | ((context: ResumeContext) => void) = null;
+  public static hostToAppPerformanceMetricsHandler: null | ((metrics: HostToAppPerformanceMetrics) => void) = null;
 
   /**
    * @internal
@@ -180,6 +181,27 @@ export function handleThemeChange(theme: string): void {
   if (Communication.childWindow) {
     sendMessageEventToChild('themeChange', [theme]);
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerHostToAppPerformanceMetricsHandler(
+  handler: (metrics: HostToAppPerformanceMetrics) => void,
+): void {
+  HandlersPrivate.hostToAppPerformanceMetricsHandler = handler;
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function handleHostToAppPerformanceMetrics(metrics: HostToAppPerformanceMetrics): void {
+  if (!HandlersPrivate.hostToAppPerformanceMetricsHandler) {
+    return;
+  }
+  HandlersPrivate.hostToAppPerformanceMetricsHandler(metrics);
 }
 
 /**
