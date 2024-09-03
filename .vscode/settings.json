@@ -2,11 +2,11 @@
   "cSpell.words": ["adal", "ipados", "teamspace", "uninitialize", "xvfb"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.workingDirectories": [
-    "./packages/teams-js/",
-    "./apps/teams-perf-test-app",
     "./apps/ssr-test-app/",
+    "./apps/teams-perf-test-app",
     "./apps/teams-test-app/",
-    "./apps/typed-dependency-tester/"
+    "./apps/typed-dependency-tester/",
+    "./packages/teams-js/"
   ],
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,
