@@ -1,8 +1,20 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 28 Aug 2024 19:31:44 GMT and should not be manually modified.
+This log was last generated on Tue, 03 Sep 2024 22:19:52 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.28.0
+
+Tue, 03 Sep 2024 22:19:52 GMT
+
+### Minor changes
+
+- Removed invalid validations for content fields on `IContentResponse` interface
+
+### Patches
+
+- Fixed a bug with `AppEligibilityInformation` that could cause `app.initialize` to fail.
 
 ## 2.27.0
 
