@@ -12,7 +12,7 @@ Wed, 28 Aug 2024 19:31:44 GMT
 
 - Added 1P-only `hostEntity` capability for adding and configuring, removing, renaming, re-configuring and fetching all tabs.
 - Added optional field `messageId` to `stageView.open`. Passing `messageId` to `stageView.open` allows opening the stageView in a channel meeting
-- Added optional enum attribute for registerFocusEnterHandler and returnFocus APIs that allows developers to send and receive more nuanced information about where focus should go in their app or the host respectively
+- Added optional enum attribute for `registerFocusEnterHandler` and `returnFocus` APIs that allows developers to send and receive more nuanced information about where focus should go in their app or the host respectively
 - Added `copilot` and `copilot.eligibility` capability that will get the eligibility information of the user using M365ChatApp. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix
 - Added new `AppId` class to use as a type where app ids are being stored
 
