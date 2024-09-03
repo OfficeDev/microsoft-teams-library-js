@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Added *.m365.cloud.microsoft to dynamic domain list",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}

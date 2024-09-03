@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Moved `AppId` type to public folder",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

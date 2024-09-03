@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "\"Setup for 2.26.0 release\"",
+  "comment": "Released 2.27.0",
   "packageName": "@microsoft/teams-js",
   "email": "jadahiya@microsoft.com",
   "dependentChangeType": "none"
