@@ -47,6 +47,7 @@ const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const initializationTimeoutInMs = 5000;
 
 const appLogger = getLogger('app');
+appLogger.enabled = true;
 
 export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
@@ -181,6 +182,8 @@ function initializeHelper(apiVersionTag: string, validMessageOrigins?: string[])
     } else {
       initializeHelperLogger('GlobalVars.initializePromise is unexpectedly undefined');
     }
+
+    appLogger.enabled = false;
   });
 }
 
