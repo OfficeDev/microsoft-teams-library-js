@@ -1,12 +1,10 @@
+import { nestedAppAuth } from '@microsoft/teams-js';
 import React, { ReactElement } from 'react';
 
 import { ApiWithTextInput } from './utils';
+import { ApiWithoutInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 import { NaaMock } from './utils/naaMock';
-
-import { nestedAppAuth } from '@microsoft/teams-js';
-
-import { ApiWithoutInput } from './utils';
 
 const NaaRequest = (): ReactElement =>
   ApiWithTextInput<NestedAppAuthRequest>({
