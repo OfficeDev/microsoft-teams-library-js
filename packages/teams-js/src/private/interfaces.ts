@@ -533,3 +533,12 @@ export interface InvokeError {
 export enum InvokeErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
 }
+
+/**
+ * @hidden
+ * Wrapper to differentiate between InvokeError and IInvokeResponse response from host
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+export const ActionExecuteInvokeRequestType = 'Action.Execute';

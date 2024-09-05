@@ -16,6 +16,7 @@ const CheckExternalAppAuthenticationCapability = (): React.ReactElement =>
 const AuthenticateWithOAuth = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
+    conversationId: string;
     authenticateParameters: {
       url: string;
       width?: number;
@@ -40,14 +41,16 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
         };
         const result = await externalAppAuthenticationForCEC.authenticateWithOAuth(
           input.appId,
+          input.conversationId,
           { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
           oAuthcallback,
         );
-        return JSON.stringify(result);
+        return 'Completed';
       },
     },
     defaultInput: JSON.stringify({
       appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      conversationId: 'testConversationId',
       authenticateParameters: {
         url: 'https://www.example.com',
         width: 100,
@@ -60,6 +63,7 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
 const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
+    conversationId: string;
     authTokenRequest: AuthTokenRequestParameters;
   }>({
     name: 'authenticateWithSSO',
@@ -78,12 +82,19 @@ const AuthenticateWithSSO = (): React.ReactElement =>
           console.log('callback received');
           setResult('callback received');
         };
-        await externalAppAuthenticationForCEC.authenticateWithSSO(input.appId, input.authTokenRequest, ssoCallback);
+        await externalAppAuthenticationForCEC.authenticateWithSSO(
+          input.appId,
+          input.conversationId,
+          input.authTokenRequest,
+          ssoCallback,
+        );
+        console.log('completed');
         return 'Completed';
       },
     },
     defaultInput: JSON.stringify({
       appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      conversationId: 'testConversationId',
       authTokenRequest: {
         claims: ['https://graph.microsoft.com'],
         silent: true,

@@ -119,6 +119,7 @@ export function registerHandler(
  * Limited to Microsoft-internal use
  */
 export function removeHandler(name: string): void {
+  console.log(name + ' handler is removed ' + JSON.stringify(HandlersPrivate.handlers));
   delete HandlersPrivate.handlers[name];
 }
 

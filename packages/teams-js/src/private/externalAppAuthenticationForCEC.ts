@@ -5,55 +5,23 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { validateId } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { AuthenticatePopUpParameters, AuthTokenRequestParameters, InvokeError } from './interfaces';
+import {
+  ActionExecuteInvokeRequestType,
+  AuthenticatePopUpParameters,
+  AuthTokenRequestParameters,
+  IActionExecuteInvokeRequest,
+  IActionExecuteResponse,
+  InvokeError,
+  InvokeErrorCode,
+  InvokeErrorWrapper,
+} from './interfaces';
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_3;
-
-// export namespace externalAppAuthenticationForCEC {
-//   export function authenticateWithSSO(
-//     appId: string,
-//     authTokenRequest: AuthTokenRequestParameters,
-//     SSOAuthCompletedCallback: () => void,
-//   ): void {
-//     ensureInitialized(runtime, FrameContexts.content);
-
-//     if (!isSupported()) {
-//       throw errorNotSupportedOnPlatform;
-//     }
-//     validateId(appId, new Error('App id is not valid.'));
-//     registerHandler(
-//       getApiVersionTag(ApiVersionNumber.V_3, ApiName.ExternalAppAuthenticationForCEC_SSOAuthCompleted),
-//       'ssoAuthCompleted',
-//       SSOAuthCompletedCallback,
-//     );
-//     return sendMessageToParent(
-//       getApiVersionTag(
-//         externalAppAuthenticationTelemetryVersionNumber,
-//         ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithSSO,
-//       ),
-//       'externalAppAuthenticationForCEC.authenticateWithSSO',
-//       [appId, authTokenRequest.claims, authTokenRequest.silent],
-//       (wasSuccessful, error) => {
-//         if (!wasSuccessful) {
-//           console.log('not successfull ' + error);
-//         } else {
-//           console.log('successfull ' + error);
-//         }
-//       },
-//     );
-//     // .then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-//     //   if (!wasSuccessful) {
-//     //     throw error;
-//     //   }
-//     // })
-//     // .finally(() => {
-//     //   // removeHandler('ssoAuthCompleted');
-//     // });
-//   }
 
 export namespace externalAppAuthenticationForCEC {
   export function authenticateWithSSO(
     appId: string,
+    conversationId: string,
     authTokenRequest: AuthTokenRequestParameters,
     SSOAuthCompletedCallback: () => void,
   ): Promise<void> {
@@ -74,7 +42,7 @@ export namespace externalAppAuthenticationForCEC {
         ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithSSO,
       ),
       'externalAppAuthenticationForCEC.authenticateWithSSO',
-      [appId, authTokenRequest.claims, authTokenRequest.silent],
+      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       removeHandler('ssoAuthCompleted');
       if (!wasSuccessful) {
@@ -85,6 +53,7 @@ export namespace externalAppAuthenticationForCEC {
 
   export function authenticateWithOAuth(
     appId: string,
+    conversationId: string,
     authenticateParameters: AuthenticatePopUpParameters,
     // callback that will be called when hubsdk is done with Authentication
     OAuthCompletedCallback: () => void,
@@ -105,11 +74,12 @@ export namespace externalAppAuthenticationForCEC {
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithOAuth,
+        ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithOauth,
       ),
-      'externalAppAuthenticationForCEC.authenticateWithOAuth',
+      'externalAppAuthenticationForCEC.authenticateWithOauth',
       [
         appId,
+        conversationId,
         authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
@@ -123,7 +93,84 @@ export namespace externalAppAuthenticationForCEC {
     });
   }
 
+  export function authenticateAndResendRequest(
+    appId: string,
+    authenticateParameters: AuthenticatePopUpParameters,
+    originalRequestInfo: IActionExecuteInvokeRequest,
+  ): Promise<IActionExecuteResponse> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    validateId(appId, new Error('App id is not valid.'));
+    validateOriginalRequestInfo(originalRequestInfo);
+
+    // Ask the parent window to open an authentication window with the parameters provided by the caller.
+    return sendMessageToParentAsync<[boolean, IActionExecuteResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
+      ),
+      'externalAppAuthentication.authenticateAndResendRequest',
+      [
+        appId,
+        originalRequestInfo,
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ],
+    ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
+      if (wasSuccessful && response.responseType != null) {
+        return response as IActionExecuteResponse;
+      } else {
+        const error = response as InvokeError;
+        throw error;
+      }
+    });
+  }
+  export function authenticateWithSSOAndResendRequest(
+    appId: string,
+    authTokenRequest: AuthTokenRequestParameters,
+    originalRequestInfo: IActionExecuteInvokeRequest,
+  ): Promise<IActionExecuteResponse> {
+    ensureInitialized(runtime, FrameContexts.content);
+
+    if (!isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    validateId(appId, new Error('App id is not valid.'));
+
+    validateOriginalRequestInfo(originalRequestInfo);
+
+    return sendMessageToParentAsync<[boolean, IActionExecuteResponse | InvokeErrorWrapper]>(
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
+      ),
+      'externalAppAuthentication.authenticateWithSSOAndResendRequest',
+      [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+    ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
+      if (wasSuccessful && response.responseType != null) {
+        return response as IActionExecuteResponse;
+      } else {
+        const error = response as InvokeError;
+        throw error;
+      }
+    });
+  }
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEC ? true : false;
+  }
+
+  function validateOriginalRequestInfo(actionExecuteRequest: IActionExecuteInvokeRequest): void {
+    if (actionExecuteRequest.type !== ActionExecuteInvokeRequestType) {
+      const error: InvokeError = {
+        errorCode: InvokeErrorCode.INTERNAL_ERROR,
+        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
+      };
+      throw error;
+    }
   }
 }
