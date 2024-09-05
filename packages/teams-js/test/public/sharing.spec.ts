@@ -1,9 +1,15 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
+import { GlobalVars } from '../../src/internal/globalVars';
+import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { compareSDKVersions } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
+import {
+  generateVersionBasedTeamsRuntimeConfig,
+  mapTeamsVersionToSupportedCapabilities,
+  versionAndPlatformAgnosticTeamsRuntimeConfig,
+} from '../../src/public/runtime';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { sharing } from '../../src/public/sharing';
 import { Utils } from '../utils';
@@ -360,7 +366,6 @@ describe('sharing_v2', () => {
   });
 
   describe('Testing sharing.isSupported function', () => {
-    const utils = new Utils();
     it('sharing.isSupported should return false if the runtime says sharing is not supported', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -382,28 +387,72 @@ describe('sharing_v2', () => {
   const testVersions = ['1.8.0', '1.9.0', '2.0.2'];
   const minDesktopAndWebVersionForSharing = '2.0.0';
   const supportedClientTypes = [HostClientType.web, HostClientType.desktop];
-  describe('Testing sharing.isSupported() on different platforms', () => {
+  describe('Testing sharing.isSupported() on web and desktop platforms', () => {
     Object.values(HostClientType).forEach((clientType) => {
       if (supportedClientTypes.some((supportedClientTypes) => supportedClientTypes == clientType)) {
         Object.values(testVersions).forEach((version) => {
           if (compareSDKVersions(version, minDesktopAndWebVersionForSharing) >= 0) {
             it(`sharing.isSupported() should return true for web and desktop when version is greater than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
               await utils.initializeWithContext(FrameContexts.content, clientType);
-              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
               expect(sharing.isSupported()).toBeTruthy();
             });
           } else {
             it(`sharing.isSupported() should return false for web and desktop when version is lower than supported version ${minDesktopAndWebVersionForSharing}}`, async () => {
               await utils.initializeWithContext(FrameContexts.content, clientType);
-              utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
               expect(sharing.isSupported()).toBeFalsy();
             });
           }
         });
-      } else {
-        it(`sharing.isSupported() should return false for platforms other than desktop and web, regardless version`, async () => {
-          await utils.initializeWithContext(FrameContexts.content, clientType);
-          expect(sharing.isSupported()).toBeFalsy();
+      }
+    });
+  });
+
+  const testVersionsForMobile = ['2.0.2', '2.0.8', '2.0.9'];
+  const minMobileVersionForSharing = '2.0.8';
+  const supportedMobileClientTypes = [HostClientType.ios, HostClientType.android];
+  describe('Testing sharing.isSupported() on mobile platforms', () => {
+    Object.values(HostClientType).forEach((clientType) => {
+      if (supportedMobileClientTypes.some((supportedMobileClientTypes) => supportedMobileClientTypes == clientType)) {
+        Object.values(testVersionsForMobile).forEach((version) => {
+          if (compareSDKVersions(version, minMobileVersionForSharing) >= 0) {
+            it(`sharing.isSupported() should return true for mobile when version is greater than supported version ${minMobileVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
+              expect(sharing.isSupported()).toBeTruthy();
+            });
+          } else {
+            it(`sharing.isSupported() should return false for mobile when version is lower than supported version ${minMobileVersionForSharing}}`, async () => {
+              await utils.initializeWithContext(FrameContexts.content, clientType);
+              utils.setRuntimeConfig(
+                generateVersionBasedTeamsRuntimeConfig(
+                  version,
+                  versionAndPlatformAgnosticTeamsRuntimeConfig,
+                  mapTeamsVersionToSupportedCapabilities,
+                ),
+              );
+              expect(sharing.isSupported()).toBeFalsy();
+            });
+          }
         });
       }
     });
@@ -645,5 +694,107 @@ describe('sharing_v2', () => {
           });
         }
       });
+  });
+
+  describe('Testing getContent', () => {
+    const allowedContexts = [FrameContexts.sidePanel, FrameContexts.meetingStage];
+    const emptyCallBack = (): void => {
+      return;
+    };
+
+    let utils: Utils = new Utils();
+    beforeEach(() => {
+      utils = new Utils();
+      utils.mockWindow.parent = undefined;
+      utils.messages = [];
+      GlobalVars.isFramelessWindow = false;
+    });
+    afterEach(() => {
+      app._uninitialize();
+      GlobalVars.isFramelessWindow = false;
+    });
+    it('should not allow calls before initialization', () => {
+      expect(() => sharing.history.getContent()).rejects.toThrowError(new Error(errorLibraryNotInitialized));
+    });
+
+    Object.values(FrameContexts).forEach((context) => {
+      if (allowedContexts.some((allowedContext) => allowedContext === context)) {
+        it(`sharing.history.getContent should throw error when sharing.history is not supported. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+          expect(sharing.history.getContent()).rejects.toEqual(errorNotSupportedOnPlatform);
+        });
+
+        it(`sharing.history.getContent should successfully get the content. context: ${context}`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
+          const promise = sharing.history.getContent();
+          const contentDetails = [
+            {
+              appId: 'appId',
+              title: 'title',
+              contentReference: 'contentReference',
+              threadId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+              author: 'da5b7aeb-2a31-6151-5e51-d4eab4abe577',
+              contentType: 'contentType',
+            },
+          ];
+          await utils.respondToFramelessMessage({
+            data: {
+              args: [null, contentDetails],
+            },
+          } as DOMMessageEvent);
+          expect(promise).resolves.toBe(contentDetails);
+        });
+
+        it(`should throw if the getContent message sends and fails ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
+          const promise = sharing.history.getContent();
+          await utils.respondToFramelessMessage({
+            data: {
+              args: [{ errorCode: ErrorCode.INTERNAL_ERROR }, null],
+            },
+          } as DOMMessageEvent);
+          expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
+        });
+      } else {
+        it(`should not allow sharing.history.getContent calls from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          expect(() => sharing.history.getContent()).rejects.toThrowError(
+            `This call is only allowed in following contexts: ${JSON.stringify(
+              allowedContexts,
+            )}. Current context: "${context}".`,
+          );
+        });
+      }
+    });
+
+    describe('Testing sharing.history.isSupported function', () => {
+      let utils: Utils = new Utils();
+      beforeEach(() => {
+        utils = new Utils();
+      });
+      afterEach(() => {
+        app._uninitialize();
+      });      
+      it('sharing.history.isSupported should return false if the runtime says sharing.history is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: {} } });
+        expect(sharing.history.isSupported()).not.toBeTruthy();
+      });
+
+      it('sharing.history.isSupported should return true if the runtime says sharing.history is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { sharing: { history: {} } } });
+        expect(sharing.history.isSupported()).toBeTruthy();
+      });
+
+      it('sharing.isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => sharing.history.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+    });
   });
 });

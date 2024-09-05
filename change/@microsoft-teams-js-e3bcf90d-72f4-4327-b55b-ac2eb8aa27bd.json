@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Add optional enum attribute for registerFocusEnterHandler and returnFocus APIs that allows developers to send and receive more nuanced information about where focus should go in their app or the host respectively",
+  "packageName": "@microsoft/teams-js",
+  "email": "153236114+arsa-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}

@@ -1,152 +1,300 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { GlobalVars } from '../../src/internal/globalVars';
-import { compareSDKVersions } from '../../src/internal/utils';
-import { app } from '../../src/public/app';
-import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { generateBackCompatRuntimeConfig } from '../../src/public/runtime';
-import { webStorage } from '../../src/public/webStorage';
+import { ApiName } from '../../src/internal/telemetry';
+import { app, Context } from '../../src/public';
+import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
+import { clearWebStorageCachedHostNameForTests, webStorage } from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
 describe('webStorage', () => {
-  const minMobileVersionForWebStorage = '2.0.5';
-  const supportedMobileClientTypes = [HostClientType.ios, HostClientType.android];
-  const testVersions = ['1.8.0', '2.0.4', '2.0.5', '2.0.6'];
-  const utils = new Utils();
-  describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
-    it('should not allow calls before initialization', () => {
-      expect(webStorage.isWebStorageClearedOnUserLogOut).toThrowError(new Error(errorLibraryNotInitialized));
-    });
+  let utils: Utils;
 
+  beforeEach(() => {
+    utils = new Utils();
+    utils.mockWindow.parent = undefined;
+    utils.messages = [];
+  });
+
+  afterEach(() => {
+    app._uninitialize();
+    jest.clearAllMocks();
+  });
+
+  describe('webStorage.isSupported', () => {
     it('webStorage.isSupported should throw if called before initialization', () => {
+      expect.assertions(1);
+
       utils.uninitializeRuntimeConfig();
       expect(() => webStorage.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
     });
 
-    describe('Framed', () => {
-      let utils: Utils = new Utils();
-      beforeEach(() => {
-        utils = new Utils();
-        utils.messages = [];
-      });
-      afterEach(() => {
-        app._uninitialize();
-      });
-      Object.values(FrameContexts).forEach((frameContext) => {
-        Object.values(HostClientType).forEach((clientType) => {
-          // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop) {
-            it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
-              await utils.initializeWithContext(frameContext, clientType);
-              expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-            });
-          } else {
-            Object.values(testVersions).forEach((version) => {
-              // mobile hostClientType is supported with valid version
-              if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) {
-                if (supportedMobileClientTypes.some((supportedClientType) => supportedClientType === clientType)) {
-                  it('webStorage.isSupported should return false if the runtime says webStorage is not supported', async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-                    expect(webStorage.isSupported()).not.toBeTruthy();
-                  });
+    it('webStorage.isSupported should return false if webStorage not supported in runtime', async () => {
+      expect.assertions(1);
 
-                  it('webStorage.isSupported should return true if the runtime says webStorage is supported', async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
-                    expect(webStorage.isSupported()).toBeTruthy();
-                  });
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+      expect(webStorage.isSupported()).not.toBeTruthy();
+    });
 
-                  it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-                  });
-                } else {
-                  it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
-                  });
-                }
-              } else {
-                // not supported for any client type with invalid version
-                it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  await utils.initializeWithContext(frameContext, clientType);
-                  utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
-                });
-              }
-            });
-          }
-        });
-      });
-    }); // end framed
+    it('webStorage.isSupported should return true if webStorage supported in runtime', async () => {
+      expect.assertions(1);
 
-    describe('Frameless', () => {
-      let utils: Utils = new Utils();
-      beforeEach(() => {
-        utils = new Utils();
-        utils.mockWindow.parent = undefined;
-        utils.messages = [];
-        GlobalVars.isFramelessWindow = false;
-      });
-      afterEach(() => {
-        app._uninitialize();
-        GlobalVars.isFramelessWindow = false;
-      });
-      Object.values(FrameContexts).forEach((frameContext) => {
-        Object.values(HostClientType).forEach((clientType) => {
-          // desktop HostClientType is always supported
-          if (clientType === HostClientType.desktop) {
-            it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext} and hostClientType ${clientType}`, async () => {
-              await utils.initializeWithContext(frameContext, clientType);
-              expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-            });
-          } else {
-            Object.values(testVersions).forEach((version) => {
-              //mobile HostClientType is supported for valid version
-              if (compareSDKVersions(version, minMobileVersionForWebStorage) >= 0) {
-                if (supportedMobileClientTypes.some((supportedClientType) => supportedClientType === clientType)) {
-                  it('webStorage.isSupported should return false if the runtime says webStorage is not supported', async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
-                    expect(webStorage.isSupported()).not.toBeTruthy();
-                  });
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
+      expect(webStorage.isSupported()).toBeTruthy();
+    });
+  });
 
-                  it('webStorage.isSupported should return true if the runtime says webStorage is supported', async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig({ apiVersion: 1, supports: { webStorage: {} } });
-                    expect(webStorage.isSupported()).toBeTruthy();
-                  });
+  describe('webStorage.isWebStorageClearedOnUserLogOut', () => {
+    afterEach(() => {
+      clearWebStorageCachedHostNameForTests();
+    });
 
-                  it('webStorage.isSupported should throw if called before initialization', () => {
-                    utils.uninitializeRuntimeConfig();
-                    expect(() => webStorage.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-                  });
-                  it(`webStorage.isWebStorageClearedOnUserLogOut should allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeTruthy();
-                  });
-                } else {
-                  it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                    await utils.initializeWithContext(frameContext, clientType);
-                    utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                    expect(webStorage.isWebStorageClearedOnUserLogOut()).not.toBeTruthy();
-                  });
-                }
-              } else {
-                // not supported for any client type with invalid version
-                it(`webStorage.isWebStorageClearedOnUserLogOut should not allow call for context ${frameContext}, hostClientType ${clientType} and version ${version}`, async () => {
-                  await utils.initializeWithContext(frameContext, clientType);
-                  utils.setRuntimeConfig(generateBackCompatRuntimeConfig(version));
-                  expect(webStorage.isWebStorageClearedOnUserLogOut()).toBeFalsy();
-                });
-              }
-            });
-          }
-        });
+    it('should not allow calls before initialization', async () => {
+      expect.assertions(1);
+
+      utils.uninitializeRuntimeConfig();
+
+      await webStorage
+        .isWebStorageClearedOnUserLogOut()
+        .catch((e) => expect(e).toMatchObject(new Error(errorLibraryNotInitialized)));
+    });
+
+    it('should throw errorNotSupportedOnPlatform if webStorage not supported in runtime config and isLegacyTeams is undefined', async () => {
+      expect.assertions(1);
+
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+      await webStorage
+        .isWebStorageClearedOnUserLogOut()
+        .catch((e) => expect(e).toMatchObject(errorNotSupportedOnPlatform));
+    });
+
+    const enum RuntimeSource {
+      LegacyTeams,
+      NotLegacyTeams,
+    }
+
+    const enum GetContextCallExpectation {
+      GetContextShouldBeCalled,
+      GetContextShouldNotBeCalled,
+    }
+
+    async function callAndAnswerIsWebStorageClearedOnUserLogOut(
+      hostClientType: HostClientType,
+      hostName: HostName,
+      runtimeSource: RuntimeSource,
+      getContextCallExpectation: GetContextCallExpectation,
+      webStorageMessageResponse: undefined | boolean, // undefined means no web storage message should be sent, a boolean value indicates how to respond when it is sent
+    ): Promise<boolean> {
+      await utils.initializeWithContext(FrameContexts.content, hostClientType);
+      utils.setRuntimeConfig({
+        apiVersion: 4,
+        isLegacyTeams: runtimeSource === RuntimeSource.LegacyTeams,
+        supports: { webStorage: {} },
       });
-    }); // end frameless
+
+      const webStoragePromise = webStorage.isWebStorageClearedOnUserLogOut();
+
+      if (getContextCallExpectation === GetContextCallExpectation.GetContextShouldBeCalled) {
+        const getContextMessage = utils.findMessageByActionName(ApiName.PublicAPIs_GetContext);
+
+        const contextResponse: Context = {
+          entityId: '',
+          hostName,
+          hostClientType,
+          locale: 'en-us',
+        };
+
+        await utils.respondToMessage(getContextMessage!, contextResponse);
+      }
+
+      if (webStorageMessageResponse !== undefined) {
+        const webStorageMessage = await utils.waitUntilMessageIsSent(
+          ApiName.WebStorage_IsWebStorageClearedOnUserLogOut,
+        );
+        await utils.respondToMessage(webStorageMessage, webStorageMessageResponse);
+      }
+
+      return webStoragePromise;
+    }
+
+    it('should return true; HOST: Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true', async () => {
+      expect.assertions(1);
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
+      );
+
+      expect(result).toStrictEqual(true);
+    });
+
+    it('should return true; HOST: Teams, PLATFORM: iPadOS, TEAMS_LEGACY_RUNTIME: true', async () => {
+      expect.assertions(1);
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ipados,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
+      );
+
+      expect(result).toStrictEqual(true);
+    });
+
+    it('should return true; HOST: Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: true', async () => {
+      expect.assertions(1);
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
+      );
+
+      expect(result).toStrictEqual(true);
+    });
+
+    it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true, host returns: true', async () => {
+      expect.assertions(1);
+
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.outlook,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.office,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: true, host returns: false', async () => {
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.outlookWin32,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return true; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
+      expect.assertions(1);
+
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.orange,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return true; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: true', async () => {
+      expect.assertions(1);
+
+      const hostResponse = true;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.places,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return false; HOST: Not Teams, PLATFORM: Android, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.android,
+        HostName.teamsModern,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should return false; HOST: Not Teams, PLATFORM: iOS, TEAMS_LEGACY_RUNTIME: false, host returns: false', async () => {
+      expect.assertions(1);
+
+      const hostResponse = false;
+
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.office,
+        RuntimeSource.NotLegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        hostResponse,
+      );
+
+      expect(result).toStrictEqual(hostResponse);
+    });
+
+    it('should not call getContext from the host more than once when it is called a second time if the host is Teams mobile and the Teams fallback runtime is being used', async () => {
+      expect.assertions(1);
+
+      await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldBeCalled,
+        undefined,
+      );
+
+      utils.messages = utils.messages.filter((message) => message.func !== ApiName.PublicAPIs_GetContext);
+      // In this call, we should not receive a getContext call so this function will fail if there's no getContext message
+      const result = await callAndAnswerIsWebStorageClearedOnUserLogOut(
+        HostClientType.ios,
+        HostName.teams,
+        RuntimeSource.LegacyTeams,
+        GetContextCallExpectation.GetContextShouldNotBeCalled,
+        undefined,
+      );
+
+      expect(result).toStrictEqual(true);
+    });
   });
 });

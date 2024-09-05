@@ -5,17 +5,21 @@ on:
 jobs:
   Release:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: write
+      pull-requests: write
     steps:
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.0.2
         with:
-          node-version: '14.x'
+          node-version: '18.x'
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Install pnpm
-        run: npm install -g pnpm@7.30.1
+        run: npm install -g pnpm@9.0.6
 
       - name: Install dependencies
         run: pnpm install

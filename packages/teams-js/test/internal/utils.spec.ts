@@ -1,11 +1,13 @@
-import { GlobalVars } from '../../src/internal/globalVars';
 import {
   base64ToBlob,
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
-  validateOrigin,
+  validateId,
+  validateUrl,
+  validateUuid,
 } from '../../src/internal/utils';
+import { UUID } from '../../src/internal/uuidObject';
 import { pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 
@@ -19,105 +21,6 @@ describe('utils', () => {
     expect(compareSDKVersions('1.10.0', '1.8.2')).toEqual(1);
     expect(compareSDKVersions('2', '1.10.345')).toEqual(1);
     expect(compareSDKVersions('1.9.1', '1.9.0.0')).toEqual(1);
-  });
-  it('validateOrigin returns true if origin is in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://teams.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns true if origin for subdomains in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://subdomain.teams.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns false if origin is not in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://badorigin.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if origin is not an exact match in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://team.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns true if origin is valid origin supplied by user ', () => {
-    const messageOrigin = new URL('https://testorigin.com');
-    GlobalVars.additionalValidOrigins = [messageOrigin.origin];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns false if origin is not supplied by user', () => {
-    const messageOrigin = new URL('https://badorigin.com');
-    GlobalVars.additionalValidOrigins = ['https://testorigin.com'];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns true if origin for subdomains is in the user supplied list', () => {
-    const messageOrigin = new URL('https://subdomain.badorigin.com');
-    GlobalVars.additionalValidOrigins = ['https://*.badorigin.com'];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns false if origin for subdomains is not in the user supplied list', () => {
-    const messageOrigin = new URL('https://subdomain.badorigin.com');
-    GlobalVars.additionalValidOrigins = ['https://*.testorigin.com'];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if the port number of valid origin is not in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://local.teams.live.com:4000');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if the port number of valid origin is not in the user supplied list', () => {
-    const messageOrigin = new URL('https://testorigin.com:4000');
-    GlobalVars.additionalValidOrigins = ['https://testorigin.com:8080'];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns true if the port number of valid origin is in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://local.teams.live.com:8080');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns true if the port number of valid origin is in the user supplied list', () => {
-    const messageOrigin = new URL('https://testorigin.com:8080');
-    GlobalVars.additionalValidOrigins = ['https://testorigin.com:8080'];
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(true);
-  });
-  it('validateOrigin returns false if origin has extra appended', () => {
-    const messageOrigin = new URL('https://teams.microsoft.com.evil.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it("validateOrigin returns false if the protocol of origin is not 'https:'", () => {
-    /* eslint-disable-next-line @microsoft/sdl/no-insecure-url */ /* Intentionally using http here because of what it is testing */
-    const messageOrigin = new URL('http://teams.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if first end of origin is not matched valid subdomains in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://myteams.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if first end of origin is not matched valid subdomains in the user supplied list', () => {
-    const messageOrigin = new URL('https://myteams.microsoft.com');
-    const result = validateOrigin(messageOrigin);
-    GlobalVars.additionalValidOrigins = ['https://*.teams.microsoft.com'];
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if origin for subdomains does not match in teams pre-known allowlist', () => {
-    const messageOrigin = new URL('https://a.b.sharepoint.com');
-    const result = validateOrigin(messageOrigin);
-    expect(result).toBe(false);
-  });
-  it('validateOrigin returns false if origin for subdomains does not match in the user supplied list', () => {
-    const messageOrigin = new URL('https://a.b.testdomain.com');
-    const result = validateOrigin(messageOrigin);
-    GlobalVars.additionalValidOrigins = ['https://*.testdomain.com'];
-    expect(result).toBe(false);
   });
   describe('createTeamsAppLink', () => {
     it('builds a basic URL with an appId and pageId', () => {
@@ -156,6 +59,17 @@ describe('utils', () => {
       };
       const expected =
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
+      expect(createTeamsAppLink(params)).toBe(expected);
+    });
+
+    it('builds a URL with a chatId parameter', () => {
+      const params: pages.NavigateToAppParams = {
+        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+        pageId: 'tasklist123',
+        chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
+      };
+      const expected =
+        'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22chatId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with all optional properties', () => {
@@ -220,6 +134,16 @@ describe('utils', () => {
       expect(result.type).toBe(ClipboardSupportedMimeType.TextPlain);
     });
 
+    it('should convert base64 string with special characters to Blob for non-image MIME type', async () => {
+      const base64Data = '4oCvV2hhdOKAmXMgdGhlIGxhdGVzdCB1cGRhdGUuLi4=';
+      const mimeType = ClipboardSupportedMimeType.TextPlain;
+      const result = await base64ToBlob(mimeType, base64Data);
+      const stringResult = await getBase64StringFromBlob(result);
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe(ClipboardSupportedMimeType.TextPlain);
+      expect(stringResult).toEqual('4oCvV2hhdOKAmXMgdGhlIGxhdGVzdCB1cGRhdGUuLi4=');
+    });
+
     it('should convert base64 string to Blob for non-image MIME type', async () => {
       const base64Data = 'PHA+SGVsbG8sIHdvcmxkITwvcD4=';
       const mimeType = ClipboardSupportedMimeType.TextHtml;
@@ -274,6 +198,254 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('Blob cannot be empty.'));
       }
+    });
+  });
+
+  describe('validateUrl', () => {
+    it('should throw invalid url error if it contains script tag', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=<script>alert("Hello, world!");</script>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains uppercase script tags', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=<script>alert("Hello, world!");</script>'.toLocaleUpperCase();
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains mixed case script tags', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=<Script>alert("Hello, world!");</sCrIpT>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains multiple script tags', async () => {
+      expect.assertions(1);
+      const url =
+        'https://example.com?id=1&param=<script>alert("Hello, world!");</script>&val=3&param=<script>alert("Hello, world!");</script>';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags in upper case', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=&lt;script&gt;alert("Hello, world!");&lt;/script&gt;'.toLocaleUpperCase();
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw invalid url error if it contains HTML encoded script tags in mixed case', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=&LT;sCript&gt;alert("Hello, world!");&lt;/scRipt&Gt;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Invalid Url'));
+      }
+    });
+    it('should throw maxlength exceed error if it contains more than 2048 chars', async () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=' + 'a'.repeat(2048);
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Url exceeds the maximum size of 2048 characters'));
+      }
+    });
+    it('should throw invalid url error if it non http url', async () => {
+      expect.assertions(1);
+      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      const url = 'http://example.com;';
+      try {
+        validateUrl(new URL(url));
+      } catch (error) {
+        expect(error).toEqual(new Error('Url should be a valid https url'));
+      }
+    });
+    it('should not throw error when url is a valid url', () => {
+      expect.assertions(1);
+      const url = 'https://example.com?param=< stript >';
+      return expect(() => validateUrl(new URL(url))).not.toThrow();
+    });
+  });
+
+  describe('validateId', () => {
+    it('should throw error on invalid app ID if it contains script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if it contains non printabe ASCII characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'appId\u0000';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if its size exceeds 256 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+    it('should throw error on invalid app ID if its size is less than 5 characters', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(4);
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+
+    it('should not throw error when appId is a valid app ID', () => {
+      expect.assertions(1);
+      const appId = '11111111-1111-1111-1111-111111111111';
+      return expect(() => validateId(appId)).not.toThrow();
+    });
+
+    it('should not throw defined error in the second parameter', () => {
+      expect.assertions(1);
+      const invalidAppId = 'a'.repeat(257);
+      try {
+        validateId(invalidAppId, new Error('Error message'));
+      } catch (error) {
+        expect(error).toEqual(new Error('Error message'));
+      }
+    });
+
+    it('should throw error on invalid app ID if it contains ecoded script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = encodeURIComponent('Invalid<script>alert("Hello, world!");</script>');
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+
+    it('should throw error on invalid app ID if it contains ecoded script tag', async () => {
+      expect.assertions(1);
+      const invalidAppId = 'InvalidID&lt;script&gt;alert("Hello, world!");&lt;/script&gt;';
+      try {
+        validateId(invalidAppId);
+      } catch (error) {
+        expect(error).toEqual(new Error('id is not valid.'));
+      }
+    });
+  });
+
+  describe('UUID class tests', () => {
+    describe('validateUuid', () => {
+      it('should throw error when id is undefined', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid(undefined);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
+
+      it('should throw error when id is null', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid(null);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
+
+      it('should throw error when id is empty', async () => {
+        expect.assertions(1);
+        try {
+          await validateUuid('');
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
+
+      it('should throw error when id is not a valid UUID', async () => {
+        expect.assertions(1);
+        const id = 'invalid-id';
+        try {
+          await validateUuid(id);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must be a valid UUID'));
+        }
+      });
+
+      it('should not throw error when appId is a valid GUID', async () => {
+        expect.assertions(1);
+        // ID randomly generated for this test
+        const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+        return expect(() => validateUuid(id)).not.toThrow();
+      });
+    });
+    describe('UUID class', () => {
+      it('should create new uuid when input is undefined', async () => {
+        expect.assertions(1);
+        const uuid = new UUID(undefined);
+        return expect(() => validateUuid(uuid.toString())).not.toThrow();
+      });
+      it('should throw error when id is empty', async () => {
+        expect.assertions(1);
+        try {
+          const _uuid = new UUID('');
+        } catch (error) {
+          expect(error).toEqual(new Error('id must not be empty'));
+        }
+      });
+
+      it('should throw error when id is not a valid UUID', async () => {
+        expect.assertions(1);
+        const id = 'invalid-id';
+        try {
+          const _uuid = new UUID(id);
+        } catch (error) {
+          expect(error).toEqual(new Error('id must be a valid UUID'));
+        }
+      });
+
+      it('should not throw error when appId is a valid GUID', async () => {
+        expect.assertions(1);
+        // ID randomly generated for this test
+        const id = 'fe4a8eba-2a31-4737-8e33-e5fae6fee194';
+        const uuid = new UUID(id);
+        expect(() => validateUuid(uuid.toString())).not.toThrow();
+        return expect(() => uuid.toString() === id);
+      });
     });
   });
 });

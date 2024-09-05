@@ -68,7 +68,7 @@ export class VideoPerformanceStatistics {
     this.sampleCount += 1;
   }
 
-  private getStatistics(): VideoPerformanceStatisticsResult {
+  private getStatistics(): VideoPerformanceStatisticsResult | null {
     if (!this.currentSession) {
       return null;
     }

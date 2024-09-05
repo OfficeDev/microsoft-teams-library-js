@@ -1,0 +1,10 @@
+{
+  "name": "Dialog Update",
+  "platforms": "Web",
+  "checkIsSupported": {
+    "domElementName": "checkCapabilityResizeDialog",
+    "toggleId": "dialogUpdateToggle",
+    "expectedOutput": "Dialog.update module is not supported"
+  },
+  "testCases": []
+}

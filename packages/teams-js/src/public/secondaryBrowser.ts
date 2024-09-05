@@ -1,19 +1,29 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isValidHttpsURL } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to power up the in-app browser experiences in the Host App.
- * For e.g., opening a URL in the Host App inside a browser
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const secondaryBrowserTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+/**
+ * Namespace to power up the in-app browser experiences in the host app.
+ * For e.g., opening a URL in the host app inside a browser
  *
  * @beta
  */
 export namespace secondaryBrowser {
   /**
-   * Open a URL in the secondary browser aka in-app browser
+   * Open a URL in the secondary browser.
+   *
+   * On mobile, this is the in-app browser.
+   *
+   * On web and desktop, please use the `window.open()` method or other native external browser methods.
    *
    * @param url Url to open in the browser
    * @returns Promise that successfully resolves if the URL  opens in the secondaryBrowser
@@ -32,7 +42,11 @@ export namespace secondaryBrowser {
       throw { errorCode: ErrorCode.INVALID_ARGUMENTS, message: 'Invalid Url: Only https URL is allowed' };
     }
 
-    return sendAndHandleSdkError('secondaryBrowser.open', url.toString());
+    return sendAndHandleSdkError(
+      getApiVersionTag(secondaryBrowserTelemetryVersionNumber, ApiName.SecondaryBrowser_OpenUrl),
+      'secondaryBrowser.open',
+      url.toString(),
+    );
   }
 
   /**

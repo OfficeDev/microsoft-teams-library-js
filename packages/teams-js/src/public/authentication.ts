@@ -8,8 +8,10 @@ import {
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
-import { ssrSafeWindow } from '../internal/utils';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
+import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -17,6 +19,13 @@ import { runtime } from './runtime';
  *
  * This object is used for starting or completing authentication flows.
  */
+
+/**
+ * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file
+ */
+const authenticationTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
+const authenticationTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
+
 export namespace authentication {
   let authHandlers: { success: (string) => void; fail: (string) => void } | undefined;
   let authWindowMonitor: number | undefined;
@@ -27,14 +36,30 @@ export namespace authentication {
    * Limited to Microsoft-internal use; automatically called when library is initialized
    */
   export function initialize(): void {
-    registerHandler('authentication.authenticate.success', handleSuccess, false);
-    registerHandler('authentication.authenticate.failure', handleFailure, false);
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateSuccessHandler,
+      ),
+      'authentication.authenticate.success',
+      handleSuccess,
+      false,
+    );
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_RegisterAuthenticateFailureHandler,
+      ),
+      'authentication.authenticate.failure',
+      handleFailure,
+      false,
+    );
   }
 
   let authParams: AuthenticateParameters | undefined;
   /**
    * @deprecated
-   * As of 2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * As of TeamsJS v2.0.0, this function has been deprecated in favor of a Promise-based pattern using {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *
    * Registers handlers to be called with the result of an authentication flow triggered using {@link authentication.authenticate authentication.authenticate(authenticateParameters?: AuthenticateParameters): void}
    *
@@ -63,17 +88,17 @@ export namespace authentication {
    * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow
    *
    * @returns `Promise` that will be fulfilled with the result from the authentication pop-up, if successful. The string in this result is provided in the parameter
-   * passed by your app when it calls {@link notifySuccess} in the pop-up window after returning from the identity provider redirect.
+   * passed by your app when it calls {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} in the pop-up window after returning from the identity provider redirect.
    *
    * @throws `Error` if the authentication request fails or is canceled by the user. This error is provided in the parameter passed by your app when it calls
-   * {@link notifyFailure} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
+   * {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} in the pop-up window after returning from the identity provider redirect. However, in some cases it can also be provided by
    * the infrastructure depending on the failure (e.g., a user cancelation)
    *
    */
   export function authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} instead.
    *
    * The documentation for {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} applies
    * to this function.
@@ -102,7 +127,11 @@ export namespace authentication {
       FrameContexts.stage,
       FrameContexts.meetingStage,
     );
-    return authenticateHelper(authenticateParams)
+    const apiVersionTag =
+      authenticateParams.successCallback || authenticateParams.failureCallback
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_Authenticate)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_Authenticate);
+    return authenticateHelper(apiVersionTag, authenticateParams)
       .then((value: string) => {
         try {
           if (authenticateParams && authenticateParams.successCallback) {
@@ -112,7 +141,7 @@ export namespace authentication {
           return value;
         } finally {
           if (!isDifferentParamsInCall) {
-            authParams = null;
+            authParams = undefined;
           }
         }
       })
@@ -125,34 +154,23 @@ export namespace authentication {
           throw err;
         } finally {
           if (!isDifferentParamsInCall) {
-            authParams = null;
+            authParams = undefined;
           }
         }
       });
   }
 
-  function authenticateHelper(authenticateParameters: AuthenticateParameters): Promise<string> {
+  function authenticateHelper(apiVersionTag: string, authenticateParameters: AuthenticateParameters): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      if (
-        GlobalVars.hostClientType === HostClientType.desktop ||
-        GlobalVars.hostClientType === HostClientType.android ||
-        GlobalVars.hostClientType === HostClientType.ios ||
-        GlobalVars.hostClientType === HostClientType.ipados ||
-        GlobalVars.hostClientType === HostClientType.macos ||
-        GlobalVars.hostClientType === HostClientType.rigel ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsWindows ||
-        GlobalVars.hostClientType === HostClientType.teamsRoomsAndroid ||
-        GlobalVars.hostClientType === HostClientType.teamsPhones ||
-        GlobalVars.hostClientType === HostClientType.teamsDisplays ||
-        GlobalVars.hostClientType === HostClientType.surfaceHub
-      ) {
+      if (GlobalVars.hostClientType !== HostClientType.web) {
         // Convert any relative URLs into absolute URLs before sending them over to the parent window.
-        const link = document.createElement('a');
-        link.href = authenticateParameters.url;
+        const fullyQualifiedURL: URL = fullyQualifyUrlString(authenticateParameters.url);
+        validateUrl(fullyQualifiedURL);
+
         // Ask the parent window to open an authentication window with the parameters provided by the caller.
         resolve(
-          sendMessageToParentAsync<[boolean, string]>('authentication.authenticate', [
-            link.href,
+          sendMessageToParentAsync<[boolean, string]>(apiVersionTag, 'authentication.authenticate', [
+            fullyQualifiedURL.href,
             authenticateParameters.width,
             authenticateParameters.height,
             authenticateParameters.isExternal,
@@ -191,7 +209,7 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequestParameters): Promise<string>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} instead.
    *
    * The documentation {@link authentication.getAuthToken authentication.getAuthToken(authTokenRequest: AuthTokenRequestParameters): Promise\<string\>} applies to this
    * function as well. The one difference when using this function is that the result is provided in the callbacks in the `authTokenRequest` parameter
@@ -203,7 +221,11 @@ export namespace authentication {
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): void;
   export function getAuthToken(authTokenRequest?: AuthTokenRequest): Promise<string> {
     ensureInitializeCalled();
-    return getAuthTokenHelper(authTokenRequest)
+    const apiVersionTag =
+      authTokenRequest && (authTokenRequest.successCallback || authTokenRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetAuthToken)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetAuthToken);
+    return getAuthTokenHelper(apiVersionTag, authTokenRequest)
       .then((value: string) => {
         if (authTokenRequest && authTokenRequest.successCallback) {
           authTokenRequest.successCallback(value);
@@ -220,13 +242,14 @@ export namespace authentication {
       });
   }
 
-  function getAuthTokenHelper(authTokenRequest?: AuthTokenRequest): Promise<string> {
+  function getAuthTokenHelper(apiVersionTag: string, authTokenRequest?: AuthTokenRequest): Promise<string> {
     return new Promise<[boolean, string]>((resolve) => {
       resolve(
-        sendMessageToParentAsync('authentication.getAuthToken', [
+        sendMessageToParentAsync(apiVersionTag, 'authentication.getAuthToken', [
           authTokenRequest?.resources,
           authTokenRequest?.claims,
           authTokenRequest?.silent,
+          authTokenRequest?.tenantId,
         ]),
       );
     }).then(([success, result]: [boolean, string]) => {
@@ -244,25 +267,36 @@ export namespace authentication {
    *
    * @returns Promise that resolves with the {@link UserProfile}.
    *
+   * @throws `Error` object in case of any problems, the most likely of which is that the calling app does not have appropriate permissions
+   * to call this method.
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function getUser(): Promise<UserProfile>;
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
+   * As of TeamsJS v2.0.0, please use {@link authentication.getUser authentication.getUser(): Promise\<UserProfile\>} instead.
    *
    * @hidden
    * Requests the decoded Microsoft Entra user identity on behalf of the app.
    *
    * @param userRequest - It passes success/failure callbacks in the userRequest object(deprecated)
+   *
+   * @throws `Error` object in case of any problems, the most likely of which is that the calling app does not have appropriate permissions
+   * to call this method.
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
   export function getUser(userRequest: UserRequest): void;
-  export function getUser(userRequest?: UserRequest): Promise<UserProfile> {
+  export function getUser(userRequest?: UserRequest): Promise<UserProfile | null> {
     ensureInitializeCalled();
-    return getUserHelper()
+    const apiVersionTag =
+      userRequest && (userRequest.successCallback || userRequest.failureCallback)
+        ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_GetUser)
+        : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_GetUser);
+    return getUserHelper(apiVersionTag)
       .then((value: UserProfile) => {
         if (userRequest && userRequest.successCallback) {
           userRequest.successCallback(value);
@@ -270,23 +304,24 @@ export namespace authentication {
         }
         return value;
       })
-      .catch((err: Error) => {
+      .catch((err: SdkError) => {
+        const errorMessage = `Error returned, code = ${err.errorCode}, message = ${err.message}`;
         if (userRequest && userRequest.failureCallback) {
-          userRequest.failureCallback(err.message);
+          userRequest.failureCallback(errorMessage);
           return null;
         }
-        throw err;
+        throw new Error(errorMessage);
       });
   }
 
-  function getUserHelper(): Promise<UserProfile> {
-    return new Promise<[boolean, UserProfile | string]>((resolve) => {
-      resolve(sendMessageToParentAsync('authentication.getUser'));
-    }).then(([success, result]: [boolean, UserProfile | string]) => {
+  function getUserHelper(apiVersionTag: string): Promise<UserProfile> {
+    return new Promise<[boolean, UserProfile | SdkError]>((resolve) => {
+      resolve(sendMessageToParentAsync(apiVersionTag, 'authentication.getUser'));
+    }).then(([success, result]: [boolean, UserProfile | SdkError]) => {
       if (success) {
         return result as UserProfile;
       } else {
-        throw new Error(result as string);
+        throw result;
       }
     });
   }
@@ -305,6 +340,14 @@ export namespace authentication {
     }
   }
 
+  /**
+   * Different browsers handle authentication flows in pop-up windows differently.
+   * Firefox and Safari, which use Quantum and WebKit browser engines respectively, block the use of 'window.open' for pop-up windows.
+   * Any chrome-based browser (Chrome, Edge, Brave, etc.) opens a new browser window without any user-prompts.
+   * To ensure consistent behavior across all browsers, consider using the following function to create a new authentication window.
+   *
+   * @param authenticateParameters - Parameters describing the authentication window used for executing the authentication flow.
+   */
   function openAuthenticationWindow(authenticateParameters: AuthenticateParameters): void {
     // Close the previously opened window if we have one
     closeAuthenticationWindow();
@@ -314,9 +357,11 @@ export namespace authentication {
     // Ensure that the new window is always smaller than our app's window so that it never fully covers up our app
     width = Math.min(width, Communication.currentWindow.outerWidth - 400);
     height = Math.min(height, Communication.currentWindow.outerHeight - 200);
+
     // Convert any relative URLs into absolute URLs before sending them over to the parent window
-    const link = document.createElement('a');
-    link.href = authenticateParameters.url.replace('{oauthRedirectMethod}', 'web');
+    const fullyQualifiedURL = fullyQualifyUrlString(authenticateParameters.url.replace('{oauthRedirectMethod}', 'web'));
+    validateUrl(fullyQualifiedURL);
+
     // We are running in the browser, so we need to center the new window ourselves
     let left: number =
       typeof Communication.currentWindow.screenLeft !== 'undefined'
@@ -330,7 +375,7 @@ export namespace authentication {
     top += Communication.currentWindow.outerHeight / 2 - height / 2;
     // Open a child window with a desired set of standard browser features
     Communication.childWindow = Communication.currentWindow.open(
-      link.href,
+      fullyQualifiedURL.href,
       '_blank',
       'toolbar=no, location=yes, status=no, menubar=no, scrollbars=yes, top=' +
         top +
@@ -381,16 +426,30 @@ export namespace authentication {
       }
     }, 100);
     // Set up an initialize-message handler that gives the authentication window its frame context
-    registerHandler('initialize', () => {
-      return [FrameContexts.authentication, GlobalVars.hostClientType];
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterInitializeHandler,
+      ),
+      'initialize',
+      () => {
+        return [FrameContexts.authentication, GlobalVars.hostClientType];
+      },
+    );
     // Set up a navigateCrossDomain message handler that blocks cross-domain re-navigation attempts
     // in the authentication window. We could at some point choose to implement this method via a call to
     // authenticationWindow.location.href = url; however, we would first need to figure out how to
     // validate the URL against the tab's list of valid domains.
-    registerHandler('navigateCrossDomain', () => {
-      return false;
-    });
+    registerHandler(
+      getApiVersionTag(
+        authenticationTelemetryVersionNumber_v1,
+        ApiName.Authentication_AuthenticationWindow_RegisterNavigateCrossDomainHandler,
+      ),
+      'navigateCrossDomain',
+      () => {
+        return false;
+      },
+    );
   }
 
   /**
@@ -405,12 +464,19 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
    */
-  export function notifySuccess(result?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'result', result);
+  export function notifySuccess(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifySuccess authentication.notifySuccess(result?: string): void} instead.
+   */
+  export function notifySuccess(result?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.success', [result]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifySuccess)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifySuccess);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.success', [result]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -428,12 +494,20 @@ export namespace authentication {
    *
    * @param result - Specifies a result for the authentication. If specified, the frame that initiated the authentication pop-up receives
    * this value in its callback or via the `Promise` return value
-   * @param callbackUrl - Specifies the url to redirect back to if the client is Win32 Outlook.
+   * @param _callbackUrl - This parameter is deprecated and unused
    */
-  export function notifyFailure(reason?: string, callbackUrl?: string): void {
-    redirectIfWin32Outlook(callbackUrl, 'reason', reason);
+  export function notifyFailure(result?: string): void;
+  /**
+   * @deprecated
+   * This function used to have an unused optional second parameter called callbackUrl. Because it was not used, it has been removed.
+   * Please use the {@link authentication.notifyFailure authentication.notifyFailure(result?: string): void} instead.
+   */
+  export function notifyFailure(reason?: string, _callbackUrl?: string): void {
     ensureInitialized(runtime, FrameContexts.authentication);
-    sendMessageToParent('authentication.authenticate.failure', [reason]);
+    const apiVersionTag = _callbackUrl
+      ? getApiVersionTag(authenticationTelemetryVersionNumber_v1, ApiName.Authentication_NotifyFailure)
+      : getApiVersionTag(authenticationTelemetryVersionNumber_v2, ApiName.Authentication_NotifyFailure);
+    sendMessageToParent(apiVersionTag, 'authentication.authenticate.failure', [reason]);
     // Wait for the message to be sent before closing the window
     waitForMessageQueue(Communication.parentWindow, () => setTimeout(() => Communication.currentWindow.close(), 200));
   }
@@ -444,7 +518,7 @@ export namespace authentication {
         authHandlers.success(result);
       }
     } finally {
-      authHandlers = null;
+      authHandlers = undefined;
       closeAuthenticationWindow();
     }
   }
@@ -455,74 +529,28 @@ export namespace authentication {
         authHandlers.fail(new Error(reason));
       }
     } finally {
-      authHandlers = null;
+      authHandlers = undefined;
       closeAuthenticationWindow();
     }
   }
 
   /**
-   * Validates that the callbackUrl param is a valid connector url, appends the result/reason and authSuccess/authFailure as URL fragments and redirects the window
-   * @param callbackUrl - the connectors url to redirect to
-   * @param key - "result" in case of success and "reason" in case of failure
-   * @param value - the value of the passed result/reason parameter
-   */
-  function redirectIfWin32Outlook(callbackUrl?: string, key?: string, value?: string): void {
-    if (callbackUrl) {
-      const link = document.createElement('a');
-      link.href = decodeURIComponent(callbackUrl);
-      if (
-        link.host &&
-        link.host !== ssrSafeWindow().location.host &&
-        link.host === 'outlook.office.com' &&
-        link.search.indexOf('client_type=Win32_Outlook') > -1
-      ) {
-        if (key && key === 'result') {
-          if (value) {
-            link.href = updateUrlParameter(link.href, 'result', value);
-          }
-          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authSuccess', ''));
-        }
-        if (key && key === 'reason') {
-          if (value) {
-            link.href = updateUrlParameter(link.href, 'reason', value);
-          }
-          Communication.currentWindow.location.assign(updateUrlParameter(link.href, 'authFailure', ''));
-        }
-      }
-    }
-  }
-
-  /**
-   * Appends either result or reason as a fragment to the 'callbackUrl'
-   * @param uri - the url to modify
-   * @param key - the fragment key
-   * @param value - the fragment value
-   */
-  function updateUrlParameter(uri: string, key: string, value: string): string {
-    const i = uri.indexOf('#');
-    let hash = i === -1 ? '#' : uri.substr(i);
-    hash = hash + '&' + key + (value !== '' ? '=' + value : '');
-    uri = i === -1 ? uri : uri.substr(0, i);
-    return uri + hash;
-  }
-
-  /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
+   * As of TeamsJS v2.0.0, this interface has been deprecated in favor of leveraging the `Promise` returned from {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>}
    *-------------------------
    * Used in {@link AuthenticateParameters} and {@link AuthTokenRequest}
    */
   export interface LegacyCallBacks {
     /**
      * @deprecated
-     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      *
      * A function that is called if the request succeeds.
      */
     successCallback?: (result: string) => void;
     /**
      * @deprecated
-     * As of 2.0.0, this property has been deprecated in favor of a Promise-based pattern.
+     * As of TeamsJS v2.0.0, this property has been deprecated in favor of a Promise-based pattern.
      *
      * A function that is called if the request fails, with the reason for the failure.
      */
@@ -559,7 +587,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
+   * As of TeamsJS v2.0.0, please use {@link authentication.authenticate authentication.authenticate(authenticateParameters: AuthenticatePopUpParameters): Promise\<string\>} and
    * the associated {@link AuthenticatePopUpParameters} instead.
    *
    * @see {@link LegacyCallBacks}
@@ -584,11 +612,15 @@ export namespace authentication {
      * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
      */
     silent?: boolean;
+    /**
+     * An optional identifier of the home tenant for which to acquire the access token for (used in cross-tenant shared channels).
+     */
+    tenantId?: string;
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link AuthTokenRequestParameters} instead.
+   * As of TeamsJS v2.0.0, please use {@link AuthTokenRequestParameters} instead.
    */
   export type AuthTokenRequest = AuthTokenRequestParameters & LegacyCallBacks;
 
@@ -763,7 +795,7 @@ export namespace authentication {
 
   /**
    * @deprecated
-   * As of 2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
+   * As of TeamsJS v2.0.0, this interface has been deprecated in favor of a Promise-based pattern.
    * @hidden
    * Describes the UserRequest. Success callback describes how a successful request is handled.
    * Failure callback describes how a failed request is handled.

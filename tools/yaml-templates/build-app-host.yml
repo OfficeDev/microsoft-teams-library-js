@@ -13,7 +13,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
     displayName: 'Install Node.js'
 
   # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
@@ -36,7 +36,7 @@ steps:
 
   - script: |
       corepack enable
-      corepack prepare pnpm@7.30.1 --activate
+      corepack prepare pnpm@9.0.6 --activate
       pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
     displayName: 'Setup pnpm'
 
@@ -46,7 +46,7 @@ steps:
   - task: Cache@2
     inputs:
       key: 'cy_v1 | "$(Agent.OS)" | $(AppHostingSdkProjectDirectory)/pnpm-lock.yaml'
-      path: /home/vsts/.cache/Cypress
+      path: /home/cloudtest/.cache/Cypress
       cacheHitVar: CYPRESS_CACHE_RESTORED
     displayName: 'Cache Cypress binary'
 
@@ -57,7 +57,9 @@ steps:
   # Below script task checks if Cypress cache is hit or not.
   # If Cypress cache is found skip cypress install.
   - script: |
-      CYPRESS_INSTALL_BINARY=0 pnpm install --frozen-lockfile
+      CYPRESS_INSTALL_BINARY=0
+      sed -i '/"preinstall":/d' package.json
+      pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (skip Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'
     condition: eq(variables.CYPRESS_CACHE_RESTORED, 'true')
@@ -65,6 +67,7 @@ steps:
   # If Cypress cache is not found include cypress install.
   - script: |
       rm -rf $(pnpm store path)
+      sed -i '/"preinstall":/d' package.json
       pnpm install --frozen-lockfile
     displayName: Install app hosting dependencies (include Cypress install)
     workingDirectory: '$(AppHostingSdkProjectDirectory)'

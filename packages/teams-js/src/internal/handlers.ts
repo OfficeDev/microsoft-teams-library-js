@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { FrameContexts, LoadContext } from '../public';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { FrameContexts } from '../public/constants';
+import { LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
+import { isNullOrUndefined } from './typeCheckUtilities';
 
 const handlersLogger = getLogger('handlers');
 
@@ -17,9 +20,17 @@ class HandlersPrivate {
   public static handlers: {
     [func: string]: Function;
   } = {};
-  public static themeChangeHandler: (theme: string) => void;
-  public static loadHandler: (context: LoadContext) => void;
-  public static beforeUnloadHandler: (readyToUnload: () => void) => boolean;
+  public static themeChangeHandler: null | ((theme: string) => void) = null;
+  /**
+   * @deprecated
+   */
+  public static loadHandler: null | ((context: LoadContext) => void) = null;
+  /**
+   * @deprecated
+   */
+  public static beforeUnloadHandler: null | ((readyToUnload: () => void) => boolean) = null;
+  public static beforeSuspendOrTerminateHandler: null | (() => Promise<void>) = null;
+  public static resumeHandler: null | ((context: ResumeContext) => void) = null;
 
   /**
    * @internal
@@ -44,6 +55,8 @@ class HandlersPrivate {
     HandlersPrivate.themeChangeHandler = null;
     HandlersPrivate.loadHandler = null;
     HandlersPrivate.beforeUnloadHandler = null;
+    HandlersPrivate.beforeSuspendOrTerminateHandler = null;
+    HandlersPrivate.resumeHandler = null;
   }
 }
 
@@ -86,10 +99,16 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerHandler(name: string, handler: Function, sendMessage = true, args: unknown[] = []): void {
+export function registerHandler(
+  apiVersionTag: string,
+  name: string,
+  handler: Function,
+  sendMessage = true,
+  args: unknown[] = [],
+): void {
   if (handler) {
     HandlersPrivate.handlers[name] = handler;
-    sendMessage && sendMessageToParent('registerHandler', [name, ...args]);
+    sendMessage && sendMessageToParent(apiVersionTag, 'registerHandler', [name, ...args]);
   } else {
     delete HandlersPrivate.handlers[name];
   }
@@ -118,12 +137,14 @@ export function doesHandlerExist(name: string): boolean {
  * @internal
  * Limited to Microsoft-internal use
  *
+ * @param apiVersionTag - The tag of the api version and name
  * @param name - The name of the handler to register.
  * @param handler - The handler to invoke.
  * @param contexts - The context within which it is valid to register this handler.
  * @param registrationHelper - The helper function containing logic pertaining to a specific version of the API.
  */
 export function registerHandlerHelper(
+  apiVersionTag: string,
   name: string,
   handler: Function,
   contexts: FrameContexts[],
@@ -135,16 +156,16 @@ export function registerHandlerHelper(
     registrationHelper();
   }
 
-  registerHandler(name, handler);
+  registerHandler(apiVersionTag, name, handler);
 }
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerOnThemeChangeHandler(handler: (theme: string) => void): void {
+export function registerOnThemeChangeHandler(apiVersionTag: string, handler: (theme: string) => void): void {
   HandlersPrivate.themeChangeHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['themeChange']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['themeChange']);
 }
 
 /**
@@ -164,23 +185,30 @@ export function handleThemeChange(theme: string): void {
 /**
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @deprecated
  */
-export function registerOnLoadHandler(handler: (context: LoadContext) => void): void {
+export function registerOnLoadHandler(apiVersionTag: string, handler: (context: LoadContext) => void): void {
   HandlersPrivate.loadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['load']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['load']);
 }
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleLoad(context: LoadContext): void {
-  if (HandlersPrivate.loadHandler) {
-    HandlersPrivate.loadHandler(context);
-  }
-
-  if (Communication.childWindow) {
-    sendMessageEventToChild('load', [context]);
+function handleLoad(loadContext: LoadContext): void {
+  const resumeContext = convertToResumeContext(loadContext);
+  if (HandlersPrivate.resumeHandler) {
+    HandlersPrivate.resumeHandler(resumeContext);
+    if (Communication.childWindow) {
+      sendMessageEventToChild('load', [resumeContext]);
+    }
+  } else if (HandlersPrivate.loadHandler) {
+    HandlersPrivate.loadHandler(loadContext);
+    if (Communication.childWindow) {
+      sendMessageEventToChild('load', [loadContext]);
+    }
   }
 }
 
@@ -188,25 +216,74 @@ function handleLoad(context: LoadContext): void {
  * @internal
  * Limited to Microsoft-internal use
  */
-export function registerBeforeUnloadHandler(handler: (readyToUnload: () => void) => boolean): void {
+function convertToResumeContext(context: LoadContext): ResumeContext {
+  return {
+    entityId: context.entityId,
+    contentUrl: new URL(context.contentUrl),
+  };
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @deprecated
+ */
+export function registerBeforeUnloadHandler(
+  apiVersionTag: string,
+  handler: (readyToUnload: () => void) => boolean,
+): void {
   HandlersPrivate.beforeUnloadHandler = handler;
-  handler && sendMessageToParent('registerHandler', ['beforeUnload']);
+  !isNullOrUndefined(handler) && sendMessageToParent(apiVersionTag, 'registerHandler', ['beforeUnload']);
 }
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleBeforeUnload(): void {
+async function handleBeforeUnload(): Promise<void> {
   const readyToUnload = (): void => {
-    sendMessageToParent('readyToUnload', []);
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.HandleBeforeUnload), 'readyToUnload', []);
   };
 
-  if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
+  if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
+    await HandlersPrivate.beforeSuspendOrTerminateHandler();
+    if (Communication.childWindow) {
+      sendMessageEventToChild('beforeUnload');
+    } else {
+      readyToUnload();
+    }
+  } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
     if (Communication.childWindow) {
       sendMessageEventToChild('beforeUnload');
     } else {
       readyToUnload();
     }
   }
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerBeforeSuspendOrTerminateHandler(handler: () => Promise<void>): void {
+  HandlersPrivate.beforeSuspendOrTerminateHandler = handler;
+  !isNullOrUndefined(handler) &&
+    sendMessageToParent(
+      getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterBeforeSuspendOrTerminateHandler),
+      'registerHandler',
+      ['beforeUnload'],
+    );
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function registerOnResumeHandler(handler: (context: ResumeContext) => void): void {
+  HandlersPrivate.resumeHandler = handler;
+  !isNullOrUndefined(handler) &&
+    sendMessageToParent(getApiVersionTag(ApiVersionNumber.V_2, ApiName.RegisterOnResumeHandler), 'registerHandler', [
+      'load',
+    ]);
 }

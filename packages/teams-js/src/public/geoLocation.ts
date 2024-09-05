@@ -1,8 +1,14 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { DevicePermission, ErrorCode } from './interfaces';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const geoLocationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
@@ -46,7 +52,14 @@ export namespace geoLocation {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: false, showMap: false });
+    return sendAndHandleSdkError(
+      getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_GetCurrentLocation),
+      'location.getLocation',
+      {
+        allowChooseLocation: false,
+        showMap: false,
+      },
+    );
   }
 
   /**
@@ -65,7 +78,13 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_HasPermission),
+          'permissions.has',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -86,7 +105,13 @@ export namespace geoLocation {
     const permissions: DevicePermission = DevicePermission.GeoLocation;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_RequestPermission),
+          'permissions.request',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -120,7 +145,14 @@ export namespace geoLocation {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return sendAndHandleSdkError('location.getLocation', { allowChooseLocation: true, showMap: true });
+      return sendAndHandleSdkError(
+        getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_Map_ChooseLocation),
+        'location.getLocation',
+        {
+          allowChooseLocation: true,
+          showMap: true,
+        },
+      );
     }
 
     /**
@@ -139,7 +171,11 @@ export namespace geoLocation {
       if (!location) {
         throw { errorCode: ErrorCode.INVALID_ARGUMENTS };
       }
-      return sendAndHandleSdkError('location.showLocation', location);
+      return sendAndHandleSdkError(
+        getApiVersionTag(geoLocationTelemetryVersionNumber, ApiName.GeoLocation_ShowLocation),
+        'location.showLocation',
+        location,
+      );
     }
 
     /**

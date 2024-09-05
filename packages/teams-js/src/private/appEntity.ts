@@ -1,8 +1,15 @@
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { FrameContexts, SdkError } from '../public';
-import { errorNotSupportedOnPlatform } from '../public/constants';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
+
+/**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const appEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 /**
  * @hidden
  * Namespace to interact with the application entities specific part of the SDK.
@@ -102,7 +109,12 @@ export namespace appEntity {
       throw new Error('[appEntity.selectAppEntity] Callback cannot be null');
     }
 
-    sendMessageToParent('appEntity.selectAppEntity', [threadId, categories, subEntityId], callback);
+    sendMessageToParent(
+      getApiVersionTag(appEntityTelemetryVersionNumber, ApiName.AppEntity_SelectAppEntity),
+      'appEntity.selectAppEntity',
+      [threadId, categories, subEntityId],
+      callback,
+    );
   }
 
   /**

@@ -77,6 +77,7 @@ const GetCloudStorageFolders = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: '"channelId1"',
   });
 
 const AddCloudStorageFolder = (): React.ReactElement =>
@@ -102,6 +103,7 @@ const AddCloudStorageFolder = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: '"channelId1"',
   });
 
 interface DeleteCloudStorageParams {
@@ -132,6 +134,21 @@ const DeleteCloudStorageFolder = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      channelId: 'channelId1',
+      folderToDelete: {
+        id: 'id1',
+        title: 'title1',
+        folderId: 'folderId1',
+        providerType: files.CloudStorageProviderType.OneDrive,
+        providerCode: files.CloudStorageProvider.Box,
+        ownerDisplayName: 'This is Box',
+        siteUrl: 'siteUrl1',
+        serverRelativeUrl: 'serverRelativeUrl1',
+        libraryType: 'libraryType1',
+        accessType: 'accessType1',
+      },
+    }),
   });
 
 interface GetCloudStorageFolderContentParams {
@@ -158,6 +175,21 @@ const GetCloudStorageFolderContents = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({
+      folder: {
+        id: 'id1',
+        title: 'title1',
+        folderId: 'folderId1',
+        providerType: files.CloudStorageProviderType.OneDrive,
+        providerCode: files.CloudStorageProvider.Box,
+        ownerDisplayName: 'This is Box',
+        siteUrl: 'siteUrl1',
+        serverRelativeUrl: 'serverRelativeUrl1',
+        libraryType: 'libraryType1',
+        accessType: 'accessType1',
+      },
+      providerCode: files.CloudStorageProvider.Box,
+    }),
   });
 
 interface OpenCloudStorageFolderParams {
@@ -178,6 +210,20 @@ const OpenCloudStorageFile = (): React.ReactElement =>
         return 'openCloudStorageFile() called.';
       },
     },
+    defaultInput: JSON.stringify({
+      file: {
+        id: 'id1',
+        title: 'title1',
+        isSubdirectory: false,
+        type: 'txt',
+        lastModified: 'yes this is a time',
+        size: 123,
+        objectUrl: 'objectUrl1',
+        accessToken: 'accessToken1',
+      },
+      providerCode: files.CloudStorageProvider.Box,
+      fileOpenPreference: FileOpenPreference.Web,
+    }),
   });
 
 const GetExternalProviders = (): React.ReactElement =>
@@ -236,6 +282,32 @@ const CopyMoveFiles = (): ReactElement =>
         }
       },
     },
+    defaultInput: JSON.stringify({
+      selectedFiles: [
+        {
+          id: 'id1',
+          title: 'title1',
+          isSubdirectory: false,
+          type: 'txt',
+          lastModified: 'yes this is a time',
+          size: 123,
+          objectUrl: 'objectUrl1',
+          accessToken: 'accessToken1',
+        },
+      ],
+      providerCode: files.CloudStorageProvider.Box,
+      destinationFolder: {
+        id: 'id1',
+        title: 'title1',
+        isSubdirectory: false,
+        type: 'txt',
+        lastModified: 'yes this is a time',
+        size: 123,
+        objectUrl: 'objectUrl1',
+        accessToken: 'accessToken1',
+      },
+      destinationProviderCode: files.CloudStorageProvider.Box,
+    }),
   });
 
 const GetFileDownloads = (): ReactElement =>

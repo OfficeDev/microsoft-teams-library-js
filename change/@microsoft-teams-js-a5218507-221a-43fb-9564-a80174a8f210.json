@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added optional field `messageId` to `stageView.open`. Passing `messageId` to `stageView.open` allows opening the stageView in a channel meeting",
+  "packageName": "@microsoft/teams-js",
+  "email": "dechowdhury@microsoft.com_msteamsmdb",
+  "dependentChangeType": "patch"
+}

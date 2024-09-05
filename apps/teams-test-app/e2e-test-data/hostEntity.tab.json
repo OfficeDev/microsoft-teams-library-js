@@ -1,0 +1,89 @@
+{
+  "name": "Host entity Tabs",
+  "platforms": "Web",
+  "version": ">2.26.0",
+  "checkIsSupported": {
+    "capabilityName": "HostEntityTab",
+    "expectedOutput": "Host entity tab module is not supported"
+  },
+  "hostSdkVersion": {
+    "web": ">4.1.0"
+  },
+  "testCases": [
+    {
+      "title": "addAndConfigure API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_addAndConfigure",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "addAndConfigure called with {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
+      "title": "getAll API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_getAll",
+      "inputValue": {
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "getAll called with {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"allTabs\":[{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"},{\"internalTabInstanceId\":\"tabId2\",\"tabName\":\"tab name2\",\"appId\":\"appId2\",\"url\":\"www.contentUrl.com2\",\"tabType\":\"StaticTab\"}]}"
+    },
+    {
+      "title": "reconfigure API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_reconfigure",
+      "inputValue": {
+        "tab": {
+          "internalTabInstanceId": "tabId",
+          "url": "new contentUrl",
+          "tabType": "ConfigurableTab"
+        },
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "reconfigure called with {\"internalTabInstanceId\":\"tabId\",\"url\":\"new contentUrl\",\"tabType\":\"ConfigurableTab\"} and {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"tab name\",\"appId\":\"appId\",\"url\":\"new contentUrl\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
+      "title": "rename API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_rename",
+      "inputValue": {
+        "tab": {
+          "internalTabInstanceId": "tabId",
+          "tabName": "new name",
+          "tabType": "ConfigurableTab"
+        },
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "rename called with {\"internalTabInstanceId\":\"tabId\",\"tabName\":\"new name\",\"tabType\":\"ConfigurableTab\"} and {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "{\"internalTabInstanceId\":\"tabId\",\"tabName\":\"new name\",\"appId\":\"appId\",\"url\":\"www.contentUrl.com\",\"tabType\":\"ConfigurableTab\"}"
+    },
+    {
+      "title": "remove API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_remove",
+      "inputValue": {
+        "tab": {
+          "internalTabInstanceId": "tabId",
+          "tabName": "new name",
+          "tabType": "ConfigurableTab"
+        },
+        "hostEntityIds": {
+          "threadId": "threadId"
+        }
+      },
+      "expectedAlertValue": "remove called with {\"internalTabInstanceId\":\"tabId\",\"tabName\":\"new name\",\"tabType\":\"ConfigurableTab\"} and {\"threadId\":\"threadId\"}",
+      "expectedTestAppValue": "true"
+    }
+  ]
+}

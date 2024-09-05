@@ -26,6 +26,7 @@ const ScanBarCode = (): React.ReactElement =>
         return JSON.stringify(scannedCode);
       },
     },
+    defaultInput: '{}',
   });
 
 const HasBarCodePermission = (): React.ReactElement =>
@@ -48,32 +49,12 @@ const RequestBarCodePermission = (): React.ReactElement =>
     },
   });
 
-const WebAPIGetUserMedia = (): React.ReactElement =>
-  ApiWithoutInput({
-    name: 'WebAPIGetUserMedia',
-    title: 'Web API GetUserMedia',
-    onClick: async (setResult) => {
-      if (navigator.mediaDevices) {
-        navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then((stream) => {
-          setResult('Recording enabled');
-          const track = stream.getTracks()[0];
-          track.stop();
-        });
-      } else {
-        const result = 'navigator.mediaDevices is not accessible';
-        setResult(result);
-      }
-      return JSON.stringify('Do not have required permissions to access media');
-    },
-  });
-
 const BarCodeAPIs = (): ReactElement => (
   <ModuleWrapper title="BarCode">
     <ScanBarCode />
     <HasBarCodePermission />
     <RequestBarCodePermission />
     <CheckBarCodeCapability />
-    <WebAPIGetUserMedia />
   </ModuleWrapper>
 );
 

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { validate } from 'uuid';
 
-import { marketplace } from '../public';
+import { marketplace } from '../public/marketplace';
 
 /**
  * @hidden

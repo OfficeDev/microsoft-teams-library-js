@@ -1,3 +1,5 @@
+import * as validOriginsJSON from '../artifactsForCDN/validDomains.json';
+
 /**
  * @hidden
  * The client version when all SDK APIs started to check platform compatibility for the APIs was 1.6.0.
@@ -110,40 +112,32 @@ export const scanBarCodeAPIMobileSupportVersion = '1.9.0';
 
 /**
  * @hidden
- * List of supported Host origins
+ * Fallback list of valid origins in JSON format
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export const validOrigins = [
-  'teams.microsoft.com',
-  'teams.microsoft.us',
-  'gov.teams.microsoft.us',
-  'dod.teams.microsoft.us',
-  'int.teams.microsoft.com',
-  'teams.live.com',
-  'devspaces.skype.com',
-  'ssauth.skype.com',
-  'local.teams.live.com', // local development
-  'local.teams.live.com:8080', // local development
-  'local.teams.office.com', // local development
-  'local.teams.office.com:8080', // local development
-  'outlook.office.com',
-  'outlook-sdf.office.com',
-  'outlook.office365.com',
-  'outlook-sdf.office365.com',
-  'outlook.live.com',
-  'outlook-sdf.live.com',
-  '*.teams.microsoft.com',
-  '*.www.office.com',
-  'www.office.com',
-  'word.office.com',
-  'excel.office.com',
-  'powerpoint.office.com',
-  'www.officeppe.com',
-  '*.www.microsoft365.com',
-  'www.microsoft365.com',
-];
+const validOriginsLocal = validOriginsJSON;
+
+/**
+ * @hidden
+ * Fallback list of valid origins
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const validOriginsFallback = validOriginsLocal.validOrigins;
+
+/**
+ * @hidden
+ * CDN endpoint of the list of valid origins
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export const validOriginsCdnEndpoint = new URL(
+  'https://res.cdn.office.net/teams-js/validDomains/json/validDomains.json',
+);
 
 /**
  * @hidden

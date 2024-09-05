@@ -19,10 +19,27 @@
     },
     {
       "title": "getMeetingDetails API Call - Success",
+      "version": "<=2.22.0",
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetails",
       "expectedAlertValue": "getMeetingDetails called",
       "expectedTestAppValue": "{\"details\":{\"id\":\"testDetailsId\",\"scheduledStartTime\":\"testStartTime\",\"scheduledEndTime\":\"testEndTime\",\"joinUrl\":\"testJoinUrl\",\"title\":\"testTitle\",\"type\":\"Unknown\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
+    },
+    {
+      "title": "getMeetingDetails API Call - Success",
+      "version": ">2.22.0",
+      "type": "callResponse",
+      "boxSelector": "#box_getMeetingDetails",
+      "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: undefined",
+      "expectedTestAppValue": "{\"details\":{\"id\":\"testDetailsId\",\"scheduledStartTime\":\"testStartTime\",\"scheduledEndTime\":\"testEndTime\",\"joinUrl\":\"testJoinUrl\",\"title\":\"testTitle\",\"type\":\"Unknown\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
+    },
+    {
+      "title": "getMeetingDetailsVerbose API Call - Success",
+      "version": ">2.22.0",
+      "type": "callResponse",
+      "boxSelector": "#box_getMeetingDetailsVerbose",
+      "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
+      "expectedTestAppValue": "{\"details\":{\"scheduledStartTime\":\"testStartTime\",\"joinUrl\":\"testJoinUrl\",\"type\":\"oneOnOneCall\",\"originalCaller\":\"testCallerId\",\"dialedEntity\":\"testDnis\",\"trackingId\":\"testTrackingId\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
     },
     {
       "title": "getAuthenticationTokenForAnonymousUser API Call - Success",
@@ -91,7 +108,9 @@
       "boxSelector": "#box_registerRaiseHandStateChangedHandler",
       "eventName": "raiseHandStateChanged",
       "eventData": {
-        "raiseHandState": { "isHandRaised": true }
+        "raiseHandState": {
+          "isHandRaised": true
+        }
       },
       "expectedTestAppValue": "RaiseHand state changed to {\"isHandRaised\":true}"
     },
@@ -102,7 +121,9 @@
       "boxSelector": "#box_registerRaiseHandStateChangedHandler",
       "eventName": "raiseHandStateChanged",
       "eventData": {
-        "raiseHandState": { "isHandRaised": false },
+        "raiseHandState": {
+          "isHandRaised": false
+        },
         "error": {
           "errorCode": 1000,
           "message": "Encountered an error"
@@ -162,13 +183,94 @@
       "expectedTestAppValue": "Receieved error {\"errorCode\":1000,\"message\":\"Encountered an error\"}"
     },
     {
-      "title": "shareAppContentToStage API Call - Success",
+      "title": "shareAppContentToStage API Call (host SDK <2.8.0) - Success",
       "type": "callResponse",
+      "hostSdkVersion": {
+        "web": "<2.8.0"
+      },
       "boxSelector": "#box_shareAppContentToStage",
       "inputValue": {
         "appContentUrl": "www.someUrl.com"
       },
-      "expectedAlertValue": "shareAppContentToStage called",
+      "expectedAlertValue": "shareAppContentToStage called with [object Object]",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call (TJS <2.19.0, host SDK>=2.8.0) - Success",
+      "type": "callResponse",
+      "version": "<2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + undefined",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call (TJS >=2.19.0, host SDK>=2.8.0) - Success",
+      "type": "callResponse",
+      "version": ">=2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com"
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + [object Object]",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions (host sdk<2.8.0) - Success",
+      "type": "callResponse",
+      "hostSdkVersion": {
+        "web": "<2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object]",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions (TJS<2.19.0, host SDK>=2.8.0) - Success",
+      "type": "callResponse",
+      "version": "<2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + undefined",
+      "expectedTestAppValue": "shareAppContentToStage() succeeded"
+    },
+    {
+      "title": "shareAppContentToStage API Call with shareOptions (TJS>=2.19.0, host SDK>=2.8.0) - Success",
+      "type": "callResponse",
+      "version": ">=2.19.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_shareAppContentToStage",
+      "inputValue": {
+        "appContentUrl": "www.someUrl.com",
+        "shareOptions": {
+          "sharingProtocol": "ScreenShare"
+        }
+      },
+      "expectedAlertValue": "shareAppContentToStage called with [object Object] + [object Object]",
       "expectedTestAppValue": "shareAppContentToStage() succeeded"
     },
     {
@@ -200,18 +302,96 @@
       "inputValue": {
         "isMicMuted": true
       },
-      "expectedAlertValue": "requestAppAudioHandling called",
+      "expectedAlertValue": "requestAppAudioHandling called with isAppHandlingAudio: true",
       "expectedTestAppValue": "requestAppAudioHandling() succeeded: isHostAudioless=true"
     },
     {
-      "title": "updateMicState API Call - Success",
+      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Success",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.17.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
+      "eventName": "audioDeviceSelectionChanged",
+      "eventData": {
+        "speaker": {
+          "deviceLabel": "speaker_0"
+        },
+        "microphone": {
+          "deviceLabel": "microphone_0"
+        }
+      },
+      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
+      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "requestAppAudioHandling API Call - register audioDeviceSelectionChanged Handler - Error",
+      "type": "registerAndRaiseEvent",
+      "version": ">2.17.0",
+      "hostSdkVersion": {
+        "web": ">=2.8.0"
+      },
+      "boxSelector": "#box_registerAudioDeviceSelectionChangedHandler",
+      "eventName": "audioDeviceSelectionChanged",
+      "eventData": {
+        "error": {
+          "errorCode": 100,
+          "message": "Not supported on platform."
+        }
+      },
+      "expectedAlertValueOnRegistration": "requestAppAudioHandling called with isAppHandlingAudio: true",
+      "expectedTestAppValue": "Received audioDeviceSelectionChanged event: ##JSON_EVENT_DATA##"
+    },
+    {
+      "title": "updateMicState API Call (<=2.20.0) - Success",
       "type": "callResponse",
-      "version": ">2.7.1",
+      "version": ">2.7.1 && <=2.20.0",
       "boxSelector": "#box_updateMicState",
       "inputValue": {
         "isMicMuted": true
       },
-      "expectedAlertValue": "updateMicState called"
+      "expectedAlertValue": "updateMicState called with micState: isMicMuted:true, reason:1",
+      "expectedTestAppValue": "updateMicState called with micState: isMicMuted:[object Object]"
+    },
+    {
+      "title": "updateMicState API Call (>2.20.0) - Success",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "boxSelector": "#box_updateMicState",
+      "inputValue": {
+        "isMicMuted": true
+      },
+      "expectedAlertValue": "updateMicState called with micState: isMicMuted:true, reason:1",
+      "expectedTestAppValue": "updateMicState called with micState: isMicMuted:true"
+    },
+    {
+      "title": "joinMeeting API Call - Success",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "hostSdkVersion": {
+        "web": ">2.12.0"
+      },
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "joinWebUrl": "https://www.example.com/",
+        "source": "Other"
+      },
+      "expectedAlertValue": "joinMeeting called with joinWebUrl: https://www.example.com/",
+      "expectedTestAppValue": "joinMeeting called with joinWebUrl: https://www.example.com/"
+    },
+    {
+      "title": "joinMeeting API Call - Error",
+      "type": "callResponse",
+      "version": ">2.20.0",
+      "hostSdkVersion": {
+        "web": ">2.12.0"
+      },
+      "boxSelector": "#box_joinMeeting",
+      "inputValue": {
+        "source": "Other"
+      },
+      "expectedTestAppValue": "Error: Error: joinWebUrl not passed"
     }
   ]
 }

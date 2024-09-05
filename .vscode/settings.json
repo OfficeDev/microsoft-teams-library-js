@@ -1,15 +1,15 @@
 {
+  "cSpell.words": ["adal", "ipados", "teamspace", "uninitialize", "xvfb"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
+  "javascript.preferences.quoteStyle": "single",
+  "jest.jestCommandLine": "pnpm test -- --",
+  "jest.runMode": { "runAllTestsOnStartup": true, "type": "watch" },
   "search.exclude": {
     "**/dist": true
   },
-  "typescript.tsdk": "./node_modules/typescript/lib",
-  "javascript.preferences.quoteStyle": "single",
   "typescript.preferences.quoteStyle": "single",
-  "prettier.singleQuote": true,
-  "cSpell.words": ["adal", "uninitialize"],
-  "jest.jestCommandLine": "pnpm test -- --"
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }

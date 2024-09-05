@@ -1,6 +1,7 @@
 {
   "name": "Clipboard",
   "version": ">2.14.0",
+  "platforms": "*",
   "testCases": [
     {
       "title": "Copy Text - success",

@@ -2,23 +2,36 @@
 
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from './dialog';
 import { dialog } from './dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 
 /**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const tasksTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
+/**
  * @deprecated
- * As of 2.0.0, please use {@link dialog} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link dialog} namespace instead.
  *
  * Namespace to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
  * The tasks namespace will be deprecated. Please use dialog for future developments.
  */
 export namespace tasks {
-  /** Start task submit handler function type.  */
-  type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
+  /**
+   * Function type that is used to receive the result when a task module is submitted by
+   * calling {@link tasks.submitTask tasks.submitTask(result?: string | object, appIds?: string | string[]): void}
+   *
+   * @param err - If the task module failed, this string contains the reason for failure. If the task module succeeded, this value is the empty string.
+   * @param result - On success, this is the value passed to the `result` parameter of {@link tasks.submitTask tasks.submitTask(result?: string | object, appIds?: string | string[]): void}. On failure, this is the empty string.
+   */
+  export type startTaskSubmitHandlerFunctionType = (err: string, result: string | object) => void;
 
   /**
    * @deprecated
@@ -36,27 +49,27 @@ export namespace tasks {
    * @param submitHandler - Handler to call when the task module is completed
    */
   export function startTask(taskInfo: TaskInfo, submitHandler?: startTaskSubmitHandlerFunctionType): IAppWindow {
+    const apiVersionTag: string = getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_StartTask);
     const dialogSubmitHandler = submitHandler
-      ? /* eslint-disable-next-line strict-null-checks/all */ /* fix tracked by 5730662 */
-        (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err, sdkResponse.result)
+      ? (sdkResponse: dialog.ISdkResponse) => submitHandler(sdkResponse.err ?? '', sdkResponse.result ?? '')
       : undefined;
     if (taskInfo.card === undefined && taskInfo.url === undefined) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.card) {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-      sendMessageToParent('tasks.startTask', [taskInfo as DialogInfo], submitHandler);
+      sendMessageToParent(apiVersionTag, 'tasks.startTask', [taskInfo as DialogInfo], submitHandler);
     } else if (taskInfo.completionBotId !== undefined) {
-      dialog.url.bot.open(getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      botUrlOpenHelper(apiVersionTag, getBotUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     } else {
-      dialog.url.open(getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
+      urlOpenHelper(apiVersionTag, getUrlDialogInfoFromTaskInfo(taskInfo), dialogSubmitHandler);
     }
     return new ChildAppWindow();
   }
 
   /**
    * @deprecated
-   * As of 2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
+   * As of TeamsJS v2.0.0, please use {@link dialog.update.resize dialog.update.resize(dimensions: DialogSize): void} instead.
    *
    * Update height/width task info properties.
    *
@@ -70,7 +83,7 @@ export namespace tasks {
     if (Object.keys(extra).length) {
       throw new Error('resize requires a TaskInfo argument containing only width and height');
     }
-    dialog.update.resize(taskInfo as DialogSize);
+    updateResizeHelper(getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_UpdateTask), taskInfo as DialogSize);
   }
 
   /**
@@ -83,7 +96,7 @@ export namespace tasks {
    * @param appIds - Valid application(s) that can receive the result of the submitted dialogs. Specifying this parameter helps prevent malicious apps from retrieving the dialog result. Multiple app IDs can be specified because a web app from a single underlying domain can power multiple apps across different environments and branding schemes.
    */
   export function submitTask(result?: string | object, appIds?: string | string[]): void {
-    dialog.url.submit(result, appIds);
+    urlSubmitHelper(getApiVersionTag(tasksTelemetryVersionNumber, ApiName.Tasks_SubmitTask), result, appIds);
   }
 
   /**
@@ -92,7 +105,10 @@ export namespace tasks {
    * @returns - Converted UrlDialogInfo object
    */
   function getUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): UrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined) {
+      throw new Error("url property of taskInfo object can't be undefined");
+    }
+
     const urldialogInfo: UrlDialogInfo = {
       url: taskInfo.url,
       size: {
@@ -111,7 +127,12 @@ export namespace tasks {
    * @returns - converted BotUrlDialogInfo object
    */
   function getBotUrlDialogInfoFromTaskInfo(taskInfo: TaskInfo): BotUrlDialogInfo {
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
+    if (taskInfo.url === undefined || taskInfo.completionBotId === undefined) {
+      throw new Error(
+        `Both url ${taskInfo.url} and completionBotId ${taskInfo.completionBotId} are required for bot url dialog. At least one is undefined.`,
+      );
+    }
+
     const botUrldialogInfo: BotUrlDialogInfo = {
       url: taskInfo.url,
       size: {

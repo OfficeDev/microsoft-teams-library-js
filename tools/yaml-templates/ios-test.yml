@@ -2,6 +2,9 @@ parameters:
   - name: 'iOSAppHostingSdkGitPath'
     default: none
     type: string
+  - name: 'testPlan'
+    default: iosE2ETestPlan
+    type: string
 
 steps:
   - checkout: self
@@ -9,113 +12,148 @@ steps:
     path: iOSHost
     persistCredentials: true
 
-  - task: InstallSSHKey@0
-    displayName: 'Install an SSH key for OneDSTelemetry'
-    inputs:
-      knownHostsEntry: 'github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
-      sshPublicKey: '$(OneDSTelemetryKey)'
-      sshKeySecureFile: 'ios_host_sdk_dev_1ds_key'
-
-  - bash: |
-      sudo gem install cocoapods
-    displayName: Install Cocoapods
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  - bash: |
-      pod install > /dev/null
-    displayName: Run Cocoapods - pod install
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-
-  - bash: |
-      brew install xctesthtmlreport
+  - task: Bash@3
     displayName: 'Install XCTestHtmlReport for publishing result'
-    workingDirectory: '$(System.DefaultWorkingDirectory)'
+    inputs:
+      targetType: inline
+      script: |
+        brew install xctesthtmlreport
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+      condition: always()
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
     displayName: 'Install Node.js'
 
-  # Cache task is used to create a cache of files which won't change between jobs, task, or steps.
-  # In this task below a unique identifier(fingerprint) is created for the cache name, usually it's
-  #   'command_name | operating_system | lockfile'
-  # in our case it is 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
-  # and for the path is the directory which needs to be cached.
-  # Here `node_modules` are cached which are dowloaded from the scoped/private registry to build the mono-repo.
   - task: Cache@2
     inputs:
       key: 'pnpm | "$(Agent.OS)" | $(ClientSdkProjectDirectory)/pnpm-lock.yaml'
       path: $(Pipeline.Workspace)/.pnpm-store
     displayName: Cache pnpm
 
-  - script: |
-      corepack enable
-      corepack prepare pnpm@7.30.1 --activate
-      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
+    inputs:
+      script: |
+        corepack enable
+        corepack prepare pnpm@9.0.6 --activate
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
-  - script: |
-      pnpm install
+  - task: CmdLine@2
     displayName: 'Install client sdk dependencies'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
+    inputs:
+      script: |
+        pnpm install
+      workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - script: |
-      pnpm build-force-blazor
+  - task: CmdLine@2
     displayName: 'Build client sdk'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
+    inputs:
+      script: |
+        pnpm build-force-blazor
+      workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - bash: 'nohup pnpm start-test-app &'
+  - task: DownloadSecureFile@1
+    name: localhostRootCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhostCA.pem'
+  
+  - task: DownloadSecureFile@1
+    name: localhostSSLCertificate
+    displayName: 'Download localhost certificate'
+    inputs:
+      secureFile: 'localhost.test.crt'
+            
+  - task: DownloadSecureFile@1
+    name: localhostSSLKey
+    displayName: 'Download localhost key'
+    inputs:
+      secureFile: 'localhost.test.key'
+
+  - task: Bash@3
     displayName: 'Run sample test app in background'
-    workingDirectory: '$(ClientSdkProjectDirectory)'
+    inputs:
+      targetType: inline
+      script: 'nohup pnpm start-test-app --server-options-cert $(localhostSSLCertificate.secureFilePath) --server-options-key $(localhostSSLKey.secureFilePath) &'
+      workingDirectory: '$(ClientSdkProjectDirectory)'
 
-  - bash: cd ~/Library/Preferences
-      defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+  # Ideally, iOS Host SDK will be built as a dependency before running E2E Test, but there is no harm to build it again for a minute.
+  # In practice, building iOS Host SDK before E2E test reduces flaky failure rate comparing to run E2E test directly.
+  - task: Xcode@5
+    displayName: '[iOS] Build iOS Host SDK'
+    inputs:
+      actions: 'build'
+      scheme: $(IOSSdkScheme)
+      sdk: 'iphoneos'
+      configuration: 'Release'
+      workingDirectory: '/Users/runner/work/1/iOSHost'
+      xcWorkspacePath: '/Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace'
+      xcodeVersion: 'default'
+      xcodeBuildArguments: 'CODE_SIGNING_ALLOWED=NO clean build -derivedDataPath "$(agent.buildDirectory)/iOS/DerivedData"'
+
+  - task: Bash@3
     displayName: 'Disable Slow Animation'
+    inputs:
+      targetType: inline
+      script: cd ~/Library/Preferences defaults write com.apple.iphonesimulator SlowMotionAnimation -bool NO
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - bash: |
+      # Boot the iOS simulator
+      xcrun simctl boot "iPhone 14 Pro" || true
+      xcrun simctl bootstatus "iPhone 14 Pro" -b
+
+      # Add the root certificate to the booted simulator's keychain
+      xcrun simctl keychain booted add-root-cert $(localhostRootCertificate.secureFilePath)
+    displayName: "[iOS] Boot iOS Simulator and Add Root Certificate"
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-  - bash: /usr/bin/xcodebuild
-      -configuration Release
-      -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace
-      -scheme $(IOSSdkScheme)
-      -sdk iphonesimulator
-      -parallel-testing-enabled YES
-      -parallel-testing-worker-count 2
-      -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2'
-      -quiet
-      -resultBundlePath TestResults
-      test > report.out 2>&1
-
-      if [[ $? == 0 ]];
-      then
-      echo "E2E Test passes successfully";
-      exit 0;
-      else
-      echo "E2E Test failed";
-      exit 1;
-      fi;
+  - task: Bash@3
     displayName: 'iOS UI/E2E Tests'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
+    condition: eq(variables['Build.Reason'], 'PullRequest') # Run E2E only for PR builds temporarily until the iOS E2E issue is resolved. 
+    inputs:
+      targetType: inline
+      script: "/usr/bin/xcodebuild -configuration Release -workspace /Users/runner/work/1/iOSHost/$(IOSSdkWorkspace).xcworkspace -scheme $(IOSSdkSchemeForTest) -testPlan ${{ parameters.testPlan }} -sdk iphonesimulator -parallel-testing-enabled YES -parallel-testing-worker-count 2 -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=16.2' -screenshot-enabled=\"YES\" -quiet -resultBundlePath TestResults test 2>/dev/null\nif [[ $? == 0 ]]; then echo \"E2E Test passes successfully\"; exit 0; else echo \"E2E Test failed\"; exit 1; fi;"
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
-  - bash: xchtmlreport -r TestResults -j > /dev/null
-
-      if [[ $? == 0 ]];
-      then
-      echo "Test report has been generated successfully.";
-      exit 0;
-      else
-      echo "Test report generating process failed for some reasons.";
-      exit 1;
-      fi;
+  - task: Bash@3
     displayName: 'Generate E2E test report'
-    workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
-    condition: succeededOrFailed()
+    condition: eq(variables['Build.Reason'], 'PullRequest') # Generate E2E test report only for PR builds temporarily until the iOS E2E issue is resolved. 
+    inputs:
+      targetType: inline
+      script: |
+        xchtmlreport -r TestResults -j; if [[ $? == 0 ]]; then echo "Test report has been generated successfully."; exit 0; else echo "Test report generating process failed for some reasons."; exit 1; fi;
+      workingDirectory: '$(Agent.BuildDirectory)/iOSHost'
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
     inputs:
       testResultsFiles: '**/*.junit'
       failTaskOnFailedTests: false
-      testRunTitle: 'E2E Tests - iOS'
+      testRunTitle: 'E2E Tests - $(agent.JobName)'
       searchFolder: '$(Agent.BuildDirectory)/iOSHost'
       mergeTestResults: true
+    condition: succeededOrFailed()
+
+  - bash: |
+      output="$(agent.buildDirectory)/Logs/$(agent.JobName)"
+      rm -rf "${output}" > /dev/null
+
+      mkdir -p "${output}"
+
+      cp -r $(Agent.BuildDirectory)/iOSHost/TestResults "${output}/output.xcresult"
+      xchtmlreport -r ${output}/output.xcresult -j
+
+
+      echo "ls -lR ${output}"
+      ls -lR "${output}"
+    displayName: Preparations for publishing results
+    condition: always()
+
+  - task: 1ES.PublishPipelineArtifact@1
+    inputs:
+      path: '$(agent.buildDirectory)/Logs'
+      artifact: iOSDebugLogs - ${{ parameters.testPlan }} - Attempt $(System.JobAttempt)
     condition: always()

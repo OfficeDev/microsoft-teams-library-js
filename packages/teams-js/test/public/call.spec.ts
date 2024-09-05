@@ -65,7 +65,7 @@ describe('call', () => {
     const msg = utils.findMessageByFunc('call.startCall');
     expect(msg).toBeTruthy();
     expect(msg.args).toEqual([mockStartCallParams]);
-    utils.respondToMessage(msg, true);
+    await utils.respondToMessage(msg, true);
     const response = await promise;
     expect(response).toBe(true);
   });
@@ -88,7 +88,7 @@ describe('call', () => {
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 
-    utils.respondToMessage(executeDeepLinkMsg, true);
+    await utils.respondToMessage(executeDeepLinkMsg, true);
     await expect(promise).resolves.toBe(true);
   });
 
@@ -110,7 +110,7 @@ describe('call', () => {
     validateCallDeepLinkPrefix(callDeepLink);
     validateDeepLinkUsers(callDeepLink, mockStartCallParams.targets);
 
-    utils.respondToMessage(executeDeepLinkMsg, false, errorCallNotStarted);
+    await utils.respondToMessage(executeDeepLinkMsg, false, errorCallNotStarted);
     await expect(promise).rejects.toThrowError(errorCallNotStarted);
   });
 });

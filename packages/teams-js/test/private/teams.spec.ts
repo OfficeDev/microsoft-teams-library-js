@@ -91,7 +91,7 @@ describe('Testing teams capabillity', () => {
 
             const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.getTeamChannels');
             expect(getCloudStorageFoldersMessage).not.toBeNull();
-            utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
+            await utils.respondToMessage(getCloudStorageFoldersMessage, false, mockTeamsChannels);
             expect(callback).toHaveBeenCalled();
           });
         } else {
@@ -150,7 +150,7 @@ describe('Testing teams capabillity', () => {
 
           const getCloudStorageFoldersMessage = utils.findMessageByFunc('teams.refreshSiteUrl');
           expect(getCloudStorageFoldersMessage).not.toBeNull();
-          utils.respondToMessage(getCloudStorageFoldersMessage, false, 'Some Message');
+          await utils.respondToMessage(getCloudStorageFoldersMessage, false, 'Some Message');
           expect(callback).toHaveBeenCalled();
         });
       });
@@ -207,7 +207,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -221,7 +221,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -233,7 +233,7 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
 
@@ -244,13 +244,12 @@ describe('Testing teams capabillity', () => {
 
         const getUserJoinedTeamsMessage = utils.findMessageByFunc('getUserJoinedTeams');
         expect(getUserJoinedTeamsMessage).not.toBeNull();
-        utils.respondToMessage(getUserJoinedTeamsMessage, {});
+        await utils.respondToMessage(getUserJoinedTeamsMessage, {});
         return expect(promise).resolves;
       });
     });
 
     describe('joinedTeams.isSupported function', () => {
-      const utils = new Utils();
       it('joinedTeams.isSupported should return false if the runtime says joinedTeams is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -281,7 +280,6 @@ describe('Testing teams capabillity', () => {
     });
 
     describe('teams.fullTrust.isSupported function', () => {
-      const utils = new Utils();
       it('teams.fullTrust.isSupported should return false if the runtime says fullTrust is not supported', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
@@ -332,7 +330,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         return expect(promise).resolves;
       });
 
@@ -343,7 +341,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
 
@@ -354,7 +352,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
 
@@ -365,7 +363,7 @@ describe('Testing teams capabillity', () => {
 
         const getConfigSettingMessage = utils.findMessageByFunc('getConfigSetting');
         expect(getConfigSettingMessage).not.toBeNull();
-        utils.respondToMessage(getConfigSettingMessage, {});
+        await utils.respondToMessage(getConfigSettingMessage, {});
         expect(promise).resolves;
       });
     });

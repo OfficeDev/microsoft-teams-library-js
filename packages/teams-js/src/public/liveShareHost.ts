@@ -1,7 +1,13 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
 import { runtime } from './runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const interactiveTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * APIs involving Live Share, a framework for building real-time collaborative apps.
@@ -159,7 +165,7 @@ export namespace liveShare {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel) &&
+    return ensureInitialized(runtime, FrameContexts.meetingStage, FrameContexts.sidePanel, FrameContexts.content) &&
       runtime.supports.interactive
       ? true
       : false;
@@ -183,7 +189,12 @@ export class LiveShareHost {
   public getFluidTenantInfo(): Promise<liveShare.IFluidTenantInfo> {
     ensureSupported();
     return new Promise<liveShare.IFluidTenantInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getFluidTenantInfo'));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidTenantInfo),
+          'interactive.getFluidTenantInfo',
+        ),
+      );
     });
   }
 
@@ -197,8 +208,14 @@ export class LiveShareHost {
   public getFluidToken(containerId?: string): Promise<string> {
     ensureSupported();
     return new Promise<string>((resolve) => {
-      // eslint-disable-next-line strict-null-checks/all
-      resolve(sendAndHandleSdkError('interactive.getFluidToken', containerId));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidToken),
+          'interactive.getFluidToken',
+          // eslint-disable-next-line strict-null-checks/all
+          containerId,
+        ),
+      );
     });
   }
 
@@ -209,7 +226,12 @@ export class LiveShareHost {
   public getFluidContainerId(): Promise<liveShare.IFluidContainerInfo> {
     ensureSupported();
     return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getFluidContainerId'));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetFluidContainerId),
+          'interactive.getFluidContainerId',
+        ),
+      );
     });
   }
 
@@ -226,7 +248,13 @@ export class LiveShareHost {
   public setFluidContainerId(containerId: string): Promise<liveShare.IFluidContainerInfo> {
     ensureSupported();
     return new Promise<liveShare.IFluidContainerInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.setFluidContainerId', containerId));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_SetFluidContainerId),
+          'interactive.setFluidContainerId',
+          containerId,
+        ),
+      );
     });
   }
 
@@ -237,7 +265,12 @@ export class LiveShareHost {
   public getNtpTime(): Promise<liveShare.INtpTimeInfo> {
     ensureSupported();
     return new Promise<liveShare.INtpTimeInfo>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getNtpTime'));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetNtpTime),
+          'interactive.getNtpTime',
+        ),
+      );
     });
   }
 
@@ -251,7 +284,13 @@ export class LiveShareHost {
   public registerClientId(clientId: string): Promise<liveShare.UserMeetingRole[]> {
     ensureSupported();
     return new Promise<liveShare.UserMeetingRole[]>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.registerClientId', clientId));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_RegisterClientId),
+          'interactive.registerClientId',
+          clientId,
+        ),
+      );
     });
   }
 
@@ -265,7 +304,13 @@ export class LiveShareHost {
   public getClientRoles(clientId: string): Promise<liveShare.UserMeetingRole[] | undefined> {
     ensureSupported();
     return new Promise<liveShare.UserMeetingRole[] | undefined>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getClientRoles', clientId));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetClientRoles),
+          'interactive.getClientRoles',
+          clientId,
+        ),
+      );
     });
   }
 
@@ -279,7 +324,13 @@ export class LiveShareHost {
   public getClientInfo(clientId: string): Promise<liveShare.IClientInfo | undefined> {
     ensureSupported();
     return new Promise<liveShare.IClientInfo | undefined>((resolve) => {
-      resolve(sendAndHandleSdkError('interactive.getClientInfo', clientId));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(interactiveTelemetryVersionNumber, ApiName.Interactive_GetClientInfo),
+          'interactive.getClientInfo',
+          clientId,
+        ),
+      );
     });
   }
 

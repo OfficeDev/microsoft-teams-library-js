@@ -1,9 +1,9 @@
-// import * as communication from '../../src/internal/communication';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { FrameContexts, HostClientType } from '../../src/public';
+import * as internalUtils from '../../src/internal/utils';
+import { ErrorCode, FrameContexts, HostClientType, SdkError } from '../../src/public';
 import { app } from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
@@ -13,8 +13,12 @@ import { Utils } from '../utils';
    large numbers of errors. Then, over time, we can fix the errors and reenable eslint on a per file basis. */
 
 describe('Testing authentication capability', () => {
-  const errorMessage = 'mockError';
+  const errorMessage = 'Sample Error Message';
   const mockResult = 'someResult';
+  const sdkError: SdkError = {
+    errorCode: ErrorCode.INTERNAL_ERROR,
+    message: errorMessage,
+  };
   const mockResource = 'https://someresource/';
   const mockClaim = 'some_claim';
   const mockUser: authentication.UserProfile = {
@@ -289,6 +293,33 @@ describe('Testing authentication capability', () => {
             await expect(promise).resolves.toEqual(mockResult);
           });
 
+          it(`authentication.authenticate should successfully handle auth success from ${context} context when passed a valid encoded URL`, async () => {
+            await utils.initializeWithContext(context);
+
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
+            });
+
+            const authenticationParams = {
+              url: 'hello%20world',
+              width: 100,
+              height: 200,
+            };
+            const promise = authentication.authenticate(authenticationParams);
+
+            utils.processMessage({
+              origin: utils.tabOrigin,
+              source: utils.childWindow,
+              data: {
+                id: 0,
+                func: 'authentication.authenticate.success',
+                args: [mockResult],
+              },
+            } as MessageEvent);
+
+            await expect(promise).resolves.toEqual(mockResult);
+          });
+
           it(`authentication.authenticate should handle auth failure in legacy flow from ${context} context`, (done) => {
             utils.initializeWithContext(context).then(() => {
               const authenticationParams = {
@@ -339,109 +370,222 @@ describe('Testing authentication capability', () => {
 
             await expect(promise).rejects.toThrowError(errorMessage);
           });
+          it(`authentication.authenticate should successfully send authenticate message to non-web client in legacy flow from ${context} context`, () => {
+            return utils.initializeWithContext(context, HostClientType.desktop).then(() => {
+              const authenticationParams = {
+                url: 'https://someUrl',
+                width: 100,
+                height: 200,
+                isExternal: true,
+              };
 
-          Object.values(HostClientType).forEach((hostClientType) => {
-            if (allowedHostClientType.includes(hostClientType)) {
-              it(`authentication.authenticate should successfully send authenticate message to ${hostClientType} client in legacy flow from ${context} context`, () => {
-                return utils.initializeWithContext(context, hostClientType).then(() => {
-                  const authenticationParams = {
-                    url: 'https://someUrl',
-                    width: 100,
-                    height: 200,
-                    isExternal: true,
-                  };
+              authentication.authenticate(authenticationParams);
+              const message = utils.findMessageByFunc('authentication.authenticate');
+              expect(message).not.toBeNull();
+              expect(message.args.length).toBe(4);
+              expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+              expect(message.args[1]).toBe(authenticationParams.width);
+              expect(message.args[2]).toBe(authenticationParams.height);
+              expect(message.args[3]).toBe(authenticationParams.isExternal);
+            });
+          });
 
-                  authentication.authenticate(authenticationParams);
-                  const message = utils.findMessageByFunc('authentication.authenticate');
-                  expect(message).not.toBeNull();
-                  expect(message.args.length).toBe(4);
-                  expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-                  expect(message.args[1]).toBe(authenticationParams.width);
-                  expect(message.args[2]).toBe(authenticationParams.height);
-                  expect(message.args[3]).toBe(authenticationParams.isExternal);
-                });
-              });
+          it(`authentication.authenticate should throw an error if a URL that isn't https is passed in`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.desktop);
 
-              it(`authentication.authenticate it should successfully handle auth success in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
-                utils.initializeWithContext(context, hostClientType).then(() => {
-                  const authenticationParams = {
-                    url: 'https://someUrl',
-                    width: 100,
-                    height: 200,
-                    successCallback: (result: string) => {
-                      expect(result).toEqual(mockResult);
-                      done();
-                    },
-                    failureCallback: () => {
-                      expect(true).toBe(false);
-                      done();
-                    },
-                  };
-                  authentication.authenticate(authenticationParams);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'http://someurl/',
+              width: 100,
+              height: 200,
+            };
 
-                  expect.assertions(2);
-                  const message = utils.findMessageByFunc('authentication.authenticate');
-                  expect(message).not.toBeNull();
-                  utils.respondToMessage(message, true, mockResult);
-                });
-              });
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url should be a valid https url');
+          });
 
-              it(`authentication.authenticate should successfully handle auth failure in the ${hostClientType} client in legacy flow from ${context} context`, (done) => {
-                expect.assertions(2);
-                utils.initializeWithContext(context, hostClientType).then(() => {
-                  const authenticationParams = {
-                    url: 'https://someUrl',
-                    width: 100,
-                    height: 200,
-                    successCallback: () => {
-                      expect(true).toBe(false);
-                      done();
-                    },
-                    failureCallback: (reason: string) => {
-                      expect(reason).toEqual(errorMessage);
-                      done();
-                    },
-                  };
-                  authentication.authenticate(authenticationParams);
+          it(`authentication.authenticate should throw an error if a URL that is more than 2048 characters long is passed in`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.desktop);
 
-                  const message = utils.findMessageByFunc('authentication.authenticate');
-                  expect(message).not.toBeNull();
-
-                  utils.respondToMessage(message, false, errorMessage);
-                });
-              });
-            } else {
-              it(`authentication.authenticate should open a client window in the ${hostClientType} client in legacy flow from ${context} context`, async () => {
-                expect.assertions(5);
-                await utils.initializeWithContext(context, hostClientType);
-
-                let windowOpenCalled = false;
-                jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
-                  const specs: string = specsInput as string;
-                  expect(url).toEqual('https://someurl/');
-                  expect(name).toEqual('_blank');
-                  expect(specs.indexOf('width=100')).not.toBe(-1);
-                  expect(specs.indexOf('height=200')).not.toBe(-1);
-                  windowOpenCalled = true;
-                  return utils.childWindow as Window;
-                });
-
-                const authenticationParams: authentication.AuthenticatePopUpParameters = {
-                  url: 'https://someurl/',
-                  width: 100,
-                  height: 200,
-                };
-                authentication.authenticate(authenticationParams);
-                expect(windowOpenCalled).toBe(true);
-              });
+            let testUrl: string = 'https://';
+            for (let i: number = 0; i < 2040; i++) {
+              testUrl += 'a';
             }
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: testUrl,
+              width: 100,
+              height: 200,
+            };
+
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url exceeds the maximum size of 2048 characters');
+          });
+
+          it(`authentication.authenticate should not contain script tags`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.desktop);
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: encodeURI('https://example.com?param=<script>alert("Hello, world!");</script>'),
+              width: 100,
+              height: 200,
+            };
+
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Invalid Url');
+          });
+
+          it(`authentication.authenticate it should successfully handle auth success in a non-web client in legacy flow from ${context} context`, (done) => {
+            utils.initializeWithContext(context, HostClientType.desktop).then(async () => {
+              const authenticationParams = {
+                url: 'https://someUrl',
+                width: 100,
+                height: 200,
+                successCallback: (result: string) => {
+                  expect(result).toEqual(mockResult);
+                  done();
+                },
+                failureCallback: () => {
+                  expect(true).toBe(false);
+                  done();
+                },
+              };
+              authentication.authenticate(authenticationParams);
+
+              expect.assertions(2);
+              const message = utils.findMessageByFunc('authentication.authenticate');
+              expect(message).not.toBeNull();
+              await utils.respondToMessage(message, true, mockResult);
+            });
+          });
+
+          it(`authentication.authenticate should successfully handle auth failure in a non-web client in legacy flow from ${context} context`, (done) => {
+            expect.assertions(2);
+            utils.initializeWithContext(context, HostClientType.desktop).then(async () => {
+              const authenticationParams = {
+                url: 'https://someUrl',
+                width: 100,
+                height: 200,
+                successCallback: () => {
+                  expect(true).toBe(false);
+                  done();
+                },
+                failureCallback: (reason: string) => {
+                  expect(reason).toEqual(errorMessage);
+                  done();
+                },
+              };
+              authentication.authenticate(authenticationParams);
+
+              const message = utils.findMessageByFunc('authentication.authenticate');
+              expect(message).not.toBeNull();
+
+              await utils.respondToMessage(message, false, errorMessage);
+            });
+          });
+          it(`authentication.authenticate should throw an error on web clients if a URL that isn't https is passed in`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.web);
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'http://someurl/',
+              width: 100,
+              height: 200,
+            };
+
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url should be a valid https url');
+          });
+          it(`authentication.authenticate should throw an error on web clients if a URL that is too long is passed in`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.web);
+
+            let testUrl: string = 'https://';
+            for (let i: number = 0; i < 2040; i++) {
+              testUrl += 'a';
+            }
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: testUrl,
+              width: 100,
+              height: 200,
+            };
+
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url exceeds the maximum size of 2048 characters');
+          });
+          it(`authentication.authenticate should throw an error on web clients if a URL containing script tags is passed in`, async () => {
+            expect.assertions(1);
+            await utils.initializeWithContext(context, HostClientType.web);
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://example.com?param=<script>alert("Hello, world!");</script>',
+              width: 100,
+              height: 200,
+            };
+
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Invalid Url');
+          });
+          it(`authentication.authenticate should open a client window in web client in legacy flow from ${context} context`, async () => {
+            expect.assertions(5);
+            await utils.initializeWithContext(context, HostClientType.web);
+
+            let windowOpenCalled = false;
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
+              const specs: string = specsInput as string;
+              expect(url).toEqual('https://someurl/');
+              expect(name).toEqual('_blank');
+              expect(specs.indexOf('width=100')).not.toBe(-1);
+              expect(specs.indexOf('height=200')).not.toBe(-1);
+              windowOpenCalled = true;
+              return utils.childWindow as Window;
+            });
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl/',
+              width: 100,
+              height: 200,
+            };
+            authentication.authenticate(authenticationParams);
+            expect(windowOpenCalled).toBe(true);
+          });
+
+          it(`authentication.authenticate should open a client window using an encoded URL in web client in legacy flow from ${context} context`, async () => {
+            expect.assertions(5);
+            await utils.initializeWithContext(context, HostClientType.web);
+
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
+            });
+
+            let windowOpenCalled = false;
+            jest.spyOn(utils.mockWindow, 'open').mockImplementation((url, name, specsInput): Window => {
+              const specs: string = specsInput as string;
+              expect(url).toEqual('https://localhost/hello%20world');
+              expect(name).toEqual('_blank');
+              expect(specs.indexOf('width=100')).not.toBe(-1);
+              expect(specs.indexOf('height=200')).not.toBe(-1);
+              windowOpenCalled = true;
+              return utils.childWindow as Window;
+            });
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'hello%20world',
+              width: 100,
+              height: 200,
+            };
+            authentication.authenticate(authenticationParams);
+            expect(windowOpenCalled).toBe(true);
           });
         } else {
           it(`authentication.authenticate should not allow calls from ${context} context`, async () => {
             expect.assertions(1);
             await utils.initializeWithContext(context);
             const authenticationParams: authentication.AuthenticatePopUpParameters = {
-              url: 'https://someurl/',
+              url: 'https://localhost/hello%20world',
               width: 100,
               height: 200,
             };
@@ -478,7 +622,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getAuthToken');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -489,7 +633,7 @@ describe('Testing authentication capability', () => {
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
           expect.assertions(6);
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               claims: [mockClaim],
@@ -507,18 +651,18 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
 
-            utils.respondToMessage(message, true, 'token');
+            await utils.respondToMessage(message, true, 'token');
           });
         });
 
         it(`authentication.getAuthToken should successfully return error from getAuthToken in case of failure in legacy flow from ${context} context`, (done) => {
           expect.assertions(6);
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               failureCallback: (error) => {
@@ -534,12 +678,12 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual(undefined);
             expect(message.args[2]).toEqual(undefined);
 
-            utils.respondToMessage(message, false, errorMessage);
+            await utils.respondToMessage(message, false, errorMessage);
           });
         });
 
@@ -556,12 +700,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
 
-          utils.respondToMessage(message, true, 'token');
+          await utils.respondToMessage(message, true, 'token');
           await expect(promise).resolves.toEqual('token');
         });
 
@@ -572,10 +716,34 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
+
+          await utils.respondToMessage(message, true, 'token');
+          await expect(promise).resolves.toEqual('token');
+        });
+
+        it(`authentication.getAuthToken should request token for the tenant specified in the authTokenRequest from ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          const authTokenRequest = {
+            resources: [mockResource],
+            claims: [mockClaim],
+            silent: false,
+            tenantId: 'tenantId',
+          };
+
+          const promise = authentication.getAuthToken(authTokenRequest);
+
+          const message = utils.findMessageByFunc('authentication.getAuthToken');
+          expect(message).not.toBeNull();
+          expect(message.args.length).toBe(4);
+          expect(message.args[0]).toEqual([mockResource]);
+          expect(message.args[1]).toEqual([mockClaim]);
+          expect(message.args[2]).toEqual(false);
+          expect(message.args[3]).toEqual('tenantId');
 
           utils.respondToMessage(message, true, 'token');
           await expect(promise).resolves.toEqual('token');
@@ -592,12 +760,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
-          utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
 
@@ -608,12 +776,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual(undefined);
           expect(message.args[1]).toEqual(undefined);
           expect(message.args[2]).toEqual(undefined);
 
-          utils.respondToMessage(message, false, errorMessage);
+          await utils.respondToMessage(message, false, errorMessage);
           await expect(promise).rejects.toThrowError(errorMessage);
         });
       });
@@ -635,7 +803,7 @@ describe('Testing authentication capability', () => {
         let message = utils.findMessageByFunc('authentication.getUser');
         expect(message).toBeNull();
 
-        utils.respondToMessage(initMessage, 'content');
+        await utils.respondToMessage(initMessage, 'content');
 
         await initPromise;
 
@@ -645,7 +813,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
               done();
@@ -662,17 +830,17 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToMessage(message, true, mockResult);
+            await utils.respondToMessage(message, true, mockResult);
           });
         });
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (): void => {
               done();
             };
             const failureCallback = (reason: string): void => {
-              expect(reason).toBe(mockResult);
+              expect(reason).toMatch(new RegExp(sdkError.message!));
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -684,7 +852,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToMessage(message, false, mockResult);
+            await utils.respondToMessage(message, false, sdkError);
           });
         });
 
@@ -696,8 +864,8 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, false, mockResult);
-          await expect(promise).rejects.toThrowError(mockResult);
+          await utils.respondToMessage(message, false, sdkError);
+          await expect(promise).rejects.toThrowError(new RegExp(sdkError.message!));
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
@@ -708,7 +876,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, true, mockUser);
+          await utils.respondToMessage(message, true, mockUser);
           await expect(promise).resolves.toEqual(mockUser);
         });
 
@@ -720,7 +888,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToMessage(message, true, mockUserWithDataResidency);
+          await utils.respondToMessage(message, true, mockUserWithDataResidency);
           await expect(promise).resolves.toEqual(mockUserWithDataResidency);
         });
       });
@@ -759,76 +927,6 @@ describe('Testing authentication capability', () => {
             await utils.initializeWithContext(context);
 
             authentication.notifySuccess(mockResult);
-            const message = utils.findMessageByFunc('authentication.authenticate.success');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(mockResult);
-          });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook with ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&result=someResult&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook and no result param specified from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              null,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should do window redirect if callbackUrl is for win32 Outlook but does not have URL fragments from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                'https://outlook.office.com/connectors?client_type=Win32_Outlook#&result=someResult&authSuccess',
-              );
-            });
-
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifySuccess should successfully notify auth success if callbackUrl is not for win32 Outlook ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifySuccess(
-              mockResult,
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
             const message = utils.findMessageByFunc('authentication.authenticate.success');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
@@ -886,69 +984,14 @@ describe('Testing authentication capability', () => {
             expect(message.args[0]).toBe(errorMessage);
           });
 
-          it(`authentication.notifyFailure should do window redirect if callbackUrl is for win32 Outlook and auth failure happens from ${context} context`, async () => {
-            expect.assertions(2);
-            let windowAssignSpyCalled = false;
-            jest.spyOn(utils.mockWindow.location, 'assign').mockImplementation((url): void => {
-              windowAssignSpyCalled = true;
-              expect(url).toEqual(
-                `https://outlook.office.com/connectors?client_type=Win32_Outlook#/configurations&reason=${errorMessage}&authFailure`,
-              );
-            });
-
+          it(`authentication.notifyFailure should successfully notify auth failure if reason is empty from ${context} context`, async () => {
             await utils.initializeWithContext(context);
 
-            authentication.notifyFailure(
-              errorMessage,
-              'https%3A%2F%2Foutlook.office.com%2Fconnectors%3Fclient_type%3DWin32_Outlook%23%2Fconfigurations',
-            );
-            expect(windowAssignSpyCalled).toBe(true);
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is not for win32 Outlook from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(
-              errorMessage,
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(errorMessage);
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is not for win32 Outlook and reason is empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(
-              '',
-              'https%3A%2F%2Fsomeinvalidurl.com%3FcallbackUrl%3Dtest%23%2Fconfiguration',
-            );
+            authentication.notifyFailure('');
             const message = utils.findMessageByFunc('authentication.authenticate.failure');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toBe('');
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl and reason are empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure('', '');
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe('');
-          });
-
-          it(`authentication.notifyFailure should successfully notify auth failure if callbackUrl is empty from ${context} context`, async () => {
-            await utils.initializeWithContext(context);
-
-            authentication.notifyFailure(errorMessage, '');
-            const message = utils.findMessageByFunc('authentication.authenticate.failure');
-            expect(message).not.toBeNull();
-            expect(message.args.length).toBe(1);
-            expect(message.args[0]).toBe(errorMessage);
           });
         } else {
           it(`authentication.notifyFailure should not allow calls from ${context} context`, async () => {
@@ -994,55 +1037,128 @@ describe('Testing authentication capability', () => {
             );
           });
         } else {
-          allowedHostClientType.forEach((hostClientType) => {
-            it(`authentication.authenticate should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await utils.initializeWithContext(context, hostClientType);
-              const authenticationParams: authentication.AuthenticatePopUpParameters = {
-                url: 'https://someurl',
-                width: 100,
-                height: 200,
-                isExternal: true,
-              };
-              const promise = authentication.authenticate(authenticationParams);
+          it(`authentication.authenticate should successfully ask parent window to open auth window with parameters in a non-web client from ${context} context`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
 
-              const message = utils.findMessageByFunc('authentication.authenticate');
-              expect(message).not.toBeNull();
-              expect(message.args.length).toBe(4);
-              expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
-              expect(message.args[1]).toBe(authenticationParams.width);
-              expect(message.args[2]).toBe(authenticationParams.height);
-              expect(message.args[3]).toBe(authenticationParams.isExternal);
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(4);
+            expect(message.args[0]).toBe(authenticationParams.url.toLowerCase() + '/');
+            expect(message.args[1]).toBe(authenticationParams.width);
+            expect(message.args[2]).toBe(authenticationParams.height);
+            expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              utils.respondToFramelessMessage({
-                data: {
-                  id: message.id,
-                  args: [true, mockResult],
-                },
-              } as DOMMessageEvent);
-              await expect(promise).resolves.toEqual(mockResult);
+            await utils.respondToFramelessMessage({
+              data: {
+                id: message.id,
+                args: [true, mockResult],
+              },
+            } as DOMMessageEvent);
+            await expect(promise).resolves.toEqual(mockResult);
+          });
+
+          it(`authentication.authenticate should successfully ask parent window to open auth window with parameters including encoded url in a non-web client from ${context} context`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+
+            jest.spyOn(internalUtils, 'fullyQualifyUrlString').mockImplementationOnce((urlString): URL => {
+              return new URL('https://localhost/' + urlString);
             });
 
-            it(`authentication.authenticate should handle auth failure with parameters in the ${hostClientType} client from ${context} context`, async () => {
-              await utils.initializeWithContext(context, hostClientType);
-              const authenticationParams: authentication.AuthenticatePopUpParameters = {
-                url: 'https://someurl',
-                width: 100,
-                height: 200,
-                isExternal: true,
-              };
-              const promise = authentication.authenticate(authenticationParams);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'hello%20world',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
 
-              const message = utils.findMessageByFunc('authentication.authenticate');
-              utils.respondToFramelessMessage({
-                data: {
-                  id: message.id,
-                  func: 'authentication.authenticate.failure',
-                  args: [false, errorMessage],
-                },
-              } as DOMMessageEvent);
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            expect(message).not.toBeNull();
+            expect(message.args.length).toBe(4);
+            expect(message.args[0]).toBe('https://localhost/hello%20world');
+            expect(message.args[1]).toBe(authenticationParams.width);
+            expect(message.args[2]).toBe(authenticationParams.height);
+            expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              await expect(promise).rejects.toThrowError(errorMessage);
-            });
+            await utils.respondToFramelessMessage({
+              data: {
+                id: message.id,
+                args: [true, mockResult],
+              },
+            } as DOMMessageEvent);
+            await expect(promise).resolves.toEqual(mockResult);
+          });
+
+          it(`authentication.authenticate should throw an error on non-web platforms if non-https URL passed in`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'http://someurl/',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url should be a valid https url');
+          });
+
+          it(`authentication.authenticate should throw an error on non-web platforms if URL that is too long is passed in`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+
+            let testUrl: string = 'https://';
+
+            for (let i: number = 0; i < 2040; i++) {
+              testUrl += 'a';
+            }
+
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: testUrl,
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Url exceeds the maximum size of 2048 characters');
+          });
+
+          it(`authentication.authenticate should throw an error on non-web platforms if URL containing script tags is passed in`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://example.com?param=<script>alert("Hello, world!");</script>',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
+            await expect(promise).rejects.toThrowError('Invalid Url');
+          });
+
+          it(`authentication.authenticate should handle auth failure with parameters in a non-web client from ${context} context`, async () => {
+            await utils.initializeWithContext(context, HostClientType.desktop);
+            const authenticationParams: authentication.AuthenticatePopUpParameters = {
+              url: 'https://someurl',
+              width: 100,
+              height: 200,
+              isExternal: true,
+            };
+            const promise = authentication.authenticate(authenticationParams);
+
+            const message = utils.findMessageByFunc('authentication.authenticate');
+            await utils.respondToFramelessMessage({
+              data: {
+                id: message.id,
+                func: 'authentication.authenticate.failure',
+                args: [false, errorMessage],
+              },
+            } as DOMMessageEvent);
+
+            await expect(promise).rejects.toThrowError(errorMessage);
           });
         }
       });
@@ -1052,7 +1168,7 @@ describe('Testing authentication capability', () => {
       allowedContexts.forEach((context) => {
         allowedHostClientType.forEach((hostClientType) => {
           it(`authentication.registerAuthenticationHandlers should successfully ask parent window to open auth window with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            utils.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(async () => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1077,7 +1193,7 @@ describe('Testing authentication capability', () => {
               expect(message.args[2]).toBe(authenticationParams.height);
               expect(message.args[3]).toBe(authenticationParams.isExternal);
 
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [true, mockResult],
@@ -1087,7 +1203,7 @@ describe('Testing authentication capability', () => {
           });
 
           it(`authentication.registerAuthenticationHandlers should handle auth failure with parameters in the ${hostClientType} client from ${context} context in legacy flow`, (done) => {
-            utils.initializeWithContext(context, hostClientType).then(() => {
+            utils.initializeWithContext(context, hostClientType).then(async () => {
               const authenticationParams: authentication.AuthenticateParameters = {
                 url: 'https://someurl',
                 width: 100,
@@ -1105,7 +1221,7 @@ describe('Testing authentication capability', () => {
               authentication.authenticate();
 
               const message = utils.findMessageByFunc('authentication.authenticate');
-              utils.respondToFramelessMessage({
+              await utils.respondToFramelessMessage({
                 data: {
                   id: message.id,
                   args: [errorMessage],
@@ -1130,7 +1246,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getAuthToken should successfully return token in case of success in legacy flow from ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               claims: [mockClaim],
@@ -1148,12 +1264,12 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toEqual([mockClaim]);
             expect(message.args[2]).toEqual(false);
 
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, 'token'],
@@ -1163,7 +1279,7 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getAuthToken should throw error in case of failure in legacy flow from ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const authTokenRequest = {
               resources: [mockResource],
               failureCallback: (error) => {
@@ -1179,11 +1295,11 @@ describe('Testing authentication capability', () => {
 
             const message = utils.findMessageByFunc('authentication.getAuthToken');
             expect(message).not.toBeNull();
-            expect(message.args.length).toBe(3);
+            expect(message.args.length).toBe(4);
             expect(message.args[0]).toEqual([mockResource]);
             expect(message.args[1]).toBeNull();
             expect(message.args[2]).toBeNull();
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [false, errorMessage],
@@ -1205,11 +1321,11 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toEqual([mockClaim]);
           expect(message.args[2]).toEqual(false);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1225,12 +1341,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, 'token'],
@@ -1250,11 +1366,11 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toEqual([mockResource]);
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1270,12 +1386,12 @@ describe('Testing authentication capability', () => {
 
           const message = utils.findMessageByFunc('authentication.getAuthToken');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(3);
+          expect(message.args.length).toBe(4);
           expect(message.args[0]).toBeNull();
           expect(message.args[1]).toBeNull();
           expect(message.args[2]).toBeNull();
 
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [false, errorMessage],
@@ -1293,7 +1409,7 @@ describe('Testing authentication capability', () => {
 
       Object.values(FrameContexts).forEach((context) => {
         it(`authentication.getUser should successfully get user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (user: authentication.UserProfile): void => {
               expect(user).toEqual(mockResult);
               done();
@@ -1310,7 +1426,7 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
                 args: [true, mockResult],
@@ -1320,12 +1436,12 @@ describe('Testing authentication capability', () => {
         });
 
         it(`authentication.getUser should throw error in getting user profile in legacy flow with ${context} context`, (done) => {
-          utils.initializeWithContext(context).then(() => {
+          utils.initializeWithContext(context).then(async () => {
             const successCallback = (): void => {
               done();
             };
             const failureCallback = (reason: string): void => {
-              expect(reason).toBe(mockResult);
+              expect(reason).toMatch(new RegExp(sdkError.message!));
               done();
             };
             const userRequest: authentication.UserRequest = {
@@ -1337,10 +1453,10 @@ describe('Testing authentication capability', () => {
             expect(message).not.toBeNull();
             expect(message.id).toBe(1);
             expect(message.args[0]).toBe(undefined);
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: message.id,
-                args: [false, mockResult],
+                args: [false, sdkError],
               },
             } as DOMMessageEvent);
           });
@@ -1354,13 +1470,13 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
-              args: [false, mockResult],
+              args: [false, sdkError],
             },
           } as DOMMessageEvent);
-          await expect(promise).rejects.toThrowError(mockResult);
+          await expect(promise).rejects.toThrowError(new RegExp(errorMessage));
         });
 
         it(`authentication.getUser should successfully get user profile with ${context} context`, async () => {
@@ -1371,7 +1487,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUser],
@@ -1388,7 +1504,7 @@ describe('Testing authentication capability', () => {
           expect(message).not.toBeNull();
           expect(message.id).toBe(1);
           expect(message.args[0]).toBe(undefined);
-          utils.respondToFramelessMessage({
+          await utils.respondToFramelessMessage({
             data: {
               id: message.id,
               args: [true, mockUserWithDataResidency],

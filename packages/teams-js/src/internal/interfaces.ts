@@ -11,6 +11,7 @@ export interface DOMMessageEvent {
   origin?: any;
   source?: any;
   data?: any;
+  ports?: any;
   // Needed for Chrome1964
   originalEvent: DOMMessageEvent;
 }
@@ -36,27 +37,6 @@ export interface TeamsNativeClient {
 export interface ExtendedWindow extends Window {
   nativeInterface: TeamsNativeClient;
   onNativeMessage(evt: DOMMessageEvent): void;
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface MessageRequest {
-  id?: number;
-  func: string;
-  timestamp?: number;
-  args?: any[];
-}
-
-/**
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface MessageResponse {
-  id: number;
-  args?: any[];
-  isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 
 /**

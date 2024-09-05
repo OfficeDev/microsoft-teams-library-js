@@ -25,25 +25,57 @@ import {
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../internal/mediaUtil';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { generateGUID } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from './constants';
 import { DevicePermission, ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
+ */
+const mediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
+const mediaLogger = getLogger('media');
+
+/**
  * Interact with media, including capturing and viewing images.
  */
 export namespace media {
-  /** Capture image callback function type. */
-  type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
-  /** Select media callback function type. */
-  type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
+  /**
+   * Function callback type used when calling {@link media.captureImage}.
+   *
+   * @param error - Error encountered during the API call, if any, {@link SdkError}
+   * @param files - Collection of File objects (images) captured by the user. Will be an empty array in the case of an error.
+   * */
+  export type captureImageCallbackFunctionType = (error: SdkError, files: File[]) => void;
+
+  /**
+   * Function callback type used when calling {@link media.selectMedia}.
+   *
+   * @param error - Error encountered during the API call, if any, {@link SdkError}
+   * @param attachments - Collection of {@link Media} objects selected by the user. Will be an empty array in the case of an error.
+   * */
+  export type selectMediaCallbackFunctionType = (error: SdkError, attachments: Media[]) => void;
+
   /** Error callback function type. */
-  type errorCallbackFunctionType = (error?: SdkError) => void;
-  /** Scan BarCode callback function type. */
-  type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
-  /** Get media callback function type. */
-  type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
+  export type errorCallbackFunctionType = (error?: SdkError) => void;
+  /**
+   * Function callback type used when calling {@link media.scanBarCode}.
+   *
+   * @param error - Error encountered during the API call, if any, {@link SdkError}
+   * @param decodedText - Decoded text from the barcode, if any. In the case of an error, this will be the empty string.
+   * */
+  export type scanBarCodeCallbackFunctionType = (error: SdkError, decodedText: string) => void;
+
+  /**
+   * Function callback type used when calling {@link media.Media.getMedia}
+   *
+   * @param error - Error encountered during the API call, if any, {@link SdkError}
+   * @param blob - Blob of media returned. Will be a blob with no BlobParts, in the case of an error.
+   * */
+  export type getMediaCallbackFunctionType = (error: SdkError, blob: Blob) => void;
 
   /**
    * Enum for file formats supported
@@ -106,18 +138,22 @@ export namespace media {
     if (!GlobalVars.isFramelessWindow) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(notSupportedError, undefined);
+      callback(notSupportedError, []);
       return;
     }
 
     if (!isCurrentSDKVersionAtLeast(captureImageMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(oldPlatformError, undefined);
+      callback(oldPlatformError, []);
       return;
     }
 
-    sendMessageToParent('captureImage', callback);
+    sendMessageToParent(
+      getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_CaptureImage),
+      'captureImage',
+      callback,
+    );
   }
 
   /**
@@ -136,7 +172,13 @@ export namespace media {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.has', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_HasPermission),
+          'permissions.has',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -156,7 +198,13 @@ export namespace media {
     const permissions: DevicePermission = DevicePermission.Media;
 
     return new Promise<boolean>((resolve) => {
-      resolve(sendAndHandleSdkError('permissions.request', permissions));
+      resolve(
+        sendAndHandleSdkError(
+          getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_RequestPermission),
+          'permissions.request',
+          permissions,
+        ),
+      );
     });
   }
 
@@ -174,7 +222,7 @@ export namespace media {
    * Media object returned by the select Media API
    */
   export class Media extends File {
-    constructor(that: Media = null) {
+    constructor(that?: Media) {
       super();
       if (that) {
         this.content = that.content;
@@ -204,14 +252,12 @@ export namespace media {
       ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
       if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
         const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        callback(oldPlatformError, null);
+        callback(oldPlatformError, new Blob());
         return;
       }
       if (!validateGetMediaInputs(this.mimeType, this.format, this.content)) {
         const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-        /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-        callback(invalidInput, null);
+        callback(invalidInput, new Blob());
         return;
       }
       // Call the new get media implementation via callbacks if the client version is greater than or equal to '2.0.0'
@@ -232,28 +278,40 @@ export namespace media {
       function handleGetMediaCallbackRequest(mediaResult: MediaResult): void {
         if (callback) {
           if (mediaResult && mediaResult.error) {
-            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-            callback(mediaResult.error, null);
+            callback(mediaResult.error, new Blob());
           } else {
             if (mediaResult && mediaResult.mediaChunk) {
               // If the chunksequence number is less than equal to 0 implies EOF
               // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-                callback(mediaResult.error, file);
+                callback(mediaResult.error, file ?? new Blob());
               } else {
                 // Keep pushing chunks into assemble attachment
-                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-                helper.assembleAttachment.push(assemble);
+                const assemble: AssembleAttachment | null = decodeAttachment(
+                  mediaResult.mediaChunk,
+                  helper.mediaMimeType,
+                );
+                if (assemble) {
+                  helper.assembleAttachment.push(assemble);
+                } else {
+                  mediaLogger(
+                    `Received a null assemble attachment for when decoding chunk sequence ${mediaResult.mediaChunk.chunkSequence}; not including the chunk in the assembled file.`,
+                  );
+                }
               }
             } else {
-              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, new Blob());
             }
           }
         }
       }
-      sendMessageToParent('getMedia', localUriId, handleGetMediaCallbackRequest);
+      sendMessageToParent(
+        getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_GetMedia),
+        'getMedia',
+        localUriId,
+        handleGetMediaCallbackRequest,
+      );
     }
 
     /** Function to retrieve media content, such as images or videos, via handler. */
@@ -264,14 +322,15 @@ export namespace media {
         assembleAttachment: [],
       };
       const params = [actionName, this.content];
-      this.content && callback && sendMessageToParent('getMedia', params);
+      this.content &&
+        !isNullOrUndefined(callback) &&
+        sendMessageToParent(getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_GetMedia), 'getMedia', params);
       function handleGetMediaRequest(response: string): void {
         if (callback) {
           /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
           const mediaResult: MediaResult = JSON.parse(response);
           if (mediaResult.error) {
-            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-            callback(mediaResult.error, null);
+            callback(mediaResult.error, new Blob());
             removeHandler('getMedia' + actionName);
           } else {
             if (mediaResult.mediaChunk) {
@@ -279,23 +338,31 @@ export namespace media {
               // create file/blob when all chunks have arrived and we get 0/-1 as chunksequence number
               if (mediaResult.mediaChunk.chunkSequence <= 0) {
                 const file = createFile(helper.assembleAttachment, helper.mediaMimeType);
-                callback(mediaResult.error, file);
+                callback(mediaResult.error, file ?? new Blob());
                 removeHandler('getMedia' + actionName);
               } else {
                 // Keep pushing chunks into assemble attachment
-                const assemble: AssembleAttachment = decodeAttachment(mediaResult.mediaChunk, helper.mediaMimeType);
-                helper.assembleAttachment.push(assemble);
+                const assemble: AssembleAttachment | null = decodeAttachment(
+                  mediaResult.mediaChunk,
+                  helper.mediaMimeType,
+                );
+                if (assemble) {
+                  helper.assembleAttachment.push(assemble);
+                }
               }
             } else {
-              /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, null);
+              callback({ errorCode: ErrorCode.INTERNAL_ERROR, message: 'data received is null' }, new Blob());
               removeHandler('getMedia' + actionName);
             }
           }
         }
       }
 
-      registerHandler('getMedia' + actionName, handleGetMediaRequest);
+      registerHandler(
+        getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_RegisterGetMediaRequestHandler),
+        'getMedia' + actionName,
+        handleGetMediaRequest,
+      );
     }
   }
 
@@ -446,7 +513,7 @@ export namespace media {
    */
   abstract class MediaController<T> {
     /** Callback that can be registered to handle events related to the playback and control of video content. */
-    protected controllerCallback: T;
+    protected controllerCallback?: T;
 
     public constructor(controllerCallback?: T) {
       this.controllerCallback = controllerCallback;
@@ -485,11 +552,16 @@ export namespace media {
       }
 
       const params: MediaControllerParam = { mediaType: this.getMediaType(), mediaControllerEvent: mediaEvent };
-      sendMessageToParent('media.controller', [params], (err?: SdkError) => {
-        if (callback) {
-          callback(err);
-        }
-      });
+      sendMessageToParent(
+        getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_Controller),
+        'media.controller',
+        [params],
+        (err?: SdkError) => {
+          if (callback) {
+            callback(err);
+          }
+        },
+      );
     }
 
     /**
@@ -695,45 +767,41 @@ export namespace media {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.task);
     if (!isCurrentSDKVersionAtLeast(mediaAPISupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(oldPlatformError, null);
+      callback(oldPlatformError, []);
       return;
     }
 
     try {
       throwExceptionIfMediaCallIsNotSupportedOnMobile(mediaInputs);
     } catch (err) {
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(err, null);
+      callback(err, []);
       return;
     }
 
     if (!validateSelectMediaInputs(mediaInputs)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(invalidInput, null);
+      callback(invalidInput, []);
       return;
     }
 
     const params = [mediaInputs];
     // What comes back from native as attachments would just be objects and will be missing getMedia method on them
     sendMessageToParent(
+      getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_SelectMedia),
       'selectMedia',
       params,
       (err: SdkError, localAttachments?: Media[], mediaEvent?: MediaControllerEvent) => {
         // MediaControllerEvent response is used to notify the app about events and is a partial response to selectMedia
         if (mediaEvent) {
           if (isVideoControllerRegistered(mediaInputs)) {
-            /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-            mediaInputs.videoProps.videoController.notifyEventToApp(mediaEvent);
+            mediaInputs?.videoProps?.videoController?.notifyEventToApp(mediaEvent);
           }
           return;
         }
 
         // Media Attachments are final response to selectMedia
         if (!localAttachments) {
-          /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-          callback(err, null);
+          callback(err, []);
           return;
         }
 
@@ -770,7 +838,12 @@ export namespace media {
     }
 
     const params = [uriList];
-    sendMessageToParent('viewImages', params, callback);
+    sendMessageToParent(
+      getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_ViewImages),
+      'viewImages',
+      params,
+      callback,
+    );
   }
 
   /**
@@ -813,26 +886,27 @@ export namespace media {
       GlobalVars.hostClientType === HostClientType.teamsDisplays
     ) {
       const notSupportedError: SdkError = { errorCode: ErrorCode.NOT_SUPPORTED_ON_PLATFORM };
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(notSupportedError, null);
+      callback(notSupportedError, '');
       return;
     }
 
     if (!isCurrentSDKVersionAtLeast(scanBarCodeAPIMobileSupportVersion)) {
       const oldPlatformError: SdkError = { errorCode: ErrorCode.OLD_PLATFORM };
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(oldPlatformError, null);
+      callback(oldPlatformError, '');
       return;
     }
 
-    /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
     if (!validateScanBarCodeInput(config)) {
       const invalidInput: SdkError = { errorCode: ErrorCode.INVALID_ARGUMENTS };
-      /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
-      callback(invalidInput, null);
+      callback(invalidInput, '');
       return;
     }
 
-    sendMessageToParent('media.scanBarCode', [config], callback);
+    sendMessageToParent(
+      getApiVersionTag(mediaTelemetryVersionNumber, ApiName.Media_ScanBarCode),
+      'media.scanBarCode',
+      [config],
+      callback,
+    );
   }
 }

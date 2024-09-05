@@ -111,6 +111,7 @@ const SelectMedia = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ mediaType: media.MediaType.Image, maxMediaCount: 1 }),
   });
 
 const GetMedia = (): React.ReactElement =>
@@ -140,6 +141,7 @@ const GetMedia = (): React.ReactElement =>
         return 'media.getMedia()' + noHostSdkMsg;
       },
     },
+    defaultInput: JSON.stringify({ mediaType: media.MediaType.Image, maxMediaCount: 1 }),
   });
 
 const ViewImagesWithId = (): React.ReactElement =>
@@ -172,6 +174,7 @@ const ViewImagesWithId = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ mediaType: media.MediaType.Image, maxMediaCount: 1 }),
   });
 
 const ScanBarCode = (): ReactElement =>
@@ -193,6 +196,7 @@ const ScanBarCode = (): ReactElement =>
         return '';
       },
     },
+    defaultInput: JSON.stringify({ timeOutIntervalInSec: 30 }),
   });
 
 const ViewImagesWithUrls = (): React.ReactElement =>
@@ -218,6 +222,7 @@ const ViewImagesWithUrls = (): React.ReactElement =>
         return '';
       },
     },
+    defaultInput: '["one", "two", "three"]',
   });
 
 const HasMediaPermission = (): React.ReactElement =>

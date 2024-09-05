@@ -1,7 +1,7 @@
 # Microsoft Teams JavaScript client library
 
 [![Microsoft Teams Library JS CI](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/OfficeDev/microsoft-teams-library-js/actions/workflows/main.yml)
-[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/Taos%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
+[![Build Status](https://office.visualstudio.com/ISS/_apis/build/status/M365%20Platform/App%20SDK/OfficeDev.microsoft-teams-library-js)](https://office.visualstudio.com/ISS/_build/latest?definitionId=17483)
 
 Welcome to the Teams client library monorepo! For breaking changes, please refer to our [changelog](./packages/teams-js/CHANGELOG.md) in the `<root>/packages/teams-js` directory. This repository contains the core teams-js package as well as tools and applications for analyzing and testing.
 
@@ -20,7 +20,7 @@ The following guide references steps to build the entire project including Teams
 
 Please look through our [Contributing Guide](CONTRIBUTING.md) for important details on how to submit a pull request and contribute to this repository.
 
-NOTE: Make sure `pnpm@7.30.1` is installed as a global tool, by running `npm install -g pnpm@7.30.1`.
+NOTE: Make sure `pnpm@9.0.6` or greater is installed as a global tool, by running `npm install -g pnpm@9.0.6`.
 
 TIP: whenever building or testing the Teams client library, you can run `pnpm build` or `pnpm test` from the `packages/teams-js` directory.
 

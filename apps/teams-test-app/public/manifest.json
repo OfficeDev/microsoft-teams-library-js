@@ -1,10 +1,48 @@
 {
-  "short_name": "Teams Test App",
-  "name": "Teams Test App",
-  "icons": [
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "version": "1.0.0",
+  "manifestVersion": "1.16",
+  "id": "a79a2374-ec2a-486e-a3dc-b913fdb1f365",
+  "packageName": "com.package.name",
+  "name": { "short": "M365 Test App", "full": "M365 Test Application" },
+  "developer": {
+    "name": "M365",
+    "mpnId": "",
+    "websiteUrl": "https://<REPLACE WITH URL OF THE APP>",
+    "privacyUrl": "https://<REPLACE WITH URL OF THE APP>",
+    "termsOfUseUrl": "https://<REPLACE WITH URL OF THE APP>"
+  },
+  "description": {
+    "short": "App to test infrastructure",
+    "full": "App to test infrastructure"
+  },
+  "icons": { "outline": "outline.png", "color": "color.png" },
+  "accentColor": "#FFFFFF",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://<REPLACE WITH URL OF THE APP>",
+      "canUpdateConfiguration": true,
+      "scopes": ["groupChat", "team"],
+      "context": [
+        "channelTab",
+        "privateChatTab",
+        "meetingSidePanel",
+        "meetingStage",
+        "meetingDetailsTab",
+        "meetingChatTab"
+      ]
+    }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "staticTabs": [
+    {
+      "entityId": "test",
+      "name": "Test",
+      "contentUrl": "https://<REPLACE WITH URL OF THE APP>",
+      "websiteUrl": "https://<REPLACE WITH URL OF THE APP>",
+      "scopes": ["personal"]
+    },
+    { "entityId": "about", "scopes": ["personal"] }
+  ],
+  "validDomains": [],
+  "devicePermissions": ["openExternal", "midi", "notifications", "media", "geolocation"]
 }

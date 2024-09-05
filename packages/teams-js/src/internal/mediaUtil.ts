@@ -14,11 +14,11 @@ import { throwExceptionIfMobileApiIsNotSupported } from './internalAPIs';
  * @internal
  * Limited to Microsoft-internal use
  */
-export function createFile(assembleAttachment: media.AssembleAttachment[], mimeType: string): Blob {
+export function createFile(assembleAttachment: media.AssembleAttachment[], mimeType: string): Blob | null {
   if (assembleAttachment == null || mimeType == null || assembleAttachment.length <= 0) {
     return null;
   }
-  let file: Blob | undefined;
+  let file: Blob | null = null;
   let sequence = 1;
   assembleAttachment.sort((a, b) => (a.sequence > b.sequence ? 1 : -1));
   assembleAttachment.forEach((item) => {
@@ -42,7 +42,7 @@ export function createFile(assembleAttachment: media.AssembleAttachment[], mimeT
  * @internal
  * Limited to Microsoft-internal use
  */
-export function decodeAttachment(attachment: media.MediaChunk, mimeType: string): media.AssembleAttachment {
+export function decodeAttachment(attachment: media.MediaChunk, mimeType: string): media.AssembleAttachment | null {
   if (attachment == null || mimeType == null) {
     return null;
   }
@@ -188,12 +188,12 @@ export function validateViewImagesInput(uriList: media.ImageUri[]): boolean {
  *
  * @internal
  */
-export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): boolean {
+export function validateScanBarCodeInput(barCodeConfig?: media.BarCodeConfig): boolean {
   if (barCodeConfig) {
     if (
       barCodeConfig.timeOutIntervalInSec === null ||
-      barCodeConfig.timeOutIntervalInSec <= 0 ||
-      barCodeConfig.timeOutIntervalInSec > 60
+      (barCodeConfig.timeOutIntervalInSec != undefined && barCodeConfig.timeOutIntervalInSec <= 0) ||
+      (barCodeConfig.timeOutIntervalInSec != undefined && barCodeConfig.timeOutIntervalInSec > 60)
     ) {
       return false;
     }
@@ -207,7 +207,7 @@ export function validateScanBarCodeInput(barCodeConfig: media.BarCodeConfig): bo
  *
  * @internal
  */
-export function validatePeoplePickerInput(peoplePickerInputs: people.PeoplePickerInputs): boolean {
+export function validatePeoplePickerInput(peoplePickerInputs?: people.PeoplePickerInputs): boolean {
   if (peoplePickerInputs) {
     if (peoplePickerInputs.title) {
       if (typeof peoplePickerInputs.title !== 'string') {

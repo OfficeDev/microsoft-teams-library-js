@@ -124,7 +124,7 @@ describe('media', () => {
             size: 300,
           } as media.File,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -145,7 +145,7 @@ describe('media', () => {
         expect(message.args.length).toBe(0);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.PERMISSION_DENIED }],
@@ -158,7 +158,7 @@ describe('media', () => {
       it('should not allow hasPermission calls before initialization', () => {
         return expect(() => media.hasPermission()).toThrowError(new Error(errorLibraryNotInitialized));
       });
-  
+
       Object.values(FrameContexts).forEach((context) => {
         if (allowedContexts.some((allowedContext) => allowedContext === context)) {
           it(`media should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
@@ -182,49 +182,49 @@ describe('media', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
-  
+
           it('hasPermission call with successful result', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
-  
+
             const promise = media.hasPermission();
-  
+
             const message = utils.findMessageByFunc('permissions.has');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toEqual(DevicePermission.Media);
-  
+
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, true],
               },
             } as DOMMessageEvent);
-  
+
             await expect(promise).resolves.toBe(true);
           });
-  
+
           it('HasPermission rejects promise with Error when error received from host', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
-  
+
             const promise = media.hasPermission();
-  
+
             const message = utils.findMessageByFunc('permissions.has');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
-  
+
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
               },
             } as DOMMessageEvent);
-  
+
             await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
           });
         } else {
@@ -257,7 +257,7 @@ describe('media', () => {
               expect(e).toEqual(errorNotSupportedOnPlatform);
             }
           });
-  
+
           it(`requestPermission should throw error when permissions is not supported in runtime config. context: ${context}`, async () => {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
@@ -273,44 +273,44 @@ describe('media', () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
-  
+
             const promise = media.requestPermission();
-  
+
             const message = utils.findMessageByFunc('permissions.request');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
             expect(message.args[0]).toEqual(DevicePermission.Media);
-  
+
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [undefined, true],
               },
             } as DOMMessageEvent);
-  
+
             await expect(promise).resolves.toBe(true);
           });
-  
+
           it('requestPermission rejects promise with Error when error received from host', async () => {
             await utils.initializeWithContext(context);
             utils.setClientSupportedSDKVersion(minVersionForPermissionsAPIs);
             utils.setRuntimeConfig({ apiVersion: 2, supports: { permissions: {} } });
-  
+
             const promise = media.requestPermission();
-  
+
             const message = utils.findMessageByFunc('permissions.request');
             expect(message).not.toBeNull();
             expect(message.args.length).toBe(1);
-  
+
             const callbackId = message.id;
-            utils.respondToFramelessMessage({
+            await utils.respondToFramelessMessage({
               data: {
                 id: callbackId,
                 args: [{ errorCode: ErrorCode.INTERNAL_ERROR }],
               },
             } as DOMMessageEvent);
-  
+
             await expect(promise).rejects.toEqual({ errorCode: ErrorCode.INTERNAL_ERROR });
           });
         } else {
@@ -433,7 +433,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -473,7 +473,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -516,7 +516,7 @@ describe('media', () => {
             size: 300,
           } as media.Media,
         ];
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, filesArray],
@@ -548,14 +548,14 @@ describe('media', () => {
           maxMediaCount: 10,
         };
         media.selectMedia(mediaInputs, (mediaError: SdkError, mediaAttachments: media.Media[]) => {
-          expect(mediaAttachments).toBeFalsy();
+          expect(mediaAttachments).toHaveLength(0);
           expect(mediaError).toEqual({ errorCode: ErrorCode.SIZE_EXCEEDED });
         });
         const message = utils.findMessageByFunc('selectMedia');
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.SIZE_EXCEEDED }],
@@ -580,7 +580,7 @@ describe('media', () => {
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, undefined, 2],
@@ -609,7 +609,7 @@ describe('media', () => {
         expect(message).not.toBeNull();
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, undefined, 1],
@@ -635,7 +635,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined],
@@ -661,7 +661,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
         const callbackId = message.id;
 
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [err],
@@ -820,7 +820,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.FILE_NOT_FOUND }],
@@ -880,7 +880,7 @@ describe('media', () => {
 
         const callbackId = message.id;
         const response = 'decodedText';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, response],
@@ -906,7 +906,7 @@ describe('media', () => {
 
         const callbackId = message.id;
         const response = 'decodedText';
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [undefined, response],
@@ -927,7 +927,7 @@ describe('media', () => {
         expect(message.args.length).toBe(1);
 
         const callbackId = message.id;
-        utils.respondToFramelessMessage({
+        await utils.respondToFramelessMessage({
           data: {
             id: callbackId,
             args: [{ errorCode: ErrorCode.OPERATION_TIMED_OUT }],

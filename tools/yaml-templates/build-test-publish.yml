@@ -1,46 +1,46 @@
-# Specific to validating build/unit tests, creating PR comments on bundle analysis, and then publishing artifacts for release.
-# If this needs to be reused, the parts not specific to building and testing should be extracted.
-
 steps:
   - task: NodeTool@0
     displayName: 'Install Node.js'
     inputs:
-      versionSpec: '14.x'
+      versionSpec: '18.x'
 
-  - script: |
-      npm install -g pnpm@7.30.1
-      pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
+  - task: CmdLine@2
     displayName: 'Setup pnpm'
+    inputs:
+      script: |
+        npm install -g pnpm@9.0.6
+        pnpm config set store-dir $(Pipeline.Workspace)/.pnpm-store
 
-  - script: |
-      pnpm install
+  - task: CmdLine@2
     displayName: 'Install repo dependencies'
+    inputs:
+      script: |
+        pnpm install
 
-  - script: 'node enforceBeachball.js'
+  - task: CmdLine@2
     displayName: 'Check that changefile was created if needed'
-    condition: and(
-      eq(variables['Build.Reason'], 'PullRequest'),
-      not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')),
-      not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/'))
-      )
+    condition: and( eq(variables['Build.Reason'], 'PullRequest'), not(startsWith(variables['System.PullRequest.SourceBranch'], 'release/')), not(startsWith(variables['System.PullRequest.TargetBranch'], 'release/')) )
+    inputs:
+      script: 'node enforceBeachball.js'
 
-  # Determines what the next beta version will be. E.g 2.0.0-beta.x
-  - script: 'node prepBetaRelease.js'
+  - task: CmdLine@2
     displayName: 'node prepBetaRelease.js'
-    workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
-    condition: and(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      ne(variables['Build.Reason'], 'PullRequest')
-      )
+    condition: and( eq(variables['Build.SourceBranch'], 'refs/heads/main'), in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest') )
+    inputs:
+      script: 'node prepBetaRelease.js'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
 
-  - script: |
-      pnpm build-force-blazor
+  - task: CmdLine@2
     displayName: 'pnpm build'
+    inputs:
+      script: |
+        pnpm build-force-blazor
 
-  - script: |
-      pnpm test
+  - task: CmdLine@2
     displayName: 'pnpm test'
+    inputs:
+      script: |
+        pnpm test
 
   - task: PublishTestResults@2
     inputs:
@@ -50,50 +50,31 @@ steps:
       testRunTitle: 'Unit Tests'
     condition: succeededOrFailed()
 
-  - script: |
-      pnpm bundleAnalyze:collect
+  - task: CmdLine@2
     displayName: 'Run bundle analysis and collect'
+    inputs:
+      script: |
+        pnpm bundleAnalyze:collect
 
-  # Bundle analysis comparison : should trigger only by PR against main
-  # Adding comment for a commit that should queue the pipeline with a PR trigger
-  - bash: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
+  - task: Bash@3
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], 'main'))
+    condition: and( in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), eq(variables['Build.Reason'], 'PullRequest'), eq(variables['System.PullRequest.TargetBranch'], 'main'))
     name: bundleAnalysisTask
     displayName: 'Analyze bundles against main and output result'
-
-  # Temporarily disabled due to failures when posting comments to Github
-  # - task: GitHubComment@0
-  #   condition: and(
-  #     in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-  #     eq(variables['Build.Reason'], 'PullRequest'),
-  #     eq(variables['System.PullRequest.TargetBranch'], 'main'))
-  #   inputs:
-  #     gitHubConnection: '$(RepoGitHubConnection)'
-  #     repositoryName: '$(Build.Repository.Name)'
-  #     id: '$(System.PullRequest.PullRequestNumber)'
-  #     comment: '$(bundleAnalysisTask.bundleAnalysisComment)'
-  #   displayName: 'Post bundle analysis result as PR comment on GitHub'
-
-  - task: PublishBuildArtifacts@1
-    condition: and(
-      in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'),
-      eq(variables['Build.Reason'], 'PullRequest'),
-      eq(variables['System.PullRequest.TargetBranch'], 'main'))
     inputs:
-      PathtoPublish: './common/temp/bundleAnalysis'
-      ArtifactName: '$(bundleArtifactName)'
-    displayName: 'Publish bundle analysis'
+      targetType: inline
+      script: 'node --max-old-space-size=4096 tools/cli/compareBundleAnalysis.js --commitId=$(System.PullRequest.SourceCommitId) --orgUrl=$(System.CollectionUri) --projectName=$(System.TeamProject) --buildId=$(System.DefinitionId) --bundleArtifactName=$(bundleArtifactName) --baseBranchName=$(System.PullRequest.TargetBranch)'
 
-  - powershell: |
-      $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
-      Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+  - task: PowerShell@2
     name: package
     displayName: 'Set package.version Variable'
+    inputs:
+      targetType: inline
+      script: |
+        $npmVer=$(node -p "require('./packages/teams-js/package.json').version")
+        Write-Host "##vso[task.setvariable variable=version;isOutput=true]$npmVer"
+
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'apps/teams-test-app/build'
@@ -110,18 +91,20 @@ steps:
       replaceExistingArchive: true
     displayName: 'Zip Test app artifacts'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\teams-test-app\$(Build.BuildId).zip'
-      ArtifactName: 'teams-test-app'
-    displayName: 'Publish Test app artifacts'
-
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**\?(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
+
+  - task: CopyFiles@2
+    inputs:
+      Contents: |
+        packages\teams-js\src\artifactsForCDN\validDomains.json
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\validDomains\json'
+      flattenFolders: true
+    displayName: 'Copy validDomains for CDN'
 
   - task: CopyFiles@2
     inputs:
@@ -141,18 +124,6 @@ steps:
       flattenFolders: true
     displayName: 'Copy JS Content for NPM'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\CDNFeed'
-      ArtifactName: 'CDNFeed'
-    displayName: 'Publish CDN feed to build Artifacts'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\NPMFeed'
-      ArtifactName: 'NPMFeed'
-    displayName: 'Publish NPM feed to Build Artifacts'
-
   - task: CopyFiles@2
     inputs:
       Contents: |
@@ -160,22 +131,3 @@ steps:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
       flattenFolders: true
     displayName: 'Copy Power Shell scripts to scripts'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
-      ArtifactName: 'scripts'
-    displayName: 'Publish Powershell Scripts to Build Artifacts'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'Manifest Generation Task'
-    inputs:
-      BuildDropPath: $(Build.ArtifactStagingDirectory)
-      BuildComponentPath: $(Build.SourcesDirectory)
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList node_modules'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\_manifest'
-      ArtifactName: 'SBOM'
-    displayName: 'Publish SBOM to Build Artifacts'

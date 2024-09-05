@@ -65,6 +65,7 @@ const NavigateCrossDomain = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: '"https://localhost:4000"',
   });
 
 const NavigateToApp = (): React.ReactElement =>
@@ -82,6 +83,13 @@ const NavigateToApp = (): React.ReactElement =>
         return 'Completed';
       },
     },
+    defaultInput: JSON.stringify({
+      appId: 'appIdA',
+      pageId: 'pageIdB',
+      webUrl: 'webUrlC',
+      subPageId: 'subPageIdD',
+      channelId: 'channelIdE',
+    }),
   });
 
 const ShareDeepLink = (): ReactElement =>
@@ -121,6 +129,14 @@ const ShareDeepLink = (): ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      subEntityId: 'subEntityIdA',
+      subEntityLabel: 'subEntityLabelB',
+      subEntityWebUrl: 'subEntityWebUrlC',
+      subPageId: 'subPageIdD',
+      subPageLabel: 'subPageLabelE',
+      subPageWebUrl: 'subPageWebUrlF',
+    }),
   });
 
 const ReturnFocus = (): React.ReactElement =>
@@ -183,6 +199,10 @@ const SetCurrentFrame = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      websiteUrl: 'https://www.bing.com',
+      contentUrl: 'https://www.bing.com',
+    }),
   });
 
 const RegisterFullScreenChangeHandler = (): React.ReactElement =>

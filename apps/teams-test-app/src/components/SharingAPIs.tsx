@@ -46,6 +46,16 @@ const ShareWebContent = (): React.ReactElement =>
         },
       },
     },
+    defaultInput: JSON.stringify({
+      content: [
+        {
+          type: 'URL',
+          url: 'https://www.bing.com',
+          message: 'Bing message',
+          preview: false,
+        },
+      ],
+    }),
   });
 
 const SharingAPIs = (): ReactElement => (

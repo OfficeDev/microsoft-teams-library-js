@@ -42,12 +42,13 @@
     {
       "title": "getCurrentLocation API Call - Failure",
       "type": "callResponse",
+      "version": ">2.16.0",
       "boxSelector": "#box_getCurrentLocation",
       "requestPermissionBeforeThisCall": {
         "boxSelector": "#box_requestGeoLocationPermission",
         "consentPermission": false
       },
-      "expectedTestAppValue": "Error: [object Object]"
+      "expectedTestAppValue": "Error: {\"errorCode\":1000,\"message\":\"user has explicitly not consented for device permission\"}"
     }
   ]
 }

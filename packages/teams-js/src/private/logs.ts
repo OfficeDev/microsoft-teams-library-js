@@ -1,6 +1,8 @@
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -11,7 +13,11 @@ import { runtime } from '../public/runtime';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
+const logsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
+
 export namespace logs {
   /**
    * @hidden
@@ -25,16 +31,20 @@ export namespace logs {
    */
   export function registerGetLogHandler(handler: () => string): void {
     // allow for registration cleanup even when not finished initializing
-    handler && ensureInitialized(runtime);
-    if (handler && !isSupported()) {
+    !isNullOrUndefined(handler) && ensureInitialized(runtime);
+    if (!isNullOrUndefined(handler) && !isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
 
     if (handler) {
-      registerHandler('log.request', () => {
-        const log: string = handler();
-        sendMessageToParent('log.receive', [log]);
-      });
+      registerHandler(
+        getApiVersionTag(logsTelemetryVersionNumber, ApiName.Logs_RegisterLogRequestHandler),
+        'log.request',
+        () => {
+          const log: string = handler();
+          sendMessageToParent(getApiVersionTag(logsTelemetryVersionNumber, ApiName.Logs_Receive), 'log.receive', [log]);
+        },
+      );
     } else {
       removeHandler('log.request');
     }

@@ -11,13 +11,18 @@
       "title": "openStageView API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_stageViewOpen",
+      "hostSdkVersion": {
+        "web": "<4.0.1"
+      },
       "inputValue": {
         "appId": "appId",
         "contentUrl": "contentUrl",
         "threadId": "threadId",
         "title": "title",
         "websiteUrl": "websiteUrl",
-        "entityId": "entityId"
+        "entityId": "entityId",
+        "openMode": "modal",
+        "messageId": "messageId"
       },
       "expectedAlertValue": "stageView.open called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "opened",

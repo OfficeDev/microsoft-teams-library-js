@@ -1,4 +1,4 @@
-import { MessageResponse } from '../../src/internal/interfaces';
+import { MessageRequest, MessageResponse } from '../../src/internal/messageObjects';
 import { UserSettingTypes, ViewerActionTypes } from '../../src/private/interfaces';
 import {
   openFilePreview,
@@ -10,7 +10,7 @@ import {
 import { app } from '../../src/public/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
-import { MessageRequest, Utils } from '../utils';
+import { Utils } from '../utils';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with
@@ -71,7 +71,7 @@ describe('AppSDK-privateAPIs', () => {
       expect(getContextMessage).not.toBeNull();
 
       callbackCalled = false;
-      utils.processMessage({
+      await utils.processMessage({
         origin: unSupportedDomain,
         source: utils.mockWindow.parent,
         data: {
@@ -97,7 +97,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://int.teams.microsoft.com',
     'https://teams.live.com',
     'https://devspaces.skype.com',
-    'https://ssauth.skype.com',
     'https://local.teams.live.com',
     'https://local.teams.live.com:8080',
     'https://local.teams.office.com',
@@ -108,7 +107,6 @@ describe('AppSDK-privateAPIs', () => {
     'https://outlook.live.com',
     'https://outlook.office365.com',
     'https://outlook-sdf.office365.com',
-    'https://retailservices.teams.microsoft.com',
     'https://test.www.office.com',
     'https://www.office.com',
     'https://word.office.com',
@@ -119,6 +117,10 @@ describe('AppSDK-privateAPIs', () => {
     'https://www.microsoft365.com',
     'https://tasks.office.com',
     'https://www.example.com',
+    'https://teams.cloud.microsoft',
+    'https://outlook.cloud.microsoft',
+    'https://m365.cloud.microsoft',
+    'https://anythingbecauseitsawildcard.cloud.microsoft',
   ];
 
   supportedDomains.forEach((supportedDomain) => {
@@ -202,7 +204,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.findMessageByFunc('getContext')).toBeNull();
 
     // init completes
-    utils.respondToMessage(initMessage, 'content');
+    await utils.respondToMessage(initMessage, 'content');
     await initPromise;
 
     // Now the getContext call should have been dequeued
@@ -257,6 +259,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId1',
       },
+      dialogParameters: {},
     };
 
     const contextBridge2: Context = {
@@ -286,6 +289,7 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId2',
       },
+      dialogParameters: {},
     };
 
     const contextBridge3: Context = {
@@ -315,12 +319,13 @@ describe('AppSDK-privateAPIs', () => {
       channel: {
         id: 'someChannelId3',
       },
+      dialogParameters: {},
     };
 
     // respond in the wrong order
-    utils.respondToMessage(getContextMessage3, contextBridge3);
-    utils.respondToMessage(getContextMessage1, contextBridge1);
-    utils.respondToMessage(getContextMessage2, contextBridge2);
+    await utils.respondToMessage(getContextMessage3, contextBridge3);
+    await utils.respondToMessage(getContextMessage1, contextBridge1);
+    await utils.respondToMessage(getContextMessage2, contextBridge2);
 
     // The callbacks were associated with the correct utils.messages
     return Promise.all([
@@ -359,7 +364,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Get many responses to the same message
     for (let i = 0; i < 100; i++) {
-      utils.respondToMessage(getContextMessage, expectedContext);
+      await utils.respondToMessage(getContextMessage, expectedContext);
     }
     await contextPromise;
 
@@ -377,17 +382,17 @@ describe('AppSDK-privateAPIs', () => {
       changedUserSettingValue = updatedValue;
     });
 
-    utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
+    await utils.sendMessage('userSettingsChange', UserSettingTypes.fileOpenPreference, 'value');
 
     expect(changedUserSettingType).toBe(UserSettingTypes.fileOpenPreference);
     expect(changedUserSettingValue).toBe('value');
   });
 
-  it('should treat messages to frameless windows as coming from the child', () => {
+  it('should treat messages to frameless windows as coming from the child', async () => {
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -401,11 +406,11 @@ describe('AppSDK-privateAPIs', () => {
     expect(utils.childMessages.length).toBe(1);
   });
 
-  it('should properly pass partial responses to nested child frames ', () => {
+  it('should properly pass partial responses to nested child frames ', async () => {
     utils.initializeAsFrameless(['https://www.example.com']);
 
     // Simulate recieving a child message as a frameless window
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://www.example.com',
       source: utils.childWindow,
       data: {
@@ -417,7 +422,7 @@ describe('AppSDK-privateAPIs', () => {
 
     // Send a partial response back
     const parentMessage = utils.findMessageByFunc('testPartialFunc1');
-    utils.respondToNativeMessage(parentMessage, true, {});
+    await utils.respondToNativeMessage(parentMessage, true, {});
 
     // The child window should properly receive the partial response plus
     // the original event
@@ -427,7 +432,7 @@ describe('AppSDK-privateAPIs', () => {
     expect(secondChildMessage.isPartialResponse).toBeTruthy();
 
     // Pass the final response (non partial)
-    utils.respondToNativeMessage(parentMessage, false, {});
+    await utils.respondToNativeMessage(parentMessage, false, {});
 
     // The child window should properly receive the non-partial response
     expect(utils.childMessages.length).toBe(3);
@@ -437,7 +442,7 @@ describe('AppSDK-privateAPIs', () => {
 
   it('Proxy messages to child window', async () => {
     await utils.initializeWithContext('content', null, ['https://teams.microsoft.com']);
-    utils.processMessage({
+    await utils.processMessage({
       origin: 'https://outlook.office.com',
       source: utils.childWindow,
       data: {
@@ -472,7 +477,7 @@ describe('AppSDK-privateAPIs', () => {
 
       //trigger child window setup
       //trigger processing of message received from child
-      utils.processMessage({
+      await utils.processMessage({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
@@ -504,7 +509,7 @@ describe('AppSDK-privateAPIs', () => {
         return [];
       });
 
-      utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
+      await utils.sendMessage(customActionName, 'arg1', 123, 4.5, true);
       expect(callbackCalled).toBe(true);
       expect(callbackArgs).toEqual(['arg1', 123, 4.5, true]);
     });
@@ -522,7 +527,7 @@ describe('AppSDK-privateAPIs', () => {
       });
 
       //trigger processing of message received from child
-      utils.processMessage({
+      await utils.processMessage({
         origin: 'https://tasks.office.com',
         source: utils.childWindow,
         data: {
@@ -549,7 +554,7 @@ describe('AppSDK-privateAPIs', () => {
       });
 
       //trigger processing of message received from child
-      utils.processMessage({
+      await utils.processMessage({
         origin: 'https://tasks.office.net',
         source: utils.childWindow,
         data: {
@@ -581,6 +586,7 @@ describe('AppSDK-privateAPIs', () => {
       viewerAction: ViewerActionTypes.view,
       fileOpenPreference: FileOpenPreference.Web,
       conversationId: 'someConversationId',
+      sizeInBytes: 1024,
     };
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContexts) => allowedContexts === context)) {
@@ -591,7 +597,7 @@ describe('AppSDK-privateAPIs', () => {
 
           const message = utils.findMessageByFunc('openFilePreview');
           expect(message).not.toBeNull();
-          expect(message.args.length).toBe(14);
+          expect(message.args.length).toBe(15);
           expect(message.args[0]).toBe('someEntityId');
           expect(message.args[1]).toBe('someTitle');
           expect(message.args[2]).toBe('someDescription');
@@ -606,6 +612,7 @@ describe('AppSDK-privateAPIs', () => {
           expect(message.args[11]).toBe('view');
           expect(message.args[12]).toBe(FileOpenPreference.Web);
           expect(message.args[13]).toBe('someConversationId');
+          expect(message.args[14]).toBe(1024);
         });
       } else {
         it(`remoteCamera.registerOnCapableParticipantsChangeHandler should not allow calls when initialized with ${context} context`, async () => {

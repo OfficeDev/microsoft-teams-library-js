@@ -33,6 +33,7 @@ const DeprecatedOpenChat = (): React.ReactElement =>
         return 'chat.openChat()' + noHostSdkMsg;
       },
     },
+    defaultInput: '{"user": "user1"}',
   });
 
 const OpenChat = (): React.ReactElement =>
@@ -41,8 +42,8 @@ const OpenChat = (): React.ReactElement =>
     title: 'Open Chat',
     onClick: {
       validateInput: (input) => {
-        if (!input.user || !input.message) {
-          throw new Error('Both user and message are required on the input');
+        if (!input.user) {
+          throw new Error('User is required on the input');
         }
       },
       submit: async (input) => {
@@ -50,6 +51,10 @@ const OpenChat = (): React.ReactElement =>
         return 'chat.openChat() was called';
       },
     },
+    defaultInput: JSON.stringify({
+      user: 'testUpn',
+      message: 'testMessage',
+    }),
   });
 
 const DeprecatedOpenGroupChat = (): React.ReactElement =>
@@ -67,6 +72,7 @@ const DeprecatedOpenGroupChat = (): React.ReactElement =>
         return 'chat.openChat()' + noHostSdkMsg;
       },
     },
+    defaultInput: '{"users": ["user1", "user2"]}',
   });
 
 const OpenGroupChat = (): React.ReactElement =>
@@ -84,6 +90,10 @@ const OpenGroupChat = (): React.ReactElement =>
         return 'chat.openGroupChat() was called';
       },
     },
+    defaultInput: JSON.stringify({
+      users: ['testUpn1', 'testUpn2'],
+      message: 'testMessage',
+    }),
   });
 
 const DeprecatedOpenConversation = (): React.ReactElement =>
@@ -126,6 +136,7 @@ const DeprecatedOpenConversation = (): React.ReactElement =>
         return 'conversations.openConversation()' + noHostSdkMsg;
       },
     },
+    defaultInput: '{"entityId": "entityId1", "title": "title1", "subEntityId": "subEntityId1"}',
   });
 
 const OpenConversation = (): React.ReactElement =>
@@ -168,6 +179,7 @@ const OpenConversation = (): React.ReactElement =>
         return 'conversations.openConversation() called';
       },
     },
+    defaultInput: '{"entityId": "entityId1", "title": "title1", "subEntityId": "subEntityId1"}',
   });
 
 const CloseConversation = (): React.ReactElement =>

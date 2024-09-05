@@ -4,6 +4,10 @@ import { ApiWithTextInput } from './utils';
 import { ModuleWrapper } from './utils/ModuleWrapper';
 import { NaaMock } from './utils/naaMock';
 
+import { nestedAppAuth } from '@microsoft/teams-js';
+
+import { ApiWithoutInput } from './utils';
+
 const NaaRequest = (): ReactElement =>
   ApiWithTextInput<NestedAppAuthRequest>({
     name: 'nestedAppAuthMock',
@@ -40,15 +44,25 @@ const NaaRequest = (): ReactElement =>
     },
   });
 
-const NestedAppAuthAPIs = (): ReactElement => (
-  <ModuleWrapper title="NAA">
-    <NaaRequest />
-  </ModuleWrapper>
-);
-
 type NestedAppAuthRequest = {
   requestId: string;
   body?: string;
+};
+
+const NestedAppAuthAPIs = (): ReactElement => {
+  const CheckIsNAAChannelRecommended = (): ReactElement =>
+    ApiWithoutInput({
+      name: 'checkIsNAAChannelRecommended',
+      title: 'Check NAA Channel Recommended',
+      onClick: async () => `NAA channel ${nestedAppAuth.isNAAChannelRecommended() ? 'is' : 'is not'} recommended`,
+    });
+
+  return (
+    <ModuleWrapper title="NestedAppAuth">
+      <CheckIsNAAChannelRecommended />
+      <NaaRequest />
+    </ModuleWrapper>
+  );
 };
 
 export default NestedAppAuthAPIs;
