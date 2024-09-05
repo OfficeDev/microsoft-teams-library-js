@@ -50,6 +50,9 @@ const appLogger = getLogger('app');
 appLogger.enabled = true;
 
 export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
+  if (!appLogger.enabled) {
+    appLogger.enabled = true;
+  }
   if (!inServerSideRenderingEnvironment()) {
     return runWithTimeout(
       () => initializeHelper(apiVersionTag, validMessageOrigins),
