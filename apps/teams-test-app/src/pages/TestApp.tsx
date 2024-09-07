@@ -71,7 +71,9 @@ export const TestApp: React.FC = () => {
 
   return (
     <>
-      <button onClick={() => window.location.reload()}>Reload This App</button>
+      <button id="button_reload" onClick={() => window.location.reload()}>
+        Reload This App
+      </button>
       <div className="App-container">
         <AppAPIs />
         <AppInitializationAPIs />
