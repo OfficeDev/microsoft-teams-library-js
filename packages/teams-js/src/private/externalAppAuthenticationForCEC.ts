@@ -95,6 +95,7 @@ export namespace externalAppAuthenticationForCEC {
 
   export function authenticateAndResendRequest(
     appId: string,
+    conversationId: string,
     authenticateParameters: AuthenticatePopUpParameters,
     originalRequestInfo: IActionExecuteInvokeRequest,
   ): Promise<IActionExecuteResponse> {
@@ -112,9 +113,10 @@ export namespace externalAppAuthenticationForCEC {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
       ),
-      'externalAppAuthentication.authenticateAndResendRequest',
+      'externalAppAuthenticationForCEC.authenticateAndResendRequest',
       [
         appId,
+        conversationId,
         originalRequestInfo,
         authenticateParameters.url.href,
         authenticateParameters.width,
@@ -132,6 +134,7 @@ export namespace externalAppAuthenticationForCEC {
   }
   export function authenticateWithSSOAndResendRequest(
     appId: string,
+    conversationId: string,
     authTokenRequest: AuthTokenRequestParameters,
     originalRequestInfo: IActionExecuteInvokeRequest,
   ): Promise<IActionExecuteResponse> {
@@ -149,8 +152,8 @@ export namespace externalAppAuthenticationForCEC {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
-      'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+      'externalAppAuthenticationForCEC.authenticateWithSSOAndResendRequest',
+      [appId, conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
         return response as IActionExecuteResponse;
