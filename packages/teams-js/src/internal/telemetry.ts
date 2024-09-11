@@ -113,6 +113,8 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins = 'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCardActionsForCEC_ProcessActionOpenUrl = 'externalAppCardActions.cec.processActionOpenUrl',
+  ExternalAppCardActionsForCEC_ProcessActionSubmit = 'externalAppCardActions.cec.processActionSubmit',
   ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',

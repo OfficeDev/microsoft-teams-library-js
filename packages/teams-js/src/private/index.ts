@@ -22,6 +22,7 @@ export { conversations } from './conversations';
 export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppCardActions } from './externalAppCardActions';
+export { externalAppCardActionsForCEC } from './externalAppCardActionsForCEC';
 export { externalAppCommands } from './externalAppCommands';
 export { files } from './files';
 export { meetingRoom } from './meetingRoom';
