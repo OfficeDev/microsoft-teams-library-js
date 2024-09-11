@@ -2,15 +2,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
 
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, HostToAppMessageDelayTelemetry } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { ISerializable, isSerializable } from '../public/serializable.interface';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
-import { callHandler, handleHostToAppPerformanceMetrics } from './handlers';
-import { CallbackInformation, DOMMessageEvent, ExtendedWindow } from './interfaces';
+import { callHandler } from './handlers';
+import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
   deserializeMessageRequest,
   deserializeMessageResponse,
@@ -61,7 +61,6 @@ class CommunicationPrivate {
   public static topMessageQueue: MessageRequest[] = [];
   public static nextMessageId = 0;
   public static callbacks: Map<MessageUUID, Function> = new Map();
-  public static callbackInformation: Map<MessageUUID, CallbackInformation> = new Map();
   public static promiseCallbacks: Map<MessageUUID, (value?: unknown) => void> = new Map();
   public static portCallbacks: Map<MessageUUID, (port?: MessagePort, args?: unknown[]) => void> = new Map();
   public static messageListener: Function;
@@ -161,7 +160,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.promiseCallbacks.clear();
   CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
-  CommunicationPrivate.callbackInformation.clear();
+  HostToAppMessageDelayTelemetry.clearMessages();
 }
 
 /**
@@ -522,7 +521,7 @@ function sendMessageToParentHelper(
   const logger = sendMessageToParentHelperLogger;
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
-  CommunicationPrivate.callbackInformation.set(request.uuid, {
+  HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
     name: actionName,
     calledAt: request.timestamp,
   });
@@ -812,19 +811,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
       logger('Received a response from parent for message %s', callbackId.toString());
-
-      // Send performance metrics information of message delay
-      const callbackInformation = CommunicationPrivate.callbackInformation.get(callbackId);
-      if (callbackInformation && message.timestamp) {
-        handleHostToAppPerformanceMetrics({
-          actionName: callbackInformation.name,
-          messageDelay: getCurrentTimestamp() - message.timestamp,
-          messageWasCreatedAt: callbackInformation.calledAt,
-        });
-      } else {
-        logger('Unable to send performance metrics for callback %i with arguments %o', callbackId, message.args);
-      }
-
+      HostToAppMessageDelayTelemetry.telemetryHostToAppPerformanceMetrics(callbackId, message, logger);
       if (callback) {
         logger(
           'Invoking the registered callback for message %s with arguments %o',

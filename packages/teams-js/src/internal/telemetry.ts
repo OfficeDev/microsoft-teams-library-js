@@ -1,5 +1,10 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { handleHostToAppPerformanceMetrics } from './handlers';
+import { CallbackInformation } from './interfaces';
+import { MessageResponse } from './messageObjects';
+import { getCurrentTimestamp } from './utils';
+
 import { UUID } from './uuidObject';
 
 // Each teamsjs instance gets a unique identifier that will be prepended to every log statement
@@ -60,6 +65,60 @@ export const enum ApiVersionNumber {
   V_1 = 'v1',
   V_2 = 'v2',
   V_3 = 'v3',
+}
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export class HostToAppMessageDelayTelemetry {
+  private static callbackInformation: Map<UUID, CallbackInformation> = new Map();
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * Store information about a particular message.
+   * @param messageUUID The message id for the request.
+   * @param callbackInformation The information of the callback.
+   */
+  public static storeCallbackInformation(messageUUID: UUID, callbackInformation: CallbackInformation): void {
+    HostToAppMessageDelayTelemetry.callbackInformation.set(messageUUID, callbackInformation);
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  public static clearMessages(): void {
+    HostToAppMessageDelayTelemetry.callbackInformation.clear();
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * Executes telemetry actions related to host to app performance metrics.
+   * @param callbackId The message id for the request.
+   * @param message The response from the host.
+   * @param logger A logger for logging any possible error.
+   */
+  public static telemetryHostToAppPerformanceMetrics(
+    callbackID: UUID,
+    message: MessageResponse,
+    logger: debug.Debugger,
+  ): void {
+    const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
+    if (callbackInformation && message.timestamp) {
+      handleHostToAppPerformanceMetrics({
+        actionName: callbackInformation.name,
+        messageDelay: getCurrentTimestamp() - message.timestamp,
+        messageWasCreatedAt: callbackInformation.calledAt,
+      });
+    } else {
+      logger('Unable to send performance metrics for callback %i with arguments %o', callbackID, message.args);
+    }
+  }
 }
 
 export const enum ApiName {
