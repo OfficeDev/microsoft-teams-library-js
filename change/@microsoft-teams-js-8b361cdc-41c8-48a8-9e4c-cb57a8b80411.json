@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added `edgeapi.svc.cloud.microsoft.com` to valid domains list",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "patch"
+}
