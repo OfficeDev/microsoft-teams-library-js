@@ -1,4 +1,4 @@
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 
@@ -15,13 +15,14 @@ export default {
       file: 'dist/bundle.min.js',
       format: 'es',
       plugins: [terser()],
+      sourcemap: true,
     },
   ],
   plugins: [
-    typescript(),
-    resolve({
-      extension: ['.js', '.ts', '.d.ts'],
+    nodeResolve({
+      extension: ['.js', '.ts', '.d.ts', '.json'],
     }),
+    typescript(),
   ],
   treeshake: true,
 };

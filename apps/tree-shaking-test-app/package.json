@@ -11,9 +11,10 @@
     "build-webpack": "webpack --json > stats.json",
     "clean": "rimraf ./dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@microsoft/teams-js": "workspace:*"
+  },
   "devDependencies": {
-    "@microsoft/teams-js": "workspace:*",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@rollup/plugin-terser": "0.4.4",

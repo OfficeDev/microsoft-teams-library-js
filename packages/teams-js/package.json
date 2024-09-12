@@ -8,12 +8,14 @@
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
-  "main": "./dist/packages/teams-js/src/index.js",
+  "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/packages/teams-js/dts/index.d.ts",
-  "module": "./dist/packages/teamsjs/src/index.js",
+  "module": "./dist/packages/teams-js/src/index.js",
   "type": "module",
   "scripts": {
-    "build": "pnpm lint && webpack && pnpm docs:validate",
+    "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate",
+    "build-rollup": "pnpm clean && rollup -c",
+    "build-webpack": "webpack",
     "clean": "rimraf ./dist",
     "docs": "pnpm typedoc",
     "docs:validate": "pnpm typedoc --emit none",

@@ -1,6 +1,7 @@
 import { barCode } from 'testlibraryfortreeshaking';
 //import { PrintTestMessage } from 'testlibraryfortreeshaking/app';
 import { geoLocation } from '@microsoft/teams-js';
+//import { app } from '@microsoft/teams-js';
 
 //import { barCode } from '@microsoft/teams-js';
 
@@ -15,5 +16,6 @@ barCode.hasPermission();
 //barCode.scanBarCode({});
 //barCode.hasPermission();
 
+//app.initialize();
 geoLocation.requestPermission();
 geoLocation.map.isSupported();

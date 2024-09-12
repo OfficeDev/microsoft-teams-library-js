@@ -20,7 +20,7 @@ export default [
     input: './src/index.ts',
     output: {
       dir: 'dist/',
-      name: 'MicrosoftTeams.min.js',
+      name: '@microsoft/teams-js',
       format: 'es',
       preserveModules: true,
       entryFileNames: '[name].js',
@@ -36,7 +36,7 @@ export default [
     preserveEntrySignatures: 'strict',
     plugins: [
       resolve({
-        extension: ['.js', '.ts'],
+        extension: ['.js', '.ts', '.d.ts', '.json'],
         preferBuiltins: true,
         customResolveOptions: {
           moduleDirectories: ['node_modules'],
@@ -76,41 +76,41 @@ export default [
       },
     ],
   },
-  {
-    input: './src/index.ts',
-    output: {
-      dir: 'dist/',
-      name: 'MicrosoftTeams',
-      format: 'umd',
-      preserveModules: false,
-      entryFileNames: 'MicrosoftTeams.umd.min.js',
-      sourcemap: false,
-      plugins: [terser()],
-      globals: {
-        buffer: 'Buffer',
-        tty: 'tty',
-        util: 'util',
-        os: 'os',
-      },
-    },
-    plugins: [
-      resolve({
-        extension: ['.js', '.ts'],
-        preferBuiltins: true,
-        customResolveOptions: {
-          moduleDirectories: ['node_modules'],
-        },
-      }),
-      replace({
-        preventAssignment: true,
-        'process.env.NODE_ENV': JSON.stringify('production'),
-        PACKAGE_VERSION: JSON.stringify(version.version),
-      }),
-      typescript(),
-      json(),
-      commonjs(),
-      sri(),
-      nodePolyfills(),
-    ],
-  },
+  //{
+  //  input: './src/index.ts',
+  //  output: {
+  //    dir: 'dist/',
+  //    name: 'MicrosoftTeams',
+  //    format: 'umd',
+  //    preserveModules: false,
+  //    entryFileNames: 'MicrosoftTeams.umd.min.js',
+  //    sourcemap: false,
+  //    plugins: [terser()],
+  //    globals: {
+  //      buffer: 'Buffer',
+  //      tty: 'tty',
+  //      util: 'util',
+  //      os: 'os',
+  //    },
+  //  },
+  //  plugins: [
+  //    resolve({
+  //      extension: ['.js', '.ts'],
+  //      preferBuiltins: true,
+  //      customResolveOptions: {
+  //        moduleDirectories: ['node_modules'],
+  //      },
+  //    }),
+  //    replace({
+  //      preventAssignment: true,
+  //      'process.env.NODE_ENV': JSON.stringify('production'),
+  //      PACKAGE_VERSION: JSON.stringify(version.version),
+  //    }),
+  //    typescript(),
+  //    json(),
+  //    commonjs(),
+  //    sri(),
+  //    nodePolyfills(),
+  //  ],
+  //},
 ];
