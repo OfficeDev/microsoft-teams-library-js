@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added APIs for externalAppCardActionForCEC capability.",
+  "packageName": "@microsoft/teams-js",
+  "email": "maggiegong@microsoft.com",
+  "dependentChangeType": "patch"
+}

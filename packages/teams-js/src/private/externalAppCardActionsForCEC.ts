@@ -4,49 +4,41 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { validateId } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { externalAppCardActions } from './externalAppCardActions';
+import { ActionOpenUrlError, ActionOpenUrlType, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
 
 /**
  * Updated to constants file: v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
 export namespace externalAppCardActionsForCEC {
-  export function processActionOpenUrl(
-    appId: string,
-    conversationId: string,
-    url: URL,
-  ): Promise<externalAppCardActions.ActionOpenUrlType> {
+  export function processActionOpenUrl(appId: string, conversationId: string, url: URL): Promise<ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
-    return sendMessageToParentAsync<
-      [externalAppCardActions.ActionOpenUrlError, externalAppCardActions.ActionOpenUrlType]
-    >(
+    validateId(conversationId, new Error('conversation id is not valid.'));
+    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
-        ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
+        ApiName.ExternalAppCardActionsForCEC_ProcessActionOpenUrl,
       ),
-      'externalAppCardActions.cec.processActionOpenUrl',
+      'externalAppCardActionsForCEC.processActionOpenUrl',
       [appId, url.href, conversationId],
-    ).then(
-      ([error, response]: [externalAppCardActions.ActionOpenUrlError, externalAppCardActions.ActionOpenUrlType]) => {
-        if (error) {
-          throw error;
-        } else {
-          return response;
-        }
-      },
-    );
+    ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
+      if (error) {
+        throw error;
+      } else {
+        return response;
+      }
+    });
   }
 
   export function processActionSubmit(
     appId: string,
     conversationId: string,
-    actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit, // alternatively, we can move IAdaptiveCardActionSubmit to interface
+    actionSubmitPayload: IAdaptiveCardActionSubmit,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -54,31 +46,21 @@ export namespace externalAppCardActionsForCEC {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
-
-    return sendMessageToParentAsync<[boolean, externalAppCardActions.ActionSubmitError]>(
+    validateId(conversationId, new Error('conversation id is not valid.'));
+    return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
-        ApiName.ExternalAppCardActions_ProcessActionSubmit,
+        ApiName.ExternalAppCardActionsForCEC_ProcessActionSubmit,
       ),
-      'externalAppCardActions.cec.processActionSubmit',
+      'externalAppCardActionsForCEC.processActionSubmit',
       [appId, conversationId, actionSubmitPayload],
-    ).then(([wasSuccessful, error]: [boolean, externalAppCardActions.ActionSubmitError]) => {
+    ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
       }
     });
   }
 
-  /**
-   * @hidden
-   * Checks if the externalAppCardActions capability is supported by the host
-   * @returns boolean to represent whether externalAppCardActions capability is supported
-   *
-   * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.externalAppCardActionsForCEC ? true : false;
   }

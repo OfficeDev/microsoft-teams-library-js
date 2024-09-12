@@ -1,4 +1,5 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
+import { ExternalAppErrorCode } from './constants';
 
 /**
  * @hidden
@@ -270,4 +271,34 @@ export interface UserJoinedTeamsInformation {
    * Limited to Microsoft-internal use
    */
   userJoinedTeams: TeamInformation[];
+}
+
+// externalAppCardActionsInterfaces.ts
+
+export enum ActionOpenUrlType {
+  DeepLinkDialog = 'DeepLinkDialog',
+  DeepLinkOther = 'DeepLinkOther',
+  DeepLinkStageView = 'DeepLinkStageView',
+  GenericUrl = 'GenericUrl',
+}
+
+export interface ActionOpenUrlError {
+  errorCode: ActionOpenUrlErrorCode;
+  message?: string;
+}
+
+export enum ActionOpenUrlErrorCode {
+  INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
+  INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
+  NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
+}
+
+export interface IAdaptiveCardActionSubmit {
+  id: string;
+  data: string | Record<string, unknown>;
+}
+
+export interface ActionSubmitError {
+  errorCode: ExternalAppErrorCode;
+  message?: string;
 }
