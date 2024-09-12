@@ -97,6 +97,14 @@ export class HostToAppMessageDelayTelemetry {
   /**
    * @internal
    * Limited to Microsoft-internal use
+   */
+  public static deleteMessageInformation(callbackId: MessageUUID): void {
+    HostToAppMessageDelayTelemetry.callbackInformation.delete(callbackId);
+  }
+
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
    *
    * Executes telemetry actions related to host to app performance metrics.
    * @param callbackId The message id for the request.
@@ -115,6 +123,7 @@ export class HostToAppMessageDelayTelemetry {
         messageDelay: getCurrentTimestamp() - message.timestamp,
         messageWasCreatedAt: callbackInformation.calledAt,
       });
+      HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
     } else {
       logger('Unable to send performance metrics for callback %i with arguments %o', callbackID, message.args);
     }
