@@ -1,5 +1,4 @@
 import { sendMessageToParentAsync } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -23,7 +22,6 @@ export namespace externalAppAuthenticationForCEC {
     appId: string,
     conversationId: string,
     authTokenRequest: AuthTokenRequestParameters,
-    SSOAuthCompletedCallback: () => void,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -31,11 +29,8 @@ export namespace externalAppAuthenticationForCEC {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
-    registerHandler(
-      getApiVersionTag(ApiVersionNumber.V_3, ApiName.ExternalAppAuthenticationForCEC_SSOAuthCompleted),
-      'ssoAuthCompleted',
-      SSOAuthCompletedCallback,
-    );
+    validateId(conversationId, new Error('conversation id is not valid.'));
+
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -44,7 +39,6 @@ export namespace externalAppAuthenticationForCEC {
       'externalAppAuthenticationForCEC.authenticateWithSSO',
       [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-      removeHandler('ssoAuthCompleted');
       if (!wasSuccessful) {
         throw error;
       }
@@ -55,8 +49,6 @@ export namespace externalAppAuthenticationForCEC {
     appId: string,
     conversationId: string,
     authenticateParameters: AuthenticatePopUpParameters,
-    // callback that will be called when hubsdk is done with Authentication
-    OAuthCompletedCallback: () => void,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -64,11 +56,7 @@ export namespace externalAppAuthenticationForCEC {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
-    registerHandler(
-      getApiVersionTag(ApiVersionNumber.V_3, ApiName.ExternalAppAuthenticationForCEC_SSOAuthCompleted),
-      'oAuthCompleted',
-      OAuthCompletedCallback,
-    );
+    validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return sendMessageToParentAsync(
@@ -86,7 +74,6 @@ export namespace externalAppAuthenticationForCEC {
         authenticateParameters.isExternal,
       ],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-      removeHandler('oAuthCompleted');
       if (!wasSuccessful) {
         throw error;
       }
@@ -105,6 +92,8 @@ export namespace externalAppAuthenticationForCEC {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
+    validateId(conversationId, new Error('conversation id is not valid.'));
+
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -144,6 +133,7 @@ export namespace externalAppAuthenticationForCEC {
       throw errorNotSupportedOnPlatform;
     }
     validateId(appId, new Error('App id is not valid.'));
+    validateId(conversationId, new Error('conversation id is not valid.'));
 
     validateOriginalRequestInfo(originalRequestInfo);
 

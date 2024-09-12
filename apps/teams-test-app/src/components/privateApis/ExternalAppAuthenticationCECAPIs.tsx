@@ -40,15 +40,10 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const oAuthcallback = () => {
-          console.log('callback received');
-        };
-        const result = await externalAppAuthenticationForCEC.authenticateWithOAuth(
-          input.appId,
-          input.conversationId,
-          { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
-          oAuthcallback,
-        );
+        const result = await externalAppAuthenticationForCEC.authenticateWithOAuth(input.appId, input.conversationId, {
+          ...input.authenticateParameters,
+          url: new URL(input.authenticateParameters.url),
+        });
         return 'Completed';
       },
     },
@@ -82,15 +77,10 @@ const AuthenticateWithSSO = (): React.ReactElement =>
         }
       },
       submit: async (input, setResult) => {
-        const ssoCallback = () => {
-          console.log('callback received');
-          setResult('callback received');
-        };
         await externalAppAuthenticationForCEC.authenticateWithSSO(
           input.appId,
           input.conversationId,
           input.authTokenRequest,
-          ssoCallback,
         );
         console.log('completed');
         return 'Completed';
