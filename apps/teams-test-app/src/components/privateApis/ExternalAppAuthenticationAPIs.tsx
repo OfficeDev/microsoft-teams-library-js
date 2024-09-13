@@ -50,7 +50,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
       authenticateParameters: {
-        url: 'https://www.example.com',
+        url: 'https://localhost:4000',
         width: 100,
         height: 100,
         isExternal: true,
