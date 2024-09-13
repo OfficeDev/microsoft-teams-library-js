@@ -1,5 +1,5 @@
 import { IAppWindow } from '@microsoft/teams-js';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import AppAPIs from '../components/AppAPIs';
 import AppEntityAPIs from '../components/AppEntityAPIs';
@@ -68,12 +68,28 @@ import WebStorageAPIs from '../components/WebStorageAPIs';
 
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
+  const [shouldNest, setShouldNest] = useState(false);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    setShouldNest(urlParams.get('shouldNest') === 'true');
+  }, []);
 
   return (
     <>
       <button id="button_reload" onClick={() => window.location.reload()}>
         Reload This App
       </button>
+      {shouldNest && (
+        <iframe
+          src="https://localhost:3001/?noSuccess=true"
+          width="500px"
+          height="500px"
+          style={{ border: 'none' }}
+          title="Embedded Content"
+          sandbox="allow-scripts"
+        />
+      )}
       <div className="App-container">
         <AppAPIs />
         <AppInitializationAPIs />

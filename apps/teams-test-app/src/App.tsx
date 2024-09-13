@@ -35,10 +35,14 @@ if (
 } else {
   if (isTestBackCompat()) {
     appInitialization.notifyAppLoaded();
-    appInitialization.notifySuccess();
+    if (!urlParams.has('noSuccess') || urlParams.get('noSuccess') !== 'true') {
+      appInitialization.notifySuccess();
+    }
   } else {
-    app.notifyAppLoaded();
-    app.notifySuccess();
+    // app.notifyAppLoaded();
+    if (!urlParams.has('noSuccess') || urlParams.get('noSuccess') !== 'true') {
+      app.notifySuccess();
+    }
   }
 }
 
