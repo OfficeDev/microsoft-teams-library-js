@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Reverted the `dialog.url.submit` API to support both `FrameContext.Content` and `FrameContext.Task` for compatibility with older Teams clients.",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
