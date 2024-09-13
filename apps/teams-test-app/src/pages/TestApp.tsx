@@ -68,10 +68,10 @@ import WebStorageAPIs from '../components/WebStorageAPIs';
 
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
-  const [iframeUrl, setIframeUrl] = React.useState<string>('');
+  const [iframeUrl, setIframeUrl] = React.useState<URL | null>(null);
 
   const loadCurrentUrl = (): void => {
-    setIframeUrl(window.location.href);
+    setIframeUrl(new URL(window.location.href));
   };
 
   return (
@@ -83,11 +83,11 @@ export const TestApp: React.FC = () => {
         Load Current URL in child Iframe
       </button>
       <div className="App-container">
-        {iframeUrl && (
+        {iframeUrl !== null && (
           <div>
             IFRAME: <br></br>
             {/*eslint-disable-next-line @microsoft/sdl/react-iframe-missing-sandbox -- always use the sandbox attribute, but this is a test app and we fully control the content going into it, so it's okay not to here. */}
-            <iframe src={iframeUrl} width="100%" height="500px" />
+            <iframe src={iframeUrl.toString()} width="100%" height="500px" />
           </div>
         )}
         <AppAPIs />
