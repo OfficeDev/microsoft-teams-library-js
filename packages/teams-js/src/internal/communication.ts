@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable strict-null-checks/all */
 
-import { ApiName, ApiVersionNumber, getApiVersionTag, HostToAppMessageDelayTelemetry } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
@@ -10,6 +10,7 @@ import { ISerializable, isSerializable } from '../public/serializable.interface'
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
+import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
   deserializeMessageRequest,
@@ -811,7 +812,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
       logger('Received a response from parent for message %s', callbackId.toString());
-      HostToAppMessageDelayTelemetry.telemetryHostToAppPerformanceMetrics(callbackId, message, logger);
+      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger);
       if (callback) {
         logger(
           'Invoking the registered callback for message %s with arguments %o',

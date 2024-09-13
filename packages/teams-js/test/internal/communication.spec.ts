@@ -12,7 +12,6 @@ import { Utils } from '../utils';
 
 jest.mock('../../src/internal/handlers', () => ({
   callHandler: jest.fn(),
-  handleHostToAppPerformanceMetrics: jest.fn(),
 }));
 
 const testApiVersion = getApiVersionTag(ApiVersionNumber.V_1, 'mockedApiName' as ApiName);
