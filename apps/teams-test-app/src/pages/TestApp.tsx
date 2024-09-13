@@ -66,12 +66,14 @@ import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
 
+export const appInitializationTestQueryParameter = 'appInitializationTest';
+
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
   const [iframeUrl, setIframeUrl] = React.useState<URL | null>(null);
 
   const loadCurrentUrl = (): void => {
-    setIframeUrl(new URL(window.location.href));
+    setIframeUrl(new URL(window.location.href + `?${appInitializationTestQueryParameter}=true`));
   };
 
   return (
@@ -80,7 +82,7 @@ export const TestApp: React.FC = () => {
         Reload This App
       </button>
       <button id="button_iframe" onClick={loadCurrentUrl}>
-        Load Current URL in child Iframe
+        Load Current URL in child Iframe for initialization testing
       </button>
       <div className="App-container">
         {iframeUrl !== null && (
