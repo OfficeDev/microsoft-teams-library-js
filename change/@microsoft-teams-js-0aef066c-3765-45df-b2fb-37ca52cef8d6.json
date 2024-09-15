@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Disabling message proxying from child windows and frames by default",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}

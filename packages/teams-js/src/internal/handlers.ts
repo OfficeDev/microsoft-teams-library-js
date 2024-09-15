@@ -6,6 +6,7 @@ import { LoadContext, ResumeContext } from '../public/interfaces';
 import { pages } from '../public/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
+import { GlobalVars } from './globalVars';
 import { ensureInitialized } from './internalAPIs';
 import { getLogger } from './telemetry';
 import { isNullOrUndefined } from './typeCheckUtilities';
@@ -86,9 +87,6 @@ export function callHandler(name: string, args?: unknown[]): [true, unknown] | [
     callHandlerLogger('Invoking the registered handler for message %s with arguments %o', name, args);
     const result = handler.apply(this, args);
     return [true, result];
-  } else if (Communication.childWindow) {
-    sendMessageEventToChild(name, args);
-    return [false, undefined];
   } else {
     callHandlerLogger('Handler for action message %s not found.', name);
     return [false, undefined];
@@ -177,7 +175,7 @@ export function handleThemeChange(theme: string): void {
     HandlersPrivate.themeChangeHandler(theme);
   }
 
-  if (Communication.childWindow) {
+  if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
     sendMessageEventToChild('themeChange', [theme]);
   }
 }
@@ -201,12 +199,12 @@ function handleLoad(loadContext: LoadContext): void {
   const resumeContext = convertToResumeContext(loadContext);
   if (HandlersPrivate.resumeHandler) {
     HandlersPrivate.resumeHandler(resumeContext);
-    if (Communication.childWindow) {
+    if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
       sendMessageEventToChild('load', [resumeContext]);
     }
   } else if (HandlersPrivate.loadHandler) {
     HandlersPrivate.loadHandler(loadContext);
-    if (Communication.childWindow) {
+    if (Communication.childWindow && (GlobalVars.allowMessageProxy || GlobalVars.webAuthWindowOpen)) {
       sendMessageEventToChild('load', [loadContext]);
     }
   }
@@ -248,17 +246,9 @@ async function handleBeforeUnload(): Promise<void> {
 
   if (HandlersPrivate.beforeSuspendOrTerminateHandler) {
     await HandlersPrivate.beforeSuspendOrTerminateHandler();
-    if (Communication.childWindow) {
-      sendMessageEventToChild('beforeUnload');
-    } else {
-      readyToUnload();
-    }
+    readyToUnload();
   } else if (!HandlersPrivate.beforeUnloadHandler || !HandlersPrivate.beforeUnloadHandler(readyToUnload)) {
-    if (Communication.childWindow) {
-      sendMessageEventToChild('beforeUnload');
-    } else {
-      readyToUnload();
-    }
+    readyToUnload();
   }
 }
 
