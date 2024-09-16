@@ -18,6 +18,15 @@ const mockedAppEligibilityInformation = {
   },
 };
 
+const mockedAppEligibilityInformationUserClassificationNull = {
+  cohort: Cohort.BCAIS,
+  ageGroup: LegalAgeGroupClassification.Adult,
+  isCopilotEnabledRegion: true,
+  isCopilotEligible: true,
+  isOptedOutByAdmin: false,
+  userClassification: null,
+};
+
 const copilotRuntimeConfig: Runtime = {
   apiVersion: 4,
   hostVersionsInfo: {
@@ -35,6 +44,25 @@ const copilotRuntimeConfig: Runtime = {
     logs: {},
   },
 };
+
+const copilotRuntimeConfigWithUserClassificationNull: Runtime = {
+  apiVersion: 4,
+  hostVersionsInfo: {
+    appEligibilityInformation: mockedAppEligibilityInformationUserClassificationNull,
+  },
+  supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
 describe('copilot', () => {
   let utils: Utils;
   beforeEach(() => {
@@ -72,6 +100,12 @@ describe('copilot', () => {
       expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(
         expect.objectContaining(errorNotSupportedOnPlatform),
       );
+    });
+    it('should return null userClassification if the host provided eligibility information with userClassification as null', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
+      expect(copilot.eligibility.isSupported()).toBeTruthy();
+      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformationUserClassificationNull);
     });
   });
 });

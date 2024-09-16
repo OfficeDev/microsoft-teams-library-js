@@ -82,6 +82,16 @@ export interface TabInstance {
    * Website URL of this tab
    */
   websiteUrl?: string;
+
+  /**
+   * AppId of this tab
+   */
+  appId?: string;
+
+  /**
+   * Order of this tab. Order is 1-indexed.
+   */
+  order?: number;
 }
 
 /**
@@ -1125,7 +1135,7 @@ export interface AppEligibilityInformation {
   /**
    * Education Eligibility Information for the app user
    */
-  userClassification: UserClassification;
+  userClassification: UserClassification | null;
 }
 
 /**
