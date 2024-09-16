@@ -10,7 +10,6 @@ import merge from 'deepmerge';
 import replace from '@rollup/plugin-replace';
 import sri from 'rollup-plugin-sri';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import { RollupFilemanager } from 'filemanager-plugin';
 import version from './package.json' assert { type: 'json' };
 
 const baseConfig = createBasicConfig();
@@ -52,19 +51,6 @@ export default [
       commonjs(),
       sri(),
       nodePolyfills(),
-      RollupFilemanager({
-        events: {
-          onEnd: {
-            copy: [
-              {
-                source: './dist/packages/teams-js/**/*.js',
-                destination: '../../apps/blazor-test-app/wwwroot/js/',
-                isFlat: false,
-              },
-            ],
-          },
-        },
-      }),
       {
         apply: (compiler) => {
           compiler.hooks.done.tap('wsi-test', () => {
