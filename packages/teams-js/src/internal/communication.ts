@@ -369,7 +369,7 @@ export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuth
   const targetWindow = Communication.topWindow;
   const request = createNestedAppAuthRequest(message);
 
-  logger('Message %s (legacy id: %i) information: %o', request.uuid.toString(), request.id, {
+  logger('Message %s information: %o', getMessageIdsAsLogString(request), {
     actionName: request.func,
   });
 
@@ -393,9 +393,9 @@ function sendRequestToTargetWindowHelper(
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
       logger(
-        `Sending message %s (legacy id: %i) to ${targetWindowName} via framelessPostMessage interface`,
-        request.uuidAsString,
-        request.id,
+        'Sending message %s to %s via framelessPostMessage interface',
+        getMessageIdsAsLogString(request),
+        targetWindowName,
       );
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
@@ -405,18 +405,10 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(
-        `Sending message %s (legacy id: %i) to ${targetWindowName} via postMessage`,
-        request.uuidAsString,
-        request.id,
-      );
+      logger('Sending message %s to %s via postMessage', getMessageIdsAsLogString(request), targetWindowName);
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger(
-        `Adding message %s (legacy id: %i) to ${targetWindowName} message queue`,
-        request.uuidAsString,
-        request.id,
-      );
+      logger('Adding message %s to %s message queue', getMessageIdsAsLogString(request), targetWindowName);
       getTargetMessageQueue(targetWindow).push(messageRequest);
     }
   }
@@ -439,7 +431,7 @@ function sendMessageToParentHelper(
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
-  logger('Message %s (legacy id: %i) information: %o', request.uuid.toString(), request.id, { actionName, args });
+  logger('Message %s information: %o', getMessageIdsAsLogString(request), { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
 }
@@ -665,10 +657,7 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
   } else {
     return CommunicationPrivate.legacyMessageIdsToUuidMap[response.id];
   }
-  logger(
-    `Received a message with uuid: ${response.uuid?.toString()} and legacyId: %i that failed to produce a callbackId`,
-    response.id,
-  );
+  logger('Received message %s that failed to produce a callbackId', getMessageIdsAsLogString(response));
   return undefined;
 }
 
@@ -678,7 +667,7 @@ function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID
  *
  * This function is used to compare a new MessageUUID object value to the key values in the specified callback and retrieving that key
  * We use this because two objects with the same value are not considered equivalent therefore we can't use the new MessageUUID object
- * as a key to retrieve the value assosciated with it and should use this function instead.
+ * as a key to retrieve the value associated with it and should use this function instead.
  */
 function retrieveMessageUUIDFromCallback(
   map: Map<MessageUUID, Function>,
@@ -778,12 +767,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    logger(
-      'Received a message from parent, id: %s (legacy id: %i), action: "%s"',
-      message.uuid?.toString(),
-      message.id,
-      message.func,
-    );
+    logger('Received a message from parent, id: %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {
     logger('Received an unknown message: %O', evt);
@@ -811,9 +795,8 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
       handleIncomingMessageFromChildLogger(
-        'Returning message %s (legacy id: %i) from child back to child, action: %s.',
-        message.uuid?.toString(),
-        message.id,
+        'Returning message %s from child back to child, action: %s.',
+        getMessageIdsAsLogString(message),
         message.func,
       );
 
@@ -825,7 +808,7 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
 
       handleIncomingMessageFromChildLogger(
         'Relaying message %s from child to parent, action: %s. Relayed message will have a new id.',
-        message.uuid?.toString(),
+        getMessageIdsAsLogString(message),
         message.func,
       );
 
@@ -837,9 +820,8 @@ function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
           if (Communication.childWindow) {
             const isPartialResponse = args.pop();
             handleIncomingMessageFromChildLogger(
-              'Message from parent being relayed to child, id: %s (legacy id: %i)',
-              message.uuid?.toString(),
-              message.id,
+              'Message from parent being relayed to child, id: %s',
+              getMessageIdsAsLogString(message),
             );
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -928,9 +910,8 @@ function flushMessageQueue(targetWindow: Window | any): void {
 
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       flushMessageQueueLogger(
-        'Flushing message %s (legacy id: %i) from %s message queue via postMessage.',
-        request?.uuidAsString,
-        request.id,
+        'Flushing message %s from %s message queue via postMessage.',
+        getMessageIdsAsLogString(request),
         target,
       );
 
@@ -1080,4 +1061,21 @@ function createMessageEvent(func: string, args?: any[]): MessageRequest {
     func: func,
     args: args || [],
   };
+}
+
+function getMessageIdsAsLogString(
+  message:
+    | SerializedMessageRequest
+    | MessageRequestWithRequiredProperties
+    | MessageRequest
+    | MessageResponse
+    | NestedAppAuthRequest,
+): string {
+  if ('uuidAsString' in message) {
+    return `${message.uuidAsString} (legacy id: ${message.id})`;
+  } else if ('uuid' in message && message.uuid !== undefined) {
+    return `${message.uuid.toString()} (legacy id: ${message.id})`;
+  } else {
+    return `legacy id: ${message.id} (no uuid)`;
+  }
 }
