@@ -767,7 +767,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    logger('Received a message from parent, id: %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
+    logger('Received a message from parent %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {
     logger('Received an unknown message: %O', evt);
