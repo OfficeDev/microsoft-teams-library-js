@@ -87,7 +87,8 @@ export function initializeCommunication(
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
-  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> => await processMessage(evt);
+  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> =>
+    await processIncomingMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -108,7 +109,7 @@ export function initializeCommunication(
     const extendedWindow = Communication.currentWindow as unknown as ExtendedWindow;
     if (extendedWindow.nativeInterface) {
       GlobalVars.isFramelessWindow = true;
-      extendedWindow.onNativeMessage = handleParentMessage;
+      extendedWindow.onNativeMessage = handleMessageFromParent;
     } else {
       // at this point we weren't able to find a parent to talk to, no way initialization will succeed
       return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
@@ -368,7 +369,9 @@ export function sendNestedAuthRequestToTopWindow(message: string): NestedAppAuth
   const targetWindow = Communication.topWindow;
   const request = createNestedAppAuthRequest(message);
 
-  logger('Message %i information: %o', request.uuid, { actionName: request.func });
+  logger('Message %s (legacy id: %i) information: %o', request.uuid.toString(), request.id, {
+    actionName: request.func,
+  });
 
   return sendRequestToTargetWindowHelper(targetWindow, request) as NestedAppAuthRequest;
 }
@@ -389,7 +392,11 @@ function sendRequestToTargetWindowHelper(
 
   if (GlobalVars.isFramelessWindow) {
     if (Communication.currentWindow && Communication.currentWindow.nativeInterface) {
-      logger(`Sending message %i to ${targetWindowName} via framelessPostMessage interface`, request.uuidAsString);
+      logger(
+        `Sending message %s (legacy id: %i) to ${targetWindowName} via framelessPostMessage interface`,
+        request.uuidAsString,
+        request.id,
+      );
       (Communication.currentWindow as ExtendedWindow).nativeInterface.framelessPostMessage(JSON.stringify(request));
     }
   } else {
@@ -398,10 +405,18 @@ function sendRequestToTargetWindowHelper(
     // If the target window isn't closed and we already know its origin, send the message right away; otherwise,
     // queue the message and send it after the origin is established
     if (targetWindow && targetOrigin) {
-      logger(`Sending message %i to ${targetWindowName} via postMessage`, request.uuidAsString);
+      logger(
+        `Sending message %s (legacy id: %i) to ${targetWindowName} via postMessage`,
+        request.uuidAsString,
+        request.id,
+      );
       targetWindow.postMessage(request, targetOrigin);
     } else {
-      logger(`Adding message %i to ${targetWindowName} message queue`, request.uuidAsString);
+      logger(
+        `Adding message %s (legacy id: %i) to ${targetWindowName} message queue`,
+        request.uuidAsString,
+        request.id,
+      );
       getTargetMessageQueue(targetWindow).push(messageRequest);
     }
   }
@@ -424,21 +439,24 @@ function sendMessageToParentHelper(
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
 
-  logger('Message %i information: %o', request.uuid, { actionName, args });
+  logger('Message %s (legacy id: %i) information: %o', request.uuid.toString(), request.id, { actionName, args });
 
   return sendRequestToTargetWindowHelper(targetWindow, request);
 }
 
-const processMessageLogger = communicationLogger.extend('processMessage');
+const processIncomingMessageLogger = communicationLogger.extend('processIncomingMessage');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-async function processMessage(evt: DOMMessageEvent): Promise<void> {
+async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
   // Process only if we received a valid message
   if (!evt || !evt.data || typeof evt.data !== 'object') {
-    processMessageLogger('Unrecognized message format received by app, message being ignored. Message: %o', evt);
+    processIncomingMessageLogger(
+      'Unrecognized message format received by app, message being ignored. Message: %o',
+      evt,
+    );
     return;
   }
 
@@ -448,10 +466,13 @@ async function processMessage(evt: DOMMessageEvent): Promise<void> {
   const messageSource = evt.source || (evt.originalEvent && evt.originalEvent.source);
   const messageOrigin = evt.origin || (evt.originalEvent && evt.originalEvent.origin);
 
-  return shouldProcessMessage(messageSource, messageOrigin).then((result) => {
+  return shouldProcessIncomingMessage(messageSource, messageOrigin).then((result) => {
     if (!result) {
-      processMessageLogger(
-        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
+      processIncomingMessageLogger(
+        'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin, message: %o, source: %o, origin: %o',
+        evt,
+        messageSource,
+        messageOrigin,
       );
       return;
     }
@@ -459,9 +480,9 @@ async function processMessage(evt: DOMMessageEvent): Promise<void> {
     updateRelationships(messageSource, messageOrigin);
     // Handle the message
     if (messageSource === Communication.parentWindow) {
-      handleParentMessage(evt);
+      handleMessageFromParent(evt);
     } else if (messageSource === Communication.childWindow) {
-      handleChildMessage(evt);
+      handleMessageFromChild(evt);
     }
   });
 }
@@ -511,7 +532,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
     return;
   }
 
-  if (!shouldProcessMessage(messageSource, messageOrigin)) {
+  if (!shouldProcessIncomingMessage(messageSource, messageOrigin)) {
     logger(
       'Message being ignored by app because it is either coming from the current window or a different window with an invalid origin',
     );
@@ -542,7 +563,7 @@ function processAuthBridgeMessage(evt: MessageEvent, onMessageReceived: (respons
   onMessageReceived(message);
 }
 
-const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMessage');
+const shouldProcessIncomingMessageLogger = communicationLogger.extend('shouldProcessIncomingMessage');
 
 /**
  * @hidden
@@ -551,11 +572,11 @@ const shouldProcessMessageLogger = communicationLogger.extend('shouldProcessMess
  * @internal
  * Limited to Microsoft-internal use
  */
-async function shouldProcessMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
+async function shouldProcessIncomingMessage(messageSource: Window, messageOrigin: string): Promise<boolean> {
   // Process if message source is a different window and if origin is either in
   // Teams' pre-known whitelist or supplied as valid origin by user during initialization
   if (Communication.currentWindow && messageSource === Communication.currentWindow) {
-    shouldProcessMessageLogger('Should not process message because it is coming from the current window');
+    shouldProcessIncomingMessageLogger('Should not process message because it is coming from the current window');
     return false;
   } else if (
     Communication.currentWindow &&
@@ -569,13 +590,13 @@ async function shouldProcessMessage(messageSource: Window, messageOrigin: string
     try {
       messageOriginURL = new URL(messageOrigin);
     } catch (_) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
       return false;
     }
 
     const isOriginValid = await validateOrigin(messageOriginURL);
     if (!isOriginValid) {
-      shouldProcessMessageLogger('Message has an invalid origin of %s', messageOrigin);
+      shouldProcessIncomingMessageLogger('Message has an invalid origin of %s', messageOrigin);
     }
     return isOriginValid;
   }
@@ -695,7 +716,7 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleParentMessage(evt: DOMMessageEvent): void {
+function handleMessageFromParent(evt: DOMMessageEvent): void {
   const logger = handleParentMessageLogger;
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
@@ -705,37 +726,49 @@ function handleParentMessage(evt: DOMMessageEvent): void {
     const callbackId = retrieveMessageUUIDFromResponse(message);
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
-      logger('Received a response from parent for message %i', callbackId);
+      logger('Received a response from parent for message %s', callbackId.toString());
       if (callback) {
-        logger('Invoking the registered callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         callback.apply(null, [...message.args, message.isPartialResponse]);
 
         // Remove the callback to ensure that the callback is called only once and to free up memory if response is a complete response
         if (!isPartialResponse(evt)) {
-          logger('Removing registered callback for message %i', callbackId);
+          logger('Removing registered callback for message %s', callbackId.toString());
           removeMessageHandlers(message, CommunicationPrivate.callbacks);
         }
       }
       const promiseCallback = CommunicationPrivate.promiseCallbacks.get(callbackId);
       if (promiseCallback) {
-        logger('Invoking the registered promise callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered promise callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         promiseCallback(message.args);
 
-        logger('Removing registered promise callback for message %i', callbackId);
+        logger('Removing registered promise callback for message %s', callbackId.toString());
         removeMessageHandlers(message, CommunicationPrivate.promiseCallbacks);
       }
       const portCallback = CommunicationPrivate.portCallbacks.get(callbackId);
       if (portCallback) {
-        logger('Invoking the registered port callback for message %i with arguments %o', callbackId, message.args);
+        logger(
+          'Invoking the registered port callback for message %s with arguments %o',
+          callbackId.toString(),
+          message.args,
+        );
         let port: MessagePort | undefined;
         if (evt.ports && evt.ports[0] instanceof MessagePort) {
           port = evt.ports[0];
         }
         portCallback(port, message.args);
 
-        logger('Removing registered port callback for message %i', callbackId);
+        logger('Removing registered port callback for message %s', callbackId.toString());
         removeMessageHandlers(message, CommunicationPrivate.portCallbacks);
       }
       if (message.uuid) {
@@ -745,7 +778,12 @@ function handleParentMessage(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    logger('Received an action message %s from parent', message.func);
+    logger(
+      'Received a message from parent, id: %s (legacy id: %i), action: "%s"',
+      message.uuid?.toString(),
+      message.id,
+      message.func,
+    );
     callHandler(message.func, message.args);
   } else {
     logger('Received an unknown message: %O', evt);
@@ -764,17 +802,31 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleChildMessage(evt: DOMMessageEvent): void {
+function handleMessageFromChild(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
+      handleParentMessageLogger(
+        'Returning message %s (legacy id: %i) from child back to child, action: %s.',
+        message.uuid?.toString(),
+        message.id,
+        message.func,
+      );
+
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       sendMessageResponseToChild(message.id, message.uuid, Array.isArray(result) ? result : [result]);
     } else {
       // No handler, proxy to parent
+
+      handleParentMessageLogger(
+        'Relaying message %s from child to parent, action: %s. Relayed message will have a new id.',
+        message.uuid?.toString(),
+        message.func,
+      );
+
       sendMessageToParent(
         getApiVersionTag(ApiVersionNumber.V_2, ApiName.Tasks_StartTask),
         message.func,
@@ -782,6 +834,11 @@ function handleChildMessage(evt: DOMMessageEvent): void {
         (...args: any[]): void => {
           if (Communication.childWindow) {
             const isPartialResponse = args.pop();
+            handleParentMessageLogger(
+              'Message from parent being relayed to child, id: %s (legacy id: %i)',
+              message.uuid?.toString(),
+              message.id,
+            );
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             sendMessageResponseToChild(message.id, message.uuid, args, isPartialResponse);
@@ -869,8 +926,10 @@ function flushMessageQueue(targetWindow: Window | any): void {
 
       /* eslint-disable-next-line strict-null-checks/all */ /* Fix tracked by 5730662 */
       flushMessageQueueLogger(
-        'Flushing message %i from ' + target + ' message queue via postMessage.',
+        'Flushing message %s (legacy id: %i) from %s message queue via postMessage.',
         request?.uuidAsString,
+        request.id,
+        target,
       );
 
       targetWindow.postMessage(request, targetOrigin);
