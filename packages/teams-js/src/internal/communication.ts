@@ -109,7 +109,7 @@ export function initializeCommunication(
     const extendedWindow = Communication.currentWindow as unknown as ExtendedWindow;
     if (extendedWindow.nativeInterface) {
       GlobalVars.isFramelessWindow = true;
-      extendedWindow.onNativeMessage = handleMessageFromParent;
+      extendedWindow.onNativeMessage = handleIncomingMessageFromParent;
     } else {
       // at this point we weren't able to find a parent to talk to, no way initialization will succeed
       return Promise.reject(new Error('Initialization Failed. No Parent window found.'));
@@ -480,9 +480,9 @@ async function processIncomingMessage(evt: DOMMessageEvent): Promise<void> {
     updateRelationships(messageSource, messageOrigin);
     // Handle the message
     if (messageSource === Communication.parentWindow) {
-      handleMessageFromParent(evt);
+      handleIncomingMessageFromParent(evt);
     } else if (messageSource === Communication.childWindow) {
-      handleMessageFromChild(evt);
+      handleIncomingMessageFromChild(evt);
     }
   });
 }
@@ -640,14 +640,14 @@ function updateRelationships(messageSource: Window, messageOrigin: string): void
   flushMessageQueue(Communication.childWindow);
 }
 
-const handleParentMessageLogger = communicationLogger.extend('handleParentMessage');
+const handleIncomingMessageFromParentLogger = communicationLogger.extend('handleIncomingMessageFromParent');
 
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
 function retrieveMessageUUIDFromResponse(response: MessageResponse): MessageUUID | undefined {
-  const logger = handleParentMessageLogger;
+  const logger = handleIncomingMessageFromParentLogger;
   if (response.uuid) {
     const responseUUID = response.uuid;
     const callbackUUID = retrieveMessageUUIDFromCallback(CommunicationPrivate.callbacks, responseUUID);
@@ -716,8 +716,8 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleMessageFromParent(evt: DOMMessageEvent): void {
-  const logger = handleParentMessageLogger;
+function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
+  const logger = handleIncomingMessageFromParentLogger;
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -798,17 +798,19 @@ function isPartialResponse(evt: DOMMessageEvent): boolean {
   return evt.data.isPartialResponse === true;
 }
 
+const handleIncomingMessageFromChildLogger = communicationLogger.extend('handleIncomingMessageFromChild');
+
 /**
  * @internal
  * Limited to Microsoft-internal use
  */
-function handleMessageFromChild(evt: DOMMessageEvent): void {
+function handleIncomingMessageFromChild(evt: DOMMessageEvent): void {
   if ('id' in evt.data && 'func' in evt.data) {
     // Try to delegate the request to the proper handler, if defined
     const message = deserializeMessageRequest(evt.data as SerializedMessageRequest);
     const [called, result] = callHandler(message.func, message.args);
     if (called && typeof result !== 'undefined') {
-      handleParentMessageLogger(
+      handleIncomingMessageFromChildLogger(
         'Returning message %s (legacy id: %i) from child back to child, action: %s.',
         message.uuid?.toString(),
         message.id,
@@ -821,7 +823,7 @@ function handleMessageFromChild(evt: DOMMessageEvent): void {
     } else {
       // No handler, proxy to parent
 
-      handleParentMessageLogger(
+      handleIncomingMessageFromChildLogger(
         'Relaying message %s from child to parent, action: %s. Relayed message will have a new id.',
         message.uuid?.toString(),
         message.func,
@@ -834,7 +836,7 @@ function handleMessageFromChild(evt: DOMMessageEvent): void {
         (...args: any[]): void => {
           if (Communication.childWindow) {
             const isPartialResponse = args.pop();
-            handleParentMessageLogger(
+            handleIncomingMessageFromChildLogger(
               'Message from parent being relayed to child, id: %s (legacy id: %i)',
               message.uuid?.toString(),
               message.id,
