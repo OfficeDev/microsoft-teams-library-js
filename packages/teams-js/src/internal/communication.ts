@@ -87,8 +87,7 @@ export function initializeCommunication(
   apiVersionTag: string,
 ): Promise<InitializeResponse> {
   // Listen for messages post to our window
-  CommunicationPrivate.messageListener = async (evt: DOMMessageEvent): Promise<void> =>
-    await processIncomingMessage(evt);
+  CommunicationPrivate.messageListener = (evt: DOMMessageEvent): Promise<void> => processIncomingMessage(evt);
 
   // If we are in an iframe, our parent window is the one hosting us (i.e., window.parent); otherwise,
   // it's the window that opened us (i.e., window.opener)
@@ -1066,6 +1065,7 @@ function createMessageEvent(func: string, args?: any[]): MessageRequest {
 function getMessageIdsAsLogString(
   message:
     | SerializedMessageRequest
+    | SerializedMessageResponse
     | MessageRequestWithRequiredProperties
     | MessageRequest
     | MessageResponse
