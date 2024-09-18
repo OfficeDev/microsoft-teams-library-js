@@ -64,6 +64,21 @@ describe('Testing pages module', () => {
           validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
         });
 
+        it(`pages.returnFocus should successfully return focus when ReturnFocusType is set and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          pages.returnFocus(pages.ReturnFocusType.NextLandmark);
+
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          validateExpectedArgumentsInRequest(
+            returnFocusMessage,
+            'returnFocus',
+            MatcherType.ToBe,
+            true,
+            pages.ReturnFocusType.NextLandmark,
+          );
+        });
+
         it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
           await utils.initializeWithContext(context);
 
@@ -2167,6 +2182,23 @@ describe('Testing pages module', () => {
             data: {
               func: 'focusEnter',
               args: [true],
+            },
+          } as DOMMessageEvent);
+          expect(handlerInvoked).toBeTruthy();
+        });
+
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusType set to nextLandmark and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          let handlerInvoked = false;
+          pages.registerFocusEnterHandler((x: boolean, enterFocusType: pages.EnterFocusType) => {
+            handlerInvoked = true;
+            return true;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'focusEnter',
+              args: [true, pages.EnterFocusType.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();

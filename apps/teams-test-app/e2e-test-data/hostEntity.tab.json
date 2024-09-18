@@ -1,6 +1,7 @@
 {
   "name": "Host entity Tabs",
   "platforms": "Web",
+  "version": ">2.26.0",
   "checkIsSupported": {
     "capabilityName": "HostEntityTab",
     "expectedOutput": "Host entity tab module is not supported"

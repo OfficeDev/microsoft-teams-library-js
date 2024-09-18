@@ -66,7 +66,9 @@ export function tabsNavigateToTabHelper(apiVersionTag: string, tabInstance: TabI
     resolve(sendAndHandleStatusAndReasonWithDefaultError(apiVersionTag, 'navigateToTab', errorMessage, tabInstance));
   });
 }
-
+/**
+ * @hidden
+ */
 export function returnFocusHelper(apiVersionTag: string, navigateForward?: boolean): void {
   ensureInitialized(runtime);
   if (!pages.isSupported()) {
@@ -173,14 +175,95 @@ export namespace pages {
   export type removeEventType = (evt: pages.config.RemoveEvent) => void;
 
   /**
+   * @hidden
+   * List of enter focus action items
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export enum EnterFocusType {
+    /**
+     * Determines the previous direction to focus in app when hot keys entered.
+     */
+    PreviousLandmark = 0,
+    /**
+     * Determines the next direction to focus in app when hot keys entered.
+     */
+    NextLandmark = 1,
+    /**
+     * Determines if the focus should go to the particular content of the app.
+     * Read - Focus should go to the content of the app.
+     */
+    Read = 2,
+    /**
+     * Determines if the focus should go to the particular content of the app.
+     * Compose - Focus should go to the compose area (such as textbox) of the app.
+     */
+    Compose = 3,
+  }
+
+  /**
+   * Return focus action items
+   */
+  export enum ReturnFocusType {
+    /**
+     * Determines the direction to focus in host for previous landmark.
+     */
+    PreviousLandmark = 0,
+    /**
+     * Determines the direction to focus in host for next landmark.
+     */
+    NextLandmark = 1,
+    /**
+     * Determines if the focus should go to the host's activity feed
+     */
+    GoToActivityFeed = 2,
+  }
+
+  /**
+   * @deprecated
    * Return focus to the host. Will move focus forward or backward based on where the application container falls in
    * the F6/tab order in the host.
    * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
    * effect and will be a no-op when called.
    * @param navigateForward - Determines the direction to focus in host.
    */
-  export function returnFocus(navigateForward?: boolean): void {
-    returnFocusHelper(getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus), navigateForward);
+  export function returnFocus(navigateForward?: boolean): void;
+
+  /**
+   * Return focus to the host. Will attempt to send focus to the appropriate part of the host (as specified by returnFocusType) based on where the application container falls in
+   * the F6/tab order in the host.
+   * On mobile hosts or hosts where there is no keyboard interaction or UI notion of "focus" this function has no
+   * effect and will be a no-op when called.
+   * @param returnFocusType - Determines the type of focus to return to in the host.
+   */
+  export function returnFocus(returnFocusType: pages.ReturnFocusType): void;
+
+  /**
+   * @hidden
+   */
+  export function returnFocus(arg1?: boolean | pages.ReturnFocusType): void {
+    const apiVersionTag = getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_ReturnFocus);
+    ensureInitialized(runtime);
+    if (!pages.isSupported()) {
+      throw errorNotSupportedOnPlatform;
+    }
+    if (arg1 === undefined) {
+      sendMessageToParent(apiVersionTag, 'returnFocus', [false]);
+    }
+    if (typeof arg1 === 'boolean') {
+      sendMessageToParent(apiVersionTag, 'returnFocus', [arg1]);
+    } else {
+      switch (arg1) {
+        case pages.ReturnFocusType.PreviousLandmark:
+        case pages.ReturnFocusType.GoToActivityFeed:
+          sendMessageToParent(apiVersionTag, 'returnFocus', [false, arg1]);
+          break;
+        case pages.ReturnFocusType.NextLandmark:
+          sendMessageToParent(apiVersionTag, 'returnFocus', [true, arg1]);
+          break;
+      }
+    }
   }
 
   /**
@@ -195,7 +278,9 @@ export namespace pages {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export function registerFocusEnterHandler(handler: (navigateForward: boolean) => void): void {
+  export function registerFocusEnterHandler(
+    handler: (navigateForward: boolean, enterFocusType?: EnterFocusType) => void,
+  ): void {
     registerHandlerHelper(
       getApiVersionTag(pagesTelemetryVersionNumber, ApiName.Pages_RegisterFocusEnterHandler),
       'focusEnter',

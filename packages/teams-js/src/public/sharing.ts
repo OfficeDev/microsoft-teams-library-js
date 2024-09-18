@@ -1,7 +1,7 @@
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction, validateUuid } from '../internal/utils';
+import { callCallbackWithSdkErrorFromPromiseAndReturnPromise, InputFunction } from '../internal/utils';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
@@ -213,9 +213,9 @@ export namespace sharing {
       title: string;
       /** Reference of the shared content */
       contentReference: string;
-      /** Id of the thread where the content was shared. This is a UUID */
+      /** Id of the thread where the content was shared. */
       threadId: string;
-      /** Id of the user who shared the content. This is a UUID */
+      /** Id of the user who shared the content. */
       author: string;
       /** Type of the shared content.
        * For sharing to Teams stage scenarios, this value would be `ShareToStage`
@@ -243,10 +243,6 @@ export namespace sharing {
         getApiVersionTag(sharingTelemetryVersionNumber_v2, ApiName.Sharing_History_GetContent),
         'sharing.history.getContent',
       );
-      contentDetails.map((contentDetails) => {
-        validateUuid(contentDetails.author);
-        validateUuid(contentDetails.threadId);
-      });
 
       return contentDetails;
     }
