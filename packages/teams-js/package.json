@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.7"
   },
+  "sideEffects": ["src/public/constants.ts", "src/public/handlers.ts", "src/private/communication.ts"],
   "license": "MIT",
   "files": [
     "dist/**",
