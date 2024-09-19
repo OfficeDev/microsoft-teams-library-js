@@ -464,7 +464,7 @@ export namespace pages {
    * @deprecated
    * This interface has been deprecated in favor of a more type-safe interface using {@link pages.AppNavigationParameters}
    *
-   * Parameters for the pages.navigateToApp function
+   * Parameters for the {@link pages.navigateToApp} function
    */
   export interface NavigateToAppParams {
     /**
@@ -501,7 +501,7 @@ export namespace pages {
   }
 
   /**
-   * Type-safer version of parameters for the pages.navigateToApp function
+   * Type-safer version of parameters for the {@link pages.navigateToApp} function
    */
   export interface AppNavigationParameters {
     /**
@@ -515,7 +515,7 @@ export namespace pages {
     pageId: string;
 
     /**
-     * Fallback URL to open if the navigation cannot be completed within the host (e.g. if the target app is not installed)
+     * Fallback URL to open if the navigation cannot be completed within the host (e.g., if the target app is not installed)
      */
     webUrl?: URL;
 
@@ -527,13 +527,14 @@ export namespace pages {
 
     /**
      * For apps installed as a channel tab, this ID can be supplied to indicate in which Teams channel the app should be opened
+     * This property has no effect in hosts where apps cannot be opened in channels
      */
     channelId?: string;
 
     /**
-   * Optional ID of the chat or meeting where the app should be opened
-
-   */
+     * Optional ID of the chat or meeting where the app should be opened
+     * This property has no effect in hosts where apps cannot be opened in chats or meetings
+     */
     chatId?: string;
   }
 
