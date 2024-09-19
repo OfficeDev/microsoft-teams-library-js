@@ -10,7 +10,6 @@
   },
   "main": "./dist/MicrosoftTeams.min.js",
   "typings": "./dist/packages/teams-js/dts/index.d.ts",
-  "module": "./dist/packages/teams-js/src/index.js",
   "type": "module",
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate",
