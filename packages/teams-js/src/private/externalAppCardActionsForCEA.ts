@@ -2,6 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ActionOpenUrlError, ActionOpenUrlType, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
@@ -22,28 +23,29 @@ export namespace externalAppCardActionsForCEA {
    * @param url The URL to open
    * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
    */
-  export function processActionOpenUrl(appId: string, conversationId: string, url: URL): Promise<ActionOpenUrlType> {
+  export async function processActionOpenUrl(
+    appId: AppId,
+    conversationId: string,
+    url: URL,
+  ): Promise<ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
-
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
     validateId(conversationId, new Error('conversation id is not valid.'));
-    return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+    const [error, response] = await sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl,
       ),
-      'externalAppCardActionsForCEA.processActionOpenUrl',
+      ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl,
       [appId, url.href, conversationId],
-    ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
-      if (error) {
-        throw error;
-      } else {
-        return response;
-      }
-    });
+    );
+    if (error) {
+      throw error;
+    } else {
+      return response;
+    }
   }
 
   /**
@@ -57,30 +59,27 @@ export namespace externalAppCardActionsForCEA {
    * @param actionSubmitPayload The Adaptive Card Action.Submit payload
    * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
    */
-  export function processActionSubmit(
-    appId: string,
+  export async function processActionSubmit(
+    appId: AppId,
     conversationId: string,
     actionSubmitPayload: IAdaptiveCardActionSubmit,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
-
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
     validateId(conversationId, new Error('conversation id is not valid.'));
-    return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
+    const [error] = await sendMessageToParentAsync<[ActionSubmitError | undefined]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       ),
-      'externalAppCardActionsForCEA.processActionSubmit',
+      ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       [appId, conversationId, actionSubmitPayload],
-    ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
-      if (!wasSuccessful) {
-        throw error;
-      }
-    });
+    );
+    if (error && (!Array.isArray(error) || error.length > 0)) {
+      throw error;
+    }
   }
 
   /**

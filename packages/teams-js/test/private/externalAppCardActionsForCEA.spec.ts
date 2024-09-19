@@ -1,9 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
+import { ApiName } from '../../src/internal/telemetry';
 import { ExternalAppErrorCode } from '../../src/private/constants';
 import { externalAppCardActionsForCEA } from '../../src/private/externalAppCardActionsForCEA';
 import { ActionOpenUrlErrorCode, ActionOpenUrlType } from '../../src/private/interfaces';
-import { FrameContexts } from '../../src/public';
+import { AppId, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { Utils } from '../utils';
@@ -12,7 +13,7 @@ describe('externalAppCardActionsForCEA', () => {
   let utils = new Utils();
 
   // This ID was randomly generated for the purpose of these tests
-  const testAppId = '01b92759-b43a-4085-ac22-7772d94bb7a9';
+  const testAppId = new AppId('01b92759-b43a-4085-ac22-7772d94bb7a9');
   const testConversationId = '61f7f08d-477b-42b8-9c36-44eabb58eb92';
 
   beforeEach(() => {
@@ -37,11 +38,16 @@ describe('externalAppCardActionsForCEA', () => {
       errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
+
     it('should not allow calls before initialization', async () => {
-      return expect(() =>
-        externalAppCardActionsForCEA.processActionSubmit(testAppId, testConversationId, testActionSubmitPayload),
-      ).toThrowError(new Error(errorLibraryNotInitialized));
+      expect.assertions(1);
+      try {
+        await externalAppCardActionsForCEA.processActionSubmit(testAppId, testConversationId, testActionSubmitPayload);
+      } catch (e) {
+        expect(e).toEqual(new Error(errorLibraryNotInitialized));
+      }
     });
+
     it('should throw error when externalAppCardActionsForCEA capability is not supported', async () => {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
@@ -52,25 +58,30 @@ describe('externalAppCardActionsForCEA', () => {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
+
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
         it(`should resolve when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
+
           const promise = externalAppCardActionsForCEA.processActionSubmit(
             testAppId,
             testConversationId,
             testActionSubmitPayload,
           );
-          const message = utils.findMessageByFunc('externalAppCardActionsForCEA.processActionSubmit');
+
+          const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
-            utils.respondToMessage(message, [true, undefined]);
+            utils.respondToMessage(message, undefined);
           }
-          return expect(promise).resolves.toBeUndefined();
+
+          await expect(promise).resolves.toBeUndefined();
         });
+
         it(`should throw error from host when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
@@ -80,25 +91,27 @@ describe('externalAppCardActionsForCEA', () => {
             testConversationId,
             testActionSubmitPayload,
           );
-          const message = utils.findMessageByFunc('externalAppCardActionsForCEA.processActionSubmit');
+          const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
-            utils.respondToMessage(message, false, testError);
+            utils.respondToMessage(message, testError);
           }
-          return expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toEqual(testError);
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
-          return expect(() =>
+
+          await expect(
             externalAppCardActionsForCEA.processActionSubmit(testAppId, testConversationId, testActionSubmitPayload),
-          ).toThrowError(
+          ).rejects.toThrowError(
             new Error(
-              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
-                `Current context: "${frameContext}".`,
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedFrameContexts,
+              )}. Current context: "${frameContext}".`,
             ),
           );
         });
@@ -114,60 +127,76 @@ describe('externalAppCardActionsForCEA', () => {
       message: 'testMessage',
     };
     const testResponse = ActionOpenUrlType.DeepLinkDialog;
+
     it('should not allow calls before initialization', async () => {
-      return expect(() =>
-        externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl),
-      ).toThrowError(new Error(errorLibraryNotInitialized));
+      expect.assertions(1);
+      try {
+        await externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl);
+      } catch (e) {
+        expect(e).toEqual(new Error(errorLibraryNotInitialized));
+      }
     });
+
     it('should throw error when externalAppCardActionsForCEA capability is not supported', async () => {
       expect.assertions(1);
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
+
       try {
         await externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
+
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
         it(`should resolve when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
+
           const promise = externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl);
-          const message = utils.findMessageByFunc('externalAppCardActionsForCEA.processActionOpenUrl');
+
+          const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testUrl.href, testConversationId]);
             utils.respondToMessage(message, null, testResponse);
           }
-          return expect(promise).resolves.toEqual(testResponse);
+
+          await expect(promise).resolves.toEqual(testResponse);
         });
+
         it(`should throw error from host when called from context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
+
           const promise = externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl);
+
           const message = utils.findMessageByFunc('externalAppCardActionsForCEA.processActionOpenUrl');
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testUrl.href, testConversationId]);
             utils.respondToMessage(message, testError, null);
           }
-          return expect(promise).rejects.toEqual(testError);
+
+          await expect(promise).rejects.toEqual(testError);
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActionsForCEA: {} } });
-          return expect(() =>
+
+          await expect(
             externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl),
-          ).toThrowError(
+          ).rejects.toThrowError(
             new Error(
-              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
-                `Current context: "${frameContext}".`,
+              `This call is only allowed in following contexts: ${JSON.stringify(
+                allowedFrameContexts,
+              )}. Current context: "${frameContext}".`,
             ),
           );
         });

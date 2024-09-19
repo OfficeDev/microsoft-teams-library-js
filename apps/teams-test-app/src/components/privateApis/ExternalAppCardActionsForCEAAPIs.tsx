@@ -1,4 +1,4 @@
-import { externalAppCardActions, IAdaptiveCardActionSubmit } from '@microsoft/teams-js';
+import { AppId, externalAppCardActionsForCEA, IAdaptiveCardActionSubmit } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -9,12 +9,15 @@ const CheckExternalAppCardActionsForCEACapability = (): React.ReactElement =>
     name: 'checkExternalAppCardActionsForCEACapability',
     title: 'Check External App Card Actions For CEA Capability',
     onClick: async () =>
-      `External App Card Actions For CEA module ${externalAppCardActions.isSupported() ? 'is' : 'is not'} supported`,
+      `External App Card Actions For CEA module ${
+        externalAppCardActionsForCEA.isSupported() ? 'is' : 'is not'
+      } supported`,
   });
 
 const CECProcessActionSubmit = (): React.ReactElement =>
   ApiWithTextInput<{
-    appId: string;
+    appId: AppId;
+    conversationId: string;
     actionSubmitPayload: IAdaptiveCardActionSubmit;
   }>({
     name: 'processActionSubmitForCEA',
@@ -29,7 +32,11 @@ const CECProcessActionSubmit = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await externalAppCardActions.processActionSubmit(input.appId, input.actionSubmitPayload);
+        await externalAppCardActionsForCEA.processActionSubmit(
+          input.appId,
+          input.conversationId,
+          input.actionSubmitPayload,
+        );
         return 'Completed';
       },
     },
@@ -44,9 +51,9 @@ const CECProcessActionSubmit = (): React.ReactElement =>
 
 const CECProcessActionOpenUrl = (): React.ReactElement =>
   ApiWithTextInput<{
-    appId: string;
+    appId: AppId;
+    conversationId: string;
     url: string;
-    fromElement?: { name: 'composeExtensions' | 'plugins' };
   }>({
     name: 'processActionOpenUrlForCEA',
     title: 'Process Action Open Url For CEA',
@@ -60,10 +67,10 @@ const CECProcessActionOpenUrl = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await externalAppCardActions.processActionOpenUrl(
+        const result = await externalAppCardActionsForCEA.processActionOpenUrl(
           input.appId,
+          input.conversationId,
           new URL(input.url),
-          input.fromElement,
         );
         return JSON.stringify(result);
       },
