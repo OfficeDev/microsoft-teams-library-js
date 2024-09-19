@@ -1,6 +1,6 @@
 // rollup.config.mjs
 
-import { createBasicConfig } from '@open-wc/building-rollup';
+//import { createBasicConfig } from '@open-wc/building-rollup';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -12,9 +12,9 @@ import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 import version from './package.json' assert { type: 'json' };
 
-const config = createBasicConfig();
+//const config = createBasicConfig();
 
-export default merge(config, {
+export default {
   input: './src/index.ts',
   output: {
     dir: 'dist/',
@@ -46,4 +46,17 @@ export default merge(config, {
     commonjs(),
     nodePolyfills(),
   ],
-});
+  treeshake: {
+    moduleSideEffects: [
+      'src/public/constants.ts',
+      'src/public/handlers.ts',
+      'src/internal/communication.ts',
+      'src/private/constants.ts',
+      'src/private/interfaces.ts',
+      'src/public/interfaces.ts',
+      'src/internal/utils.ts',
+      'src/internal/nestedAppAuthUtils.ts',
+      'src/internal/videoEffectsUtils.ts',
+    ],
+  },
+};
