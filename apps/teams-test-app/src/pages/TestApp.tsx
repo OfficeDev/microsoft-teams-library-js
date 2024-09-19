@@ -1,5 +1,5 @@
 import { IAppWindow } from '@microsoft/teams-js';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 import AppAPIs from '../components/AppAPIs';
 import AppEntityAPIs from '../components/AppEntityAPIs';
@@ -71,12 +71,94 @@ import WebStorageAPIs from '../components/WebStorageAPIs';
 export const appInitializationTestQueryParameter = 'appInitializationTest';
 
 export const TestApp: React.FC = () => {
-  const dialogWindowRef = React.useRef<IAppWindow | null>(null);
-  const [iframeUrl, setIframeUrl] = React.useState<URL | null>(null);
+  const dialogWindowRef = useRef<IAppWindow | null>(null);
+  const [iframeUrl, setIframeUrl] = useState<URL | null>(null);
+  const [groupedMode, setGroupedMode] = useState(false); // Toggle between default and grouped mode
+  const [visibleSections, setVisibleSections] = useState<string[]>([]); // Track multiple open sections
 
   const loadCurrentUrl = (): void => {
     setIframeUrl(new URL(window.location.href + `?${appInitializationTestQueryParameter}=true`));
   };
+
+  // Function to toggle the visibility of a specific section
+  const toggleSection = (sectionName: string): void => {
+    setVisibleSections(
+      (prev) =>
+        prev.includes(sectionName)
+          ? prev.filter((section) => section !== sectionName) // Hide section if already open
+          : [...prev, sectionName], // Show section if not open
+    );
+  };
+
+  // List of sections dynamically created from React elements
+  const sections = [
+    { name: 'AppAPIs', component: <AppAPIs /> },
+    { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
+    { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
+    { name: 'AuthenticationAPIs', component: <AuthenticationAPIs /> },
+    { name: 'AppEntityAPIs', component: <AppEntityAPIs /> },
+    { name: 'BarCodeAPIs', component: <BarCodeAPIs /> },
+    { name: 'CalendarAPIs', component: <CalendarAPIs /> },
+    { name: 'CallAPIs', component: <CallAPIs /> },
+    { name: 'ChatAPIs', component: <ChatAPIs /> },
+    { name: 'ClipboardAPIs', component: <ClipboardAPIs /> },
+    { name: 'CookieAccessComponent', component: <CookieAccessComponent /> },
+    { name: 'CopilotAPIs', component: <CopilotAPIs /> },
+    { name: 'CustomAPIs', component: <CustomAPIs /> },
+    { name: 'DialogAPIs', component: <DialogAPIs /> },
+    { name: 'DialogCardAPIs', component: <DialogCardAPIs /> },
+    { name: 'DialogCardBotAPIs', component: <DialogCardBotAPIs /> },
+    { name: 'DialogUpdateAPIs', component: <DialogUpdateAPIs /> },
+    { name: 'DialogUrlAPIs', component: <DialogUrlAPIs childWindowRef={dialogWindowRef} /> },
+    { name: 'DialogUrlBotAPIs', component: <DialogUrlBotAPIs /> },
+    {
+      name: 'DialogUrlParentCommunicationAPIs',
+      component: <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />,
+    },
+    { name: 'ExternalAppAuthenticationAPIs', component: <ExternalAppAuthenticationAPIs /> },
+    { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
+    { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
+    { name: 'FilesAPIs', component: <FilesAPIs /> },
+    { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },
+    { name: 'GeoLocationAPIs', component: <GeoLocationAPIs /> },
+    { name: 'HostEntityTabAPIs', component: <HostEntityTabAPIs /> },
+    { name: 'Links', component: <Links /> },
+    { name: 'LocationAPIs', component: <LocationAPIs /> },
+    { name: 'LogAPIs', component: <LogAPIs /> },
+    { name: 'MailAPIs', component: <MailAPIs /> },
+    { name: 'MarketplaceAPIs', component: <MarketplaceAPIs /> },
+    { name: 'MediaAPIs', component: <MediaAPIs /> },
+    { name: 'MeetingAPIs', component: <MeetingAPIs /> },
+    { name: 'MeetingRoomAPIs', component: <MeetingRoomAPIs /> },
+    { name: 'MenusAPIs', component: <MenusAPIs /> },
+    { name: 'MessageChannelAPIs', component: <MessageChannelAPIs /> },
+    { name: 'MonetizationAPIs', component: <MonetizationAPIs /> },
+    { name: 'NestedAppAuthAPIs', component: <NestedAppAuthAPIs /> },
+    { name: 'NotificationAPIs', component: <NotificationAPIs /> },
+    { name: 'OtherAppStateChangedAPIs', component: <OtherAppStateChangedAPIs /> },
+    { name: 'PagesAPIs', component: <PagesAPIs /> },
+    { name: 'PagesAppButtonAPIs', component: <PagesAppButtonAPIs /> },
+    { name: 'PagesBackStackAPIs', component: <PagesBackStackAPIs /> },
+    { name: 'PagesConfigAPIs', component: <PagesConfigAPIs /> },
+    { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
+    { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
+    { name: 'PeopleAPIs', component: <PeopleAPIs /> },
+    { name: 'PrivateAPIs', component: <PrivateAPIs /> },
+    { name: 'ProfileAPIs', component: <ProfileAPIs /> },
+    { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
+    { name: 'SearchAPIs', component: <SearchAPIs /> },
+    { name: 'SecondaryBrowserAPIs', component: <SecondaryBrowserAPIs /> },
+    { name: 'SharingAPIs', component: <SharingAPIs /> },
+    { name: 'WebStorageAPIs', component: <WebStorageAPIs /> },
+    { name: 'StageViewAPIs', component: <StageViewAPIs /> },
+    { name: 'StageViewSelfAPIs', component: <StageViewSelfAPIs /> },
+    { name: 'TeamsCoreAPIs', component: <TeamsCoreAPIs /> },
+    { name: 'TeamsAPIs', component: <TeamsAPIs /> },
+    { name: 'ThirdPartyCloudStorageAPIs', component: <ThirdPartyCloudStorageAPIs /> },
+    { name: 'VideoAPIs', component: <VideoAPIs /> },
+    { name: 'VideoExAPIs', component: <VideoExAPIs /> },
+    { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
+  ];
 
   return (
     <>
@@ -86,6 +168,12 @@ export const TestApp: React.FC = () => {
       <button id="button_iframe" onClick={loadCurrentUrl}>
         Load Current URL in child Iframe for initialization testing
       </button>
+
+      {/* Toggle between default and grouped mode */}
+      <button onClick={() => setGroupedMode(!groupedMode)}>
+        {groupedMode ? 'Show All Sections' : 'Switch to Grouped Mode'}
+      </button>
+
       <div className="App-container">
         {iframeUrl !== null && (
           <div>
@@ -94,71 +182,26 @@ export const TestApp: React.FC = () => {
             <iframe src={iframeUrl.toString()} width="100%" height="500px" />
           </div>
         )}
-        <AppAPIs />
-        <AppInitializationAPIs />
-        <AppInstallDialogAPIs />
-        <AuthenticationAPIs />
-        <AppEntityAPIs />
-        <BarCodeAPIs />
-        <CalendarAPIs />
-        <CallAPIs />
-        <ChatAPIs />
-        <ClipboardAPIs />
-        <CookieAccessComponent />
-        <CopilotAPIs />
-        <CustomAPIs />
-        <DialogAPIs />
-        <DialogCardAPIs />
-        <DialogCardBotAPIs />
-        <DialogUpdateAPIs />
-        <DialogUrlAPIs childWindowRef={dialogWindowRef} />
-        <DialogUrlBotAPIs />
-        <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />
-        <ExternalAppAuthenticationAPIs />
-        <ExternalAppAuthenticationForCEAAPIs />
-        <ExternalAppCardActionsAPIs />
-        <ExternalAppCardActionsForCEAAPIs />
-        <ExternalAppCommandsAPIs />
-        <FilesAPIs />
-        <FullTrustAPIs />
-        <GeoLocationAPIs />
-        <HostEntityTabAPIs />
-        <Links />
-        <LocationAPIs />
-        <LogAPIs />
-        <MailAPIs />
-        <MarketplaceAPIs />
-        <MediaAPIs />
-        <MeetingAPIs />
-        <MeetingRoomAPIs />
-        <MenusAPIs />
-        <MessageChannelAPIs />
-        <MonetizationAPIs />
-        <NestedAppAuthAPIs />
-        <NotificationAPIs />
-        <OtherAppStateChangedAPIs />
-        <PagesAPIs />
-        <PagesAppButtonAPIs />
-        <PagesBackStackAPIs />
-        <PagesConfigAPIs />
-        <PagesCurrentAppAPIs />
-        <PagesTabsAPIs />
-        <PeopleAPIs />
-        <PrivateAPIs />
-        <ProfileAPIs />
-        <RemoteCameraAPIs />
-        <SearchAPIs />
-        <SecondaryBrowserAPIs />
-        <SharingAPIs />
-        <WebStorageAPIs />
-        <StageViewAPIs />
-        <StageViewSelfAPIs />
-        <TeamsCoreAPIs />
-        <TeamsAPIs />
-        <ThirdPartyCloudStorageAPIs />
-        <VideoAPIs />
-        <VideoExAPIs />
-        <VisualMediaAPIs />
+        {/* Default mode: Show all sections */}
+        {!groupedMode ? (
+          <>
+            {sections.map((section) => (
+              <React.Fragment key={section.name}>{section.component}</React.Fragment>
+            ))}
+          </>
+        ) : (
+          <>
+            {/* Grouped mode: Dynamically create buttons for each section */}
+            {sections.map((section) => (
+              <div key={section.name} className="section-content-in-grouped-mode">
+                <button className="section-button-in-grouped-mode" onClick={() => toggleSection(section.name)}>
+                  {section.name}
+                </button>
+                {visibleSections.includes(section.name) && section.component}
+              </div>
+            ))}
+          </>
+        )}
       </div>
       <Version />
     </>
