@@ -282,22 +282,49 @@ export enum ActionOpenUrlType {
   GenericUrl = 'GenericUrl',
 }
 
+/**
+ * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface ActionOpenUrlError {
   errorCode: ActionOpenUrlErrorCode;
   message?: string;
 }
 
+/**
+ * @hidden
+ * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export enum ActionOpenUrlErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
   INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
   NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
 }
 
+/**
+ * @hidden
+ * The payload that is used when executing an Adaptive Card Action.Submit
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface IAdaptiveCardActionSubmit {
   id: string;
   data: string | Record<string, unknown>;
 }
 
+/**
+ *
+ * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export interface ActionSubmitError {
   errorCode: ExternalAppErrorCode;
   message?: string;

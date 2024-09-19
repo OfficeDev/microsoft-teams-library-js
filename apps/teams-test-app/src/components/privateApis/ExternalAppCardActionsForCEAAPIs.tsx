@@ -4,12 +4,12 @@ import React from 'react';
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
-const CheckExternalAppCardActionsForCECCapability = (): React.ReactElement =>
+const CheckExternalAppCardActionsForCEACapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkExternalAppCardActionsForCECCapability',
-    title: 'Check External App Card Actions For CEC Capability',
+    name: 'checkExternalAppCardActionsForCEACapability',
+    title: 'Check External App Card Actions For CEA Capability',
     onClick: async () =>
-      `External App Card Actions For CEC module ${externalAppCardActions.isSupported() ? 'is' : 'is not'} supported`,
+      `External App Card Actions For CEA module ${externalAppCardActions.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const CECProcessActionSubmit = (): React.ReactElement =>
@@ -17,8 +17,8 @@ const CECProcessActionSubmit = (): React.ReactElement =>
     appId: string;
     actionSubmitPayload: IAdaptiveCardActionSubmit;
   }>({
-    name: 'processActionSubmitForCEC',
-    title: 'Process Action Submit For CEC',
+    name: 'processActionSubmitForCEA',
+    title: 'Process Action Submit For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {
@@ -48,8 +48,8 @@ const CECProcessActionOpenUrl = (): React.ReactElement =>
     url: string;
     fromElement?: { name: 'composeExtensions' | 'plugins' };
   }>({
-    name: 'processActionOpenUrlForCEC',
-    title: 'Process Action Open Url For CEC',
+    name: 'processActionOpenUrlForCEA',
+    title: 'Process Action Open Url For CEA',
     onClick: {
       validateInput: (input) => {
         if (!input.appId) {
@@ -74,12 +74,12 @@ const CECProcessActionOpenUrl = (): React.ReactElement =>
     }),
   });
 
-const ExternalAppCardActionsForCECAPIs = (): React.ReactElement => (
-  <ModuleWrapper title="External App Card Actions For CEC">
-    <CheckExternalAppCardActionsForCECCapability />
+const ExternalAppCardActionsForCEAAPIs = (): React.ReactElement => (
+  <ModuleWrapper title="External App Card Actions For CEA">
+    <CheckExternalAppCardActionsForCEACapability />
     <CECProcessActionSubmit />
     <CECProcessActionOpenUrl />
   </ModuleWrapper>
 );
 
-export default ExternalAppCardActionsForCECAPIs;
+export default ExternalAppCardActionsForCEAAPIs;
