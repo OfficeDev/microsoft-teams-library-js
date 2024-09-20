@@ -2,7 +2,7 @@ import { Debugger } from 'debug';
 
 import { handleHostToAppPerformanceMetrics } from './handlers';
 import { CallbackInformation } from './interfaces';
-import { MessageResponse } from './messageObjects';
+import { MessageRequest, MessageResponse } from './messageObjects';
 import { getCurrentTimestamp } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
 
@@ -40,6 +40,26 @@ export default class HostToAppMessageDelayTelemetry {
   public static deleteMessageInformation(callbackId: MessageUUID): void {
     HostToAppMessageDelayTelemetry.callbackInformation.delete(callbackId);
   }
+  /**
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * Executes telemetry actions related to host to app performance metrics where event is raised in the host.
+   * @param message The request from the host.
+   * @param logger The logger in case an error occurs.
+   */
+  public static handleOneWayPerformanceMetrics(message: MessageRequest, logger: Debugger): void {
+    const timestamp = message.monotonicTimestamp;
+    if (!timestamp) {
+      logger('Unable to send performance metrics for event %s', message.func);
+      return;
+    }
+    handleHostToAppPerformanceMetrics({
+      actionName: message.func,
+      messageDelay: getCurrentTimestamp() - timestamp,
+      messageWasCreatedAt: timestamp,
+    });
+  }
 
   /**
    * @internal
@@ -52,15 +72,15 @@ export default class HostToAppMessageDelayTelemetry {
    */
   public static handlePerformanceMetrics(callbackID: MessageUUID, message: MessageResponse, logger: Debugger): void {
     const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
-    if (callbackInformation && message.timestamp) {
-      handleHostToAppPerformanceMetrics({
-        actionName: callbackInformation.name,
-        messageDelay: getCurrentTimestamp() - message.timestamp,
-        messageWasCreatedAt: callbackInformation.calledAt,
-      });
-      HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
-    } else {
+    if (!callbackInformation || !message.timestamp) {
       logger('Unable to send performance metrics for callback %i with arguments %o', callbackID, message.args);
+      return;
     }
+    handleHostToAppPerformanceMetrics({
+      actionName: callbackInformation.name,
+      messageDelay: getCurrentTimestamp() - message.timestamp,
+      messageWasCreatedAt: callbackInformation.calledAt,
+    });
+    HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
   }
 }
