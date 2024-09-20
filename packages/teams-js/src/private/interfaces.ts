@@ -273,8 +273,13 @@ export interface UserJoinedTeamsInformation {
   userJoinedTeams: TeamInformation[];
 }
 
-// externalAppCardActionsInterfaces.ts
-
+/**
+ * @hidden
+ * The types for ActionOpenUrl
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
 export enum ActionOpenUrlType {
   DeepLinkDialog = 'DeepLinkDialog',
   DeepLinkOther = 'DeepLinkOther',
@@ -285,6 +290,7 @@ export enum ActionOpenUrlType {
 /**
  * @hidden
  * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
  *
  * @internal
  * Limited to Microsoft-internal use
@@ -297,6 +303,8 @@ export interface ActionOpenUrlError {
 /**
  * @hidden
  * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -309,6 +317,7 @@ export enum ActionOpenUrlErrorCode {
 /**
  * @hidden
  * The payload that is used when executing an Adaptive Card Action.Submit
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
@@ -321,6 +330,7 @@ export interface IAdaptiveCardActionSubmit {
  *
  * @hidden
  * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
+ * and IExternalAppCardActionForCEAService.handleActionSubmit
  *
  * @internal
  * Limited to Microsoft-internal use
