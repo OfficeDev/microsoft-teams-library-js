@@ -39,7 +39,7 @@ export default {
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),
-      PACKAGE_VERSION: JSON.stringify(version),
+      PACKAGE_VERSION: JSON.stringify(version.version),
     }),
     typescript(),
     json(),
