@@ -8,7 +8,7 @@ import { runtime } from '../public/runtime';
 import { ActionOpenUrlError, ActionOpenUrlType, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
 
 /**
- * Updated to constants file: v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ * All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 /**
