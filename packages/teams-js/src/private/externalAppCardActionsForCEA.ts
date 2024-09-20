@@ -77,7 +77,6 @@ export namespace externalAppCardActionsForCEA {
       ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       [appId, conversationId, actionSubmitPayload],
     );
-    console.log('HERE    ', error);
     if (error && (!Array.isArray(error) || error.length > 0) && error[0]) {
       throw error[0];
     }
