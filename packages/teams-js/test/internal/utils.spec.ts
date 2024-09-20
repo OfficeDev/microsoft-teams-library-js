@@ -8,7 +8,7 @@ import {
   validateUuid,
 } from '../../src/internal/utils';
 import { UUID } from '../../src/internal/uuidObject';
-import { pages } from '../../src/public';
+import { AppId, pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 
 describe('utils', () => {
@@ -24,26 +24,26 @@ describe('utils', () => {
   });
   describe('createTeamsAppLink', () => {
     it('builds a basic URL with an appId and pageId', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
       };
       const expected = 'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a webUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        webUrl: new URL('https://tasklist.example.com/123'),
       };
       const expected =
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a subPageUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         subPageId: 'task456',
       };
@@ -52,8 +52,8 @@ describe('utils', () => {
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a channelId parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
       };
@@ -63,8 +63,8 @@ describe('utils', () => {
     });
 
     it('builds a URL with a chatId parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
       };
@@ -73,10 +73,10 @@ describe('utils', () => {
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with all optional properties', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        webUrl: new URL('https://tasklist.example.com/123'),
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
         subPageId: 'task456',
       };

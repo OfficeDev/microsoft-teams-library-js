@@ -272,16 +272,16 @@ export function runWithTimeout<TResult, TError>(
  * @internal
  * Limited to Microsoft-internal use
  */
-export function createTeamsAppLink(params: pages.NavigateToAppParams): string {
+export function createTeamsAppLink(params: pages.AppNavigationParameters): string {
   const url = new URL(
     'https://teams.microsoft.com/l/entity/' +
-      encodeURIComponent(params.appId) +
+      encodeURIComponent(params.appId.toString()) +
       '/' +
       encodeURIComponent(params.pageId),
   );
 
   if (params.webUrl) {
-    url.searchParams.append('webUrl', params.webUrl);
+    url.searchParams.append('webUrl', params.webUrl.toString());
   }
   if (params.chatId || params.channelId || params.subPageId) {
     url.searchParams.append(
