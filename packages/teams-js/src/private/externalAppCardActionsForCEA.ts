@@ -69,7 +69,7 @@ export namespace externalAppCardActionsForCEA {
       throw errorNotSupportedOnPlatform;
     }
     validateId(conversationId, new Error('conversation id is not valid.'));
-    const [error] = await sendMessageToParentAsync<[ActionSubmitError | undefined]>(
+    const error = await sendMessageToParentAsync<ActionSubmitError | undefined>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
@@ -77,8 +77,9 @@ export namespace externalAppCardActionsForCEA {
       ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       [appId, conversationId, actionSubmitPayload],
     );
-    if (error && (!Array.isArray(error) || error.length > 0)) {
-      throw error;
+    console.log('HERE    ', error);
+    if (error && (!Array.isArray(error) || error.length > 0) && error[0]) {
+      throw error[0];
     }
   }
 

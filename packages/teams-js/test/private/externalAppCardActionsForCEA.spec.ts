@@ -175,7 +175,7 @@ describe('externalAppCardActionsForCEA', () => {
 
           const promise = externalAppCardActionsForCEA.processActionOpenUrl(testAppId, testConversationId, testUrl);
 
-          const message = utils.findMessageByFunc('externalAppCardActionsForCEA.processActionOpenUrl');
+          const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([testAppId, testUrl.href, testConversationId]);
