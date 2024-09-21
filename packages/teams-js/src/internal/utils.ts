@@ -407,6 +407,21 @@ export function inServerSideRenderingEnvironment(): boolean {
   return typeof window === 'undefined';
 }
 
+/**
+ * @param id The id to validate
+ * @param errorToThrow Customized error to throw if the id is not valid
+ *
+ * @throws Error if id is not valid
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateId(id: string, errorToThrow?: Error): void {
+  if (hasScriptTags(id) || !isIdLengthValid(id) || !isOpaque(id)) {
+    throw errorToThrow || new Error('id is not valid.');
+  }
+}
+
 export function validateUrl(url: URL, errorToThrow?: Error): void {
   const urlString = url.toString().toLocaleLowerCase();
   if (hasScriptTags(urlString)) {
@@ -458,6 +473,20 @@ export function hasScriptTags(input: string): boolean {
     'gi',
   );
   return openingOrClosingScriptTagRegex.test(input);
+}
+
+function isIdLengthValid(id: string): boolean {
+  return id.length < 256 && id.length > 4;
+}
+
+function isOpaque(id: string): boolean {
+  for (let i = 0; i < id.length; i++) {
+    const charCode = id.charCodeAt(i);
+    if (charCode < 32 || charCode > 126) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
