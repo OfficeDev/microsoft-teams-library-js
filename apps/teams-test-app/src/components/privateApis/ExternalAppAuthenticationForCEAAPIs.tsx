@@ -1,6 +1,6 @@
 import {
   AuthTokenRequestParameters,
-  externalAppAuthenticationForCEC,
+  externalAppAuthenticationForCEA,
   IActionExecuteInvokeRequest,
 } from '@microsoft/teams-js';
 import React from 'react';
@@ -9,12 +9,12 @@ import { ApiWithoutInput } from '../utils/ApiWithoutInput';
 import { ApiWithTextInput } from '../utils/ApiWithTextInput';
 import { ModuleWrapper } from '../utils/ModuleWrapper';
 
-const CheckExternalAppAuthenticationForCECCapability = (): React.ReactElement =>
+const CheckExternalAppAuthenticationForCEACapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkExternalAppAuthenticationCECCapability',
-    title: 'Check External App Authentication CEC Capability',
+    name: 'checkExternalAppAuthenticationCEACapability',
+    title: 'Check External App Authentication CEA Capability',
     onClick: async () =>
-      `External App Authentication CEC module ${externalAppAuthenticationForCEC.isSupported() ? 'is' : 'is not'} supported`,
+      `External App Authentication CEA module ${externalAppAuthenticationForCEA.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const AuthenticateWithOAuth = (): React.ReactElement =>
@@ -40,7 +40,7 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await externalAppAuthenticationForCEC.authenticateWithOAuth(input.appId, input.conversationId, {
+        await externalAppAuthenticationForCEA.authenticateWithOAuth(input.appId, input.conversationId, {
           ...input.authenticateParameters,
           url: new URL(input.authenticateParameters.url),
         });
@@ -77,7 +77,7 @@ const AuthenticateWithSSO = (): React.ReactElement =>
         }
       },
       submit: async (input, setResult) => {
-        await externalAppAuthenticationForCEC.authenticateWithSSO(
+        await externalAppAuthenticationForCEA.authenticateWithSSO(
           input.appId,
           input.conversationId,
           input.authTokenRequest,
@@ -123,7 +123,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await externalAppAuthenticationForCEC.authenticateAndResendRequest(
+        const result = await externalAppAuthenticationForCEA.authenticateAndResendRequest(
           input.appId,
           input.conversationId,
           { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
@@ -172,7 +172,7 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        const result = await externalAppAuthenticationForCEC.authenticateWithSSOAndResendRequest(
+        const result = await externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest(
           input.appId,
           input.conversationId,
           input.authTokenRequest,
@@ -198,9 +198,9 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
     }),
   });
 
-const ExternalAppAuthenticationForCECAPIs = (): React.ReactElement => (
-  <ModuleWrapper title="External App Authentication for CEC">
-    <CheckExternalAppAuthenticationForCECCapability />
+const ExternalAppAuthenticationForCEAAPIs = (): React.ReactElement => (
+  <ModuleWrapper title="External App Authentication for CEA">
+    <CheckExternalAppAuthenticationForCEACapability />
     <AuthenticateWithOAuth />
     <AuthenticateWithSSO />
     <AuthenticateAndResendRequest />
@@ -208,4 +208,4 @@ const ExternalAppAuthenticationForCECAPIs = (): React.ReactElement => (
   </ModuleWrapper>
 );
 
-export default ExternalAppAuthenticationForCECAPIs;
+export default ExternalAppAuthenticationForCEAAPIs;

@@ -17,7 +17,7 @@ import {
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_3;
 
-export namespace externalAppAuthenticationForCEC {
+export namespace externalAppAuthenticationForCEA {
   export function authenticateWithSSO(
     appId: string,
     conversationId: string,
@@ -34,9 +34,9 @@ export namespace externalAppAuthenticationForCEC {
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithSSO,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
-      'externalAppAuthenticationForCEC.authenticateWithSSO',
+      'externalAppAuthenticationForCEA.authenticateWithSSO',
       [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
@@ -62,9 +62,9 @@ export namespace externalAppAuthenticationForCEC {
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEC_AuthenticateWithOauth,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
-      'externalAppAuthenticationForCEC.authenticateWithOauth',
+      'externalAppAuthenticationForCEA.authenticateWithOauth',
       [
         appId,
         conversationId,
@@ -102,7 +102,7 @@ export namespace externalAppAuthenticationForCEC {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
       ),
-      'externalAppAuthenticationForCEC.authenticateAndResendRequest',
+      'externalAppAuthenticationForCEA.authenticateAndResendRequest',
       [
         appId,
         conversationId,
@@ -142,7 +142,7 @@ export namespace externalAppAuthenticationForCEC {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
-      'externalAppAuthenticationForCEC.authenticateWithSSOAndResendRequest',
+      'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
       [appId, conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
@@ -154,7 +154,7 @@ export namespace externalAppAuthenticationForCEC {
     });
   }
   export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEC ? true : false;
+    return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEA ? true : false;
   }
 
   function validateOriginalRequestInfo(actionExecuteRequest: IActionExecuteInvokeRequest): void {
