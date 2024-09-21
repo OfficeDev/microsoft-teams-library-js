@@ -1,7 +1,9 @@
 import {
   base64ToBlob,
   compareSDKVersions,
+  containsScriptTag,
   createTeamsAppLink,
+  doesStringOnlyContainPrintableCharacters,
   getBase64StringFromBlob,
   validateId,
   validateUrl,
@@ -201,6 +203,90 @@ describe('utils', () => {
     });
   });
 
+  describe('doesStringOnlyContainPrintableCharacters', () => {
+    it('should return true for a string with only printable ASCII characters', () => {
+      const id = 'Hello World!';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(true);
+    });
+
+    it('should return false for a string with mixed printable and non-printable ASCII characters', () => {
+      const id = 'Hello\x00World';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(false);
+    });
+
+    it('should return false for a string with only one non-printable ASCII character', () => {
+      const id = '\x00';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(false);
+    });
+
+    it('should return false for a string with multiple non-printable ASCII characters', () => {
+      const id = '\xAE\xFF\x03';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(false);
+    });
+
+    it('should return true for an empty string', () => {
+      const id = '';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(true);
+    });
+
+    it('should return true for a string with only spaces', () => {
+      const id = '     ';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(true);
+    });
+
+    it('should return true for a string with special characters', () => {
+      const id = '!@#$%^&*()_+-=[]{}|;:\'",.<>?/';
+      expect(doesStringOnlyContainPrintableCharacters(id)).toBe(true);
+    });
+  });
+
+  describe('containsScriptTag', () => {
+    it('should return true for a string with a plain <script> tag', () => {
+      const input = '<script>alert("XSS")</script>';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+
+    it('should return true for a string with an encoded <script> tag', () => {
+      const input = '&lt;script&gt;alert("XSS")&lt;/script&gt;';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+
+    it('should return false for a string with no <script> tag', () => {
+      const input = '<div>Hello World</div>';
+      expect(containsScriptTag(input)).toBe(false);
+    });
+
+    it('should return true for a string with a plain <script> tag with attributes', () => {
+      const input = '<script type="text/javascript">alert("XSS")</script>';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+
+    it('should return true for a string with an encoded <script> tag with attributes', () => {
+      const input = '&lt;script type="text/javascript"&gt;alert("XSS")&lt;/script&gt;';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+
+    it('should return false for a string with nested tags but no <script> tag', () => {
+      const input = '<div><p>Hello World</p></div>';
+      expect(containsScriptTag(input)).toBe(false);
+    });
+
+    it('should return false for an empty string', () => {
+      const input = '';
+      expect(containsScriptTag(input)).toBe(false);
+    });
+
+    it('should return true for a string with an encoded opening <script> tag but an unencoded closing </script> tag', () => {
+      const input = '&lt;script&gt;alert("XSS")</script>';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+
+    it('should return true for a string with an unencoded opening <script> tag but an encoded closing </script> tag', () => {
+      const input = '<script>alert("XSS")&lt;/script&gt;';
+      expect(containsScriptTag(input)).toBe(true);
+    });
+  });
+
   describe('validateUrl', () => {
     it('should throw invalid url error if it contains script tag', async () => {
       expect.assertions(1);
@@ -366,6 +452,54 @@ describe('utils', () => {
       }
     });
   });
+
+  // describe('decodeHTMLEntities function', () => {
+  //   test('decodes common HTML entities', () => {
+  //     expect(decodeHTMLEntities('&lt;')).toBe('<');
+  //     expect(decodeHTMLEntities('&gt;')).toBe('>');
+  //     expect(decodeHTMLEntities('&amp;')).toBe('&');
+  //     expect(decodeHTMLEntities('&quot;')).toBe('"');
+  //     expect(decodeHTMLEntities('&#39;')).toBe("'");
+  //     expect(decodeHTMLEntities('&#x2F;')).toBe('/');
+  //   });
+
+  //   test('decodes numeric HTML entities', () => {
+  //     expect(decodeHTMLEntities('&#60;')).toBe('<');
+  //     expect(decodeHTMLEntities('&#62;')).toBe('>');
+  //     expect(decodeHTMLEntities('&#38;')).toBe('&');
+  //     expect(decodeHTMLEntities('&#34;')).toBe('"');
+  //     expect(decodeHTMLEntities('&#39;')).toBe("'");
+  //     expect(decodeHTMLEntities('&#47;')).toBe('/');
+  //   });
+
+  //   test('decodes mixed content', () => {
+  //     expect(decodeHTMLEntities('Hello &amp; welcome to the world of &lt;coding&gt;!')).toBe(
+  //       'Hello & welcome to the world of <coding>!',
+  //     );
+  //     expect(decodeHTMLEntities('5 &gt; 3 and 3 &lt; 5')).toBe('5 > 3 and 3 < 5');
+  //   });
+
+  //   test('handles empty strings', () => {
+  //     expect(decodeHTMLEntities('')).toBe('');
+  //   });
+
+  //   test('handles strings without HTML entities', () => {
+  //     expect(decodeHTMLEntities('Hello world!')).toBe('Hello world!');
+  //   });
+
+  //   test('handles multiple occurrences of the same entity', () => {
+  //     expect(decodeHTMLEntities('&amp;&amp;&amp;')).toBe('&&&');
+  //     expect(decodeHTMLEntities('&lt;&lt;&lt;')).toBe('<<<');
+  //   });
+
+  //   test('handles unknown entities gracefully', () => {
+  //     expect(decodeHTMLEntities('&unknown;')).toBe('&unknown;');
+  //   });
+
+  //   test('handles a mix of known and unknown entities', () => {
+  //     expect(decodeHTMLEntities('Hello &unknown; &amp; world')).toBe('Hello &unknown; & world');
+  //   });
+  // });
 
   describe('UUID class tests', () => {
     describe('validateUuid', () => {
