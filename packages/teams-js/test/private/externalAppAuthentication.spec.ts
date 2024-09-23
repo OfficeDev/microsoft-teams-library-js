@@ -880,7 +880,7 @@ describe('externalAppAuthentication', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           // eslint-disable-next-line @microsoft/sdl/no-insecure-url
-          const invalidStingInUrl = new URL('http://pishingsite.com');
+          const invalidStingInUrl = new URL('http://adatum.com');
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
@@ -895,7 +895,7 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          let dummyUrl = 'https://dummy.com?param=';
+          let dummyUrl = 'https://contoso.com?param=';
           while (dummyUrl.length < 2050) {
             dummyUrl += 'a';
           }
