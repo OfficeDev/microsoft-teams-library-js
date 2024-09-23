@@ -1,4 +1,4 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -77,7 +77,7 @@ export namespace externalAppCardActionsForCEA {
       throw errorNotSupportedOnPlatform;
     }
     validateId(conversationId, new Error('conversation id is not valid.'));
-    const error = await sendMessageToParentAsync<ActionSubmitError | undefined>(
+    const error = await sendAndUnwrap<ActionSubmitError | undefined>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
@@ -85,8 +85,8 @@ export namespace externalAppCardActionsForCEA {
       ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       [appId, conversationId, actionSubmitPayload],
     );
-    if (error && (!Array.isArray(error) || error.length > 0) && error[0]) {
-      throw error[0];
+    if (error) {
+      throw error;
     }
   }
 
