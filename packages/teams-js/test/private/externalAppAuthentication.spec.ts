@@ -147,46 +147,43 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
-          try {
-            await externalAppAuthentication.authenticateAndResendRequest(
-              invalidAppId,
-              testAuthRequest,
-              testOriginalRequest,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          const invalidAppId = 'invalidAppIdWith<script>alert(1)</script>';
+          expect(
+            async () =>
+              await externalAppAuthentication.authenticateAndResendRequest(
+                invalidAppId,
+                testAuthRequest,
+                testOriginalRequest,
+              ),
+          ).toThrowError(/script/);
         });
-        it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
+        it(`should throw error on invalid app ID if it contains non printable ASCII characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'appId\u0000';
-          try {
-            await externalAppAuthentication.authenticateAndResendRequest(
-              invalidAppId,
-              testAuthRequest,
-              testOriginalRequest,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          expect(
+            async () =>
+              await externalAppAuthentication.authenticateAndResendRequest(
+                invalidAppId,
+                testAuthRequest,
+                testOriginalRequest,
+              ),
+          ).toThrowError(/characters/);
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           const invalidAppId = 'a'.repeat(257);
-          try {
-            await externalAppAuthentication.authenticateAndResendRequest(
-              invalidAppId,
-              testAuthRequest,
-              testOriginalRequest,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          expect(
+            async () =>
+              await externalAppAuthentication.authenticateAndResendRequest(
+                invalidAppId,
+                testAuthRequest,
+                testOriginalRequest,
+              ),
+          ).toThrowError(/length/);
         });
         it(`should throw error on original request info command ID exceeds max size with context - ${frameContext}`, async () => {
           expect.assertions(1);
@@ -870,27 +867,26 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidsingInUrl = new URL('https://example.com?param=<script>alert("Hello, world!");</script>');
-          try {
-            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
-              titleId,
-              invalidsingInUrl,
-              testPPCWindowParameters,
-            );
-          } catch (e) {
-            expect(e).toEqual(new Error('Invalid Url'));
-          }
+          const invalidStingInUrl = new URL('https://example.com?param=<script>alert("Hello, world!");</script>');
+          expect(
+            async () =>
+              await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+                titleId,
+                invalidStingInUrl,
+                testPPCWindowParameters,
+              ),
+          ).toThrowError(/script/);
         });
         it(`should throw error on a non-http signInUrl - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
           // eslint-disable-next-line @microsoft/sdl/no-insecure-url
-          const invalidsingInUrl = new URL('http://pishingsite.com');
+          const invalidStingInUrl = new URL('http://pishingsite.com');
           try {
             await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
               titleId,
-              invalidsingInUrl,
+              invalidStingInUrl,
               testPPCWindowParameters,
             );
           } catch (e) {

@@ -104,7 +104,7 @@ export namespace externalAppCardActions {
         ApiName.ExternalAppCardActions_ProcessActionSubmit,
       ),
       'externalAppCardActions.processActionSubmit',
-      [typeSafeAppId, actionSubmitPayload],
+      [typeSafeAppId.toString(), actionSubmitPayload],
     ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
