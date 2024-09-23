@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add userClickTimeV2 new context field.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jcardenasr123@gmail.com",
+  "dependentChangeType": "patch"
+}
