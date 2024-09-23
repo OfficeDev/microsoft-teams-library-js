@@ -98,27 +98,27 @@ describe('externalAppCommands', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'invalidAppIdWith<script>alert(1)</script>';
-          expect(
+          await expect(
             async () => await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam),
-          ).toThrowError(/script/);
+          ).rejects.toThrowError(/script/i);
         });
         it(`should throw error on invalid app ID if it contains non printable ASCII characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'appId\u0000';
-          expect(
+          await expect(
             async () => await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam),
-          ).toThrowError(/characters/);
+          ).rejects.toThrowError(/characters/i);
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCommands: {} } });
           const invalidAppId = 'a'.repeat(257);
-          expect(
+          await expect(
             async () => await externalAppCommands.processActionCommand(invalidAppId, mockCommandId, mockExtractedParam),
-          ).toThrowError(/length/);
+          ).rejects.toThrowError(/length/i);
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {

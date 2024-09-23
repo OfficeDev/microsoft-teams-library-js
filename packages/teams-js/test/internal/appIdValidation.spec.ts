@@ -66,15 +66,15 @@ describe('validateStringAsAppId', () => {
   });
 
   test('should throw error with "script" in message for app id containing script tag', () => {
-    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/);
+    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/i);
   });
 
   test('should throw error with "length" in message for app id too long or too short', () => {
-    expect(() => validateStringAsAppId('a')).toThrowError(/length/);
-    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/);
+    expect(() => validateStringAsAppId('a')).toThrowError(/length/i);
+    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
   });
 
   test('should throw error with "printable" in message for app id containing non-printable characters', () => {
-    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/);
+    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/i);
   });
 });

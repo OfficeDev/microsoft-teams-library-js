@@ -864,15 +864,16 @@ describe('externalAppAuthentication', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
-          const invalidStingInUrl = new URL('https://example.com?param=<script>alert("Hello, world!");</script>');
-          await expect(
-            async () =>
-              await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
-                titleId,
-                invalidStingInUrl,
-                testPPCWindowParameters,
-              ),
-          ).rejects.toThrowError(/script/i);
+          const invalidStringInUrl = new URL('https://example.com?param=<script>alert("Hello, world!");</script>');
+          try {
+            await externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins(
+              titleId,
+              invalidStringInUrl,
+              testPPCWindowParameters,
+            );
+          } catch (e) {
+            expect(e).toEqual(new Error('Invalid Url'));
+          }
         });
         it(`should throw error on a non-http signInUrl - ${frameContext}`, async () => {
           expect.assertions(1);
