@@ -73,7 +73,11 @@ export default class HostToAppMessageDelayTelemetry {
   public static handlePerformanceMetrics(callbackID: MessageUUID, message: MessageResponse, logger: Debugger): void {
     const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
     if (!callbackInformation || !message.timestamp) {
-      logger('Unable to send performance metrics for callback %i with arguments %o', callbackID, message.args);
+      logger(
+        'Unable to send performance metrics for callback %s with arguments %o',
+        callbackID.toString(),
+        message.args,
+      );
       return;
     }
     handleHostToAppPerformanceMetrics({
