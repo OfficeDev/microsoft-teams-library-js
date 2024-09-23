@@ -94,7 +94,7 @@ steps:
   - task: CopyFiles@2
     inputs:
       sourceFolder: 'packages\teams-js\dist'
-      contents: '*\?(*.js|*.ts|*.map)'
+      contents: '\?(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
 
