@@ -77,7 +77,7 @@ module.exports = {
       name: '@microsoft/teams-js',
       main: './dist/packages/teams-js/dts',
       out: '~/dist/MicrosoftTeams.d.ts',
-      removeSource: false,
+      removeSource: true,
       outputAsModuleFolder: true,
     }),
 

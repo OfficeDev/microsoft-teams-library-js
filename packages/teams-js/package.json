@@ -9,7 +9,7 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "main": "./dist/MicrosoftTeams.min.js",
-  "typings": "./dist/packages/teams-js/dts/index.d.ts",
+  "typings": "./dist/MicrosoftTeams.d.ts",
   "module": "./dist/packages/teams-js/src/index.js",
   "type": "module",
   "scripts": {
