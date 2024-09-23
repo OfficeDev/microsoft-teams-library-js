@@ -1,6 +1,5 @@
 import {
   doesStringContainNonPrintableCharacters,
-  doesStringContainScriptTags,
   isStringWithinAppIdLengthLimits,
   maximumValidAppIdLength,
   minimumValidAppIdLength,
