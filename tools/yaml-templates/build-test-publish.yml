@@ -121,7 +121,7 @@ steps:
       sourceFolder: 'packages\teams-js\dist'
       contents: '**\?(*.js|*.ts|*.map)'
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
-      flattenFolders: true
+      flattenFolders: false
     displayName: 'Copy JS Content for NPM'
 
   - task: CopyFiles@2
