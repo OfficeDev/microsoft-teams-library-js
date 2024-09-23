@@ -1,5 +1,14 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { UUID } from './uuidObject';
+
+export const teamsJsInstanceIdentifier = new UUID();
+const origFormatArgs = registerLogger.formatArgs;
+registerLogger.formatArgs = function (args) {
+  args[0] = `${teamsJsInstanceIdentifier.toString()} (${new Date().toISOString()}): ${args[0]}`;
+  origFormatArgs.call(this, args);
+};
+
 const topLevelLogger = registerLogger('teamsJs');
 
 /**
