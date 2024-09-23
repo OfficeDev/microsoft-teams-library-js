@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Unified app id validation, removed incomplete HTML element transformation, and refreshed how script tags are identified in strings",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
