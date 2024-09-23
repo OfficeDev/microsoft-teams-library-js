@@ -2,7 +2,10 @@ import { debug as registerLogger, Debugger } from 'debug';
 
 import { UUID } from './uuidObject';
 
+// Each teamsjs instance gets a unique identifier that will be prepended to every log statement
 export const teamsJsInstanceIdentifier = new UUID();
+
+// Every log statement will get prepended with the teamsJsInstanceIdentifier and a timestamp
 const origFormatArgs = registerLogger.formatArgs;
 registerLogger.formatArgs = function (args) {
   args[0] = `${teamsJsInstanceIdentifier.toString()} (${new Date().toISOString()}): ${args[0]}`;
