@@ -8,7 +8,7 @@ export const teamsJsInstanceIdentifier = new UUID();
 // Every log statement will get prepended with the teamsJsInstanceIdentifier and a timestamp
 const origFormatArgs = registerLogger.formatArgs;
 registerLogger.formatArgs = function (args) {
-  args[0] = `${teamsJsInstanceIdentifier.toString()} (${new Date().toISOString()}): ${args[0]}`;
+  args[0] = `(${new Date().toISOString()}): ${args[0]} [${teamsJsInstanceIdentifier.toString()}]`;
   origFormatArgs.call(this, args);
 };
 
