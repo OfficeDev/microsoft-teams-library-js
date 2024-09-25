@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ActionOpenUrlError, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
@@ -48,7 +48,7 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
 
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
       getApiVersionTag(
@@ -56,7 +56,7 @@ export namespace externalAppCardActions {
         ApiName.ExternalAppCardActions_ProcessActionSubmit,
       ),
       'externalAppCardActions.processActionSubmit',
-      [appId, actionSubmitPayload],
+      [typeSafeAppId.toString(), actionSubmitPayload],
     ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
@@ -87,14 +87,14 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
       ),
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url.href, fromElement],
+      [typeSafeAppId.toString(), url.href, fromElement],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;

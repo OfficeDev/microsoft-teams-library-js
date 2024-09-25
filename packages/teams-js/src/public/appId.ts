@@ -8,7 +8,8 @@ import { validateStringAsAppId } from '../internal/appIdValidation';
  * However, there are some older internal/hard-coded apps which violate this schema and use names like
  * com.microsoft.teamspace.tab.youtube. For compatibility with these legacy apps, we unfortunately cannot
  * securely and completely validate app ids as UUIDs. Based on this, the validation is limited to checking
- * for script tags, length, and non-printable characters.
+ * for script tags, length, and non-printable characters. Validation will be updated in the future to ensure
+ * the app id is a valid UUID as legacy apps update.
  */
 export class AppId {
   /**

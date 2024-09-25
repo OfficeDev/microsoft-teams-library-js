@@ -756,7 +756,13 @@ export namespace app {
     }
   }
 
-  // This is called right away to make sure that we capture which script is being executed correctly
+  // This is called right away to make sure that we capture which script is being executed and important stats about the current teamsjs instance
+  appLogger(
+    'teamsjs instance is version %s, starting at %s UTC (%s local)',
+    version,
+    new Date().toISOString(),
+    new Date().toLocaleString(),
+  );
   logWhereTeamsJsIsBeingUsed();
 
   /**
