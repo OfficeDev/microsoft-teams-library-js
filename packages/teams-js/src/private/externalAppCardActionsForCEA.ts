@@ -12,6 +12,7 @@ import { ActionOpenUrlError, ActionOpenUrlType, ActionSubmitError, IAdaptiveCard
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 /**
+ * @beta
  * @hidden
  * Namespace to delegate adaptive card action for Custom Engine Agent execution to the host
  * @internal
@@ -64,7 +65,7 @@ export namespace externalAppCardActionsForCEA {
    * @param appId ID of the application the request is intended for. This must be a UUID
    * @param conversationId To tell the bot what conversation the calls are coming from
    * @param actionSubmitPayload The Adaptive Card Action.Submit payload
-   * @throws Error if host notifies of a error
+   * @throws Error if host notifies of an error
    * @returns Promise that resolves when the request is completed and rejects with ActionSubmitError if the request fails
    */
   export async function processActionSubmit(
@@ -91,6 +92,7 @@ export namespace externalAppCardActionsForCEA {
   }
 
   /**
+   * @beta
    * @hidden
    * Checks if the externalAppCardActionsForCEA capability is supported by the host
    * @returns boolean to represent whether externalAppCardActions capability is supported

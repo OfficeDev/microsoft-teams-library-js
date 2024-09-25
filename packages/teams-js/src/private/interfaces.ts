@@ -274,6 +274,7 @@ export interface UserJoinedTeamsInformation {
 }
 
 /**
+ * @beta
  * @hidden
  * The types for ActionOpenUrl
  *
@@ -288,6 +289,7 @@ export enum ActionOpenUrlType {
 }
 
 /**
+ * @beta
  * @hidden
  * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
  * and IExternalAppCardActionForCEAService.handleActionOpenUrl
@@ -301,6 +303,7 @@ export interface ActionOpenUrlError {
 }
 
 /**
+ * @beta
  * @hidden
  * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
  * and IExternalAppCardActionForCEAService.handleActionOpenUrl
@@ -315,6 +318,7 @@ export enum ActionOpenUrlErrorCode {
 }
 
 /**
+ * @beta
  * @hidden
  * The payload that is used when executing an Adaptive Card Action.Submit
  *
@@ -327,7 +331,7 @@ export interface IAdaptiveCardActionSubmit {
 }
 
 /**
- *
+ * @beta
  * @hidden
  * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
  * and IExternalAppCardActionForCEAService.handleActionSubmit
