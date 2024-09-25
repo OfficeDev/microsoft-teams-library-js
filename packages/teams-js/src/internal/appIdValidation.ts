@@ -1,3 +1,5 @@
+import { hasScriptTags } from './utils';
+
 /**
  * This function can be used to validate if a string is a "valid" app id.
  * Valid is a relative term, in this case. Truly valid app ids are UUIDs as documented in the schema:
@@ -10,7 +12,7 @@
  * @throws Error with a message describing the exact validation violation
  */
 export function validateStringAsAppId(potentialAppId: string): void {
-  if (doesStringContainScriptTags(potentialAppId)) {
+  if (hasScriptTags(potentialAppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains script tags.`);
   }
 
@@ -23,11 +25,6 @@ export function validateStringAsAppId(potentialAppId: string): void {
   if (doesStringContainNonPrintableCharacters(potentialAppId)) {
     throw new Error(`Potential app id (${potentialAppId}) is invalid; it contains non-printable characters.`);
   }
-}
-
-export function doesStringContainScriptTags(str: string): boolean {
-  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
-  return scriptRegex.test(str);
 }
 
 export const minimumValidAppIdLength = 4;

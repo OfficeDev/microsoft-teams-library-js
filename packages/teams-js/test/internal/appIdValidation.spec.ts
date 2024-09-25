@@ -1,6 +1,5 @@
 import {
   doesStringContainNonPrintableCharacters,
-  doesStringContainScriptTags,
   isStringWithinAppIdLengthLimits,
   maximumValidAppIdLength,
   minimumValidAppIdLength,
@@ -58,37 +57,6 @@ describe('isStringWithinAppIdLengthLimits', () => {
   });
 });
 
-describe('doesStringContainScriptTags', () => {
-  test('should return true for strings containing script tags', () => {
-    expect(doesStringContainScriptTags('<script>alert("Hello")</script>')).toBe(true);
-    expect(doesStringContainScriptTags('<script src="example.js"></script>')).toBe(true);
-    expect(doesStringContainScriptTags('<script type="text/javascript">console.log("test")</script>')).toBe(true);
-  });
-
-  test('should return false for strings without script tags', () => {
-    expect(doesStringContainScriptTags('This is a test string')).toBe(false);
-    expect(doesStringContainScriptTags('8e6523aa-97f9-49ad-8614-75cae22f6597')).toBe(false);
-    expect(doesStringContainScriptTags('com.microsoft.teamspace.tab.youtube')).toBe(false);
-    expect(doesStringContainScriptTags('<div>This is a div</div>')).toBe(false);
-    expect(doesStringContainScriptTags('<a href="example.com">Link</a>')).toBe(false);
-  });
-
-  test('should return true for strings with script tags containing newlines and spaces', () => {
-    expect(doesStringContainScriptTags('<script>\nalert("Hello")\n</script>')).toBe(true);
-    expect(doesStringContainScriptTags('<script> \n console.log("test") \n </script>')).toBe(true);
-  });
-
-  test('should return false for empty string', () => {
-    expect(doesStringContainScriptTags('')).toBe(false);
-  });
-
-  test('should return true for strings with multiple script tags', () => {
-    expect(doesStringContainScriptTags('<script>alert("Hello")</script><script>console.log("test")</script>')).toBe(
-      true,
-    );
-  });
-});
-
 // Since there are plenty of tests validating the individual validation functions, these tests are intentionally not as
 // comprehensive as those. It executes a few basic tests and also validates that the error messages thrown are as expected.
 describe('validateStringAsAppId', () => {
@@ -98,15 +66,15 @@ describe('validateStringAsAppId', () => {
   });
 
   test('should throw error with "script" in message for app id containing script tag', () => {
-    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/);
+    expect(() => validateStringAsAppId('<script>alert("Hello")</script>')).toThrowError(/script/i);
   });
 
   test('should throw error with "length" in message for app id too long or too short', () => {
-    expect(() => validateStringAsAppId('a')).toThrowError(/length/);
-    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/);
+    expect(() => validateStringAsAppId('a')).toThrowError(/length/i);
+    expect(() => validateStringAsAppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
   });
 
   test('should throw error with "printable" in message for app id containing non-printable characters', () => {
-    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/);
+    expect(() => validateStringAsAppId('hello\u0080world')).toThrowError(/printable/i);
   });
 });
