@@ -44,15 +44,15 @@ export default {
   ],
   treeshake: {
     moduleSideEffects: [
-      'src/public/constants.ts',
-      'src/public/handlers.ts',
       'src/internal/communication.ts',
+      'src/internal/nestedAppAuthUtils.ts',
+      'src/internal/utils.ts',
+      'src/internal/videoEffectsUtils.ts',
       'src/private/constants.ts',
       'src/private/interfaces.ts',
+      'src/public/constants.ts',
+      'src/public/handlers.ts',
       'src/public/interfaces.ts',
-      'src/internal/utils.ts',
-      'src/internal/nestedAppAuthUtils.ts',
-      'src/internal/videoEffectsUtils.ts',
     ],
   },
 };

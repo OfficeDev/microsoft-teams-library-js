@@ -10,7 +10,7 @@
     "noImplicitAny": false,
     "noEmitOnError": false,
     "noImplicitReturns": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration": true,
     "strictNullChecks": true,
     "resolveJsonModule": true
