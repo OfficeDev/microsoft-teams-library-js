@@ -35,7 +35,7 @@
     },
     {
       "title": "getMeetingDetailsVerbose API Call - Success",
-      "version": ">2.26.0",
+      "version": ">2.28.0",
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetailsVerbose",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
