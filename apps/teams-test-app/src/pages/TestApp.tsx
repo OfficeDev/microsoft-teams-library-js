@@ -117,6 +117,7 @@ export const TestApp: React.FC = () => {
     },
     { name: 'ExternalAppAuthenticationAPIs', component: <ExternalAppAuthenticationAPIs /> },
     { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
+    { name: 'ExternalAppCardActionsForCEAAPIs', component: <ExternalAppCardActionsForCEAAPIs /> },
     { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
     { name: 'FilesAPIs', component: <FilesAPIs /> },
     { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },
