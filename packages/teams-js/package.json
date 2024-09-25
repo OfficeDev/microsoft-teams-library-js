@@ -8,9 +8,9 @@
     "type": "git",
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
-  "main": "./dist/MicrosoftTeams.min.js",
-  "typings": "./dist/MicrosoftTeams.d.ts",
-  "module": "./dist/packages/teams-js/src/index.js",
+  "main": "./dist/umd/MicrosoftTeams.min.js",
+  "typings": "./dist/umd/MicrosoftTeams.d.ts",
+  "module": "./dist/esm/packages/teams-js/src/index.js",
   "type": "module",
   "scripts": {
     "build": "pnpm clean && pnpm lint && pnpm build-rollup && pnpm build-webpack && pnpm docs:validate",

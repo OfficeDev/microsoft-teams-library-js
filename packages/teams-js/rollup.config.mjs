@@ -13,7 +13,7 @@ import version from './package.json' assert { type: 'json' };
 export default {
   input: './src/index.ts',
   output: {
-    dir: 'dist/',
+    dir: 'dist/esm',
     name: '@microsoft/teams-js',
     format: 'es',
     preserveModules: true,
