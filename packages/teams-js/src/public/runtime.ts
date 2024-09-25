@@ -243,6 +243,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     };
     readonly externalAppAuthentication?: {};
     readonly externalAppCardActions?: {};
+    readonly externalAppCardActionsForCEA?: {};
     readonly externalAppCommands?: {};
     readonly geoLocation?: {
       readonly map?: {};

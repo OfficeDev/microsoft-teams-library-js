@@ -1,4 +1,5 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
+import { ExternalAppErrorCode } from './constants';
 
 /**
  * @hidden
@@ -270,4 +271,75 @@ export interface UserJoinedTeamsInformation {
    * Limited to Microsoft-internal use
    */
   userJoinedTeams: TeamInformation[];
+}
+
+/**
+ * @beta
+ * @hidden
+ * The types for ActionOpenUrl
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum ActionOpenUrlType {
+  DeepLinkDialog = 'DeepLinkDialog',
+  DeepLinkOther = 'DeepLinkOther',
+  DeepLinkStageView = 'DeepLinkStageView',
+  GenericUrl = 'GenericUrl',
+}
+
+/**
+ * @beta
+ * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface ActionOpenUrlError {
+  errorCode: ActionOpenUrlErrorCode;
+  message?: string;
+}
+
+/**
+ * @beta
+ * @hidden
+ * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export enum ActionOpenUrlErrorCode {
+  INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
+  INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
+  NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
+}
+
+/**
+ * @beta
+ * @hidden
+ * The payload that is used when executing an Adaptive Card Action.Submit
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface IAdaptiveCardActionSubmit {
+  id: string;
+  data: string | Record<string, unknown>;
+}
+
+/**
+ * @beta
+ * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
+ * and IExternalAppCardActionForCEAService.handleActionSubmit
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface ActionSubmitError {
+  errorCode: ExternalAppErrorCode;
+  message?: string;
 }
