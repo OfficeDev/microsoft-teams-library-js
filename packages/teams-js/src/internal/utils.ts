@@ -460,43 +460,19 @@ export function fullyQualifyUrlString(fullOrRelativePath: string): URL {
 }
 
 /**
- * The hasScriptTags function first decodes any HTML entities in the input string using the decodeHTMLEntities function.
- * It then tries to decode the result as a URI component. If the URI decoding fails (which would throw an error), it assumes that the input was not encoded and uses the original input.
- * Next, it defines a regular expression scriptRegex that matches any string that starts with <script (followed by any characters), then has any characters (including newlines),
- * and ends with </script> (preceded by any characters).
- * Finally, it uses the test method to check if the decoded input matches this regular expression. The function returns true if a match is found and false otherwise.
- * @param input URL converted to string to pattern match
+ * Detects if there are any script tags in a given string, even if they are Uri encoded or encoded as HTML entities.
+ * @param input string to test for script tags
  * @returns true if the input string contains a script tag, false otherwise
  */
-function hasScriptTags(input: string): boolean {
-  let decodedInput;
-  try {
-    const decodedHTMLInput = decodeHTMLEntities(input);
-    decodedInput = decodeURIComponent(decodedHTMLInput);
-  } catch (e) {
-    // input was not encoded, use it as is
-    decodedInput = input;
-  }
-  const scriptRegex = /<script[^>]*>[\s\S]*?<\/script[^>]*>/gi;
-  return scriptRegex.test(decodedInput);
-}
+export function hasScriptTags(input: string): boolean {
+  const openingScriptTagRegex = /<script[^>]*>|&lt;script[^&]*&gt;|%3Cscript[^%]*%3E/gi;
+  const closingScriptTagRegex = /<\/script[^>]*>|&lt;\/script[^&]*&gt;|%3C\/script[^%]*%3E/gi;
 
-/**
- * The decodeHTMLEntities function replaces HTML entities in the input string with their corresponding characters.
- */
-function decodeHTMLEntities(input: string): string {
-  const entityMap = new Map<string, string>([
-    ['&lt;', '<'],
-    ['&gt;', '>'],
-    ['&amp;', '&'],
-    ['&quot;', '"'],
-    ['&#39;', "'"],
-    ['&#x2F;', '/'],
-  ]);
-  entityMap.forEach((value, key) => {
-    input = input.replace(new RegExp(key, 'gi'), value);
-  });
-  return input;
+  const openingOrClosingScriptTagRegex = new RegExp(
+    `${openingScriptTagRegex.source}|${closingScriptTagRegex.source}`,
+    'gi',
+  );
+  return openingOrClosingScriptTagRegex.test(input);
 }
 
 function isIdLengthValid(id: string): boolean {

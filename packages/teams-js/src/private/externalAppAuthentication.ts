@@ -2,6 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId, validateUrl } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -351,7 +352,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -362,7 +363,7 @@ export namespace externalAppAuthentication {
       ),
       'externalAppAuthentication.authenticateAndResendRequest',
       [
-        appId,
+        typeSafeAppId.toString(),
         originalRequestInfo,
         authenticateParameters.url.href,
         authenticateParameters.width,
@@ -395,14 +396,15 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
+
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSO,
       ),
       'externalAppAuthentication.authenticateWithSSO',
-      [appId, authTokenRequest.claims, authTokenRequest.silent],
+      [typeSafeAppId.toString(), authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
         throw error;
@@ -431,7 +433,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
 
     validateOriginalRequestInfo(originalRequestInfo);
 
@@ -441,7 +443,7 @@ export namespace externalAppAuthentication {
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+      [typeSafeAppId.toString(), originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
         return response as IInvokeResponse;
