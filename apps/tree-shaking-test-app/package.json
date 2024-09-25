@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build-rollup": "pnpm clean && rollup --c",
-    "build-webpack": "webpack --json > stats.json",
+    "build-webpack": "webpack",
     "clean": "rimraf ./dist"
   },
   "dependencies": {
