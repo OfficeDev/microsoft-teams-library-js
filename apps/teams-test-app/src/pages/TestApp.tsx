@@ -1,5 +1,5 @@
 import { IAppWindow } from '@microsoft/teams-js';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import AppAPIs from '../components/AppAPIs';
 import AppEntityAPIs from '../components/AppEntityAPIs';
@@ -69,12 +69,14 @@ import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
 
 export const appInitializationTestQueryParameter = 'appInitializationTest';
+export const groupedModeQueryParameter = 'groupedMode'; // Define query parameter name for grouped mode
 
 export const TestApp: React.FC = () => {
   const dialogWindowRef = useRef<IAppWindow | null>(null);
   const [iframeUrl, setIframeUrl] = useState<URL | null>(null);
   const [groupedMode, setGroupedMode] = useState(false); // Toggle between default and grouped mode
   const [visibleSections, setVisibleSections] = useState<string[]>([]); // Track multiple open sections
+  const [hideButtons, setHideButtons] = useState(false); // New state to hide buttons
 
   const loadCurrentUrl = (): void => {
     setIframeUrl(new URL(window.location.href + `?${appInitializationTestQueryParameter}=true`));
@@ -91,75 +93,102 @@ export const TestApp: React.FC = () => {
   };
 
   // List of sections dynamically created from React elements
-  const sections = [
-    { name: 'AppAPIs', component: <AppAPIs /> },
-    { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
-    { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
-    { name: 'AuthenticationAPIs', component: <AuthenticationAPIs /> },
-    { name: 'AppEntityAPIs', component: <AppEntityAPIs /> },
-    { name: 'BarCodeAPIs', component: <BarCodeAPIs /> },
-    { name: 'CalendarAPIs', component: <CalendarAPIs /> },
-    { name: 'CallAPIs', component: <CallAPIs /> },
-    { name: 'ChatAPIs', component: <ChatAPIs /> },
-    { name: 'ClipboardAPIs', component: <ClipboardAPIs /> },
-    { name: 'CookieAccessComponent', component: <CookieAccessComponent /> },
-    { name: 'CopilotAPIs', component: <CopilotAPIs /> },
-    { name: 'CustomAPIs', component: <CustomAPIs /> },
-    { name: 'DialogAPIs', component: <DialogAPIs /> },
-    { name: 'DialogCardAPIs', component: <DialogCardAPIs /> },
-    { name: 'DialogCardBotAPIs', component: <DialogCardBotAPIs /> },
-    { name: 'DialogUpdateAPIs', component: <DialogUpdateAPIs /> },
-    { name: 'DialogUrlAPIs', component: <DialogUrlAPIs childWindowRef={dialogWindowRef} /> },
-    { name: 'DialogUrlBotAPIs', component: <DialogUrlBotAPIs /> },
-    {
-      name: 'DialogUrlParentCommunicationAPIs',
-      component: <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />,
-    },
-    { name: 'ExternalAppAuthenticationAPIs', component: <ExternalAppAuthenticationAPIs /> },
-    { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
-    { name: 'ExternalAppCardActionsForCEAAPIs', component: <ExternalAppCardActionsForCEAAPIs /> },
-    { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
-    { name: 'FilesAPIs', component: <FilesAPIs /> },
-    { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },
-    { name: 'GeoLocationAPIs', component: <GeoLocationAPIs /> },
-    { name: 'HostEntityTabAPIs', component: <HostEntityTabAPIs /> },
-    { name: 'Links', component: <Links /> },
-    { name: 'LocationAPIs', component: <LocationAPIs /> },
-    { name: 'LogAPIs', component: <LogAPIs /> },
-    { name: 'MailAPIs', component: <MailAPIs /> },
-    { name: 'MarketplaceAPIs', component: <MarketplaceAPIs /> },
-    { name: 'MediaAPIs', component: <MediaAPIs /> },
-    { name: 'MeetingAPIs', component: <MeetingAPIs /> },
-    { name: 'MeetingRoomAPIs', component: <MeetingRoomAPIs /> },
-    { name: 'MenusAPIs', component: <MenusAPIs /> },
-    { name: 'MessageChannelAPIs', component: <MessageChannelAPIs /> },
-    { name: 'MonetizationAPIs', component: <MonetizationAPIs /> },
-    { name: 'NestedAppAuthAPIs', component: <NestedAppAuthAPIs /> },
-    { name: 'NotificationAPIs', component: <NotificationAPIs /> },
-    { name: 'OtherAppStateChangedAPIs', component: <OtherAppStateChangedAPIs /> },
-    { name: 'PagesAPIs', component: <PagesAPIs /> },
-    { name: 'PagesAppButtonAPIs', component: <PagesAppButtonAPIs /> },
-    { name: 'PagesBackStackAPIs', component: <PagesBackStackAPIs /> },
-    { name: 'PagesConfigAPIs', component: <PagesConfigAPIs /> },
-    { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
-    { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
-    { name: 'PeopleAPIs', component: <PeopleAPIs /> },
-    { name: 'PrivateAPIs', component: <PrivateAPIs /> },
-    { name: 'ProfileAPIs', component: <ProfileAPIs /> },
-    { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
-    { name: 'SearchAPIs', component: <SearchAPIs /> },
-    { name: 'SecondaryBrowserAPIs', component: <SecondaryBrowserAPIs /> },
-    { name: 'SharingAPIs', component: <SharingAPIs /> },
-    { name: 'WebStorageAPIs', component: <WebStorageAPIs /> },
-    { name: 'StageViewAPIs', component: <StageViewAPIs /> },
-    { name: 'StageViewSelfAPIs', component: <StageViewSelfAPIs /> },
-    { name: 'TeamsCoreAPIs', component: <TeamsCoreAPIs /> },
-    { name: 'TeamsAPIs', component: <TeamsAPIs /> },
-    { name: 'ThirdPartyCloudStorageAPIs', component: <ThirdPartyCloudStorageAPIs /> },
-    { name: 'VideoAPIs', component: <VideoAPIs /> },
-    { name: 'VideoExAPIs', component: <VideoExAPIs /> },
-    { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
-  ];
+  const sections = useMemo(
+    () => [
+      { name: 'AppAPIs', component: <AppAPIs /> },
+      { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
+      { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },
+      { name: 'AuthenticationAPIs', component: <AuthenticationAPIs /> },
+      { name: 'AppEntityAPIs', component: <AppEntityAPIs /> },
+      { name: 'BarCodeAPIs', component: <BarCodeAPIs /> },
+      { name: 'CalendarAPIs', component: <CalendarAPIs /> },
+      { name: 'CallAPIs', component: <CallAPIs /> },
+      { name: 'ChatAPIs', component: <ChatAPIs /> },
+      { name: 'ClipboardAPIs', component: <ClipboardAPIs /> },
+      { name: 'CookieAccessComponent', component: <CookieAccessComponent /> },
+      { name: 'CopilotAPIs', component: <CopilotAPIs /> },
+      { name: 'CustomAPIs', component: <CustomAPIs /> },
+      { name: 'DialogAPIs', component: <DialogAPIs /> },
+      { name: 'DialogCardAPIs', component: <DialogCardAPIs /> },
+      { name: 'DialogCardBotAPIs', component: <DialogCardBotAPIs /> },
+      { name: 'DialogUpdateAPIs', component: <DialogUpdateAPIs /> },
+      { name: 'DialogUrlAPIs', component: <DialogUrlAPIs childWindowRef={dialogWindowRef} /> },
+      { name: 'DialogUrlBotAPIs', component: <DialogUrlBotAPIs /> },
+      {
+        name: 'DialogUrlParentCommunicationAPIs',
+        component: <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />,
+      },
+      { name: 'ExternalAppAuthenticationAPIs', component: <ExternalAppAuthenticationAPIs /> },
+      { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
+      { name: 'ExternalAppCardActionsForCEAAPIs', component: <ExternalAppCardActionsForCEAAPIs /> },
+      { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
+      { name: 'FilesAPIs', component: <FilesAPIs /> },
+      { name: 'FullTrustAPIs', component: <FullTrustAPIs /> },
+      { name: 'GeoLocationAPIs', component: <GeoLocationAPIs /> },
+      { name: 'HostEntityTabAPIs', component: <HostEntityTabAPIs /> },
+      { name: 'Links', component: <Links /> },
+      { name: 'LocationAPIs', component: <LocationAPIs /> },
+      { name: 'LogAPIs', component: <LogAPIs /> },
+      { name: 'MailAPIs', component: <MailAPIs /> },
+      { name: 'MarketplaceAPIs', component: <MarketplaceAPIs /> },
+      { name: 'MediaAPIs', component: <MediaAPIs /> },
+      { name: 'MeetingAPIs', component: <MeetingAPIs /> },
+      { name: 'MeetingRoomAPIs', component: <MeetingRoomAPIs /> },
+      { name: 'MenusAPIs', component: <MenusAPIs /> },
+      { name: 'MessageChannelAPIs', component: <MessageChannelAPIs /> },
+      { name: 'MonetizationAPIs', component: <MonetizationAPIs /> },
+      { name: 'NestedAppAuthAPIs', component: <NestedAppAuthAPIs /> },
+      { name: 'NotificationAPIs', component: <NotificationAPIs /> },
+      { name: 'OtherAppStateChangedAPIs', component: <OtherAppStateChangedAPIs /> },
+      { name: 'PagesAPIs', component: <PagesAPIs /> },
+      { name: 'PagesAppButtonAPIs', component: <PagesAppButtonAPIs /> },
+      { name: 'PagesBackStackAPIs', component: <PagesBackStackAPIs /> },
+      { name: 'PagesConfigAPIs', component: <PagesConfigAPIs /> },
+      { name: 'PagesCurrentAppAPIs', component: <PagesCurrentAppAPIs /> },
+      { name: 'PagesTabsAPIs', component: <PagesTabsAPIs /> },
+      { name: 'PeopleAPIs', component: <PeopleAPIs /> },
+      { name: 'PrivateAPIs', component: <PrivateAPIs /> },
+      { name: 'ProfileAPIs', component: <ProfileAPIs /> },
+      { name: 'RemoteCameraAPIs', component: <RemoteCameraAPIs /> },
+      { name: 'SearchAPIs', component: <SearchAPIs /> },
+      { name: 'SecondaryBrowserAPIs', component: <SecondaryBrowserAPIs /> },
+      { name: 'SharingAPIs', component: <SharingAPIs /> },
+      { name: 'WebStorageAPIs', component: <WebStorageAPIs /> },
+      { name: 'StageViewAPIs', component: <StageViewAPIs /> },
+      { name: 'StageViewSelfAPIs', component: <StageViewSelfAPIs /> },
+      { name: 'TeamsCoreAPIs', component: <TeamsCoreAPIs /> },
+      { name: 'TeamsAPIs', component: <TeamsAPIs /> },
+      { name: 'ThirdPartyCloudStorageAPIs', component: <ThirdPartyCloudStorageAPIs /> },
+      { name: 'VideoAPIs', component: <VideoAPIs /> },
+      { name: 'VideoExAPIs', component: <VideoExAPIs /> },
+      { name: 'VisualMediaAPIs', component: <VisualMediaAPIs /> },
+    ],
+    [],
+  );
+
+  // Check URL for groupedMode parameter on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const groupedModeParam = params.get(groupedModeQueryParameter);
+
+    if (groupedModeParam) {
+      setGroupedMode(true); // Automatically switch to grouped mode
+
+      // Split the parameter by comma to support multiple sections
+      const sectionsToOpen = groupedModeParam.split(',');
+
+      // Find matching sections
+      const matchingSections = sections
+        .filter((section) => sectionsToOpen.some((param) => param.toLowerCase() === section.name.toLowerCase()))
+        .map((section) => section.name);
+
+      // If matching sections found, open them
+      if (matchingSections.length > 0) {
+        setVisibleSections(matchingSections);
+        setHideButtons(true); // Hide buttons if sections are specified in query
+      }
+    }
+  }, [sections]); // Include sections in the dependency array
 
   return (
     <>
@@ -193,14 +222,29 @@ export const TestApp: React.FC = () => {
         ) : (
           <>
             {/* Grouped mode: Dynamically create buttons for each section */}
-            {sections.map((section) => (
-              <div key={section.name} className="section-content-in-grouped-mode">
-                <button className="section-button-in-grouped-mode" onClick={() => toggleSection(section.name)}>
-                  {section.name}
-                </button>
-                {visibleSections.includes(section.name) && section.component}
-              </div>
-            ))}
+            {!hideButtons && (
+              <>
+                {sections.map((section) => (
+                  <div key={section.name} className="section-content-in-grouped-mode">
+                    <button className="section-button-in-grouped-mode" onClick={() => toggleSection(section.name)}>
+                      {section.name}
+                    </button>
+                    {visibleSections.includes(section.name) && section.component}
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* Only display visible sections if buttons are hidden */}
+            {hideButtons && (
+              <>
+                {sections
+                  .filter((section) => visibleSections.includes(section.name))
+                  .map((section) => (
+                    <div key={section.name}>{section.component}</div>
+                  ))}
+              </>
+            )}
           </>
         )}
       </div>
