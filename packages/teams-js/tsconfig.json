@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.common.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "declarationDir": "./dts",
+    "outDir": "./dist/esm",
+    "declarationDir": "./dist/esm/packages/teams-js/dts",
     "lib": ["DOM", "ES2015", "ES5"],
     "module": "es6",
     "moduleResolution": "node",
