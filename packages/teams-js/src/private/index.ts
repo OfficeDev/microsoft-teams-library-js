@@ -23,6 +23,7 @@ export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppAuthenticationForCEA } from './externalAppAuthenticationForCEA';
 export { externalAppCardActions } from './externalAppCardActions';
+export { externalAppCardActionsForCEA } from './externalAppCardActionsForCEA';
 export { externalAppCommands } from './externalAppCommands';
 export { files } from './files';
 export { meetingRoom } from './meetingRoom';

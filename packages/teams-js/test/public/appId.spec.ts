@@ -10,15 +10,15 @@ describe('doesStringContainNonPrintableCharacters', () => {
   });
 
   test('should throw error with "script" in message for app id containing script tag', () => {
-    expect(() => new AppId('<script>alert("Hello")</script>')).toThrowError(/script/);
+    expect(() => new AppId('<script>alert("Hello")</script>')).toThrowError(/script/i);
   });
 
   test('should throw error with "length" in message for app id too long or too short', () => {
-    expect(() => new AppId('a')).toThrowError(/length/);
-    expect(() => new AppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/);
+    expect(() => new AppId('a')).toThrowError(/length/i);
+    expect(() => new AppId('a'.repeat(maximumValidAppIdLength))).toThrowError(/length/i);
   });
 
   test('should throw error with "printable" in message for app id containing non-printable characters', () => {
-    expect(() => new AppId('hello\u0080world')).toThrowError(/printable/);
+    expect(() => new AppId('hello\u0080world')).toThrowError(/printable/i);
   });
 });

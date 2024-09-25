@@ -1,4 +1,5 @@
 import { FileOpenPreference, TeamInformation } from '../public/interfaces';
+import { ExternalAppErrorCode } from './constants';
 
 /**
  * @hidden
@@ -273,272 +274,72 @@ export interface UserJoinedTeamsInformation {
 }
 
 /**
+ * @beta
  * @hidden
- * Information about the bot request that should be resent by the host
- * @internal
- * Limited to Microsoft-internal use
- */
-export type IOriginalRequestInfo = IQueryMessageExtensionRequest | IActionExecuteInvokeRequest;
-
-/**
- * @hidden
- * Parameters OauthWindow
- * @internal
- * Limited to Microsoft-internal use
- */
-export type OauthWindowProperties = {
-  /**
-   * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
-   */
-  width?: number;
-  /**
-   * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
-   */
-  height?: number;
-  /**
-   * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
-   * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page
-   * to be opened in an external browser. If this flag is `false`, the page will be opened directly within the current hosting application.
-   *
-   * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
-   * environment without an embedded browser.
-   */
-  isExternal?: boolean;
-};
-/**
- * @hidden
- * Parameters for the authentication pop-up. This interface is used exclusively with the externalAppAuthentication APIs
- * @internal
- * Limited to Microsoft-internal use
- */
-export type AuthenticatePopUpParameters = {
-  /**
-   * The URL for the authentication pop-up.
-   */
-  url: URL;
-  /**
-   * The preferred width for the pop-up. This value can be ignored if outside the acceptable bounds.
-   */
-  width?: number;
-  /**
-   * The preferred height for the pop-up. This value can be ignored if outside the acceptable bounds.
-   */
-  height?: number;
-  /**
-   * Some identity providers restrict their authentication pages from being displayed in embedded browsers (e.g., a web view inside of a native application)
-   * If the identity provider you are using prevents embedded browser usage, this flag should be set to `true` to enable the authentication page specified in
-   * the {@link url} property to be opened in an external browser.
-   * If this flag is `false`, the page will be opened directly within the current hosting application.
-   *
-   * This flag is ignored when the host for the application is a web app (as opposed to a native application) as the behavior is unnecessary in a web-only
-   * environment without an embedded browser.
-   */
-  isExternal?: boolean;
-};
-
-/**
- * @hidden
- * Parameters for SSO authentication. This interface is used exclusively with the externalAppAuthentication APIs
- * @internal
- * Limited to Microsoft-internal use
- */
-export type AuthTokenRequestParameters = {
-  /**
-   * An optional list of claims which to pass to Microsoft Entra when requesting the access token.
-   */
-  claims?: string[];
-  /**
-   * An optional flag indicating whether to attempt the token acquisition silently or allow a prompt to be shown.
-   */
-  silent?: boolean;
-};
-
-/**
- * @hidden
- * Information about the message extension request that should be resent by the host. Corresponds to request schema in https://learn.microsoft.com/microsoftteams/platform/resources/messaging-extension-v3/search-extensions#receive-user-requests
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface IQueryMessageExtensionRequest {
-  requestType: OriginalRequestType.QueryMessageExtensionRequest;
-  commandId: string;
-  parameters: {
-    name: string;
-    value: string;
-  }[];
-  queryOptions?: {
-    count: number;
-    skip: number;
-  };
-}
-
-/**
- * @hidden
- * Information about the Action.Execute request that should be resent by the host. Corresponds to schema in https://adaptivecards.io/explorer/Action.Execute.html
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface IActionExecuteInvokeRequest {
-  requestType: OriginalRequestType.ActionExecuteInvokeRequest;
-  type: string; // This must be "Action.Execute"
-  id: string; // The unique identifier associated with the action
-  verb: string; // The card author defined verb associated with the action
-  data: string | Record<string, unknown>;
-}
-
-/**
- * @hidden
- * Used to differentiate between IOriginalRequestInfo types
- * @internal
- * Limited to Microsoft-internal use
- */
-export enum OriginalRequestType {
-  ActionExecuteInvokeRequest = 'ActionExecuteInvokeRequest',
-  QueryMessageExtensionRequest = 'QueryMessageExtensionRequest',
-}
-/*********** END REQUEST TYPE ************/
-
-/*********** BEGIN RESPONSE TYPE ************/
-/**
- * @hidden
- * The response from the bot returned via the host
- * @internal
- * Limited to Microsoft-internal use
- */
-export type IInvokeResponse = IQueryMessageExtensionResponse | IActionExecuteResponse;
-
-/**
- * @hidden
- * Used to differentiate between IInvokeResponse types
- * @internal
- * Limited to Microsoft-internal use
- */
-export enum InvokeResponseType {
-  ActionExecuteInvokeResponse = 'ActionExecuteInvokeResponse',
-  QueryMessageExtensionResponse = 'QueryMessageExtensionResponse',
-}
-
-/**
- * @hidden
- * The response from the bot returned via the host for a message extension query request.
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface IQueryMessageExtensionResponse {
-  responseType: InvokeResponseType.QueryMessageExtensionResponse;
-  composeExtension?: ComposeExtensionResponse;
-}
-
-/**
- * @hidden
- * The response from the bot returned via the host for an Action.Execute request.
- * @internal
- * Limited to Microsoft-internal use
- */
-export interface IActionExecuteResponse {
-  responseType: InvokeResponseType.ActionExecuteInvokeResponse;
-  value: Record<string, unknown>;
-  signature?: string;
-  statusCode: number;
-  type: string;
-}
-
-/**
- * @hidden
- * The compose extension response returned for a message extension query request. `suggestedActions` will be present only when the type is is 'config' or 'auth'.
- * @internal
- * Limited to Microsoft-internal use
- */
-export type ComposeExtensionResponse = {
-  attachmentLayout: AttachmentLayout;
-  type: ComposeResultTypes;
-  attachments?: QueryMessageExtensionAttachment[];
-  suggestedActions?: QueryMessageExtensionSuggestedActions;
-  text?: string;
-};
-
-/**
- * @hidden
+ * The types for ActionOpenUrl
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export type QueryMessageExtensionSuggestedActions = {
-  actions: Action[];
-};
+export enum ActionOpenUrlType {
+  DeepLinkDialog = 'DeepLinkDialog',
+  DeepLinkOther = 'DeepLinkOther',
+  DeepLinkStageView = 'DeepLinkStageView',
+  GenericUrl = 'GenericUrl',
+}
 
 /**
+ * @beta
  * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export type Action = {
-  type: string;
-  title: string;
-  value: string;
-};
-
-/**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export type QueryMessageExtensionCard = {
-  contentType: string;
-  content: Record<string, unknown>;
-  fallbackHtml?: string;
-  signature?: string;
-};
-
-/**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export type QueryMessageExtensionAttachment = QueryMessageExtensionCard & {
-  preview?: QueryMessageExtensionCard;
-};
-
-/**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export type AttachmentLayout = 'grid' | 'list';
-/**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- */
-export type ComposeResultTypes = 'auth' | 'config' | 'message' | 'result' | 'silentAuth';
-/*********** END RESPONSE TYPE ************/
-
-/*********** BEGIN ERROR TYPE ***********/
-export interface InvokeError {
-  errorCode: InvokeErrorCode;
+export interface ActionOpenUrlError {
+  errorCode: ActionOpenUrlErrorCode;
   message?: string;
 }
 
 /**
+ * @beta
  * @hidden
+ * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+ * and IExternalAppCardActionForCEAService.handleActionOpenUrl
  *
  * @internal
  * Limited to Microsoft-internal use
  */
-export enum InvokeErrorCode {
+export enum ActionOpenUrlErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
+  INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
+  NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
 }
 
 /**
+ * @beta
  * @hidden
- * Wrapper to differentiate between InvokeError and IInvokeResponse response from host
+ * The payload that is used when executing an Adaptive Card Action.Submit
+ *
  * @internal
  * Limited to Microsoft-internal use
  */
-export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
-export const ActionExecuteInvokeRequestType = 'Action.Execute';
+export interface IAdaptiveCardActionSubmit {
+  id: string;
+  data: string | Record<string, unknown>;
+}
+
+/**
+ * @beta
+ * @hidden
+ * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
+ * and IExternalAppCardActionForCEAService.handleActionSubmit
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface ActionSubmitError {
+  errorCode: ExternalAppErrorCode;
+  message?: string;
+}

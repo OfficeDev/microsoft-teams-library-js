@@ -42,6 +42,7 @@ import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
 import ExternalAppAuthenticationForCEAAPIs from '../components/privateApis/ExternalAppAuthenticationForCEAAPIs';
 import ExternalAppCardActionsAPIs from '../components/privateApis/ExternalAppCardActionsAPIs';
+import ExternalAppCardActionsForCEAAPIs from '../components/privateApis/ExternalAppCardActionsForCEAAPIs';
 import ExternalAppCommandsAPIs from '../components/privateApis/ExternalAppCommandsAPIs';
 import FilesAPIs from '../components/privateApis/FilesAPIs';
 import FullTrustAPIs from '../components/privateApis/FullTrustAPIs';
@@ -67,12 +68,32 @@ import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
 
+export const appInitializationTestQueryParameter = 'appInitializationTest';
+
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
+  const [iframeUrl, setIframeUrl] = React.useState<URL | null>(null);
+
+  const loadCurrentUrl = (): void => {
+    setIframeUrl(new URL(window.location.href + `?${appInitializationTestQueryParameter}=true`));
+  };
 
   return (
     <>
+      <button id="button_reload" onClick={() => window.location.reload()}>
+        Reload This App
+      </button>
+      <button id="button_iframe" onClick={loadCurrentUrl}>
+        Load Current URL in child Iframe for initialization testing
+      </button>
       <div className="App-container">
+        {iframeUrl !== null && (
+          <div>
+            IFRAME: <br></br>
+            {/*eslint-disable-next-line @microsoft/sdl/react-iframe-missing-sandbox -- always use the sandbox attribute, but this is a test app and we fully control the content going into it, so it's okay not to here. */}
+            <iframe src={iframeUrl.toString()} width="100%" height="500px" />
+          </div>
+        )}
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
@@ -96,6 +117,7 @@ export const TestApp: React.FC = () => {
         <ExternalAppAuthenticationAPIs />
         <ExternalAppAuthenticationForCEAAPIs />
         <ExternalAppCardActionsAPIs />
+        <ExternalAppCardActionsForCEAAPIs />
         <ExternalAppCommandsAPIs />
         <FilesAPIs />
         <FullTrustAPIs />

@@ -1,5 +1,17 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { UUID } from './uuidObject';
+
+// Each teamsjs instance gets a unique identifier that will be prepended to every log statement
+export const teamsJsInstanceIdentifier = new UUID();
+
+// Every log statement will get prepended with the teamsJsInstanceIdentifier and a timestamp
+const originalFormatArgsFunction = registerLogger.formatArgs;
+registerLogger.formatArgs = function (args) {
+  args[0] = `(${new Date().toISOString()}): ${args[0]} [${teamsJsInstanceIdentifier.toString()}]`;
+  originalFormatArgsFunction.call(this, args);
+};
+
 const topLevelLogger = registerLogger('teamsJs');
 
 /**
@@ -117,6 +129,8 @@ export const enum ApiName {
   ExternalAppAuthenticationForCEA_OAuthCompleted = 'externalAppAuthentication.cea.OAuthCompleted',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCardActionsForCEA_ProcessActionOpenUrl = 'externalAppCardActionsForCEA.processActionOpenUrl',
+  ExternalAppCardActionsForCEA_ProcessActionSubmit = 'externalAppCardActionsForCEA.processActionSubmit',
   ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',
