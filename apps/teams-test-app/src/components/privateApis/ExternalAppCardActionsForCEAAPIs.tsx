@@ -14,7 +14,7 @@ const CheckExternalAppCardActionsForCEACapability = (): React.ReactElement =>
       } supported`,
   });
 
-const CECProcessActionSubmit = (): React.ReactElement =>
+const ProcessActionSubmitForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: AppId;
     conversationId: string;
@@ -26,6 +26,9 @@ const CECProcessActionSubmit = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
+        }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
         }
         if (!input.actionSubmitPayload) {
           throw new Error('actionSubmitPayload is required');
@@ -41,7 +44,8 @@ const CECProcessActionSubmit = (): React.ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
+      appId: new AppId('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a'),
+      conversationId: 'conversationId',
       actionSubmitPayload: {
         id: 'submitId',
         data: 'data1',
@@ -49,11 +53,11 @@ const CECProcessActionSubmit = (): React.ReactElement =>
     }),
   });
 
-const CECProcessActionOpenUrl = (): React.ReactElement =>
+const ProcessActionOpenUrlForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: AppId;
     conversationId: string;
-    url: string;
+    url: URL;
   }>({
     name: 'processActionOpenUrlForCEA',
     title: 'Process Action Open Url For CEA',
@@ -61,6 +65,9 @@ const CECProcessActionOpenUrl = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
+        }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
         }
         if (!input.url) {
           throw new Error('url is required');
@@ -70,22 +77,23 @@ const CECProcessActionOpenUrl = (): React.ReactElement =>
         const result = await externalAppCardActionsForCEA.processActionOpenUrl(
           input.appId,
           input.conversationId,
-          new URL(input.url),
+          input.url,
         );
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
-      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
-      url: 'https://www.example.com',
+      appId: new AppId('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a'),
+      conversationId: 'conversationID',
+      url: new URL('https://www.example.com'),
     }),
   });
 
 const ExternalAppCardActionsForCEAAPIs = (): React.ReactElement => (
   <ModuleWrapper title="External App Card Actions For CEA">
     <CheckExternalAppCardActionsForCEACapability />
-    <CECProcessActionSubmit />
-    <CECProcessActionOpenUrl />
+    <ProcessActionSubmitForCEA />
+    <ProcessActionOpenUrlForCEA />
   </ModuleWrapper>
 );
 
