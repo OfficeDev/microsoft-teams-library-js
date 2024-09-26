@@ -22,6 +22,7 @@ import GeoLocationAPIs from '../components/GeoLocationAPIs';
 import HostEntityTabAPIs from '../components/HostEntityTabAPIs';
 import Links from '../components/Links';
 import LocationAPIs from '../components/LocationAPIs';
+import LoggerAPIs from '../components/LoggerAPIs';
 import LogAPIs from '../components/LogsAPIs';
 import MailAPIs from '../components/MailAPIs';
 import MarketplaceAPIs from '../components/MarketplaceAPIs';
@@ -126,6 +127,7 @@ export const TestApp: React.FC = () => {
         <Links />
         <LocationAPIs />
         <LogAPIs />
+        <LoggerAPIs />
         <MailAPIs />
         <MarketplaceAPIs />
         <MediaAPIs />

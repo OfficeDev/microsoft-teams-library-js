@@ -20,9 +20,9 @@ const createDebuggerFunction = (namespace: string): Debugger => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const func = function (formatter: any, ...args: any[]): void {
     if (GlobalVars.turnOnConsoleLog) {
+      internalDebugger(formatter, args);
       console.log(formatter, args);
     }
-    internalDebugger(formatter, args);
   } as Debugger;
 
   Object.assign(func, {
