@@ -15,7 +15,7 @@ registerLogger.formatArgs = function (args) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createDebuggerFunction = (namespace: string): Debugger => {
-  let internalDebugger: Debugger = registerLogger(namespace);
+  const internalDebugger: Debugger = registerLogger(namespace);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const func = function (formatter: any, ...args: any[]): void {
@@ -51,18 +51,12 @@ const createDebuggerFunction = (namespace: string): Debugger => {
       internalDebugger.namespace = namespace;
     },
     extend(namespace: string, delimiter?: string): Debugger {
-      internalDebugger = internalDebugger.extend(namespace, delimiter);
-      return this;
+      return createDebuggerFunction(internalDebugger.extend(namespace, delimiter).namespace);
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     log(...args: any[]) {
       internalDebugger.log(args);
     },
-    // destroy: {
-    //   value(): boolean {
-    //     return true;
-    //   },
-    // },
   });
 
   return func;
