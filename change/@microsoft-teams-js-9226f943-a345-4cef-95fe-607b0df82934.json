@@ -1,6 +1,6 @@
 {
   "type": "none",
-  "comment": "renamed prepBetaRelease.js to use .cjs file extension",
+  "comment": "Renamed prepBetaRelease.js to use .cjs file extension",
   "packageName": "@microsoft/teams-js",
   "email": "noahdarveau@microsoft.com",
   "dependentChangeType": "none"
