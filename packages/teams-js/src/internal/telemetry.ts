@@ -1,5 +1,6 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { GlobalVars } from './globalVars';
 import { UUID } from './uuidObject';
 
 // Each teamsjs instance gets a unique identifier that will be prepended to every log statement
@@ -12,7 +13,70 @@ registerLogger.formatArgs = function (args) {
   originalFormatArgsFunction.call(this, args);
 };
 
-const topLevelLogger = registerLogger('teamsJs');
+const createDebuggerFunction = (namespace: string): Debugger => {
+  let internalDebugger: Debugger = registerLogger(namespace);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const func = function (formatter: any, ...args: any[]): void {
+    if (GlobalVars.turnOnConsoleLog) {
+      console.log(formatter, args);
+    }
+    internalDebugger(formatter, args);
+  } as Debugger;
+
+  Object.assign(func, {
+    color: {
+      get() {
+        return internalDebugger.color;
+      },
+      set(value: string) {
+        internalDebugger.color = value;
+      },
+    },
+    diff: {
+      get() {
+        return internalDebugger.diff;
+      },
+      set(value: number) {
+        internalDebugger.diff = value;
+      },
+    },
+    enabled: {
+      get(): boolean {
+        return internalDebugger.enabled;
+      },
+      set(enabled: boolean) {
+        internalDebugger.enabled = enabled;
+      },
+    },
+    namespace: {
+      get(): string {
+        return internalDebugger.namespace;
+      },
+      set(namespace: string) {
+        internalDebugger.namespace = namespace;
+      },
+    },
+    extend: {
+      value(namespace: string, delimiter?: string) {
+        internalDebugger = internalDebugger.extend(namespace, delimiter);
+        return this;
+      },
+    },
+    log: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      value(...args: any[]) {
+        internalDebugger.log(args);
+      },
+    },
+  });
+
+  return func;
+};
+
+const topLevelLogger = createDebuggerFunction('teamsJs');
+
+// const topLevelLogger = registerLogger('teamsJs');
 
 /**
  * @internal
