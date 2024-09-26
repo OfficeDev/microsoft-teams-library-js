@@ -16,7 +16,7 @@ import {
   InvokeErrorWrapper,
 } from './interfaces';
 
-const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_3;
+const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * @hidden
@@ -38,7 +38,7 @@ export namespace externalAppAuthenticationForCEA {
    * @throws InvokeError if the host encounters an error while authenticating
    * @returns A promise that resolves when authentication succeeds and rejects with InvokeError on failure
    */
-  export function authenticateWithSSO(
+  export async function authenticateWithSSO(
     appId: AppId,
     conversationId: string,
     authTokenRequest: AuthTokenRequestParameters,
@@ -51,18 +51,17 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    return sendMessageToParentAsync(
+    const [error] = await sendMessageToParentAsync<[InvokeError]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       'externalAppAuthenticationForCEA.authenticateWithSSO',
       [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
-    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-      if (!wasSuccessful) {
-        throw error;
-      }
-    });
+    );
+    if (error) {
+      throw error;
+    }
   }
 
   /**
@@ -77,7 +76,7 @@ export namespace externalAppAuthenticationForCEA {
    * @throws InvokeError if the host encounters an error while authenticating
    * @returns A promise that resolves from the application backend and rejects with InvokeError if the host encounters an error while authenticating
    */
-  export function authenticateWithOAuth(
+  export async function authenticateWithOAuth(
     appId: AppId,
     conversationId: string,
     authenticateParameters: AuthenticatePopUpParameters,
@@ -91,7 +90,7 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageToParentAsync(
+    const [error] = await sendMessageToParentAsync<[InvokeError]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
@@ -105,11 +104,10 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
-    ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
-      if (!wasSuccessful) {
-        throw error;
-      }
-    });
+    );
+    if (error) {
+      throw error;
+    }
   }
 
   /**
@@ -125,7 +123,7 @@ export namespace externalAppAuthenticationForCEA {
    * @throws InvokeError if the host encounters an error while authenticating or resending the request
    * @returns A promise that resolves to the IActionExecuteResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
-  export function authenticateAndResendRequest(
+  export async function authenticateAndResendRequest(
     appId: AppId,
     conversationId: string,
     authenticateParameters: AuthenticatePopUpParameters,
@@ -142,7 +140,7 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageToParentAsync<[boolean, IActionExecuteResponse | InvokeErrorWrapper]>(
+    const [error, response] = await sendMessageToParentAsync<[InvokeErrorWrapper, IActionExecuteResponse]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
@@ -157,14 +155,12 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
-    ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
-      if (wasSuccessful && response.responseType != null) {
-        return response as IActionExecuteResponse;
-      } else {
-        const error = response as InvokeError;
-        throw error;
-      }
-    });
+    );
+    if (response && response.responseType != null) {
+      return response as IActionExecuteResponse;
+    } else {
+      throw error;
+    }
   }
 
   /**
@@ -180,7 +176,7 @@ export namespace externalAppAuthenticationForCEA {
    * @throws InvokeError if the host encounters an error while authenticating or resending the request
    * @returns A promise that resolves to the IActionExecuteResponse from the application backend and rejects with InvokeError if the host encounters an error while authenticating or resending the request
    */
-  export function authenticateWithSSOAndResendRequest(
+  export async function authenticateWithSSOAndResendRequest(
     appId: AppId,
     conversationId: string,
     authTokenRequest: AuthTokenRequestParameters,
@@ -196,21 +192,21 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    return sendMessageToParentAsync<[boolean, IActionExecuteResponse | InvokeErrorWrapper]>(
+    const [error, response] = await sendMessageToParentAsync<
+      [InvokeErrorWrapper, IActionExecuteResponse | InvokeErrorWrapper]
+    >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
       'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
       [appId, conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
-    ).then(([wasSuccessful, response]: [boolean, IActionExecuteResponse | InvokeErrorWrapper]) => {
-      if (wasSuccessful && response.responseType != null) {
-        return response as IActionExecuteResponse;
-      } else {
-        const error = response as InvokeError;
-        throw error;
-      }
-    });
+    );
+    if (response && response.responseType != null) {
+      return response as IActionExecuteResponse;
+    } else {
+      throw error;
+    }
   }
 
   /**

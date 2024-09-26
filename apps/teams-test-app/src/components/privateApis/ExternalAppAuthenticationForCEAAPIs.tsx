@@ -76,13 +76,13 @@ const AuthenticateWithSSO = (): React.ReactElement =>
           throw new Error('authTokenRequest is required');
         }
       },
-      submit: async (input, setResult) => {
+      submit: async (input) => {
         await externalAppAuthenticationForCEA.authenticateWithSSO(
           input.appId,
           input.conversationId,
           input.authTokenRequest,
         );
-        console.log('completed');
+
         return 'Completed';
       },
     },
