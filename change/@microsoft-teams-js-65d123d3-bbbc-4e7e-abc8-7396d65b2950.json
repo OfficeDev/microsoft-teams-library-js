@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added a capability for better logging discoverability",
+  "packageName": "@microsoft/teams-js",
+  "email": "kangxuanye@microsoft.com",
+  "dependentChangeType": "patch"
+}
