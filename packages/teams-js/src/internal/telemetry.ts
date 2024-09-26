@@ -13,6 +13,7 @@ registerLogger.formatArgs = function (args) {
   originalFormatArgsFunction.call(this, args);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createDebuggerFunction = (namespace: string): Debugger => {
   let internalDebugger: Debugger = registerLogger(namespace);
 
@@ -25,56 +26,49 @@ const createDebuggerFunction = (namespace: string): Debugger => {
   } as Debugger;
 
   Object.assign(func, {
-    color: {
-      get() {
-        return internalDebugger.color;
-      },
-      set(value: string) {
-        internalDebugger.color = value;
-      },
+    get color() {
+      return internalDebugger.color;
     },
-    diff: {
-      get() {
-        return internalDebugger.diff;
-      },
-      set(value: number) {
-        internalDebugger.diff = value;
-      },
+    set color(value: string) {
+      internalDebugger.color = value;
     },
-    enabled: {
-      get(): boolean {
-        return internalDebugger.enabled;
-      },
-      set(enabled: boolean) {
-        internalDebugger.enabled = enabled;
-      },
+    get diff() {
+      return internalDebugger.diff;
     },
-    namespace: {
-      get(): string {
-        return internalDebugger.namespace;
-      },
-      set(namespace: string) {
-        internalDebugger.namespace = namespace;
-      },
+    set diff(value: number) {
+      internalDebugger.diff = value;
     },
-    extend: {
-      value(namespace: string, delimiter?: string) {
-        internalDebugger = internalDebugger.extend(namespace, delimiter);
-        return this;
-      },
+    get enabled(): boolean {
+      return internalDebugger.enabled;
     },
-    log: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      value(...args: any[]) {
-        internalDebugger.log(args);
-      },
+    set enabled(enabled: boolean) {
+      internalDebugger.enabled = enabled;
     },
+    get namespace(): string {
+      return internalDebugger.namespace;
+    },
+    set namespace(namespace: string) {
+      internalDebugger.namespace = namespace;
+    },
+    extend(namespace: string, delimiter?: string): Debugger {
+      internalDebugger = internalDebugger.extend(namespace, delimiter);
+      return this;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    log(...args: any[]) {
+      internalDebugger.log(args);
+    },
+    // destroy: {
+    //   value(): boolean {
+    //     return true;
+    //   },
+    // },
   });
 
   return func;
 };
 
-const topLevelLogger = createDebuggerFunction('teamsJs');
+const topLevelLogger: Debugger = createDebuggerFunction('teamsJs');
 
 // const topLevelLogger = registerLogger('teamsJs');
 
