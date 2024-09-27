@@ -16,7 +16,7 @@ const CheckExternalAppCardActionsForCEACapability = (): React.ReactElement =>
 
 const ProcessActionSubmitForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
-    appId: AppId;
+    appId: string;
     conversationId: string;
     actionSubmitPayload: IAdaptiveCardActionSubmit;
   }>({
@@ -36,7 +36,7 @@ const ProcessActionSubmitForCEA = (): React.ReactElement =>
       },
       submit: async (input) => {
         await externalAppCardActionsForCEA.processActionSubmit(
-          input.appId,
+          new AppId(input.appId),
           input.conversationId,
           input.actionSubmitPayload,
         );
@@ -44,7 +44,7 @@ const ProcessActionSubmitForCEA = (): React.ReactElement =>
       },
     },
     defaultInput: JSON.stringify({
-      appId: new AppId('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a'),
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
       conversationId: 'conversationId',
       actionSubmitPayload: {
         id: 'submitId',
@@ -55,9 +55,9 @@ const ProcessActionSubmitForCEA = (): React.ReactElement =>
 
 const ProcessActionOpenUrlForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
-    appId: AppId;
+    appId: string;
     conversationId: string;
-    url: URL;
+    url: string;
   }>({
     name: 'processActionOpenUrlForCEA',
     title: 'Process Action Open Url For CEA',
@@ -75,17 +75,17 @@ const ProcessActionOpenUrlForCEA = (): React.ReactElement =>
       },
       submit: async (input) => {
         const result = await externalAppCardActionsForCEA.processActionOpenUrl(
-          input.appId,
+          new AppId(input.appId),
           input.conversationId,
-          input.url,
+          new URL(input.url),
         );
         return JSON.stringify(result);
       },
     },
     defaultInput: JSON.stringify({
-      appId: new AppId('b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a'),
+      appId: 'b7f8c0a0-6c1d-4a9a-9c0a-2c3f1c0a3b0a',
       conversationId: 'conversationID',
-      url: new URL('https://www.example.com'),
+      url: 'https://www.example.com',
     }),
   });
 

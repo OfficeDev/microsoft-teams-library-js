@@ -75,7 +75,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testActionSubmitPayload]);
             utils.respondToMessage(message, undefined);
           }
 
@@ -94,7 +94,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testActionSubmitPayload]);
             utils.respondToMessage(message, testError);
           }
           await expect(promise).rejects.toEqual(testError);
@@ -161,7 +161,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testConversationId, testUrl.href]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testUrl.href]);
             utils.respondToMessage(message, null, testResponse);
           }
 
@@ -178,7 +178,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testConversationId, testUrl.href]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testUrl.href]);
             utils.respondToMessage(message, testError, null);
           }
 

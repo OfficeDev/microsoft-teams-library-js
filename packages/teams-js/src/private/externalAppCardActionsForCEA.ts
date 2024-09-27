@@ -47,7 +47,7 @@ export namespace externalAppCardActionsForCEA {
         ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl,
       ),
       ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl,
-      [appId, conversationId, url],
+      [appId.toString(), conversationId, url.href],
     );
     if (error) {
       throw error;
@@ -84,7 +84,7 @@ export namespace externalAppCardActionsForCEA {
         ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
       ),
       ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,
-      appId,
+      appId.toString(),
       conversationId,
       actionSubmitPayload,
     );
