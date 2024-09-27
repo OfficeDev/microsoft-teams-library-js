@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Updated types for `{externalAppCardActionsForCEA}` capability.",
+  "comment": "Updated types for `externalAppCardActionsForCEA` capability.",
   "packageName": "@microsoft/teams-js",
   "email": "maggiegong@microsoft.com",
   "dependentChangeType": "patch"
