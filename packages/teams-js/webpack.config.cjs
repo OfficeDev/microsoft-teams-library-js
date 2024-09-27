@@ -23,7 +23,7 @@ module.exports = {
     filename: '[name].js',
     // the following setting is required for SRI to work
     crossOriginLoading: 'anonymous',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist/umd'),
     library: {
       name: libraryName,
       type: 'umd',
@@ -75,8 +75,8 @@ module.exports = {
 
     new DtsBundleWebpack({
       name: '@microsoft/teams-js',
-      main: 'dts/index.d.ts',
-      out: '~/dist/MicrosoftTeams.d.ts',
+      main: './dist/esm/packages/teams-js/dts',
+      out: '~/dist/umd/MicrosoftTeams.d.ts',
       removeSource: true,
       outputAsModuleFolder: true,
     }),
@@ -98,7 +98,7 @@ module.exports = {
     {
       apply: (compiler) => {
         compiler.hooks.done.tap('wsi-test', () => {
-          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/MicrosoftTeams-manifest.json'), 'utf-8'));
+          const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/umd/MicrosoftTeams-manifest.json'), 'utf-8'));
           // If for some reason hash was not generated for the assets, this test will fail in build.
           expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
         });
@@ -110,7 +110,7 @@ module.exports = {
         onEnd: {
           copy: [
             {
-              source: './dist/MicrosoftTeams.min.js',
+              source: './dist/umd/MicrosoftTeams.min.js',
               destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
             },
           ],

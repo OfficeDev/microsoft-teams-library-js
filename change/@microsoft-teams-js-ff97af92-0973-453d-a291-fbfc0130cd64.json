@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": " Added 1P-only `hostEntity` capability for adding and configuring, removing, renaming, re-configuring and fetching all tabs.",
-  "packageName": "@microsoft/teams-js",
-  "email": "rideshmu@microsoft.com_msteamsmdb",
-  "dependentChangeType": "patch"
-}

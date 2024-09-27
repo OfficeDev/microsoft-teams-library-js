@@ -21,7 +21,8 @@
         "title": "title",
         "websiteUrl": "websiteUrl",
         "entityId": "entityId",
-        "openMode": "modal"
+        "openMode": "modal",
+        "messageId": "messageId"
       },
       "expectedAlertValue": "stageView.open called with ##JSON_INPUT_VALUE##",
       "expectedTestAppValue": "opened",
