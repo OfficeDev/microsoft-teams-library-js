@@ -108,7 +108,7 @@ export namespace meeting {
     /**
      * Email of a VoIP caller
      */
-    email?: string;
+    email?: EmailAddress;
   }
 
   /**
@@ -118,22 +118,44 @@ export namespace meeting {
    */
   export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
     /**
+     * @deprecated please use {@link ICallDetails.originalCallerInfo} instead
+     *
      * @hidden
-     * originalCaller object
+     * Phone number of a PSTN caller or email of a VoIP caller
      */
-    originalCaller?: ICallParticipantIdentifiers;
+    originalCaller?: string;
 
     /**
      * @hidden
-     * dialedEntity object
+     * Object representing the original caller
+     */
+    originalCallerInfo?: ICallParticipantIdentifiers;
+
+    /**
+     * @deprecated please use {@link ICallDetails.dialedEntityInfo} instead
+     *
+     * @hidden
+     * Phone number of a PSTN callee or email of a VoIP callee
      */
     dialedEntity?: never;
+
+    /**
+     * @hidden
+     * Object representing the entity the caller dialed
+     */
+    dialedEntityInfo?: never;
 
     /**
      * @hidden
      * Tracking identifier for grouping related calls
      */
     trackingId?: never;
+
+    /**
+     * @hidden
+     * Identifier for the current call
+     */
+    callId?: never;
   }
 
   /**
@@ -556,6 +578,25 @@ export namespace meeting {
   }
 
   /**
+   * Represents a validated email.
+   *
+   * @hidden
+   * Hide from docs.
+   */
+  export class EmailAddress {
+    public constructor(private readonly val: string) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.val)) {
+        throw new Error('Input email address does not have the correct format.');
+      }
+    }
+
+    public toString(): string {
+      return this.val;
+    }
+  }
+
+  /**
    * Allows an app to get the incoming audio speaker setting for the meeting user.
    * To learn more, visit https://aka.ms/teamsjs/getIncomingClientAudioState
    *
@@ -682,7 +723,7 @@ export namespace meeting {
 
     if (
       (response.details?.type == CallType.GroupCall || response.details?.type == CallType.OneOnOneCall) &&
-      !response.details.originalCaller
+      !response.details.originalCallerInfo
     ) {
       throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
     }

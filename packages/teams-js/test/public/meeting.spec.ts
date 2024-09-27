@@ -277,9 +277,9 @@ describe('meeting', () => {
                   'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
                 type: meeting.CallType.OneOnOneCall,
                 // Verbose details
-                originalCaller: {
-                  phoneNumber: 'testCallerPhoneNumber',
-                  email: 'testCallerEmail',
+                originalCallerInfo: {
+                  phoneNumber: '1234567890',
+                  email: new meeting.EmailAddress('calleremail@somedomain.com'),
                 },
               };
               const organizer: meeting.IOrganizer = {
@@ -630,9 +630,9 @@ describe('meeting', () => {
                 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
               type: meeting.CallType.OneOnOneCall,
               // Verbose details
-              originalCaller: {
-                phoneNumber: 'testCallerPhoneNumber',
-                email: 'testCallerEmail',
+              originalCallerInfo: {
+                phoneNumber: '1234567890',
+                email: new meeting.EmailAddress('calleeemail@somedomain.com'),
               },
             };
             const organizer: meeting.IOrganizer = {
