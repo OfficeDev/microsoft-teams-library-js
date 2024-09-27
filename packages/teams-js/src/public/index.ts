@@ -42,13 +42,13 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { AppId } from './appId';
-export { appInstallDialog } from './appInstallDialog';
-export { barCode } from './barCode';
+export * as appInstallDialog from './appInstallDialog';
+export * as barCode from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
-export { clipboard } from './clipboard';
+export * as clipboard from './clipboard';
 export { dialog } from './dialog';
 export { nestedAppAuth } from './nestedAppAuth';
-export { geoLocation } from './geoLocation';
+export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
 export {
@@ -64,7 +64,7 @@ export { secondaryBrowser } from './secondaryBrowser';
 export { location } from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
-export { calendar } from './calendar';
+export * as calendar from './calendar';
 export { mail } from './mail';
 export { teamsCore } from './teamsAPIs';
 export { people } from './people';
@@ -76,8 +76,8 @@ export { stageView } from './stageView';
 export { version } from './version';
 export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
-export { call } from './call';
-export { appInitialization } from './appInitialization';
+export * as call from './call';
+export * as appInitialization from './appInitialization';
 export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
