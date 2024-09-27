@@ -112,7 +112,7 @@
       "version": "1.x || >2.0.0-beta.2",
       "boxSelector": "#box_registerFocusEnterHandler",
       "eventName": "focusEnter",
-      "eventData": true,
+      "eventData": [true],
       "expectedTestAppValue": "successfully called with navigateForward:true"
     }
   ]
