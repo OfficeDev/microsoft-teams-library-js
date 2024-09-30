@@ -9,11 +9,14 @@ import {
   ActionExecuteInvokeRequestType,
   AuthenticatePopUpParameters,
   AuthTokenRequestParameters,
+  defaultExternalAppError,
   IActionExecuteInvokeRequest,
   IActionExecuteResponse,
   InvokeError,
   InvokeErrorCode,
   InvokeErrorWrapper,
+  InvokeResponseType,
+  isInvokeErrorWrapper,
 } from './interfaces';
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
@@ -57,7 +60,7 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       'externalAppAuthenticationForCEA.authenticateWithSSO',
-      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
+      [appId.toString(), conversationId, authTokenRequest.claims, authTokenRequest.silent],
     );
     if (error) {
       throw error;
@@ -97,7 +100,7 @@ export namespace externalAppAuthenticationForCEA {
       ),
       'externalAppAuthenticationForCEA.authenticateWithOauth',
       [
-        appId,
+        appId.toString(),
         conversationId,
         authenticateParameters.url.href,
         authenticateParameters.width,
@@ -140,14 +143,14 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const [error, response] = await sendMessageToParentAsync<[InvokeErrorWrapper, IActionExecuteResponse]>(
+    const [response] = await sendMessageToParentAsync<[InvokeErrorWrapper | IActionExecuteResponse]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
       ),
       'externalAppAuthenticationForCEA.authenticateAndResendRequest',
       [
-        appId,
+        appId.toString(),
         conversationId,
         originalRequestInfo,
         authenticateParameters.url.href,
@@ -156,11 +159,24 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.isExternal,
       ],
     );
-    if (response && response.responseType != null) {
-      return response as IActionExecuteResponse;
+    if (isActionExecuteResponse(response)) {
+      return response;
+    } else if (isInvokeErrorWrapper(response)) {
+      throw response;
     } else {
-      throw error;
+      throw defaultExternalAppError;
     }
+  }
+
+  function isActionExecuteResponse(response: unknown): response is IActionExecuteResponse {
+    const actionResponse = response as IActionExecuteResponse;
+
+    return (
+      actionResponse.responseType === InvokeResponseType.ActionExecuteInvokeResponse &&
+      actionResponse.value !== undefined &&
+      actionResponse.statusCode !== undefined &&
+      actionResponse.type !== undefined
+    );
   }
 
   /**
@@ -192,20 +208,20 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const [error, response] = await sendMessageToParentAsync<
-      [InvokeErrorWrapper, IActionExecuteResponse | InvokeErrorWrapper]
-    >(
+    const [response] = await sendMessageToParentAsync<[IActionExecuteResponse | InvokeErrorWrapper]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
       'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
-      [appId, conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+      [appId.toString(), conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     );
-    if (response && response.responseType != null) {
-      return response as IActionExecuteResponse;
+    if (isActionExecuteResponse(response)) {
+      return response;
+    } else if (isInvokeErrorWrapper(response)) {
+      throw response;
     } else {
-      throw error;
+      throw defaultExternalAppError;
     }
   }
 

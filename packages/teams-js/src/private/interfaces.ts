@@ -614,3 +614,22 @@ export enum InvokeErrorCode {
  */
 export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
 export const ActionExecuteInvokeRequestType = 'Action.Execute';
+
+export function isInvokeErrorWrapper(err: unknown): err is InvokeErrorWrapper {
+  if (typeof err !== 'object' || err === null) {
+    return false;
+  }
+
+  const errorWrapper = err as InvokeErrorWrapper;
+
+  return (
+    errorWrapper?.errorCode === InvokeErrorCode.INTERNAL_ERROR &&
+    (errorWrapper.message === undefined || typeof errorWrapper.message === 'string') &&
+    errorWrapper.responseType === undefined
+  );
+}
+
+export const defaultExternalAppError = {
+  errorCode: ExternalAppErrorCode.INTERNAL_ERROR,
+  message: 'An internal error occurred',
+};

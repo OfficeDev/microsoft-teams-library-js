@@ -1,4 +1,5 @@
 import {
+  AppId,
   AuthTokenRequestParameters,
   externalAppAuthenticationForCEA,
   IActionExecuteInvokeRequest,
@@ -40,7 +41,7 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await externalAppAuthenticationForCEA.authenticateWithOAuth(input.appId, input.conversationId, {
+        await externalAppAuthenticationForCEA.authenticateWithOAuth(new AppId(input.appId), input.conversationId, {
           ...input.authenticateParameters,
           url: new URL(input.authenticateParameters.url),
         });
@@ -78,7 +79,7 @@ const AuthenticateWithSSO = (): React.ReactElement =>
       },
       submit: async (input) => {
         await externalAppAuthenticationForCEA.authenticateWithSSO(
-          input.appId,
+          new AppId(input.appId),
           input.conversationId,
           input.authTokenRequest,
         );
@@ -124,7 +125,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       },
       submit: async (input) => {
         const result = await externalAppAuthenticationForCEA.authenticateAndResendRequest(
-          input.appId,
+          new AppId(input.appId),
           input.conversationId,
           { ...input.authenticateParameters, url: new URL(input.authenticateParameters.url) },
           input.originalRequestInfo,
@@ -173,7 +174,7 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
       },
       submit: async (input) => {
         const result = await externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest(
-          input.appId,
+          new AppId(input.appId),
           input.conversationId,
           input.authTokenRequest,
           input.originalRequestInfo,
