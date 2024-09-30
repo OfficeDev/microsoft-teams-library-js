@@ -6,7 +6,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "pnpm i && pnpm copy && pnpm tsc && pnpm clean",
-    "copy": "cp ./node_modules/@microsoft/teams-js/dist/MicrosoftTeams.d.ts ./ || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\MicrosoftTeams.d.ts .\\ /Y",
+    "copy": "cp ./node_modules/@microsoft/teams-js/dist/umd/MicrosoftTeams.d.ts ./ || xcopy .\\node_modules\\@microsoft\\teams-js\\dist\\umd\\MicrosoftTeams.d.ts .\\ /Y",
     "clean": "rimraf node_modules && rimraf MicrosoftTeams.d.ts"
   },
   "dependencies": {},

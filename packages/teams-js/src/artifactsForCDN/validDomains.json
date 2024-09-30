@@ -31,6 +31,7 @@
     "www.staging-bing-int.com",
     "*.cloud.microsoft",
     "*.m365.cloud.microsoft",
+    "edgeapi.svc.cloud.microsoft",
     "copilot.microsoft.com",
     "windows.msn.com",
     "fa000000125.resources.office.net",

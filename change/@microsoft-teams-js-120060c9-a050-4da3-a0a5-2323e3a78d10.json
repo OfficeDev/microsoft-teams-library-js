@@ -1,6 +1,6 @@
 {
-  "type": "patch",
-  "comment": "Enabled `webStorage` capability to be used on Teams Mobile in compatibility scenarios",
+  "type": "minor",
+  "comment": "Added logging for version on startup",
   "packageName": "@microsoft/teams-js",
   "email": "36546967+AE-MS@users.noreply.github.com",
   "dependentChangeType": "patch"
