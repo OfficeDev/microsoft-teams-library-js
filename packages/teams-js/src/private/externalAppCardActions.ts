@@ -1,10 +1,10 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { ExternalAppErrorCode } from './constants';
+import { ActionOpenUrlError, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -32,54 +32,6 @@ export namespace externalAppCardActions {
   }
 
   /**
-   * @hidden
-   * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface ActionOpenUrlError {
-    errorCode: ActionOpenUrlErrorCode;
-    message?: string;
-  }
-
-  /**
-   * @hidden
-   * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export enum ActionOpenUrlErrorCode {
-    INTERNAL_ERROR = 'INTERNAL_ERROR', // Generic error
-    INVALID_LINK = 'INVALID_LINK', // Deep link is invalid
-    NOT_SUPPORTED = 'NOT_SUPPORTED', // Deep link is not supported
-  }
-
-  /**
-   * @hidden
-   * The payload that is used when executing an Adaptive Card Action.Submit
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface IAdaptiveCardActionSubmit {
-    id: string;
-    data: string | Record<string, unknown>;
-  }
-
-  /**
-   *
-   * @hidden
-   * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface ActionSubmitError {
-    errorCode: ExternalAppErrorCode;
-    message?: string;
-  }
-
-  /**
    * @beta
    * @hidden
    * Delegates an Adaptive Card Action.Submit request to the host for the application with the provided app ID
@@ -96,7 +48,7 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
 
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
       getApiVersionTag(
@@ -104,7 +56,7 @@ export namespace externalAppCardActions {
         ApiName.ExternalAppCardActions_ProcessActionSubmit,
       ),
       'externalAppCardActions.processActionSubmit',
-      [appId, actionSubmitPayload],
+      [typeSafeAppId.toString(), actionSubmitPayload],
     ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
@@ -135,14 +87,14 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
       ),
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url.href, fromElement],
+      [typeSafeAppId.toString(), url.href, fromElement],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;
