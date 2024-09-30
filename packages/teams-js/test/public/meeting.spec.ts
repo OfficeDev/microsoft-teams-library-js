@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
-import { FrameContexts } from '../../src/public';
+import { EmailAddress, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
@@ -279,7 +279,7 @@ describe('meeting', () => {
                 // Verbose details
                 originalCallerInfo: {
                   phoneNumber: '1234567890',
-                  email: new meeting.EmailAddress('calleremail@somedomain.com'),
+                  email: new EmailAddress('calleremail@somedomain.com'),
                 },
               };
               const organizer: meeting.IOrganizer = {
@@ -632,7 +632,7 @@ describe('meeting', () => {
               // Verbose details
               originalCallerInfo: {
                 phoneNumber: '1234567890',
-                email: new meeting.EmailAddress('calleeemail@somedomain.com'),
+                email: new EmailAddress('calleeemail@somedomain.com'),
               },
             };
             const organizer: meeting.IOrganizer = {
@@ -2263,28 +2263,6 @@ describe('meeting', () => {
             );
           });
         }
-      });
-    });
-  });
-  describe('utility', () => {
-    const invalidEmails = ['@@domain.com', 'firstname lastname@domain.com', 'name@domain'];
-    invalidEmails.forEach((invalidEmail) => {
-      it('should throw errors for invalid email addresses', () => {
-        expect(() => new meeting.EmailAddress(invalidEmail)).toThrowError(
-          'Input email address does not have the correct format.',
-        );
-      });
-    });
-    const validEmails = [
-      'email@domain.com',
-      'firstname+lastname@domain.com',
-      '123@domain.com',
-      'name@domain.subdomain.com',
-    ];
-    validEmails.forEach((validEmail) => {
-      it('should not throw errors for valid email addresses', () => {
-        const email = new meeting.EmailAddress(validEmail);
-        expect(email.toString()).toBe(validEmail);
       });
     });
   });
