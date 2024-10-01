@@ -24,10 +24,10 @@ steps:
       script: 'node enforceBeachball.js'
 
   - task: CmdLine@2
-    displayName: 'node prepBetaRelease.js'
+    displayName: 'node prepBetaRelease.cjs'
     condition: and( eq(variables['Build.SourceBranch'], 'refs/heads/main'), in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues'), ne(variables['Build.Reason'], 'PullRequest') )
     inputs:
-      script: 'node prepBetaRelease.js'
+      script: 'node prepBetaRelease.cjs'
       workingDirectory: '$(System.DefaultWorkingDirectory)\packages\teams-js'
 
   - task: CmdLine@2
@@ -93,7 +93,7 @@ steps:
 
   - task: CopyFiles@2
     inputs:
-      sourceFolder: 'packages\teams-js\dist'
+      sourceFolder: 'packages\teams-js\dist\umd'
       contents: '**\?(*.js|*.ts|*.map)'
       targetFolder: '$(Build.ArtifactStagingDirectory)\CDNFeed\$(package.version)\js'
     displayName: 'Copy TeamsJS Content for CDN'
@@ -118,10 +118,10 @@ steps:
 
   - task: CopyFiles@2
     inputs:
-      Contents: |
-        packages\teams-js\dist\**\?(*.js|*.ts|*.map)
+      sourceFolder: 'packages\teams-js\dist'
+      contents: '**\?(*.js|*.ts|*.map)'
       TargetFolder: '$(Build.ArtifactStagingDirectory)\NPMFeed\dist'
-      flattenFolders: true
+      flattenFolders: false
     displayName: 'Copy JS Content for NPM'
 
   - task: CopyFiles@2
