@@ -1,6 +1,6 @@
 {
   "type": "patch",
-  "comment": "Keep the common data models in the `externalAppCardAction` API file to share with the `externalAppCardActionForCEA` API.",
+  "comment": "Unified common data models for external card actions into externalAppCardActions namespace.",
   "packageName": "@microsoft/teams-js",
   "email": "maggiegong@microsoft.com",
   "dependentChangeType": "patch"
