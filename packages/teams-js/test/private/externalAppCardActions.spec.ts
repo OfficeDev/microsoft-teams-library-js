@@ -2,7 +2,6 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { ExternalAppErrorCode } from '../../src/private/constants';
 import { externalAppCardActions } from '../../src/private/externalAppCardActions';
-import { ActionOpenUrlErrorCode } from '../../src/private/interfaces';
 import { FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
@@ -128,7 +127,7 @@ describe('externalAppCardActions', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testUrl = new URL('https://example.com');
     const testError = {
-      errorCode: ActionOpenUrlErrorCode.INTERNAL_ERROR,
+      errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
     const testResponse = externalAppCardActions.ActionOpenUrlType.DeepLinkDialog;

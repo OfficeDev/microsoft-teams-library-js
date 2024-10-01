@@ -5,7 +5,7 @@ import { validateId } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { ActionOpenUrlError, ActionOpenUrlType, ActionSubmitError, IAdaptiveCardActionSubmit } from './interfaces';
+import { externalAppCardActions } from './externalAppCardActions';
 
 /**
  * All of APIs in this capability file should send out API version v2 ONLY
@@ -35,13 +35,15 @@ export namespace externalAppCardActionsForCEA {
     appId: AppId,
     conversationId: string,
     url: URL,
-  ): Promise<ActionOpenUrlType> {
+  ): Promise<externalAppCardActions.ActionOpenUrlType> {
     ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     validateId(conversationId, new Error('conversation id is not valid.'));
-    const [error, response] = await sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
+    const [error, response] = await sendMessageToParentAsync<
+      [externalAppCardActions.ActionOpenUrlError, externalAppCardActions.ActionOpenUrlType]
+    >(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl,
@@ -71,14 +73,14 @@ export namespace externalAppCardActionsForCEA {
   export async function processActionSubmit(
     appId: AppId,
     conversationId: string,
-    actionSubmitPayload: IAdaptiveCardActionSubmit,
+    actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
     validateId(conversationId, new Error('conversation id is not valid.'));
-    const error = await sendAndUnwrap<ActionSubmitError | undefined>(
+    const error = await sendAndUnwrap<externalAppCardActions.ActionSubmitError | undefined>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit,

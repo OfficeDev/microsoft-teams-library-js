@@ -1,4 +1,4 @@
-import { AppId, externalAppCardActionsForCEA, IAdaptiveCardActionSubmit } from '@microsoft/teams-js';
+import { AppId, externalAppCardActions, externalAppCardActionsForCEA } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -18,7 +18,7 @@ const ProcessActionSubmitForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
-    actionSubmitPayload: IAdaptiveCardActionSubmit;
+    actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit;
   }>({
     name: 'processActionSubmitForCEA',
     title: 'Process Action Submit For CEA',
