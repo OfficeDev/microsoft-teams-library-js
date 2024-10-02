@@ -5,19 +5,7 @@ import { validateId } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import {
-  ActionExecuteInvokeRequestType,
-  AuthenticatePopUpParameters,
-  AuthTokenRequestParameters,
-  defaultExternalAppError,
-  IActionExecuteInvokeRequest,
-  IActionExecuteResponse,
-  InvokeError,
-  InvokeErrorCode,
-  InvokeErrorWrapper,
-  InvokeResponseType,
-  isInvokeErrorWrapper,
-} from './interfaces';
+import { externalAppAuthentication } from './externalAppAuthentication';
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
@@ -44,7 +32,7 @@ export namespace externalAppAuthenticationForCEA {
   export async function authenticateWithSSO(
     appId: AppId,
     conversationId: string,
-    authTokenRequest: AuthTokenRequestParameters,
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -54,7 +42,7 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    const [error] = await sendMessageToParentAsync<[InvokeError]>(
+    const [error] = await sendMessageToParentAsync<[externalAppAuthentication.InvokeError]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
@@ -82,7 +70,7 @@ export namespace externalAppAuthenticationForCEA {
   export async function authenticateWithOAuth(
     appId: AppId,
     conversationId: string,
-    authenticateParameters: AuthenticatePopUpParameters,
+    authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters,
   ): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content);
 
@@ -93,7 +81,7 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const [error] = await sendMessageToParentAsync<[InvokeError]>(
+    const [error] = await sendMessageToParentAsync<[externalAppAuthentication.InvokeError]>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
@@ -129,9 +117,9 @@ export namespace externalAppAuthenticationForCEA {
   export async function authenticateAndResendRequest(
     appId: AppId,
     conversationId: string,
-    authenticateParameters: AuthenticatePopUpParameters,
-    originalRequestInfo: IActionExecuteInvokeRequest,
-  ): Promise<IActionExecuteResponse> {
+    authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters,
+    originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
+  ): Promise<externalAppAuthentication.IActionExecuteResponse> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
@@ -143,7 +131,9 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const [response] = await sendMessageToParentAsync<[InvokeErrorWrapper | IActionExecuteResponse]>(
+    const [response] = await sendMessageToParentAsync<
+      [externalAppAuthentication.InvokeErrorWrapper | externalAppAuthentication.IActionExecuteResponse]
+    >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
@@ -168,11 +158,11 @@ export namespace externalAppAuthenticationForCEA {
     }
   }
 
-  function isActionExecuteResponse(response: unknown): response is IActionExecuteResponse {
-    const actionResponse = response as IActionExecuteResponse;
+  function isActionExecuteResponse(response: unknown): response is externalAppAuthentication.IActionExecuteResponse {
+    const actionResponse = response as externalAppAuthentication.IActionExecuteResponse;
 
     return (
-      actionResponse.responseType === InvokeResponseType.ActionExecuteInvokeResponse &&
+      actionResponse.responseType === externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse &&
       actionResponse.value !== undefined &&
       actionResponse.statusCode !== undefined &&
       actionResponse.type !== undefined
@@ -195,9 +185,9 @@ export namespace externalAppAuthenticationForCEA {
   export async function authenticateWithSSOAndResendRequest(
     appId: AppId,
     conversationId: string,
-    authTokenRequest: AuthTokenRequestParameters,
-    originalRequestInfo: IActionExecuteInvokeRequest,
-  ): Promise<IActionExecuteResponse> {
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
+    originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest,
+  ): Promise<externalAppAuthentication.IActionExecuteResponse> {
     ensureInitialized(runtime, FrameContexts.content);
 
     if (!isSupported()) {
@@ -208,7 +198,9 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const [response] = await sendMessageToParentAsync<[IActionExecuteResponse | InvokeErrorWrapper]>(
+    const [response] = await sendMessageToParentAsync<
+      [externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeErrorWrapper]
+    >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
@@ -230,9 +222,7 @@ export namespace externalAppAuthenticationForCEA {
    * @hidden
    * Checks if the externalAppAuthenticationForCEA capability is supported by the host
    * @returns boolean to represent whether externalAppAuthenticationForCEA capability is supported
-   *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
-   *
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -246,14 +236,34 @@ export namespace externalAppAuthenticationForCEA {
    * Limited to Microsoft-internal use
    * @beta
    */
-
-  function validateOriginalRequestInfo(actionExecuteRequest: IActionExecuteInvokeRequest): void {
-    if (actionExecuteRequest.type !== ActionExecuteInvokeRequestType) {
-      const error: InvokeError = {
-        errorCode: InvokeErrorCode.INTERNAL_ERROR,
-        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
+  function validateOriginalRequestInfo(
+    actionExecuteRequest: externalAppAuthentication.IActionExecuteInvokeRequest,
+  ): void {
+    if (actionExecuteRequest.type !== externalAppAuthentication.ActionExecuteInvokeRequestType) {
+      const error: externalAppAuthentication.InvokeError = {
+        errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${externalAppAuthentication.ActionExecuteInvokeRequestType}"`,
       };
       throw error;
     }
   }
+
+  function isInvokeErrorWrapper(err: unknown): err is externalAppAuthentication.InvokeErrorWrapper {
+    if (typeof err !== 'object' || err === null) {
+      return false;
+    }
+
+    const errorWrapper = err as externalAppAuthentication.InvokeErrorWrapper;
+
+    return (
+      errorWrapper?.errorCode === externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR &&
+      (errorWrapper.message === undefined || typeof errorWrapper.message === 'string') &&
+      errorWrapper.responseType === undefined
+    );
+  }
+
+  const defaultExternalAppError = {
+    errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
+    message: 'No valid response received',
+  };
 }

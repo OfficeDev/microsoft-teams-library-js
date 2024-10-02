@@ -139,7 +139,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  const ActionExecuteInvokeRequestType = 'Action.Execute';
+  export const ActionExecuteInvokeRequestType = 'Action.Execute';
 
   /**
    * @hidden
@@ -295,7 +295,7 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+  export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
   /*********** END ERROR TYPE ***********/
 
   /**

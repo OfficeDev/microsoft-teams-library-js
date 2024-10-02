@@ -1,9 +1,4 @@
-import {
-  AppId,
-  AuthTokenRequestParameters,
-  externalAppAuthenticationForCEA,
-  IActionExecuteInvokeRequest,
-} from '@microsoft/teams-js';
+import { AppId, externalAppAuthentication, externalAppAuthenticationForCEA } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput } from '../utils/ApiWithoutInput';
@@ -64,7 +59,7 @@ const AuthenticateWithSSO = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
-    authTokenRequest: AuthTokenRequestParameters;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
   }>({
     name: 'authenticateWithSSO',
     title: 'Authenticate With SSO',
@@ -107,7 +102,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       height?: number;
       isExternal?: boolean;
     };
-    originalRequestInfo: IActionExecuteInvokeRequest;
+    originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
     name: 'authenticateAndResendRequest',
     title: 'Authenticate And Resend Request',
@@ -155,8 +150,8 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
-    authTokenRequest: AuthTokenRequestParameters;
-    originalRequestInfo: IActionExecuteInvokeRequest;
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
+    originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
     name: 'authenticateWithSSOAndResendRequest',
     title: 'Authenticate With SSO And Resend Request',
