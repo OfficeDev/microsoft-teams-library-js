@@ -7,13 +7,13 @@ import { ModuleWrapper } from '../utils/ModuleWrapper';
 
 const CheckExternalAppAuthenticationForCEACapability = (): React.ReactElement =>
   ApiWithoutInput({
-    name: 'checkExternalAppAuthenticationCEACapability',
+    name: 'checkExternalAppAuthenticationForCEACapability',
     title: 'Check External App Authentication CEA Capability',
     onClick: async () =>
       `External App Authentication CEA module ${externalAppAuthenticationForCEA.isSupported() ? 'is' : 'is not'} supported`,
   });
 
-const AuthenticateWithOAuth = (): React.ReactElement =>
+const AuthenticateWithOAuthForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
@@ -24,7 +24,7 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
       isExternal?: boolean;
     };
   }>({
-    name: 'AuthenticateWithOAuth',
+    name: 'AuthenticateWithOAuthForCEA',
     title: 'Authenticate With OAuth',
     onClick: {
       validateInput: (input) => {
@@ -36,7 +36,7 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
         }
       },
       submit: async (input) => {
-        await externalAppAuthenticationForCEA.authenticateWithOAuth(new AppId(input.appId), input.conversationId, {
+        await externalAppAuthenticationForCEA.authenticateWithOauth(new AppId(input.appId), input.conversationId, {
           ...input.authenticateParameters,
           url: new URL(input.authenticateParameters.url),
         });
@@ -55,13 +55,13 @@ const AuthenticateWithOAuth = (): React.ReactElement =>
     }),
   });
 
-const AuthenticateWithSSO = (): React.ReactElement =>
+const AuthenticateWithSSOForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
     authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
   }>({
-    name: 'authenticateWithSSO',
+    name: 'authenticateWithSSOForCEA',
     title: 'Authenticate With SSO',
     onClick: {
       validateInput: (input) => {
@@ -92,7 +92,7 @@ const AuthenticateWithSSO = (): React.ReactElement =>
     }),
   });
 
-const AuthenticateAndResendRequest = (): React.ReactElement =>
+const AuthenticateAndResendRequestForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
@@ -104,7 +104,7 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
     };
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
-    name: 'authenticateAndResendRequest',
+    name: 'authenticateAndResendRequestForCEA',
     title: 'Authenticate And Resend Request',
     onClick: {
       validateInput: (input) => {
@@ -146,14 +146,14 @@ const AuthenticateAndResendRequest = (): React.ReactElement =>
       },
     }),
   });
-const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
+const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
     conversationId: string;
     authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters;
     originalRequestInfo: externalAppAuthentication.IActionExecuteInvokeRequest;
   }>({
-    name: 'authenticateWithSSOAndResendRequest',
+    name: 'authenticateWithSSOAndResendRequestForCEA',
     title: 'Authenticate With SSO And Resend Request',
     onClick: {
       validateInput: (input) => {
@@ -197,10 +197,10 @@ const AuthenticateWithSSOAndResendRequest = (): React.ReactElement =>
 const ExternalAppAuthenticationForCEAAPIs = (): React.ReactElement => (
   <ModuleWrapper title="External App Authentication for CEA">
     <CheckExternalAppAuthenticationForCEACapability />
-    <AuthenticateWithOAuth />
-    <AuthenticateWithSSO />
-    <AuthenticateAndResendRequest />
-    <AuthenticateWithSSOAndResendRequest />
+    <AuthenticateWithOAuthForCEA />
+    <AuthenticateWithSSOForCEA />
+    <AuthenticateAndResendRequestForCEA />
+    <AuthenticateWithSSOAndResendRequestForCEA />
   </ModuleWrapper>
 );
 

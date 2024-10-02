@@ -47,7 +47,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
-      'externalAppAuthenticationForCEA.authenticateWithSSO',
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       [appId.toString(), conversationId, authTokenRequest.claims, authTokenRequest.silent],
     );
     if (error) {
@@ -67,7 +67,7 @@ export namespace externalAppAuthenticationForCEA {
    * @throws InvokeError if the host encounters an error while authenticating
    * @returns A promise that resolves from the application backend and rejects with InvokeError if the host encounters an error while authenticating
    */
-  export async function authenticateWithOAuth(
+  export async function authenticateWithOauth(
     appId: AppId,
     conversationId: string,
     authenticateParameters: externalAppAuthentication.AuthenticatePopUpParameters,
@@ -86,7 +86,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
-      'externalAppAuthenticationForCEA.authenticateWithOauth',
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       [
         appId.toString(),
         conversationId,
@@ -136,9 +136,9 @@ export namespace externalAppAuthenticationForCEA {
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthentication_AuthenticateAndResendRequest,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
-      'externalAppAuthenticationForCEA.authenticateAndResendRequest',
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       [
         appId.toString(),
         conversationId,
@@ -203,9 +203,9 @@ export namespace externalAppAuthenticationForCEA {
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
-      'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       [appId.toString(), conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     );
     if (isActionExecuteResponse(response)) {

@@ -2,7 +2,6 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { externalAppAuthentication } from '../../src/private/externalAppAuthentication';
 import { externalAppAuthenticationForCEA } from '../../src/private/externalAppAuthenticationForCEA';
-// import { externalAppAuthentication.IActionExecuteInvokeRequest, externalAppAuthentication.InvokeResponseType, externalAppAuthentication.OriginalRequestType } from '../../src/private/interfaces';
 import { AppId } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
@@ -227,6 +226,8 @@ describe('externalAppAuthenticationForCEA', () => {
       claims: ['claims'],
       silent: true,
     };
+    const allowedFrameContexts = [FrameContexts.content];
+
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
 
@@ -247,46 +248,72 @@ describe('externalAppAuthenticationForCEA', () => {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
     });
-    it('should throw error from host', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
-      const testError = {
-        errorCode: 'INTERNAL_ERROR',
-        message: 'test error message',
-      };
-      const promise = externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, testRequest);
+    Object.values(FrameContexts).forEach((frameContext) => {
+      if (allowedFrameContexts.includes(frameContext)) {
+        it('should throw error from host', async () => {
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          const testError = {
+            errorCode: 'INTERNAL_ERROR',
+            message: 'test error message',
+          };
+          const promise = externalAppAuthenticationForCEA.authenticateWithSSO(
+            testAppId,
+            testConversationId,
+            testRequest,
+          );
 
-      const message = utils.findMessageByFunc('externalAppAuthenticationForCEA.authenticateWithSSO');
-      if (message && message.args) {
-        expect(message).not.toBeNull();
-        expect(message.args).toEqual([
-          testAppId.toString(),
-          testConversationId,
-          testRequest.claims,
-          testRequest.silent,
-        ]);
-        utils.respondToMessage(message, testError);
-      }
-      await expect(promise).rejects.toEqual(testError);
-    });
-    it('should resolve on success', async () => {
-      expect.assertions(3);
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
-      const promise = externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, testRequest);
+          const message = utils.findMessageByFunc('externalAppAuthenticationForCEA.authenticateWithSSO');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              testAppId.toString(),
+              testConversationId,
+              testRequest.claims,
+              testRequest.silent,
+            ]);
+            utils.respondToMessage(message, testError);
+          }
+          await expect(promise).rejects.toEqual(testError);
+        });
+        it('should resolve on success', async () => {
+          expect.assertions(3);
+          await utils.initializeWithContext(FrameContexts.content);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          const promise = externalAppAuthenticationForCEA.authenticateWithSSO(
+            testAppId,
+            testConversationId,
+            testRequest,
+          );
 
-      const message = utils.findMessageByFunc('externalAppAuthenticationForCEA.authenticateWithSSO');
-      if (message && message.args) {
-        expect(message).not.toBeNull();
-        expect(message.args).toEqual([
-          testAppId.toString(),
-          testConversationId,
-          testRequest.claims,
-          testRequest.silent,
-        ]);
-        utils.respondToMessage(message);
+          const message = utils.findMessageByFunc('externalAppAuthenticationForCEA.authenticateWithSSO');
+          if (message && message.args) {
+            expect(message).not.toBeNull();
+            expect(message.args).toEqual([
+              testAppId.toString(),
+              testConversationId,
+              testRequest.claims,
+              testRequest.silent,
+            ]);
+            utils.respondToMessage(message);
+          }
+          await expect(promise).resolves.toBeUndefined();
+        });
+      } else {
+        it(`should not allow calls from ${frameContext} context`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+
+          await expect(
+            externalAppAuthenticationForCEA.authenticateWithSSO(testAppId, testConversationId, testRequest),
+          ).rejects.toThrow(
+            new Error(
+              `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
+                `Current context: "${frameContext}".`,
+            ),
+          );
+        });
       }
-      await expect(promise).resolves.toBeUndefined();
     });
   });
 
@@ -471,7 +498,7 @@ describe('externalAppAuthenticationForCEA', () => {
     });
   });
 
-  describe('authenticateWithOAuth', () => {
+  describe('authenticateWithOauth', () => {
     const testAuthRequest = {
       url: new URL('https://example.com'),
       width: 100,
@@ -483,7 +510,7 @@ describe('externalAppAuthenticationForCEA', () => {
       expect.assertions(1);
 
       try {
-        await externalAppAuthenticationForCEA.authenticateWithOAuth(testAppId, testConversationId, testAuthRequest);
+        await externalAppAuthenticationForCEA.authenticateWithOauth(testAppId, testConversationId, testAuthRequest);
       } catch (e) {
         expect(e).toEqual(new Error(errorLibraryNotInitialized));
       }
@@ -494,7 +521,7 @@ describe('externalAppAuthenticationForCEA', () => {
       utils.setRuntimeConfig({ apiVersion: 2, supports: {} });
       expect.assertions(1);
       try {
-        await externalAppAuthenticationForCEA.authenticateWithOAuth(testAppId, testConversationId, testAuthRequest);
+        await externalAppAuthenticationForCEA.authenticateWithOauth(testAppId, testConversationId, testAuthRequest);
       } catch (e) {
         expect(e).toEqual(errorNotSupportedOnPlatform);
       }
@@ -506,7 +533,7 @@ describe('externalAppAuthenticationForCEA', () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
-          const promise = externalAppAuthenticationForCEA.authenticateWithOAuth(
+          const promise = externalAppAuthenticationForCEA.authenticateWithOauth(
             testAppId,
             testConversationId,
             testAuthRequest,
@@ -533,7 +560,7 @@ describe('externalAppAuthenticationForCEA', () => {
             errorCode: 'INTERNAL_ERROR',
             message: 'test error message',
           };
-          const promise = externalAppAuthenticationForCEA.authenticateWithOAuth(
+          const promise = externalAppAuthenticationForCEA.authenticateWithOauth(
             testAppId,
             testConversationId,
             testAuthRequest,
@@ -558,7 +585,7 @@ describe('externalAppAuthenticationForCEA', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
           await expect(
-            externalAppAuthenticationForCEA.authenticateWithOAuth(testAppId, testConversationId, testAuthRequest),
+            externalAppAuthenticationForCEA.authenticateWithOauth(testAppId, testConversationId, testAuthRequest),
           ).rejects.toThrow(
             new Error(
               `This call is only allowed in following contexts: ${JSON.stringify(allowedFrameContexts)}. ` +
