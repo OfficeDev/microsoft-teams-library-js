@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Unified common data models for external card actions into `externalAppCardActions` namespace.",
+  "packageName": "@microsoft/teams-js",
+  "email": "maggiegong@microsoft.com",
+  "dependentChangeType": "patch"
+}
