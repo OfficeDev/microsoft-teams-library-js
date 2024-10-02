@@ -102,12 +102,12 @@ export namespace meeting {
    */
   interface ICallParticipantIdentifiers {
     /**
-     * Phone number of a PSTN caller
+     * Phone number of a caller
      */
     phoneNumber?: string;
 
     /**
-     * Email of a VoIP caller
+     * Email of a caller
      */
     email?: EmailAddress;
   }
