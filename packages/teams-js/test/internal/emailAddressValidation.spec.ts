@@ -16,9 +16,8 @@ describe('emailAddressValidation', () => {
   validEmails.forEach((validEmail) => {
     it('should not throw errors for valid email addresses', () => {
       expect(() => validateEmailAddress(validEmail)).not.toThrow(
-        'Input email address does not have the correct format.'
+        'Input email address does not have the correct format.',
       );
     });
   });
 });
-

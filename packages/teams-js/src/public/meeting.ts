@@ -133,6 +133,12 @@ export namespace meeting {
     originalCallerInfo?: ICallParticipantIdentifiers;
 
     /**
+     * @hidden
+     * Identifier for the current call
+     */
+    callId?: string;
+
+    /**
      * @deprecated please use {@link ICallDetails.dialedEntityInfo} instead
      *
      * @hidden
@@ -151,12 +157,6 @@ export namespace meeting {
      * Tracking identifier for grouping related calls
      */
     trackingId?: never;
-
-    /**
-     * @hidden
-     * Identifier for the current call
-     */
-    callId?: never;
   }
 
   /**
