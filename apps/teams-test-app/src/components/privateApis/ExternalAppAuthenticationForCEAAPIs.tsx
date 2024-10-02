@@ -10,7 +10,7 @@ const CheckExternalAppAuthenticationForCEACapability = (): React.ReactElement =>
     name: 'checkExternalAppAuthenticationForCEACapability',
     title: 'Check External App Authentication CEA Capability',
     onClick: async () =>
-      `External App Authentication CEA module ${externalAppAuthenticationForCEA.isSupported() ? 'is' : 'is not'} supported`,
+      `External App Authentication For CEA module ${externalAppAuthenticationForCEA.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const AuthenticateWithOAuthForCEA = (): React.ReactElement =>
