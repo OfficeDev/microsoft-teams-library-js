@@ -4,7 +4,7 @@
   "platform": "Web",
   "testCases": [
     {
-      "title": "checkExternalAppAuthenticationCapability API Call - Success",
+      "title": "checkExternalAppAuthenticationForCEACapability API Call - Success",
       "type": "callResponse",
       "boxSelector": "#box_checkExternalAppAuthenticationForCEACapability",
       "expectedTestAppValue": "External App Authentication For CEA module is supported"
