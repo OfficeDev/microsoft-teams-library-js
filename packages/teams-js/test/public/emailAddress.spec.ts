@@ -1,7 +1,7 @@
 import { EmailAddress } from '../../src/public';
 
 describe('emailAddress', () => {
-  const invalidEmails = ['@@domain.com', 'firstname lastname@domain.com', 'name@domain'];
+  const invalidEmails = ['domain.com', 'name.domain@com', 'name@domain'];
   invalidEmails.forEach((invalidEmail) => {
     it('should throw errors for invalid email addresses', () => {
       expect(() => new EmailAddress(invalidEmail)).toThrowError(
