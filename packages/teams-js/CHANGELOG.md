@@ -10,11 +10,11 @@ Thu, 03 Oct 2024 22:51:48 GMT
 
 ### Minor changes
 
-- Added support for `ExternalAppAuthenticationForCEA` capability
+- Added support for `externalAppAuthenticationForCEA` capability
+- Added support for `externalAppCardActionsForCEA` capability.
 - Added logging for current teamsjs instance and timestamps
 - Added a Rollup built bundle of Teams-JS
-- Added APIs for `externalAppCardActionsForCEA` capability.
-- Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and  deprecated the `originalCaller` and `dialedEntity` properties
+- Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and deprecated the `originalCaller` and `dialedEntity` properties
 - Updated `pages.navigateToApp` to now optionally accept a more type-safe input object
 - Added logging for version on startup
 
@@ -368,7 +368,7 @@ Fri, 03 Mar 2023 19:57:31 GMT
 
 - Updated documentation for `dialog` and `tasks` capabilities
 - Elaborated on various areas of `authentication` documentation
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 
 ## 2.8.0
 
@@ -383,7 +383,7 @@ Wed, 01 Feb 2023 23:22:55 GMT
 
 ### Patches
 
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 - Updated typedoc version and fixed doc issues raised by it
 - Added documentation for `dialog.submit`
 - Changed user facing documentation associated with `meeting.ts`
