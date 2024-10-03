@@ -1,4 +1,4 @@
-import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
+import { sendAndUnwrap } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -132,23 +132,21 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const [response] = await sendMessageToParentAsync<
-      [externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse]
+    const response = await sendAndUnwrap<
+      externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      [
-        appId.toString(),
-        conversationId,
-        originalRequestInfo,
-        authenticateParameters.url.href,
-        authenticateParameters.width,
-        authenticateParameters.height,
-        authenticateParameters.isExternal,
-      ],
+      appId.toString(),
+      conversationId,
+      originalRequestInfo,
+      authenticateParameters.url.href,
+      authenticateParameters.width,
+      authenticateParameters.height,
+      authenticateParameters.isExternal,
     );
     if (externalAppAuthentication.isActionExecuteResponse(response)) {
       return response;
@@ -186,15 +184,19 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const [response] = await sendMessageToParentAsync<
-      [externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError]
+    const response = await sendAndUnwrap<
+      externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      [appId.toString(), conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+      appId.toString(),
+      conversationId,
+      originalRequestInfo,
+      authTokenRequest.claims,
+      authTokenRequest.silent,
     );
     if (externalAppAuthentication.isActionExecuteResponse(response)) {
       return response;
