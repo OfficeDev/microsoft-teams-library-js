@@ -22,7 +22,7 @@ const execShellCommand = async (cmd) => {
 };
 
 const buildAndGetIntegrityHash = async () => {
-  const relativePathToManifestJson = '../../packages/teams-js/dist/MicrosoftTeams-manifest.json';
+  const relativePathToManifestJson = '../../packages/teams-js/dist/umd/MicrosoftTeams-manifest.json';
   const absolutePathToManifestJson = path.resolve(__dirname, relativePathToManifestJson);
 
   console.log('Building @microsoft/teams-js');
