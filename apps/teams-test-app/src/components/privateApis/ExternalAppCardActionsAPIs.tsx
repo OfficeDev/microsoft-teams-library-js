@@ -1,4 +1,4 @@
-import { externalAppCardActions, IAdaptiveCardActionSubmit } from '@microsoft/teams-js';
+import { externalAppCardActions } from '@microsoft/teams-js';
 import React from 'react';
 
 import { ApiWithoutInput, ApiWithTextInput } from '../utils';
@@ -15,7 +15,7 @@ const CheckExternalAppCardActionsCapability = (): React.ReactElement =>
 const ProcessActionSubmit = (): React.ReactElement =>
   ApiWithTextInput<{
     appId: string;
-    actionSubmitPayload: IAdaptiveCardActionSubmit;
+    actionSubmitPayload: externalAppCardActions.IAdaptiveCardActionSubmit;
   }>({
     name: 'processActionSubmit',
     title: 'Process Action Submit',
