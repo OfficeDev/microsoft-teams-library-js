@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added support for `ExternalAppAuthenticationForCEA` capability",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
