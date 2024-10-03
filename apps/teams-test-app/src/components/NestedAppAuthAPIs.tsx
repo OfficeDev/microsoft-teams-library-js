@@ -10,13 +10,14 @@ const NaaRequest = (): ReactElement =>
   ApiWithTextInput<NestedAppAuthRequest>({
     name: 'nestedAppAuthMock',
     title: 'NAA Mock',
+    defaultInput: JSON.stringify({ requestId: '123', messageType: 'NestedAppAuthRequest', body: 'test' }),
     onClick: {
       validateInput: (input) => {
         if (!input.requestId) {
           throw new Error('requestId is required');
         }
       },
-      submit: async (input) => {
+      submit: async (input, setResult) => {
         const naaMock = new NaaMock();
         const listener = (response): void => {
           console.log(response);
@@ -25,6 +26,7 @@ const NaaRequest = (): ReactElement =>
             alert('Received response for a different request: ' + JSON.stringify(response));
           }
           alert('Received response: ' + JSON.stringify(parsedResponse));
+          setResult('Received response: ' + JSON.stringify(parsedResponse));
           naaMock.removeEventListener(listener);
         };
         try {

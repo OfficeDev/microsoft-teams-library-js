@@ -12,6 +12,7 @@ declare global {
 
 export class NaaMock {
   public addEventListener(callback: (response: string) => void): void {
+    console.log(window.nestedAppAuthBridge);
     window.nestedAppAuthBridge.addEventListener('message', callback);
   }
 

@@ -65,6 +65,7 @@ import Version from '../components/Version';
 import VideoAPIs from '../components/VideoEffectsApis';
 import VisualMediaAPIs from '../components/VisualMediaAPIs';
 import WebStorageAPIs from '../components/WebStorageAPIs';
+import CookieTest from '../components/CookieTest';
 
 export const TestApp: React.FC = () => {
   const dialogWindowRef = React.useRef<IAppWindow | null>(null);
@@ -72,6 +73,7 @@ export const TestApp: React.FC = () => {
   return (
     <>
       <div className="App-container">
+        <CookieTest />
         <AppAPIs />
         <AppInitializationAPIs />
         <AppInstallDialogAPIs />
