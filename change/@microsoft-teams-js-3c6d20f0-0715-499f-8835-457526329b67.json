@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Updated `pages.navigateToApp` to now optionally accept a more type-safe input object",
-  "packageName": "@microsoft/teams-js",
-  "email": "36546967+AE-MS@users.noreply.github.com",
-  "dependentChangeType": "patch"
-}

@@ -1,8 +1,30 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Tue, 03 Sep 2024 22:19:52 GMT and should not be manually modified.
+This log was last generated on Thu, 03 Oct 2024 19:57:27 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.29.0
+
+Thu, 03 Oct 2024 19:57:27 GMT
+
+### Minor changes
+
+- Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and  deprecated the `originalCaller` and `dialedEntity` properties
+- Added support for `ExternalAppAuthenticationForCEA` capability
+- Added logging for current teamsjs instance and timestamps
+- Updated `pages.navigateToApp` to now optionally accept a more type-safe input object
+- Added APIs for `externalAppCardActionsForCEA` capability.
+- Added a Rollup built bundle of Teams-JS
+- Added logging for version on startup
+
+### Patches
+
+- Updated logging for messages to be clearer
+- Added `edgeapi.svc.cloud.microsoft` to valid domains list
+- Unified common data models for external card actions into `externalAppCardActions` namespace.
+- Updated internal app id validation
+- Updated types for `externalAppCardActionsForCEA` capability.
 
 ## 2.28.0
 
