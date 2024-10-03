@@ -134,12 +134,33 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Determines if the provided response object is an instance of IActionExecuteResponse
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param response The object to check whether it is of IActionExecuteResponse type
+   */
+  export function isActionExecuteResponse(
+    response: unknown,
+  ): response is externalAppAuthentication.IActionExecuteResponse {
+    const actionResponse = response as externalAppAuthentication.IActionExecuteResponse;
+
+    return (
+      actionResponse.responseType === externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse &&
+      actionResponse.value !== undefined &&
+      actionResponse.statusCode !== undefined &&
+      actionResponse.type !== undefined
+    );
+  }
+
+  /**
    * @hidden
    * This is the only allowed value for IActionExecuteInvokeRequest.type. Used for validation
    * @internal
    * Limited to Microsoft-internal use
    */
-  const ActionExecuteInvokeRequestType = 'Action.Execute';
+  export const ActionExecuteInvokeRequestType = 'Action.Execute';
 
   /**
    * @hidden
@@ -280,6 +301,27 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Determines if the provided error object is an instance of InvokeError
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param err The error object to check whether it is of InvokeError type
+   */
+  export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
+    if (typeof err !== 'object' || err === null) {
+      return false;
+    }
+
+    const error = err as externalAppAuthentication.InvokeError;
+
+    return (
+      Object.values(externalAppAuthentication.InvokeErrorCode).includes(error.errorCode) &&
+      (error.message === undefined || typeof error.message === 'string')
+    );
+  }
+
+  /**
    * @hidden
    *
    * @internal
@@ -295,7 +337,8 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+  export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+
   /*********** END ERROR TYPE ***********/
 
   /**
