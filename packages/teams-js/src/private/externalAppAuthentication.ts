@@ -133,6 +133,14 @@ export namespace externalAppAuthentication {
     data: string | Record<string, unknown>;
   }
 
+  /**
+   * @beta
+   * @hidden
+   * Determines if the provided response object is an instance of IActionExecuteResponse
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param response The object to check whether it is of IActionExecuteResponse type
+   */
   export function isActionExecuteResponse(
     response: unknown,
   ): response is externalAppAuthentication.IActionExecuteResponse {
@@ -293,6 +301,27 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Determines if the provided error object is an instance of InvokeError
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param err The error object to check whether it is of InvokeError type
+   */
+  export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
+    if (typeof err !== 'object' || err === null) {
+      return false;
+    }
+
+    const error = err as externalAppAuthentication.InvokeError;
+
+    return (
+      Object.values(externalAppAuthentication.InvokeErrorCode).includes(error.errorCode) &&
+      (error.message === undefined || typeof error.message === 'string')
+    );
+  }
+
+  /**
    * @hidden
    *
    * @internal
@@ -309,25 +338,6 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
-
-  /**
-   * @hidden
-   * Determines if the provided error object is an instance of InvokeErrorWrapper
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
-    if (typeof err !== 'object' || err === null) {
-      return false;
-    }
-
-    const error = err as externalAppAuthentication.InvokeError;
-
-    return (
-      Object.values(externalAppAuthentication.InvokeErrorCode).includes(error?.errorCode) &&
-      (error.message === undefined || typeof error.message === 'string')
-    );
-  }
 
   /*********** END ERROR TYPE ***********/
 
