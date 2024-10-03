@@ -1,0 +1,16 @@
+{
+  "name": "ExternalAppCardActionsForCEA",
+  "version": ">=2.29.0",
+  "hostSdkVersion": {
+    "web": ">=4.3.0"
+  },
+  "platform": "Web",
+  "testCases": [
+    {
+      "title": "checkExternalAppCardActionsForCEACapability API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_checkExternalAppCardActionsForCEACapability",
+      "expectedTestAppValue": "External App Card Actions For CEA module is supported"
+    }
+  ]
+}

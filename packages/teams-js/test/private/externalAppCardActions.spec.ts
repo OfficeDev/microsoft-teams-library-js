@@ -82,34 +82,28 @@ describe('externalAppCardActions', () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
-          const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
-          try {
-            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          const invalidAppId = 'invalidAppIdWith<script>alert(1)</script>';
+          await expect(
+            async () => await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload),
+          ).rejects.toThrowError(/script/i);
         });
-        it(`should throw error on invalid app ID if it contains non printabe ASCII characters. context - ${frameContext}`, async () => {
+        it(`should throw error on invalid app ID if it contains non printable ASCII characters. context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'appId\u0000';
-          try {
-            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          await expect(
+            async () => await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload),
+          ).rejects.toThrowError(/characters/i);
         });
         it(`should throw error on invalid app ID if it its size exceeds 256 characters. context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'a'.repeat(257);
-          try {
-            await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          await expect(
+            async () => await externalAppCardActions.processActionSubmit(invalidAppId, testActionSubmitPayload),
+          ).rejects.toThrowError(/length/i);
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -188,33 +182,27 @@ describe('externalAppCardActions', () => {
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'invalidAppIdwith<script>alert(1)</script>';
-          try {
-            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          await expect(
+            async () => await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl),
+          ).rejects.toThrowError(/script/i);
         });
-        it(`should throw error on invalid app ID if it contains non printabe ASCII characters with context - ${frameContext}`, async () => {
+        it(`should throw error on invalid app ID if it contains non printable ASCII characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'appId\u0000';
-          try {
-            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          await expect(
+            async () => await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl),
+          ).rejects.toThrowError(/characters/i);
         });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppCardActions: {} } });
           const invalidAppId = 'a'.repeat(257);
-          try {
-            await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl);
-          } catch (e) {
-            expect(e).toEqual(new Error('App id is not valid.'));
-          }
+          await expect(
+            async () => await externalAppCardActions.processActionOpenUrl(invalidAppId, testUrl),
+          ).rejects.toThrowError(/length/i);
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {

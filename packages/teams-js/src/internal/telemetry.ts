@@ -1,5 +1,17 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { UUID } from './uuidObject';
+
+// Each teamsjs instance gets a unique identifier that will be prepended to every log statement
+export const teamsJsInstanceIdentifier = new UUID();
+
+// Every log statement will get prepended with the teamsJsInstanceIdentifier and a timestamp
+const originalFormatArgsFunction = registerLogger.formatArgs;
+registerLogger.formatArgs = function (args) {
+  args[0] = `(${new Date().toISOString()}): ${args[0]} [${teamsJsInstanceIdentifier.toString()}]`;
+  originalFormatArgsFunction.call(this, args);
+};
+
 const topLevelLogger = registerLogger('teamsJs');
 
 /**
@@ -111,8 +123,14 @@ export const enum ApiName {
   ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest = 'externalAppAuthentication.authenticateWithSSOAndResendRequest',
   ExternalAppAuthentication_AuthenticateWithOauth2 = 'externalAppAuthentication.authenticateWithOauth2',
   ExternalAppAuthentication_AuthenticateWithPowerPlatformConnectorPlugins = 'externalAppAuthentication.authenticateWithPowerPlatformConnectorPlugins',
+  ExternalAppAuthenticationForCEA_AuthenticateWithOauth = 'externalAppAuthenticationForCEA.authenticateWithOauth',
+  ExternalAppAuthenticationForCEA_AuthenticateWithSSO = 'externalAppAuthenticationForCEA.authenticateWithSSO',
+  ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest = 'externalAppAuthenticationForCEA.authenticateAndResendRequest',
+  ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest = 'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
   ExternalAppCardActions_ProcessActionOpenUrl = 'externalAppCardActions.processActionOpenUrl',
   ExternalAppCardActions_ProcessActionSubmit = 'externalAppCardActions.processActionSubmit',
+  ExternalAppCardActionsForCEA_ProcessActionOpenUrl = 'externalAppCardActionsForCEA.processActionOpenUrl',
+  ExternalAppCardActionsForCEA_ProcessActionSubmit = 'externalAppCardActionsForCEA.processActionSubmit',
   ExternalAppCommands_ProcessActionCommands = 'externalAppCommands.processActionCommand',
   Files_AddCloudStorageFolder = 'files.addCloudStorageFolder',
   Files_AddCloudStorageProvider = 'files.addCloudStorageProvider',
@@ -138,6 +156,11 @@ export const enum ApiName {
   GeoLocation_RequestPermission = 'geoLocation.requestPermission',
   GeoLocation_ShowLocation = 'geoLocation.showLocation',
   HandleBeforeUnload = 'handleBeforeUnload',
+  HostEntity_Tab_addAndConfigureApp = 'hostEntity.tab.addAndConfigure',
+  HostEntity_Tab_reconfigure = 'hostEntity.tab.reconfigure',
+  HostEntity_Tab_rename = 'hostEntity.tab.rename',
+  HostEntity_Tab_remove = 'hostEntity.tab.remove',
+  HostEntity_Tab_getAll = 'hostEntity.tab.getAll',
   Interactive_GetClientInfo = 'interactive.getClientInfo',
   Interactive_GetClientRoles = 'interactive.getClientRoles',
   Interactive_GetFluidContainerId = 'interactive.getFluidContainerId',
@@ -297,6 +320,7 @@ export const enum ApiName {
   Sharing_History_GetContent = 'sharing.history.getContent',
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
+  StageView_Self_Close = 'stageView.self.close',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',

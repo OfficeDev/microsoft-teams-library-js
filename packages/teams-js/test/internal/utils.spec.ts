@@ -3,12 +3,13 @@ import {
   compareSDKVersions,
   createTeamsAppLink,
   getBase64StringFromBlob,
+  hasScriptTags,
   validateId,
   validateUrl,
   validateUuid,
 } from '../../src/internal/utils';
 import { UUID } from '../../src/internal/uuidObject';
-import { pages } from '../../src/public';
+import { AppId, pages } from '../../src/public';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 
 describe('utils', () => {
@@ -24,26 +25,26 @@ describe('utils', () => {
   });
   describe('createTeamsAppLink', () => {
     it('builds a basic URL with an appId and pageId', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
       };
       const expected = 'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a webUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        webUrl: new URL('https://tasklist.example.com/123'),
       };
       const expected =
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a subPageUrl parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         subPageId: 'task456',
       };
@@ -52,8 +53,8 @@ describe('utils', () => {
       expect(createTeamsAppLink(params)).toBe(expected);
     });
     it('builds a URL with a channelId parameter', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
       };
@@ -61,11 +62,22 @@ describe('utils', () => {
         'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22channelId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
       expect(createTeamsAppLink(params)).toBe(expected);
     });
-    it('builds a URL with all optional properties', () => {
-      const params: pages.NavigateToAppParams = {
-        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+
+    it('builds a URL with a chatId parameter', () => {
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
         pageId: 'tasklist123',
-        webUrl: 'https://tasklist.example.com/123',
+        chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
+      };
+      const expected =
+        'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?context=%7B%22chatId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%7D';
+      expect(createTeamsAppLink(params)).toBe(expected);
+    });
+    it('builds a URL with all optional properties', () => {
+      const params: pages.AppNavigationParameters = {
+        appId: new AppId('fe4a8eba-2a31-4737-8e33-e5fae6fee194'),
+        pageId: 'tasklist123',
+        webUrl: new URL('https://tasklist.example.com/123'),
         channelId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
         subPageId: 'task456',
       };
@@ -353,6 +365,105 @@ describe('utils', () => {
       } catch (error) {
         expect(error).toEqual(new Error('id is not valid.'));
       }
+    });
+  });
+
+  describe('hasScriptTags', () => {
+    test('detects plain opening <script> tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded opening <script> tag', () => {
+      expect(hasScriptTags('&lt;script&gt;alert("XSS")&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded opening <script> tag', () => {
+      expect(hasScriptTags('%3Cscript%3Ealert("XSS")%3C/script%3E')).toBe(true);
+    });
+
+    test('detects plain closing </script> tag', () => {
+      expect(hasScriptTags('</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded closing </script> tag', () => {
+      expect(hasScriptTags('&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded closing </script> tag', () => {
+      expect(hasScriptTags('%3C/script%3E')).toBe(true);
+    });
+
+    test('returns false for strings without <script> tags', () => {
+      expect(hasScriptTags('<div>no script here</div>')).toBe(false);
+    });
+
+    test('detects mixed content with <script> tags', () => {
+      expect(hasScriptTags('<div><script>alert("XSS")</script></div>')).toBe(true);
+    });
+
+    test('returns false for empty string', () => {
+      expect(hasScriptTags('')).toBe(false);
+    });
+
+    test('detects multiple <script> tags', () => {
+      expect(hasScriptTags('<script>alert("XSS")</script><script>alert("XSS2")</script>')).toBe(true);
+    });
+
+    test('detects <script> tags with attributes', () => {
+      expect(hasScriptTags('<script type="text/javascript">alert("XSS")</script>')).toBe(true);
+      expect(hasScriptTags('<script src="example.js"></script>')).toBe(true);
+      expect(hasScriptTags('<script async defer>alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects HTML entity encoded <script> tag with attributes', () => {
+      expect(hasScriptTags('&lt;script type="text/javascript"&gt;alert("XSS")&lt;/script&gt;')).toBe(true);
+      expect(hasScriptTags('&lt;script src="example.js"&gt;&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects URI encoded <script> tag with attributes', () => {
+      expect(hasScriptTags('%3Cscript%20type=%22text/javascript%22%3Ealert("XSS")%3C/script%3E')).toBe(true);
+      expect(hasScriptTags('%3Cscript%20src=%22example.js%22%3E%3C/script%3E')).toBe(true);
+    });
+
+    test('detects <script> tags with spaces', () => {
+      expect(hasScriptTags('<script >alert("XSS")</script >')).toBe(true);
+    });
+
+    test('detects plain opening <script> tag with URI encoded closing tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")%3C/script%3E')).toBe(true);
+    });
+
+    test('detects URI encoded opening <script> tag with plain closing tag', () => {
+      expect(hasScriptTags('%3Cscript%3Ealert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects plain opening <script> tag with HTML entity encoded closing tag', () => {
+      expect(hasScriptTags('<script>alert("XSS")&lt;/script&gt;')).toBe(true);
+    });
+
+    test('detects HTML entity encoded opening <script> tag with plain closing tag', () => {
+      expect(hasScriptTags('&lt;script&gt;alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects nested <script> tags', () => {
+      expect(hasScriptTags('<script><script>alert("nested")</script></script>')).toBe(true);
+    });
+
+    test('detects <script> tags with unusual but valid attributes', () => {
+      expect(hasScriptTags('<script data-custom="value">alert("XSS")</script>')).toBe(true);
+      expect(hasScriptTags('<script nonce="random">alert("XSS")</script>')).toBe(true);
+    });
+
+    test('detects <script> tags with different casing', () => {
+      expect(hasScriptTags('<SCRIPT>alert("XSS")</SCRIPT>')).toBe(true);
+      expect(hasScriptTags('&lt;SCRIPT&gt;alert("XSS")&lt;/SCRIPT&gt;')).toBe(true);
+      expect(hasScriptTags('%3CSCRIPT%3Ealert("XSS")%3C/SCRIPT%3E')).toBe(true);
+    });
+
+    test('detects mixed casing <script> tags', () => {
+      expect(hasScriptTags('<sCRipT>alert("XSS")</sCRipT>')).toBe(true);
+      expect(hasScriptTags('&lt;sCRipT&gt;alert("XSS")&lt;/sCRipT&gt;')).toBe(true);
+      expect(hasScriptTags('%3CsCRipT%3Ealert("XSS")%3C/sCRipT%3E')).toBe(true);
     });
   });
 

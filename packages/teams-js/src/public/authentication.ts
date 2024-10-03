@@ -11,6 +11,7 @@ import { ensureInitializeCalled, ensureInitialized } from '../internal/internalA
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
+import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
@@ -266,6 +267,9 @@ export namespace authentication {
    *
    * @returns Promise that resolves with the {@link UserProfile}.
    *
+   * @throws `Error` object in case of any problems, the most likely of which is that the calling app does not have appropriate permissions
+   * to call this method.
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -278,6 +282,10 @@ export namespace authentication {
    * Requests the decoded Microsoft Entra user identity on behalf of the app.
    *
    * @param userRequest - It passes success/failure callbacks in the userRequest object(deprecated)
+   *
+   * @throws `Error` object in case of any problems, the most likely of which is that the calling app does not have appropriate permissions
+   * to call this method.
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -296,23 +304,24 @@ export namespace authentication {
         }
         return value;
       })
-      .catch((err: Error) => {
+      .catch((err: SdkError) => {
+        const errorMessage = `Error returned, code = ${err.errorCode}, message = ${err.message}`;
         if (userRequest && userRequest.failureCallback) {
-          userRequest.failureCallback(err.message);
+          userRequest.failureCallback(errorMessage);
           return null;
         }
-        throw err;
+        throw new Error(errorMessage);
       });
   }
 
   function getUserHelper(apiVersionTag: string): Promise<UserProfile> {
-    return new Promise<[boolean, UserProfile | string]>((resolve) => {
+    return new Promise<[boolean, UserProfile | SdkError]>((resolve) => {
       resolve(sendMessageToParentAsync(apiVersionTag, 'authentication.getUser'));
-    }).then(([success, result]: [boolean, UserProfile | string]) => {
+    }).then(([success, result]: [boolean, UserProfile | SdkError]) => {
       if (success) {
         return result as UserProfile;
       } else {
-        throw new Error(result as string);
+        throw result;
       }
     });
   }

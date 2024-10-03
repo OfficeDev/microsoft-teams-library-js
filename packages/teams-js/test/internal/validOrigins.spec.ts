@@ -123,6 +123,19 @@ describe('validOrigins', () => {
       GlobalVars.additionalValidOrigins = ['https://*.testdomain.com'];
       expect(result).toBe(false);
     });
+    it('validateOrigin returns true for high-profile *.cloud.microsoft origins', async () => {
+      let messageOrigin = new URL('https://teams.cloud.microsoft');
+      let result = await validateOrigin(messageOrigin);
+      expect(result).toBe(true);
+
+      messageOrigin = new URL('https://outlook.cloud.microsoft');
+      result = await validateOrigin(messageOrigin);
+      expect(result).toBe(true);
+
+      messageOrigin = new URL('https://m365.cloud.microsoft');
+      result = await validateOrigin(messageOrigin);
+      expect(result).toBe(true);
+    });
   });
   describe('testing main validOrigins flow with invalid json object', () => {
     let utils: Utils = new Utils();

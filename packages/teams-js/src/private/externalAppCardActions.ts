@@ -1,7 +1,7 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { ExternalAppErrorCode } from './constants';
@@ -32,8 +32,10 @@ export namespace externalAppCardActions {
   }
 
   /**
+   * @beta
    * @hidden
    * Error that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+   * and IExternalAppCardActionForCEAService.handleActionOpenUrl
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -44,8 +46,11 @@ export namespace externalAppCardActions {
   }
 
   /**
+   * @beta
    * @hidden
    * Error codes that can be thrown from IExternalAppCardActionService.handleActionOpenUrl
+   * and IExternalAppCardActionForCEAService.handleActionOpenUrl
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -56,8 +61,10 @@ export namespace externalAppCardActions {
   }
 
   /**
+   * @beta
    * @hidden
    * The payload that is used when executing an Adaptive Card Action.Submit
+   *
    * @internal
    * Limited to Microsoft-internal use
    */
@@ -67,9 +74,10 @@ export namespace externalAppCardActions {
   }
 
   /**
-   *
+   * @beta
    * @hidden
    * Error that can be thrown from IExternalAppCardActionService.handleActionSubmit
+   * and IExternalAppCardActionForCEAService.handleActionSubmit
    *
    * @internal
    * Limited to Microsoft-internal use
@@ -96,7 +104,7 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
 
     return sendMessageToParentAsync<[boolean, ActionSubmitError]>(
       getApiVersionTag(
@@ -104,7 +112,7 @@ export namespace externalAppCardActions {
         ApiName.ExternalAppCardActions_ProcessActionSubmit,
       ),
       'externalAppCardActions.processActionSubmit',
-      [appId, actionSubmitPayload],
+      [typeSafeAppId.toString(), actionSubmitPayload],
     ).then(([wasSuccessful, error]: [boolean, ActionSubmitError]) => {
       if (!wasSuccessful) {
         throw error;
@@ -135,14 +143,14 @@ export namespace externalAppCardActions {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
     return sendMessageToParentAsync<[ActionOpenUrlError, ActionOpenUrlType]>(
       getApiVersionTag(
         externalAppCardActionsTelemetryVersionNumber,
         ApiName.ExternalAppCardActions_ProcessActionOpenUrl,
       ),
       'externalAppCardActions.processActionOpenUrl',
-      [appId, url.href, fromElement],
+      [typeSafeAppId.toString(), url.href, fromElement],
     ).then(([error, response]: [ActionOpenUrlError, ActionOpenUrlType]) => {
       if (error) {
         throw error;

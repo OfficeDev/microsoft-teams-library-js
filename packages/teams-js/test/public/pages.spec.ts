@@ -6,7 +6,12 @@ import { getGenericOnCompleteHandler } from '../../src/internal/utils';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
-import { pages } from '../../src/public/pages';
+import {
+  convertAppNavigationParametersToNavigateToAppParams,
+  convertNavigateToAppParamsToAppNavigationParameters,
+  isAppNavigationParametersObject,
+  pages,
+} from '../../src/public/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import {
@@ -57,6 +62,21 @@ describe('Testing pages module', () => {
 
           const returnFocusMessage = utils.findMessageByFunc('returnFocus');
           validateExpectedArgumentsInRequest(returnFocusMessage, 'returnFocus', MatcherType.ToBe, true);
+        });
+
+        it(`pages.returnFocus should successfully return focus when ReturnFocusType is set and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          pages.returnFocus(pages.ReturnFocusType.NextLandmark);
+
+          const returnFocusMessage = utils.findMessageByFunc('returnFocus');
+          validateExpectedArgumentsInRequest(
+            returnFocusMessage,
+            'returnFocus',
+            MatcherType.ToBe,
+            true,
+            pages.ReturnFocusType.NextLandmark,
+          );
         });
 
         it(`pages.returnFocus should not successfully returnFocus when set to false and initialized with ${context} context`, async () => {
@@ -428,6 +448,19 @@ describe('Testing pages module', () => {
         subPageId: 'task456',
       };
 
+      const navigateToAppParamsWithChat: pages.NavigateToAppParams = {
+        appId: 'fe4a8eba-2a31-4737-8e33-e5fae6fee194',
+        pageId: 'tasklist123',
+        webUrl: 'https://tasklist.example.com/123',
+        chatId: '19:cbe3683f25094106b826c9cada3afbe0@thread.skype',
+        subPageId: 'task456',
+      };
+
+      const typeSafeAppNavigationParams: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParams);
+      const typeSafeAppNavigationParamsWithChat: pages.AppNavigationParameters =
+        convertNavigateToAppParamsToAppNavigationParameters(navigateToAppParamsWithChat);
+
       it('pages.navigateToApp should not allow calls before initialization', async () => {
         await expect(pages.navigateToApp(navigateToAppParams)).rejects.toThrowError(
           new Error(errorLibraryNotInitialized),
@@ -466,7 +499,9 @@ describe('Testing pages module', () => {
             await expect(promise).resolves.toBe(undefined);
           });
 
-          it('pages.navigateToApp should successfully send the navigateToApp message', async () => {
+          async function validateNavigateToAppMessage(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({ apiVersion: 1, supports: { pages: {} } });
 
@@ -477,14 +512,26 @@ describe('Testing pages module', () => {
               navigateToAppMessage,
               'pages.navigateToApp',
               MatcherType.ToStrictEqual,
-              navigateToAppParams,
+              isAppNavigationParametersObject(navigateToAppParams)
+                ? convertAppNavigationParametersToNavigateToAppParams(navigateToAppParams)
+                : navigateToAppParams,
             );
 
             await utils.respondToMessage(navigateToAppMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send the navigateToApp message using serialized parameter', async () => {
+            validateNavigateToAppMessage(navigateToAppParams);
           });
 
-          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients', async () => {
+          it('pages.navigateToApp should successfully send the navigateToApp message using type-safe parameter', async () => {
+            validateNavigateToAppMessage(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeams(
+            navigateToAppParams: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
             await utils.initializeWithContext(context);
             utils.setRuntimeConfig({
               apiVersion: 1,
@@ -506,6 +553,47 @@ describe('Testing pages module', () => {
 
             await utils.respondToMessage(executeDeepLinkMessage!, true);
             await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(navigateToAppParams);
+          });
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message for legacy teams clients using a type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeams(typeSafeAppNavigationParams);
+          });
+
+          async function validateNavigateToAppMessageForLegacyTeamsWithChat(
+            navigateToAppParamsWithChat: pages.NavigateToAppParams | pages.AppNavigationParameters,
+          ) {
+            await utils.initializeWithContext(context);
+            utils.setRuntimeConfig({
+              apiVersion: 1,
+              isLegacyTeams: true,
+              supports: {
+                pages: {},
+              },
+            });
+
+            const promise = pages.navigateToApp(navigateToAppParamsWithChat);
+
+            const executeDeepLinkMessage = utils.findMessageByFunc('executeDeepLink');
+            validateExpectedArgumentsInRequest(
+              executeDeepLinkMessage,
+              'executeDeepLink',
+              MatcherType.ToBe,
+              'https://teams.microsoft.com/l/entity/fe4a8eba-2a31-4737-8e33-e5fae6fee194/tasklist123?webUrl=https%3A%2F%2Ftasklist.example.com%2F123&context=%7B%22chatId%22%3A%2219%3Acbe3683f25094106b826c9cada3afbe0%40thread.skype%22%2C%22subEntityId%22%3A%22task456%22%7D',
+            );
+
+            await utils.respondToMessage(executeDeepLinkMessage!, true);
+            await promise;
+          }
+
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using serialized parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(navigateToAppParamsWithChat);
+          });
+          it('pages.navigateToApp should successfully send an executeDeepLink message with chat id for legacy teams clients using type-safe parameter', async () => {
+            validateNavigateToAppMessageForLegacyTeamsWithChat(typeSafeAppNavigationParamsWithChat);
           });
         } else {
           it(`pages.navigateToApp should not allow calls from ${context} context`, async () => {
@@ -2094,6 +2182,23 @@ describe('Testing pages module', () => {
             data: {
               func: 'focusEnter',
               args: [true],
+            },
+          } as DOMMessageEvent);
+          expect(handlerInvoked).toBeTruthy();
+        });
+
+        it(`pages.registerFocusEnterHandler should successfully invoke focus enter handler when EnterFocusType set to nextLandmark and initialized with ${context} context`, async () => {
+          await utils.initializeWithContext(context);
+
+          let handlerInvoked = false;
+          pages.registerFocusEnterHandler((x: boolean, enterFocusType: pages.EnterFocusType) => {
+            handlerInvoked = true;
+            return true;
+          });
+          await utils.respondToFramelessMessage({
+            data: {
+              func: 'focusEnter',
+              args: [true, pages.EnterFocusType.NextLandmark],
             },
           } as DOMMessageEvent);
           expect(handlerInvoked).toBeTruthy();

@@ -2,6 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId, validateUrl } from '../internal/utils';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 
@@ -133,12 +134,33 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Determines if the provided response object is an instance of IActionExecuteResponse
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param response The object to check whether it is of IActionExecuteResponse type
+   */
+  export function isActionExecuteResponse(
+    response: unknown,
+  ): response is externalAppAuthentication.IActionExecuteResponse {
+    const actionResponse = response as externalAppAuthentication.IActionExecuteResponse;
+
+    return (
+      actionResponse.responseType === externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse &&
+      actionResponse.value !== undefined &&
+      actionResponse.statusCode !== undefined &&
+      actionResponse.type !== undefined
+    );
+  }
+
+  /**
    * @hidden
    * This is the only allowed value for IActionExecuteInvokeRequest.type. Used for validation
    * @internal
    * Limited to Microsoft-internal use
    */
-  const ActionExecuteInvokeRequestType = 'Action.Execute';
+  export const ActionExecuteInvokeRequestType = 'Action.Execute';
 
   /**
    * @hidden
@@ -279,6 +301,27 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @beta
+   * @hidden
+   * Determines if the provided error object is an instance of InvokeError
+   * @internal
+   * Limited to Microsoft-internal use
+   * @param err The error object to check whether it is of InvokeError type
+   */
+  export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
+    if (typeof err !== 'object' || err === null) {
+      return false;
+    }
+
+    const error = err as externalAppAuthentication.InvokeError;
+
+    return (
+      Object.values(externalAppAuthentication.InvokeErrorCode).includes(error.errorCode) &&
+      (error.message === undefined || typeof error.message === 'string')
+    );
+  }
+
+  /**
    * @hidden
    *
    * @internal
@@ -294,7 +337,8 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+  export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+
   /*********** END ERROR TYPE ***********/
 
   /**
@@ -351,7 +395,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
@@ -362,7 +406,7 @@ export namespace externalAppAuthentication {
       ),
       'externalAppAuthentication.authenticateAndResendRequest',
       [
-        appId,
+        typeSafeAppId.toString(),
         originalRequestInfo,
         authenticateParameters.url.href,
         authenticateParameters.width,
@@ -395,14 +439,15 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
+
     return sendMessageToParentAsync(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthentication_AuthenticateWithSSO,
       ),
       'externalAppAuthentication.authenticateWithSSO',
-      [appId, authTokenRequest.claims, authTokenRequest.silent],
+      [typeSafeAppId.toString(), authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, error]: [boolean, InvokeError]) => {
       if (!wasSuccessful) {
         throw error;
@@ -431,7 +476,7 @@ export namespace externalAppAuthentication {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    validateId(appId, new Error('App id is not valid.'));
+    const typeSafeAppId: AppId = new AppId(appId);
 
     validateOriginalRequestInfo(originalRequestInfo);
 
@@ -441,7 +486,7 @@ export namespace externalAppAuthentication {
         ApiName.ExternalAppAuthentication_AuthenticateWithSSOAndResendRequest,
       ),
       'externalAppAuthentication.authenticateWithSSOAndResendRequest',
-      [appId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
+      [typeSafeAppId.toString(), originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     ).then(([wasSuccessful, response]: [boolean, IInvokeResponse | InvokeErrorWrapper]) => {
       if (wasSuccessful && response.responseType != null) {
         return response as IInvokeResponse;

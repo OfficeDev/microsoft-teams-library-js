@@ -39,6 +39,8 @@ export class Utils {
   public parentWindow: Window;
   public topWindow: Window;
 
+  private onMessageSent: null | ((messageRequest: MessageRequest) => void) = null;
+
   public constructor() {
     this.messages = [];
     this.childMessages = [];
@@ -53,6 +55,9 @@ export class Utils {
         const message: MessageRequest = deserializeMessageRequest(serializedMessage);
 
         this.messages.push(message);
+        if (this.onMessageSent !== null) {
+          this.onMessageSent(message);
+        }
       },
     } as Window;
 
@@ -98,6 +103,9 @@ export class Utils {
           const parsedMessage: SerializedMessageRequest = JSON.parse(serializedMessage);
           const message: MessageRequest = deserializeMessageRequest(parsedMessage);
           this.messages.push(message);
+          if (this.onMessageSent !== null) {
+            this.onMessageSent(message);
+          }
         },
       },
       self: null as unknown as Window,
@@ -186,6 +194,28 @@ export class Utils {
     }
     return null;
   };
+
+  public async waitUntilMessageIsSent(actionName: string): Promise<MessageRequest> {
+    const messageRequest = this.findMessageByFunc(actionName);
+    if (messageRequest !== null) {
+      return messageRequest;
+    }
+
+    if (this.onMessageSent !== null) {
+      throw new Error(
+        'You can only wait for one message at a time. Feel free to extend this function to support multiple simultaneous waits!',
+      );
+    }
+
+    return new Promise<MessageRequest>((resolve) => {
+      this.onMessageSent = (message: MessageRequest): void => {
+        if (message.func === actionName) {
+          this.onMessageSent = null;
+          resolve(message);
+        }
+      };
+    });
+  }
 
   /**
    * This function is used to find a message by the action name provided to the send* functions. Usually the action name is the
@@ -310,7 +340,7 @@ export class Utils {
     } as DOMMessageEvent);
   };
 
-  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
+  public sendMessageWithCustomOrigin = async (func: string, origin: string, ...args: unknown[]): Promise<void> => {
     if (this.processMessage === null) {
       throw Error(
         `Cannot send message calling function ${func} because processMessage function has not been set and is null`,
@@ -318,13 +348,17 @@ export class Utils {
     }
 
     await this.processMessage({
-      origin: this.validOrigin,
+      origin: origin,
       source: this.mockWindow.parent,
       data: {
         func: func,
         args: args,
       },
     } as MessageEvent);
+  };
+
+  public sendMessage = async (func: string, ...args: unknown[]): Promise<void> => {
+    return this.sendMessageWithCustomOrigin(func, this.validOrigin, ...args);
   };
 
   public respondToFramelessMessage = (event: DOMMessageEvent): void => {
