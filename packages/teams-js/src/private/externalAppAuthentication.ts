@@ -133,6 +133,19 @@ export namespace externalAppAuthentication {
     data: string | Record<string, unknown>;
   }
 
+  export function isActionExecuteResponse(
+    response: unknown,
+  ): response is externalAppAuthentication.IActionExecuteResponse {
+    const actionResponse = response as externalAppAuthentication.IActionExecuteResponse;
+
+    return (
+      actionResponse.responseType === externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse &&
+      actionResponse.value !== undefined &&
+      actionResponse.statusCode !== undefined &&
+      actionResponse.type !== undefined
+    );
+  }
+
   /**
    * @hidden
    * This is the only allowed value for IActionExecuteInvokeRequest.type. Used for validation
@@ -296,6 +309,26 @@ export namespace externalAppAuthentication {
    * Limited to Microsoft-internal use
    */
   export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
+
+  /**
+   * @hidden
+   * Determines if the provided error object is an instance of InvokeErrorWrapper
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
+    if (typeof err !== 'object' || err === null) {
+      return false;
+    }
+
+    const error = err as externalAppAuthentication.InvokeError;
+
+    return (
+      Object.values(externalAppAuthentication.InvokeErrorCode).includes(error?.errorCode) &&
+      (error.message === undefined || typeof error.message === 'string')
+    );
+  }
+
   /*********** END ERROR TYPE ***********/
 
   /**

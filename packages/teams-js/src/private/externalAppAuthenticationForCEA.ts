@@ -1,4 +1,4 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -23,7 +23,7 @@ export namespace externalAppAuthenticationForCEA {
    * Signals to the host to perform SSO authentication for the application specified by the app ID, and then send the authResult to the application backend.
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId Id of the application backend for which the host should attempt SSO authentication.
+   * @param appId App ID of the app upon whose behalf Copilot is requesting authentication. This must be a UUID.
    * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
    * @param authTokenRequest Parameters for SSO authentication
    * @throws InvokeError if the host encounters an error while authenticating
@@ -42,13 +42,16 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    const [error] = await sendMessageToParentAsync<[externalAppAuthentication.InvokeError]>(
+    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      [appId.toString(), conversationId, authTokenRequest.claims, authTokenRequest.silent],
+      appId.toString(),
+      conversationId,
+      authTokenRequest.claims,
+      authTokenRequest.silent,
     );
     if (error) {
       throw error;
@@ -61,7 +64,7 @@ export namespace externalAppAuthenticationForCEA {
    * Signals to the host to perform authentication using the given authentication parameters and then send the auth result to the application backend.
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend to which the request and authentication response should be sent. This must be a UUID
+   * @param appId App ID of the app upon whose behalf Copilot is requesting authentication. This must be a UUID.
    * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
    * @param authenticateParameters Parameters for the authentication pop-up
    * @throws InvokeError if the host encounters an error while authenticating
@@ -81,20 +84,18 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const [error] = await sendMessageToParentAsync<[externalAppAuthentication.InvokeError]>(
+    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      [
-        appId.toString(),
-        conversationId,
-        authenticateParameters.url.href,
-        authenticateParameters.width,
-        authenticateParameters.height,
-        authenticateParameters.isExternal,
-      ],
+      appId.toString(),
+      conversationId,
+      authenticateParameters.url.href,
+      authenticateParameters.width,
+      authenticateParameters.height,
+      authenticateParameters.isExternal,
     );
     if (error) {
       throw error;
@@ -107,7 +108,7 @@ export namespace externalAppAuthenticationForCEA {
    * Signals to the host to perform authentication using the given authentication parameters and then resend the request to the application backend with the authentication result.
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend to which the request and authentication response should be sent. This must be a UUID
+   * @param appId App ID of the app upon whose behalf Copilot is requesting authentication. This must be a UUID.
    * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
    * @param authenticateParameters Parameters for the authentication pop-up
    * @param originalRequestInfo Information about the original request that should be resent
@@ -132,7 +133,7 @@ export namespace externalAppAuthenticationForCEA {
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     const [response] = await sendMessageToParentAsync<
-      [externalAppAuthentication.InvokeErrorWrapper | externalAppAuthentication.IActionExecuteResponse]
+      [externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse]
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -149,24 +150,11 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.isExternal,
       ],
     );
-    if (isActionExecuteResponse(response)) {
+    if (externalAppAuthentication.isActionExecuteResponse(response)) {
       return response;
-    } else if (isInvokeErrorWrapper(response)) {
-      throw response;
     } else {
-      throw defaultExternalAppError;
+      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
     }
-  }
-
-  function isActionExecuteResponse(response: unknown): response is externalAppAuthentication.IActionExecuteResponse {
-    const actionResponse = response as externalAppAuthentication.IActionExecuteResponse;
-
-    return (
-      actionResponse.responseType === externalAppAuthentication.InvokeResponseType.ActionExecuteInvokeResponse &&
-      actionResponse.value !== undefined &&
-      actionResponse.statusCode !== undefined &&
-      actionResponse.type !== undefined
-    );
   }
 
   /**
@@ -175,7 +163,7 @@ export namespace externalAppAuthenticationForCEA {
    * Signals to the host to perform SSO authentication for the application specified by the app ID and then resend the request to the application backend with the authentication result and originalRequestInfo
    * @internal
    * Limited to Microsoft-internal use
-   * @param appId ID of the application backend for which the host should attempt SSO authentication and resend the request and authentication response. This must be a UUID.
+   * @param appId App ID of the app upon whose behalf Copilot is requesting authentication. This must be a UUID.
    * @param conversationId ConversationId To tell the bot what conversation the calls are coming from
    * @param authTokenRequest Parameters for SSO authentication
    * @param originalRequestInfo Information about the original request that should be resent
@@ -199,7 +187,7 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     const [response] = await sendMessageToParentAsync<
-      [externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeErrorWrapper]
+      [externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError]
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -208,12 +196,10 @@ export namespace externalAppAuthenticationForCEA {
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       [appId.toString(), conversationId, originalRequestInfo, authTokenRequest.claims, authTokenRequest.silent],
     );
-    if (isActionExecuteResponse(response)) {
+    if (externalAppAuthentication.isActionExecuteResponse(response)) {
       return response;
-    } else if (isInvokeErrorWrapper(response)) {
-      throw response;
     } else {
-      throw defaultExternalAppError;
+      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
     }
   }
 
@@ -248,20 +234,12 @@ export namespace externalAppAuthenticationForCEA {
     }
   }
 
-  function isInvokeErrorWrapper(err: unknown): err is externalAppAuthentication.InvokeErrorWrapper {
-    if (typeof err !== 'object' || err === null) {
-      return false;
-    }
-
-    const errorWrapper = err as externalAppAuthentication.InvokeErrorWrapper;
-
-    return (
-      errorWrapper?.errorCode === externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR &&
-      (errorWrapper.message === undefined || typeof errorWrapper.message === 'string') &&
-      errorWrapper.responseType === undefined
-    );
-  }
-
+  /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   * @beta
+   */
   const defaultExternalAppError = {
     errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
     message: 'No valid response received',

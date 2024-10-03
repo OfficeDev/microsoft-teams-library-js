@@ -31,6 +31,9 @@ const AuthenticateWithOAuthForCEA = (): React.ReactElement =>
         if (!input.appId) {
           throw new Error('appId is required');
         }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
+        }
         if (!input.authenticateParameters) {
           throw new Error('authenticateParameters is required');
         }
@@ -67,6 +70,9 @@ const AuthenticateWithSSOForCEA = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
+        }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
         }
         if (!input.authTokenRequest) {
           throw new Error('authTokenRequest is required');
@@ -110,6 +116,9 @@ const AuthenticateAndResendRequestForCEA = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
+        }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
         }
         if (!input.authenticateParameters) {
           throw new Error('authenticateParameters is required');
@@ -159,6 +168,9 @@ const AuthenticateWithSSOAndResendRequestForCEA = (): React.ReactElement =>
       validateInput: (input) => {
         if (!input.appId) {
           throw new Error('appId is required');
+        }
+        if (!input.conversationId) {
+          throw new Error('conversationId is required');
         }
         if (!input.authTokenRequest) {
           throw new Error('authTokenRequest is required');

@@ -166,7 +166,7 @@ describe('externalAppAuthenticationForCEA', () => {
           }
           return expect(promise).rejects.toEqual(testError);
         });
-        it(`should throw default error when host sends a response that does not fit InvokeErrorWrapper or ActionExecuteResponse - ${frameContext}`, async () => {
+        it(`should throw default error when host sends a response that does not fit InvokeError or ActionExecuteResponse - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
