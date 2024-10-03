@@ -42,6 +42,7 @@ export {
 } from './interfaces';
 export { app } from './app';
 export { AppId } from './appId';
+export { EmailAddress } from './emailAddress';
 export { appInstallDialog } from './appInstallDialog';
 export { barCode } from './barCode';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
