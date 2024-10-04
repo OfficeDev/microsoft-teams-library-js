@@ -16,29 +16,61 @@ const urlParams = new URLSearchParams(window.location.search);
 const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
-// This is added for custom initialization when app can be initialized based upon a trigger/click.
-if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
-  if (isTestBackCompat()) {
-    initialize(undefined, validMessageOrigins);
+if (!urlParams.has('testInit') || !urlParams.get('testInit')) {
+  // This is added for custom initialization when app can be initialized based upon a trigger/click.
+  if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+    if (isTestBackCompat()) {
+      initialize(undefined, validMessageOrigins);
+    } else {
+      app.initialize(validMessageOrigins);
+    }
+  }
+
+  // for AppInitialization tests we need a way to stop the Test App from sending these
+  // we do it by adding appInitializationTest=true to query string
+  if (
+    (urlParams.has('customInit') && urlParams.get('customInit')) ||
+    (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
+  ) {
+    console.info('Not calling appInitialization because part of App Initialization Test run');
   } else {
-    app.initialize(validMessageOrigins);
+    if (isTestBackCompat()) {
+      appInitialization.notifyAppLoaded();
+      appInitialization.notifySuccess();
+    } else {
+      app.notifyAppLoaded();
+      app.notifySuccess();
+    }
   }
 }
 
-// for AppInitialization tests we need a way to stop the Test App from sending these
-// we do it by adding appInitializationTest=true to query string
-if (
-  (urlParams.has('customInit') && urlParams.get('customInit')) ||
-  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
-) {
-  console.info('Not calling appInitialization because part of App Initialization Test run');
-} else {
-  if (isTestBackCompat()) {
-    appInitialization.notifyAppLoaded();
-    appInitialization.notifySuccess();
-  } else {
-    app.notifyAppLoaded();
-    app.notifySuccess();
+window.addEventListener('message', handleMessageFromMockedHost);
+
+function handleMessageFromMockedHost(msg: MessageEvent): void {
+  if (!msg || !msg.data) {
+    console.log('Unrecognized message format received by app, message being ignored. Message: %o', msg);
+    return;
+  }
+  // Ensure the message is from a trusted origin
+  switch (msg.data) {
+    case 'app.initialize':
+      app.initialize();
+      break;
+    case 'app.notifySuccess':
+      app.notifySuccess();
+      break;
+    case 'app.notifyFailure':
+      app.notifyFailure({ reason: app.FailedReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyExpectedFailure':
+      app.notifyExpectedFailure({ reason: app.ExpectedFailureReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyAppLoaded':
+      app.notifyAppLoaded();
+      break;
+    // Add more cases for other API calls as needed
+    default:
+      console.log('Unknown API call or response:', msg);
   }
 }
 
