@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and  deprecated the `originalCaller` and `dialedEntity` properties",
-  "packageName": "@microsoft/teams-js",
-  "email": "johnsle@microsoft.com",
-  "dependentChangeType": "patch"
-}
