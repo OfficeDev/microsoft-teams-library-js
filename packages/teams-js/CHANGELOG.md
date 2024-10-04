@@ -11,7 +11,7 @@ Thu, 03 Oct 2024 22:51:48 GMT
 ### Minor changes
 
 - Added support for `externalAppAuthenticationForCEA` capability
-- Added support for `externalAppCardActionsForCEA` capability.
+- Added support for `externalAppCardActionsForCEA` capability
 - Added logging for current teamsjs instance and timestamps
 - Added a Rollup built bundle of Teams-JS
 - Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and deprecated the `originalCaller` and `dialedEntity` properties
