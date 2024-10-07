@@ -1,7 +1,0 @@
-{
-  "type": "none",
-  "comment": "Released 2.28.0, <<this can be removed from the changelog>>",
-  "packageName": "@microsoft/teams-js",
-  "email": "noahdarveau@microsoft.com",
-  "dependentChangeType": "none"
-}

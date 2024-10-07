@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
-import { FrameContexts } from '../../src/public';
+import { EmailAddress, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
 import { meeting } from '../../src/public/meeting';
@@ -277,7 +277,10 @@ describe('meeting', () => {
                   'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
                 type: meeting.CallType.OneOnOneCall,
                 // Verbose details
-                originalCaller: 'testCallerId',
+                originalCallerInfo: {
+                  phoneNumber: '1234567890',
+                  email: new EmailAddress('calleremail@somedomain.com'),
+                },
               };
               const organizer: meeting.IOrganizer = {
                 id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',
@@ -627,7 +630,10 @@ describe('meeting', () => {
                 'https://teams.microsoft.com/l/meetup-join/19%3ameeting_qwertyuiop[phgfdsasdfghjkjbvcxcvbnmyt1234567890!@#$%^&*(%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%226b33ac33-85ae-4995-be29-1d38a77aa8e3%22%7d',
               type: meeting.CallType.OneOnOneCall,
               // Verbose details
-              originalCaller: 'testCallerId',
+              originalCallerInfo: {
+                phoneNumber: '1234567890',
+                email: new EmailAddress('calleeemail@somedomain.com'),
+              },
             };
             const organizer: meeting.IOrganizer = {
               id: '8:orgid:6b33ac33-85ae-4995-be29-1d38a77aa8e3',

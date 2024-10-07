@@ -1,0 +1,16 @@
+{
+  "name": "ExternalAppAuthenticationForCEA",
+  "version": ">2.29.0",
+  "hostSdkVersion": {
+    "web": ">=4.3.0"
+  },
+  "platform": "Web",
+  "testCases": [
+    {
+      "title": "checkExternalAppAuthenticationForCEACapability API Call - Success",
+      "type": "callResponse",
+      "boxSelector": "#box_checkExternalAppAuthenticationForCEACapability",
+      "expectedTestAppValue": "External App Authentication For CEA module is supported"
+    }
+  ]
+}

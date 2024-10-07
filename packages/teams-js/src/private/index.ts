@@ -21,6 +21,7 @@ export {
 export { conversations } from './conversations';
 export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
+export { externalAppAuthenticationForCEA } from './externalAppAuthenticationForCEA';
 export { externalAppCardActions } from './externalAppCardActions';
 export { externalAppCardActionsForCEA } from './externalAppCardActionsForCEA';
 export { externalAppCommands } from './externalAppCommands';

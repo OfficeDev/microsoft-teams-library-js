@@ -2,8 +2,8 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { ApiName } from '../../src/internal/telemetry';
 import { ExternalAppErrorCode } from '../../src/private/constants';
+import { externalAppCardActions } from '../../src/private/externalAppCardActions';
 import { externalAppCardActionsForCEA } from '../../src/private/externalAppCardActionsForCEA';
-import { ActionOpenUrlErrorCode, ActionOpenUrlType } from '../../src/private/interfaces';
 import { AppId, FrameContexts } from '../../src/public';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
@@ -75,7 +75,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args[0]).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testActionSubmitPayload]);
             utils.respondToMessage(message, undefined);
           }
 
@@ -94,7 +94,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionSubmit);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args[0]).toEqual([testAppId, testConversationId, testActionSubmitPayload]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testActionSubmitPayload]);
             utils.respondToMessage(message, testError);
           }
           await expect(promise).rejects.toEqual(testError);
@@ -123,10 +123,10 @@ describe('externalAppCardActionsForCEA', () => {
     const allowedFrameContexts = [FrameContexts.content];
     const testUrl = new URL('https://example.com');
     const testError = {
-      errorCode: ActionOpenUrlErrorCode.INTERNAL_ERROR,
+      errorCode: externalAppCardActions.ActionOpenUrlErrorCode.INTERNAL_ERROR,
       message: 'testMessage',
     };
-    const testResponse = ActionOpenUrlType.DeepLinkDialog;
+    const testResponse = externalAppCardActions.ActionOpenUrlType.DeepLinkDialog;
 
     it('should not allow calls before initialization', async () => {
       expect.assertions(1);
@@ -161,7 +161,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl.href, testConversationId]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testUrl.href]);
             utils.respondToMessage(message, null, testResponse);
           }
 
@@ -178,7 +178,7 @@ describe('externalAppCardActionsForCEA', () => {
           const message = utils.findMessageByFunc(ApiName.ExternalAppCardActionsForCEA_ProcessActionOpenUrl);
           if (message && message.args) {
             expect(message).not.toBeNull();
-            expect(message.args).toEqual([testAppId, testUrl.href, testConversationId]);
+            expect(message.args).toEqual([testAppId.toString(), testConversationId, testUrl.href]);
             utils.respondToMessage(message, testError, null);
           }
 
