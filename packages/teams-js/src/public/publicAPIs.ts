@@ -45,8 +45,10 @@ export type registerOnThemeChangeHandlerFunctionType = (theme: string) => void;
  * Initializes the library. This must be called before any other SDK calls
  * but after the frame is loaded successfully.
  * @param callback - Optionally specify a callback to invoke when Teams SDK has successfully initialized
- * @param validMessageOrigins - Optionally specify a list of cross frame message origins. There must have
- * https: protocol otherwise they will be ignored. Example: https://www.example.com
+ * @param validMessageOrigins - Optionally specify a list of cross-frame message origins. This parameter is used if you know that your app
+ * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
+ * to pass a value for this parameter.
+ * Any domains passed in the array must have the https: protocol on the string otherwise they will be ignored. Example: https://www.example.com
  */
 export function initialize(callback?: callbackFunctionType, validMessageOrigins?: string[]): void {
   appInitializeHelper(
