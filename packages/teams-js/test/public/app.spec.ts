@@ -556,6 +556,7 @@ describe('Testing app capability', () => {
             sourceOrigin: 'www.origin.com',
             teamTemplateId: 'someTeamTemplateId',
             userClickTime: 2222,
+            userClickTimeV2: 3333,
             userFileOpenPreference: FileOpenPreference.Inline,
             isMultiWindow: true,
             isBackgroundLoad: true,
@@ -574,6 +575,7 @@ describe('Testing app capability', () => {
               sessionId: 'appSessionId',
               theme: 'someTheme',
               userClickTime: 2222,
+              userClickTimeV2: 3333,
               userFileOpenPreference: FileOpenPreference.Inline,
               appLaunchId: 'appLaunchId',
               host: {
@@ -1424,6 +1426,7 @@ describe('Testing app capability', () => {
             sourceOrigin: 'www.origin.com',
             teamTemplateId: 'someTeamTemplateId',
             userClickTime: 2222,
+            userClickTimeV2: 3333,
             userFileOpenPreference: FileOpenPreference.Inline,
             isMultiWindow: true,
             frameContext: context,
@@ -1441,6 +1444,7 @@ describe('Testing app capability', () => {
               osLocaleInfo: undefined,
               parentMessageId: 'someParentMessageId',
               userClickTime: 2222,
+              userClickTimeV2: 3333,
               userFileOpenPreference: FileOpenPreference.Inline,
               host: {
                 name: HostName.orange,

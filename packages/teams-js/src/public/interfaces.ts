@@ -713,6 +713,14 @@ export interface Context {
 
   /**
    * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead
+   *
+   * Monotonic timer when the user clicked on the tab
+   */
+  userClickTimeV2?: number;
+
+  /**
+   * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.TeamInfo.templateId | app.Context.team.templateId} instead
    *
    * Team Template ID if there was a Team Template associated with the creation of the team.
@@ -1008,7 +1016,7 @@ export interface SdkError {
   errorCode: ErrorCode;
   /**
   Optional description for the error. This may contain useful information for web-app developers.
-  This string will not be localized and is not for end-user consumption. 
+  This string will not be localized and is not for end-user consumption.
   App should not depend on the string content. The exact value may change. This is only for debugging purposes.
   */
   message?: string;

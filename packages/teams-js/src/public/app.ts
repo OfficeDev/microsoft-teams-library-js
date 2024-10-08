@@ -340,6 +340,11 @@ export namespace app {
     userClickTime?: number;
 
     /**
+     * Monotonic timer when the user clicked on the tab
+     */
+    userClickTimeV2?: number;
+
+    /**
      * The ID of the parent message from which this task module was launched.
      * This is only available in task modules launched from bot cards.
      */
@@ -1007,6 +1012,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
       osLocaleInfo: legacyContext.osLocaleInfo,
       parentMessageId: legacyContext.parentMessageId,
       userClickTime: legacyContext.userClickTime,
+      userClickTimeV2: legacyContext.userClickTimeV2,
       userFileOpenPreference: legacyContext.userFileOpenPreference,
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,
