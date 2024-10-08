@@ -70,8 +70,6 @@ const createDebuggerFunction = (namespace: string): Debugger => {
 
 const topLevelLogger: Debugger = createDebuggerFunction('teamsJs');
 
-// const topLevelLogger = registerLogger('teamsJs');
-
 /**
  * @internal
  * Limited to Microsoft-internal use
