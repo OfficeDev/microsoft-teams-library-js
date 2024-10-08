@@ -1,7 +1,13 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import {
+  Args,
+  ResponseHandler,
+  sendMessage,
+  sendMessageToParentAsync,
+  SerializableArg,
+} from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { ErrorCode, SdkError } from '../public';
+import { app, ErrorCode, SdkError } from '../public';
 import { isSdkError, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
@@ -112,16 +118,28 @@ export namespace hostEntity {
         throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
       }
 
-      return sendMessageToParentAsync<[HostEntityTabInstance | SdkError]>(
+      return sendMessage<HostEntityTabInstance, HostEntityTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'hostEntity.tab.addAndConfigure',
-        [hostEntityIds, appTypes],
-      ).then(([response]: [HostEntityTabInstance | SdkError]) => {
-        if (isSdkError(response)) {
-          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
-        }
-        return response as HostEntityTabInstance;
-      });
+        new HostEntityTabInstanceResponseHandler(),
+        new Args([new SerializableHostEntityId(hostEntityIds), appTypes]),
+      );
+    }
+
+    class SerializableHostEntityId implements SerializableArg {
+      public constructor(private hostEntityId: HostEntityIds) {}
+      public serialize(): object {
+        return this.hostEntityId;
+      }
+    }
+
+    class HostEntityTabInstanceResponseHandler extends ResponseHandler<HostEntityTabInstance, HostEntityTabInstance> {
+      public validate(response: HostEntityTabInstance): boolean {
+        return response.tabType === 'ConfigurableTab' || response.tabType === 'StaticTab';
+      }
+      public deserialize(response: HostEntityTabInstance): HostEntityTabInstance {
+        return response;
+      }
     }
 
     /**

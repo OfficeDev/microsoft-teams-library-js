@@ -4,7 +4,7 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { SdkError } from '../public/interfaces';
+import { isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
@@ -256,6 +256,69 @@ export function sendMessageToParentAsync<T>(
     resolve(waitForResponse<T>(request.uuid));
   });
 }
+
+/***********************************************/
+
+export abstract class ResponseHandler<ReceivedFromHost, DeserializedFromHost> {
+  public abstract validate(response: ReceivedFromHost): boolean;
+  public abstract deserialize(response: ReceivedFromHost): DeserializedFromHost;
+}
+
+/***********************************************/
+
+export interface SerializableArg {
+  serialize(): object;
+}
+
+function isSerializableArg(arg: any): arg is SerializableArg {
+  return arg && typeof arg.serialize === 'function';
+}
+
+export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
+
+export class Args {
+  public constructor(public args: (SimpleType | SerializableArg)[] | undefined) {}
+
+  public getSerializedArgs(): any[] | undefined {
+    if (this.args === undefined) {
+      return undefined;
+    }
+
+    return this.args.map((arg) => {
+      if (isSerializableArg(arg)) {
+        return arg.serialize();
+      } else {
+        return arg;
+      }
+    });
+  }
+}
+
+/*********************************************/
+
+export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
+  apiVersionTag: string,
+  actionName: string,
+  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
+  args: Args | undefined = undefined,
+): Promise<DeserializedFromHost> {
+  return new Promise((resolve, reject) => {
+    const foo = args === undefined ? undefined : args.getSerializedArgs();
+    const requestPromise = sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(apiVersionTag, actionName, foo);
+
+    requestPromise.then(([response]: [ReceivedFromHost | SdkError]) => {
+      if (isSdkError(response)) {
+        reject(new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`));
+      } else if (!responseHandler.validate(response as ReceivedFromHost)) {
+        reject(new Error('Invalid response'));
+      } else {
+        resolve(responseHandler.deserialize(response as ReceivedFromHost));
+      }
+    });
+  });
+}
+
+/***********************************************/
 
 /**
  * @hidden
