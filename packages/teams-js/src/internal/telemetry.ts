@@ -20,8 +20,13 @@ const createDebuggerFunction = (namespace: string): Debugger => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const func = function (formatter: any, ...args: any[]): void {
     if (GlobalVars.turnOnConsoleLog && localStorage.getItem('debug') != 'teamsJs.*') {
-      args.unshift(`color: ${internalDebugger.color}`);
-      console.log(`${internalDebugger.namespace}: ${formatter}`, args);
+      console.log(
+        `%c${internalDebugger.namespace}%c: ${formatter}`,
+        `color: ${internalDebugger.color};`,
+        '',
+        [...args],
+        internalDebugger.color,
+      );
     }
     internalDebugger(formatter, args);
   } as Debugger;
