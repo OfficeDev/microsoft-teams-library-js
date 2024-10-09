@@ -326,7 +326,7 @@ export class Args {
 /*********************************************/
 
 export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
-  apiVersionTag: string,
+  apiVersionTag: string, // should this be a string?
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
   args: Args | undefined = undefined,
@@ -339,6 +339,8 @@ export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
       argsSafeToTransfer,
     );
 
+    // try this out with URL and AppId too
+    // void as well
     // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
     requestPromise.then(([response]: [ReceivedFromHost | SdkError]) => {
       if (isSdkError(response)) {
