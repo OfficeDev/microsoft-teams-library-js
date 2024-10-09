@@ -1,4 +1,12 @@
-import { Args, sendAndUnwrap, sendMessage, SerializableAppId, UndefinedHandler } from '../internal/communication';
+import {
+  Args,
+  sendAndUnwrap,
+  // sendMessage,
+  // sendMessage2,
+  sendMessageErrorOnly,
+  SerializableAppId,
+  // UndefinedHandler,
+} from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -57,16 +65,18 @@ export namespace externalAppAuthenticationForCEA {
     //   throw error;
     // }
 
-    return sendMessage(
+    return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      new UndefinedHandler(), // Should this be a separate function for thing that only receives errors?
       new Args([new SerializableAppId(appId), conversationId, authTokenRequest.claims, authTokenRequest.silent]),
       (err): err is SdkError => {
-        return externalAppAuthentication.isInvokeError(err);
+        console.log(`IS INVOKE ERROR? ${JSON.stringify(err)}`);
+        const foo = externalAppAuthentication.isInvokeError(err);
+        console.log(`Returning ${foo}...`);
+        return foo;
       },
     );
   }

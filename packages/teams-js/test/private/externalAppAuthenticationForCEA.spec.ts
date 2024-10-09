@@ -257,6 +257,7 @@ describe('externalAppAuthenticationForCEA', () => {
             errorCode: 'INTERNAL_ERROR',
             message: 'test error message',
           };
+
           const promise = externalAppAuthenticationForCEA.authenticateWithSSO(
             testAppId,
             testConversationId,
@@ -272,10 +273,12 @@ describe('externalAppAuthenticationForCEA', () => {
               testRequest.claims,
               testRequest.silent,
             ]);
-            await utils.respondToMessage(message, testError);
+            utils.respondToMessage(message, testError);
           }
           // await expect(promise).rejects.toEqual(testError);
-          await expect(promise).rejects.toThrowError('error');
+          await expect(promise).rejects.toThrowError(
+            `Error code: ${testError.errorCode}, message: ${testError.message ?? 'None'}`,
+          );
         });
         it('should resolve on success', async () => {
           expect.assertions(3);

@@ -375,7 +375,52 @@ export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   });
 }
 
-/***********************************************/
+export async function sendMessage2<ReceivedFromHost, DeserializedFromHost>(
+  apiVersionTag: string, // should this be a string?
+  actionName: string,
+  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
+  args: Args | undefined = undefined,
+  errorChecker?: (response: unknown) => response is SdkError,
+): Promise<DeserializedFromHost> {
+  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const response = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
+    apiVersionTag,
+    actionName,
+    argsSafeToTransfer,
+  );
+
+  // try this out with URL and AppId too
+  // void as well
+  // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
+  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (!responseHandler.validate(response as ReceivedFromHost)) {
+    throw new Error('Invalid response');
+  } else {
+    return responseHandler.deserialize(response as ReceivedFromHost);
+  }
+}
+
+export async function sendMessageErrorOnly(
+  apiVersionTag: string, // should this be a string?
+  actionName: string,
+  args: Args | undefined = undefined,
+  errorChecker?: (response: unknown) => response is SdkError,
+): Promise<void> {
+  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const response = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
+
+  console.log(`RESPONSE!!!! ${JSON.stringify(response)}`);
+
+  // try this out with URL and AppId too
+  // void as well
+  // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
+  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
+  }
+}
+
+/*********************************************/
 
 /**
  * @hidden
