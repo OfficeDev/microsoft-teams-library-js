@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation",
+  "packageName": "@microsoft/teams-js",
+  "email": "36546967+AE-MS@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
