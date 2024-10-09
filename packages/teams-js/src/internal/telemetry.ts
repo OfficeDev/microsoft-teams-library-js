@@ -1,5 +1,6 @@
 import { debug as registerLogger, Debugger } from 'debug';
 
+import { GlobalVars } from './globalVars';
 import { UUID } from './uuidObject';
 
 // Each teamsjs instance gets a unique identifier that will be prepended to every log statement
@@ -12,7 +13,62 @@ registerLogger.formatArgs = function (args) {
   originalFormatArgsFunction.call(this, args);
 };
 
-const topLevelLogger = registerLogger('teamsJs');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const createDebuggerFunction = (namespace: string): Debugger => {
+  const internalDebugger: Debugger = registerLogger(namespace);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const func = function (formatter: any, ...args: any[]): void {
+    if (GlobalVars.turnOnConsoleLog && localStorage.getItem('debug') != 'teamsJs.*') {
+      console.timeLog(
+        `%c${internalDebugger.namespace}%c: ${formatter}`,
+        `color: ${internalDebugger.color};`,
+        '',
+        [...args],
+        internalDebugger.color,
+      );
+    }
+    internalDebugger(formatter, args);
+  } as Debugger;
+
+  Object.assign(func, {
+    get color() {
+      return internalDebugger.color;
+    },
+    set color(value: string) {
+      internalDebugger.color = value;
+    },
+    get diff() {
+      return internalDebugger.diff;
+    },
+    set diff(value: number) {
+      internalDebugger.diff = value;
+    },
+    get enabled(): boolean {
+      return internalDebugger.enabled;
+    },
+    set enabled(enabled: boolean) {
+      internalDebugger.enabled = enabled;
+    },
+    get namespace(): string {
+      return internalDebugger.namespace;
+    },
+    set namespace(namespace: string) {
+      internalDebugger.namespace = namespace;
+    },
+    extend(namespace: string, delimiter?: string): Debugger {
+      return createDebuggerFunction(internalDebugger.extend(namespace, delimiter).namespace);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    log(...args: any[]) {
+      internalDebugger.log(args);
+    },
+  });
+
+  return func;
+};
+
+const topLevelLogger: Debugger = createDebuggerFunction('teamsJs');
 
 /**
  * @internal
