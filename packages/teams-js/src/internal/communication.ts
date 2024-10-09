@@ -294,7 +294,8 @@ export class BooleanResponseHandler extends ResponseHandler<boolean, boolean> {
 }
 
 /***********************************************/
-
+// Is there a more "standard" way to name some of this?
+// ISerializable?
 export interface SerializableArg {
   getSerializableObject(): object;
 }
@@ -324,7 +325,9 @@ export class Args {
 }
 
 /*********************************************/
-
+// Should there be a version of this that takes a single generic type?
+// Sometimes no deserialization is necessary. I kind of like forcing callers to have to
+// consider deserialization and choose to do nothing, but it bears thinking about.
 export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string, // should this be a string?
   actionName: string,
