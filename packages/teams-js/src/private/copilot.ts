@@ -29,7 +29,11 @@ export namespace copilot {
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
     export function isSupported(): boolean {
-      return ensureInitialized(runtime) && !!runtime.hostVersionsInfo?.appEligibilityInformation;
+      return (
+        ensureInitialized(runtime) &&
+        (!!runtime.hostVersionsInfo?.appEligibilityInformation ||
+          !!(runtime.supports.copilot && runtime.supports.copilot.eligibility))
+      );
     }
 
     /**
