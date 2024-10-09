@@ -273,7 +273,9 @@ export class Utils {
     args: unknown[],
     ports: MessagePort[] = [],
   ): Promise<void> => {
-    const timestamp = this.respondWithTimestamp ? { timestamp: performance.now() + performance.timeOrigin } : {};
+    const timestamp = this.respondWithTimestamp
+      ? { monotonicTimestamp: performance.now() + performance.timeOrigin }
+      : {};
     if (this.processMessage === null) {
       throw Error(
         `Cannot respond to message ${message.id} because processMessage function has not been set and is null`,

@@ -72,7 +72,7 @@ export default class HostToAppMessageDelayTelemetry {
    */
   public static handlePerformanceMetrics(callbackID: MessageUUID, message: MessageResponse, logger: Debugger): void {
     const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
-    if (!callbackInformation || !message.timestamp) {
+    if (!callbackInformation || !message.monotonicTimestamp) {
       logger(
         'Unable to send performance metrics for callback %s with arguments %o',
         callbackID.toString(),
@@ -82,7 +82,7 @@ export default class HostToAppMessageDelayTelemetry {
     }
     handleHostToAppPerformanceMetrics({
       actionName: callbackInformation.name,
-      messageDelay: getCurrentTimestamp() - message.timestamp,
+      messageDelay: getCurrentTimestamp() - message.monotonicTimestamp,
       messageWasCreatedAt: callbackInformation.calledAt,
     });
     HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
