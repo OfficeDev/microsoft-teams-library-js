@@ -7,7 +7,7 @@ import {
 } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { app, ErrorCode, SdkError } from '../public';
+import { ErrorCode, SdkError } from '../public';
 import { isSdkError, TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 

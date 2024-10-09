@@ -279,7 +279,7 @@ export type SimpleType = string | number | boolean | null | undefined | SimpleTy
 export class Args {
   public constructor(public args: (SimpleType | SerializableArg)[] | undefined) {}
 
-  public getSerializedArgs(): any[] | undefined {
+  public getSerializableArgs(): (object | SimpleType)[] | undefined {
     if (this.args === undefined) {
       return undefined;
     }
@@ -303,8 +303,12 @@ export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   args: Args | undefined = undefined,
 ): Promise<DeserializedFromHost> {
   return new Promise((resolve, reject) => {
-    const foo = args === undefined ? undefined : args.getSerializedArgs();
-    const requestPromise = sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(apiVersionTag, actionName, foo);
+    const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+    const requestPromise = sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
+      apiVersionTag,
+      actionName,
+      argsSafeToTransfer,
+    );
 
     requestPromise.then(([response]: [ReceivedFromHost | SdkError]) => {
       if (isSdkError(response)) {
