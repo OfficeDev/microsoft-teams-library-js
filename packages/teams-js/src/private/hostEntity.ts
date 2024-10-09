@@ -1,14 +1,8 @@
-import {
-  Args,
-  ResponseHandler,
-  sendMessage,
-  sendMessageToParentAsync,
-  SerializableArg,
-} from '../internal/communication';
+import { Args, BooleanResponseHandler, ResponseHandler, sendMessage, SerializableArg } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { ErrorCode, SdkError } from '../public';
-import { isSdkError, TabInstance } from '../public/interfaces';
+import { ErrorCode } from '../public';
+import { TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 /**
@@ -48,6 +42,13 @@ export namespace hostEntity {
    */
   export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;
 
+  class SerializableHostEntityId implements SerializableArg {
+    public constructor(private hostEntityId: HostEntityIds) {}
+    public getSerializableObject(): object {
+      return this.hostEntityId;
+    }
+  }
+
   /**
    * @hidden
    * @internal
@@ -71,16 +72,72 @@ export namespace hostEntity {
       tabType: 'ConfigurableTab';
     }
 
+    class ConfigurableTabInstanceResponseHandler extends ResponseHandler<
+      ConfigurableTabInstance,
+      ConfigurableTabInstance
+    > {
+      public validate(response: ConfigurableTabInstance): boolean {
+        return response.tabType === 'ConfigurableTab';
+      }
+
+      public deserialize(response: ConfigurableTabInstance): ConfigurableTabInstance {
+        return response;
+      }
+    }
+
+    class SerializableConfigurableTabInstance implements SerializableArg {
+      public constructor(private configurableTabInstance: ConfigurableTabInstance) {}
+      public getSerializableObject(): object {
+        return this.configurableTabInstance;
+      }
+    }
+
     /**
      * Represents information about a tab instance associated with a host entity like chat, channel or meeting. Cab be a configurable tab or static tab.
      */
     export type HostEntityTabInstance = StaticTabInstance | ConfigurableTabInstance;
+
+    class HostEntityTabInstanceResponseHandler extends ResponseHandler<HostEntityTabInstance, HostEntityTabInstance> {
+      public validate(response: HostEntityTabInstance): boolean {
+        return response.tabType === 'ConfigurableTab' || response.tabType === 'StaticTab';
+      }
+      public deserialize(response: HostEntityTabInstance): HostEntityTabInstance {
+        return response;
+      }
+    }
+
+    class SerializableHostEntityTabInstance implements SerializableArg {
+      public constructor(private hostEntityTabInstance: HostEntityTabInstance) {}
+      public getSerializableObject(): object {
+        return this.hostEntityTabInstance;
+      }
+    }
 
     /**
      * Represents all tabs associated with a host entity like chat, channel or meeting
      */
     export interface HostEntityTabInstances {
       allTabs: HostEntityTabInstance[];
+    }
+
+    class HostEntityTabInstancesResponseHandler extends ResponseHandler<
+      HostEntityTabInstances,
+      HostEntityTabInstances
+    > {
+      public validate(response: HostEntityTabInstances): boolean {
+        const instanceValidator = new HostEntityTabInstanceResponseHandler();
+        let isValid: boolean = true;
+        if (response.allTabs) {
+          response.allTabs.forEach((tab) => {
+            isValid ||= instanceValidator.validate(tab);
+          });
+        }
+        return isValid;
+      }
+
+      public deserialize(response: HostEntityTabInstances): HostEntityTabInstances {
+        return response;
+      }
     }
 
     /**
@@ -126,22 +183,6 @@ export namespace hostEntity {
       );
     }
 
-    class SerializableHostEntityId implements SerializableArg {
-      public constructor(private hostEntityId: HostEntityIds) {}
-      public serialize(): object {
-        return this.hostEntityId;
-      }
-    }
-
-    class HostEntityTabInstanceResponseHandler extends ResponseHandler<HostEntityTabInstance, HostEntityTabInstance> {
-      public validate(response: HostEntityTabInstance): boolean {
-        return response.tabType === 'ConfigurableTab' || response.tabType === 'StaticTab';
-      }
-      public deserialize(response: HostEntityTabInstance): HostEntityTabInstance {
-        return response;
-      }
-    }
-
     /**
      * @hidden
      * @internal
@@ -165,16 +206,12 @@ export namespace hostEntity {
 
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[HostEntityTabInstances | SdkError]>(
+      return sendMessage<HostEntityTabInstances, HostEntityTabInstances>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
         'hostEntity.tab.getAll',
-        [hostEntityIds],
-      ).then(([response]: [HostEntityTabInstances | SdkError]) => {
-        if (isSdkError(response)) {
-          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
-        }
-        return response as HostEntityTabInstances;
-      });
+        new HostEntityTabInstancesResponseHandler(),
+        new Args([new SerializableHostEntityId(hostEntityIds)]),
+      );
     }
 
     /**
@@ -207,16 +244,12 @@ export namespace hostEntity {
       validateTab(tab);
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[ConfigurableTabInstance | SdkError]>(
+      return sendMessage<ConfigurableTabInstance, ConfigurableTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'hostEntity.tab.reconfigure',
-        [tab, hostEntityIds],
-      ).then(([response]: [ConfigurableTabInstance | SdkError]) => {
-        if (isSdkError(response)) {
-          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
-        }
-        return response as ConfigurableTabInstance;
-      });
+        new ConfigurableTabInstanceResponseHandler(),
+        new Args([new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+      );
     }
 
     /**
@@ -249,16 +282,12 @@ export namespace hostEntity {
       validateTab(tab);
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessageToParentAsync<[ConfigurableTabInstance | SdkError]>(
+      return sendMessage<ConfigurableTabInstance, ConfigurableTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'hostEntity.tab.rename',
-        [tab, hostEntityIds],
-      ).then(([response]: [ConfigurableTabInstance | SdkError]) => {
-        if (isSdkError(response)) {
-          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
-        }
-        return response as ConfigurableTabInstance;
-      });
+        new ConfigurableTabInstanceResponseHandler(),
+        new Args([new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+      );
     }
 
     /**
@@ -288,16 +317,12 @@ export namespace hostEntity {
       validateThreadId(hostEntityIds.threadId);
       validateTab(tab);
 
-      return sendMessageToParentAsync<[boolean | SdkError]>(
+      return sendMessage<boolean, boolean>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'hostEntity.tab.remove',
-        [tab, hostEntityIds],
-      ).then(([response]: [boolean | SdkError]) => {
-        if (isSdkError(response)) {
-          throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
-        }
-        return true;
-      });
+        new BooleanResponseHandler(),
+        new Args([new SerializableHostEntityTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+      );
     }
 
     /**
