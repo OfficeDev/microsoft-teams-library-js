@@ -1,8 +1,8 @@
-import { sendAndUnwrap } from '../internal/communication';
+import { Args, sendAndUnwrap, sendMessage, SerializableAppId, UndefinedHandler } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
-import { AppId } from '../public';
+import { AppId, SdkError } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { externalAppAuthentication } from './externalAppAuthentication';
@@ -42,20 +42,33 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    // const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    //   getApiVersionTag(
+    //     externalAppAuthenticationTelemetryVersionNumber,
+    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
+    //   ),
+    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
+    //   appId.toString(),
+    //   conversationId,
+    //   authTokenRequest.claims,
+    //   authTokenRequest.silent,
+    // );
+    // if (error) {
+    //   throw error;
+    // }
+
+    return sendMessage(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      appId.toString(),
-      conversationId,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      new UndefinedHandler(), // Should this be a separate function for thing that only receives errors?
+      new Args([new SerializableAppId(appId), conversationId, authTokenRequest.claims, authTokenRequest.silent]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**

@@ -3,6 +3,7 @@
 /* eslint-disable strict-null-checks/all */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { AppId } from '../public/appId';
 import { FrameContexts } from '../public/constants';
 import { isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
@@ -293,15 +294,31 @@ export class BooleanResponseHandler extends ResponseHandler<boolean, boolean> {
   }
 }
 
+export class UndefinedHandler extends ResponseHandler<undefined, undefined> {
+  public validate(response: undefined): boolean {
+    return response === undefined;
+  }
+  public deserialize(response: undefined): undefined {
+    return response;
+  }
+}
+
 /***********************************************/
 // Is there a more "standard" way to name some of this?
 // ISerializable?
 export interface SerializableArg {
-  getSerializableObject(): object;
+  getSerializableObject(): object | string;
 }
 
 function isSerializableArg(arg: any): arg is SerializableArg {
-  return arg && typeof arg.serialize === 'function';
+  return arg && typeof arg.getSerializableObject === 'function';
+}
+
+export class SerializableAppId implements SerializableArg {
+  public constructor(private appId: AppId) {}
+  public getSerializableObject(): object | string {
+    return this.appId.toString();
+  }
 }
 
 export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
@@ -333,6 +350,7 @@ export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
   args: Args | undefined = undefined,
+  errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
   return new Promise((resolve, reject) => {
     const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
@@ -346,7 +364,7 @@ export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
     // void as well
     // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
     requestPromise.then(([response]: [ReceivedFromHost | SdkError]) => {
-      if (isSdkError(response)) {
+      if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
         reject(new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`));
       } else if (!responseHandler.validate(response as ReceivedFromHost)) {
         reject(new Error('Invalid response'));

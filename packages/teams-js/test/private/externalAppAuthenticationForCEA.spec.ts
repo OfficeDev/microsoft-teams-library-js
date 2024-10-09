@@ -272,9 +272,10 @@ describe('externalAppAuthenticationForCEA', () => {
               testRequest.claims,
               testRequest.silent,
             ]);
-            utils.respondToMessage(message, testError);
+            await utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+          // await expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toThrowError('error');
         });
         it('should resolve on success', async () => {
           expect.assertions(3);
