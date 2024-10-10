@@ -185,26 +185,6 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    // const response = await sendAndUnwrap<
-    //   externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
-    // >(
-    //   getApiVersionTag(
-    //     externalAppAuthenticationTelemetryVersionNumber,
-    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-    //   ),
-    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-    //   appId.toString(),
-    //   conversationId,
-    //   originalRequestInfo,
-    //   authTokenRequest.claims,
-    //   authTokenRequest.silent,
-    // );
-    // if (externalAppAuthentication.isActionExecuteResponse(response)) {
-    //   return response;
-    // } else {
-    //   throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    // }
-
     return sendMessage<
       externalAppAuthentication.IActionExecuteResponse,
       externalAppAuthentication.IActionExecuteResponse
@@ -258,15 +238,4 @@ export namespace externalAppAuthenticationForCEA {
       throw error;
     }
   }
-
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * @beta
-   */
-  const defaultExternalAppError = {
-    errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-    message: 'No valid response received',
-  };
 }
