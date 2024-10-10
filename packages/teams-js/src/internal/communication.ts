@@ -346,7 +346,7 @@ export class Args {
 // Sometimes no deserialization is necessary. I kind of like forcing callers to have to
 // consider deserialization and choose to do nothing, but it bears thinking about.
 export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
-  apiVersionTag: string, // should this be a string?
+  apiVersionTag: string, // should this be a string? maybe an object
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
   args: Args | undefined = undefined,

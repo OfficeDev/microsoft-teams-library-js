@@ -1,12 +1,4 @@
-import {
-  Args,
-  sendAndUnwrap,
-  // sendMessage,
-  // sendMessage2,
-  sendMessageErrorOnly,
-  SerializableAppId,
-  // UndefinedHandler,
-} from '../internal/communication';
+import { Args, sendAndUnwrap, sendMessageErrorOnly, SerializableAppId } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';

@@ -582,7 +582,9 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toThrowError(
+            new Error(`Error code: ${testError.errorCode}, message: ${testError.message ?? 'None'}`),
+          );
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
