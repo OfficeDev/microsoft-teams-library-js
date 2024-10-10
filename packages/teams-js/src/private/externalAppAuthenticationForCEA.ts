@@ -1,4 +1,12 @@
-import { Args, sendAndUnwrap, sendMessageErrorOnly, SerializableAppId } from '../internal/communication';
+import {
+  Args,
+  ResponseHandler,
+  sendAndUnwrap,
+  sendMessage,
+  sendMessageErrorOnly,
+  SerializableAppId,
+  SerializableArg,
+} from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -81,23 +89,6 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    // const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
-    //   getApiVersionTag(
-    //     externalAppAuthenticationTelemetryVersionNumber,
-    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-    //   ),
-    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-    //   appId.toString(),
-    //   conversationId,
-    //   authenticateParameters.url.href,
-    //   authenticateParameters.width,
-    //   authenticateParameters.height,
-    //   authenticateParameters.isExternal,
-    // );
-    // if (error) {
-    //   throw error;
-    // }
-
     return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -148,26 +139,46 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse
+    return sendMessage<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      new ActionExecuteResponseHandler(),
+      new Args([
+        new SerializableAppId(appId),
+        conversationId,
+        new SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ]),
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
+  }
+
+  class SerializableActionExecuteInvokeRequest implements SerializableArg {
+    public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
+    public getSerializableObject(): object | string {
+      return this.invokeRequest; // I wonder if the Record actually needs to be serialized. Might be a real bug?
+    }
+  }
+
+  class ActionExecuteResponseHandler extends ResponseHandler<
+    externalAppAuthentication.IActionExecuteResponse,
+    externalAppAuthentication.IActionExecuteResponse
+  > {
+    public validate(response: externalAppAuthentication.IActionExecuteResponse): boolean {
+      return externalAppAuthentication.isActionExecuteResponse(response);
+    }
+    public deserialize(
+      response: externalAppAuthentication.IActionExecuteResponse,
+    ): externalAppAuthentication.IActionExecuteResponse {
       return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
     }
   }
 

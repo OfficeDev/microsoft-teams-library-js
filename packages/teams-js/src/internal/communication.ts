@@ -5,7 +5,7 @@
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { AppId } from '../public/appId';
 import { FrameContexts } from '../public/constants';
-import { isSdkError, SdkError } from '../public/interfaces';
+import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
@@ -363,9 +363,9 @@ export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   // void as well
   // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
-    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (!responseHandler.validate(response as ReceivedFromHost)) {
-    throw new Error('Invalid response');
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
   } else {
     return responseHandler.deserialize(response as ReceivedFromHost);
   }
@@ -384,7 +384,7 @@ export async function sendMessageErrorOnly(
   // void as well
   // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
-    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
+    throw new Error(`${response.errorCode}, message: ${response.message}`);
   }
 }
 

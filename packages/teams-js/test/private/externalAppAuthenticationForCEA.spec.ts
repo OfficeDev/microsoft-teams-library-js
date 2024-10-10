@@ -164,7 +164,7 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          return expect(promise).rejects.toEqual(testError);
+          return expect(promise).rejects.toThrowError(`${testError.errorCode}, message: ${testError.message}`);
         });
         it(`should throw default error when host sends a response that does not fit InvokeError or ActionExecuteResponse - ${frameContext}`, async () => {
           expect.assertions(3);
@@ -193,10 +193,8 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testInvalidResponse);
           }
-          return expect(promise).rejects.toEqual({
-            errorCode: 'INTERNAL_ERROR',
-            message: 'No valid response received',
-          });
+
+          return expect(promise).rejects.toThrowError(new Error('500, message: Invalid response from host'));
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -275,10 +273,8 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          // await expect(promise).rejects.toEqual(testError);
-          await expect(promise).rejects.toThrowError(
-            `Error code: ${testError.errorCode}, message: ${testError.message ?? 'None'}`,
-          );
+
+          await expect(promise).rejects.toThrowError(`${testError.errorCode}, message: ${testError.message ?? 'None'}`);
         });
         it('should resolve on success', async () => {
           expect.assertions(3);
@@ -583,7 +579,7 @@ describe('externalAppAuthenticationForCEA', () => {
             utils.respondToMessage(message, testError);
           }
           await expect(promise).rejects.toThrowError(
-            new Error(`Error code: ${testError.errorCode}, message: ${testError.message ?? 'None'}`),
+            new Error(`${testError.errorCode}, message: ${testError.message ?? 'None'}`),
           );
         });
       } else {
