@@ -345,37 +345,7 @@ export class Args {
 // Should there be a version of this that takes a single generic type?
 // Sometimes no deserialization is necessary. I kind of like forcing callers to have to
 // consider deserialization and choose to do nothing, but it bears thinking about.
-export function sendMessage<ReceivedFromHost, DeserializedFromHost>(
-  apiVersionTag: string, // should this be a string?
-  actionName: string,
-  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
-  args: Args | undefined = undefined,
-  errorChecker?: (response: unknown) => response is SdkError,
-): Promise<DeserializedFromHost> {
-  return new Promise((resolve, reject) => {
-    const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
-    const requestPromise = sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
-      apiVersionTag,
-      actionName,
-      argsSafeToTransfer,
-    );
-
-    // try this out with URL and AppId too
-    // void as well
-    // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
-    requestPromise.then(([response]: [ReceivedFromHost | SdkError]) => {
-      if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
-        reject(new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`));
-      } else if (!responseHandler.validate(response as ReceivedFromHost)) {
-        reject(new Error('Invalid response'));
-      } else {
-        resolve(responseHandler.deserialize(response as ReceivedFromHost));
-      }
-    });
-  });
-}
-
-export async function sendMessage2<ReceivedFromHost, DeserializedFromHost>(
+export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string, // should this be a string?
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
@@ -383,7 +353,7 @@ export async function sendMessage2<ReceivedFromHost, DeserializedFromHost>(
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
-  const response = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
+  const [response] = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
     apiVersionTag,
     actionName,
     argsSafeToTransfer,
@@ -408,15 +378,13 @@ export async function sendMessageErrorOnly(
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
-  const response = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
-
-  const sdkError = response[0];
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
 
   // try this out with URL and AppId too
   // void as well
   // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
-  if ((errorChecker && errorChecker(sdkError)) || isSdkError(sdkError)) {
-    throw new Error(`Error code: ${sdkError.errorCode}, message: ${sdkError.message ?? 'None'}`);
+  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
   }
 }
 

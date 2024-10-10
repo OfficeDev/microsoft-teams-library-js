@@ -89,22 +89,41 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    // const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    //   getApiVersionTag(
+    //     externalAppAuthenticationTelemetryVersionNumber,
+    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
+    //   ),
+    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
+    //   appId.toString(),
+    //   conversationId,
+    //   authenticateParameters.url.href,
+    //   authenticateParameters.width,
+    //   authenticateParameters.height,
+    //   authenticateParameters.isExternal,
+    // );
+    // if (error) {
+    //   throw error;
+    // }
+
+    return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      appId.toString(),
-      conversationId,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      new Args([
+        new SerializableAppId(appId),
+        conversationId,
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**
