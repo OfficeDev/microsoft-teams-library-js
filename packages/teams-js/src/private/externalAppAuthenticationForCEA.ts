@@ -1,8 +1,9 @@
-import { sendAndUnwrap } from '../internal/communication';
+import { ArgsForHost } from '../internal/argsForHost';
+import { sendMessage, sendMessageErrorOnly } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
-import { AppId } from '../public';
+import { AppId, SdkError } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { externalAppAuthentication } from './externalAppAuthentication';
@@ -42,20 +43,17 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      appId.toString(),
-      conversationId,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      new ArgsForHost([appId, conversationId, authTokenRequest.claims, authTokenRequest.silent]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**
@@ -84,22 +82,24 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      appId.toString(),
-      conversationId,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      new ArgsForHost([
+        appId,
+        conversationId,
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**
@@ -132,27 +132,29 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse
+    return sendMessage<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
+      new ArgsForHost([
+        appId,
+        conversationId,
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
-      return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    }
   }
 
   /**
@@ -184,25 +186,27 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
+    return sendMessage<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
+      new ArgsForHost([
+        appId,
+        conversationId,
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authTokenRequest.claims,
+        authTokenRequest.silent,
+      ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
-      return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    }
   }
 
   /**
@@ -235,15 +239,4 @@ export namespace externalAppAuthenticationForCEA {
       throw error;
     }
   }
-
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * @beta
-   */
-  const defaultExternalAppError = {
-    errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-    message: 'No valid response received',
-  };
 }

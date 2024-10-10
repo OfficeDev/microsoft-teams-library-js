@@ -4,9 +4,10 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { SdkError } from '../public/interfaces';
+import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
+import { ArgsForHost } from './argsForHost';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
@@ -28,6 +29,7 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
+import { ResponseHandler } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
@@ -255,6 +257,43 @@ export function sendMessageToParentAsync<T>(
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
     resolve(waitForResponse<T>(request.uuid));
   });
+}
+
+export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
+  apiVersionTag: string,
+  actionName: string,
+  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
+  args: ArgsForHost | undefined = undefined,
+  errorChecker?: (response: unknown) => response is SdkError,
+): Promise<DeserializedFromHost> {
+  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const [response] = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
+    apiVersionTag,
+    actionName,
+    argsSafeToTransfer,
+  );
+
+  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (!responseHandler.validate(response as ReceivedFromHost)) {
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
+  } else {
+    return responseHandler.deserialize(response as ReceivedFromHost);
+  }
+}
+
+export async function sendMessageErrorOnly(
+  apiVersionTag: string,
+  actionName: string,
+  args: ArgsForHost | undefined = undefined,
+  errorChecker?: (response: unknown) => response is SdkError,
+): Promise<void> {
+  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
+
+  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+    throw new Error(`${response.errorCode}, message: ${response.message}`);
+  }
 }
 
 /**
