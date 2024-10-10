@@ -1,4 +1,5 @@
-import { Args, sendMessage, sendMessageErrorOnly, SerializableAppId } from '../internal/communication';
+import { ArgsForHost } from '../internal/argsForHost';
+import { sendMessage, sendMessageErrorOnly } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -48,7 +49,7 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      new Args([new SerializableAppId(appId), conversationId, authTokenRequest.claims, authTokenRequest.silent]),
+      new ArgsForHost([appId, conversationId, authTokenRequest.claims, authTokenRequest.silent]),
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -87,8 +88,8 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      new Args([
-        new SerializableAppId(appId),
+      new ArgsForHost([
+        appId,
         conversationId,
         authenticateParameters.url.href,
         authenticateParameters.width,
@@ -141,8 +142,8 @@ export namespace externalAppAuthenticationForCEA {
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       new externalAppAuthentication.ActionExecuteResponseHandler(),
-      new Args([
-        new SerializableAppId(appId),
+      new ArgsForHost([
+        appId,
         conversationId,
         new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
         authenticateParameters.url.href,
@@ -195,8 +196,8 @@ export namespace externalAppAuthenticationForCEA {
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       new externalAppAuthentication.ActionExecuteResponseHandler(),
-      new Args([
-        new SerializableAppId(appId),
+      new ArgsForHost([
+        appId,
         conversationId,
         new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
         authTokenRequest.claims,

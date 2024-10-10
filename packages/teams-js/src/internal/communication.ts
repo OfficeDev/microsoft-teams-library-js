@@ -3,11 +3,11 @@
 /* eslint-disable strict-null-checks/all */
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { AppId } from '../public/appId';
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
+import { ArgsForHost } from './argsForHost';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
@@ -29,6 +29,7 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
+import { ResponseHandler } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
@@ -258,98 +259,11 @@ export function sendMessageToParentAsync<T>(
   });
 }
 
-/***********************************************/
-
-/**
- * This class is used for validating and deserializing the response from the host.
- *
- * @typeParam ReceivedFromHost The type of the response received from the host
- * @typeParam DeserializedFromHost The type of the response after deserialization
- */
-export abstract class ResponseHandler<ReceivedFromHost, DeserializedFromHost> {
-  /**
-   * Checks if the response from the host is valid.
-   *
-   * @param response The response from the host to validate
-   *
-   * @returns True if the response is valid, false otherwise
-   */
-  public abstract validate(response: ReceivedFromHost): boolean;
-
-  /**
-   * This function converts the response from the host into a different format
-   * before returning it to the caller (if needed).
-   * @param response
-   */
-  public abstract deserialize(response: ReceivedFromHost): DeserializedFromHost;
-}
-
-export class BooleanResponseHandler extends ResponseHandler<boolean, boolean> {
-  public validate(_response: boolean): boolean {
-    return true;
-  }
-
-  public deserialize(response: boolean): boolean {
-    return response;
-  }
-}
-
-export class UndefinedHandler extends ResponseHandler<undefined, undefined> {
-  public validate(response: undefined): boolean {
-    return response === undefined;
-  }
-  public deserialize(response: undefined): undefined {
-    return response;
-  }
-}
-
-/***********************************************/
-// Is there a more "standard" way to name some of this?
-// ISerializable?
-export interface SerializableArg {
-  getSerializableObject(): object | string;
-}
-
-function isSerializableArg(arg: any): arg is SerializableArg {
-  return arg && typeof arg.getSerializableObject === 'function';
-}
-
-export class SerializableAppId implements SerializableArg {
-  public constructor(private appId: AppId) {}
-  public getSerializableObject(): object | string {
-    return this.appId.toString();
-  }
-}
-
-export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
-
-export class Args {
-  public constructor(public args: (SimpleType | SerializableArg)[] | undefined) {}
-
-  public getSerializableArgs(): (object | SimpleType)[] | undefined {
-    if (this.args === undefined) {
-      return undefined;
-    }
-
-    return this.args.map((arg) => {
-      if (isSerializableArg(arg)) {
-        return arg.getSerializableObject();
-      } else {
-        return arg;
-      }
-    });
-  }
-}
-
-/*********************************************/
-// Should there be a version of this that takes a single generic type?
-// Sometimes no deserialization is necessary. I kind of like forcing callers to have to
-// consider deserialization and choose to do nothing, but it bears thinking about.
 export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string,
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
-  args: Args | undefined = undefined,
+  args: ArgsForHost | undefined = undefined,
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
@@ -371,7 +285,7 @@ export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
 export async function sendMessageErrorOnly(
   apiVersionTag: string,
   actionName: string,
-  args: Args | undefined = undefined,
+  args: ArgsForHost | undefined = undefined,
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
@@ -381,8 +295,6 @@ export async function sendMessageErrorOnly(
     throw new Error(`${response.errorCode}, message: ${response.message}`);
   }
 }
-
-/*********************************************/
 
 /**
  * @hidden

@@ -1,5 +1,7 @@
-import { ResponseHandler, sendMessageToParentAsync, SerializableArg } from '../internal/communication';
+import { SerializableArg } from '../internal/argsForHost';
+import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId, validateUrl } from '../internal/utils';
 import { AppId } from '../public';
