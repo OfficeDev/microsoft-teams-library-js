@@ -1,4 +1,4 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import { ResponseHandler, sendMessageToParentAsync, SerializableArg } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId, validateUrl } from '../internal/utils';
@@ -134,6 +134,18 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export class SerializableActionExecuteInvokeRequest implements SerializableArg {
+    public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
+    public getSerializableObject(): object | string {
+      return this.invokeRequest; // I wonder if the Record actually needs to be serialized. Might be a real bug?
+    }
+  }
+
+  /**
    * @beta
    * @hidden
    * Determines if the provided response object is an instance of IActionExecuteResponse
@@ -217,6 +229,22 @@ export namespace externalAppAuthentication {
     signature?: string;
     statusCode: number;
     type: string;
+  }
+
+  /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export class ActionExecuteResponseHandler extends ResponseHandler<IActionExecuteResponse, IActionExecuteResponse> {
+    public validate(response: externalAppAuthentication.IActionExecuteResponse): boolean {
+      return externalAppAuthentication.isActionExecuteResponse(response);
+    }
+    public deserialize(
+      response: externalAppAuthentication.IActionExecuteResponse,
+    ): externalAppAuthentication.IActionExecuteResponse {
+      return response;
+    }
   }
 
   /**

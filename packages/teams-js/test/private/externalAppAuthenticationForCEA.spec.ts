@@ -385,7 +385,9 @@ describe('externalAppAuthenticationForCEA', () => {
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toThrow(
+            new Error(`${testError.errorCode}, message: ${testError.message ?? 'None'}`),
+          );
         });
 
         it(`should throw error from host failure in context - ${frameContext}`, async () => {
@@ -417,10 +419,7 @@ describe('externalAppAuthenticationForCEA', () => {
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, invalidTestError);
           }
-          await expect(promise).rejects.toEqual({
-            errorCode: 'INTERNAL_ERROR',
-            message: 'No valid response received',
-          });
+          await expect(promise).rejects.toThrowError(new Error('500, message: Invalid response from host'));
         });
 
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {

@@ -1,12 +1,4 @@
-import {
-  Args,
-  ResponseHandler,
-  sendAndUnwrap,
-  sendMessage,
-  sendMessageErrorOnly,
-  SerializableAppId,
-  SerializableArg,
-} from '../internal/communication';
+import { Args, sendMessage, sendMessageErrorOnly, SerializableAppId } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -148,38 +140,20 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      new ActionExecuteResponseHandler(),
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
       new Args([
         new SerializableAppId(appId),
         conversationId,
-        new SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
         authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-  }
-
-  class SerializableActionExecuteInvokeRequest implements SerializableArg {
-    public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
-    public getSerializableObject(): object | string {
-      return this.invokeRequest; // I wonder if the Record actually needs to be serialized. Might be a real bug?
-    }
-  }
-
-  class ActionExecuteResponseHandler extends ResponseHandler<
-    externalAppAuthentication.IActionExecuteResponse,
-    externalAppAuthentication.IActionExecuteResponse
-  > {
-    public validate(response: externalAppAuthentication.IActionExecuteResponse): boolean {
-      return externalAppAuthentication.isActionExecuteResponse(response);
-    }
-    public deserialize(
-      response: externalAppAuthentication.IActionExecuteResponse,
-    ): externalAppAuthentication.IActionExecuteResponse {
-      return response;
-    }
   }
 
   /**
@@ -211,25 +185,47 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
+    // const response = await sendAndUnwrap<
+    //   externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
+    // >(
+    //   getApiVersionTag(
+    //     externalAppAuthenticationTelemetryVersionNumber,
+    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
+    //   ),
+    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
+    //   appId.toString(),
+    //   conversationId,
+    //   originalRequestInfo,
+    //   authTokenRequest.claims,
+    //   authTokenRequest.silent,
+    // );
+    // if (externalAppAuthentication.isActionExecuteResponse(response)) {
+    //   return response;
+    // } else {
+    //   throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
+    // }
+
+    return sendMessage<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
+      new Args([
+        new SerializableAppId(appId),
+        conversationId,
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authTokenRequest.claims,
+        authTokenRequest.silent,
+      ]),
+      (err): err is SdkError => {
+        return externalAppAuthentication.isInvokeError(err);
+      },
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
-      return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    }
   }
 
   /**
