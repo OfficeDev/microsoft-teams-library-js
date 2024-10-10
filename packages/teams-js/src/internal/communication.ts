@@ -359,9 +359,6 @@ export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
     argsSafeToTransfer,
   );
 
-  // try this out with URL and AppId too
-  // void as well
-  // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (!responseHandler.validate(response as ReceivedFromHost)) {
@@ -380,9 +377,6 @@ export async function sendMessageErrorOnly(
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
   const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
 
-  // try this out with URL and AppId too
-  // void as well
-  // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
     throw new Error(`${response.errorCode}, message: ${response.message}`);
   }
