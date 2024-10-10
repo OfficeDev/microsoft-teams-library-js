@@ -1,8 +1,11 @@
+import { sendAndUnwrap } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { AppEligibilityInformation } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
+const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 /**
  * @beta
  * @hidden
@@ -45,12 +48,34 @@ export namespace copilot {
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
-    export function getEligibilityInfo(): AppEligibilityInformation {
+    export function getEligibilityInfo(): Promise<AppEligibilityInformation> {
       ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return runtime.hostVersionsInfo!.appEligibilityInformation!;
+      return new Promise((resolve, reject) => {
+        // return the eligibility information if it is already available
+        if (runtime.hostVersionsInfo?.appEligibilityInformation) {
+          resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
+        } else {
+          // send message to host SDK to get eligibility information
+          sendAndUnwrap<AppEligibilityInformation | undefined>(
+            getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
+            // what should this param be? 'copilot.getEligibilityInfo' or 'getEligibilityInfo' or what I have?,
+            'copilot.eligibility.getEligibilityInfo',
+          )
+            .then((result: AppEligibilityInformation | undefined) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(new Error('Failed to get eligibility information from the host.'));
+              }
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        }
+      });
     }
   }
 }
