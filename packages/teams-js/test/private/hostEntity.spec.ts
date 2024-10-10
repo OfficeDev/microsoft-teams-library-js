@@ -378,7 +378,6 @@ describe('hostEntity', () => {
           try {
             await hostEntity.tab.getAll({ threadId: '' });
           } catch (e) {
-            console.log(e);
             expect(e).toEqual(
               new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: ThreadId cannot be null or empty`),
             );

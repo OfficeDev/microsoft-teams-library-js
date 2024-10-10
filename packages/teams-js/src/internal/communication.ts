@@ -410,13 +410,13 @@ export async function sendMessageErrorOnly(
   const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
   const response = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
 
-  console.log(`RESPONSE!!!! ${JSON.stringify(response)}`);
+  const sdkError = response[0];
 
   // try this out with URL and AppId too
   // void as well
   // Want to look in to how to accept error types other than SdkError. I know external uses a different error type (with a similar structure)
-  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
-    throw new Error(`Error code: ${response.errorCode}, message: ${response.message ?? 'None'}`);
+  if ((errorChecker && errorChecker(sdkError)) || isSdkError(sdkError)) {
+    throw new Error(`Error code: ${sdkError.errorCode}, message: ${sdkError.message ?? 'None'}`);
   }
 }
 

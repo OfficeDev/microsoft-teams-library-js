@@ -310,7 +310,6 @@ export namespace externalAppAuthentication {
    */
   export function isInvokeError(err: unknown): err is externalAppAuthentication.InvokeError {
     if (typeof err !== 'object' || err === null) {
-      console.log('Error object');
       return false;
     }
 

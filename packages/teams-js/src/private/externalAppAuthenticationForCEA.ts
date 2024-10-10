@@ -50,21 +50,6 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    // const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
-    //   getApiVersionTag(
-    //     externalAppAuthenticationTelemetryVersionNumber,
-    //     ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-    //   ),
-    //   ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-    //   appId.toString(),
-    //   conversationId,
-    //   authTokenRequest.claims,
-    //   authTokenRequest.silent,
-    // );
-    // if (error) {
-    //   throw error;
-    // }
-
     return sendMessageErrorOnly(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
@@ -73,10 +58,7 @@ export namespace externalAppAuthenticationForCEA {
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       new Args([new SerializableAppId(appId), conversationId, authTokenRequest.claims, authTokenRequest.silent]),
       (err): err is SdkError => {
-        console.log(`IS INVOKE ERROR? ${JSON.stringify(err)}`);
-        const foo = externalAppAuthentication.isInvokeError(err);
-        console.log(`Returning ${foo}...`);
-        return foo;
+        return externalAppAuthentication.isInvokeError(err);
       },
     );
   }
