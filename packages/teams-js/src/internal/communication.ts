@@ -294,7 +294,7 @@ export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, Dese
     argsSafeToTransfer,
   );
 
-  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
+  if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (!responseHandler.validate(response as ReceivedFromHost)) {
     throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
@@ -312,8 +312,11 @@ export async function callFunctionInHost(
   const argsSafeToTransfer = serializeItemArray(args);
   const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, argsSafeToTransfer);
 
-  if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
-    throw new Error(`${response.errorCode}, message: ${response.message}`);
+  if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (response !== undefined) {
+    // If we receive a response from the host that is not a recognized error type it is an invalid response
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
   }
 }
 
