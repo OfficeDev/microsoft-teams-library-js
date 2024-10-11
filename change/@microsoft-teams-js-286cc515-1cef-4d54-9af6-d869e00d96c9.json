@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Updated `copilot.eligibility.getEligibilityInfo` to get the eligibility info from the host if it is not already available.",
+  "packageName": "@microsoft/teams-js",
+  "email": "erinha@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
