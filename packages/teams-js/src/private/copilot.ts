@@ -1,8 +1,8 @@
-import { sendAndUnwrap } from '../internal/communication';
+import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { AppEligibilityInformation } from '../public/interfaces';
+import { AppEligibilityInformation, isSdkError, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
@@ -53,29 +53,48 @@ export namespace copilot {
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
       }
-      return new Promise((resolve, reject) => {
-        // return the eligibility information if it is already available
-        if (runtime.hostVersionsInfo?.appEligibilityInformation) {
-          resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
-        } else {
-          // send message to host SDK to get eligibility information
-          sendAndUnwrap<AppEligibilityInformation | undefined>(
-            getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
-            // what should this param be? 'copilot.getEligibilityInfo' or 'getEligibilityInfo' or what I have?,
-            'copilot.eligibility.getEligibilityInfo',
-          )
-            .then((result: AppEligibilityInformation | undefined) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(new Error('Failed to get eligibility information from the host.'));
-              }
-            })
-            .catch((error) => {
-              reject(error);
-            });
+
+      // Return the eligibility information if it is already available
+      if (runtime.hostVersionsInfo?.appEligibilityInformation) {
+        return Promise.resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
+      }
+
+      // Send message to host SDK to get eligibility information
+      return sendMessageToParentAsync<AppEligibilityInformation | SdkError>(
+        getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
+        'copilot.eligibility.getEligibilityInfo',
+      ).then((response: AppEligibilityInformation | SdkError) => {
+        if (isSdkError(response)) {
+          throw new Error(
+            `Error code: ${response.errorCode}, message: ${response.message ?? 'Failed to get eligibility information from the host.'}`,
+          );
         }
+        return response as AppEligibilityInformation;
       });
+
+      // return new Promise((resolve, reject) => {
+      //   // return the eligibility information if it is already available
+      //   if (runtime.hostVersionsInfo?.appEligibilityInformation) {
+      //     resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
+      //   } else {
+      //     // send message to host SDK to get eligibility information
+      //     sendAndUnwrap<AppEligibilityInformation | undefined>(
+      //       getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
+      //       // what should this param be? 'copilot.getEligibilityInfo' or 'getEligibilityInfo' or what I have?,
+      //       'copilot.eligibility.getEligibilityInfo',
+      //     )
+      //       .then((result: AppEligibilityInformation | undefined) => {
+      //         if (result) {
+      //           resolve(result);
+      //         } else {
+      //           reject(new Error('Failed to get eligibility information from the host.'));
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         reject(error);
+      //       });
+      //   }
+      // });
     }
   }
 }
