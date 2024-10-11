@@ -163,6 +163,7 @@ export function uninitializeCommunication(): void {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -176,6 +177,7 @@ export function sendAndUnwrap<T>(apiVersionTag: string, actionName: string, ...a
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -192,6 +194,7 @@ export function sendAndHandleStatusAndReason(apiVersionTag: string, actionName: 
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -216,6 +219,7 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -234,6 +238,7 @@ export function sendAndHandleSdkError<T>(apiVersionTag: string, actionName: stri
 }
 
 /**
+ * @deprecated This function will no longer be exported in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -280,6 +285,19 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
   });
 }
 
+/**
+ * Call a function in the host and receive a response. If the host returns an {@link SdkError} instead of a normal response, this function will throw a new Error containing the SdkError's information
+ *
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes.
+ * @param functionName The function name to call in the host.
+ * @param responseHandler When the host responds, this handler will validate and deserialize the response.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param errorChecker This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @returns The response received from the host after deserialization.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
 export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string,
   functionName: string,
@@ -303,6 +321,16 @@ export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, Dese
   }
 }
 
+/**
+ * Call a function in the host that receives either an {@link SdkError} or undefined as a response. If the host returns an {@link SdkError} this function will throw a new Error containing the SdkError's information.
+ *
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes.
+ * @param functionName The function name to call in the host.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param errorChecker This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
 export async function callFunctionInHost(
   apiVersionTag: string,
   functionName: string,
@@ -368,12 +396,14 @@ function waitForResponse<T>(requestUuid: MessageUUID): Promise<T> {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @internal
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParent(apiVersionTag: string, actionName: string, callback?: Function): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  *
@@ -388,6 +418,7 @@ export function sendMessageToParent(
 ): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
