@@ -1,4 +1,4 @@
-import { ArgsForHost, SerializableArg } from '../internal/argsForHost';
+import { ArgsForHost } from '../internal/argsForHost';
 import { sendMessage } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { BooleanResponseHandler, ResponseHandler } from '../internal/responseHandler';
@@ -6,6 +6,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { ErrorCode } from '../public';
 import { TabInstance } from '../public/interfaces';
 import { runtime } from '../public/runtime';
+import { ISerializable } from '../public/serializable.interface';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -44,9 +45,9 @@ export namespace hostEntity {
    */
   export type HostEntityIds = TeamsEntityId | TeamsChannelMeetingEntityIds;
 
-  class SerializableHostEntityId implements SerializableArg {
+  class SerializableHostEntityId implements ISerializable {
     public constructor(private hostEntityId: HostEntityIds) {}
-    public getSerializableObject(): object {
+    public serialize(): object {
       return this.hostEntityId;
     }
   }
@@ -87,9 +88,9 @@ export namespace hostEntity {
       }
     }
 
-    class SerializableConfigurableTabInstance implements SerializableArg {
+    class SerializableConfigurableTabInstance implements ISerializable {
       public constructor(private configurableTabInstance: ConfigurableTabInstance) {}
-      public getSerializableObject(): object {
+      public serialize(): object {
         return this.configurableTabInstance;
       }
     }
@@ -108,9 +109,9 @@ export namespace hostEntity {
       }
     }
 
-    class SerializableHostEntityTabInstance implements SerializableArg {
+    class SerializableHostEntityTabInstance implements ISerializable {
       public constructor(private hostEntityTabInstance: HostEntityTabInstance) {}
-      public getSerializableObject(): object {
+      public serialize(): object {
         return this.hostEntityTabInstance;
       }
     }

@@ -1,25 +1,39 @@
-export interface SerializableArg {
-  getSerializableObject(): object | string;
+import { ISerializable } from '../public/serializable.interface';
+
+function isSerializable(arg: unknown): arg is ISerializable {
+  return (
+    arg !== undefined &&
+    arg !== null &&
+    (arg as ISerializable).serialize !== undefined &&
+    typeof (arg as ISerializable).serialize === 'function'
+  );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isSerializableArg(arg: any): arg is SerializableArg {
-  return arg && typeof arg.getSerializableObject === 'function';
-}
-
+/**
+ * @hidden
+ * @internal
+ *
+ * A simple type that can be passed to the host
+ */
 export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
 
+/**
+ * @hidden
+ * @internal
+ *
+ * This class is used for serializing the arguments passed to the host.
+ */
 export class ArgsForHost {
-  public constructor(public args: (SimpleType | SerializableArg)[] | undefined) {}
+  public constructor(public args: (SimpleType | ISerializable)[] | undefined) {}
 
-  public getSerializableArgs(): (object | SimpleType)[] | undefined {
+  public getSerializableArgs(): unknown[] | undefined {
     if (this.args === undefined) {
       return undefined;
     }
 
     return this.args.map((arg) => {
-      if (isSerializableArg(arg)) {
-        return arg.getSerializableObject();
+      if (isSerializable(arg)) {
+        return arg.serialize();
       } else {
         return arg;
       }

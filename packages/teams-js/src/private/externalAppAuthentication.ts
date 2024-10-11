@@ -1,4 +1,3 @@
-import { SerializableArg } from '../internal/argsForHost';
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
@@ -7,6 +6,7 @@ import { validateId, validateUrl } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ISerializable } from '../public/serializable.interface';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -140,9 +140,9 @@ export namespace externalAppAuthentication {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export class SerializableActionExecuteInvokeRequest implements SerializableArg {
+  export class SerializableActionExecuteInvokeRequest implements ISerializable {
     public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
-    public getSerializableObject(): object | string {
+    public serialize(): object | string {
       return this.invokeRequest; // I wonder if the Record actually needs to be serialized. Might be a real bug?
     }
   }

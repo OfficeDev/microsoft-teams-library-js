@@ -1,5 +1,5 @@
 import { validateStringAsAppId } from '../internal/appIdValidation';
-import { SerializableArg } from '../internal/argsForHost';
+import { ISerializable } from './serializable.interface';
 
 /**
  * A strongly-typed class used to represent a "valid" app id.
@@ -12,7 +12,7 @@ import { SerializableArg } from '../internal/argsForHost';
  * for script tags, length, and non-printable characters. Validation will be updated in the future to ensure
  * the app id is a valid UUID as legacy apps update.
  */
-export class AppId implements SerializableArg {
+export class AppId implements ISerializable {
   /**
    * Creates a strongly-typed AppId from a string
    *
@@ -29,7 +29,7 @@ export class AppId implements SerializableArg {
    *
    * @returns A serializable representation of an AppId, used for passing AppIds to the host.
    */
-  public getSerializableObject(): object | string {
+  public serialize(): object | string {
     return this.toString();
   }
 

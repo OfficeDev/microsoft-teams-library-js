@@ -28,7 +28,7 @@ describe('AppId', () => {
   describe('getSerializableObject', () => {
     test('should return the same value as toString', () => {
       const appId = new AppId('8e6523');
-      expect(appId.getSerializableObject()).toBe(appId.toString());
+      expect(appId.serialize()).toBe(appId.toString());
     });
   });
 });

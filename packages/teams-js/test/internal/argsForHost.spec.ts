@@ -15,13 +15,13 @@ describe('ArgsForHost', () => {
       expect(argsForHost.getSerializableArgs()).toEqual(['a', 1, true, null, undefined]);
     });
     test('should return the serializable object for each arg if they are serializable', () => {
-      const serializableArg1 = { getSerializableObject: () => 'serializableArg1' };
-      const serializableArg2 = { getSerializableObject: () => 'serializableArg2' };
+      const serializableArg1 = { serialize: () => 'serializableArg1' };
+      const serializableArg2 = { serialize: () => 'serializableArg2' };
       const argsForHost = new ArgsForHost([serializableArg1, serializableArg2]);
       expect(argsForHost.getSerializableArgs()).toEqual(['serializableArg1', 'serializableArg2']);
     });
     test('should return a mix of serializable objects and simple types', () => {
-      const serializableArg = { getSerializableObject: () => 'serializableArg' };
+      const serializableArg = { serialize: () => 'serializableArg' };
       const argsForHost = new ArgsForHost([serializableArg, 'a', 1, true, null, undefined]);
       expect(argsForHost.getSerializableArgs()).toEqual(['serializableArg', 'a', 1, true, null, undefined]);
     });
