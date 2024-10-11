@@ -6,8 +6,8 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
+import { ISerializable } from '../public/serializable.interface';
 import { version } from '../public/version';
-import { ArgsForHost } from './argsForHost';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
@@ -259,14 +259,32 @@ export function sendMessageToParentAsync<T>(
   });
 }
 
+type SimpleType = string | number | boolean | null | undefined | SimpleType[];
+
+function isSerializable(arg: unknown): arg is ISerializable {
+  return (
+    arg !== undefined &&
+    arg !== null &&
+    (arg as ISerializable).serialize !== undefined &&
+    typeof (arg as ISerializable).serialize === 'function'
+  );
+}
+
 export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string,
   actionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
-  args: ArgsForHost | undefined = undefined,
+  args: (SimpleType | ISerializable)[],
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
-  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const argsSafeToTransfer = args.map((arg) => {
+    if (isSerializable(arg)) {
+      return arg.serialize();
+    } else {
+      return arg;
+    }
+  });
+
   const [response] = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
     apiVersionTag,
     actionName,
@@ -285,10 +303,16 @@ export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
 export async function sendMessageErrorOnly(
   apiVersionTag: string,
   actionName: string,
-  args: ArgsForHost | undefined = undefined,
+  args: (SimpleType | ISerializable)[],
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
-  const argsSafeToTransfer = args === undefined ? undefined : args.getSerializableArgs();
+  const argsSafeToTransfer = args.map((arg) => {
+    if (isSerializable(arg)) {
+      return arg.serialize();
+    } else {
+      return arg;
+    }
+  });
   const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
 
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {

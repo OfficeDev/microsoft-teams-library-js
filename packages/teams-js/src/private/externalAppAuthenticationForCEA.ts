@@ -1,4 +1,3 @@
-import { ArgsForHost } from '../internal/argsForHost';
 import { sendMessage, sendMessageErrorOnly } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -49,7 +48,7 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      new ArgsForHost([appId, conversationId, authTokenRequest.claims, authTokenRequest.silent]),
+      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -88,14 +87,14 @@ export namespace externalAppAuthenticationForCEA {
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      new ArgsForHost([
+      [
         appId,
         conversationId,
         authenticateParameters.url.href,
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
-      ]),
+      ],
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -142,7 +141,7 @@ export namespace externalAppAuthenticationForCEA {
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       new externalAppAuthentication.ActionExecuteResponseHandler(),
-      new ArgsForHost([
+      [
         appId,
         conversationId,
         new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
@@ -150,7 +149,7 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.width,
         authenticateParameters.height,
         authenticateParameters.isExternal,
-      ]),
+      ],
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -196,13 +195,13 @@ export namespace externalAppAuthenticationForCEA {
       ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       new externalAppAuthentication.ActionExecuteResponseHandler(),
-      new ArgsForHost([
+      [
         appId,
         conversationId,
         new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
         authTokenRequest.claims,
         authTokenRequest.silent,
-      ]),
+      ],
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },

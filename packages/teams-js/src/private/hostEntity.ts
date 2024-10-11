@@ -1,4 +1,3 @@
-import { ArgsForHost } from '../internal/argsForHost';
 import { sendMessage } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { BooleanResponseHandler, ResponseHandler } from '../internal/responseHandler';
@@ -182,7 +181,7 @@ export namespace hostEntity {
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'hostEntity.tab.addAndConfigure',
         new HostEntityTabInstanceResponseHandler(),
-        new ArgsForHost([new SerializableHostEntityId(hostEntityIds), appTypes]),
+        [new SerializableHostEntityId(hostEntityIds), appTypes],
       );
     }
 
@@ -213,7 +212,7 @@ export namespace hostEntity {
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
         'hostEntity.tab.getAll',
         new HostEntityTabInstancesResponseHandler(),
-        new ArgsForHost([new SerializableHostEntityId(hostEntityIds)]),
+        [new SerializableHostEntityId(hostEntityIds)],
       );
     }
 
@@ -251,7 +250,7 @@ export namespace hostEntity {
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'hostEntity.tab.reconfigure',
         new ConfigurableTabInstanceResponseHandler(),
-        new ArgsForHost([new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+        [new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
       );
     }
 
@@ -289,7 +288,7 @@ export namespace hostEntity {
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'hostEntity.tab.rename',
         new ConfigurableTabInstanceResponseHandler(),
-        new ArgsForHost([new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+        [new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
       );
     }
 
@@ -324,7 +323,7 @@ export namespace hostEntity {
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'hostEntity.tab.remove',
         new BooleanResponseHandler(),
-        new ArgsForHost([new SerializableHostEntityTabInstance(tab), new SerializableHostEntityId(hostEntityIds)]),
+        [new SerializableHostEntityTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
       );
     }
 
