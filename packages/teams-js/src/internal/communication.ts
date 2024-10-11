@@ -270,24 +270,27 @@ function isSerializable(arg: unknown): arg is ISerializable {
   );
 }
 
-export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
+function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
+  return items.map((item) => {
+    if (isSerializable(item)) {
+      return item.serialize();
+    } else {
+      return item;
+    }
+  });
+}
+
+export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, DeserializedFromHost>(
   apiVersionTag: string,
-  actionName: string,
+  functionName: string,
   responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
   args: (SimpleType | ISerializable)[],
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
-  const argsSafeToTransfer = args.map((arg) => {
-    if (isSerializable(arg)) {
-      return arg.serialize();
-    } else {
-      return arg;
-    }
-  });
-
+  const argsSafeToTransfer = serializeItemArray(args);
   const [response] = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
     apiVersionTag,
-    actionName,
+    functionName,
     argsSafeToTransfer,
   );
 
@@ -300,20 +303,14 @@ export async function sendMessage<ReceivedFromHost, DeserializedFromHost>(
   }
 }
 
-export async function sendMessageErrorOnly(
+export async function callFunctionInHost(
   apiVersionTag: string,
-  actionName: string,
+  functionName: string,
   args: (SimpleType | ISerializable)[],
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
-  const argsSafeToTransfer = args.map((arg) => {
-    if (isSerializable(arg)) {
-      return arg.serialize();
-    } else {
-      return arg;
-    }
-  });
-  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, actionName, argsSafeToTransfer);
+  const argsSafeToTransfer = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, argsSafeToTransfer);
 
   if ((errorChecker && errorChecker(response)) || isSdkError(response)) {
     throw new Error(`${response.errorCode}, message: ${response.message}`);

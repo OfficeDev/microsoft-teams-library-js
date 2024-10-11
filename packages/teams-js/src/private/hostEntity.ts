@@ -1,4 +1,4 @@
-import { sendMessage } from '../internal/communication';
+import { callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { BooleanResponseHandler, ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -177,7 +177,7 @@ export namespace hostEntity {
         throw new Error(`Error code: ${ErrorCode.INVALID_ARGUMENTS}, message: App types cannot be an empty array`);
       }
 
-      return sendMessage<HostEntityTabInstance, HostEntityTabInstance>(
+      return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'hostEntity.tab.addAndConfigure',
         new HostEntityTabInstanceResponseHandler(),
@@ -208,7 +208,7 @@ export namespace hostEntity {
 
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessage<HostEntityTabInstances, HostEntityTabInstances>(
+      return callFunctionInHostAndHandleResponse<HostEntityTabInstances, HostEntityTabInstances>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
         'hostEntity.tab.getAll',
         new HostEntityTabInstancesResponseHandler(),
@@ -246,7 +246,7 @@ export namespace hostEntity {
       validateTab(tab);
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessage<ConfigurableTabInstance, ConfigurableTabInstance>(
+      return callFunctionInHostAndHandleResponse<ConfigurableTabInstance, ConfigurableTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'hostEntity.tab.reconfigure',
         new ConfigurableTabInstanceResponseHandler(),
@@ -284,7 +284,7 @@ export namespace hostEntity {
       validateTab(tab);
       validateThreadId(hostEntityIds.threadId);
 
-      return sendMessage<ConfigurableTabInstance, ConfigurableTabInstance>(
+      return callFunctionInHostAndHandleResponse<ConfigurableTabInstance, ConfigurableTabInstance>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'hostEntity.tab.rename',
         new ConfigurableTabInstanceResponseHandler(),
@@ -319,7 +319,7 @@ export namespace hostEntity {
       validateThreadId(hostEntityIds.threadId);
       validateTab(tab);
 
-      return sendMessage<boolean, boolean>(
+      return callFunctionInHostAndHandleResponse<boolean, boolean>(
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'hostEntity.tab.remove',
         new BooleanResponseHandler(),

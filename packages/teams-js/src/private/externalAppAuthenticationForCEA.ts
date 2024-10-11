@@ -1,4 +1,4 @@
-import { sendMessage, sendMessageErrorOnly } from '../internal/communication';
+import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -42,7 +42,7 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    return sendMessageErrorOnly(
+    return callFunctionInHost(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
@@ -81,7 +81,7 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessageErrorOnly(
+    return callFunctionInHost(
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
@@ -131,7 +131,7 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    return sendMessage<
+    return callFunctionInHostAndHandleResponse<
       externalAppAuthentication.IActionExecuteResponse,
       externalAppAuthentication.IActionExecuteResponse
     >(
@@ -185,7 +185,7 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    return sendMessage<
+    return callFunctionInHostAndHandleResponse<
       externalAppAuthentication.IActionExecuteResponse,
       externalAppAuthentication.IActionExecuteResponse
     >(
