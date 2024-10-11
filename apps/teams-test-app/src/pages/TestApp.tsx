@@ -119,7 +119,7 @@ export const TestApp: React.FC = () => {
         component: <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />,
       },
       { name: 'ExternalAppAuthenticationAPIs', component: <ExternalAppAuthenticationAPIs /> },
-      { name: 'ExternalAppAuthenticationForCEAAPIs', component: <ExternalAppAuthenticationAPIs /> },
+      { name: 'ExternalAppAuthenticationForCEAAPIs', component: <ExternalAppAuthenticationForCEAAPIs /> },
       { name: 'ExternalAppCardActionsAPIs', component: <ExternalAppCardActionsAPIs /> },
       { name: 'ExternalAppCardActionsForCEAAPIs', component: <ExternalAppCardActionsForCEAAPIs /> },
       { name: 'ExternalAppCommandsAPIs', component: <ExternalAppCommandsAPIs /> },
