@@ -17,7 +17,12 @@ const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? u
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
 // This is added for custom initialization when app can be initialized based upon a trigger/click.
-if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+if (
+  !urlParams.has('customInit') ||
+  !urlParams.get('customInit') ||
+  !urlParams.has('skipInit') ||
+  !urlParams.get('skipInit')
+) {
   if (isTestBackCompat()) {
     initialize(undefined, validMessageOrigins);
   } else {
@@ -29,7 +34,8 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
 // we do it by adding appInitializationTest=true to query string
 if (
   (urlParams.has('customInit') && urlParams.get('customInit')) ||
-  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
+  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter)) ||
+  (urlParams.has('skipInit') && urlParams.get('skipInit'))
 ) {
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
