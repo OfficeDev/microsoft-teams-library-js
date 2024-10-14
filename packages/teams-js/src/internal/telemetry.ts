@@ -13,6 +13,15 @@ registerLogger.formatArgs = function (args) {
   originalFormatArgsFunction.call(this, args);
 };
 
+/**
+ * This function creates a customized debugger, or debugger wrapper, which wraps the debugger from `debug` npm library.
+ * The customized debugger inherits `extend` function, which is the most important one for debugging, and provides the
+ * capability to set all of attributes as `internalDebugger` does for itself. The wrapper also provides an anonymous function
+ * as `internalDebugger` does but this function will output verbose logs to console directly under certain circumstance.
+ * In the other scenarios, the debugger wrapper will behave as `internalDebugger`.
+ * @param namespace namespace of debugger
+ * @returns a debugger wrapper containning debugger created from `debug` npm library
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createDebuggerFunction = (namespace: string): Debugger => {
   const internalDebugger: Debugger = registerLogger(namespace);
@@ -27,8 +36,9 @@ const createDebuggerFunction = (namespace: string): Debugger => {
         [...args],
         internalDebugger.color,
       );
+    } else {
+      internalDebugger(formatter, args);
     }
-    internalDebugger(formatter, args);
   } as Debugger;
 
   Object.assign(func, {
