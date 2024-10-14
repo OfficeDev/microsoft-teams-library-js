@@ -44,6 +44,7 @@ export { app } from './app';
 export { AppId } from './appId';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
+export { EmailAddress } from './emailAddress';
 export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
 export { dialog } from './dialog';

@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Added a Rollup built bundle of Teams-JS",
-  "packageName": "@microsoft/teams-js",
-  "email": "noahdarveau@microsoft.com",
-  "dependentChangeType": "patch"
-}

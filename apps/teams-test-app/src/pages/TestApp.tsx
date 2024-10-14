@@ -40,6 +40,7 @@ import PeopleAPIs from '../components/PeopleAPIs';
 import ChatAPIs from '../components/privateApis/ChatAPIs';
 import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
+import ExternalAppAuthenticationForCEAAPIs from '../components/privateApis/ExternalAppAuthenticationForCEAAPIs';
 import ExternalAppCardActionsAPIs from '../components/privateApis/ExternalAppCardActionsAPIs';
 import ExternalAppCardActionsForCEAAPIs from '../components/privateApis/ExternalAppCardActionsForCEAAPIs';
 import ExternalAppCommandsAPIs from '../components/privateApis/ExternalAppCommandsAPIs';
@@ -114,6 +115,7 @@ export const TestApp: React.FC = () => {
         <DialogUrlBotAPIs />
         <DialogUrlParentCommunicationAPIs childWindowRef={dialogWindowRef} />
         <ExternalAppAuthenticationAPIs />
+        <ExternalAppAuthenticationForCEAAPIs />
         <ExternalAppCardActionsAPIs />
         <ExternalAppCardActionsForCEAAPIs />
         <ExternalAppCommandsAPIs />
