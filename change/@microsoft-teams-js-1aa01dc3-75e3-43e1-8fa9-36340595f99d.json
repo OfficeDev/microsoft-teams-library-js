@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Updated edgeapi endpoint from `edgeapi.svc.cloud.microsoft` to `edgeapi.freya.svc.cloud.microsoft` in valid domains list. Added `work.bing.com` to valid domains list.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jadahiya@microsoft.com",
+  "dependentChangeType": "none"
+}
