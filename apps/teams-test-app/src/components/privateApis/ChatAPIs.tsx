@@ -1,5 +1,6 @@
 import {
   chat,
+  ChatMessageUrgency,
   conversations,
   OpenConversationRequest,
   OpenGroupChatRequest,
@@ -54,6 +55,7 @@ const OpenChat = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       user: 'testUpn',
       message: 'testMessage',
+      urgency: ChatMessageUrgency.Normal,
     }),
   });
 
@@ -93,6 +95,7 @@ const OpenGroupChat = (): React.ReactElement =>
     defaultInput: JSON.stringify({
       users: ['testUpn1', 'testUpn2'],
       message: 'testMessage',
+      urgency: ChatMessageUrgency.Normal,
     }),
   });
 

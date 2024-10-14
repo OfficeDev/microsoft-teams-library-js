@@ -22,6 +22,20 @@ interface OpenChatRequest {
 }
 
 /**
+ * Enumeration for chat message urgency levels.
+ * @enum {string}
+ *
+ * @property {string} Normal - Normal priority message.
+ * @property {string} Urgent - Urgent priority message.
+ * @property {string} Important - Important priority message.
+ */
+export enum ChatMessageUrgency {
+  Normal = 'Normal',
+  Urgent = 'Urgent',
+  Important = 'Important',
+}
+
+/**
  * Used when starting a chat with one person
  *
  * @see OpenGroupChatRequest for use when a chat with more than one person
@@ -32,6 +46,10 @@ export interface OpenSingleChatRequest extends OpenChatRequest {
    * of the user with whom to begin a chat
    */
   user: string;
+  /**
+   * An optional parameter to specify the urgency of the message
+   */
+  urgency?: ChatMessageUrgency;
 }
 
 /**
@@ -86,6 +104,7 @@ export namespace chat {
         const sendPromise = sendAndHandleStatusAndReason(apiVersionTag, 'chat.openChat', {
           members: [openChatRequest.user],
           message: openChatRequest.message,
+          urgency: openChatRequest.urgency,
         });
         resolve(sendPromise);
       }
