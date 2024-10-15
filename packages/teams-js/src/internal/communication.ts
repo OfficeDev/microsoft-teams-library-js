@@ -283,7 +283,7 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
  * @param functionName The function name to call in the host.
  * @param responseHandler When the host responds, this handler will validate and deserialize the response.
  * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
- * @param errorChecker This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
  *
  * @returns The response received from the host after deserialization.
  *
@@ -297,7 +297,7 @@ export async function callFunctionInHostAndHandleResponse<
   args: (SimpleType | ISerializable)[],
   responseHandler: ResponseHandler<SerializedReturnValueFromHost, DeserializedReturnValueFromHost>,
   apiVersionTag: string,
-  errorChecker?: (response: unknown) => response is SdkError,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
 ): Promise<DeserializedReturnValueFromHost> {
   const serializedArguments = serializeItemArray(args);
   const [response] = await sendMessageToParentAsync<[SerializedReturnValueFromHost | SdkError]>(
@@ -306,7 +306,10 @@ export async function callFunctionInHostAndHandleResponse<
     serializedArguments,
   );
 
-  if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (!responseHandler.validate(response as SerializedReturnValueFromHost)) {
     throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
@@ -321,7 +324,7 @@ export async function callFunctionInHostAndHandleResponse<
  * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes.
  * @param functionName The function name to call in the host.
  * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
- * @param errorChecker This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
  *
  * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
  */
@@ -329,12 +332,15 @@ export async function callFunctionInHost(
   functionName: string,
   args: (SimpleType | ISerializable)[],
   apiVersionTag: string,
-  errorChecker?: (response: unknown) => response is SdkError,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
 ): Promise<void> {
   const serializedArguments = serializeItemArray(args);
   const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, serializedArguments);
 
-  if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (response !== undefined) {
     // If we receive a response from the host that is not a recognized error type it is an invalid response

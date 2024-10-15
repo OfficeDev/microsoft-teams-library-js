@@ -49,9 +49,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
-      (err): err is SdkError => {
-        return externalAppAuthentication.isInvokeError(err);
-      },
+      externalAppAuthentication.isInvokeError,
     );
   }
 
@@ -95,9 +93,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
-      (err): err is SdkError => {
-        return externalAppAuthentication.isInvokeError(err);
-      },
+      externalAppAuthentication.isInvokeError,
     );
   }
 
@@ -150,9 +146,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
-      (err): err is SdkError => {
-        return externalAppAuthentication.isInvokeError(err);
-      },
+      externalAppAuthentication.isInvokeError,
     );
   }
 
@@ -202,9 +196,7 @@ export namespace externalAppAuthenticationForCEA {
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
-      (err): err is SdkError => {
-        return externalAppAuthentication.isInvokeError(err);
-      },
+      externalAppAuthentication.isInvokeError,
     );
   }
 
