@@ -17,7 +17,11 @@ const CopilotAPIs = (): ReactElement => {
     ApiWithoutInput({
       name: 'getEligibilityInfo',
       title: 'Get the app Eligibility Information',
-      onClick: async () => `${JSON.stringify(copilot.eligibility.getEligibilityInfo())}`,
+      //onClick: async () => `${JSON.stringify(copilot.eligibility.getEligibilityInfo())}`,
+      onClick: async () => {
+        const result = await copilot.eligibility.getEligibilityInfo();
+        return JSON.stringify(result);
+      },
     });
 
   return (

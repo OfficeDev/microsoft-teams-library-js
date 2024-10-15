@@ -1,11 +1,12 @@
-import { sendMessageToParentAsync } from '../internal/communication';
+import { sendAndUnwrap } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import { AppEligibilityInformation, isSdkError, SdkError } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+const copilotLogger = getLogger('copilot');
 /**
  * @beta
  * @hidden
@@ -48,7 +49,7 @@ export namespace copilot {
      *
      * @throws Error if {@linkcode app.initialize} has not successfully completed
      */
-    export function getEligibilityInfo(): Promise<AppEligibilityInformation> {
+    export async function getEligibilityInfo(): Promise<AppEligibilityInformation> {
       ensureInitialized(runtime);
       if (!isSupported()) {
         throw errorNotSupportedOnPlatform;
@@ -56,21 +57,26 @@ export namespace copilot {
 
       // Return the eligibility information if it is already available
       if (runtime.hostVersionsInfo?.appEligibilityInformation) {
+        copilotLogger('Eligibility information is already available on runtime.');
         return Promise.resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
       }
 
+      copilotLogger('Eligibility information is not available on runtime. Requesting from host.');
       // Send message to host SDK to get eligibility information
-      return sendMessageToParentAsync<AppEligibilityInformation | SdkError>(
+      const response = await sendAndUnwrap<AppEligibilityInformation | SdkError>(
         getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
         'copilot.eligibility.getEligibilityInfo',
-      ).then((response: AppEligibilityInformation | SdkError) => {
-        if (isSdkError(response)) {
-          throw new Error(
-            `Error code: ${response.errorCode}, message: ${response.message ?? 'Failed to get eligibility information from the host.'}`,
-          );
-        }
-        return response as AppEligibilityInformation;
-      });
+      );
+
+      console.log('response:', JSON.stringify(response));
+
+      if (isSdkError(response)) {
+        throw new Error(
+          `Error code: ${response.errorCode}, message: ${response.message ?? 'Failed to get eligibility information from the host.'}`,
+        );
+      }
+      // validate response
+      return response;
 
       // return new Promise((resolve, reject) => {
       //   // return the eligibility information if it is already available

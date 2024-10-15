@@ -27,12 +27,31 @@ const mockedAppEligibilityInformationUserClassificationNull = {
   userClassification: null,
 };
 
-const copilotRuntimeConfig: Runtime = {
+const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
   apiVersion: 4,
   hostVersionsInfo: {
     appEligibilityInformation: mockedAppEligibilityInformation,
   },
   supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
+const copilotRuntimeConfig: Runtime = {
+  apiVersion: 4,
+  hostVersionsInfo: {},
+  supports: {
+    copilot: {
+      eligibility: {},
+    },
     pages: {
       appButton: {},
       tabs: {},
@@ -72,7 +91,7 @@ describe('copilot', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(copilotRuntimeConfig);
+      utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
       app._uninitialize();
     }
   });
@@ -85,14 +104,14 @@ describe('copilot', () => {
     });
     it('should return EligibilityInfo if the host provided eligibility information', async () => {
       await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotRuntimeConfig);
+      utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
       expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
+      expect(await copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
     });
     it('should throw if the value is not set by the host or missing ', async () => {
       await utils.initializeWithContext(FrameContexts.content);
       const copilotRuntimeConfigWithoutEligibilityInformation = {
-        ...copilotRuntimeConfig,
+        ...copilotInHostVersionsInfoRuntimeConfig,
         hostVersionsInfo: undefined,
       };
       utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
@@ -105,7 +124,15 @@ describe('copilot', () => {
       await utils.initializeWithContext(FrameContexts.content);
       utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
       expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformationUserClassificationNull);
+      expect(await copilot.eligibility.getEligibilityInfo()).toBe(
+        mockedAppEligibilityInformationUserClassificationNull,
+      );
+    });
+    it('should return EligibilityInfo after making a call to parent', async () => {
+      await utils.initializeWithContext(FrameContexts.content);
+      utils.setRuntimeConfig(copilotRuntimeConfig);
+      const result = await copilot.eligibility.getEligibilityInfo();
+      expect(result).toEqual(mockedAppEligibilityInformation);
     });
   });
 });
