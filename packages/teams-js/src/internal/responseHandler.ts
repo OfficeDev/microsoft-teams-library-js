@@ -1,10 +1,10 @@
 /**
  * This class is used for validating and deserializing the response from the host.
  *
- * @typeParam ReceivedFromHost The type of the response received from the host
- * @typeParam DeserializedFromHost The type of the response after deserialization
+ * @typeParam SerializedReturnValueFromHost The type of the response received from the host
+ * @typeParam DeserializedReturnValueFromHost The type of the response after deserialization
  */
-export abstract class ResponseHandler<ReceivedFromHost, DeserializedFromHost> {
+export abstract class ResponseHandler<SerializedReturnValueFromHost, DeserializedReturnValueFromHost> {
   /**
    * Checks if the response from the host is valid.
    *
@@ -12,14 +12,14 @@ export abstract class ResponseHandler<ReceivedFromHost, DeserializedFromHost> {
    *
    * @returns True if the response is valid, false otherwise
    */
-  public abstract validate(response: ReceivedFromHost): boolean;
+  public abstract validate(response: SerializedReturnValueFromHost): boolean;
 
   /**
    * This function converts the response from the host into a different format
    * before returning it to the caller (if needed).
    * @param response
    */
-  public abstract deserialize(response: ReceivedFromHost): DeserializedFromHost;
+  public abstract deserialize(response: SerializedReturnValueFromHost): DeserializedReturnValueFromHost;
 }
 
 /**
