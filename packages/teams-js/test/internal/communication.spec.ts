@@ -1368,7 +1368,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => true }];
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
       communication.callFunctionInHostAndHandleResponse(
         functionName,
         inputArgs,
@@ -1570,7 +1570,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => true }];
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
       communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
 
       const sentMessage = utils.findMessageByFunc(functionName);

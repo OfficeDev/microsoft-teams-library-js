@@ -266,7 +266,7 @@ export function sendMessageToParentAsync<T>(
 
 type SimpleType = string | number | boolean | null | undefined | SimpleType[];
 
-function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
+function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType | object)[] {
   return items.map((item) => {
     if (isSerializable(item)) {
       return item.serialize();
