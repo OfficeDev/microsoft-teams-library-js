@@ -771,8 +771,10 @@ export namespace app {
    * @remarks
    * Initialize must have completed successfully (as determined by the resolved Promise) before any other library calls are made
    *
-   * @param validMessageOrigins - Optionally specify a list of cross frame message origins. They must have
-   * https: protocol otherwise they will be ignored. Example: https://www.example.com
+   * @param validMessageOrigins - Optionally specify a list of cross-frame message origins. This parameter is used if you know that your app
+   * will be hosted on a custom domain (i.e., not a standard Microsoft 365 host like Teams, Outlook, etc.) Most apps will never need
+   * to pass a value for this parameter.
+   * Any domains passed in the array must have the https: protocol on the string otherwise they will be ignored. Example: https://www.example.com
    * @returns Promise that will be fulfilled when initialization has completed, or rejected if the initialization fails or times out
    */
   export function initialize(validMessageOrigins?: string[]): Promise<void> {
