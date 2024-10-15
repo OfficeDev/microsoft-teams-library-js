@@ -2,7 +2,7 @@ import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../inte
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
-import { AppId, SdkError } from '../public';
+import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 import { externalAppAuthentication } from './externalAppAuthentication';
