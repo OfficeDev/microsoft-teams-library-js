@@ -4,6 +4,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/tele
 import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { ErrorCode } from '../interfaces';
 import { runtime } from '../runtime';
+import { Location } from './geoLocation';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
