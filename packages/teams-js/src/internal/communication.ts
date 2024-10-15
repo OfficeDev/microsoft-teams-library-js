@@ -279,10 +279,10 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
 /**
  * Call a function in the host and receive a response. If the host returns an {@link SdkError} instead of a normal response, this function will throw a new Error containing the SdkError's information
  *
- * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes.
  * @param functionName The function name to call in the host.
- * @param responseHandler When the host responds, this handler will validate and deserialize the response.
  * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param responseHandler When the host responds, this handler will validate and deserialize the response.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
  * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
  *
  * @returns The response received from the host after deserialization.
@@ -321,9 +321,9 @@ export async function callFunctionInHostAndHandleResponse<
 /**
  * Call a function in the host that receives either an {@link SdkError} or undefined as a response. If the host returns an {@link SdkError} this function will throw a new Error containing the SdkError's information.
  *
- * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes.
  * @param functionName The function name to call in the host.
  * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
  * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
  *
  * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
