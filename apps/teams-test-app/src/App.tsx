@@ -16,41 +16,39 @@ const urlParams = new URLSearchParams(window.location.search);
 const getOriginsParam = urlParams.has('origins') && urlParams.get('origins') ? urlParams.get('origins') : '';
 const validMessageOrigins: string[] | undefined = getOriginsParam ? getOriginsParam.split(',') : undefined;
 
-if (!urlParams.has('testInit') || !urlParams.get('testInit')) {
-  // This is added for custom initialization when app can be initialized based upon a trigger/click.
-  if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
-    if (isTestBackCompat()) {
-      initialize(undefined, validMessageOrigins);
-    } else {
-      app.initialize(validMessageOrigins);
-    }
-  }
-
-  // for AppInitialization tests we need a way to stop the Test App from sending these
-  // we do it by adding appInitializationTest=true to query string
-  if (
-    (urlParams.has('customInit') && urlParams.get('customInit')) ||
-    (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
-  ) {
-    console.info('Not calling appInitialization because part of App Initialization Test run');
+// This is added for custom initialization when app can be initialized based upon a trigger/click.
+if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
+  if (isTestBackCompat()) {
+    initialize(undefined, validMessageOrigins);
   } else {
-    if (isTestBackCompat()) {
-      appInitialization.notifyAppLoaded();
-      appInitialization.notifySuccess();
-    } else {
-      app.notifyAppLoaded();
-      app.notifySuccess();
-    }
+    app.initialize(validMessageOrigins);
   }
 }
 
-window.addEventListener('message', handleMessageFromMockedHost);
+// for AppInitialization tests we need a way to stop the Test App from sending these
+// we do it by adding appInitializationTest=true to query string
+if (
+  (urlParams.has('customInit') && urlParams.get('customInit')) ||
+  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
+) {
+  window.addEventListener('message', handleMessageFromMockedHost);
+  console.info('Not calling appInitialization because part of App Initialization Test run');
+} else {
+  if (isTestBackCompat()) {
+    appInitialization.notifyAppLoaded();
+    appInitialization.notifySuccess();
+  } else {
+    app.notifyAppLoaded();
+    app.notifySuccess();
+  }
+}
 
 function handleMessageFromMockedHost(msg: MessageEvent): void {
   if (!msg || !msg.data) {
-    console.log('Unrecognized message format received by app, message being ignored. Message: %o', msg);
+    console.warn('Unrecognized message format received by app, message being ignored. Message: %o', msg);
     return;
   }
+  console.log(`Received message from test host: ${msg.data}`);
   // Ensure the message is from a trusted origin
   switch (msg.data) {
     case 'app.initialize':
@@ -70,7 +68,7 @@ function handleMessageFromMockedHost(msg: MessageEvent): void {
       break;
     // Add more cases for other API calls as needed
     default:
-      console.log('Unknown API call or response:', msg);
+      console.warn('Unknown API call or response:', msg);
   }
 }
 
