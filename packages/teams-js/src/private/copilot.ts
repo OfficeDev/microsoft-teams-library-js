@@ -52,7 +52,7 @@ export namespace copilot {
     export async function getEligibilityInfo(): Promise<AppEligibilityInformation> {
       ensureInitialized(runtime);
       if (!isSupported()) {
-        throw errorNotSupportedOnPlatform;
+        throw new Error(`Error code: ${errorNotSupportedOnPlatform.errorCode}, message: Not supported on platform`);
       }
 
       // Return the eligibility information if it is already available
@@ -68,8 +68,6 @@ export namespace copilot {
         'copilot.eligibility.getEligibilityInfo',
       );
 
-      console.log('response:', JSON.stringify(response));
-
       if (isSdkError(response)) {
         throw new Error(
           `Error code: ${response.errorCode}, message: ${response.message ?? 'Failed to get eligibility information from the host.'}`,
@@ -77,30 +75,6 @@ export namespace copilot {
       }
       // validate response
       return response;
-
-      // return new Promise((resolve, reject) => {
-      //   // return the eligibility information if it is already available
-      //   if (runtime.hostVersionsInfo?.appEligibilityInformation) {
-      //     resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
-      //   } else {
-      //     // send message to host SDK to get eligibility information
-      //     sendAndUnwrap<AppEligibilityInformation | undefined>(
-      //       getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
-      //       // what should this param be? 'copilot.getEligibilityInfo' or 'getEligibilityInfo' or what I have?,
-      //       'copilot.eligibility.getEligibilityInfo',
-      //     )
-      //       .then((result: AppEligibilityInformation | undefined) => {
-      //         if (result) {
-      //           resolve(result);
-      //         } else {
-      //           reject(new Error('Failed to get eligibility information from the host.'));
-      //         }
-      //       })
-      //       .catch((error) => {
-      //         reject(error);
-      //       });
-      //   }
-      // });
     }
   }
 }

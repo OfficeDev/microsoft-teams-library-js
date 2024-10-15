@@ -47,7 +47,6 @@ const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
 
 const copilotRuntimeConfig: Runtime = {
   apiVersion: 4,
-  hostVersionsInfo: {},
   supports: {
     copilot: {
       eligibility: {},
@@ -96,43 +95,93 @@ describe('copilot', () => {
     }
   });
 
-  describe('eligibility', () => {
-    it('should throw if called before initialization', () => {
-      utils.uninitializeRuntimeConfig();
-      expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(new Error(errorLibraryNotInitialized));
+  describe('copilot.eligibility', () => {
+    describe('isSupported', () => {
+      it('isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('isSupported should return false if eligibility is not on the runtimeConfig and copilot is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.eligibility.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return false if eligibility is not on the runtimeConfig and copilot.eligibility is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const minRuntimeConfigWithCopilot = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: {},
+          },
+        };
+        utils.setRuntimeConfig(minRuntimeConfigWithCopilot);
+        expect(copilot.eligibility.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return true if eligibility information is on the runtimeConfig', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+
+      it('isSupported should return true if copilot.eligibility is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
     });
-    it('should return EligibilityInfo if the host provided eligibility information', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
-      expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(await copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
-    });
-    it('should throw if the value is not set by the host or missing ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const copilotRuntimeConfigWithoutEligibilityInformation = {
-        ...copilotInHostVersionsInfoRuntimeConfig,
-        hostVersionsInfo: undefined,
-      };
-      utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
-      expect(copilot.eligibility.isSupported()).toBeFalsy();
-      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(
-        expect.objectContaining(errorNotSupportedOnPlatform),
-      );
-    });
-    it('should return null userClassification if the host provided eligibility information with userClassification as null', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
-      expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(await copilot.eligibility.getEligibilityInfo()).toBe(
-        mockedAppEligibilityInformationUserClassificationNull,
-      );
-    });
-    it('should return EligibilityInfo after making a call to parent', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotRuntimeConfig);
-      const result = await copilot.eligibility.getEligibilityInfo();
-      expect(result).toEqual(mockedAppEligibilityInformation);
+
+    describe('getEligibilityInfo', () => {
+      it('getEligibilityInfo should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.eligibility.getEligibilityInfo()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+      it('should return EligibilityInfo if the host provided eligibility information', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+        expect(await copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
+      });
+      it('should throw if the value is not set by the host or missing ', async () => {
+        expect.assertions(2);
+        await utils.initializeWithContext(FrameContexts.content);
+        const copilotRuntimeConfigWithoutEligibilityInformation = {
+          ...copilotInHostVersionsInfoRuntimeConfig,
+          hostVersionsInfo: undefined,
+        };
+        utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
+        expect(copilot.eligibility.isSupported()).toBeFalsy();
+        await expect(copilot.eligibility.getEligibilityInfo()).rejects.toThrowError(
+          new Error(`Error code: ${errorNotSupportedOnPlatform.errorCode}, message: Not supported on platform`),
+        );
+      });
+      it('should return null userClassification if the host provided eligibility information with userClassification as null', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+        expect(await copilot.eligibility.getEligibilityInfo()).toBe(
+          mockedAppEligibilityInformationUserClassificationNull,
+        );
+      });
+      it('getEligibilityInfo should return response on success with context', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedAppEligibilityInformation);
+        }
+
+        return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
+      });
     });
   });
 });
