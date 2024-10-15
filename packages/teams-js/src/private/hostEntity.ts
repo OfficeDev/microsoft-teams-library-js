@@ -178,10 +178,10 @@ export namespace hostEntity {
       }
 
       return callFunctionInHostAndHandleResponse<HostEntityTabInstance, HostEntityTabInstance>(
-        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
         'hostEntity.tab.addAndConfigure',
-        new HostEntityTabInstanceResponseHandler(),
         [new SerializableHostEntityId(hostEntityIds), appTypes],
+        new HostEntityTabInstanceResponseHandler(),
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_addAndConfigureApp),
       );
     }
 
@@ -209,10 +209,10 @@ export namespace hostEntity {
       validateThreadId(hostEntityIds.threadId);
 
       return callFunctionInHostAndHandleResponse<HostEntityTabInstances, HostEntityTabInstances>(
-        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
         'hostEntity.tab.getAll',
-        new HostEntityTabInstancesResponseHandler(),
         [new SerializableHostEntityId(hostEntityIds)],
+        new HostEntityTabInstancesResponseHandler(),
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_getAll),
       );
     }
 
@@ -247,10 +247,10 @@ export namespace hostEntity {
       validateThreadId(hostEntityIds.threadId);
 
       return callFunctionInHostAndHandleResponse<ConfigurableTabInstance, ConfigurableTabInstance>(
-        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
         'hostEntity.tab.reconfigure',
-        new ConfigurableTabInstanceResponseHandler(),
         [new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
+        new ConfigurableTabInstanceResponseHandler(),
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_reconfigure),
       );
     }
 
@@ -285,10 +285,10 @@ export namespace hostEntity {
       validateThreadId(hostEntityIds.threadId);
 
       return callFunctionInHostAndHandleResponse<ConfigurableTabInstance, ConfigurableTabInstance>(
-        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
         'hostEntity.tab.rename',
-        new ConfigurableTabInstanceResponseHandler(),
         [new SerializableConfigurableTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
+        new ConfigurableTabInstanceResponseHandler(),
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_rename),
       );
     }
 
@@ -320,10 +320,10 @@ export namespace hostEntity {
       validateTab(tab);
 
       return callFunctionInHostAndHandleResponse<boolean, boolean>(
-        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
         'hostEntity.tab.remove',
-        new BooleanResponseHandler(),
         [new SerializableHostEntityTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
+        new BooleanResponseHandler(),
+        getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
       );
     }
 

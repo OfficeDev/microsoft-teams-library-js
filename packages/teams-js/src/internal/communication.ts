@@ -6,7 +6,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemet
 import { FrameContexts } from '../public/constants';
 import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
-import { ISerializable } from '../public/serializable.interface';
+import { ISerializable, isSerializable } from '../public/serializable.interface';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -266,15 +266,6 @@ export function sendMessageToParentAsync<T>(
 
 type SimpleType = string | number | boolean | null | undefined | SimpleType[];
 
-function isSerializable(arg: unknown): arg is ISerializable {
-  return (
-    arg !== undefined &&
-    arg !== null &&
-    (arg as ISerializable).serialize !== undefined &&
-    typeof (arg as ISerializable).serialize === 'function'
-  );
-}
-
 function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
   return items.map((item) => {
     if (isSerializable(item)) {
@@ -299,10 +290,10 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
  * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
  */
 export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, DeserializedFromHost>(
-  apiVersionTag: string,
   functionName: string,
-  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
   args: (SimpleType | ISerializable)[],
+  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
+  apiVersionTag: string,
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<DeserializedFromHost> {
   const argsSafeToTransfer = serializeItemArray(args);
@@ -332,9 +323,9 @@ export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, Dese
  * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
  */
 export async function callFunctionInHost(
-  apiVersionTag: string,
   functionName: string,
   args: (SimpleType | ISerializable)[],
+  apiVersionTag: string,
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
   const argsSafeToTransfer = serializeItemArray(args);

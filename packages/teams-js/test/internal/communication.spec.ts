@@ -1305,9 +1305,12 @@ describe('Testing communication', () => {
       expect.assertions(1);
 
       try {
-        await communication.callFunctionInHostAndHandleResponse('', functionName, new UnitTestResponseHandler(), [
-          'arg2',
-        ]);
+        await communication.callFunctionInHostAndHandleResponse(
+          functionName,
+          ['arg2'],
+          new UnitTestResponseHandler(),
+          '',
+        );
       } catch (e) {
         expect(e).toBeDefined();
       }
@@ -1318,10 +1321,10 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler(),
         [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1338,10 +1341,10 @@ describe('Testing communication', () => {
 
       const inputArgs = [1, 'string', true, undefined, null, [1]];
       communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler(),
         inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1367,10 +1370,10 @@ describe('Testing communication', () => {
 
       const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => true }];
       communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler(),
         inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1396,10 +1399,10 @@ describe('Testing communication', () => {
 
       const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
       const promise = communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler(),
         [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1415,10 +1418,10 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const promise = communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler((_response) => false),
         [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1436,13 +1439,13 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const promise = communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
+        [],
         new UnitTestResponseHandler(
           (_response) => true,
           (_response) => 'this is the deserialized response',
         ),
-        [],
+        testApiVersion,
       );
 
       const sentMessage = utils.findMessageByFunc(functionName);
@@ -1459,10 +1462,10 @@ describe('Testing communication', () => {
 
       const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
       const promise = communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler(),
         [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
         (err: unknown): err is SdkError => {
           const returnedErrorCode = (err as SdkError).errorCode;
           const extraValue = (err as { name })?.name;
@@ -1484,10 +1487,10 @@ describe('Testing communication', () => {
 
       const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'bizarre error message' };
       const promise = communication.callFunctionInHostAndHandleResponse(
-        testApiVersion,
         functionName,
-        new UnitTestResponseHandler((_response) => false),
         [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
         (err: unknown): err is SdkError => {
           const returnedErrorCode = (err as SdkError).errorCode;
           const extraValue = (err as { name })?.name;
@@ -1520,7 +1523,7 @@ describe('Testing communication', () => {
     it('should throw error if an invalid apiVersionTag is passed in', async () => {
       expect.assertions(1);
       try {
-        await communication.callFunctionInHost('', 'arg1', ['arg2']);
+        await communication.callFunctionInHost('', ['arg2'], 'arg1');
       } catch (e) {
         expect(e).toBeDefined();
       }
@@ -1530,7 +1533,7 @@ describe('Testing communication', () => {
       const initializeMessage = utils.findInitializeMessageOrThrow();
       await utils.respondToMessage(initializeMessage);
 
-      communication.callFunctionInHost(testApiVersion, functionName, []);
+      communication.callFunctionInHost(functionName, [], testApiVersion);
 
       const sentMessage = utils.findMessageByFunc(functionName);
       if (sentMessage === null) {
@@ -1546,7 +1549,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const inputArgs = [1, 'string', true, undefined, null, [1]];
-      communication.callFunctionInHost(testApiVersion, functionName, inputArgs);
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
 
       const sentMessage = utils.findMessageByFunc(functionName);
       if (sentMessage === null) {
@@ -1568,7 +1571,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => true }];
-      communication.callFunctionInHost(testApiVersion, functionName, inputArgs);
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
 
       const sentMessage = utils.findMessageByFunc(functionName);
       if (sentMessage === null) {
@@ -1590,7 +1593,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
-      const promise = communication.callFunctionInHost(testApiVersion, functionName, []);
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion);
 
       const sentMessage = utils.findMessageByFunc(functionName);
       expect(sentMessage).toBeDefined();
@@ -1605,7 +1608,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const sdkError = undefined;
-      const promise = communication.callFunctionInHost(testApiVersion, functionName, [], (err): err is SdkError => {
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
         return false;
       });
 
@@ -1623,9 +1626,9 @@ describe('Testing communication', () => {
 
       const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
       const promise = communication.callFunctionInHost(
-        testApiVersion,
         functionName,
         [],
+        testApiVersion,
         (err: unknown): err is SdkError => {
           const returnedErrorCode = (err as SdkError).errorCode;
           const extraValue = (err as { name })?.name;
@@ -1646,7 +1649,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(initializeMessage);
 
       const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
-      const promise = communication.callFunctionInHost(testApiVersion, functionName, [], (err): err is SdkError => {
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
         return false;
       });
 

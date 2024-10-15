@@ -43,12 +43,12 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     return callFunctionInHost(
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
+      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
-      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -82,10 +82,6 @@ export namespace externalAppAuthenticationForCEA {
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return callFunctionInHost(
-      getApiVersionTag(
-        externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       [
         appId,
@@ -95,6 +91,10 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
+      ),
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -135,12 +135,7 @@ export namespace externalAppAuthenticationForCEA {
       externalAppAuthentication.IActionExecuteResponse,
       externalAppAuthentication.IActionExecuteResponse
     >(
-      getApiVersionTag(
-        externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      new externalAppAuthentication.ActionExecuteResponseHandler(),
       [
         appId,
         conversationId,
@@ -150,6 +145,11 @@ export namespace externalAppAuthenticationForCEA {
         authenticateParameters.height,
         authenticateParameters.isExternal,
       ],
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
+      ),
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },
@@ -189,12 +189,7 @@ export namespace externalAppAuthenticationForCEA {
       externalAppAuthentication.IActionExecuteResponse,
       externalAppAuthentication.IActionExecuteResponse
     >(
-      getApiVersionTag(
-        externalAppAuthenticationTelemetryVersionNumber,
-        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      ),
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      new externalAppAuthentication.ActionExecuteResponseHandler(),
       [
         appId,
         conversationId,
@@ -202,6 +197,11 @@ export namespace externalAppAuthenticationForCEA {
         authTokenRequest.claims,
         authTokenRequest.silent,
       ],
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
+      getApiVersionTag(
+        externalAppAuthenticationTelemetryVersionNumber,
+        ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
+      ),
       (err): err is SdkError => {
         return externalAppAuthentication.isInvokeError(err);
       },

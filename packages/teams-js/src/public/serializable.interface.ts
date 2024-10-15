@@ -7,3 +7,19 @@ export interface ISerializable {
    */
   serialize(): unknown;
 }
+
+/**
+ * @hidden
+ * @internal
+ * Used by the communication layer to make sure that an argument being passed to the host is serializable.
+ * @param arg The argument to evaluate
+ * @returns Whether or not the argument is serializable.
+ */
+export function isSerializable(arg: unknown): arg is ISerializable {
+  return (
+    arg !== undefined &&
+    arg !== null &&
+    (arg as ISerializable).serialize !== undefined &&
+    typeof (arg as ISerializable).serialize === 'function'
+  );
+}
