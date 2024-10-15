@@ -289,26 +289,29 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): unknown[] {
  *
  * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
  */
-export async function callFunctionInHostAndHandleResponse<ReceivedFromHost, DeserializedFromHost>(
+export async function callFunctionInHostAndHandleResponse<
+  SerializedReturnValueFromHost,
+  DeserializedReturnValueFromHost,
+>(
   functionName: string,
   args: (SimpleType | ISerializable)[],
-  responseHandler: ResponseHandler<ReceivedFromHost, DeserializedFromHost>,
+  responseHandler: ResponseHandler<SerializedReturnValueFromHost, DeserializedReturnValueFromHost>,
   apiVersionTag: string,
   errorChecker?: (response: unknown) => response is SdkError,
-): Promise<DeserializedFromHost> {
-  const argsSafeToTransfer = serializeItemArray(args);
-  const [response] = await sendMessageToParentAsync<[ReceivedFromHost | SdkError]>(
+): Promise<DeserializedReturnValueFromHost> {
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SerializedReturnValueFromHost | SdkError]>(
     apiVersionTag,
     functionName,
-    argsSafeToTransfer,
+    serializedArguments,
   );
 
   if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
-  } else if (!responseHandler.validate(response as ReceivedFromHost)) {
+  } else if (!responseHandler.validate(response as SerializedReturnValueFromHost)) {
     throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
   } else {
-    return responseHandler.deserialize(response as ReceivedFromHost);
+    return responseHandler.deserialize(response as SerializedReturnValueFromHost);
   }
 }
 
@@ -328,8 +331,8 @@ export async function callFunctionInHost(
   apiVersionTag: string,
   errorChecker?: (response: unknown) => response is SdkError,
 ): Promise<void> {
-  const argsSafeToTransfer = serializeItemArray(args);
-  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, argsSafeToTransfer);
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, serializedArguments);
 
   if ((errorChecker && errorChecker(response)) || (!errorChecker && isSdkError(response))) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
