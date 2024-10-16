@@ -312,7 +312,7 @@ export async function callFunctionInHostAndHandleResponse<
   ) {
     throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
   } else if (!responseHandler.validate(response as SerializedReturnValueFromHost)) {
-    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(response)}`);
   } else {
     return responseHandler.deserialize(response as SerializedReturnValueFromHost);
   }
