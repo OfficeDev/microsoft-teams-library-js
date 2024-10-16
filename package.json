@@ -86,7 +86,7 @@
     "path": "^0.12.7",
     "prettier": "^3.3.2",
     "rimraf": "^5.0.7",
-    "rollup": "^4.22.4",
+    "rollup": "^4.24.0",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "shx": "^0.3.4",
     "style-loader": "^3.3.4",
