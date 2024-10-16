@@ -35,8 +35,7 @@ export namespace copilot {
     export function isSupported(): boolean {
       return (
         ensureInitialized(runtime) &&
-        (!!runtime.hostVersionsInfo?.appEligibilityInformation ||
-          !!(runtime.supports.copilot && runtime.supports.copilot.eligibility))
+        (!!runtime.hostVersionsInfo?.appEligibilityInformation || !!runtime.supports.copilot?.eligibility)
       );
     }
 
@@ -58,7 +57,7 @@ export namespace copilot {
       // Return the eligibility information if it is already available
       if (runtime.hostVersionsInfo?.appEligibilityInformation) {
         copilotLogger('Eligibility information is already available on runtime.');
-        return Promise.resolve(runtime.hostVersionsInfo!.appEligibilityInformation);
+        return runtime.hostVersionsInfo!.appEligibilityInformation;
       }
 
       copilotLogger('Eligibility information is not available on runtime. Requesting from host.');
