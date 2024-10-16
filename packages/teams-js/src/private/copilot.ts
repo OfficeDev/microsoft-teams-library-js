@@ -73,7 +73,24 @@ export namespace copilot {
         );
       }
       // validate response
+      if (!isEligibilityInfoValid(response)) {
+        throw new Error('Error deserializing eligibility information');
+      }
       return response;
+    }
+
+    function isEligibilityInfoValid(eligibilityInfo: AppEligibilityInformation): boolean {
+      if (
+        eligibilityInfo.ageGroup === undefined ||
+        eligibilityInfo.cohort === undefined ||
+        eligibilityInfo.userClassification === undefined ||
+        eligibilityInfo.isCopilotEligible === undefined ||
+        eligibilityInfo.isCopilotEnabledRegion === undefined ||
+        eligibilityInfo.isOptedOutByAdmin === undefined
+      ) {
+        return false;
+      }
+      return true;
     }
   }
 }

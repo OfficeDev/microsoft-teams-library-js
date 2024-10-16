@@ -169,7 +169,7 @@ describe('copilot', () => {
           mockedAppEligibilityInformationUserClassificationNull,
         );
       });
-      it('getEligibilityInfo should return response on success with context', async () => {
+      it('getEligibilityInfo should return a valid response on success with context', async () => {
         await utils.initializeWithContext(FrameContexts.content);
         utils.setRuntimeConfig(copilotRuntimeConfig);
 
@@ -181,6 +181,116 @@ describe('copilot', () => {
         }
 
         return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
+      });
+    });
+
+    describe('isEligibilityInfoValid', () => {
+      it('getEligibilityInfo should throw if AppEligibilityInformation.ageGroup is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          ageGroup: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.cohort is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          cohort: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isCopilotEnabledRegion is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isCopilotEnabledRegion: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isCopilotEligible is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isCopilotEligible: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isOptedOutByAdmin is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isOptedOutByAdmin: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.userClassification is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          userClassification: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
       });
     });
   });
