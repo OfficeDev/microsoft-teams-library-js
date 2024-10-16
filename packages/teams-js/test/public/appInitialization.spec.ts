@@ -9,7 +9,7 @@ import { Utils } from '../utils';
 
 describe('appInitialization', () => {
   const utils = new Utils();
-  const app = AppFile.app;
+  const app = AppFile;
 
   beforeEach(() => {
     utils.processMessage = null;
