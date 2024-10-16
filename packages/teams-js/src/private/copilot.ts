@@ -64,7 +64,7 @@ export namespace copilot {
       // Send message to host SDK to get eligibility information
       const response = await sendAndUnwrap<AppEligibilityInformation | SdkError>(
         getApiVersionTag(copilotTelemetryVersionNumber, ApiName.Copilot_Eligibility_GetEligibilityInfo),
-        'copilot.eligibility.getEligibilityInfo',
+        ApiName.Copilot_Eligibility_GetEligibilityInfo,
       );
 
       if (isSdkError(response)) {
