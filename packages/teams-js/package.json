@@ -26,11 +26,10 @@
   },
   "dependencies": {
     "base64-js": "^1.3.1",
-    "debug": "^4.3.3"
-  },
-  "devDependencies": {
+    "debug": "^4.3.3",
     "@types/debug": "^4.1.7"
   },
+  "devDependencies": {},
   "sideEffects": [
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",
