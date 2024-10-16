@@ -143,7 +143,7 @@ export namespace externalAppAuthentication {
   export class SerializableActionExecuteInvokeRequest implements ISerializable {
     public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
     public serialize(): object | string {
-      return this.invokeRequest; // I wonder if the Record actually needs to be serialized. Might be a real bug?
+      return this.invokeRequest;
     }
   }
 
