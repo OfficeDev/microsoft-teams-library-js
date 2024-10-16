@@ -106,6 +106,7 @@ export const enum ApiName {
   Conversations_OpenConversation = 'conversations.openConversation',
   Conversations_RegisterCloseConversationHandler = 'conversations.registerCloseConversationHandler',
   Conversations_RegisterStartConversationHandler = 'conversations.registerStartConversationHandler',
+  Copilot_Eligibility_GetEligibilityInfo = 'copilot.eligibility.getEligibilityInfo',
   Dialog_AdaptiveCard_Bot_Open = 'dialog.adaptiveCard.bot.open',
   Dialog_AdaptiveCard_Open = 'dialog.adaptiveCard.open',
   Dialog_RegisterMessageForChildHandler = 'dialog.registerMessageForChildHandler',
