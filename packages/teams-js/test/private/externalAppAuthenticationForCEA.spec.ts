@@ -194,7 +194,9 @@ describe('externalAppAuthenticationForCEA', () => {
             utils.respondToMessage(message, testInvalidResponse);
           }
 
-          return expect(promise).rejects.toThrowError(new Error('500, message: Invalid response from host'));
+          return expect(promise).rejects.toThrowError(
+            new Error(`500, message: Invalid response from host - ${JSON.stringify(testInvalidResponse)}`),
+          );
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -404,6 +406,10 @@ describe('externalAppAuthenticationForCEA', () => {
           const message = utils.findMessageByFunc(
             'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
           );
+          const invalidTestError = {
+            invalidError: 'invalidError',
+          };
+
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
@@ -413,13 +419,13 @@ describe('externalAppAuthenticationForCEA', () => {
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);
-            const invalidTestError = {
-              invalidError: 'invalidError',
-            };
+
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, invalidTestError);
           }
-          await expect(promise).rejects.toThrowError(new Error('500, message: Invalid response from host'));
+          await expect(promise).rejects.toThrowError(
+            new Error(`500, message: Invalid response from host - ${JSON.stringify(invalidTestError)}`),
+          );
         });
 
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {

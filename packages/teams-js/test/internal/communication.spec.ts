@@ -1430,7 +1430,9 @@ describe('Testing communication', () => {
       await utils.respondToMessage(sentMessage!, 'host response value');
 
       expect(promise).rejects.toThrowError(
-        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`),
+        new Error(
+          `${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify('host response value')}`,
+        ),
       );
     });
     it('should return correctly deserialized response if host returns a valid response that is not an error', async () => {
@@ -1504,7 +1506,7 @@ describe('Testing communication', () => {
       await utils.respondToMessage(sentMessage!, weirdError);
 
       expect(promise).rejects.toThrowError(
-        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`),
+        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(weirdError)}`),
       );
     });
   });
