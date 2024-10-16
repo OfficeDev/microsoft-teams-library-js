@@ -44,12 +44,12 @@ if (
 }
 
 function handleMessageFromMockedHost(msg: MessageEvent): void {
-  if (!msg || !msg.data) {
+  if (!msg.data) {
     console.warn('Unrecognized message format received by app, message being ignored. Message: %o', msg);
     return;
   }
   console.log(`Received message from test host: ${msg.data}`);
-  // Ensure the message is from a trusted origin
+  // Handle messages that are correctly formatted and for func values we recognize
   switch (msg.data) {
     case 'app.initialize':
       app.initialize();
