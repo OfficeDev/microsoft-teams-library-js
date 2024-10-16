@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { copilot } from '../../src/private/copilot';
 import { app } from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { Cohort, EduType, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
+import { Cohort, EduType, ErrorCode, LegalAgeGroupClassification, Persona } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -27,12 +27,30 @@ const mockedAppEligibilityInformationUserClassificationNull = {
   userClassification: null,
 };
 
-const copilotRuntimeConfig: Runtime = {
+const copilotInHostVersionsInfoRuntimeConfig: Runtime = {
   apiVersion: 4,
   hostVersionsInfo: {
     appEligibilityInformation: mockedAppEligibilityInformation,
   },
   supports: {
+    pages: {
+      appButton: {},
+      tabs: {},
+      config: {},
+      backStack: {},
+      fullTrust: {},
+    },
+    teamsCore: {},
+    logs: {},
+  },
+};
+
+const copilotRuntimeConfig: Runtime = {
+  apiVersion: 4,
+  supports: {
+    copilot: {
+      eligibility: {},
+    },
     pages: {
       appButton: {},
       tabs: {},
@@ -72,40 +90,235 @@ describe('copilot', () => {
   afterEach(() => {
     // Reset the object since it's a singleton
     if (app._uninitialize) {
-      utils.setRuntimeConfig(copilotRuntimeConfig);
+      utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
       app._uninitialize();
     }
   });
 
-  describe('eligibility', () => {
-    it('should throw if called before initialization', () => {
-      utils.uninitializeRuntimeConfig();
-      expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
-      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(new Error(errorLibraryNotInitialized));
+  describe('copilot.eligibility', () => {
+    describe('isSupported', () => {
+      it('isSupported should throw if called before initialization', () => {
+        utils.uninitializeRuntimeConfig();
+        expect(() => copilot.eligibility.isSupported()).toThrowError(new Error(errorLibraryNotInitialized));
+      });
+
+      it('isSupported should return false if eligibility is not on the runtimeConfig and copilot is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(_minRuntimeConfigToUninitialize);
+        expect(copilot.eligibility.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return false if eligibility is not on the runtimeConfig and copilot.eligibility is not supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        const minRuntimeConfigWithCopilot = {
+          ..._minRuntimeConfigToUninitialize,
+          supports: {
+            ..._minRuntimeConfigToUninitialize.supports,
+            copilot: {},
+          },
+        };
+        utils.setRuntimeConfig(minRuntimeConfigWithCopilot);
+        expect(copilot.eligibility.isSupported()).toBeFalsy();
+      });
+
+      it('isSupported should return true if eligibility information is on the runtimeConfig', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
+
+      it('isSupported should return true if copilot.eligibility is supported', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+        expect(copilot.eligibility.isSupported()).toBeTruthy();
+      });
     });
-    it('should return EligibilityInfo if the host provided eligibility information', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotRuntimeConfig);
-      expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
+
+    describe('getEligibilityInfo', () => {
+      it('getEligibilityInfo should throw if called before initialization', async () => {
+        expect.assertions(1);
+        utils.uninitializeRuntimeConfig();
+        await expect(copilot.eligibility.getEligibilityInfo()).rejects.toThrowError(
+          new Error(errorLibraryNotInitialized),
+        );
+      });
+
+      Object.values(FrameContexts).forEach((frameContext) => {
+        it(`should return EligibilityInfo if the host provided eligibility information - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotInHostVersionsInfoRuntimeConfig);
+          expect(copilot.eligibility.isSupported()).toBeTruthy();
+          expect(await copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformation);
+        });
+
+        it(`should throw if the value is not set by the host or missing - with context ${frameContext}`, async () => {
+          expect.assertions(2);
+          await utils.initializeWithContext(frameContext);
+          const copilotRuntimeConfigWithoutEligibilityInformation = {
+            ...copilotInHostVersionsInfoRuntimeConfig,
+            hostVersionsInfo: undefined,
+          };
+          utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
+          expect(copilot.eligibility.isSupported()).toBeFalsy();
+          await expect(copilot.eligibility.getEligibilityInfo()).rejects.toThrowError(
+            new Error(`Error code: ${errorNotSupportedOnPlatform.errorCode}, message: Not supported on platform`),
+          );
+        });
+
+        it(`should return null userClassification if the host provided eligibility information with userClassification as null - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
+          expect(copilot.eligibility.isSupported()).toBeTruthy();
+          expect(await copilot.eligibility.getEligibilityInfo()).toBe(
+            mockedAppEligibilityInformationUserClassificationNull,
+          );
+        });
+
+        it(`should return a valid response on success - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, mockedAppEligibilityInformation);
+          }
+
+          return expect(promise).resolves.toEqual(mockedAppEligibilityInformation);
+        });
+
+        it(`should throw error if host returns error - with context ${frameContext}`, async () => {
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig(copilotRuntimeConfig);
+
+          const sdkError = {
+            errorCode: ErrorCode.INTERNAL_ERROR,
+            message: 'An error occurred',
+          };
+
+          const promise = copilot.eligibility.getEligibilityInfo();
+          const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+          expect(message).not.toBeNull();
+          if (message) {
+            utils.respondToMessage(message, sdkError);
+          }
+
+          await expect(promise).rejects.toThrowError(
+            new Error(`Error code: ${sdkError.errorCode}, message: ${sdkError.message}`),
+          );
+        });
+      });
     });
-    it('should throw if the value is not set by the host or missing ', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      const copilotRuntimeConfigWithoutEligibilityInformation = {
-        ...copilotRuntimeConfig,
-        hostVersionsInfo: undefined,
-      };
-      utils.setRuntimeConfig(copilotRuntimeConfigWithoutEligibilityInformation);
-      expect(copilot.eligibility.isSupported()).toBeFalsy();
-      expect(() => copilot.eligibility.getEligibilityInfo()).toThrowError(
-        expect.objectContaining(errorNotSupportedOnPlatform),
-      );
-    });
-    it('should return null userClassification if the host provided eligibility information with userClassification as null', async () => {
-      await utils.initializeWithContext(FrameContexts.content);
-      utils.setRuntimeConfig(copilotRuntimeConfigWithUserClassificationNull);
-      expect(copilot.eligibility.isSupported()).toBeTruthy();
-      expect(copilot.eligibility.getEligibilityInfo()).toBe(mockedAppEligibilityInformationUserClassificationNull);
+
+    describe('isEligibilityInfoValid', () => {
+      it('getEligibilityInfo should throw if AppEligibilityInformation.ageGroup is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          ageGroup: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.cohort is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          cohort: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isCopilotEnabledRegion is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isCopilotEnabledRegion: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isCopilotEligible is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isCopilotEligible: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.isOptedOutByAdmin is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          isOptedOutByAdmin: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
+
+      it('getEligibilityInfo should throw if AppEligibilityInformation.userClassification is undefined', async () => {
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig(copilotRuntimeConfig);
+
+        const mockedInvalidAppEligibilityInformation = {
+          ...mockedAppEligibilityInformation,
+          userClassification: undefined,
+        };
+        const promise = copilot.eligibility.getEligibilityInfo();
+        const message = utils.findMessageByFunc('copilot.eligibility.getEligibilityInfo');
+        expect(message).not.toBeNull();
+        if (message) {
+          utils.respondToMessage(message, mockedInvalidAppEligibilityInformation);
+        }
+
+        await expect(promise).rejects.toThrowError('Error deserializing eligibility information');
+      });
     });
   });
 });
