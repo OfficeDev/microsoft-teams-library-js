@@ -1,11 +1,11 @@
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import {
-  app,
   notifyAppLoadedHelper,
   notifyExpectedFailureHelper,
   notifyFailureHelper,
   notifySuccessHelper,
-} from './app';
+} from '../internal/appHelpers';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import * as app from './app';
 
 /**
  * @deprecated
@@ -20,29 +20,37 @@ const appInitializationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumb
  * As of TeamsJS v2.0.0, please use {@link app.Messages} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export import Messages = app.Messages;
+const Messages = app.Messages;
+export { Messages };
+
 /**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.FailedReason} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export import FailedReason = app.FailedReason;
+export const FailedReason = app.FailedReason;
+
 /**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.ExpectedFailureReason} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export import ExpectedFailureReason = app.ExpectedFailureReason;
+const ExpectedFailureReason = app.ExpectedFailureReason;
+export { ExpectedFailureReason };
+
 /**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.IFailedRequest} instead.
  */
-export import IFailedRequest = app.IFailedRequest;
+type IFailedRequest = app.IFailedRequest;
+export { IFailedRequest };
+
 /**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.IExpectedFailureRequest} instead.
  */
-export import IExpectedFailureRequest = app.IExpectedFailureRequest;
+type IExpectedFailureRequest = app.IExpectedFailureRequest;
+export { IExpectedFailureRequest };
 
 /**
  * @deprecated

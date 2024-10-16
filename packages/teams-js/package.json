@@ -9,7 +9,7 @@
     "url": "https://github.com/OfficeDev/microsoft-teams-library-js"
   },
   "main": "./dist/umd/MicrosoftTeams.min.js",
-  "typings": "./dist/esm/packages/teams-js/dts/index.d.ts",
+  "typings": "./dist/esm/packages/teams-js/dts/MicrosoftTeams.d.ts",
   "module": "./dist/esm/packages/teams-js/src/index.js",
   "type": "module",
   "scripts": {
@@ -26,10 +26,11 @@
   },
   "dependencies": {
     "base64-js": "^1.3.1",
-    "debug": "^4.3.3",
+    "debug": "^4.3.3"
+  },
+  "devDependencies": {
     "@types/debug": "^4.1.7"
   },
-  "devDependencies": {},
   "sideEffects": [
     "src/internal/communication.ts",
     "src/internal/nestedAppAuthUtils.ts",

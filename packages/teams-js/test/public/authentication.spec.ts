@@ -4,7 +4,7 @@ import * as handlers from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as internalUtils from '../../src/internal/utils';
 import { ErrorCode, FrameContexts, HostClientType, SdkError } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { authentication } from '../../src/public/authentication';
 import { Utils } from '../utils';
 

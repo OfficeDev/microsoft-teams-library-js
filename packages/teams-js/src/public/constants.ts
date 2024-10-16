@@ -147,7 +147,7 @@ import { AdaptiveCardVersion, ErrorCode, SdkError } from './interfaces';
  * As of TeamsJS v2.0.0, please use {@link DialogDimension} instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export import TaskModuleDimension = DialogDimension;
+export { DialogDimension as TaskModuleDimension };
 import { HostVersionsInfo } from './interfaces';
 
 /**

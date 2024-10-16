@@ -35,7 +35,7 @@ Install either using npm or pnpm.
 **If you are using any dependency loader** such as [RequireJS](http://requirejs.org/) or [SystemJS](https://github.com/systemjs/systemjs) or module bundler such as [browserify](http://browserify.org/), [webpack](https://webpack.github.io/), you can use `import` syntax to import specific modules. For e.g.
 
 ```typescript
-import { app } from '@microsoft/teams-js';
+import * as app from '@microsoft/teams-js';
 ```
 
 ### As a script tag

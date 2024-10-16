@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { NotificationTypes, ShowNotificationParameters } from '../../src/private/interfaces';
 import { notifications } from '../../src/private/notifications';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';

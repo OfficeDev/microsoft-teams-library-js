@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
-import { app } from '../../src/public';
+import * as app from '../../src/public';
 import { HostClientType, TeamType, UserTeamRole } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { Context, FrameContext, LoadContext, TabInstanceParameters } from '../../src/public/interfaces';

@@ -40,7 +40,7 @@ export {
   TeamInformation,
   UrlDialogInfo,
 } from './interfaces';
-export { app } from './app';
+export * as app from './app';
 export { AppId } from './appId';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
@@ -116,7 +116,7 @@ export {
   onCompleteHandlerFunctionType,
   returnFocus,
 } from './navigation';
-export { settings } from './settings';
+export * as settings from './settings';
 export { tasks } from './tasks';
 export { liveShare, LiveShareHost } from './liveShareHost';
 export { marketplace } from './marketplace';
