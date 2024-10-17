@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';

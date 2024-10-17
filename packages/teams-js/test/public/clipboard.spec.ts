@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { clipboard } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 import { Utils } from '../utils';
@@ -45,13 +45,13 @@ describe('clipboard', () => {
         // Clipboard capabilities should function in frameless context when navigator.clipboard is not available
         Object.assign(navigator, {
           clipboard: null,
-        })
+        });
       });
 
       afterEach(() => {
         Object.assign(navigator, {
           clipboard: {},
-        })
+        });
         app._uninitialize();
         GlobalVars.isFramelessWindow = true;
       });

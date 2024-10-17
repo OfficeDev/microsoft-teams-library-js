@@ -1,7 +1,7 @@
+import { settings } from '../../src/index';
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { app, FrameContexts } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { settings } from '../../src/public/settings';
 import { Utils } from '../utils';
 
 /* eslint-disable */

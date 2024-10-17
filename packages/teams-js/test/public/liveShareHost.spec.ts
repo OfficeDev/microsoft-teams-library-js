@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { liveShare, LiveShareHost } from '../../src/public/liveShareHost';
 import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';

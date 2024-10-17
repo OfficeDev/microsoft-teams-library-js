@@ -5,7 +5,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { videoEffectsEx } from '../../src/private/videoEffectsEx';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { videoEffects } from '../../src/public/videoEffects';
 import { Utils } from '../utils';
@@ -1204,7 +1204,7 @@ describe('videoEffectsEx', () => {
 });
 
 function numToByteArray(num: number): Uint8Array {
-  return new Uint8Array((new Uint32Array([num])).buffer);
+  return new Uint8Array(new Uint32Array([num]).buffer);
 }
 
 function generateOneTextureMetadataMock(attributes: ReadonlyMap<string, Uint8Array>, streamCount: number): Uint8Array {
@@ -1228,7 +1228,7 @@ function generateOneTextureMetadataMock(attributes: ReadonlyMap<string, Uint8Arr
 
     attributesData.push(...numToByteArray(streamId++));
     attributesData.push(...stringBytes);
-    attributesData.push(...(new Uint8Array(paddingSize)));
+    attributesData.push(...new Uint8Array(paddingSize));
 
     dataSegment.push(...attributeData);
   });
@@ -1300,7 +1300,9 @@ function mockMediaStreamAPI() {
     1 + frameAttributesMock.size, // multiStreamCount
   ]);
 
-  const oneTextureMetadataMock = new Uint8Array(generateOneTextureMetadataMock(frameAttributesMock, oneTextureHeaderMock[7]));
+  const oneTextureMetadataMock = new Uint8Array(
+    generateOneTextureMetadataMock(frameAttributesMock, oneTextureHeaderMock[7]),
+  );
 
   const originalReadableStream = window['ReadableStream'];
 
@@ -1316,7 +1318,8 @@ function mockMediaStreamAPI() {
               codedWidth: 100,
               codedHeight: 100,
               format: 'NV12',
-              copyTo: jest.fn()
+              copyTo: jest
+                .fn()
                 .mockImplementationOnce((buffer) => new Uint32Array(buffer).set(oneTextureHeaderMock))
                 .mockImplementationOnce((buffer) => new Uint8Array(buffer).set(oneTextureMetadataMock)),
               // eslint-disable-next-line @typescript-eslint/no-empty-function

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Enabled Treeshakability for a small subset of capabilities",
+  "packageName": "@microsoft/teams-js",
+  "email": "noahdarveau@microsoft.com",
+  "dependentChangeType": "patch"
+}
