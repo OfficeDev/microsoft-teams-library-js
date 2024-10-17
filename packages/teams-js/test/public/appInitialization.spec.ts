@@ -1,3 +1,4 @@
+import * as AppHelpersFile from '../../src/internal/appHelpers';
 import * as AppFile from '../../src/public/app';
 import * as appInitialization from '../../src/public/appInitialization';
 import { version } from '../../src/public/version';
@@ -30,7 +31,7 @@ describe('appInitialization', () => {
   describe('testing notifyAppLoaded', () => {
     it('should call notifyAppLoadedHelper from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const notifyAppLoadedHelperFunc = jest.spyOn(AppFile, 'notifyAppLoadedHelper');
+      const notifyAppLoadedHelperFunc = jest.spyOn(AppHelpersFile, 'notifyAppLoadedHelper');
       appInitialization.notifyAppLoaded();
       expect(notifyAppLoadedHelperFunc).toHaveBeenCalled();
       expect(notifyAppLoadedHelperFunc).toHaveReturned();
@@ -59,7 +60,7 @@ describe('appInitialization', () => {
   describe('testing notifySuccess', () => {
     it('should call app.notifySuccess from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const notifySuccessHelperFile = jest.spyOn(AppFile, 'notifySuccessHelper');
+      const notifySuccessHelperFile = jest.spyOn(AppHelpersFile, 'notifySuccessHelper');
       appInitialization.notifySuccess();
       expect(notifySuccessHelperFile).toHaveBeenCalled();
       expect(notifySuccessHelperFile).toHaveReturned();
@@ -88,7 +89,7 @@ describe('appInitialization', () => {
   describe('testing notifyExpectedFailure', () => {
     it('should call app.notifyExpectedFailure from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const notifyExpectedFailureHelperFunc = jest.spyOn(AppFile, 'notifyExpectedFailureHelper');
+      const notifyExpectedFailureHelperFunc = jest.spyOn(AppHelpersFile, 'notifyExpectedFailureHelper');
       appInitialization.notifyExpectedFailure({
         reason: appInitialization.ExpectedFailureReason.PermissionError,
         message: 'Permission denied',
@@ -128,7 +129,7 @@ describe('appInitialization', () => {
   describe('testing notifyFailure', () => {
     it('should call app.notifyFailure from the legacy code', async () => {
       await utils.initializeWithContext('content');
-      const notifyFailureHelperFunc = jest.spyOn(AppFile, 'notifyFailureHelper');
+      const notifyFailureHelperFunc = jest.spyOn(AppHelpersFile, 'notifyFailureHelper');
       appInitialization.notifyFailure({
         reason: appInitialization.FailedReason.AuthFailed,
         message: 'Failed message',
