@@ -16,3 +16,31 @@
 .App-container {
   display: grid;
 }
+
+/* ==============================================================
+ * Grouped Mode - Button, Section Button, and Section Content Styles
+ * ============================================================== */
+
+/* Style for individual section buttons */
+.section-button-in-grouped-mode {
+  background-color: #0f6cbd; /* Blue background for buttons */
+  color: white; /* White text */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners */
+  padding: 8px 15px; /* Padding inside the button */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 14px; /* Font size of the button text */
+}
+
+/* Style for section button hover effect */
+.section-button-in-grouped-mode:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Style for the section content */
+.section-content-in-grouped-mode {
+  margin-top: 2px; /* Space above each section's content */
+  border: 1px solid #ddd; /* Light grey border around the section */
+  padding: 4px; /* Padding inside the section */
+  border-radius: 4px; /* Rounded corners */
+}
