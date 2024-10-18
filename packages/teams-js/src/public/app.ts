@@ -23,7 +23,14 @@ import { messageChannels } from '../private/messageChannels';
 import { authentication } from './authentication';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
 import { dialog } from './dialog';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
+import {
+  ActionInfo,
+  Context as LegacyContext,
+  FileOpenPreference,
+  HostToAppPerformanceMetrics,
+  LocaleInfo,
+  ResumeContext,
+} from './interfaces';
 import { menus } from './menus';
 import { pages } from './pages';
 import {
@@ -724,6 +731,11 @@ export namespace app {
   export type themeHandler = (theme: string) => void;
 
   /**
+   * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
+   */
+  export type HostToAppPerformanceMetricsHandler = (metrics: HostToAppPerformanceMetrics) => void;
+
+  /**
    * Checks whether the Teams client SDK has been initialized.
    * @returns whether the Teams client SDK has been initialized.
    */
@@ -892,6 +904,18 @@ export namespace app {
       getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
       handler,
     );
+  }
+
+  /**
+   * Registers a function for handling data of host to app message delay.
+   *
+   * @remarks
+   * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+   *
+   * @param handler - The handler to invoke when the metrics are available on each function response.
+   */
+  export function registerHostToAppPerformanceMetricsHandler(handler: HostToAppPerformanceMetricsHandler): void {
+    Handlers.registerHostToAppPerformanceMetricsHandler(handler);
   }
 
   /**

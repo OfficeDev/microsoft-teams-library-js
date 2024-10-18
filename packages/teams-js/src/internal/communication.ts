@@ -9,6 +9,7 @@ import { latestRuntimeApiVersion } from '../public/runtime';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
+import HostToAppMessageDelayTelemetry from './hostToAppTelemetry';
 import { DOMMessageEvent, ExtendedWindow } from './interfaces';
 import {
   deserializeMessageRequest,
@@ -29,7 +30,7 @@ import {
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
-import { ssrSafeWindow } from './utils';
+import { getCurrentTimestamp, ssrSafeWindow } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
 import { validateOrigin } from './validOrigins';
 
@@ -158,6 +159,7 @@ export function uninitializeCommunication(): void {
   CommunicationPrivate.promiseCallbacks.clear();
   CommunicationPrivate.portCallbacks.clear();
   CommunicationPrivate.legacyMessageIdsToUuidMap = {};
+  HostToAppMessageDelayTelemetry.clearMessages();
 }
 
 /**
@@ -426,9 +428,12 @@ function sendMessageToParentHelper(
   args: any[] | undefined,
 ): MessageRequestWithRequiredProperties {
   const logger = sendMessageToParentHelperLogger;
-
   const targetWindow = Communication.parentWindow;
   const request = createMessageRequest(apiVersionTag, actionName, args);
+  HostToAppMessageDelayTelemetry.storeCallbackInformation(request.uuid, {
+    name: actionName,
+    calledAt: request.timestamp,
+  });
 
   logger('Message %s information: %o', getMessageIdsAsLogString(request), { actionName, args });
 
@@ -715,6 +720,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
       logger('Received a response from parent for message %s', callbackId.toString());
+      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger);
       if (callback) {
         logger(
           'Invoking the registered callback for message %s with arguments %o',
@@ -766,6 +772,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
+    HostToAppMessageDelayTelemetry.handleOneWayPerformanceMetrics(message, logger);
     logger('Received a message from parent %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {
@@ -998,6 +1005,7 @@ function createMessageRequest(
     uuid: messageUuid,
     func: func,
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
     args: args || [],
     apiVersionTag: apiVersionTag,
   };
@@ -1023,6 +1031,7 @@ function createNestedAppAuthRequest(message: string): NestedAppAuthRequest {
     uuid: messageUuid,
     func: 'nestedAppAuth.execute',
     timestamp: Date.now(),
+    monotonicTimestamp: getCurrentTimestamp(),
     // Since this is a nested app auth request, we don't need to send any args.
     // We avoid overloading the args array with the message to avoid potential issues processing of these messages on the hubSDK.
     args: [],

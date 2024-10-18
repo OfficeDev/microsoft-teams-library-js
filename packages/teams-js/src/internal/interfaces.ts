@@ -50,3 +50,15 @@ export interface DOMMessageEvent {
   func: string;
   args?: any[];
 }
+
+/**
+ * @hidden
+ * Meant for providing information related to certain callback context.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export interface CallbackInformation {
+  name: string;
+  calledAt: number;
+}

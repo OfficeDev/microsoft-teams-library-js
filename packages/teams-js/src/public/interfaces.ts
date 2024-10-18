@@ -1008,7 +1008,7 @@ export interface SdkError {
   errorCode: ErrorCode;
   /**
   Optional description for the error. This may contain useful information for web-app developers.
-  This string will not be localized and is not for end-user consumption. 
+  This string will not be localized and is not for end-user consumption.
   App should not depend on the string content. The exact value may change. This is only for debugging purposes.
   */
   message?: string;
@@ -1271,4 +1271,16 @@ export interface ClipboardParams {
   mimeType: ClipboardSupportedMimeType;
   /** Blob content in Base64 string format */
   content: string;
+}
+
+/**
+ * Meant for passing data to the app related to host-to-app message performance metrics.
+ */
+export interface HostToAppPerformanceMetrics {
+  /** The name of the action the host is responding to. */
+  actionName: string;
+  /** The delay the message took traveling from host to app */
+  messageDelay: number;
+  /** The time the message was originally created at */
+  messageWasCreatedAt: number;
 }

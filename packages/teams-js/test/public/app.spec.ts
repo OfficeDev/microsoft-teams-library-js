@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
+import { UUID } from '../../src/internal/uuidObject';
 import { authentication, dialog, menus, pages } from '../../src/public';
 import { app } from '../../src/public/app';
 import {
@@ -58,6 +59,7 @@ describe('Testing app capability', () => {
       utils.childMessages = [];
       utils.childWindow.closed = false;
       utils.mockWindow.parent = utils.parentWindow;
+      utils.setRespondWithTimestamp(false);
 
       // Set a mock window for testing
       app._initialize(utils.mockWindow);
@@ -795,6 +797,73 @@ describe('Testing app capability', () => {
       });
     });
 
+    describe('Testing hostToAppPerformanceMetricsHandler', () => {
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should get called when api SDK call has timestamp', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call does not have timestamp', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call response has no info', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        await utils.respondToMessage({ uuid: new UUID(), func: 'weirdFunc' }, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handlerOne = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerTwo);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handlerTwo).toBeCalled();
+        expect(handlerOne).not.toBeCalled();
+      });
+    });
+
     describe('Testing app.registerOnThemeChangeHandler function', () => {
       it('app.registerOnThemeChangeHandler should not allow calls before initialization', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -944,6 +1013,7 @@ describe('Testing app capability', () => {
       utils = new Utils();
       utils.mockWindow.parent = undefined;
       utils.messages = [];
+      utils.setRespondWithTimestamp(false);
       app._initialize(utils.mockWindow);
       GlobalVars.isFramelessWindow = false;
     });
@@ -1587,6 +1657,73 @@ describe('Testing app capability', () => {
           expect(message.args[0]).toEqual(app.ExpectedFailureReason.PermissionError);
           expect(message.args[1]).toEqual('Failed message');
         });
+      });
+    });
+
+    describe('Testing hostToAppPerformanceMetricsHandler', () => {
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should get called when api SDK call has timestamp', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call does not have timestamp', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler registered function should not get called when api SDK call response has no info', async () => {
+        await utils.initializeWithContext('content');
+
+        const handler = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handler);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        await utils.respondToMessage({ uuid: new UUID(), func: 'weirdFunc' }, {});
+        expect(handler).not.toBeCalled();
+      });
+
+      it('app.registerHostToAppPerformanceMetricsHandler should replace previously registered handler', async () => {
+        await utils.initializeWithContext('content');
+        utils.setRespondWithTimestamp(true);
+
+        const handlerOne = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerOne);
+        const handlerTwo = jest.fn();
+        app.registerHostToAppPerformanceMetricsHandler(handlerTwo);
+
+        // Call an sdk function such as getcontext
+        app.getContext();
+        const getContextMessage = utils.findMessageByFunc('getContext');
+        if (!getContextMessage) {
+          fail('Get context message was never created');
+        }
+        await utils.respondToMessage(getContextMessage, {});
+        expect(handlerTwo).toBeCalled();
+        expect(handlerOne).not.toBeCalled();
       });
     });
 
