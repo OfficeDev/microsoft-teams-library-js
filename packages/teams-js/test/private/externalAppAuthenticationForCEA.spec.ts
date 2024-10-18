@@ -164,7 +164,7 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          return expect(promise).rejects.toEqual(testError);
+          return expect(promise).rejects.toThrowError(`${testError.errorCode}, message: ${testError.message}`);
         });
         it(`should throw default error when host sends a response that does not fit InvokeError or ActionExecuteResponse - ${frameContext}`, async () => {
           expect.assertions(3);
@@ -193,10 +193,10 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testInvalidResponse);
           }
-          return expect(promise).rejects.toEqual({
-            errorCode: 'INTERNAL_ERROR',
-            message: 'No valid response received',
-          });
+
+          return expect(promise).rejects.toThrowError(
+            new Error(`500, message: Invalid response from host - ${JSON.stringify(testInvalidResponse)}`),
+          );
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
@@ -257,6 +257,7 @@ describe('externalAppAuthenticationForCEA', () => {
             errorCode: 'INTERNAL_ERROR',
             message: 'test error message',
           };
+
           const promise = externalAppAuthenticationForCEA.authenticateWithSSO(
             testAppId,
             testConversationId,
@@ -274,7 +275,8 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+
+          await expect(promise).rejects.toThrowError(`${testError.errorCode}, message: ${testError.message ?? 'None'}`);
         });
         it('should resolve on success', async () => {
           expect.assertions(3);
@@ -385,7 +387,9 @@ describe('externalAppAuthenticationForCEA', () => {
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toThrow(
+            new Error(`${testError.errorCode}, message: ${testError.message ?? 'None'}`),
+          );
         });
 
         it(`should throw error from host failure in context - ${frameContext}`, async () => {
@@ -402,6 +406,10 @@ describe('externalAppAuthenticationForCEA', () => {
           const message = utils.findMessageByFunc(
             'externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest',
           );
+          const invalidTestError = {
+            invalidError: 'invalidError',
+          };
+
           if (message && message.args) {
             expect(message).not.toBeNull();
             expect(message.args).toEqual([
@@ -411,16 +419,13 @@ describe('externalAppAuthenticationForCEA', () => {
               testAuthRequest.claims,
               testAuthRequest.silent,
             ]);
-            const invalidTestError = {
-              invalidError: 'invalidError',
-            };
+
             // eslint-disable-next-line strict-null-checks/all
             utils.respondToMessage(message, invalidTestError);
           }
-          await expect(promise).rejects.toEqual({
-            errorCode: 'INTERNAL_ERROR',
-            message: 'No valid response received',
-          });
+          await expect(promise).rejects.toThrowError(
+            new Error(`500, message: Invalid response from host - ${JSON.stringify(invalidTestError)}`),
+          );
         });
 
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
@@ -578,7 +583,9 @@ describe('externalAppAuthenticationForCEA', () => {
             ]);
             utils.respondToMessage(message, testError);
           }
-          await expect(promise).rejects.toEqual(testError);
+          await expect(promise).rejects.toThrowError(
+            new Error(`${testError.errorCode}, message: ${testError.message ?? 'None'}`),
+          );
         });
       } else {
         it(`should not allow calls from ${frameContext} context`, async () => {
