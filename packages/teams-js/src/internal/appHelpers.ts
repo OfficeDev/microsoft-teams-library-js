@@ -10,7 +10,7 @@ import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigin
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
-import * as app from '../public/app';
+import { app } from '../public/app';
 import { authentication } from '../public/authentication';
 import { FrameContexts } from '../public/constants';
 import { dialog } from '../public/dialog';
