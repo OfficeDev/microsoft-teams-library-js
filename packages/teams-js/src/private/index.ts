@@ -18,7 +18,7 @@ export {
   registerUserSettingsChangeHandler,
   openFilePreview,
 } from './privateAPIs';
-export { conversations } from './conversations';
+export { conversations, OpenConversationRequest } from './conversations';
 export { copilot } from './copilot';
 export { externalAppAuthentication } from './externalAppAuthentication';
 export { externalAppAuthenticationForCEA } from './externalAppAuthenticationForCEA';

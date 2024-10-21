@@ -1,3 +1,4 @@
+import { appInitializeHelper } from '../internal/appHelpers';
 import {
   Communication,
   sendAndHandleSdkError,
@@ -14,7 +15,6 @@ import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { createTeamsAppLink } from '../internal/utils';
 import { prefetchOriginsFromCDN } from '../internal/validOrigins';
 import { AppId } from '../public/appId';
-import { appInitializeHelper } from './app';
 import { errorNotSupportedOnPlatform, FrameContexts } from './constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInformation, TabInstance, TabInstanceParameters } from './interfaces';
 import { runtime } from './runtime';
