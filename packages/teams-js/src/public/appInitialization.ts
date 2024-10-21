@@ -1,11 +1,11 @@
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import {
-  app,
   notifyAppLoadedHelper,
   notifyExpectedFailureHelper,
   notifyFailureHelper,
   notifySuccessHelper,
-} from './app';
+} from '../internal/appHelpers';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { app } from './app';
 
 /**
  * @deprecated
