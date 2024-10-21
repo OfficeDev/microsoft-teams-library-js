@@ -14,9 +14,9 @@ Mon, 21 Oct 2024 18:11:30 GMT
 
 ### Patches
 
-- Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft
+- Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft.
 - Updated edgeapi endpoint from `edgeapi.svc.cloud.microsoft` to `edgeapi.freya.svc.cloud.microsoft` in valid domains list. Added `work.bing.com` to valid domains list.
-- Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation
+- Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation.
 
 ## 2.29.0
 
