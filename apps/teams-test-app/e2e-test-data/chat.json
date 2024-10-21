@@ -8,11 +8,12 @@
   "featureTests": [
     {
       "feature": {
-        "id": "openChat"
+        "id": "openChat",
+        "version": 1
       },
       "testCases": [
         {
-          "title": "openChat API Call - Feature Test",
+          "title": "openChat API Call - Feature Test v1",
           "type": "callResponse",
           "boxSelector": "#box_openChat",
           "inputValue": {
@@ -20,8 +21,27 @@
             "message": "testMessage"
           },
           "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
-          "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK.",
-          "featureVersion": 1
+          "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": "openChat",
+        "version": 2
+      },
+      "testCases": [
+        {
+          "title": "openChat API Call - Feature Test v2",
+          "type": "callResponse",
+          "boxSelector": "#box_openChat",
+          "inputValue": {
+            "user": "testUpn",
+            "message": "testMessage",
+            "urgency": "Urgent"
+          },
+          "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\",\"urgency\":\"Urgent\"}",
+          "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
         }
       ]
     }
