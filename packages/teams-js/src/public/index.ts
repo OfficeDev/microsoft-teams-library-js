@@ -116,7 +116,7 @@ export {
   onCompleteHandlerFunctionType,
   returnFocus,
 } from './navigation';
-export { settings } from './settings';
+export * as settings from './settings';
 export { tasks } from './tasks';
 export { liveShare, LiveShareHost } from './liveShareHost';
 export { marketplace } from './marketplace';

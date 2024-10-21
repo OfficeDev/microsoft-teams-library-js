@@ -1,6 +1,6 @@
 import * as AppHelpersFile from '../../src/internal/appHelpers';
 import * as AppFile from '../../src/public/app';
-import { appInitialization } from '../../src/public/appInitialization';
+import * as appInitialization from '../../src/public/appInitialization';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';
 
