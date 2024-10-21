@@ -6,7 +6,7 @@ import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { UUID } from '../../src/internal/uuidObject';
 import { FrameContexts } from '../../src/public';
-import * as from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { Utils } from '../utils';
 
 jest.mock('../../src/internal/handlers', () => ({
