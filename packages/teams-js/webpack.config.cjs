@@ -73,14 +73,6 @@ module.exports = {
       PACKAGE_VERSION: JSON.stringify(packageVersion),
     }),
 
-    new DtsBundleWebpack({
-      name: '@microsoft/teams-js',
-      main: './dist/esm/packages/teams-js/dts',
-      out: '~/dist/umd/MicrosoftTeams.d.ts',
-      removeSource: true,
-      outputAsModuleFolder: true,
-    }),
-
     // https://www.npmjs.com/package/webpack-subresource-integrity
     new SubresourceIntegrityPlugin({ enabled: true }),
 
