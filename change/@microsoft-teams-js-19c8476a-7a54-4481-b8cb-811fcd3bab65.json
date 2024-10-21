@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Created unified way for capability functions to communicate with hosts and deprecated old functions used for this purpose. This change is internal to the library and should not affect any callers.",
-  "packageName": "@microsoft/teams-js",
-  "email": "trharris@microsoft.com",
-  "dependentChangeType": "patch"
-}
