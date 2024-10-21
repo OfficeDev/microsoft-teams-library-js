@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft",
-  "packageName": "@microsoft/teams-js",
-  "email": "jadahiya@microsoft.com",
-  "dependentChangeType": "patch"
-}

@@ -1,8 +1,22 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Thu, 03 Oct 2024 22:51:48 GMT and should not be manually modified.
+This log was last generated on Mon, 21 Oct 2024 18:11:30 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.30.0
+
+Mon, 21 Oct 2024 18:11:30 GMT
+
+### Minor changes
+
+- Updated `copilot.eligibility.getEligibilityInfo` to be async and get the eligibility info from the host if it is not already available.
+
+### Patches
+
+- Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft.
+- Updated edgeapi endpoint from `edgeapi.svc.cloud.microsoft` to `edgeapi.freya.svc.cloud.microsoft` in valid domains list. Added `work.bing.com` to valid domains list.
+- Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation.
 
 ## 2.29.0
 
