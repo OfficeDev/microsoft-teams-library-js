@@ -31,6 +31,7 @@ if (
   (urlParams.has('customInit') && urlParams.get('customInit')) ||
   (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
 ) {
+  window.addEventListener('message', handleMessageFromMockedHost);
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
   if (isTestBackCompat()) {
@@ -39,6 +40,35 @@ if (
   } else {
     app.notifyAppLoaded();
     app.notifySuccess();
+  }
+}
+
+function handleMessageFromMockedHost(msg: MessageEvent): void {
+  if (!msg.data) {
+    console.warn('Unrecognized message format received by app, message being ignored. Message: %o', msg);
+    return;
+  }
+  console.log(`Received message from test host: ${msg.data}`);
+  // Handle messages that are correctly formatted and for func values we recognize
+  switch (msg.data) {
+    case 'app.initialize':
+      app.initialize();
+      break;
+    case 'app.notifySuccess':
+      app.notifySuccess();
+      break;
+    case 'app.notifyFailure':
+      app.notifyFailure({ reason: app.FailedReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyExpectedFailure':
+      app.notifyExpectedFailure({ reason: app.ExpectedFailureReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyAppLoaded':
+      app.notifyAppLoaded();
+      break;
+    // Add more cases for other API calls as needed
+    default:
+      console.warn('Unknown API call or response:', msg);
   }
 }
 
