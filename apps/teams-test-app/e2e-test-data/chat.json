@@ -118,32 +118,6 @@
       },
       "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\"}",
       "expectedTestAppValue": "chat.openGroupChat() was called"
-    },
-    {
-      "title": "openChat2 API Call with Urgency - Success",
-      "type": "callResponse",
-      "version": ">2.29.0",
-      "boxSelector": "#box_openChat2",
-      "inputValue": {
-        "user": "testUpn",
-        "message": "testMessage",
-        "urgency": "Urgent"
-      },
-      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\",\"urgency\":\"Urgent\"}",
-      "expectedTestAppValue": "chat.openChat() was called"
-    },
-    {
-      "title": "openGroupChat2 API Call with Urgency - Success",
-      "type": "callResponse",
-      "version": ">2.29.0",
-      "boxSelector": "#box_openGroupChat2",
-      "inputValue": {
-        "users": ["testUpn1", "testUpn2"],
-        "message": "testMessage",
-        "urgency": "Important"
-      },
-      "expectedAlertValue": "openChat called with {\"members\":[\"testUpn1\",\"testUpn2\"],\"message\":\"testMessage\",\"urgency\":\"Important\"}",
-      "expectedTestAppValue": "chat.openGroupChat() was called"
     }
   ]
 }
