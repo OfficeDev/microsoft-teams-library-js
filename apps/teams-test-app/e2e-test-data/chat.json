@@ -5,6 +5,47 @@
   "checkIsSupported": {
     "version": ">2.0.0-beta.3"
   },
+  "featureTests": [
+    {
+      "feature": {
+        "id": "openChat",
+        "version": 1
+      },
+      "testCases": [
+        {
+          "title": "openChat API Call - Feature Test v1",
+          "type": "callResponse",
+          "boxSelector": "#box_openChat",
+          "inputValue": {
+            "user": "testUpn",
+            "message": "testMessage"
+          },
+          "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\"}",
+          "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": "openChat",
+        "version": 2
+      },
+      "testCases": [
+        {
+          "title": "openChat API Call - Feature Test v2",
+          "type": "callResponse",
+          "boxSelector": "#box_openChat",
+          "inputValue": {
+            "user": "testUpn",
+            "message": "testMessage",
+            "urgency": "Urgent"
+          },
+          "expectedAlertValue": "openChat called with {\"members\":[\"testUpn\"],\"message\":\"testMessage\",\"urgency\":\"Urgent\"}",
+          "expectedTestAppValue": "chat.openChat() was called, but there was no response from the Host SDK."
+        }
+      ]
+    }
+  ],
   "testCases": [
     {
       "title": "openChat API Call - Success",
