@@ -3,7 +3,7 @@ import { SimpleTypeResponseHandler } from '../../src/internal/responseHandler';
 describe('ResponseHandler', () => {
   describe('BooleanResponseHandler', () => {
     describe('validate', () => {
-      let handler: SimpleTypeResponseHandler = new SimpleTypeResponseHandler();
+      let handler: SimpleTypeResponseHandler<boolean> = new SimpleTypeResponseHandler();
 
       beforeEach(() => {
         handler = new SimpleTypeResponseHandler();
@@ -17,7 +17,7 @@ describe('ResponseHandler', () => {
       });
     });
     describe('deserialize', () => {
-      let handler: SimpleTypeResponseHandler = new SimpleTypeResponseHandler();
+      let handler: SimpleTypeResponseHandler<boolean> = new SimpleTypeResponseHandler();
 
       beforeEach(() => {
         handler = new SimpleTypeResponseHandler();
