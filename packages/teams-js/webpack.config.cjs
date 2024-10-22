@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 const TerserPlugin = require('terser-webpack-plugin');
-const DtsBundleWebpack = require('dts-bundle-webpack');
 const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const { readFileSync } = require('fs');
 const { join } = require('path');
@@ -71,14 +70,6 @@ module.exports = {
   plugins: [
     new DefinePlugin({
       PACKAGE_VERSION: JSON.stringify(packageVersion),
-    }),
-
-    new DtsBundleWebpack({
-      name: '@microsoft/teams-js',
-      main: './dist/esm/packages/teams-js/dts',
-      out: '~/dist/umd/MicrosoftTeams.d.ts',
-      removeSource: true,
-      outputAsModuleFolder: true,
     }),
 
     // https://www.npmjs.com/package/webpack-subresource-integrity

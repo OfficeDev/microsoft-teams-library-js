@@ -7,7 +7,7 @@ import { ResponseHandler } from '../../src/internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { UUID } from '../../src/internal/uuidObject';
 import { ErrorCode, FrameContexts, SdkError } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { Utils } from '../utils';
 
 jest.mock('../../src/internal/handlers', () => ({

@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ErrorCode } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { stageView } from '../../src/public/stageView';
@@ -14,7 +14,7 @@ describe('stageView', () => {
   const utils = new Utils();
 
   function makeRuntimeSupportStageViewCapability() {
-    utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: {self: {}} } });
+    utils.setRuntimeConfig({ apiVersion: 1, supports: { stageView: { self: {} } } });
   }
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe('stageView', () => {
     websiteUrl: 'websiteUrl',
     entityId: 'entityId',
     openMode: stageView.StageViewOpenMode.modal,
-    messageId: 'messageId'
+    messageId: 'messageId',
   };
 
   describe('isSupported', () => {

@@ -40,7 +40,7 @@ export {
   TeamInformation,
   UrlDialogInfo,
 } from './interfaces';
-export { app } from './app';
+export * as app from './app';
 export { AppId } from './appId';
 export { EmailAddress } from './emailAddress';
 export { appInstallDialog } from './appInstallDialog';
@@ -78,7 +78,7 @@ export { version } from './version';
 export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export { call } from './call';
-export { appInitialization } from './appInitialization';
+export * as appInitialization from './appInitialization';
 export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
@@ -116,7 +116,7 @@ export {
   onCompleteHandlerFunctionType,
   returnFocus,
 } from './navigation';
-export { settings } from './settings';
+export * as settings from './settings';
 export { tasks } from './tasks';
 export { liveShare, LiveShareHost } from './liveShareHost';
 export { marketplace } from './marketplace';

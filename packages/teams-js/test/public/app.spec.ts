@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { authentication, dialog, menus, pages } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import {
   ChannelType,
   FrameContexts,

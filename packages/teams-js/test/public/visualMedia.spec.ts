@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized, permissionsAPIsRequiredVersion } from '../.
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { visualMedia } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorInvalidCount, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { DevicePermission, ErrorCode } from '../../src/public/interfaces';
 import { setUnitializedRuntime } from '../../src/public/runtime';

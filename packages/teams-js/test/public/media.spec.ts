@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized, permissionsAPIsRequiredVersion } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { DevicePermission, ErrorCode, SdkError } from '../../src/public/interfaces';
 import { media } from '../../src/public/media';
