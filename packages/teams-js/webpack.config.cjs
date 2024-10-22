@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 const TerserPlugin = require('terser-webpack-plugin');
-const DtsBundleWebpack = require('dts-bundle-webpack');
 const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const { readFileSync } = require('fs');
 const { join } = require('path');
