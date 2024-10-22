@@ -170,6 +170,11 @@ export namespace app {
      * ID for the current visible app which is different for across cached sessions. Used for correlating telemetry data.
      */
     appLaunchId?: string;
+
+    /**
+     * App id that is used by Hosts to distinguish between different apps sideloaded or in store
+     */
+    appId: string;
   }
 
   /**
@@ -831,6 +836,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): app.C
         ringId: legacyContext.ringId,
       },
       appLaunchId: legacyContext.appLaunchId,
+      appId: legacyContext.appId,
     },
     page: {
       id: legacyContext.entityId,
