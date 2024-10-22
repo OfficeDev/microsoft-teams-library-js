@@ -5,7 +5,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as internalUtils from '../../src/internal/utils';
 import { ErrorCode, FrameContexts, HostClientType, SdkError } from '../../src/public';
 import * as app from '../../src/public/app';
-import { authentication } from '../../src/public/authentication';
+import * as authentication from '../../src/public/authentication';
 import { Utils } from '../utils';
 
 /* eslint-disable */
