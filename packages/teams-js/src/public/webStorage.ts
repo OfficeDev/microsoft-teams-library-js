@@ -2,7 +2,7 @@ import { sendAndUnwrap } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { app } from './app';
+import * as app from './app';
 import { errorNotSupportedOnPlatform, HostClientType, HostName } from './constants';
 import { runtime } from './runtime';
 

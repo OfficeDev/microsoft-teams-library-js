@@ -1,6 +1,6 @@
 import { GlobalVars } from '../../src/internal/globalVars';
 import { validateOrigin } from '../../src/internal/validOrigins';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';
 describe('validOrigins', () => {

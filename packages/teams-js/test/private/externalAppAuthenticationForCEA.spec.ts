@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { externalAppAuthentication } from '../../src/private/externalAppAuthentication';
 import { externalAppAuthenticationForCEA } from '../../src/private/externalAppAuthenticationForCEA';
 import { AppId } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 
