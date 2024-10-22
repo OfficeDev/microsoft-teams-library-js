@@ -1,3 +1,5 @@
+import { SimpleType } from './communication';
+
 /**
  * This class is used for validating and deserializing the response from the host.
  *
@@ -25,12 +27,12 @@ export abstract class ResponseHandler<SerializedReturnValueFromHost, Deserialize
 /**
  * This class is used for validating and deserializing boolean responses from the host.
  */
-export class BooleanResponseHandler extends ResponseHandler<boolean, boolean> {
-  public validate(_response: boolean): boolean {
+export class SimpleTypeResponseHandler<T extends SimpleType> extends ResponseHandler<T, T> {
+  public validate(_response: T): boolean {
     return true;
   }
 
-  public deserialize(response: boolean): boolean {
+  public deserialize(response: T): T {
     return response;
   }
 }

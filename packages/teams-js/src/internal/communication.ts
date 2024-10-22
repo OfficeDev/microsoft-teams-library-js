@@ -264,7 +264,7 @@ export function sendMessageToParentAsync<T>(
   });
 }
 
-type SimpleType = string | number | boolean | null | undefined | SimpleType[];
+export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
 
 function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType | object)[] {
   return items.map((item) => {
@@ -283,7 +283,7 @@ function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType 
  * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
  * @param responseHandler When the host responds, this handler will validate and deserialize the response.
  * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
- * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this if your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
  *
  * @returns The response received from the host after deserialization.
  *

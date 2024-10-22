@@ -1,6 +1,6 @@
 import { callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { BooleanResponseHandler, ResponseHandler } from '../internal/responseHandler';
+import { ResponseHandler, SimpleTypeResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ErrorCode } from '../public';
 import { TabInstance } from '../public/interfaces';
@@ -322,7 +322,7 @@ export namespace hostEntity {
       return callFunctionInHostAndHandleResponse<boolean, boolean>(
         'hostEntity.tab.remove',
         [new SerializableHostEntityTabInstance(tab), new SerializableHostEntityId(hostEntityIds)],
-        new BooleanResponseHandler(),
+        new SimpleTypeResponseHandler(),
         getApiVersionTag(hostEntityTelemetryVersionNumber, ApiName.HostEntity_Tab_remove),
       );
     }

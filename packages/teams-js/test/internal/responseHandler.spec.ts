@@ -1,12 +1,12 @@
-import { BooleanResponseHandler } from '../../src/internal/responseHandler';
+import { SimpleTypeResponseHandler } from '../../src/internal/responseHandler';
 
 describe('ResponseHandler', () => {
   describe('BooleanResponseHandler', () => {
     describe('validate', () => {
-      let handler: BooleanResponseHandler = new BooleanResponseHandler();
+      let handler: SimpleTypeResponseHandler = new SimpleTypeResponseHandler();
 
       beforeEach(() => {
-        handler = new BooleanResponseHandler();
+        handler = new SimpleTypeResponseHandler();
       });
       test('should always return true', () => {
         const resultWhenTrue = handler.validate(true);
@@ -17,10 +17,10 @@ describe('ResponseHandler', () => {
       });
     });
     describe('deserialize', () => {
-      let handler: BooleanResponseHandler = new BooleanResponseHandler();
+      let handler: SimpleTypeResponseHandler = new SimpleTypeResponseHandler();
 
       beforeEach(() => {
-        handler = new BooleanResponseHandler();
+        handler = new SimpleTypeResponseHandler();
       });
       test('should return the response as is', () => {
         const resultWhenTrue = handler.deserialize(true);
