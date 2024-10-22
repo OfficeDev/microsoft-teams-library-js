@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Made `app`, `appInitialization`, and `settings` treeshakable as well as added dts rollup plugin",
+  "comment": "Made the `app`, `appInitialization`, and `settings` files treeshakable",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
