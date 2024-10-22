@@ -29,7 +29,7 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
-import { ResponseHandler } from './responseHandler';
+import { ResponseHandler, SimpleType } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
@@ -263,8 +263,6 @@ export function sendMessageToParentAsync<T>(
     resolve(waitForResponse<T>(request.uuid));
   });
 }
-
-export type SimpleType = string | number | boolean | null | undefined | SimpleType[];
 
 function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType | object)[] {
   return items.map((item) => {
