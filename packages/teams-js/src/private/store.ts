@@ -1,3 +1,6 @@
+import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from '../public/runtime';
+
 /**
  * In context store.
  *
@@ -29,12 +32,12 @@ export namespace store {
   }
 
   /**
-   * Checks if the store capability is supported by the host
-   * @returns boolean to represent whether the store capability is supported
+   * Checks if the store capability is supported by the host.
+   * @returns boolean to represent whether the store capability is supported.
    *
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return true;
+    return ensureInitialized(runtime) && !!runtime.supports.store;
   }
 }

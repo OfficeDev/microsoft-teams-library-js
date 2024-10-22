@@ -125,7 +125,15 @@ export namespace otherAppStateChange {
    * does not support the otherAppStateChange capability.
    */
   export function notifyAppInstall(appId: AppId): void {
-    throw new Error(`not implemented ${appId}`);
+    if (!isSupported()) {
+      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+    }
+
+    sendMessageToParent(
+      getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyAppInstall),
+      ApiName.OtherAppStateChange_NotifyAppInstall,
+      [appId.toString()],
+    );
   }
 
   /**

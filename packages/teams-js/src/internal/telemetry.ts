@@ -232,6 +232,7 @@ export const enum ApiName {
   Navigation_ReturnFocus = 'navigation.returnFocus',
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
+  OtherAppStateChange_NotifyAppInstall = 'otherApp.notifyAppInstall',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
