@@ -3,9 +3,10 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import * as handlers from '../../src/internal/handlers';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { NestedAppAuthMessageEventNames, NestedAppAuthRequest } from '../../src/internal/nestedAppAuthUtils';
+import { ResponseHandler } from '../../src/internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import { UUID } from '../../src/internal/uuidObject';
-import { FrameContexts } from '../../src/public';
+import { ErrorCode, FrameContexts, SdkError } from '../../src/public';
 import * as app from '../../src/public/app';
 import { Utils } from '../utils';
 
@@ -1273,7 +1274,397 @@ describe('Testing communication', () => {
       }
     });
   });
+  describe('callFunctionInHostAndHandleResponse', () => {
+    let utils: Utils = new Utils();
+    const functionName = 'actionName';
 
+    class UnitTestResponseHandler implements ResponseHandler<unknown, string> {
+      public constructor(
+        private validateResponse?: (response: unknown) => boolean,
+        private deserializeResponse?: (response: unknown) => string,
+      ) {}
+
+      public validate(response: unknown): boolean {
+        return this.validateResponse ? this.validateResponse(response) : true;
+      }
+      public deserialize(response: unknown): string {
+        return this.deserializeResponse ? this.deserializeResponse(response) : 'default deserialization';
+      }
+    }
+
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw error if an invalid apiVersionTag is passed in', async () => {
+      expect.assertions(1);
+
+      try {
+        await communication.callFunctionInHostAndHandleResponse(
+          functionName,
+          ['arg2'],
+          new UnitTestResponseHandler(),
+          '',
+        );
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    });
+    it('should pass action name and empty args array to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(0);
+    });
+    it('should pass args array containing only simple types to host', async () => {
+      expect.assertions(3);
+
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [1, 'string', true, undefined, null, [1]];
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(inputArgs.length);
+      try {
+        sentMessage?.args?.forEach((arg, index) => {
+          if (arg !== inputArgs[index]) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected value`);
+          }
+        });
+      } catch (e) {
+        expect(e).toBeUndefined();
+      }
+    });
+    it('should pass args array containing only ISerializableObjects to host', async () => {
+      expect.assertions(3);
+
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
+      communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        inputArgs,
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage!.args).toBeDefined();
+      expect(sentMessage!.args!.length).toBe(inputArgs.length);
+
+      try {
+        sentMessage?.args?.forEach((arg, index) => {
+          if (arg !== inputArgs[index].serialize()) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected serialized value`);
+          }
+        });
+      } catch (e) {
+        expect(e).toBeUndefined();
+      }
+    });
+    it('should throw error if host returns an SdkError', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(new Error(`${sdkError.errorCode}, message: ${sdkError.message}`));
+    });
+    it('should throw error if host does not return SdkError and ResponseHandler says response is invalid', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, 'host response value');
+
+      expect(promise).rejects.toThrowError(
+        new Error(
+          `${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify('host response value')}`,
+        ),
+      );
+    });
+    it('should return correctly deserialized response if host returns a valid response that is not an error', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(
+          (_response) => true,
+          (_response) => 'this is the deserialized response',
+        ),
+        testApiVersion,
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, 'host response value');
+
+      expect(promise).resolves.toEqual('this is the deserialized response');
+    });
+    it('should throw error if returned object matches passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler(),
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === weirdError.errorCode && extraValue === 'weird error message';
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(new Error(`${weirdError.errorCode}, message: None`));
+    });
+    it('should throw invalid response error if returned object does not match passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'bizarre error message' };
+      const promise = communication.callFunctionInHostAndHandleResponse(
+        functionName,
+        [],
+        new UnitTestResponseHandler((_response) => false),
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === ErrorCode.FILE_NOT_FOUND && extraValue === 'weird error message';
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(
+        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(weirdError)}`),
+      );
+    });
+  });
+  describe('callFunctionInHost', () => {
+    let utils: Utils = new Utils();
+    const functionName = 'actionName';
+    beforeEach(() => {
+      utils = new Utils();
+      communication.uninitializeCommunication();
+      app._initialize(utils.mockWindow);
+    });
+    afterAll(() => {
+      communication.Communication.currentWindow = utils.mockWindow;
+      communication.uninitializeCommunication();
+    });
+    it('should throw error if an invalid apiVersionTag is passed in', async () => {
+      expect.assertions(1);
+      try {
+        await communication.callFunctionInHost('', ['arg2'], 'arg1');
+      } catch (e) {
+        expect(e).toBeDefined();
+      }
+    });
+    it('should pass action name and empty args array to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      communication.callFunctionInHost(functionName, [], testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args || sentMessage.args.length > 0) {
+        throw new Error('empty args expected on message');
+      }
+    });
+    it('should pass args array containing only simple types to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [1, 'string', true, undefined, null, [1]];
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args) {
+        throw new Error('No arg array found on Message');
+      } else {
+        sentMessage.args.forEach((arg, index) => {
+          if (arg !== inputArgs[index]) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected value`);
+          }
+        });
+      }
+    });
+    it('should pass args array containing only ISerializableObjects to host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const inputArgs = [{ serialize: () => 'foo' }, { serialize: () => 'bar' }];
+      communication.callFunctionInHost(functionName, inputArgs, testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      if (sentMessage === null) {
+        throw new Error('No sent message was found');
+      }
+      if (!sentMessage.args) {
+        throw new Error('No arg array found on Message');
+      } else {
+        sentMessage.args.forEach((arg, index) => {
+          if (arg !== inputArgs[index].serialize()) {
+            throw new Error(`Arg value ${arg} at index ${index} does not match expected serialized value`);
+          }
+        });
+      }
+    });
+    it('should throw error if host returns an SdkError', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion);
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(new Error(`${sdkError.errorCode}, message: ${sdkError.message}`));
+    });
+    it('should not throw error if no error returned from host', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = undefined;
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
+        return false;
+      });
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).resolves;
+    });
+    it('should throw error if returned object matches passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const weirdError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, name: 'weird error message' };
+      const promise = communication.callFunctionInHost(
+        functionName,
+        [],
+        testApiVersion,
+        (err: unknown): err is SdkError => {
+          const returnedErrorCode = (err as SdkError).errorCode;
+          const extraValue = (err as { name })?.name;
+          return returnedErrorCode === weirdError.errorCode && extraValue === weirdError.name;
+        },
+      );
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, weirdError);
+
+      expect(promise).rejects.toThrowError(new Error(`${weirdError.errorCode}, message: None`));
+    });
+    it('should not throw error if returned object does not match passed in errorChecker', async () => {
+      communication.initializeCommunication(undefined, testApiVersion);
+      const initializeMessage = utils.findInitializeMessageOrThrow();
+      await utils.respondToMessage(initializeMessage);
+
+      const sdkError = { errorCode: ErrorCode.OPERATION_TIMED_OUT, message: 'Unit Test Error' };
+      const promise = communication.callFunctionInHost(functionName, [], testApiVersion, (err): err is SdkError => {
+        return false;
+      });
+
+      const sentMessage = utils.findMessageByFunc(functionName);
+      expect(sentMessage).toBeDefined();
+
+      await utils.respondToMessage(sentMessage!, sdkError);
+
+      expect(promise).rejects.toThrowError(
+        new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`),
+      );
+    });
+  });
   describe('sendAndHandleSdkError', () => {
     let utils: Utils = new Utils();
     const actionName = 'test';
