@@ -1,10 +1,12 @@
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId, validateUrl } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { ISerializable } from '../public/serializable.interface';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -134,6 +136,18 @@ export namespace externalAppAuthentication {
   }
 
   /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export class SerializableActionExecuteInvokeRequest implements ISerializable {
+    public constructor(private invokeRequest: externalAppAuthentication.IActionExecuteInvokeRequest) {}
+    public serialize(): object | string {
+      return this.invokeRequest;
+    }
+  }
+
+  /**
    * @beta
    * @hidden
    * Determines if the provided response object is an instance of IActionExecuteResponse
@@ -217,6 +231,22 @@ export namespace externalAppAuthentication {
     signature?: string;
     statusCode: number;
     type: string;
+  }
+
+  /**
+   * @hidden
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export class ActionExecuteResponseHandler extends ResponseHandler<IActionExecuteResponse, IActionExecuteResponse> {
+    public validate(response: externalAppAuthentication.IActionExecuteResponse): boolean {
+      return externalAppAuthentication.isActionExecuteResponse(response);
+    }
+    public deserialize(
+      response: externalAppAuthentication.IActionExecuteResponse,
+    ): externalAppAuthentication.IActionExecuteResponse {
+      return response;
+    }
   }
 
   /**

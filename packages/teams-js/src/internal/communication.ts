@@ -4,8 +4,9 @@
 
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
-import { SdkError } from '../public/interfaces';
+import { ErrorCode, isSdkError, SdkError } from '../public/interfaces';
 import { latestRuntimeApiVersion } from '../public/runtime';
+import { ISerializable, isSerializable } from '../public/serializable.interface';
 import { version } from '../public/version';
 import { GlobalVars } from './globalVars';
 import { callHandler } from './handlers';
@@ -28,6 +29,7 @@ import {
   ParsedNestedAppAuthMessageData,
   tryPolyfillWithNestedAppAuthBridge,
 } from './nestedAppAuthUtils';
+import { ResponseHandler, SimpleType } from './responseHandler';
 import { getLogger, isFollowingApiVersionTagFormat } from './telemetry';
 import { ssrSafeWindow } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
@@ -161,6 +163,7 @@ export function uninitializeCommunication(): void {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then unwrap result. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -174,6 +177,7 @@ export function sendAndUnwrap<T>(apiVersionTag: string, actionName: string, ...a
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -190,6 +194,7 @@ export function sendAndHandleStatusAndReason(apiVersionTag: string, actionName: 
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle status and reason with default error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -214,6 +219,7 @@ export function sendAndHandleStatusAndReasonWithDefaultError(
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent and then handle SDK error. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -232,6 +238,7 @@ export function sendAndHandleSdkError<T>(apiVersionTag: string, actionName: stri
 }
 
 /**
+ * @deprecated This function will no longer be exported in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent asynchronously. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
@@ -255,6 +262,88 @@ export function sendMessageToParentAsync<T>(
     const request = sendMessageToParentHelper(apiVersionTag, actionName, args);
     resolve(waitForResponse<T>(request.uuid));
   });
+}
+
+function serializeItemArray(items: (SimpleType | ISerializable)[]): (SimpleType | object)[] {
+  return items.map((item) => {
+    if (isSerializable(item)) {
+      return item.serialize();
+    } else {
+      return item;
+    }
+  });
+}
+
+/**
+ * Call a function in the host and receive a response. If the host returns an {@link SdkError} instead of a normal response, this function will throw a new Error containing the SdkError's information
+ *
+ * @param functionName The function name to call in the host.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param responseHandler When the host responds, this handler will validate and deserialize the response.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this if your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @returns The response received from the host after deserialization.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
+export async function callFunctionInHostAndHandleResponse<
+  SerializedReturnValueFromHost,
+  DeserializedReturnValueFromHost,
+>(
+  functionName: string,
+  args: (SimpleType | ISerializable)[],
+  responseHandler: ResponseHandler<SerializedReturnValueFromHost, DeserializedReturnValueFromHost>,
+  apiVersionTag: string,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
+): Promise<DeserializedReturnValueFromHost> {
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SerializedReturnValueFromHost | SdkError]>(
+    apiVersionTag,
+    functionName,
+    serializedArguments,
+  );
+
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (!responseHandler.validate(response as SerializedReturnValueFromHost)) {
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host - ${JSON.stringify(response)}`);
+  } else {
+    return responseHandler.deserialize(response as SerializedReturnValueFromHost);
+  }
+}
+
+/**
+ * Call a function in the host that receives either an {@link SdkError} or undefined as a response. If the host returns an {@link SdkError} this function will throw a new Error containing the SdkError's information.
+ *
+ * @param functionName The function name to call in the host.
+ * @param args A collection of data to pass to the host. This data must be an array of either simple types or objects that implement {@link ISerializable}.
+ * @param apiVersionTag A unique tag used to identify the API version for telemetry purposes. This should be set using {@link getApiVersionTag}, which should be passed a unique string identifying the function being called by the app developer as well as a version number that is incremented whenever meaningful changes are made to that function.
+ * @param isResponseAReportableError This optional property can be used to override the default ErrorChecking this function uses to decide whether to throw the host response as a new Error. Specify this is your function needs to do any logic verifying that the object received is an error that goes beyond the logic found in {@link isSdkError}.
+ *
+ * @throws An Error containing the SdkError information ({@link SdkError.errorCode} and {@link SdkError.message}) if the host returns an SdkError, or an Error if the response from the host is an unexpected format.
+ */
+export async function callFunctionInHost(
+  functionName: string,
+  args: (SimpleType | ISerializable)[],
+  apiVersionTag: string,
+  isResponseAReportableError?: (response: unknown) => response is { errorCode: number | string; message?: string },
+): Promise<void> {
+  const serializedArguments = serializeItemArray(args);
+  const [response] = await sendMessageToParentAsync<[SdkError]>(apiVersionTag, functionName, serializedArguments);
+
+  if (
+    (isResponseAReportableError && isResponseAReportableError(response)) ||
+    (!isResponseAReportableError && isSdkError(response))
+  ) {
+    throw new Error(`${response.errorCode}, message: ${response.message ?? 'None'}`);
+  } else if (response !== undefined) {
+    // If we receive a response from the host that is not a recognized error type it is an invalid response
+    throw new Error(`${ErrorCode.INTERNAL_ERROR}, message: Invalid response from host`);
+  }
 }
 
 /**
@@ -305,12 +394,14 @@ function waitForResponse<T>(requestUuid: MessageUUID): Promise<T> {
 }
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @internal
  * Limited to Microsoft-internal use
  */
 export function sendMessageToParent(apiVersionTag: string, actionName: string, callback?: Function): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  *
@@ -325,6 +416,7 @@ export function sendMessageToParent(
 ): void;
 
 /**
+ * @deprecated This function is deprecated and will be removed in a future release. Please use {@link callFunctionInHostAndHandleResponse} or {@link callFunctionInHost} instead.
  * @hidden
  * Send a message to parent. Uses nativeInterface on mobile to communicate with parent context
  * Additional apiVersionTag parameter is added, which provides the ability to send api version number to parent
