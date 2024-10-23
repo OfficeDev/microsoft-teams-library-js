@@ -323,6 +323,8 @@ export const enum ApiName {
   Sharing_ShareWebContent = 'sharing.shareWebContent',
   StageView_Open = 'stageView.open',
   StageView_Self_Close = 'stageView.self.close',
+  Store_OpenStoreExperience = 'store.openStoreExperience',
+  Store_RegisterMessageForChildHandler = 'store.registerMessageForChildHandler',
   Tasks_StartTask = 'tasks.startTask',
   Tasks_SubmitTask = 'tasks.submitTask',
   Tasks_UpdateTask = 'tasks.updateTask',

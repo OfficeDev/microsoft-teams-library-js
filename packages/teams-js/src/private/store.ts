@@ -1,5 +1,13 @@
+import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
+
+/**
+ * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ */
+const storeTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * In context store.
@@ -9,7 +17,7 @@ import { runtime } from '../public/runtime';
  */
 export namespace store {
   /** Represents set of parameters needed to open the appInstallDialog. */
-  interface OpenStoreParams {
+  export interface OpenStoreParams {
     /** A unique identifier for the app being installed. */
     appId: string;
     dialogType: dialogType;
@@ -27,8 +35,18 @@ export namespace store {
    * Displays different forms of Store or App Install Dialogs based on the dialogType.
    * Promise is returned once Store App initialization is completed.
    */
-  export function openStoreExperience(openStoreParams: OpenStoreParams): Promise<void> {
-    throw new Error(`not implemented ${JSON.stringify(openStoreParams)}`);
+  export function openStoreExperience(openStoreParams: OpenStoreParams): void {
+    console.log({ openStoreExperience: openStoreParams });
+    if (!isSupported()) {
+      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+    }
+
+    console.log('send message');
+    sendMessageToParent(
+      getApiVersionTag(storeTelemetryVersionNumber, ApiName.Store_OpenStoreExperience),
+      ApiName.Store_OpenStoreExperience,
+      [openStoreParams],
+    );
   }
 
   /**
