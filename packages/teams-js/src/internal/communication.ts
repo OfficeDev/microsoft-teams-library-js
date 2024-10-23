@@ -803,6 +803,7 @@ function removeMessageHandlers(message: MessageResponse, map: Map<MessageUUID, F
  */
 function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   const logger = handleIncomingMessageFromParentLogger;
+  const timeWhenMessageArrived = getCurrentTimestamp();
 
   if ('id' in evt.data && typeof evt.data.id === 'number') {
     // Call any associated Communication.callbacks
@@ -812,7 +813,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
     if (callbackId) {
       const callback = CommunicationPrivate.callbacks.get(callbackId);
       logger('Received a response from parent for message %s', callbackId.toString());
-      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger);
+      HostToAppMessageDelayTelemetry.handlePerformanceMetrics(callbackId, message, logger, timeWhenMessageArrived);
       if (callback) {
         logger(
           'Invoking the registered callback for message %s with arguments %o',
@@ -864,7 +865,7 @@ function handleIncomingMessageFromParent(evt: DOMMessageEvent): void {
   } else if ('func' in evt.data && typeof evt.data.func === 'string') {
     // Delegate the request to the proper handler
     const message = evt.data as MessageRequest;
-    HostToAppMessageDelayTelemetry.handleOneWayPerformanceMetrics(message, logger);
+    HostToAppMessageDelayTelemetry.handleOneWayPerformanceMetrics(message, logger, timeWhenMessageArrived);
     logger('Received a message from parent %s, action: "%s"', getMessageIdsAsLogString(message), message.func);
     callHandler(message.func, message.args);
   } else {

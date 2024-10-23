@@ -3,7 +3,6 @@ import { Debugger } from 'debug';
 import { handleHostToAppPerformanceMetrics } from './handlers';
 import { CallbackInformation } from './interfaces';
 import { MessageRequest, MessageResponse } from './messageObjects';
-import { getCurrentTimestamp } from './utils';
 import { UUID as MessageUUID } from './uuidObject';
 
 /**
@@ -47,8 +46,9 @@ export default class HostToAppMessageDelayTelemetry {
    * Executes telemetry actions related to host to app performance metrics where event is raised in the host.
    * @param message The request from the host.
    * @param logger The logger in case an error occurs.
+   * @param endTime The ending time for calculating the elapsed time
    */
-  public static handleOneWayPerformanceMetrics(message: MessageRequest, logger: Debugger): void {
+  public static handleOneWayPerformanceMetrics(message: MessageRequest, logger: Debugger, endTime: number): void {
     const timestamp = message.monotonicTimestamp;
     if (!timestamp) {
       logger('Unable to send performance metrics for event %s', message.func);
@@ -56,7 +56,7 @@ export default class HostToAppMessageDelayTelemetry {
     }
     handleHostToAppPerformanceMetrics({
       actionName: message.func,
-      messageDelay: getCurrentTimestamp() - timestamp,
+      messageDelay: endTime - timestamp,
       messageWasCreatedAt: timestamp,
     });
   }
@@ -69,8 +69,14 @@ export default class HostToAppMessageDelayTelemetry {
    * @param callbackId The message id for the request.
    * @param message The response from the host.
    * @param logger The logger in case an error occurs.
+   * @param endTime The ending time for calculating the elapsed time
    */
-  public static handlePerformanceMetrics(callbackID: MessageUUID, message: MessageResponse, logger: Debugger): void {
+  public static handlePerformanceMetrics(
+    callbackID: MessageUUID,
+    message: MessageResponse,
+    logger: Debugger,
+    endTime: number,
+  ): void {
     const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
     if (!callbackInformation || !message.monotonicTimestamp) {
       logger(
@@ -82,7 +88,7 @@ export default class HostToAppMessageDelayTelemetry {
     }
     handleHostToAppPerformanceMetrics({
       actionName: callbackInformation.name,
-      messageDelay: getCurrentTimestamp() - message.monotonicTimestamp,
+      messageDelay: endTime - message.monotonicTimestamp,
       messageWasCreatedAt: callbackInformation.calledAt,
     });
     HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
