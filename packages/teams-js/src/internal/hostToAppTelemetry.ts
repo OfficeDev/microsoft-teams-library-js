@@ -57,7 +57,7 @@ export default class HostToAppMessageDelayTelemetry {
     handleHostToAppPerformanceMetrics({
       actionName: message.func,
       messageDelay: endTime - timestamp,
-      messageWasCreatedAt: timestamp,
+      requestStartedAt: timestamp,
     });
   }
 
@@ -89,7 +89,7 @@ export default class HostToAppMessageDelayTelemetry {
     handleHostToAppPerformanceMetrics({
       actionName: callbackInformation.name,
       messageDelay: endTime - message.monotonicTimestamp,
-      messageWasCreatedAt: callbackInformation.calledAt,
+      requestStartedAt: callbackInformation.calledAt,
     });
     HostToAppMessageDelayTelemetry.deleteMessageInformation(callbackID);
   }

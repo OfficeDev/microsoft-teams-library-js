@@ -1293,6 +1293,6 @@ export interface HostToAppPerformanceMetrics {
   actionName: string;
   /** The delay the message took traveling from host to app */
   messageDelay: number;
-  /** The time the message was originally created at */
-  messageWasCreatedAt: number;
+  /** The time when the request was dispatched */
+  requestStartedAt: number;
 }
