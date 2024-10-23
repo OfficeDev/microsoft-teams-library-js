@@ -6,10 +6,11 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
+import { readFileSync } from 'fs';
 import dts from 'rollup-plugin-dts';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 
-import version from './package.json' assert { type: 'json' };
+const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default [
   {
@@ -37,7 +38,7 @@ export default [
       replace({
         preventAssignment: true,
         'process.env.NODE_ENV': JSON.stringify('production'),
-        PACKAGE_VERSION: JSON.stringify(version.version),
+        PACKAGE_VERSION: JSON.stringify(packageJson.version),
       }),
       typescript(),
       json(),
