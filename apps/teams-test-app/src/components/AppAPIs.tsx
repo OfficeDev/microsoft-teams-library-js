@@ -3,6 +3,7 @@ import {
   Context,
   executeDeepLink,
   getContext,
+  HostToAppPerformanceMetrics,
   registerOnThemeChangeHandler,
   ResumeContext,
 } from '@microsoft/teams-js';
@@ -69,8 +70,12 @@ const RegisterHostToAppPerformanceMetricsHandler = (): ReactElement =>
     name: 'registerHostToAppPerformanceMetricsHandler',
     title: 'Register Host to App performance metrics handler',
     onClick: async (setResult) => {
-      app.registerHostToAppPerformanceMetricsHandler((v) => setResult(JSON.stringify(v)));
-      return '';
+      const handler = (v: HostToAppPerformanceMetrics): void => {
+        console.log(v);
+        setResult(JSON.stringify(v));
+      };
+      app.registerHostToAppPerformanceMetricsHandler(handler);
+      return 'Registered callback!';
     },
   });
 
