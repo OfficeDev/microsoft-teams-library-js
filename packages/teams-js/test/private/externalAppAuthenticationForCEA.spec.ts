@@ -122,6 +122,28 @@ describe('externalAppAuthenticationForCEA', () => {
           }
           return expect(promise).resolves.toEqual(testResponse);
         });
+        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          const invalidDataRequest = {
+            ...testOriginalRequest,
+            data: { function() {} },
+          };
+          try {
+            await externalAppAuthenticationForCEA.authenticateAndResendRequest(
+              testAppId,
+              testConversationId,
+              testAuthRequest,
+              invalidDataRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid data type ${typeof invalidDataRequest.data}. Data must be a primitive or a plain object.`,
+            });
+          }
+        });
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
@@ -426,6 +448,29 @@ describe('externalAppAuthenticationForCEA', () => {
           await expect(promise).rejects.toThrowError(
             new Error(`500, message: Invalid response from host - ${JSON.stringify(invalidTestError)}`),
           );
+        });
+
+        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          const invalidDataRequest = {
+            ...testOriginalRequest,
+            data: { function() {} },
+          };
+          try {
+            await externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testConversationId,
+              testAuthRequest,
+              invalidDataRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid data type ${typeof invalidDataRequest.data}. Data must be a primitive or a plain object.`,
+            });
+          }
         });
 
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {

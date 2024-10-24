@@ -171,6 +171,27 @@ describe('externalAppAuthentication', () => {
               ),
           ).rejects.toThrowError(/characters/i);
         });
+        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidDataRequest = {
+            ...testOriginalRequest,
+            data: { function() {} },
+          };
+          try {
+            await externalAppAuthentication.authenticateAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              invalidDataRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid data type ${typeof invalidDataRequest.data}. Data must be a primitive or a plain object.`,
+            });
+          }
+        });
         it(`should throw error on invalid app ID if its size exceeds 256 characters with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
@@ -432,6 +453,27 @@ describe('externalAppAuthentication', () => {
             utils.respondToMessage(message, true, testResponse);
           }
           await expect(promise).resolves.toEqual(testResponse);
+        });
+        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthentication: {} } });
+          const invalidDataRequest = {
+            ...testOriginalRequest,
+            data: { function() {} },
+          };
+          try {
+            await externalAppAuthentication.authenticateWithSSOAndResendRequest(
+              testAppId,
+              testAuthRequest,
+              invalidDataRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual({
+              errorCode: 'INTERNAL_ERROR',
+              message: `Invalid data type ${typeof invalidDataRequest.data}. Data must be a primitive or a plain object.`,
+            });
+          }
         });
         it(`should throw error on invalid app ID if it contains script tag with context - ${frameContext}`, async () => {
           expect.assertions(1);
