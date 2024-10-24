@@ -4,6 +4,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/tele
 import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { ErrorCode } from '../interfaces';
 import { runtime } from '../runtime';
+import { Location } from './geoLocation';
 
 /**
  * Namespace to interact with the location on map module-specific part of the SDK.
