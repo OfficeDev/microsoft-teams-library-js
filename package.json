@@ -133,10 +133,8 @@
     },
     "overrides-explanation": {
       "WHAT IS THIS SECTION": "pnpm ignores this section and comments aren't allowed in JSON files. This section documents why the above overrides have been put in place. If you add an override, describe it in this section.",
-      "@azure/identity": "There is a vulnerability in older versions of @azure/identity package and currently this is used by teamsfx package in the teamsjs-diagnostic-app.",
       "express": "There is a vulnerability in older versions of the express package that is consumed by webpack-dev-server, this has been patched in a later version of express that webpack-dev-server has not updated yet. Once they update this package, we can remove this override",
       "follow-redirects": "There is a vulnerability in the follow-redirects package, and a fix has been provided. However, we consume the follow-redirects package via webpack-dev-server, Lerna, and wait-on, eventually. We are using this newer version of follow-redirects to avoid the vulnerability. If webpack-dev-server, Lerna, and wait-on packages are ever updated to a version of follow-redirects that fixes the vulnerability, we can remove this override and update the three packages accordingly.",
-      "nth-check": "There is a vulnerability in older versions of nth-check package and currently this is used by teamsfx package in the teamsjs-diagnostic-app.",
       "socks": "There is a vulnerability in the ip package which has no fix. We consume ip via socks (eventually via lerna). Socks released a new version that removed the ip dependency. We are using this newer version of socks to avoid the vulnerability. If ip is ever updated or lerna (or any package in the chain) eventually updates to a version of socks that doesn't depend on ip, we can remove this override",
       "tar": "There is a vulnerability in the tar package which is being used by lerna that hasn't yet been updated. Once this is patched in lerna we can remove this override"
     }
