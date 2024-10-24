@@ -399,12 +399,10 @@ export namespace externalAppAuthentication {
       throw error;
     }
 
-    if (isPrimitiveOrPlainObject(this.invokeRequest.data)) {
-      return this.invokeRequest;
-    } else {
+    if (!isPrimitiveOrPlainObject(actionExecuteRequest.data)) {
       const error: externalAppAuthentication.InvokeError = {
         errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-        message: `Invalid data type ${typeof this.invokeRequest.data}. Data must be a primitive or a plain object.`,
+        message: `Invalid data type ${typeof actionExecuteRequest.data}. Data must be a primitive or a plain object.`,
       };
       throw error;
     }

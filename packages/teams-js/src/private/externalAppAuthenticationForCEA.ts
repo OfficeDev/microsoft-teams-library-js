@@ -212,22 +212,4 @@ export namespace externalAppAuthenticationForCEA {
   export function isSupported(): boolean {
     return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEA ? true : false;
   }
-
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * @beta
-   */
-  function validateOriginalRequestInfo(
-    actionExecuteRequest: externalAppAuthentication.IActionExecuteInvokeRequest,
-  ): void {
-    if (actionExecuteRequest.type !== externalAppAuthentication.ActionExecuteInvokeRequestType) {
-      const error: externalAppAuthentication.InvokeError = {
-        errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${externalAppAuthentication.ActionExecuteInvokeRequestType}"`,
-      };
-      throw error;
-    }
-  }
 }
