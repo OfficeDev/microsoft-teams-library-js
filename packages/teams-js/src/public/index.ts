@@ -40,7 +40,7 @@ export {
   TeamInformation,
   UrlDialogInfo,
 } from './interfaces';
-export * as app from './app';
+export * as app from './app/app';
 export { AppId } from './appId';
 export { EmailAddress } from './emailAddress';
 export * as appInstallDialog from './appInstallDialog';
