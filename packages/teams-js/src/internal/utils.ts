@@ -504,3 +504,46 @@ export function validateUuid(id: string | undefined | null): void {
     throw new Error('id must be a valid UUID');
   }
 }
+
+/**
+ * @beta
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * Function to check whether the data is a primitive type or a plain object.
+ * @param value The value to check
+ * @returns true if the value is a primitive type or a plain object, false otherwise
+ *
+ */
+export function isPrimitiveOrPlainObject(value: unknown): boolean {
+  // Check if the value is a primitive type or null
+  if (
+    typeof value === 'undefined' ||
+    typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    typeof value === 'bigint' ||
+    typeof value === 'string' ||
+    value === null
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(value)) {
+    // Check if all elements in the array are serializable
+    return value.every(isPrimitiveOrPlainObject);
+  }
+
+  // Check if the value is a plain object
+  const isPlainObject =
+    typeof value === 'object' &&
+    Object.prototype.toString.call(value) === '[object Object]' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
+
+  if (!isPlainObject) {
+    return false;
+  }
+
+  // Check all properties of the object recursively
+  return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key]));
+}

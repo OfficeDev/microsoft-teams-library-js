@@ -124,7 +124,7 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    validateOriginalRequestInfo(originalRequestInfo);
+    externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
     return callFunctionInHostAndHandleResponse<
@@ -177,7 +177,7 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    validateOriginalRequestInfo(originalRequestInfo);
+    externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
     return callFunctionInHostAndHandleResponse<
       externalAppAuthentication.IActionExecuteResponse,
