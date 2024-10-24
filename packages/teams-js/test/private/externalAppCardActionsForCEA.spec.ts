@@ -5,7 +5,7 @@ import { ExternalAppErrorCode } from '../../src/private/constants';
 import { externalAppCardActions } from '../../src/private/externalAppCardActions';
 import { externalAppCardActionsForCEA } from '../../src/private/externalAppCardActionsForCEA';
 import { AppId, FrameContexts } from '../../src/public';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { Utils } from '../utils';
 

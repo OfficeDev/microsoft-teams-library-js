@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { chat, OpenGroupChatRequest, OpenSingleChatRequest } from '../../src/public/chat';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
