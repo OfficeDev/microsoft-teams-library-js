@@ -276,7 +276,7 @@ describe('Testing communication', () => {
       it('should set Communication.parentWindow and Communication.parentOrigin to null if the parent window is closed during the initialization call', async () => {
         expect.assertions(4);
 
-        /* 
+        /*
           This promise is intentionally not being awaited
           If the parent window is closed during the initialize call,
           the initialize response never resolves (even though we receive it)

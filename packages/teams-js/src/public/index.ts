@@ -25,6 +25,7 @@ export {
   FileOpenPreference,
   FrameContext,
   FrameInfo,
+  HostToAppPerformanceMetrics,
   LoadContext,
   LocaleInfo,
   M365ContentAction,
