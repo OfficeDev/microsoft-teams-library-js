@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Add userClickTimeV2 to app `Context` to provide the timestamp when the user clicked the app using the performance timer API.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jcardenasr123@gmail.com",
+  "dependentChangeType": "patch"
+}
