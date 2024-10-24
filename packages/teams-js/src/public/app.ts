@@ -151,12 +151,16 @@ export interface AppInfo {
   iconPositionVertical?: number;
 
   /**
-   * Time when the user clicked on the tab
+   * Time when the user clicked on the tab using the date.
+   *
+   * For measuring elapsed time between the moment the user click the tab, use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead as it uses the performance timer API.
    */
   userClickTime?: number;
 
   /**
-   * Monotonic timer when the user clicked on the tab
+   * Time when the user click on the app by using the performance timer API. Useful for measuring elapsed time accurately.
+   *
+   * For displaying the time when the user clicked on the app, please use {@link app.AppInfo.userClickTime | app.Context.app.userClickTime} as it uses the date.
    */
   userClickTimeV2?: number;
 
