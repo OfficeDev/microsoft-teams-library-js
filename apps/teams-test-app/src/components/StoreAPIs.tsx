@@ -7,8 +7,8 @@ import { ModuleWrapper } from './utils/ModuleWrapper';
 const CheckStoreCapability = (): React.ReactElement =>
   ApiWithoutInput({
     name: 'store_isSupported',
-    title: 'Check Stored Capability',
-    onClick: async () => `Stored module ${store.isSupported() ? 'is' : 'is not'} supported`,
+    title: 'Check Store Capability',
+    onClick: async () => `Store module ${store.isSupported() ? 'is' : 'is not'} supported`,
   });
 
 const OpenStoreExperienceHandler = (): React.ReactElement =>
@@ -29,7 +29,7 @@ const OpenStoreExperienceHandler = (): React.ReactElement =>
 
 const StoredAPIs = (): ReactElement => (
   <>
-    <ModuleWrapper title="Stored">
+    <ModuleWrapper title="Store">
       <CheckStoreCapability />
       <OpenStoreExperienceHandler />
     </ModuleWrapper>
