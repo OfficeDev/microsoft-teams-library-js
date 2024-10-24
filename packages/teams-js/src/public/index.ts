@@ -46,7 +46,7 @@ export { EmailAddress } from './emailAddress';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
 export * as chat from './chat';
-//export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
+export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
 export { dialog } from './dialog';
 export { nestedAppAuth } from './nestedAppAuth';
