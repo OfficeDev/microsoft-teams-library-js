@@ -151,9 +151,18 @@ export interface AppInfo {
   iconPositionVertical?: number;
 
   /**
-   * Time when the user clicked on the tab
+   * Time when the user clicked on the tab using the date.
+   *
+   * For measuring elapsed time between the moment the user click the tab, use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead as it uses the performance timer API.
    */
   userClickTime?: number;
+
+  /**
+   * Time when the user click on the app by using the performance timer API. Useful for measuring elapsed time accurately.
+   *
+   * For displaying the time when the user clicked on the app, please use {@link app.AppInfo.userClickTime | app.Context.app.userClickTime} as it uses the date.
+   */
+  userClickTimeV2?: number;
 
   /**
    * The ID of the parent message from which this task module was launched.
@@ -765,6 +774,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       osLocaleInfo: legacyContext.osLocaleInfo,
       parentMessageId: legacyContext.parentMessageId,
       userClickTime: legacyContext.userClickTime,
+      userClickTimeV2: legacyContext.userClickTimeV2,
       userFileOpenPreference: legacyContext.userFileOpenPreference,
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,

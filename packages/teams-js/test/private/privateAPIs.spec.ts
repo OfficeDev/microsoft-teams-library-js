@@ -358,6 +358,7 @@ describe('AppSDK-privateAPIs', () => {
       appLaunchId: 'appLaunchId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      userClickTimeV2: 1001,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
       userFileOpenPreference: FileOpenPreference.Web,
     };
