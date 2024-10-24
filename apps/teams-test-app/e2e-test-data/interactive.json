@@ -1,6 +1,6 @@
 {
   "name": "Interactive",
-  "version": "experimental/interactive",
+  "platforms": "Web",
   "testUrlParams": [["frameContext", "sidePanel"]],
   "testCases": [
     {
