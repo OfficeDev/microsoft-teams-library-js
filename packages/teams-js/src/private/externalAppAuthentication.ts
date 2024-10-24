@@ -132,7 +132,7 @@ export namespace externalAppAuthentication {
     type: string; // This must be "Action.Execute"
     id: string; // The unique identifier associated with the action
     verb: string; // The card author defined verb associated with the action
-    data: string | Record<string, unknown>; // This must be primitive or plain object
+    data: string | Record<string, unknown>; // This must be primitive (except symbol type) or plain object
   }
 
   /**
