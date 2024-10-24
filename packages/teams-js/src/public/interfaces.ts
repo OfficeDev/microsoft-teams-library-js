@@ -707,9 +707,21 @@ export interface Context {
    * @deprecated
    * As of TeamsJS v2.0.0, please use {@link app.AppInfo.userClickTime | app.Context.app.userClickTime} instead
    *
-   * Time when the user clicked on the tab
+   * Time when the user clicked on the tab using the date.
+   *
+   * For measuring elapsed time between the moment the user click the tab, use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead as it uses the performance timer API.
    */
   userClickTime?: number;
+
+  /**
+   * @deprecated
+   * As of TeamsJS v2.0.0, please use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead
+   *
+   * Time when the user click on the app by using the performance timer API. Useful for measuring elapsed time accurately.
+   *
+   * For displaying the time when the user clicked on the app, please use {@link app.AppInfo.userClickTime | app.Context.app.userClickTime} as it uses the date.
+   */
+  userClickTimeV2?: number;
 
   /**
    * @deprecated
@@ -1008,7 +1020,7 @@ export interface SdkError {
   errorCode: ErrorCode;
   /**
   Optional description for the error. This may contain useful information for web-app developers.
-  This string will not be localized and is not for end-user consumption. 
+  This string will not be localized and is not for end-user consumption.
   App should not depend on the string content. The exact value may change. This is only for debugging purposes.
   */
   message?: string;
