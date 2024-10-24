@@ -52,7 +52,7 @@ export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
 export { dialog } from './dialog';
 export { nestedAppAuth } from './nestedAppAuth';
-export * as geoLocation from './geolocation/geoLocation';
+export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
 export {
