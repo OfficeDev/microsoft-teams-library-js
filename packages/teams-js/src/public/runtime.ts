@@ -290,6 +290,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly stageView?: {
       readonly self?: {};
     };
+    readonly store?: {};
     readonly teams?: {
       readonly fullTrust?: {
         readonly joinedTeams?: {};
