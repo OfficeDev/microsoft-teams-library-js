@@ -120,7 +120,7 @@ export {
   returnFocus,
 } from './navigation';
 export * as settings from './settings';
-export { tasks } from './tasks';
+export * as tasks from './tasks';
 export * as liveShare from './liveShareHost';
 //It is necessary to export the LiveShareHost class from liveShareHost.ts individually as well
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
