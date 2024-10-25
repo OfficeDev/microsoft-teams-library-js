@@ -70,7 +70,7 @@ export { meeting } from './meeting';
 export * as monetization from './monetization';
 export * as calendar from './calendar';
 export * as mail from './mail';
-export { teamsCore } from './teamsAPIs';
+export * as teamsCore from './teamsAPIs';
 export * as people from './people';
 export { profile } from './profile';
 export { videoEffects } from './videoEffects';
