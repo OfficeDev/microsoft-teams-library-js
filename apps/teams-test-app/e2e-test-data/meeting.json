@@ -35,11 +35,25 @@
     },
     {
       "title": "getMeetingDetailsVerbose API Call - Success",
-      "version": ">2.22.0",
+      "version": ">2.22.0 && <=2.28.0",
+      "hostSdkVersion": {
+        "web": "<= 4.2.2"
+      },
       "type": "callResponse",
       "boxSelector": "#box_getMeetingDetailsVerbose",
       "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
       "expectedTestAppValue": "{\"details\":{\"scheduledStartTime\":\"testStartTime\",\"joinUrl\":\"testJoinUrl\",\"type\":\"oneOnOneCall\",\"originalCaller\":\"testCallerId\",\"dialedEntity\":\"testDnis\",\"trackingId\":\"testTrackingId\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
+    },
+    {
+      "title": "getMeetingDetailsVerbose API Call - Success",
+      "version": ">2.28.0",
+      "hostSdkVersion": {
+        "web": "> 4.2.2"
+      },
+      "type": "callResponse",
+      "boxSelector": "#box_getMeetingDetailsVerbose",
+      "expectedAlertValue": "getMeetingDetails called with shouldGetVerboseDetails: true",
+      "expectedTestAppValue": "{\"details\":{\"scheduledStartTime\":\"testStartTime\",\"joinUrl\":\"testJoinUrl\",\"type\":\"oneOnOneCall\",\"originalCaller\":\"testCallerId\",\"dialedEntity\":\"testDnis\",\"originalCallerInfo\":{\"phoneNumber\":\"1234567890\",\"email\":{\"val\":\"calleremail@somedomain.com\"}},\"dialedEntityInfo\":{\"phoneNumber\":\"1234567890\",\"email\":{\"val\":\"calleeemail@somedomain.com\"}},\"trackingId\":\"testTrackingId\",\"callId\":\"testCallId\"},\"conversation\":{\"id\":\"testConversationId\"},\"organizer\":{\"id\":\"testOrganizerId\",\"tenantId\":\"testTenantId\"}}"
     },
     {
       "title": "getAuthenticationTokenForAnonymousUser API Call - Success",

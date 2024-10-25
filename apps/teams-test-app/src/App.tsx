@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { isTestBackCompat } from './components/utils/isTestBackCompat';
 import { SecondRoute } from './pages/SecondRoute';
-import { TestApp } from './pages/TestApp';
+import { appInitializationTestQueryParameter, TestApp } from './pages/TestApp';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -29,8 +29,9 @@ if (!urlParams.has('customInit') || !urlParams.get('customInit')) {
 // we do it by adding appInitializationTest=true to query string
 if (
   (urlParams.has('customInit') && urlParams.get('customInit')) ||
-  (urlParams.has('appInitializationTest') && urlParams.get('appInitializationTest'))
+  (urlParams.has(appInitializationTestQueryParameter) && urlParams.get(appInitializationTestQueryParameter))
 ) {
+  window.addEventListener('message', handleMessageFromMockedHost);
   console.info('Not calling appInitialization because part of App Initialization Test run');
 } else {
   if (isTestBackCompat()) {
@@ -39,6 +40,35 @@ if (
   } else {
     app.notifyAppLoaded();
     app.notifySuccess();
+  }
+}
+
+function handleMessageFromMockedHost(msg: MessageEvent): void {
+  if (!msg.data) {
+    console.warn('Unrecognized message format received by app, message being ignored. Message: %o', msg);
+    return;
+  }
+  console.log(`Received message from test host: ${JSON.stringify(msg.data)}`);
+  // Handle messages that are correctly formatted and for func values we recognize
+  switch (msg.data) {
+    case 'app.initialize':
+      app.initialize();
+      break;
+    case 'app.notifySuccess':
+      app.notifySuccess();
+      break;
+    case 'app.notifyFailure':
+      app.notifyFailure({ reason: app.FailedReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyExpectedFailure':
+      app.notifyExpectedFailure({ reason: app.ExpectedFailureReason.Other, message: 'Failed on test app on purpose' });
+      break;
+    case 'app.notifyAppLoaded':
+      app.notifyAppLoaded();
+      break;
+    // Add more cases for other API calls as needed
+    default:
+      console.warn('Unknown API call or response:', msg);
   }
 }
 

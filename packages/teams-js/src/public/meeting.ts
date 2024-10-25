@@ -3,6 +3,7 @@ import { doesHandlerExist, registerHandler, removeHandler } from '../internal/ha
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from './constants';
+import { EmailAddress } from './emailAddress';
 import { ErrorCode, SdkError } from './interfaces';
 import { runtime } from './runtime';
 
@@ -97,10 +98,29 @@ export namespace meeting {
   /**
    * @hidden
    * Hide from docs
+   * Data structure to represent call participant identifiers
+   */
+  interface ICallParticipantIdentifiers {
+    /**
+     * Phone number of a caller
+     */
+    phoneNumber?: string;
+
+    /**
+     * Email of a caller
+     */
+    email?: EmailAddress;
+  }
+
+  /**
+   * @hidden
+   * Hide from docs
    * Data structure to represent call details
    */
   export interface ICallDetails extends IMeetingOrCallDetailsBase<CallType> {
     /**
+     * @deprecated please use {@link ICallDetails.originalCallerInfo} instead
+     *
      * @hidden
      * Phone number of a PSTN caller or email of a VoIP caller
      */
@@ -108,9 +128,29 @@ export namespace meeting {
 
     /**
      * @hidden
+     * Object representing the original caller
+     */
+    originalCallerInfo?: ICallParticipantIdentifiers;
+
+    /**
+     * @hidden
+     * Identifier for the current call
+     */
+    callId?: string;
+
+    /**
+     * @deprecated please use {@link ICallDetails.dialedEntityInfo} instead
+     *
+     * @hidden
      * Phone number of a PSTN callee or email of a VoIP callee
      */
     dialedEntity?: never;
+
+    /**
+     * @hidden
+     * Object representing the entity the caller dialed
+     */
+    dialedEntityInfo?: never;
 
     /**
      * @hidden
@@ -665,7 +705,7 @@ export namespace meeting {
 
     if (
       (response.details?.type == CallType.GroupCall || response.details?.type == CallType.OneOnOneCall) &&
-      !response.details.originalCaller
+      !response.details.originalCallerInfo
     ) {
       throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
     }

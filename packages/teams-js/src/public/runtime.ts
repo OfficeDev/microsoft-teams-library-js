@@ -231,6 +231,9 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly chat?: {};
     readonly clipboard?: {};
     readonly conversations?: {};
+    readonly copilot?: {
+      readonly eligibility?: {};
+    };
     readonly dialog?: {
       readonly card?: {
         readonly bot?: {};
@@ -242,7 +245,9 @@ interface IRuntimeV4 extends IBaseRuntime {
       readonly update?: {};
     };
     readonly externalAppAuthentication?: {};
+    readonly externalAppAuthenticationForCEA?: {};
     readonly externalAppCardActions?: {};
+    readonly externalAppCardActionsForCEA?: {};
     readonly externalAppCommands?: {};
     readonly geoLocation?: {
       readonly map?: {};

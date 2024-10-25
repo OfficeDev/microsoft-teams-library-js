@@ -1,8 +1,56 @@
 # Change Log - @microsoft/teams-js
 
-This log was last generated on Wed, 28 Aug 2024 19:31:44 GMT and should not be manually modified.
+This log was last generated on Mon, 21 Oct 2024 18:11:30 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.30.0
+
+Mon, 21 Oct 2024 18:11:30 GMT
+
+### Minor changes
+
+- Updated `copilot.eligibility.getEligibilityInfo` to be async and get the eligibility info from the host if it is not already available.
+
+### Patches
+
+- Updated edgeapi.freya.svc.cloud.microsoft to chatuxmanager.svc.cloud.microsoft.
+- Updated edgeapi endpoint from `edgeapi.svc.cloud.microsoft` to `edgeapi.freya.svc.cloud.microsoft` in valid domains list. Added `work.bing.com` to valid domains list.
+- Clarified usage for `validMessageOrigins` parameter on `app.initialize` in documentation.
+
+## 2.29.0
+
+Thu, 03 Oct 2024 22:51:48 GMT
+
+### Minor changes
+
+- Added support for `externalAppAuthenticationForCEA` capability
+- Added support for `externalAppCardActionsForCEA` capability
+- Added logging for current teamsjs instance and timestamps
+- Added a Rollup built bundle of Teams-JS
+- Added three properties to `ICallDetails`, `originalCallerInfo`, `dialedEntityInfo`, and `callId`, created a new type `ICallParticipantIdentifiers`, and deprecated the `originalCaller` and `dialedEntity` properties
+- Updated `pages.navigateToApp` to now optionally accept a more type-safe input object
+- Added logging for version on startup
+
+### Patches
+
+- Updated logging for messages to be clearer
+- Added `edgeapi.svc.cloud.microsoft` to valid domains list
+- Updated internal app id validation
+- Unified common data models for external card actions into `externalAppCardActions` namespace.
+- Updated types for `externalAppCardActionsForCEA` capability.
+
+## 2.28.0
+
+Tue, 03 Sep 2024 22:19:52 GMT
+
+### Minor changes
+
+- Removed invalid validations for content fields on `IContentResponse` interface
+
+### Patches
+
+- Fixed a bug with `AppEligibilityInformation` that could cause `app.initialize` to fail.
 
 ## 2.27.0
 
@@ -334,7 +382,7 @@ Fri, 03 Mar 2023 19:57:31 GMT
 
 - Updated documentation for `dialog` and `tasks` capabilities
 - Elaborated on various areas of `authentication` documentation
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 
 ## 2.8.0
 
@@ -349,7 +397,7 @@ Wed, 01 Feb 2023 23:22:55 GMT
 
 ### Patches
 
-- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
+- Added @beta tags to `registerBeforeUnloadHandler` and `registerOnLoadHandler` APIs.
 - Updated typedoc version and fixed doc issues raised by it
 - Added documentation for `dialog.submit`
 - Changed user facing documentation associated with `meeting.ts`

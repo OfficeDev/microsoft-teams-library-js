@@ -1,7 +1,0 @@
-{
-  "type": "minor",
-  "comment": "Removed invalid validations for content fields on `IContentResponse` interface",
-  "packageName": "@microsoft/teams-js",
-  "email": "shmayura@microsoft.com",
-  "dependentChangeType": "patch"
-}

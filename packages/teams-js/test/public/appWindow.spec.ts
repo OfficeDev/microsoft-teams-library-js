@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { ChildAppWindow, ParentAppWindow } from '../../src/public';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
 
