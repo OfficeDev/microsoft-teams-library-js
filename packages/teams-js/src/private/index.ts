@@ -35,3 +35,4 @@ export { appEntity } from './appEntity';
 export { teams } from './teams';
 export { videoEffectsEx } from './videoEffectsEx';
 export { hostEntity } from './hostEntity';
+export { store } from './store';
