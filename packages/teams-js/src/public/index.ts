@@ -67,7 +67,7 @@ export * as media from './media';
 export { secondaryBrowser } from './secondaryBrowser';
 export * as location from './location';
 export { meeting } from './meeting';
-export { monetization } from './monetization';
+export * as monetization from './monetization';
 export * as calendar from './calendar';
 export * as mail from './mail';
 export { teamsCore } from './teamsAPIs';
