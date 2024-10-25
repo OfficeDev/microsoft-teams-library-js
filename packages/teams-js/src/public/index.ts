@@ -69,7 +69,7 @@ export * as location from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
 export * as calendar from './calendar';
-export { mail } from './mail';
+export * as mail from './mail';
 export { teamsCore } from './teamsAPIs';
 export { people } from './people';
 export { profile } from './profile';
