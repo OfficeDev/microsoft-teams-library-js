@@ -5,7 +5,7 @@ import {
   notifySuccessHelper,
 } from '../internal/appHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app';
+import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app/app';
 
 /**
  * @deprecated
