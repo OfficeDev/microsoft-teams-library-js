@@ -8,7 +8,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../constants';
 import { AdaptiveCardDialogInfo, DialogInfo } from '../../interfaces';
 import { runtime } from '../../runtime';
 import { DialogSubmitHandler } from '../dialog';
-import * as url from '../url/url';
 import * as bot from './bot';
 
 /**
@@ -22,7 +21,7 @@ import * as bot from './bot';
  * This function cannot be called from inside of a dialog
  *
  * @param adaptiveCardDialogInfo - An object containing the parameters of the dialog module {@link AdaptiveCardDialogInfo}.
- * @param submitHandler - Handler that triggers when a dialog calls the {@linkcode url.submit} function or when the user closes the dialog.
+ * @param submitHandler - Handler that triggers when a dialog fires an [Action.Submit](https://adaptivecards.io/explorer/Action.Submit.html) or when the user closes the dialog.
  *
  * @beta
  */
