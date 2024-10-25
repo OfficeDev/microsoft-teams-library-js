@@ -1,5 +1,5 @@
 import { sendMessageToParent } from '../../../internal/communication';
-import { dialogTelemetryVersionNumber } from '../../../internal/dialogHelpers';
+import { dialogTelemetryVersionNumber, storedMessages } from '../../../internal/dialogHelpers';
 import { registerHandler, removeHandler } from '../../../internal/handlers';
 import { ensureInitialized } from '../../../internal/internalAPIs';
 import { ApiName, getApiVersionTag } from '../../../internal/telemetry';

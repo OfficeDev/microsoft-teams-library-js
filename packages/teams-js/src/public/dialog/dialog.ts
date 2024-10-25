@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { dialogTelemetryVersionNumber } from '../../internal/dialogHelpers';
-import { GlobalVars } from '../../internal/globalVars';
+import { dialogTelemetryVersionNumber, handleDialogMessage } from '../../internal/dialogHelpers';
 import { registerHandler, removeHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, getApiVersionTag } from '../../internal/telemetry';
@@ -62,7 +61,6 @@ export type PostMessageChannel = (message: any) => void;
  * @beta
  */
 export type DialogSubmitHandler = (result: ISdkResponse) => void;
-const storedMessages: string[] = [];
 
 /**
  * @hidden
@@ -82,20 +80,6 @@ export function initialize(): void {
     handleDialogMessage,
     false,
   );
-}
-
-function handleDialogMessage(message: string): void {
-  if (!GlobalVars.frameContext) {
-    // GlobalVars.frameContext is currently not set
-    return;
-  }
-
-  if (GlobalVars.frameContext === FrameContexts.task) {
-    storedMessages.push(message);
-  } else {
-    // Not in task FrameContext, remove 'messageForChild' handler
-    removeHandler('messageForChild');
-  }
 }
 
 /**

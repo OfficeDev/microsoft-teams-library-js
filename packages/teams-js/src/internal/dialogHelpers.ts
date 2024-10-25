@@ -4,11 +4,12 @@
 
 import { ensureInitialized } from '../internal/internalAPIs';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
-import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo } from '../public/interfaces';
 import { dialog } from '../public/dialog/dialog';
+import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo } from '../public/interfaces';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { sendMessageToParent } from './communication';
+import { GlobalVars } from './globalVars';
 import { registerHandler, removeHandler } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 
@@ -126,4 +127,20 @@ export function getDialogInfoFromBotAdaptiveCardDialogInfo(
   const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
   dialogInfo.completionBotId = botAdaptiveCardDialogInfo.completionBotId;
   return dialogInfo;
+}
+
+export const storedMessages: string[] = [];
+
+export function handleDialogMessage(message: string): void {
+  if (!GlobalVars.frameContext) {
+    // GlobalVars.frameContext is currently not set
+    return;
+  }
+
+  if (GlobalVars.frameContext === FrameContexts.task) {
+    storedMessages.push(message);
+  } else {
+    // Not in task FrameContext, remove 'messageForChild' handler
+    removeHandler('messageForChild');
+  }
 }
