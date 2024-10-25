@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../internal/communication';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogHelpers';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -16,7 +17,6 @@ import {
   DialogInfo,
   DialogSize,
   M365ContentAction,
-  TaskInfo,
   UrlDialogInfo,
 } from './interfaces';
 import { runtime } from './runtime';
@@ -25,83 +25,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
-  ensureInitialized(
-    runtime,
-    FrameContexts.content,
-    FrameContexts.sidePanel,
-    FrameContexts.task,
-    FrameContexts.meetingStage,
-  );
-  if (!dialog.update.isSupported()) {
-    throw errorNotSupportedOnPlatform;
-  }
-  sendMessageToParent(apiVersionTag, 'tasks.updateTask', [dimensions]);
-}
-
-export function urlOpenHelper(
-  apiVersionTag: string,
-  urlDialogInfo: UrlDialogInfo,
-  submitHandler?: dialog.DialogSubmitHandler,
-  messageFromChildHandler?: dialog.PostMessageChannel,
-): void {
-  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-  if (!dialog.url.isSupported()) {
-    throw errorNotSupportedOnPlatform;
-  }
-
-  if (messageFromChildHandler) {
-    registerHandler(
-      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_RegisterMessageForParentHandler),
-      'messageForParent',
-      messageFromChildHandler,
-    );
-  }
-  const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(urlDialogInfo);
-  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-    submitHandler?.({ err, result });
-    removeHandler('messageForParent');
-  });
-}
-
-export function botUrlOpenHelper(
-  apiVersionTag: string,
-  urlDialogInfo: BotUrlDialogInfo,
-  submitHandler?: dialog.DialogSubmitHandler,
-  messageFromChildHandler?: dialog.PostMessageChannel,
-): void {
-  ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-  if (!dialog.url.bot.isSupported()) {
-    throw errorNotSupportedOnPlatform;
-  }
-
-  if (messageFromChildHandler) {
-    registerHandler(
-      getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_RegisterMessageForParentHandler),
-      'messageForParent',
-      messageFromChildHandler,
-    );
-  }
-  const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromBotUrlDialogInfo(urlDialogInfo);
-  sendMessageToParent(apiVersionTag, 'tasks.startTask', [dialogInfo], (err: string, result: string | object) => {
-    submitHandler?.({ err, result });
-    removeHandler('messageForParent');
-  });
-}
-
-export function urlSubmitHelper(apiVersionTag: string, result?: string | object, appIds?: string | string[]): void {
-  ensureInitialized(runtime, FrameContexts.task);
-  if (!dialog.url.isSupported()) {
-    throw errorNotSupportedOnPlatform;
-  }
-
-  // Send tasks.completeTask instead of tasks.submitTask message for backward compatibility with Mobile clients
-  sendMessageToParent(apiVersionTag, 'tasks.completeTask', [
-    result,
-    appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
-  ]);
-}
 
 /**
  * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
