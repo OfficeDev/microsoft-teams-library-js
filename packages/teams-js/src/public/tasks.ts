@@ -5,8 +5,8 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ChildAppWindow, IAppWindow } from './appWindow';
 import { FrameContexts, TaskModuleDimension } from './constants';
-import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from './dialog';
-import { dialog } from './dialog';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from './dialog/dialog';
+import { dialog } from './dialog/dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, TaskInfo, UrlDialogInfo } from './interfaces';
 import { runtime } from './runtime';
 

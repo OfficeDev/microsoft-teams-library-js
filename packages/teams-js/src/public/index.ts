@@ -50,7 +50,7 @@ export * as chat from './chat';
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.
 export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
-export { dialog } from './dialog';
+export { dialog } from './dialog/dialog';
 export { nestedAppAuth } from './nestedAppAuth';
 export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';

@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { sendMessageToParent } from '../internal/communication';
-import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogHelpers';
-import { GlobalVars } from '../internal/globalVars';
-import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { isHostAdaptiveCardSchemaVersionUnsupported } from '../internal/utils';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from './constants';
+import { sendMessageToParent } from '../../internal/communication';
+import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../../internal/dialogHelpers';
+import { GlobalVars } from '../../internal/globalVars';
+import { registerHandler, removeHandler } from '../../internal/handlers';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
+import { isHostAdaptiveCardSchemaVersionUnsupported } from '../../internal/utils';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import {
   AdaptiveCardDialogInfo,
   BotAdaptiveCardDialogInfo,
@@ -18,8 +18,8 @@ import {
   DialogSize,
   M365ContentAction,
   UrlDialogInfo,
-} from './interfaces';
-import { runtime } from './runtime';
+} from '../interfaces';
+import { runtime } from '../runtime';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY

@@ -4,7 +4,7 @@
 
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
-import * as dialog from '../public/dialog';
+import * as dialog from '../public/dialog/dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { sendMessageToParent } from './communication';
