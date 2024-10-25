@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { ExternalAppErrorCode } from '../../src/private/constants';
 import { externalAppCommands } from '../../src/private/externalAppCommands';
 import { FrameContexts } from '../../src/public';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';
 import { Utils } from '../utils';
 

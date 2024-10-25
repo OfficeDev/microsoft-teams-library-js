@@ -1,5 +1,5 @@
 import * as AppHelpersFile from '../../src/internal/appHelpers';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import * as appInitialization from '../../src/public/appInitialization';
 import { version } from '../../src/public/version';
 import { Utils } from '../utils';

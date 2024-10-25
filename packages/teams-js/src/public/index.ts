@@ -40,16 +40,19 @@ export {
   TeamInformation,
   UrlDialogInfo,
 } from './interfaces';
-export * as app from './app';
+export * as app from './app/app';
 export { AppId } from './appId';
 export { EmailAddress } from './emailAddress';
 export * as appInstallDialog from './appInstallDialog';
 export * as barCode from './barCode';
-export { chat, OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
+export * as chat from './chat';
+//It is necessary to export the OpenGroupChatRequest and OpenSingleChatRequest interfaces from chat.ts individually as well
+//to keep the named exports so as to not break the existing consumers directly referencing the named exports.
+export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
-export { dialog } from './dialog';
+export * as dialog from './dialog/dialog';
 export { nestedAppAuth } from './nestedAppAuth';
-export { geoLocation } from './geoLocation';
+export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
 export {

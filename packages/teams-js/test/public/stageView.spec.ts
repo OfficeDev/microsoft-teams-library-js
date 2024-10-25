@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ErrorCode } from '../../src/public';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { stageView } from '../../src/public/stageView';

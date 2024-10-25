@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { compareSDKVersions } from '../../src/internal/utils';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import {

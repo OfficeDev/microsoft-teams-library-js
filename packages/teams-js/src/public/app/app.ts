@@ -2,19 +2,19 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as appHelpers from '../internal/appHelpers';
-import { Communication, sendAndUnwrap, uninitializeCommunication } from '../internal/communication';
-import { GlobalVars } from '../internal/globalVars';
-import * as Handlers from '../internal/handlers'; // Conflict with some names
-import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
-import { inServerSideRenderingEnvironment } from '../internal/utils';
-import { prefetchOriginsFromCDN } from '../internal/validOrigins';
-import { messageChannels } from '../private/messageChannels';
-import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from './constants';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo, ResumeContext } from './interfaces';
-import { runtime } from './runtime';
-import { version } from './version';
+import * as appHelpers from '../../internal/appHelpers';
+import { Communication, sendAndUnwrap, uninitializeCommunication } from '../../internal/communication';
+import { GlobalVars } from '../../internal/globalVars';
+import * as Handlers from '../../internal/handlers'; // Conflict with some names
+import { ensureInitializeCalled } from '../../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
+import { inServerSideRenderingEnvironment } from '../../internal/utils';
+import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
+import { messageChannels } from '../../private/messageChannels';
+import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
+import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from '../interfaces';
+import { version } from '../version';
+import * as lifecycle from './lifecycle';
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -151,9 +151,18 @@ export interface AppInfo {
   iconPositionVertical?: number;
 
   /**
-   * Time when the user clicked on the tab
+   * Time when the user clicked on the tab using the date.
+   *
+   * For measuring elapsed time between the moment the user click the tab, use {@link app.AppInfo.userClickTimeV2 | app.Context.app.userClickTimeV2} instead as it uses the performance timer API.
    */
   userClickTime?: number;
+
+  /**
+   * Time when the user click on the app by using the performance timer API. Useful for measuring elapsed time accurately.
+   *
+   * For displaying the time when the user clicked on the app, please use {@link app.AppInfo.userClickTime | app.Context.app.userClickTime} as it uses the date.
+   */
+  userClickTimeV2?: number;
 
   /**
    * The ID of the parent message from which this task module was launched.
@@ -745,64 +754,7 @@ export function openLink(deepLink: string): Promise<void> {
   return appHelpers.openLinkHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_OpenLink), deepLink);
 }
 
-/**
- * A namespace for enabling the suspension or delayed termination of an app when the user navigates away.
- * When an app registers for the registerBeforeSuspendOrTerminateHandler, it chooses to delay termination.
- * When an app registers for both registerBeforeSuspendOrTerminateHandler and registerOnResumeHandler, it chooses the suspension of the app .
- * Please note that selecting suspension doesn't guarantee prevention of background termination.
- * The outcome is influenced by factors such as available memory and the number of suspended apps.
- *
- * @beta
- */
-export namespace lifecycle {
-  /**
-   * Register on resume handler function type
-   *
-   * @param context - Data structure to be used to pass the context to the app.
-   */
-  export type registerOnResumeHandlerFunctionType = (context: ResumeContext) => void;
-
-  /**
-   * Register before suspendOrTerminate handler function type
-   *
-   * @returns void
-   */
-  export type registerBeforeSuspendOrTerminateHandlerFunctionType = () => Promise<void>;
-
-  /**
-   * Registers a handler to be called before the page is suspended or terminated. Once a user navigates away from an app,
-   * the handler will be invoked. App developers can use this handler to save unsaved data, pause sync calls etc.
-   *
-   * @param handler - The handler to invoke before the page is suspended or terminated. When invoked, app can perform tasks like cleanups, logging etc.
-   * Upon returning, the app will be suspended or terminated.
-   *
-   */
-  export function registerBeforeSuspendOrTerminateHandler(
-    handler: registerBeforeSuspendOrTerminateHandlerFunctionType,
-  ): void {
-    if (!handler) {
-      throw new Error('[app.lifecycle.registerBeforeSuspendOrTerminateHandler] Handler cannot be null');
-    }
-    ensureInitialized(runtime);
-    Handlers.registerBeforeSuspendOrTerminateHandler(handler);
-  }
-
-  /**
-   * Registers a handler to be called when the page has been requested to resume from being suspended.
-   *
-   * @param handler - The handler to invoke when the page is requested to be resumed. The app is supposed to navigate to
-   * the appropriate page using the ResumeContext. Once done, the app should then call {@link notifySuccess}.
-   *
-   * @beta
-   */
-  export function registerOnResumeHandler(handler: registerOnResumeHandlerFunctionType): void {
-    if (!handler) {
-      throw new Error('[app.lifecycle.registerOnResumeHandler] Handler cannot be null');
-    }
-    ensureInitialized(runtime);
-    Handlers.registerOnResumeHandler(handler);
-  }
-}
+export { lifecycle };
 
 /**
  * @hidden
@@ -822,6 +774,7 @@ function transformLegacyContextToAppContext(legacyContext: LegacyContext): Conte
       osLocaleInfo: legacyContext.osLocaleInfo,
       parentMessageId: legacyContext.parentMessageId,
       userClickTime: legacyContext.userClickTime,
+      userClickTimeV2: legacyContext.userClickTimeV2,
       userFileOpenPreference: legacyContext.userFileOpenPreference,
       host: {
         name: legacyContext.hostName ? legacyContext.hostName : HostName.teams,

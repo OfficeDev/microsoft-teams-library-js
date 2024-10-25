@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized, locationAPIsRequiredVersion } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { ErrorCode, location, SdkError } from '../../src/public/index';
 import { setUnitializedRuntime } from '../../src/public/runtime';

@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { clipboard } from '../../src/public';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType } from '../../src/public/constants';
 import { ClipboardSupportedMimeType } from '../../src/public/interfaces';
 import { Utils } from '../utils';
