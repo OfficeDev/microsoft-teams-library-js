@@ -1,3 +1,5 @@
+import { liveShare } from '../../dist/umd/MicrosoftTeams';
+
 export * as authentication from './authentication';
 export {
   ChannelType,
@@ -121,6 +123,9 @@ export {
 } from './navigation';
 export * as settings from './settings';
 export { tasks } from './tasks';
-export { liveShare, LiveShareHost } from './liveShareHost';
+export * as liveShare from './liveShareHost';
+//It is necessary to export the LiveShareHost class from liveShareHost.ts individually as well
+//to keep the named exports so as to not break the existing consumers directly referencing the named exports.
+export { LiveShareHost } from './liveShareHost';
 export { marketplace } from './marketplace';
 export { ISerializable } from './serializable.interface';
