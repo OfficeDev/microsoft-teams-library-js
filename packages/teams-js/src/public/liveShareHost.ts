@@ -15,7 +15,6 @@ const interactiveTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2
  *
  * @see LiveShareHost
  */
-
 /**
  * @hidden
  * The meeting roles of a user.
