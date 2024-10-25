@@ -4,7 +4,7 @@
 
 import { ensureInitialized } from '../internal/internalAPIs';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
-import { dialog } from '../public/dialog/dialog';
+import * as dialog from '../public/dialog/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo } from '../public/interfaces';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
