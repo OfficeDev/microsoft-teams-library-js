@@ -64,7 +64,7 @@ export {
 } from './appWindow';
 export * as menus from './menus';
 export * as media from './media';
-export { secondaryBrowser } from './secondaryBrowser';
+export * as secondaryBrowser from './secondaryBrowser';
 export * as location from './location';
 export { meeting } from './meeting';
 export * as monetization from './monetization';
