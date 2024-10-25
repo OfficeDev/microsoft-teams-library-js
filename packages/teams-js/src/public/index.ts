@@ -74,7 +74,7 @@ export { teamsCore } from './teamsAPIs';
 export * as people from './people';
 export { profile } from './profile';
 export { videoEffects } from './videoEffects';
-export { search } from './search';
+export * as search from './search';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
 export { version } from './version';

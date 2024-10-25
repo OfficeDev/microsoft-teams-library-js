@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import * as app from '../../src/public/app/app';
 import { FrameContexts } from '../../src/public/constants';
-import { search } from '../../src/public/search';
+import * as search from '../../src/public/search';
 import { Utils } from '../utils';
 
 const dataError = 'Something went wrong...';
