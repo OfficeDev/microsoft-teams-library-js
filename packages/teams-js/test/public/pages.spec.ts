@@ -3,7 +3,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageResponse } from '../../src/internal/messageObjects';
 import { getGenericOnCompleteHandler } from '../../src/internal/utils';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import {

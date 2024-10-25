@@ -1,0 +1,7 @@
+{
+  "type": "none",
+  "comment": "Fix building in node 22",
+  "packageName": "@microsoft/teams-js",
+  "email": "jcardenasr123@gmail.com",
+  "dependentChangeType": "patch"
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Made `externalAppAuthenticationForCEA.ts` throw `Error` objects instead of `SdkErrors`.",
+  "packageName": "@microsoft/teams-js",
+  "email": "trharris@microsoft.com",
+  "dependentChangeType": "patch"
+}

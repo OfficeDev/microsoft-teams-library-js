@@ -48,7 +48,7 @@ function handleMessageFromMockedHost(msg: MessageEvent): void {
     console.warn('Unrecognized message format received by app, message being ignored. Message: %o', msg);
     return;
   }
-  console.log(`Received message from test host: ${msg.data}`);
+  console.log(`Received message from test host: ${JSON.stringify(msg.data)}`);
   // Handle messages that are correctly formatted and for func values we recognize
   switch (msg.data) {
     case 'app.initialize':

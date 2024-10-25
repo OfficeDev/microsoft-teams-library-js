@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { FrameContexts } from '../../src/public/constants';
 import { ErrorCode } from '../../src/public/interfaces';
 import { ShowProfileRequestInternal } from '../../src/public/profile';

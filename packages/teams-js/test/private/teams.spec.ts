@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { TeamInstanceParameters, teams } from '../../src/private';
-import { app } from '../../src/public';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';

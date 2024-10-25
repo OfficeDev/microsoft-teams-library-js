@@ -1,10 +1,10 @@
+import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from '../internal/appHelpers';
 import { sendMessageToParent } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { registerHandlerHelper } from '../internal/handlers';
 import { ensureInitializeCalled, ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
-import { appInitializeHelper, openLinkHelper, registerOnThemeChangeHandlerHelper } from './app';
 import { FrameContexts } from './constants';
 import {
   Context,

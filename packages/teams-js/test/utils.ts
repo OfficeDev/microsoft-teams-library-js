@@ -6,7 +6,7 @@ import { MessageRequest, SerializedMessageRequest, SerializedMessageResponse } f
 import { NestedAppAuthRequest } from '../src/internal/nestedAppAuthUtils';
 import { UUID as MessageUUID } from '../src/internal/uuidObject';
 import { HostClientType } from '../src/public';
-import { app } from '../src/public/app';
+import * as app from '../src/public/app/app';
 import { applyRuntimeConfig, IBaseRuntime, setUnitializedRuntime } from '../src/public/runtime';
 
 function deserializeMessageRequest(serializedMessage: SerializedMessageRequest): MessageRequest {

@@ -7,7 +7,7 @@ import {
   sendCustomEvent,
   sendCustomMessage,
 } from '../../src/private/privateAPIs';
-import { app } from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { FrameContexts, HostClientType, HostName, TeamType } from '../../src/public/constants';
 import { Context, FileOpenPreference } from '../../src/public/interfaces';
 import { Utils } from '../utils';
@@ -358,6 +358,7 @@ describe('AppSDK-privateAPIs', () => {
       appLaunchId: 'appLaunchId',
       sourceOrigin: 'someOrigin',
       userClickTime: 1000,
+      userClickTimeV2: 1001,
       teamTemplateId: 'com.microsoft.teams.ManageAProject',
       userFileOpenPreference: FileOpenPreference.Web,
     };

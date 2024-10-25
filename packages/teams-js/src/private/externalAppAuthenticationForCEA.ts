@@ -1,4 +1,4 @@
-import { sendAndUnwrap } from '../internal/communication';
+import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { validateId } from '../internal/utils';
@@ -42,20 +42,15 @@ export namespace externalAppAuthenticationForCEA {
 
     validateId(conversationId, new Error('conversation id is not valid.'));
 
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    return callFunctionInHost(
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
+      [appId, conversationId, authTokenRequest.claims, authTokenRequest.silent],
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
       ),
-      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
-      appId.toString(),
-      conversationId,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      externalAppAuthentication.isInvokeError,
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**
@@ -84,22 +79,22 @@ export namespace externalAppAuthenticationForCEA {
     validateId(conversationId, new Error('conversation id is not valid.'));
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const error = await sendAndUnwrap<externalAppAuthentication.InvokeError | undefined>(
+    return callFunctionInHost(
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
+      [
+        appId,
+        conversationId,
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ],
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
       ),
-      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithOauth,
-      appId.toString(),
-      conversationId,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      externalAppAuthentication.isInvokeError,
     );
-    if (error) {
-      throw error;
-    }
   }
 
   /**
@@ -132,27 +127,27 @@ export namespace externalAppAuthenticationForCEA {
     validateOriginalRequestInfo(originalRequestInfo);
 
     // Ask the parent window to open an authentication window with the parameters provided by the caller.
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.InvokeError | externalAppAuthentication.IActionExecuteResponse
+    return callFunctionInHostAndHandleResponse<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
+      [
+        appId,
+        conversationId,
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authenticateParameters.url.href,
+        authenticateParameters.width,
+        authenticateParameters.height,
+        authenticateParameters.isExternal,
+      ],
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
       ),
-      ApiName.ExternalAppAuthenticationForCEA_AuthenticateAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authenticateParameters.url.href,
-      authenticateParameters.width,
-      authenticateParameters.height,
-      authenticateParameters.isExternal,
+      externalAppAuthentication.isInvokeError,
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
-      return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    }
   }
 
   /**
@@ -184,25 +179,25 @@ export namespace externalAppAuthenticationForCEA {
 
     validateOriginalRequestInfo(originalRequestInfo);
 
-    const response = await sendAndUnwrap<
-      externalAppAuthentication.IActionExecuteResponse | externalAppAuthentication.InvokeError
+    return callFunctionInHostAndHandleResponse<
+      externalAppAuthentication.IActionExecuteResponse,
+      externalAppAuthentication.IActionExecuteResponse
     >(
+      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
+      [
+        appId,
+        conversationId,
+        new externalAppAuthentication.SerializableActionExecuteInvokeRequest(originalRequestInfo),
+        authTokenRequest.claims,
+        authTokenRequest.silent,
+      ],
+      new externalAppAuthentication.ActionExecuteResponseHandler(),
       getApiVersionTag(
         externalAppAuthenticationTelemetryVersionNumber,
         ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
       ),
-      ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSOAndResendRequest,
-      appId.toString(),
-      conversationId,
-      originalRequestInfo,
-      authTokenRequest.claims,
-      authTokenRequest.silent,
+      externalAppAuthentication.isInvokeError,
     );
-    if (externalAppAuthentication.isActionExecuteResponse(response)) {
-      return response;
-    } else {
-      throw externalAppAuthentication.isInvokeError(response) ? response : defaultExternalAppError;
-    }
   }
 
   /**
@@ -235,15 +230,4 @@ export namespace externalAppAuthenticationForCEA {
       throw error;
     }
   }
-
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * @beta
-   */
-  const defaultExternalAppError = {
-    errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-    message: 'No valid response received',
-  };
 }
