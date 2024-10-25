@@ -82,7 +82,7 @@ export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export * as call from './call';
 export * as appInitialization from './appInitialization';
-export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
+export * as thirdPartyCloudStorage from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
   enablePrintCapability,
