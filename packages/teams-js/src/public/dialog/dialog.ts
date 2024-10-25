@@ -3,11 +3,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { sendMessageToParent } from '../../internal/communication';
-import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../../internal/dialogHelpers';
+import {
+  botUrlOpenHelper,
+  dialogTelemetryVersionNumber,
+  updateResizeHelper,
+  urlOpenHelper,
+  urlSubmitHelper,
+} from '../../internal/dialogHelpers';
 import { GlobalVars } from '../../internal/globalVars';
 import { registerHandler, removeHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
+import { ApiName, getApiVersionTag } from '../../internal/telemetry';
 import { isHostAdaptiveCardSchemaVersionUnsupported } from '../../internal/utils';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import {
@@ -20,11 +26,9 @@ import {
   UrlDialogInfo,
 } from '../interfaces';
 import { runtime } from '../runtime';
-
-/**
- * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
- */
-const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+import * as update from './update';
+import * as url from './url';
+import * as adaptiveCard from './adaptiveCard';
 
 /**
  * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
@@ -156,116 +160,6 @@ export namespace dialog {
     }
 
     /**
-     * Subcapability that allows communication between the dialog and the parent app.
-     *
-     * @remarks
-     * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
-     *
-     * @beta
-     */
-    export namespace parentCommunication {
-      /**
-       *  Send message to the parent from dialog
-       *
-       * @remarks
-       * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
-       *
-       * @param message - The message to send to the parent
-       *
-       * @beta
-       */
-      export function sendMessageToParentFromDialog(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        message: any,
-      ): void {
-        ensureInitialized(runtime, FrameContexts.task);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-
-        sendMessageToParent(
-          getApiVersionTag(
-            dialogTelemetryVersionNumber,
-            ApiName.Dialog_Url_ParentCommunication_SendMessageToParentFromDialog,
-          ),
-          'messageForParent',
-          [message],
-        );
-      }
-
-      /**
-       *  Send message to the dialog from the parent
-       *
-       * @param message - The message to send
-       *
-       * @beta
-       */
-      export function sendMessageToDialog(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        message: any,
-      ): void {
-        ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-
-        sendMessageToParent(
-          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_ParentCommunication_SendMessageToDialog),
-          'messageForChild',
-          [message],
-        );
-      }
-
-      /**
-       * Register a listener that will be triggered when a message is received from the app that opened the dialog.
-       *
-       * @remarks
-       * This function is only intended to be called from code running within the dialog. Calling it from outside the dialog will have no effect.
-       *
-       * @param listener - The listener that will be triggered.
-       *
-       * @beta
-       */
-      export function registerOnMessageFromParent(listener: PostMessageChannel): void {
-        ensureInitialized(runtime, FrameContexts.task);
-        if (!isSupported()) {
-          throw errorNotSupportedOnPlatform;
-        }
-
-        // We need to remove the original 'messageForChild'
-        // handler since the original does not allow for post messages.
-        // It is replaced by the user specified listener that is passed in.
-        removeHandler('messageForChild');
-        registerHandler(
-          getApiVersionTag(
-            dialogTelemetryVersionNumber,
-            ApiName.Dialog_Url_ParentCommunication_RegisterMessageForChildHandler,
-          ),
-          'messageForChild',
-          listener,
-        );
-        storedMessages.reverse();
-        while (storedMessages.length > 0) {
-          const message = storedMessages.pop();
-          listener(message);
-        }
-      }
-
-      /**
-       * Checks if dialog.url.parentCommunication capability is supported by the host
-       *
-       * @returns boolean to represent whether dialog.url.parentCommunication capability is supported
-       *
-       * @throws Error if {@linkcode app.initialize} has not successfully completed
-       *
-       * @beta
-       */
-      export function isSupported(): boolean {
-        return ensureInitialized(runtime) && !!runtime.supports.dialog?.url?.parentCommunication;
-      }
-    }
-
-    /**
      * Checks if dialog.url module is supported by the host
      *
      * @returns boolean to represent whether dialog.url module is supported
@@ -276,53 +170,6 @@ export namespace dialog {
      */
     export function isSupported(): boolean {
       return ensureInitialized(runtime) && (runtime.supports.dialog && runtime.supports.dialog.url) !== undefined;
-    }
-
-    /**
-     * Namespace to open a dialog that sends results to the bot framework
-     *
-     * @beta
-     */
-    export namespace bot {
-      /**
-       * Allows an app to open a dialog that sends submitted data to a bot.
-       *
-       * @param botUrlDialogInfo - An object containing the parameters of the dialog module including completionBotId.
-       * @param submitHandler - Handler that triggers when the dialog has been submitted or closed.
-       * @param messageFromChildHandler - Handler that triggers if dialog sends a message to the app.
-       *
-       * @returns a function that can be used to send messages to the dialog.
-       *
-       * @beta
-       */
-      export function open(
-        botUrlDialogInfo: BotUrlDialogInfo,
-        submitHandler?: DialogSubmitHandler,
-        messageFromChildHandler?: PostMessageChannel,
-      ): void {
-        botUrlOpenHelper(
-          getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Url_Bot_Open),
-          botUrlDialogInfo,
-          submitHandler,
-          messageFromChildHandler,
-        );
-      }
-
-      /**
-       * Checks if dialog.url.bot capability is supported by the host
-       *
-       * @returns boolean to represent whether dialog.url.bot is supported
-       *
-       * @throws Error if {@linkcode app.initialize} has not successfully completed
-       *
-       * @beta
-       */
-      export function isSupported(): boolean {
-        return (
-          ensureInitialized(runtime) &&
-          (runtime.supports.dialog && runtime.supports.dialog.url && runtime.supports.dialog.url.bot) !== undefined
-        );
-      }
     }
 
     /**
@@ -549,4 +396,6 @@ export namespace dialog {
       return dialogInfo;
     }
   }
+
+  export { adaptiveCard, url, update };
 }

@@ -4,7 +4,7 @@
 
 import { ensureInitialized } from '../internal/internalAPIs';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
-import * as dialog from '../public/dialog/dialog';
+import { dialog } from '../public/dialog/dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 import { sendMessageToParent } from './communication';
@@ -14,7 +14,7 @@ import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
-const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+export const dialogTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 export function updateResizeHelper(apiVersionTag: string, dimensions: DialogSize): void {
   ensureInitialized(
