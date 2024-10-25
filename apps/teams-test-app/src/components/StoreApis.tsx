@@ -1,4 +1,4 @@
-import { dialog, store } from '@microsoft/teams-js';
+import { store } from '@microsoft/teams-js';
 import { ReactElement } from 'react';
 import React from 'react';
 
