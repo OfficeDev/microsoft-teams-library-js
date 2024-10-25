@@ -1,5 +1,3 @@
-import { liveShare } from '../../dist/umd/MicrosoftTeams';
-
 export * as authentication from './authentication';
 export {
   ChannelType,
@@ -67,7 +65,7 @@ export {
 export { menus } from './menus';
 export { media } from './media';
 export { secondaryBrowser } from './secondaryBrowser';
-export { location } from './location';
+export * as location from './location';
 export { meeting } from './meeting';
 export { monetization } from './monetization';
 export * as calendar from './calendar';
