@@ -9,7 +9,7 @@ import {
   FrameContexts,
   minAdaptiveCardVersion,
 } from '../../src/public/constants';
-import { dialog } from '../../src/public/dialog';
+import * as dialog from '../../src/public/dialog/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
