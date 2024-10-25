@@ -71,7 +71,7 @@ export * as monetization from './monetization';
 export * as calendar from './calendar';
 export * as mail from './mail';
 export { teamsCore } from './teamsAPIs';
-export { people } from './people';
+export * as people from './people';
 export { profile } from './profile';
 export { videoEffects } from './videoEffects';
 export { search } from './search';
