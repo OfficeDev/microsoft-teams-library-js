@@ -51,7 +51,7 @@ export * as chat from './chat';
 export { OpenGroupChatRequest, OpenSingleChatRequest } from './chat';
 export * as clipboard from './clipboard';
 export * as dialog from './dialog/dialog';
-export { nestedAppAuth } from './nestedAppAuth';
+export * as nestedAppAuth from './nestedAppAuth';
 export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
 export { pages } from './pages';
