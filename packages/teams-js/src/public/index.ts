@@ -62,7 +62,7 @@ export {
   onCompleteFunctionType,
   ParentAppWindow,
 } from './appWindow';
-export { menus } from './menus';
+export * as menus from './menus';
 export * as media from './media';
 export { secondaryBrowser } from './secondaryBrowser';
 export * as location from './location';
