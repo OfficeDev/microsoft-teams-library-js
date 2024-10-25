@@ -3,7 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { ensureInitialized } from '../internal/internalAPIs';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
+import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo } from '../public/interfaces';
 import { dialog } from '../public/dialog/dialog';
 import { BotUrlDialogInfo, DialogInfo, DialogSize, UrlDialogInfo } from '../public/interfaces';
 import { runtime } from '../public/runtime';
@@ -91,4 +92,38 @@ export function urlSubmitHelper(apiVersionTag: string, result?: string | object,
     result,
     appIds ? (Array.isArray(appIds) ? appIds : [appIds]) : [],
   ]);
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Convert AdaptiveCardDialogInfo to DialogInfo to send the information to host in {@linkcode adaptiveCard.open} API.
+ *
+ * @internal
+ */
+export function getDialogInfoFromAdaptiveCardDialogInfo(adaptiveCardDialogInfo: AdaptiveCardDialogInfo): DialogInfo {
+  const dialogInfo: DialogInfo = {
+    card: adaptiveCardDialogInfo.card,
+    height: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.height : DialogDimension.Small,
+    width: adaptiveCardDialogInfo.size ? adaptiveCardDialogInfo.size.width : DialogDimension.Small,
+    title: adaptiveCardDialogInfo.title,
+  };
+  return dialogInfo;
+}
+
+/**
+ * @hidden
+ * Hide from docs
+ * --------
+ * Convert BotAdaptiveCardDialogInfo to DialogInfo to send the information to host in {@linkcode adaptiveCard.open} API.
+ *
+ * @internal
+ */
+export function getDialogInfoFromBotAdaptiveCardDialogInfo(
+  botAdaptiveCardDialogInfo: BotAdaptiveCardDialogInfo,
+): DialogInfo {
+  const dialogInfo: DialogInfo = getDialogInfoFromAdaptiveCardDialogInfo(botAdaptiveCardDialogInfo);
+  dialogInfo.completionBotId = botAdaptiveCardDialogInfo.completionBotId;
+  return dialogInfo;
 }

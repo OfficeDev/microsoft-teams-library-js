@@ -1,18 +1,37 @@
-import { sendMessageToParent } from '../../internal/communication';
-import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../../internal/dialogHelpers';
-import { GlobalVars } from '../../internal/globalVars';
-import { registerHandler, removeHandler } from '../../internal/handlers';
+import { dialogTelemetryVersionNumber, updateResizeHelper } from '../../internal/dialogHelpers';
 import { ensureInitialized } from '../../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
-import { isHostAdaptiveCardSchemaVersionUnsupported } from '../../internal/utils';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../constants';
-import {
-  AdaptiveCardDialogInfo,
-  BotAdaptiveCardDialogInfo,
-  BotUrlDialogInfo,
-  DialogInfo,
-  DialogSize,
-  M365ContentAction,
-  UrlDialogInfo,
-} from '../interfaces';
+import { ApiName, getApiVersionTag } from '../../internal/telemetry';
+import { DialogSize } from '../interfaces';
 import { runtime } from '../runtime';
+
+/**
+ * Module to update the dialog
+ *
+ * @beta
+ */
+/**
+ * Update dimensions - height/width of a dialog.
+ *
+ * @param dimensions - An object containing width and height properties.
+ *
+ * @beta
+ */
+export function resize(dimensions: DialogSize): void {
+  updateResizeHelper(getApiVersionTag(dialogTelemetryVersionNumber, ApiName.Dialog_Update_Resize), dimensions);
+}
+
+/**
+ * Checks if dialog.update capability is supported by the host
+ * @returns boolean to represent whether dialog.update capabilty is supported
+ *
+ * @throws Error if {@linkcode app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && runtime.supports.dialog
+    ? runtime.supports.dialog.update
+      ? true
+      : false
+    : false;
+}
