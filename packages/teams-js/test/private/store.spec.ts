@@ -1,7 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { store } from '../../src/private/store';
-import { DialogInfo } from '../../src/public';
-import { app } from '../../src/public/app';
+import { app, DialogInfo } from '../../src/public';
 import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
 import { Utils } from '../utils';
