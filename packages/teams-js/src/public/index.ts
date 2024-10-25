@@ -63,7 +63,7 @@ export {
   ParentAppWindow,
 } from './appWindow';
 export { menus } from './menus';
-export { media } from './media';
+export * as media from './media';
 export { secondaryBrowser } from './secondaryBrowser';
 export * as location from './location';
 export { meeting } from './meeting';

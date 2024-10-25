@@ -1,4 +1,4 @@
-import { media } from '../public/media';
+import * as media from '../public/media';
 import { people } from '../public/people';
 import {
   imageOutputFormatsAPISupportVersion,
