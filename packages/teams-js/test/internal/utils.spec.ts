@@ -584,6 +584,7 @@ describe('utils', () => {
 
     it('should return false for nested structures with non-plain objects', () => {
       expect(isPrimitiveOrPlainObject({ a: [1, 2, new Date()] })).toBe(false);
+      expect(isPrimitiveOrPlainObject({ a: { b: [1, 2, new Map()] } })).toBe(false);
     });
 
     it('should return false for functions', () => {

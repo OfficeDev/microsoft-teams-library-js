@@ -506,7 +506,6 @@ export function validateUuid(id: string | undefined | null): void {
 }
 
 /**
- * @beta
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
