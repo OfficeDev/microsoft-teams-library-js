@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Made the `liveShareHosts`, `location`, `mail`, `marketplace`, media`, `menus`, `monetization`, `nestedAppAuth`, `people`, `search`, `secondaryBrowser`, `tasks`, `teamsAPIs`, and `thirdPartyCloudStorage` files treeshakable",
+  "packageName": "@microsoft/teams-js",
+  "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
