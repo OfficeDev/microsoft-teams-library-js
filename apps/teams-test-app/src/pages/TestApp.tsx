@@ -37,6 +37,7 @@ import PagesConfigAPIs from '../components/PagesConfigAPIs';
 import PagesCurrentAppAPIs from '../components/PagesCurrentAppAPIs';
 import PagesTabsAPIs from '../components/PagesTabsAPIs';
 import PeopleAPIs from '../components/PeopleAPIs';
+import PresenceAPIs from '../components/PresenceAPIs';
 import ChatAPIs from '../components/privateApis/ChatAPIs';
 import CopilotAPIs from '../components/privateApis/CopilotAPIs';
 import ExternalAppAuthenticationAPIs from '../components/privateApis/ExternalAppAuthenticationAPIs';
@@ -95,6 +96,7 @@ export const TestApp: React.FC = () => {
   // List of sections dynamically created from React elements
   const sections = useMemo(
     () => [
+      { name: 'PresenceAPIs', component: <PresenceAPIs /> },
       { name: 'AppAPIs', component: <AppAPIs /> },
       { name: 'AppInitializationAPIs', component: <AppInitializationAPIs /> },
       { name: 'AppInstallDialogAPIs', component: <AppInstallDialogAPIs /> },

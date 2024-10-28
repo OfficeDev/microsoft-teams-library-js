@@ -365,4 +365,6 @@ export const enum ApiName {
   VisualMedia_Image_RetrieveImages = 'visualMedia.image.retrieveImages',
   VisualMedia_RequestPermission = 'visualMedia.requestPermission',
   WebStorage_IsWebStorageClearedOnUserLogOut = 'webStorage.isWebStorageClearedOnUserLogOut',
+  Presence_GetPresence = 'presence.getPresence',
+  Presence_SetPresence = 'presence.setPresence',
 }
