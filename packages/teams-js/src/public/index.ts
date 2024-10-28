@@ -64,17 +64,17 @@ export {
 } from './appWindow';
 export * as menus from './menus';
 export * as media from './media';
-export { secondaryBrowser } from './secondaryBrowser';
+export * as secondaryBrowser from './secondaryBrowser';
 export * as location from './location';
 export * as meeting from './meeting/meeting';
 export * as monetization from './monetization';
 export * as calendar from './calendar';
 export * as mail from './mail';
-export { teamsCore } from './teamsAPIs';
+export * as teamsCore from './teamsAPIs';
 export * as people from './people';
 export * as profile from './profile';
 export { videoEffects } from './videoEffects';
-export { search } from './search';
+export * as search from './search';
 export { sharing } from './sharing';
 export { stageView } from './stageView';
 export { version } from './version';
@@ -82,7 +82,7 @@ export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
 export * as call from './call';
 export * as appInitialization from './appInitialization';
-export { thirdPartyCloudStorage } from './thirdPartyCloudStorage';
+export * as thirdPartyCloudStorage from './thirdPartyCloudStorage';
 export {
   callbackFunctionType,
   enablePrintCapability,
@@ -120,7 +120,7 @@ export {
   returnFocus,
 } from './navigation';
 export * as settings from './settings';
-export { tasks } from './tasks';
+export * as tasks from './tasks';
 export * as liveShare from './liveShareHost';
 //It is necessary to export the LiveShareHost class from liveShareHost.ts individually as well
 //to keep the named exports so as to not break the existing consumers directly referencing the named exports.

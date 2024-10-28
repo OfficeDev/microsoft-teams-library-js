@@ -7,8 +7,8 @@ import {
   validateSelectMediaInputs,
   validateViewImagesInput,
 } from '../../src/internal/mediaUtil';
-import { media } from '../../src/public/media';
-import { people } from '../../src/public/people';
+import * as media from '../../src/public/media';
+import * as people from '../../src/public/people';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with

@@ -1,5 +1,5 @@
 import * as media from '../public/media';
-import { people } from '../public/people';
+import * as people from '../public/people';
 import {
   imageOutputFormatsAPISupportVersion,
   nonFullScreenVideoModeAPISupportVersion,
