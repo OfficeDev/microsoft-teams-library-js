@@ -76,7 +76,7 @@ export * as profile from './profile';
 export { videoEffects } from './videoEffects';
 export * as search from './search';
 export * as sharing from './sharing/sharing';
-export { stageView } from './stageView';
+export * as stageView from './stageView/stageView';
 export { version } from './version';
 export { visualMedia } from './visualMedia';
 export { webStorage } from './webStorage';
