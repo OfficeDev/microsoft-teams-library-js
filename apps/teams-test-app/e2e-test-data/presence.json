@@ -1,0 +1,75 @@
+{
+  "name": "Presence",
+  "version": ">2.0.0-beta.0",
+  "platforms": "*",
+  "checkIsSupported": {
+    "version": ">2.0.0-beta.3"
+  },
+  "featureTests": [
+    {
+      "feature": {
+        "id": "getPresence",
+        "version": 1
+      },
+      "testCases": [
+        {
+          "title": "getPresence API Call - Success",
+          "type": "callResponse",
+          "boxSelector": "#box_getPresence",
+          "inputValue": {
+            "upn": "user@contoso.com"
+          },
+          "expectedAlertValue": "getPresence called for user: user@contoso.com",
+          "expectedTestAppValue": "{\"status\":\"Available\",\"customMessage\":\"Mock presence status\"}"
+        },
+        {
+          "title": "getPresence API Call - Invalid UPN",
+          "type": "callResponse",
+          "boxSelector": "#box_getPresence",
+          "inputValue": {
+            "upn": ""
+          },
+          "expectedTestAppValue": "Error: Error: UPN is required"
+        }
+      ]
+    },
+    {
+      "feature": {
+        "id": "setPresence",
+        "version": 1
+      },
+      "testCases": [
+        {
+          "title": "setPresence API Call - Success",
+          "type": "callResponse",
+          "boxSelector": "#box_setPresence",
+          "inputValue": {
+            "status": "Busy",
+            "customMessage": "In a meeting"
+          },
+          "expectedAlertValue": "setPresence called with status: Busy and message: In a meeting",
+          "expectedTestAppValue": "Presence set successfully"
+        },
+        {
+          "title": "setPresence API Call - Success without custom message",
+          "type": "callResponse",
+          "boxSelector": "#box_setPresence",
+          "inputValue": {
+            "status": "Available"
+          },
+          "expectedAlertValue": "setPresence called with status: Available and message: none",
+          "expectedTestAppValue": "Presence set successfully"
+        },
+        {
+          "title": "setPresence API Call - Invalid Status",
+          "type": "callResponse",
+          "boxSelector": "#box_setPresence",
+          "inputValue": {
+            "status": "InvalidStatus"
+          },
+          "expectedTestAppValue": "Error: Error: Invalid status value"
+        }
+      ]
+    }
+  ]
+}
