@@ -75,7 +75,7 @@ export * as people from './people';
 export * as profile from './profile';
 export { videoEffects } from './videoEffects';
 export * as search from './search';
-export { sharing } from './sharing';
+export * as sharing from './sharing/sharing';
 export { stageView } from './stageView';
 export { version } from './version';
 export { visualMedia } from './visualMedia';
