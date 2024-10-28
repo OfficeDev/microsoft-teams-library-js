@@ -1,6 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as app from '../../src/public/app/app';
-import { liveShare, LiveShareHost } from '../../src/public/liveShareHost';
+import * as liveShare from '../../src/public/liveShareHost';
+import { LiveShareHost } from '../../src/public/liveShareHost';
 import { setUnitializedRuntime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 

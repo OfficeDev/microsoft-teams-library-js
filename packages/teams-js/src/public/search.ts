@@ -18,32 +18,31 @@ const searchTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * This functionality is in Beta.
  * @beta
  */
-export namespace search {
-  const onChangeHandlerName = 'search.queryChange';
-  const onClosedHandlerName = 'search.queryClose';
-  const onExecutedHandlerName = 'search.queryExecute';
+const onChangeHandlerName = 'search.queryChange';
+const onClosedHandlerName = 'search.queryClose';
+const onExecutedHandlerName = 'search.queryExecute';
 
-  /**
-   * This interface contains information pertaining to the contents of the host M365 application's search box
-   *
-   * @beta
-   */
-  export interface SearchQuery {
-    /** The current search term in the host search experience */
-    searchTerm: string;
+/**
+ * This interface contains information pertaining to the contents of the host M365 application's search box
+ *
+ * @beta
+ */
+export interface SearchQuery {
+  /** The current search term in the host search experience */
+  searchTerm: string;
 
-    /** Timestamp sequence value to ensure messages are processed in correct order / combine them. */
-    timestamp: number;
-  }
+  /** Timestamp sequence value to ensure messages are processed in correct order / combine them. */
+  timestamp: number;
+}
 
-  /**
-   * This type will store the SearchQuery and allow other logic to be made inside the handler.
-   *
-   * @beta
-   */
-  export type SearchQueryHandler = (query: SearchQuery) => void;
+/**
+ * This type will store the SearchQuery and allow other logic to be made inside the handler.
+ *
+ * @beta
+ */
+export type SearchQueryHandler = (query: SearchQuery) => void;
 
-  /**
+/**
    * Allows the caller to register for various events fired by the host search experience.
    * Calling this function indicates that your application intends to plug into the host's search box and handle search events,
    * when the user is actively using your page/tab.
@@ -84,89 +83,88 @@ export namespace search {
    *
    * @beta
    */
-  export function registerHandlers(
-    onClosedHandler: SearchQueryHandler,
-    onExecuteHandler: SearchQueryHandler,
-    onChangeHandler?: SearchQueryHandler,
-  ): void {
-    ensureInitialized(runtime, FrameContexts.content);
+export function registerHandlers(
+  onClosedHandler: SearchQueryHandler,
+  onExecuteHandler: SearchQueryHandler,
+  onChangeHandler?: SearchQueryHandler,
+): void {
+  ensureInitialized(runtime, FrameContexts.content);
 
-    if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
-    }
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
 
+  registerHandler(
+    getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnClosedHandler),
+    onClosedHandlerName,
+    onClosedHandler,
+  );
+  registerHandler(
+    getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecutedHandler),
+    onExecutedHandlerName,
+    onExecuteHandler,
+  );
+  if (onChangeHandler) {
     registerHandler(
-      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnClosedHandler),
-      onClosedHandlerName,
-      onClosedHandler,
+      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnChangeHandler),
+      onChangeHandlerName,
+      onChangeHandler,
     );
-    registerHandler(
-      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnExecutedHandler),
-      onExecutedHandlerName,
-      onExecuteHandler,
-    );
-    if (onChangeHandler) {
-      registerHandler(
-        getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_RegisterOnChangeHandler),
-        onChangeHandlerName,
-        onChangeHandler,
-      );
-    }
   }
+}
 
-  /**
-   * Allows the caller to unregister for all events fired by the host search experience. Calling
-   * this function will cause your app to stop appearing in the set of search scopes in the hosts
-   *
-   * @beta
-   */
-  export function unregisterHandlers(): void {
+/**
+ * Allows the caller to unregister for all events fired by the host search experience. Calling
+ * this function will cause your app to stop appearing in the set of search scopes in the hosts
+ *
+ * @beta
+ */
+export function unregisterHandlers(): void {
+  ensureInitialized(runtime, FrameContexts.content);
+
+  if (!isSupported()) {
+    throw errorNotSupportedOnPlatform;
+  }
+  // This should let the host know to stop making the app scope show up in the search experience
+  // Can also be used to clean up handlers on the host if desired
+  sendMessageToParent(
+    getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_UnregisterHandlers),
+    'search.unregister',
+  );
+  removeHandler(onChangeHandlerName);
+  removeHandler(onClosedHandlerName);
+  removeHandler(onExecutedHandlerName);
+}
+
+/**
+ * Checks if search capability is supported by the host
+ * @returns boolean to represent whether the search capability is supported
+ *
+ * @throws Error if {@link app.initialize} has not successfully completed
+ *
+ * @beta
+ */
+export function isSupported(): boolean {
+  return ensureInitialized(runtime) && runtime.supports.search ? true : false;
+}
+
+/**
+ * Clear the host M365 application's search box
+ *
+ * @beta
+ */
+export function closeSearch(): Promise<void> {
+  return new Promise<void>((resolve) => {
     ensureInitialized(runtime, FrameContexts.content);
-
     if (!isSupported()) {
-      throw errorNotSupportedOnPlatform;
+      throw new Error('Not supported');
     }
-    // This should let the host know to stop making the app scope show up in the search experience
-    // Can also be used to clean up handlers on the host if desired
-    sendMessageToParent(
-      getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_UnregisterHandlers),
-      'search.unregister',
+
+    resolve(
+      sendAndHandleStatusAndReason(
+        getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_CloseSearch),
+        'search.closeSearch',
+      ),
     );
-    removeHandler(onChangeHandlerName);
-    removeHandler(onClosedHandlerName);
-    removeHandler(onExecutedHandlerName);
-  }
-
-  /**
-   * Checks if search capability is supported by the host
-   * @returns boolean to represent whether the search capability is supported
-   *
-   * @throws Error if {@link app.initialize} has not successfully completed
-   *
-   * @beta
-   */
-  export function isSupported(): boolean {
-    return ensureInitialized(runtime) && runtime.supports.search ? true : false;
-  }
-
-  /**
-   * Clear the host M365 application's search box
-   *
-   * @beta
-   */
-  export function closeSearch(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      ensureInitialized(runtime, FrameContexts.content);
-      if (!isSupported()) {
-        throw new Error('Not supported');
-      }
-
-      resolve(
-        sendAndHandleStatusAndReason(
-          getApiVersionTag(searchTelemetryVersionNumber, ApiName.Search_CloseSearch),
-          'search.closeSearch',
-        ),
-      );
-    });
-  }
+  });
 }
