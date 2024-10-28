@@ -5,7 +5,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequest } from '../../src/internal/messageObjects';
 import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMonitor';
 import { videoEffectsEx } from '../../src/private/videoEffectsEx';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { videoEffects } from '../../src/public/videoEffects';
 import { Utils } from '../utils';

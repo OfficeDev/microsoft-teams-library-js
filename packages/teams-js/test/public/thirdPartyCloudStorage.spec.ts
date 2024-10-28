@@ -2,7 +2,7 @@ import * as communicationModule from '../../src/internal/communication';
 import * as decodeAttachmentModule from '../../src/internal/mediaUtil';
 import { ErrorCode, SdkError } from '../../src/public';
 import { FrameContexts, HostClientType } from '../../src/public/constants';
-import { thirdPartyCloudStorage } from '../../src/public/thirdPartyCloudStorage';
+import * as thirdPartyCloudStorage from '../../src/public/thirdPartyCloudStorage';
 import { Utils } from '../utils';
 
 describe('thirdPartyCloudStorage', () => {

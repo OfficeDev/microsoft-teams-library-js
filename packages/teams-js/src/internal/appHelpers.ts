@@ -10,11 +10,11 @@ import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigin
 import { getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } from '../internal/utils';
-import * as app from '../public/app';
+import * as app from '../public/app/app';
 import * as authentication from '../public/authentication';
 import { FrameContexts } from '../public/constants';
-import { dialog } from '../public/dialog';
-import { menus } from '../public/menus';
+import * as dialog from '../public/dialog/dialog';
+import * as menus from '../public/menus';
 import { pages } from '../public/pages';
 import {
   applyRuntimeConfig,

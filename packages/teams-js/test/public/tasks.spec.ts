@@ -1,10 +1,10 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import { minAdaptiveCardVersion, TaskModuleDimension } from '../../src/public/constants';
 import { FrameContexts } from '../../src/public/constants';
 import { TaskInfo } from '../../src/public/interfaces';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { tasks } from '../../src/public/tasks';
+import * as tasks from '../../src/public/tasks';
 import { Utils } from '../utils';
 
 /* eslint-disable */

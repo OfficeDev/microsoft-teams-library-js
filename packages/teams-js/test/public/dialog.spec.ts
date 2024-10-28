@@ -2,14 +2,14 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { doesHandlerExist } from '../../src/internal/handlers';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
-import * as app from '../../src/public/app';
+import * as app from '../../src/public/app/app';
 import {
   DialogDimension,
   errorNotSupportedOnPlatform,
   FrameContexts,
   minAdaptiveCardVersion,
 } from '../../src/public/constants';
-import { dialog } from '../../src/public/dialog';
+import * as dialog from '../../src/public/dialog/dialog';
 import { AdaptiveCardDialogInfo, BotAdaptiveCardDialogInfo, DialogInfo, DialogSize } from '../../src/public/interfaces';
 import { BotUrlDialogInfo, UrlDialogInfo } from '../../src/public/interfaces';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
