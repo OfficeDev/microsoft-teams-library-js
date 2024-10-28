@@ -37,6 +37,7 @@ interface IRuntimeV1 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly presence?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly bot?: {};
@@ -93,6 +94,7 @@ interface IRuntimeV2 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly presence?: {};
     readonly conversations?: {};
     readonly dialog?: {
       readonly card?: {
@@ -229,6 +231,7 @@ interface IRuntimeV4 extends IBaseRuntime {
     readonly calendar?: {};
     readonly call?: {};
     readonly chat?: {};
+    readonly presence?: {};
     readonly clipboard?: {};
     readonly conversations?: {};
     readonly copilot?: {
@@ -370,6 +373,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
     appEntity: {},
     call: {},
     chat: {},
+    presence: {},
     conversations: {},
     dialog: {
       card: {
@@ -539,7 +543,10 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   // we can just effectively consider them always supported (on the specified platforms)
   '1.0.0': [
     {
-      capability: { pages: { appButton: {}, tabs: {} }, stageView: {} },
+      capability: {
+        pages: { appButton: {}, tabs: {} },
+        stageView: {},
+      },
       hostClientTypes: v1NonMobileHostClientTypes,
     },
   ],
