@@ -1,4 +1,4 @@
-import { profile } from '../public/profile';
+import * as profile from '../public/profile';
 
 /**
  * @hidden
@@ -76,4 +76,27 @@ function validatePersona(persona: profile.Persona): [boolean, string | undefined
   }
 
   return [true, undefined];
+}
+
+/**
+ * Internal representation of a DOMRect suitable for sending via postMessage.
+ */
+type Rectangle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+/**
+ * @beta
+ * @hidden
+ * An internal representation of the showProfile parameters suitable for sending via postMessage.
+ * The hub expects to receive an object of this type.
+ */
+export interface ShowProfileRequestInternal {
+  modality?: profile.Modality;
+  persona: profile.Persona;
+  targetRectangle: Rectangle;
+  triggerType: profile.TriggerType;
 }
