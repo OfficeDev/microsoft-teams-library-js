@@ -5,7 +5,7 @@ import { MessageRequest } from '../../src/internal/messageObjects';
 import { EmailAddress, FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { ErrorCode, SdkError } from '../../src/public/interfaces';
-import { meeting } from '../../src/public/meeting';
+import * as meeting from '../../src/public/meeting/meeting';
 import { Utils } from '../utils';
 
 /* eslint-disable */
