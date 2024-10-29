@@ -1,5 +1,5 @@
 import { validateShowProfileRequest } from '../../src/internal/profileUtil';
-import { profile } from '../../src/public/profile';
+import * as profile from '../../src/public/profile';
 
 /* eslint-disable */
 /* As part of enabling eslint on test files, we need to disable eslint checking on the specific files with

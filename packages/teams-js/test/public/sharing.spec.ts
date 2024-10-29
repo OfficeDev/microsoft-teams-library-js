@@ -11,7 +11,7 @@ import {
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../../src/public/runtime';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { sharing } from '../../src/public/sharing';
+import * as sharing from '../../src/public/sharing/sharing';
 import { Utils } from '../utils';
 
 /* eslint-disable */
