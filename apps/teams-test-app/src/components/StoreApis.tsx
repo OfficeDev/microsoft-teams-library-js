@@ -1,4 +1,4 @@
-import { store } from '@microsoft/teams-js';
+import { AppId, store } from '@microsoft/teams-js';
 import { ReactElement } from 'react';
 import React from 'react';
 
@@ -20,7 +20,7 @@ const StoreAPIs = (): ReactElement => {
     });
 
   const OpenStore = (): ReactElement =>
-    ApiWithTextInput<store.OpenStoreParams>({
+    ApiWithTextInput<{ dialogType: store.StoreDialogType; appId?: string }>({
       name: 'storeOpen',
       title: 'Store Open',
       onClick: {
@@ -30,7 +30,12 @@ const StoreAPIs = (): ReactElement => {
           }
         },
         submit: async (input) => {
-          store.openStoreExperience(input as store.OpenStoreParams);
+          const appId = input.appId === undefined ? undefined : new AppId(input.appId);
+          const openStoreParam = {
+            dialogType: input.dialogType,
+            appId: appId,
+          };
+          store.openStoreExperience(openStoreParam as store.OpenStoreParams | store.OpenAppDetailParams);
           return '';
         },
       },

@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { store } from '../../src/private/store';
-import { app, DialogInfo } from '../../src/public';
-import { DialogDimension, errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { app, AppId } from '../../src/public';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -24,15 +24,15 @@ describe('store', () => {
 
   describe('openStoreExperience', () => {
     const paramFullStore: store.OpenStoreParams = {
-      dialogType: store.StoreDialogTypeEnum.fullStore,
+      dialogType: store.StoreDialogType.fullStore,
     };
-    const respFullStore: DialogInfo = {
-      url: store.StoreUrl.fullStore,
-      height: DialogDimension.Medium,
-      width: DialogDimension.Medium,
+    const paramAppDetail: store.OpenAppDetailParams = {
+      dialogType: store.StoreDialogType.appDetail,
+      appId: new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d'),
     };
-    const paramAppDetailWithoutId: store.OpenStoreParams = {
-      dialogType: store.StoreDialogTypeEnum.appDetail,
+    const argsAppDetail = ['appdetail', '1542629c-01b3-4a6d-8f76-1938b779e48d'];
+    const paramAppDetailWithoutId = {
+      dialogType: store.StoreDialogType.appDetail,
     };
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
@@ -41,29 +41,26 @@ describe('store', () => {
         it(`should throw error when dialog is not supported in ${context} context`, async () => {
           await utils.initializeWithContext(context);
           utils.setRuntimeConfig({ apiVersion: latestRuntimeApiVersion, supports: {} });
-          try {
-            store.openStoreExperience(paramFullStore);
-          } catch (e) {
+          store.openStoreExperience(paramFullStore).catch((e) => {
             expect(e).toEqual(errorNotSupportedOnPlatform);
-          }
+          });
         });
 
         it(`should pass along entire openStoreExperience parameter in ${context} context`, async () => {
           await utils.initializeWithContext(context);
-          store.openStoreExperience(paramFullStore).then(() => {
+          store.openStoreExperience(paramAppDetail).then(() => {
             const openMessage = utils.findMessageByFunc('store.open');
             expect(openMessage).not.toBeNull();
-            expect(openMessage?.args).toEqual([respFullStore]);
+            expect(openMessage?.args).toEqual([argsAppDetail]);
           });
         });
 
         it(`should throw error when trying to open app details but lack app id in ${context} context`, async () => {
           await utils.initializeWithContext(context);
-          try {
-            store.openStoreExperience(paramAppDetailWithoutId);
-          } catch (e) {
-            expect(e).toEqual(store.errorMissingAppId);
-          }
+          // eslint-disable-next-line strict-null-checks/all
+          store.openStoreExperience(paramAppDetailWithoutId as store.OpenAppDetailParams).catch((e) => {
+            expect(e).toEqual(new Error(store.errorMissingAppId));
+          });
         });
       }
     });

@@ -1,9 +1,8 @@
-import { sendMessageToParent } from '../internal/communication';
+import { callFunctionInHost } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { app, DialogDimension, DialogInfo, FrameContexts, UrlDialogInfo } from '../public';
-import { errorNotSupportedOnPlatform } from '../public/constants';
-import { dialog } from '../public/dialog';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
+import { AppId } from '../public/appId';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
 /**
  * @beta
@@ -12,60 +11,56 @@ import { runtime } from '../public/runtime';
  * @internal
  * Limited to Microsoft-internal use
  */
+const StoreVersionTagNum = ApiVersionNumber.V_2;
+const storeLogger = getLogger('store');
 export namespace store {
-  /**
-   * @beta
-   * @hidden
-   * Interface to input open store function parameter
-   *
-   * @param dialogType - the store dialog type
-   * @param appId - if you'd like to open an app detail, make sure append an appId
-   * @param collectionId - if you'd like to open a full store with navigation to a specific collection, make sure append an collectionId
-   * @param userHasCopilotLicense - If you'd like to open a full store specific to copilot, put it's true
-   *
-   * @internal
-   * Limited to Microsoft-internal use
-   */
-  export interface OpenStoreParams {
-    dialogType: StoreDialogTypeEnum;
-    appId?: string;
-    collectionId?: string;
-    userHasCopilotLicense?: boolean;
-  }
   /**
    * @beta
    * @hidden
    * Enum of store dialog type
    *
-   * @enum fullStore - open a fullStore, if a collectionId is specified, it will navigate to the specified one, otherwise no navigation
+   * @enum fullStore - open a fullStore without navigation
    * @enum ICS - open in-context-store
    * @enum appDetail - open detail dialog (DD), make sure an appId appended, otherwise throw error
+   * @enum copilotStore - open a full store with navigation to copilot section
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export enum StoreDialogTypeEnum {
+  export enum StoreDialogType {
     fullStore = 'fullstore',
     ICS = 'ics',
     appDetail = 'appdetail',
+    copilotStore = 'copilotstore',
   }
   /**
    * @beta
    * @hidden
-   * different url for each type of store
+   * Interface of open full store, copilot store and in-context-store function parameter
+   *
+   * @param dialogType - the store dialog type, defined by {@link StoreDialogType}
    *
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const StoreUrl = {
-    fullStore:
-      'https://teams.microsoft.com/extensibility-apps/store/view?language={locale}&metaoshost=office&host=metaos&clienttype=web',
-    ICS: 'https://teams.microsoft.com/extensibility-apps/hostedincontextstore/create?language={locale}&metaoshost=office&host=metaos&clienttype=web',
-    appDetail:
-      'https://teams.microsoft.com/extensibility-apps/appdetails/{appId}/create?language={locale}&metaoshost=office&host=metaos&clienttype=web',
-    collectionStore:
-      'https://teams.microsoft.com/extensibility-apps/store/app:co:{collectionId}?language={locale}&metaoshost=office&host=metaos&clienttype=web',
-  };
+  export interface OpenStoreParams {
+    dialogType: StoreDialogType.fullStore | StoreDialogType.copilotStore | StoreDialogType.ICS;
+  }
+  /**
+   * @beta
+   * @hidden
+   * Interface of open app detail dialog function parameter, make sure app id is appended, otherwise error thrown
+   *
+   * @param dialogType - need to be app detail type, defined by {@link StoreDialogType}
+   * @param appId - app id of the dialog to open
+   *
+   * @internal
+   * Limited to Microsoft-internal use
+   */
+  export interface OpenAppDetailParams {
+    dialogType: StoreDialogType.appDetail;
+    appId: AppId;
+  }
   /**
    * @beta
    * @hidden
@@ -74,33 +69,7 @@ export namespace store {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export const errorMissingAppId = 'Missing App Id';
-  const StoreVersionTagNum = ApiVersionNumber.V_2;
-  function getStoreUrl(openStoreParams: OpenStoreParams): string {
-    const { dialogType, appId, userHasCopilotLicense, collectionId } = openStoreParams;
-    if (dialogType === StoreDialogTypeEnum.fullStore) {
-      if (userHasCopilotLicense) {
-        return StoreUrl.collectionStore.replace('{collectionId}', 'copilotplugins');
-      }
-      if (collectionId !== undefined) {
-        return StoreUrl.collectionStore.replace('{collectionId}', collectionId);
-      }
-      return StoreUrl.fullStore;
-    }
-
-    if (dialogType === StoreDialogTypeEnum.ICS) {
-      return StoreUrl.ICS;
-    }
-
-    if (dialogType === StoreDialogTypeEnum.appDetail) {
-      if (appId === undefined) {
-        throw new Error(errorMissingAppId);
-      }
-      return StoreUrl.appDetail.replace('appId', appId);
-    }
-
-    return StoreUrl.fullStore;
-  }
+  export const errorMissingAppId = 'No App Id present, but AppId needed to open AppDetail store';
   /**
    * @beta
    * @hidden
@@ -111,22 +80,21 @@ export namespace store {
    * @internal
    * Limited to Microsoft-internal use
    */
-  export async function openStoreExperience(openStoreParams: OpenStoreParams): Promise<void> {
+  export async function openStoreExperience(openStoreParams: OpenStoreParams | OpenAppDetailParams): Promise<void> {
     ensureInitialized(runtime, FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage);
-    if (!this.isSupported()) {
+    if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-    const context = await app.getContext();
-    const url: string = getStoreUrl(openStoreParams).replace('{locale}', context.app.locale);
-    const storeDialogInfo: UrlDialogInfo = {
-      url,
-      size: {
-        height: DialogDimension.Medium,
-        width: DialogDimension.Medium,
-      },
-    };
-    const dialogInfo: DialogInfo = dialog.url.getDialogInfoFromUrlDialogInfo(storeDialogInfo);
-    sendMessageToParent(getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open), 'store.open', [dialogInfo]);
+    if (openStoreParams.dialogType === StoreDialogType.appDetail && !(openStoreParams.appId instanceof AppId)) {
+      throw new Error(errorMissingAppId);
+    }
+    return callFunctionInHost(
+      ApiName.Store_Open,
+      [openStoreParams.dialogType, (openStoreParams as OpenAppDetailParams).appId],
+      getApiVersionTag(StoreVersionTagNum, ApiName.Store_Open),
+    ).catch((e) => {
+      storeLogger(e);
+    });
   }
   /**
    * Checks if the store capability is supported by the host
@@ -135,6 +103,6 @@ export namespace store {
    * @throws Error if {@linkcode app.initialize} has not successfully completed
    */
   export function isSupported(): boolean {
-    return ensureInitialized(runtime);
+    return ensureInitialized(runtime) && !!runtime.supports.dialog?.url;
   }
 }
