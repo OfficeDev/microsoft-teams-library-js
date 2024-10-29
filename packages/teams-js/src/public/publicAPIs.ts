@@ -17,7 +17,7 @@ import {
 import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
 import { pages } from './pages';
 import { runtime } from './runtime';
-import { teamsCore } from './teamsAPIs';
+import * as teamsCore from './teamsAPIs';
 
 /**
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY

@@ -13,8 +13,8 @@ import { compareSDKVersions, inServerSideRenderingEnvironment, runWithTimeout } 
 import * as app from '../public/app/app';
 import * as authentication from '../public/authentication';
 import { FrameContexts } from '../public/constants';
-import { dialog } from '../public/dialog';
-import { menus } from '../public/menus';
+import * as dialog from '../public/dialog/dialog';
+import * as menus from '../public/menus';
 import { pages } from '../public/pages';
 import {
   applyRuntimeConfig,
