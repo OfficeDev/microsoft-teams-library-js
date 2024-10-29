@@ -79,7 +79,7 @@ export * as sharing from './sharing/sharing';
 export * as stageView from './stageView/stageView';
 export { version } from './version';
 export * as visualMedia from './visualMedia/visualMedia';
-export { webStorage } from './webStorage';
+export * as webStorage from './webStorage';
 export * as call from './call';
 export * as appInitialization from './appInitialization';
 export * as thirdPartyCloudStorage from './thirdPartyCloudStorage';
