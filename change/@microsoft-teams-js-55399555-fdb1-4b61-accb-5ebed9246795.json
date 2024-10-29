@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Made the `videoEffects`, `visualMedia`, and `webStorage` files treeshakable",
+  "comment": "Made the `videoEffects`, `videoEffectsEx`, `visualMedia`, and `webStorage` files treeshakable",
   "packageName": "@microsoft/teams-js",
   "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
   "dependentChangeType": "patch"
