@@ -1,8 +1,9 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { ApiName } from '../../src/internal/telemetry';
+import { clearWebStorageCachedHostNameForTests } from '../../src/internal/webStorageHelpers';
 import { app, Context } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts, HostClientType, HostName } from '../../src/public/constants';
-import { clearWebStorageCachedHostNameForTests, webStorage } from '../../src/public/webStorage';
+import * as webStorage from '../../src/public/webStorage';
 import { Utils } from '../utils';
 
 describe('webStorage', () => {
