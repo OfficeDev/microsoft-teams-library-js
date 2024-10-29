@@ -4,10 +4,6 @@ import { HostName } from '../public/constants';
 
 export let cachedHostName: HostName | null = null;
 
-export function setCachedHostName(hostName: HostName): void {
-  cachedHostName = hostName;
-}
-
 export async function getCachedHostName(): Promise<HostName> {
   if (cachedHostName === null) {
     cachedHostName = (await app.getContext()).app.host.name;
