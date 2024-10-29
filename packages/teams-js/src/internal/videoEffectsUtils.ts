@@ -1,6 +1,6 @@
 import { videoEffectsEx } from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
-import { videoEffects } from '../public/videoEffects';
+import * as videoEffects from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
 import { registerHandler } from './handlers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from './telemetry';
