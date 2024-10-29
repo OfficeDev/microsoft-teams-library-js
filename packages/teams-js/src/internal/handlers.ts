@@ -3,7 +3,7 @@
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { FrameContexts } from '../public/constants';
 import { LoadContext, ResumeContext } from '../public/interfaces';
-import { pages } from '../public/pages/pages';
+import * as pages from '../public/pages/pages';
 import { runtime } from '../public/runtime';
 import { Communication, sendMessageEventToChild, sendMessageToParent } from './communication';
 import { ensureInitialized } from './internalAPIs';

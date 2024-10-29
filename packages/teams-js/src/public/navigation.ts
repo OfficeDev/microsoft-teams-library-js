@@ -1,14 +1,14 @@
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { getGenericOnCompleteHandler } from '../internal/utils';
-import { FrameContexts } from './constants';
-import { TabInstance } from './interfaces';
 import {
   backStackNavigateBackHelper,
   navigateCrossDomainHelper,
   returnFocusHelper,
   tabsNavigateToTabHelper,
-} from './pages/pages';
+} from '../internal/pagesHelpers';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { getGenericOnCompleteHandler } from '../internal/utils';
+import { FrameContexts } from './constants';
+import { TabInstance } from './interfaces';
 import { runtime } from './runtime';
 
 /**

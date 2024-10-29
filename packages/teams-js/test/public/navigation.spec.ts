@@ -2,7 +2,7 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import * as utilFunc from '../../src/internal/utils';
 import { app, FrameContexts } from '../../src/public';
 import { navigateBack, navigateCrossDomain, navigateToTab, returnFocus } from '../../src/public/navigation';
-import * as pagesUtil from '../../src/public/pages';
+import * as pagesUtil from '../../src/internal/pagesHelpers';
 import { Utils } from '../utils';
 
 /* eslint-disable */
