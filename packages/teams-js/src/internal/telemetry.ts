@@ -233,6 +233,7 @@ export const enum ApiName {
   Notifications_ShowNotification = 'notifications.showNotification',
   OtherAppStateChange_Install = 'otherApp.install',
   OtherAppStateChange_UnregisterInstall = 'otherApp.unregisterInstall',
+  OtherAppStateChange_NotifyAppInstall = 'otherApp.notifyAppInstall',
   Pages_AppButton_OnClick = 'pages.appButton.onClick',
   Pages_AppButton_OnHoverEnter = 'pages.appButton.onHoverEnter',
   Pages_AppButton_OnHoverLeave = 'pages.appButton.onHoverLeave',

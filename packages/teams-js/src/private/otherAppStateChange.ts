@@ -1,8 +1,9 @@
-import { sendMessageToParent } from '../internal/communication';
+import { callFunctionInHost, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
+import { AppId } from '../public/appId';
 import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
 
@@ -16,6 +17,7 @@ import { runtime } from '../public/runtime';
  * *while* the developer's application is running. For example, if the developer wants to be notified
  * when another application has been installed.
  */
+const logger = getLogger('otherAppStateChange');
 export namespace otherAppStateChange {
   /**
    * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
@@ -109,6 +111,32 @@ export namespace otherAppStateChange {
     );
 
     removeHandler(ApiName.OtherAppStateChange_Install);
+  }
+
+  /**
+   * @hidden
+   * @beta
+   * @internal
+   * Limited to Microsoft-internal use
+   *
+   * This function should be called by the Store App to notify the host that the
+   * app with the given appId has been installed.
+   *
+   * @throws Error if {@link app.initialize} has not successfully completed or if the platform
+   * does not support the otherAppStateChange capability.
+   */
+  export function notifyAppInstall(appId: AppId): void {
+    if (!isSupported()) {
+      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
+    }
+
+    callFunctionInHost(
+      ApiName.OtherAppStateChange_NotifyAppInstall,
+      [appId.toString()],
+      getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyAppInstall),
+    ).catch((e) => {
+      logger(e);
+    });
   }
 
   /**
