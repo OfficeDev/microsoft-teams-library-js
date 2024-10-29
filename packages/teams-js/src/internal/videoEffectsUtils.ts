@@ -1,4 +1,4 @@
-import { videoEffectsEx } from '../private/videoEffectsEx';
+import * as videoEffectsEx from '../private/videoEffectsEx';
 import { errorNotSupportedOnPlatform } from '../public/constants';
 import * as videoEffects from '../public/videoEffects';
 import { sendMessageToParent } from './communication';
