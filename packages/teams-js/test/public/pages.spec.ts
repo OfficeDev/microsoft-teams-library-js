@@ -2,16 +2,16 @@ import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageResponse } from '../../src/internal/messageObjects';
-import { getGenericOnCompleteHandler } from '../../src/internal/utils';
-import * as app from '../../src/public/app/app';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
 import {
   convertAppNavigationParametersToNavigateToAppParams,
   convertNavigateToAppParamsToAppNavigationParameters,
   isAppNavigationParametersObject,
-  pages,
-} from '../../src/public/pages';
+} from '../../src/internal/pagesHelpers';
+import { getGenericOnCompleteHandler } from '../../src/internal/utils';
+import * as app from '../../src/public/app/app';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
+import { FrameInfo, ShareDeepLinkParameters, TabInstance, TabInstanceParameters } from '../../src/public/interfaces';
+import * as pages from '../../src/public/pages/pages';
 import { latestRuntimeApiVersion } from '../../src/public/runtime';
 import { version } from '../../src/public/version';
 import {

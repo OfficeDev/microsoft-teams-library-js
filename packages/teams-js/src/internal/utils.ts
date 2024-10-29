@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
-import { pages } from '../public/pages';
+import * as pages from '../public/pages/pages';
 
 /**
  * @internal

@@ -54,7 +54,7 @@ export * as dialog from './dialog/dialog';
 export * as nestedAppAuth from './nestedAppAuth';
 export * as geoLocation from './geoLocation/geoLocation';
 export { getAdaptiveCardSchemaVersion } from './adaptiveCards';
-export { pages } from './pages';
+export * as pages from './pages/pages';
 export {
   addEventListnerFunctionType,
   ChildAppWindow,

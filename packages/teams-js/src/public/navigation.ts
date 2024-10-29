@@ -8,7 +8,7 @@ import {
   navigateCrossDomainHelper,
   returnFocusHelper,
   tabsNavigateToTabHelper,
-} from './pages';
+} from './pages/pages';
 import { runtime } from './runtime';
 
 /**

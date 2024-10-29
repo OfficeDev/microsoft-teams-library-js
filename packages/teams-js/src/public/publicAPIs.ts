@@ -14,8 +14,13 @@ import {
   TabInformation,
   TabInstanceParameters,
 } from './interfaces';
-import { getMruTabInstancesHelper, getTabInstancesHelper, setCurrentFrameHelper, shareDeepLinkHelper } from './pages';
-import { pages } from './pages';
+import {
+  getMruTabInstancesHelper,
+  getTabInstancesHelper,
+  setCurrentFrameHelper,
+  shareDeepLinkHelper,
+} from './pages/pages';
+import { pages } from './pages/pages';
 import { runtime } from './runtime';
 import * as teamsCore from './teamsAPIs';
 

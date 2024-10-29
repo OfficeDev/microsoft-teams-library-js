@@ -2,7 +2,7 @@ import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { getGenericOnCompleteHandler } from '../internal/utils';
 import { FrameContexts } from './constants';
-import { configSetConfigHelper, configSetValidityStateHelper, getConfigHelper, pages } from './pages';
+import { configSetConfigHelper, configSetValidityStateHelper, getConfigHelper, pages } from './pages/pages';
 import { runtime } from './runtime';
 
 /**
