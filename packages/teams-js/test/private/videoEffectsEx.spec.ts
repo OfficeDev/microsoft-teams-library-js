@@ -7,7 +7,7 @@ import { VideoPerformanceMonitor } from '../../src/internal/videoPerformanceMoni
 import { videoEffectsEx } from '../../src/private/videoEffectsEx';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
-import { videoEffects } from '../../src/public/videoEffects';
+import * as videoEffects from '../../src/public/videoEffects';
 import { Utils } from '../utils';
 
 Object.assign(global, { TextDecoder, TextEncoder });

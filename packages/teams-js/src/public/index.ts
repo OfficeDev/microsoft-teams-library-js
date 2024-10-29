@@ -73,7 +73,7 @@ export * as mail from './mail';
 export * as teamsCore from './teamsAPIs';
 export * as people from './people';
 export * as profile from './profile';
-export { videoEffects } from './videoEffects';
+export * as videoEffects from './videoEffects';
 export * as search from './search';
 export * as sharing from './sharing/sharing';
 export * as stageView from './stageView/stageView';

@@ -12,7 +12,7 @@ import {
 import { VideoPerformanceMonitor } from '../internal/videoPerformanceMonitor';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-import { videoEffects } from '../public/videoEffects';
+import * as videoEffects from '../public/videoEffects';
 
 /**
  * @hidden
