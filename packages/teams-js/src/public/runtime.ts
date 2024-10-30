@@ -224,7 +224,7 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
-      readonly notifySuccessResponse: boolean;
+      readonly notifySuccessResponse?: {};
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
@@ -370,7 +370,7 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   isLegacyTeams: true,
   supports: {
     app: {
-      notifySuccessResponse: false,
+      notifySuccessResponse: {},
     },
     appInstallDialog: {},
     appEntity: {},
