@@ -81,7 +81,6 @@ export interface MessageRequestWithRequiredProperties extends MessageRequest {
   uuid: MessageUUID;
   /** Deprecated field, is still here for backwards compatibility */
   timestamp: number;
-  monotonicTimestamp: number;
 }
 
 export const serializeMessageRequest = (message: MessageRequest): SerializedMessageRequest => {

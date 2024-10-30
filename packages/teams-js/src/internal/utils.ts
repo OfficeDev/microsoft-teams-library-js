@@ -515,6 +515,6 @@ const supportsPerformanceTimers = !!performance && 'now' in performance;
  * Limited to Microsoft-internal use
  * @returns current timestamp in milliseconds
  */
-export function getCurrentTimestamp(): number {
-  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : new Date().getTime();
+export function getCurrentTimestamp(): number | undefined {
+  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : undefined;
 }

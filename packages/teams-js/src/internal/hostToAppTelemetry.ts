@@ -48,9 +48,9 @@ export default class HostToAppMessageDelayTelemetry {
    * @param logger The logger in case an error occurs.
    * @param endTime The ending time for calculating the elapsed time
    */
-  public static handleOneWayPerformanceMetrics(message: MessageRequest, logger: Debugger, endTime: number): void {
+  public static handleOneWayPerformanceMetrics(message: MessageRequest, logger: Debugger, endTime?: number): void {
     const timestamp = message.monotonicTimestamp;
-    if (!timestamp) {
+    if (!timestamp || !endTime) {
       logger('Unable to send performance metrics for event %s', message.func);
       return;
     }
@@ -75,10 +75,10 @@ export default class HostToAppMessageDelayTelemetry {
     callbackID: MessageUUID,
     message: MessageResponse,
     logger: Debugger,
-    endTime: number,
+    endTime?: number,
   ): void {
     const callbackInformation = HostToAppMessageDelayTelemetry.callbackInformation.get(callbackID);
-    if (!callbackInformation || !message.monotonicTimestamp) {
+    if (!callbackInformation || !message.monotonicTimestamp || !endTime) {
       logger(
         'Unable to send performance metrics for callback %s with arguments %o',
         callbackID.toString(),
