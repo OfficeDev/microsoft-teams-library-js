@@ -27,12 +27,10 @@ const NotifySuccess = (): React.ReactElement =>
     title: 'appInitialization.success',
     onClick: {
       withPromise: async () => {
-        app.notifySuccess();
-        return 'called';
+        return JSON.stringify(await app.notifySuccess());
       },
       withCallback: (setResult) => {
-        appInitialization.notifySuccess();
-        setResult('called');
+        app.notifySuccess().then((v) => setResult(JSON.stringify(v)));
       },
     },
   });

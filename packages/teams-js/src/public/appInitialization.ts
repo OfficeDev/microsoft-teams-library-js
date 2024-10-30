@@ -5,7 +5,14 @@ import {
   notifySuccessHelper,
 } from '../internal/appHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app/app';
+import {
+  ExpectedFailureReason,
+  FailedReason,
+  IExpectedFailureRequest,
+  IFailedRequest,
+  Messages,
+  NotifySuccessResponse,
+} from './app/app';
 
 /**
  * @deprecated
@@ -58,12 +65,12 @@ export function notifyAppLoaded(): void {
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link app.notifySuccess app.notifySuccess(): void} instead.
+ * As of TeamsJS v2.0.0, please use {@link app.notifySuccess app.notifySuccess(): Promise<NotifySuccessResponse>} instead.
  *
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
-export function notifySuccess(): void {
-  notifySuccessHelper(
+export function notifySuccess(): Promise<NotifySuccessResponse> {
+  return notifySuccessHelper(
     getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifySuccess),
   );
 }
