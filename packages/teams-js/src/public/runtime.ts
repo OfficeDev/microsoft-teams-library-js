@@ -224,7 +224,7 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isLegacyTeams?: boolean;
   readonly supports: {
     readonly app?: {
-      notifySuccessResponse: boolean;
+      readonly notifySuccessResponse: boolean;
     };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
