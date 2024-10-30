@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Change the `notifySuccess` function to indicate through a promise when the function finished processing in the host.",
+  "comment": "Changed the `notifySuccess` function to indicate through a promise when the function finished processing in the host.",
   "packageName": "@microsoft/teams-js",
   "email": "jcardenasr123@gmail.com",
   "dependentChangeType": "patch"
