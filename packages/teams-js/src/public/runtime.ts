@@ -223,6 +223,9 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      notifySuccessResponse: boolean;
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};
@@ -366,6 +369,9 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
+    app: {
+      notifySuccessResponse: false,
+    },
     appInstallDialog: {},
     appEntity: {},
     call: {},

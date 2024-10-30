@@ -683,9 +683,8 @@ export function notifyAppLoaded(): void {
 /**
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
-export function notifySuccess(): void {
-  ensureInitializeCalled();
-  appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
+export function notifySuccess(): Promise<appHelpers.NotifySuccessResponse> {
+  return appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
 }
 
 /**
@@ -778,6 +777,7 @@ export function openLink(deepLink: string): Promise<void> {
 }
 
 export { lifecycle };
+export { NotifySuccessResponse } from '../../internal/appHelpers';
 
 /**
  * @hidden
