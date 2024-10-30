@@ -5,14 +5,7 @@ import {
   notifySuccessHelper,
 } from '../internal/appHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import {
-  ExpectedFailureReason,
-  FailedReason,
-  IExpectedFailureRequest,
-  IFailedRequest,
-  Messages,
-  NotifySuccessResponse,
-} from './app/app';
+import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app/app';
 
 /**
  * @deprecated
@@ -64,14 +57,26 @@ export function notifyAppLoaded(): void {
 }
 
 /**
+ * This object will store all promises for dispatching the notify success function message to the host.
+ * Is important to keep a reference to each promise, because if the promise is executed but not stored somewhere
+ * the garbage collector will collect it and may stop the function to finish successfully.
+ */
+const NOTIFY_SUCCESS_PROMISES: Promise<unknown>[] = [];
+
+/**
  * @deprecated
  * As of TeamsJS v2.0.0, please use {@link app.notifySuccess app.notifySuccess(): Promise<NotifySuccessResponse>} instead.
  *
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
-export function notifySuccess(): Promise<NotifySuccessResponse> {
-  return notifySuccessHelper(
-    getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifySuccess),
+export function notifySuccess(): void {
+  const indexOfPromise = NOTIFY_SUCCESS_PROMISES.length;
+  NOTIFY_SUCCESS_PROMISES.push(
+    notifySuccessHelper(
+      getApiVersionTag(appInitializationTelemetryVersionNumber, ApiName.AppInitialization_NotifySuccess),
+    )
+      .then(() => NOTIFY_SUCCESS_PROMISES.splice(indexOfPromise, 1))
+      .catch(() => NOTIFY_SUCCESS_PROMISES.splice(indexOfPromise, 1)),
   );
 }
 

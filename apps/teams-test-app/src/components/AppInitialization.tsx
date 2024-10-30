@@ -30,7 +30,8 @@ const NotifySuccess = (): React.ReactElement =>
         return JSON.stringify(await app.notifySuccess());
       },
       withCallback: (setResult) => {
-        appInitialization.notifySuccess().then((v) => setResult(JSON.stringify(v)));
+        appInitialization.notifySuccess();
+        setResult('called');
       },
     },
   });
