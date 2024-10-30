@@ -1,5 +1,5 @@
-import { sendMessageToParent } from '../../dist/esm/packages/teams-js/dts/internal/communication';
 import { notifyAppLoadedHelper, notifyExpectedFailureHelper, notifyFailureHelper } from '../internal/appHelpers';
+import { sendMessageToParent } from '../internal/communication';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { ExpectedFailureReason, FailedReason, IExpectedFailureRequest, IFailedRequest, Messages } from './app/app';
 import { version } from './version';
