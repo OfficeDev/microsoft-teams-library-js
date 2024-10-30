@@ -5,6 +5,7 @@ import { validateId } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { assertIsArray, assertIsBoolean, assertIsString } from '../typeAssertions';
 import { externalAppAuthentication } from './externalAppAuthentication';
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
@@ -39,8 +40,7 @@ export namespace externalAppAuthenticationForCEA {
     if (!isSupported()) {
       throw errorNotSupportedOnPlatform;
     }
-
-    validateId(conversationId, new Error('conversation id is not valid.'));
+    validateInput(appId, conversationId, authTokenRequest);
 
     return callFunctionInHost(
       ApiName.ExternalAppAuthenticationForCEA_AuthenticateWithSSO,
@@ -213,21 +213,18 @@ export namespace externalAppAuthenticationForCEA {
     return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEA ? true : false;
   }
 
-  /**
-   * @hidden
-   * @internal
-   * Limited to Microsoft-internal use
-   * @beta
-   */
-  function validateOriginalRequestInfo(
-    actionExecuteRequest: externalAppAuthentication.IActionExecuteInvokeRequest,
+  function validateInput(
+    appId: AppId,
+    conversationId: string,
+    authTokenRequest: externalAppAuthentication.AuthTokenRequestParameters,
   ): void {
-    if (actionExecuteRequest.type !== externalAppAuthentication.ActionExecuteInvokeRequestType) {
-      const error: externalAppAuthentication.InvokeError = {
-        errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${externalAppAuthentication.ActionExecuteInvokeRequestType}"`,
-      };
-      throw error;
+    if (!(appId instanceof AppId)) {
+      throw new Error('appId must be an instance of AppId class');
     }
+    assertIsString(conversationId);
+    validateId(conversationId, new Error('conversation id is not valid.'));
+
+    authTokenRequest.claims && assertIsArray<string>(authTokenRequest.claims, assertIsString);
+    authTokenRequest.silent && assertIsBoolean(authTokenRequest.silent);
   }
 }
