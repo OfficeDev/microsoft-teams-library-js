@@ -588,7 +588,7 @@ export const mapTeamsVersionToSupportedCapabilities: Record<string, Array<ICapab
   ],
   '2.0.8': [
     {
-      capability: { sharing: {} },
+      capability: { sharing: {}, nestedAppAuth: {} },
       hostClientTypes: [HostClientType.android, HostClientType.ios],
     },
   ],

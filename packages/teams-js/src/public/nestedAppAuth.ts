@@ -16,5 +16,9 @@ import { runtime } from './runtime';
  * @beta
  */
 export function isNAAChannelRecommended(): boolean {
-  return (ensureInitialized(runtime) && runtime.isNAAChannelRecommended) ?? false;
+  return (
+    (ensureInitialized(runtime) &&
+      (runtime.isNAAChannelRecommended || (runtime.supports.nestedAppAuth ? true : false))) ??
+    false
+  );
 }
