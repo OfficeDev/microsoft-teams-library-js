@@ -87,22 +87,28 @@ export function notifyFailureHelper(apiVersiontag: string, appInitializationFail
   ]);
 }
 
-function supportsNotifySuccessResponse(): boolean {
-  return ensureInitialized(runtime) && !!runtime.supports.app?.notifySuccessResponse;
-}
-
 export async function notifySuccessHelper(apiVersionTag: string): Promise<NotifySuccessResponse> {
+  // The following implementation ensures that notify success can be called before the initialize
+  // call resolves completely, while still accessing the initialized runtime object without
+  // any issue.
+
   // If the initialize already completed, dispatch notify success
   if (GlobalVars.initializeCompleted) {
     return callNotifySuccessInHost(apiVersionTag);
   }
 
-  // If initialize is still waiting for response, dispatch the call after initialize
-  // finishes to have the full runtime object instantiated.
+  // If initialize hasn't been called yet, throw an error to the dev as the app hasn't initialized yet
   if (!GlobalVars.initializePromise) {
     throw new Error(errorLibraryNotInitialized);
   }
+
+  // If initialize is still waiting for response, dispatch the call after initialize
+  // finishes to have the full runtime object instantiated.
   return GlobalVars.initializePromise.then(() => callNotifySuccessInHost(apiVersionTag));
+}
+
+function supportsNotifySuccessResponse(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.app?.notifySuccessResponse;
 }
 
 export async function callNotifySuccessInHost(apiVersionTag: string): Promise<NotifySuccessResponse> {
