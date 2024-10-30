@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  callFunctionInHost,
   callFunctionInHostAndHandleResponse,
   initializeCommunication,
   sendAndHandleStatusAndReason,
@@ -113,7 +112,7 @@ function supportsNotifySuccessResponse(): boolean {
 
 export async function callNotifySuccessInHost(apiVersionTag: string): Promise<NotifySuccessResponse> {
   if (!supportsNotifySuccessResponse()) {
-    callFunctionInHost(app.Messages.Success, [version], apiVersionTag);
+    sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
     return {
       hasFinishedSuccessfully: 'unknown',
     };
