@@ -15,7 +15,7 @@ import * as authentication from '../public/authentication';
 import { FrameContexts } from '../public/constants';
 import * as dialog from '../public/dialog/dialog';
 import * as menus from '../public/menus';
-import { pages } from '../public/pages';
+import * as pages from '../public/pages/pages';
 import {
   applyRuntimeConfig,
   generateVersionBasedTeamsRuntimeConfig,
