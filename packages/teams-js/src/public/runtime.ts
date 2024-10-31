@@ -369,9 +369,6 @@ export const versionAndPlatformAgnosticTeamsRuntimeConfig: Runtime = {
   hostVersionsInfo: teamsMinAdaptiveCardVersion,
   isLegacyTeams: true,
   supports: {
-    app: {
-      notifySuccessResponse: {},
-    },
     appInstallDialog: {},
     appEntity: {},
     call: {},
