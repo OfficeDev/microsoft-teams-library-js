@@ -1,7 +1,7 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
 import { ExternalAppErrorCode } from '../../src/private/constants';
-import { externalAppCommands } from '../../src/private/externalAppCommands';
+import * as externalAppCommands from '../../src/private/externalAppCommands';
 import { FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';

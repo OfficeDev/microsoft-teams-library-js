@@ -2,7 +2,7 @@ import { GlobalVars } from '../../src/internal/globalVars';
 import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequestWithRequiredProperties } from '../../src/internal/messageObjects';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
-import { otherAppStateChange } from '../../src/private/otherAppStateChange';
+import * as otherAppStateChange from '../../src/private/otherAppStateChange';
 import { app, ErrorCode, FrameContexts } from '../../src/public';
 import { Utils } from '../utils';
 
