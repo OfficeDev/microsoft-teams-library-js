@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { remoteCamera } from '../../src/private/remoteCamera';
+import * as remoteCamera from '../../src/private/remoteCamera';
 import { FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';

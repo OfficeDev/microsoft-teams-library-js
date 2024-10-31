@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { appEntity } from '../../src/private/appEntity';
+import * as appEntity from '../../src/private/appEntity';
 import { FrameContexts } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform } from '../../src/public/constants';

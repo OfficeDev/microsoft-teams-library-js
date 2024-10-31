@@ -1,6 +1,6 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
 import { GlobalVars } from '../../src/internal/globalVars';
-import { externalAppAuthentication } from '../../src/private/externalAppAuthentication';
+import * as externalAppAuthentication from '../../src/private/externalAppAuthentication';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { Utils } from '../utils';
