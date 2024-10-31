@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { files } from '../../src/private/files';
+import * as files from '../../src/private/files';
 import { app, ErrorCode, FileOpenPreference, SdkError } from '../../src/public';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
 import { Utils } from '../utils';

@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Made the `appEntity`, `conversations`, `copilot`, `externalAppAuthentication`, `externalAppAuthenticationForCEA`, `externalAppCardActions`, `externalAppCardActionsForCEA`, `externalAppCommands`, `files`, `logs`, `meetingRoom`, `notifications`, `otherAppStateChange`, and `remoteCamera` files treeshakable",
+  "packageName": "@microsoft/teams-js",
+  "email": "109628470+noahdarveau-MSFT@users.noreply.github.com",
+  "dependentChangeType": "patch"
+}
