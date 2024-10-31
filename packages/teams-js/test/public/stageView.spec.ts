@@ -3,7 +3,7 @@ import { ErrorCode } from '../../src/public';
 import * as app from '../../src/public/app/app';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize } from '../../src/public/runtime';
-import { stageView } from '../../src/public/stageView';
+import * as stageView from '../../src/public/stageView/stageView';
 import { Utils } from '../utils';
 
 /* eslint-disable */

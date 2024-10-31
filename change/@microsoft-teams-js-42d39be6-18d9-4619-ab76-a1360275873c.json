@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Added new timestamp and handler for analyzing latencies due to message delays between app and hub.",
+  "packageName": "@microsoft/teams-js",
+  "email": "jcardenasr123@gmail.com",
+  "dependentChangeType": "patch"
+}

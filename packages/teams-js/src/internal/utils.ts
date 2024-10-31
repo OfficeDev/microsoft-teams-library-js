@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
-import { pages } from '../public/pages';
+import * as pages from '../public/pages/pages';
 
 /**
  * @internal
@@ -503,4 +503,18 @@ export function validateUuid(id: string | undefined | null): void {
   if (uuid.validate(id) === false) {
     throw new Error('id must be a valid UUID');
   }
+}
+
+/**
+ * Cache if performance timers are available to avoid redoing this on each function call.
+ */
+const supportsPerformanceTimers = !!performance && 'now' in performance;
+
+/**
+ * @internal
+ * Limited to Microsoft-internal use
+ * @returns current timestamp in milliseconds
+ */
+export function getCurrentTimestamp(): number | undefined {
+  return supportsPerformanceTimers ? performance.now() + performance.timeOrigin : undefined;
 }
