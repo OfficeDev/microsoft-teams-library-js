@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "Added validation for `IActionExecuteInvokeRequest.data` element in `ExternalAppAuthentication` and `ExternalAppAuthenticationForCEA` capabilities. The element can be of type primitive or plain object only",
+  "packageName": "@microsoft/teams-js",
+  "email": "lakhveerkaur@microsoft.com",
+  "dependentChangeType": "patch"
+}
