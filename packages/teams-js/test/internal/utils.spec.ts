@@ -550,6 +550,20 @@ describe('utils', () => {
     });
   });
   describe('isPrimitiveOrPlainObject', () => {
+    type NestedObject = { [key: string]: NestedObject | null };
+    function createNestedObject(depth: number): NestedObject {
+      // Create an empty object to start
+      const current: NestedObject = {};
+      let nestedObject: NestedObject = current;
+
+      // Loop to create a nested structure
+      for (let i = 0; i < depth; i++) {
+        nestedObject[i.toString()] = {}; // Create a new nested object for each depth level
+        nestedObject = nestedObject[i.toString()] as NestedObject; // Move deeper into the nesting
+      }
+
+      return current; // Return the top-level object
+    }
     it('should return true for undefined or null', () => {
       expect(isPrimitiveOrPlainObject(undefined)).toBe(true);
       expect(isPrimitiveOrPlainObject(null)).toBe(true);
@@ -589,6 +603,11 @@ describe('utils', () => {
 
     it('should return false for functions', () => {
       expect(isPrimitiveOrPlainObject(function () {})).toBe(false);
+    });
+
+    it('should return false for objects nested deeper than 1000 levels', () => {
+      expect(isPrimitiveOrPlainObject(createNestedObject(1001))).toBe(false);
+      expect(isPrimitiveOrPlainObject(createNestedObject(1000))).toBe(true);
     });
   });
 });
