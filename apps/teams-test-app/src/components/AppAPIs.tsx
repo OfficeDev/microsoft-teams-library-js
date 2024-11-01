@@ -3,6 +3,7 @@ import {
   Context,
   executeDeepLink,
   getContext,
+  HostToAppPerformanceMetrics,
   registerOnThemeChangeHandler,
   ResumeContext,
 } from '@microsoft/teams-js';
@@ -62,6 +63,20 @@ const OpenLink = (): ReactElement =>
       },
     },
     defaultInput: '"https://teams.microsoft.com/l/call/0/0?users=testUser1,testUser2&withVideo=true&source=test"',
+  });
+
+const RegisterHostToAppPerformanceMetricsHandler = (): ReactElement =>
+  ApiWithoutInput({
+    name: 'registerHostToAppPerformanceMetricsHandler',
+    title: 'Register Host to App performance metrics handler',
+    onClick: async (setResult) => {
+      const handler = (v: HostToAppPerformanceMetrics): void => {
+        console.log(v);
+        setResult(JSON.stringify(v));
+      };
+      app.registerHostToAppPerformanceMetricsHandler(handler);
+      return 'Registered callback!';
+    },
   });
 
 const RegisterOnThemeChangeHandler = (): ReactElement =>
@@ -128,6 +143,7 @@ const AppAPIs = (): ReactElement => (
   <ModuleWrapper title="App">
     <GetContext />
     <OpenLink />
+    <RegisterHostToAppPerformanceMetricsHandler />
     <RegisterOnThemeChangeHandler />
     <RegisterBeforeSuspendOrTerminateHandler />
     <RegisterOnResumeHandler />

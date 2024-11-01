@@ -17,6 +17,7 @@ export interface MessageRequest {
   uuid?: MessageUUID;
   func: string;
   timestamp?: number;
+  monotonicTimestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
   apiVersionTag?: string;
@@ -32,6 +33,7 @@ export interface SerializedMessageRequest {
   uuidAsString?: string;
   func: string;
   timestamp?: number;
+  monotonicTimestamp?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
   apiVersionTag?: string;
@@ -46,6 +48,7 @@ export interface SerializedMessageResponse {
   uuidAsString?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
+  monotonicTimestamp?: number;
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 
@@ -58,6 +61,7 @@ export interface MessageResponse {
   uuid?: MessageUUID;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args?: any[];
+  monotonicTimestamp?: number;
   isPartialResponse?: boolean; // If the message is partial, then there will be more future responses for the given message ID.
 }
 
@@ -75,6 +79,7 @@ export interface MessageResponse {
 export interface MessageRequestWithRequiredProperties extends MessageRequest {
   id: MessageID;
   uuid: MessageUUID;
+  /** Deprecated field, is still here for backwards compatibility */
   timestamp: number;
 }
 

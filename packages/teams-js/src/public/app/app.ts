@@ -10,9 +10,15 @@ import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
 import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
-import { messageChannels } from '../../private/messageChannels';
+import * as messageChannels from '../../private/messageChannels/messageChannels';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
-import { ActionInfo, Context as LegacyContext, FileOpenPreference, LocaleInfo } from '../interfaces';
+import {
+  ActionInfo,
+  Context as LegacyContext,
+  FileOpenPreference,
+  HostToAppPerformanceMetrics,
+  LocaleInfo,
+} from '../interfaces';
 import { version } from '../version';
 import * as lifecycle from './lifecycle';
 
@@ -549,6 +555,11 @@ export interface Context {
 export type themeHandler = (theme: string) => void;
 
 /**
+ * This function is passed to registerHostToAppPerformanceMetricsHandler. It is called every time a response is received from the host with metrics for analyzing message delay. See {@link HostToAppPerformanceMetrics} to see which metrics are passed to the handler.
+ */
+export type HostToAppPerformanceMetricsHandler = (metrics: HostToAppPerformanceMetrics) => void;
+
+/**
  * Checks whether the Teams client SDK has been initialized.
  * @returns whether the Teams client SDK has been initialized.
  */
@@ -717,6 +728,18 @@ export function registerOnThemeChangeHandler(handler: themeHandler): void {
     getApiVersionTag(appTelemetryVersionNumber, ApiName.App_RegisterOnThemeChangeHandler),
     handler,
   );
+}
+
+/**
+ * Registers a function for handling data of host to app message delay.
+ *
+ * @remarks
+ * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.
+ *
+ * @param handler - The handler to invoke when the metrics are available on each function response.
+ */
+export function registerHostToAppPerformanceMetricsHandler(handler: HostToAppPerformanceMetricsHandler): void {
+  Handlers.registerHostToAppPerformanceMetricsHandler(handler);
 }
 
 /**
