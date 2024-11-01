@@ -529,7 +529,11 @@ export function getCurrentTimestamp(): number | undefined {
  * @returns true if the value is a primitive type or a plain object, false otherwise
  *
  */
-export function isPrimitiveOrPlainObject(value: unknown): boolean {
+export function isPrimitiveOrPlainObject(value: unknown, depth: number = 0): boolean {
+  if (depth > 1000) {
+    return false; // Limit recursion depth
+  }
+
   // Check if the value is a primitive type or null
   if (
     typeof value === 'undefined' ||
@@ -544,7 +548,7 @@ export function isPrimitiveOrPlainObject(value: unknown): boolean {
 
   if (Array.isArray(value)) {
     // Check if all elements in the array are serializable
-    return value.every(isPrimitiveOrPlainObject);
+    return value.every((element) => isPrimitiveOrPlainObject(element, depth + 1));
   }
 
   // Check if the value is a plain object
@@ -558,5 +562,5 @@ export function isPrimitiveOrPlainObject(value: unknown): boolean {
   }
 
   // Check all properties of the object recursively
-  return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key]));
+  return Object.keys(value).every((key) => isPrimitiveOrPlainObject(value[key], depth + 1));
 }
