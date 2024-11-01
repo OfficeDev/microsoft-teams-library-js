@@ -120,7 +120,7 @@ steps:
 
   - task: Bash@3
     displayName: 'Generate E2E test report'
-    condition: eq(variables['Build.Reason'], 'PullRequest') # Run E2E only for PR builds temporarily until the iOS E2E issue is resolved.
+    condition: eq(variables['Build.Reason'], 'PullRequest') # Generate E2E test report only for PR builds temporarily until the iOS E2E issue is resolved.
     inputs:
       targetType: inline
       script: |
