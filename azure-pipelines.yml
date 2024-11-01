@@ -196,7 +196,7 @@ extends:
             displayName: 'E2E Tests - Android'
             pool:
               name: Azure Pipelines
-              image: macos-latest
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/android-test.yml@self
@@ -207,7 +207,7 @@ extends:
             displayName: 'E2E Tests - IOS - Plan A'
             pool:
               name: Azure Pipelines
-              image: macos-latest
+              image: macos-latest-internal
               os: macOS
             steps:
               - template: tools/yaml-templates/ios-test.yml@self
