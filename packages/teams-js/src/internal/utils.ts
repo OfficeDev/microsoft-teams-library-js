@@ -525,6 +525,8 @@ export function getCurrentTimestamp(): number | undefined {
  * Limited to Microsoft-internal use
  *
  * Function to check whether the data is a primitive type or a plain object.
+ * Recursion is limited to a maximum depth of 1000 to prevent excessive nesting and potential stack overflow.
+ *
  * @param value The value to check
  * @returns true if the value is a primitive type or a plain object, false otherwise
  *
