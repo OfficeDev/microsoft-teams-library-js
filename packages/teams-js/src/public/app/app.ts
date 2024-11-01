@@ -10,7 +10,7 @@ import { ensureInitializeCalled } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
 import { inServerSideRenderingEnvironment } from '../../internal/utils';
 import { prefetchOriginsFromCDN } from '../../internal/validOrigins';
-import { messageChannels } from '../../private/messageChannels';
+import * as messageChannels from '../../private/messageChannels/messageChannels';
 import { ChannelType, FrameContexts, HostClientType, HostName, TeamType, UserTeamRole } from '../constants';
 import {
   ActionInfo,
