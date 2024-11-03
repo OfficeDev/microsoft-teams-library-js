@@ -1,6 +1,6 @@
 {
   "type": "minor",
-  "comment": "Added store capability that will enable user to open an app store dialog, covering several types of store. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
+  "comment": "Added `store` capability that will enable user to open several types of app store dialogs.. The capability is still awaiting support in one or most host applications. To track availability of this capability across different hosts see https://aka.ms/capmatrix",
   "packageName": "@microsoft/teams-js",
   "email": "yt6520143@163.com",
   "dependentChangeType": "patch"
