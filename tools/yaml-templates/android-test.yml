@@ -51,9 +51,9 @@ steps:
 
   - task: Bash@3
     displayName: 'Install Emulator'
-    # This task is flaky, but when it works it almost always completes in under 5 minutes.
-    # Setting the timeout to 10 minutes so we can fail faster when it fails.
-    timeoutInMinutes: 10
+    # This task is flaky, but when it works it almost always completes in under 10 minutes.
+    # Setting the timeout to 20 minutes so we can fail faster when it fails.
+    timeoutInMinutes: 20
     inputs:
       targetType: inline
       script: 'chmod u+x install_emulator.sh && ./install_emulator.sh'

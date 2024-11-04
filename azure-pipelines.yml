@@ -193,16 +193,16 @@ extends:
                 condition: succeededOrFailed()
 
 # De-tach the tests from pipeline until we figure out why they won't run on macos-latest image
-#          - job: E2ETestAndroid
-#            displayName: 'E2E Tests - Android'
-#            pool:
-#              name: Azure Pipelines
-#              image: internal-macos12
-#              os: macOS
-#            steps:
-#              - template: tools/yaml-templates/android-test.yml@self
-#                parameters:
-#                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+          - job: E2ETestAndroid
+            displayName: 'E2E Tests - Android'
+            pool:
+              name: Azure Pipelines
+              image: macos-14
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
 #
 #          - job: E2ETestIOS
 #            displayName: 'E2E Tests - IOS - Plan A'
