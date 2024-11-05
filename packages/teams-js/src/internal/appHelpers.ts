@@ -2,8 +2,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { initializeCommunication, sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
-import { defaultSDKVersionForCompatCheck } from '../internal/constants';
+import {
+  callFunctionInHostAndHandleResponse,
+  initializeCommunication,
+  sendAndHandleStatusAndReason,
+  sendMessageToParent,
+} from '../internal/communication';
+import { defaultSDKVersionForCompatCheck, errorLibraryNotInitialized } from '../internal/constants';
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitializeCalled, ensureInitialized, processAdditionalValidOrigins } from '../internal/internalAPIs';
@@ -25,6 +30,7 @@ import {
   versionAndPlatformAgnosticTeamsRuntimeConfig,
 } from '../public/runtime';
 import { version } from '../public/version';
+import { SimpleTypeResponseHandler } from './responseHandler';
 
 /**
  * Number of milliseconds we'll give the initialization call to return before timing it out
@@ -32,6 +38,16 @@ import { version } from '../public/version';
 const initializationTimeoutInMs = 60000;
 
 const appLogger = getLogger('app');
+
+/**
+ * The response of the notify success callback.
+ */
+export interface NotifySuccessResponse {
+  /**
+   * It shows if the callback resolved successfully in the host. If the host does not support answering back to the callback, the result is unknown.
+   */
+  hasFinishedSuccessfully: true | 'unknown';
+}
 
 export function appInitializeHelper(apiVersionTag: string, validMessageOrigins?: string[]): Promise<void> {
   if (!inServerSideRenderingEnvironment()) {
@@ -70,8 +86,43 @@ export function notifyFailureHelper(apiVersiontag: string, appInitializationFail
   ]);
 }
 
-export function notifySuccessHelper(apiVersionTag: string): void {
-  sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
+export async function notifySuccessHelper(apiVersionTag: string): Promise<NotifySuccessResponse> {
+  // The following implementation ensures that notify success can be called before the initialize
+  // call resolves completely, while still accessing the initialized runtime object without
+  // any issue.
+
+  // If the initialize already completed, dispatch notify success
+  if (GlobalVars.initializeCompleted) {
+    return callNotifySuccessInHost(apiVersionTag);
+  }
+
+  // If initialize hasn't been called yet, throw an error to the dev as the app hasn't initialized yet
+  if (!GlobalVars.initializePromise) {
+    throw new Error(errorLibraryNotInitialized);
+  }
+
+  // If initialize is still waiting for response, dispatch the call after initialize
+  // finishes to have the full runtime object instantiated.
+  return GlobalVars.initializePromise.then(() => callNotifySuccessInHost(apiVersionTag));
+}
+
+function supportsNotifySuccessResponse(): boolean {
+  return ensureInitialized(runtime) && !!runtime.supports.app?.notifySuccessResponse;
+}
+
+export async function callNotifySuccessInHost(apiVersionTag: string): Promise<NotifySuccessResponse> {
+  if (!supportsNotifySuccessResponse()) {
+    sendMessageToParent(apiVersionTag, app.Messages.Success, [version]);
+    return {
+      hasFinishedSuccessfully: 'unknown',
+    };
+  }
+  return callFunctionInHostAndHandleResponse(
+    app.Messages.Success,
+    [version],
+    new SimpleTypeResponseHandler<undefined>(),
+    apiVersionTag,
+  ).then(() => ({ hasFinishedSuccessfully: true }));
 }
 
 const initializeHelperLogger = appLogger.extend('initializeHelper');
