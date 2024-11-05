@@ -35,7 +35,7 @@ import { SimpleTypeResponseHandler } from './responseHandler';
 /**
  * Number of milliseconds we'll give the initialization call to return before timing it out
  */
-const initializationTimeoutInMs = 5000;
+const initializationTimeoutInMs = 60000;
 
 const appLogger = getLogger('app');
 
