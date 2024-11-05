@@ -20,6 +20,7 @@ parameters:
     default: ['{[A-Z],[a-z],[0-9]}']
 
 jobs:
+  - ${{ each env in split($(AppHostReleaseBranch), ',')}}:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
       # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
       # Sadly ADO does not support regex matching here at this time.
