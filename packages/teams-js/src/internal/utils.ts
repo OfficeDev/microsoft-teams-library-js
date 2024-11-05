@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Buffer } from 'buffer';
+import base64ToString from 'Uint8array-extras';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
@@ -348,14 +348,14 @@ export function base64ToBlob(mimeType: string, base64String: string): Promise<Bl
      *      constructor expects binary data.
      */
     if (mimeType.startsWith('image/')) {
-      const byteCharacters = atob(base64String);
+      const byteCharacters = base64ToString(base64String);
       const byteArray = new Uint8Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteArray[i] = byteCharacters.charCodeAt(i);
       }
       resolve(new Blob([byteArray], { type: mimeType }));
     }
-    const byteCharacters = Buffer.from(base64String, 'base64').toString();
+    const byteCharacters = base64ToString(base64String);
     resolve(new Blob([byteCharacters], { type: mimeType }));
   });
 }

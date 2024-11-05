@@ -140,7 +140,7 @@
     }
   },
   "dependencies": {
-    "skeleton-buffer": "file:./skeleton-buffer",
+    "uint8array-extras": "1.4.0",
     "uuid": "^9.0.1"
   }
 }
