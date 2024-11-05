@@ -20,10 +20,10 @@ parameters:
     default: ['{[A-Z],[a-z],[0-9]}']
   - name: releaseBranch
     type: string
-    default: 'main,release/4.6.0'
+    default: '$(AppHostReleaseBranch)'
 
 jobs:
-  - ${{ each versionBranch in split(parameters.releaseBranch, ',')}}:
+  - ${{ each versionBranch in split($(AppHostReleaseBranch) ',')}}:
       - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
           # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
           # Sadly ADO does not support regex matching here at this time.
