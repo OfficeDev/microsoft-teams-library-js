@@ -41,6 +41,7 @@ jobs:
                   value: 'localScriptTag'
             steps:
               - bash: echo $(parameters.releaseBranch)
+                displayName: 'Testing Variable Gathering'
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
               - template: build-app-host.yml
