@@ -36,9 +36,6 @@ importers:
 
   .:
     dependencies:
-      uint8array-extras:
-        specifier: 1.4.0
-        version: 1.4.0
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -124,9 +121,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.13.1
         version: 7.14.1(eslint@8.57.0)(typescript@4.9.5)
-      babel-jest:
-        specifier: ^29.7.00
-        version: 29.7.0(@babel/core@7.24.7)
       babel-loader:
         specifier: ^9.2.1
         version: 9.2.1(@babel/core@7.24.7)(webpack@5.96.1)
@@ -6383,10 +6377,6 @@ packages:
     resolution: {integrity: sha512-SyVVbcNBCk0dzr9XL/R/ySrmYf0s372K6/hFklzgcp2lBFyXtw4I7BOdDjlLhE1aVqaI/SHWXWmYdlZxuyF38A==}
     engines: {node: '>=0.8.0'}
     hasBin: true
-
-  uint8array-extras@1.4.0:
-    resolution: {integrity: sha512-ZPtzy0hu4cZjv3z5NW9gfKnNLjoz4y6uv4HlelAjDK7sY/xOkKZv9xK/WQpcsBB3jEybChz9DPC2U/+cusjJVQ==}
-    engines: {node: '>=18'}
 
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
@@ -14089,8 +14079,6 @@ snapshots:
 
   uglify-js@3.18.0:
     optional: true
-
-  uint8array-extras@1.4.0: {}
 
   unbox-primitive@1.0.2:
     dependencies:
