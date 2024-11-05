@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { store } from '../../src/private/store';
+import { store } from '../../src/private';
 import { app, AppId } from '../../src/public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../../src/public/constants';
 import { _minRuntimeConfigToUninitialize, latestRuntimeApiVersion } from '../../src/public/runtime';
@@ -36,6 +36,13 @@ describe('store', () => {
     };
 
     const allowedContexts = [FrameContexts.content, FrameContexts.sidePanel, FrameContexts.meetingStage];
+
+    it('store.openStoreExperience should not allow calls before initialization', async () => {
+      await expect(() => store.openStoreExperience(paramFullStore)).rejects.toThrowError(
+        new Error(errorLibraryNotInitialized),
+      );
+    });
+
     Object.values(FrameContexts).forEach((context) => {
       if (allowedContexts.some((allowedContext) => allowedContext === context)) {
         it(`should throw error when dialog is not supported in ${context} context`, async () => {

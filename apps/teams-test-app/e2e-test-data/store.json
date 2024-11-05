@@ -4,6 +4,7 @@
   "checkIsSupported": {
     "domElementName": "checkCapabilityStore"
   },
+  "version": ">2.31.0",
   "testCases": [
     {
       "title": "openStoreExperience API Call - Success",

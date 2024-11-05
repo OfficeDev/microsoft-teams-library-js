@@ -3,7 +3,7 @@ import { DOMMessageEvent } from '../../src/internal/interfaces';
 import { MessageRequestWithRequiredProperties } from '../../src/internal/messageObjects';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../src/internal/telemetry';
 import * as otherAppStateChange from '../../src/private/otherAppStateChange';
-import { app, ErrorCode, FrameContexts } from '../../src/public';
+import { app, AppId, ErrorCode, FrameContexts } from '../../src/public';
 import { Utils } from '../utils';
 
 describe('otherAppStateChange', () => {
@@ -168,6 +168,45 @@ describe('otherAppStateChange', () => {
         });
 
         utils.sendMessage(ApiName.OtherAppStateChange_Install, { appIds: ['123', '456'] });
+      });
+    });
+    describe('notifyAppInstall', () => {
+      const mockAppId = new AppId('1542629c-01b3-4a6d-8f76-1938b779e48d');
+      it('should not allow calls before initialization', () => {
+        expect.assertions(1);
+        expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).toThrowError();
+      });
+
+      Object.values(FrameContexts).forEach((frameContext) => {
+        it(`should throw correct error if called from ${frameContext} frame context but capability is not supported`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: {} });
+
+          expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).toThrowError(
+            ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString(),
+          );
+        });
+        it(`should succeed if called from ${frameContext} frame context and capability is supported`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
+
+          expect(() => otherAppStateChange.notifyAppInstall(mockAppId)).not.toThrowError();
+        });
+      });
+
+      it('should pass the name of the event and correct parameter', async () => {
+        expect.assertions(3);
+        await utils.initializeWithContext(FrameContexts.content);
+        utils.setRuntimeConfig({ apiVersion: 1, supports: { otherAppStateChange: {} } });
+
+        otherAppStateChange.notifyAppInstall(mockAppId);
+        const message = utils.findMessageByFunc(ApiName.OtherAppStateChange_NotifyAppInstall);
+        expect(message?.args).not.toBeUndefined();
+        expect(message?.args?.length).toBe(1);
+        console.log('hangyin message?.args', message?.args);
+        expect(message?.args).toEqual([mockAppId.toString()]);
       });
     });
   });

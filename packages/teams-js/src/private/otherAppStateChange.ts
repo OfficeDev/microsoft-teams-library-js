@@ -1,13 +1,11 @@
 import { callFunctionInHost, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../internal/telemetry';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { isNullOrUndefined } from '../internal/typeCheckUtilities';
 import { AppId } from '../public/appId';
 import { ErrorCode } from '../public/interfaces';
 import { runtime } from '../public/runtime';
-
-const logger = getLogger('otherAppStateChange');
 
 /**
  * @hidden
@@ -114,30 +112,28 @@ export function unregisterAppInstallationHandler(): void {
 }
 
 /**
-   * @hidden
-   * @beta
-   * @internal
-   * Limited to Microsoft-internal use
-   *
-   * This function should be called by the Store App to notify the host that the
-   * app with the given appId has been installed.
-   *
-   * @throws Error if {@link app.initialize} has not successfully completed or if the platform
-   * does not support the otherAppStateChange capability.
-   */
-  export function notifyAppInstall(appId: AppId): void {
-    if (!isSupported()) {
-      throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
-    }
-
-    callFunctionInHost(
-      ApiName.OtherAppStateChange_NotifyAppInstall,
-      [appId.toString()],
-      getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyAppInstall),
-    ).catch((e) => {
-      logger(e);
-    });
+ * @hidden
+ * @beta
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * This function should be called by the Store App to notify the host that the
+ * app with the given appId has been installed.
+ *
+ * @throws Error if {@link app.initialize} has not successfully completed or if the platform
+ * does not support the otherAppStateChange capability.
+ */
+export function notifyAppInstall(appId: AppId): Promise<void> {
+  if (!isSupported()) {
+    throw new Error(ErrorCode.NOT_SUPPORTED_ON_PLATFORM.toString());
   }
+
+  return callFunctionInHost(
+    ApiName.OtherAppStateChange_NotifyAppInstall,
+    [appId.toString()],
+    getApiVersionTag(otherAppStateChangeTelemetryVersionNumber, ApiName.OtherAppStateChange_NotifyAppInstall),
+  );
+}
 
 /**
  * Checks if the otherAppStateChange capability is supported by the host
