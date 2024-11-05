@@ -21,7 +21,7 @@ export namespace store {
    *
    * @enum fullStore - open a fullStore without navigation
    * @enum ICS - open in-context-store
-   * @enum appDetail - open detail dialog (DD), make sure an appId appended, otherwise throw error
+   * @enum appDetail - open detail dialog (DD)
    * @enum copilotStore - open a full store with navigation to copilot section
    *
    * @internal
