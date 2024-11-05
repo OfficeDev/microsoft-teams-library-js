@@ -24,7 +24,6 @@ parameters:
 
 jobs:
   - ${{ each branch in split(parameters.releaseBranch, ',')}}:
-      - script: echo ${{ branch }}
       - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
           # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
           # Sadly ADO does not support regex matching here at this time.
@@ -41,6 +40,9 @@ jobs:
                 ${{ else }}:
                   value: 'localScriptTag'
             steps:
+              - bash: echo $(parameters.releaseBranch)
+                workingDirectory: '$(AppHostingSdkProjectDirectory)'
+
               - template: build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
