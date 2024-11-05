@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
-import { base64ToString } from './uint8array-extras';
+import { base64ToString } from './uint8array-extras/uint8array-extras';
 
 /**
  * @internal
