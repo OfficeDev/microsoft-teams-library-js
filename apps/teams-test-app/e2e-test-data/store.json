@@ -11,6 +11,9 @@
       "type": "callResponse",
       "testUrlParams": [["frameContext", "task"]],
       "boxSelector": "#box_storeOpen",
+      "hostSdkVersion": {
+        "web": "<4.5.0"
+      },
       "inputValue": {
         "dialogType": "fullstore"
       },
