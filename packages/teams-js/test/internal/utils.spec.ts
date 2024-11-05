@@ -4,6 +4,7 @@ import {
   createTeamsAppLink,
   getBase64StringFromBlob,
   hasScriptTags,
+  isPrimitiveOrPlainObject,
   validateId,
   validateUrl,
   validateUuid,
@@ -546,6 +547,67 @@ describe('utils', () => {
         expect(() => validateUuid(uuid.toString())).not.toThrow();
         return expect(() => uuid.toString() === id);
       });
+    });
+  });
+  describe('isPrimitiveOrPlainObject', () => {
+    type NestedObject = { [key: string]: NestedObject | null };
+    function createNestedObject(depth: number): NestedObject {
+      // Create an empty object to start
+      const current: NestedObject = {};
+      let nestedObject: NestedObject = current;
+
+      // Loop to create a nested structure
+      for (let i = 0; i < depth; i++) {
+        nestedObject[i.toString()] = {}; // Create a new nested object for each depth level
+        nestedObject = nestedObject[i.toString()] as NestedObject; // Move deeper into the nesting
+      }
+
+      return current; // Return the top-level object
+    }
+    it('should return true for undefined or null', () => {
+      expect(isPrimitiveOrPlainObject(undefined)).toBe(true);
+      expect(isPrimitiveOrPlainObject(null)).toBe(true);
+    });
+
+    it('should return true for primitives except symbol', () => {
+      expect(isPrimitiveOrPlainObject(true)).toBe(true); // Check for boolean
+      expect(isPrimitiveOrPlainObject(-123)).toBe(true); //Check for number
+      expect(isPrimitiveOrPlainObject(BigInt(123))).toBe(true); //Check for BigInt
+      expect(isPrimitiveOrPlainObject('testString')).toBe(true); //Check for string
+    });
+
+    it('should return false for symbol', () => {
+      expect(isPrimitiveOrPlainObject(Symbol('symbol'))).toBe(false);
+    });
+
+    it('should return true for arrays of primitive types', () => {
+      expect(isPrimitiveOrPlainObject([1, 'a', true, null, undefined])).toBe(true);
+    });
+
+    it('should return true for plain objects', () => {
+      expect(isPrimitiveOrPlainObject({ a: 1, b: 'string', c: true })).toBe(true);
+    });
+
+    it('should return false for non-plain objects', () => {
+      expect(isPrimitiveOrPlainObject(new Date())).toBe(false);
+      expect(isPrimitiveOrPlainObject(new Map())).toBe(false);
+    });
+    it('should return true for nested plain objects and arrays', () => {
+      expect(isPrimitiveOrPlainObject({ a: [1, 2, { b: 'string' }] })).toBe(true);
+    });
+
+    it('should return false for nested structures with non-plain objects', () => {
+      expect(isPrimitiveOrPlainObject({ a: [1, 2, new Date()] })).toBe(false);
+      expect(isPrimitiveOrPlainObject({ a: { b: [1, 2, function () {}] } })).toBe(false);
+    });
+
+    it('should return false for functions', () => {
+      expect(isPrimitiveOrPlainObject(function () {})).toBe(false);
+    });
+
+    it('should return false for objects nested deeper than 1000 levels', () => {
+      expect(isPrimitiveOrPlainObject(createNestedObject(1001))).toBe(false);
+      expect(isPrimitiveOrPlainObject(createNestedObject(1000))).toBe(true);
     });
   });
 });

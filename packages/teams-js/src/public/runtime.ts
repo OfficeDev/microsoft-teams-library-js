@@ -223,6 +223,9 @@ interface IRuntimeV4 extends IBaseRuntime {
   readonly isNAAChannelRecommended?: boolean;
   readonly isLegacyTeams?: boolean;
   readonly supports: {
+    readonly app?: {
+      readonly notifySuccessResponse?: {};
+    };
     readonly appEntity?: {};
     readonly appInstallDialog?: {};
     readonly barCode?: {};

@@ -123,7 +123,7 @@ export async function authenticateAndResendRequest(
 
   validateId(conversationId, new Error('conversation id is not valid.'));
 
-  validateOriginalRequestInfo(originalRequestInfo);
+  externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
   // Ask the parent window to open an authentication window with the parameters provided by the caller.
   return callFunctionInHostAndHandleResponse<
@@ -176,7 +176,7 @@ export async function authenticateWithSSOAndResendRequest(
 
   validateId(conversationId, new Error('conversation id is not valid.'));
 
-  validateOriginalRequestInfo(originalRequestInfo);
+  externalAppAuthentication.validateActionExecuteInvokeRequest(originalRequestInfo);
 
   return callFunctionInHostAndHandleResponse<
     externalAppAuthentication.IActionExecuteResponse,
@@ -210,22 +210,4 @@ export async function authenticateWithSSOAndResendRequest(
  */
 export function isSupported(): boolean {
   return ensureInitialized(runtime) && runtime.supports.externalAppAuthenticationForCEA ? true : false;
-}
-
-/**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- * @beta
- */
-function validateOriginalRequestInfo(
-  actionExecuteRequest: externalAppAuthentication.IActionExecuteInvokeRequest,
-): void {
-  if (actionExecuteRequest.type !== externalAppAuthentication.ActionExecuteInvokeRequestType) {
-    const error: externalAppAuthentication.InvokeError = {
-      errorCode: externalAppAuthentication.InvokeErrorCode.INTERNAL_ERROR,
-      message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${externalAppAuthentication.ActionExecuteInvokeRequestType}"`,
-    };
-    throw error;
-  }
 }
