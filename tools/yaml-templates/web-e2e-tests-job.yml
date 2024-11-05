@@ -23,7 +23,7 @@ parameters:
     default: '$(AppHostReleaseBranch)'
 
 jobs:
-  - ${{ each versionBranch in split(parameters.releaseBranch, ', ')}}:
+  - ${{ each versionBranch in split(parameters.releaseBranch, ',')}}:
       - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
           # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
           # Sadly ADO does not support regex matching here at this time.
@@ -47,6 +47,7 @@ jobs:
               - template: build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
+                  appHostReleaseBranch: versionBranch
 
               - task: CmdLine@2
                 displayName: 'Build Local Test App to Reference via Script Tag'

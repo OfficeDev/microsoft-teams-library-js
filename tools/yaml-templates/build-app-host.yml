@@ -5,6 +5,9 @@ parameters:
   - name: 'appHostGitPath'
     default: none
     type: string
+  - name: 'appHostReleaseBranch'
+    default: 'main'
+    type: string
 
 steps:
   - checkout: self
