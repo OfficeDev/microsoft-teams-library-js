@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { base64ToString } from 'uint8array-extras';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
 import { AdaptiveCardVersion, SdkError } from '../public/interfaces';
 import * as pages from '../public/pages/pages';
+import { base64ToString } from './uint8array-extras';
 
 /**
  * @internal
