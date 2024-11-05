@@ -20,26 +20,26 @@ parameters:
     default: ['{[A-Z],[a-z],[0-9]}']
   - name: releaseBranch
     type: string
-    default: $[AppHostReleaseBranch]
+    default: $(AppHostReleaseBranch)
 
 jobs:
-  - ${{ each versionBranch in split(parameters.releaseBranch, ',')}}:
-      - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
-          # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
-          # Sadly ADO does not support regex matching here at this time.
-          - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
-            displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
-            pool:
-              name: Azure-Pipelines-1ESPT-ExDShared
-              image: 'ubuntu-2004'
-              os: linux
-            variables:
-              - name: envType
-                ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
-                  value: 'test'
-                ${{ else }}:
-                  value: 'localScriptTag'
-            steps:
+  - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
+      # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
+      # Sadly ADO does not support regex matching here at this time.
+      - job: E2ETestsWeb_${{parameters.teamsJsReferenceType}}_${{ replace(replace(replace(replace(replace(replace(testPrefixPattern, '[', '_'), ']', '_' ), '{', '_'), '}', '_'), ',', '_'), '-', '_') }}
+        displayName: 'E2E Tests - Web - Via ${{parameters.teamsJsReferenceType}} - ${{parameters.hostingEnvironmentType}} Hosted - ${{testPrefixPattern}}'
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: 'ubuntu-2004'
+          os: linux
+        variables:
+          - name: envType
+            ${{ if eq(parameters.teamsJsReferenceType, 'npm') }}:
+              value: 'test'
+            ${{ else }}:
+              value: 'localScriptTag'
+        steps:
+          - ${{ each versionBranch in split(parameters.releaseBranch, ',')}}:
               - bash: echo ${{versionBranch}}
                 displayName: 'Testing Variable Gathering'
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'
