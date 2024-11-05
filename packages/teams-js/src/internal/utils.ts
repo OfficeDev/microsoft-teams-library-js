@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import base64ToString from 'Uint8array-extras';
+import { base64ToString } from 'Uint8array-extras';
 import * as uuid from 'uuid';
 
 import { minAdaptiveCardVersion } from '../public/constants';
