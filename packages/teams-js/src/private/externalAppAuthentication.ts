@@ -2,7 +2,7 @@ import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId, validateUrl } from '../internal/utils';
+import { isPrimitiveOrPlainObject, validateId, validateUrl } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
@@ -131,7 +131,7 @@ export interface IActionExecuteInvokeRequest {
   type: string; // This must be "Action.Execute"
   id: string; // The unique identifier associated with the action
   verb: string; // The card author defined verb associated with the action
-  data: string | Record<string, unknown>;
+  data: string | Record<string, unknown>; // This must be primitive (except symbol type) or plain object
 }
 
 /**
@@ -373,28 +373,55 @@ export type InvokeErrorWrapper = InvokeError & { responseType: undefined };
  */
 function validateOriginalRequestInfo(originalRequestInfo: IOriginalRequestInfo): void {
   if (originalRequestInfo.requestType === OriginalRequestType.ActionExecuteInvokeRequest) {
-    const actionExecuteRequest = originalRequestInfo as IActionExecuteInvokeRequest;
-    if (actionExecuteRequest.type !== ActionExecuteInvokeRequestType) {
-      const error: InvokeError = {
-        errorCode: InvokeErrorCode.INTERNAL_ERROR,
-        message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
-      };
-      throw error;
-    }
+    validateActionExecuteInvokeRequest(originalRequestInfo as IActionExecuteInvokeRequest);
   } else if (originalRequestInfo.requestType === OriginalRequestType.QueryMessageExtensionRequest) {
-    if (originalRequestInfo.commandId.length > 64) {
-      throw new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters');
+    validateQueryMessageExtensionRequest(originalRequestInfo as IQueryMessageExtensionRequest);
+  }
+}
+
+/**
+ * @beta
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+export function validateActionExecuteInvokeRequest(actionExecuteRequest: IActionExecuteInvokeRequest): void {
+  if (actionExecuteRequest.type !== ActionExecuteInvokeRequestType) {
+    const error: InvokeError = {
+      errorCode: InvokeErrorCode.INTERNAL_ERROR,
+      message: `Invalid action type ${actionExecuteRequest.type}. Action type must be "${ActionExecuteInvokeRequestType}"`,
+    };
+    throw error;
+  }
+
+  if (!isPrimitiveOrPlainObject(actionExecuteRequest.data)) {
+    const error: InvokeError = {
+      errorCode: InvokeErrorCode.INTERNAL_ERROR,
+      message: `Invalid data type ${typeof actionExecuteRequest.data}. Data must be a primitive or a plain object.`,
+    };
+    throw error;
+  }
+}
+
+/**
+ * @beta
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+function validateQueryMessageExtensionRequest(originalRequestInfo: IQueryMessageExtensionRequest): void {
+  if (originalRequestInfo.commandId.length > 64) {
+    throw new Error('originalRequestInfo.commandId exceeds the maximum size of 64 characters');
+  }
+  if (originalRequestInfo.parameters.length > 5) {
+    throw new Error('originalRequestInfo.parameters exceeds the maximum size of 5');
+  }
+  for (const parameter of originalRequestInfo.parameters) {
+    if (parameter.name.length > 64) {
+      throw new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters');
     }
-    if (originalRequestInfo.parameters.length > 5) {
-      throw new Error('originalRequestInfo.parameters exceeds the maximum size of 5');
-    }
-    for (const parameter of originalRequestInfo.parameters) {
-      if (parameter.name.length > 64) {
-        throw new Error('originalRequestInfo.parameters.name exceeds the maximum size of 64 characters');
-      }
-      if (parameter.value.length > 512) {
-        throw new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters');
-      }
+    if (parameter.value.length > 512) {
+      throw new Error('originalRequestInfo.parameters.value exceeds the maximum size of 512 characters');
     }
   }
 }
