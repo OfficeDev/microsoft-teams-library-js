@@ -75,7 +75,7 @@ export namespace store {
    * @hidden
    * Api to open a store
    *
-   * @param openStoreParams - params to call openStoreExperience
+   * @param openStoreParams - params to call openStoreExperience, either {@link OpenStoreParams} or {@link OpenAppDetailParams}
    *
    * @internal
    * Limited to Microsoft-internal use
