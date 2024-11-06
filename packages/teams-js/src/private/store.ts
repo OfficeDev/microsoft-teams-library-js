@@ -7,6 +7,7 @@ import { runtime } from '../public/runtime';
 /**
  * @beta
  * @hidden
+ * @module
  * Namespace to open app store
  * @internal
  * Limited to Microsoft-internal use
