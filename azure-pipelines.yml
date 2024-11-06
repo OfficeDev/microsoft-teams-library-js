@@ -106,52 +106,16 @@ extends:
                   targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
                   artifactName: 'scripts'
 
-          - job: E2ETest1
-            displayName: 'E2E Test - Perf'
+          - job: E2ETestLatest
+            displayName: 'E2E Test - Latest'
             pool:
               name: Azure-Pipelines-1ESPT-ExDShared
               image: 'ubuntu-latest'
               os: linux
             steps:
-              - template: tools/yaml-templates/build-app-host.yml@self
+              - template: tools/yaml-templates/web-e2e-versions.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk
-
-              - task: Bash@3
-                displayName: 'Run E2E Perf tests'
-                condition: succeeded()
-                inputs:
-                  targetType: inline
-                  script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-                  workingDirectory: '$(AppHostingSdkProjectDirectory)'
-
-              - task: PublishTestResults@2
-                inputs:
-                  testResultsFormat: 'JUnit'
-                  testResultsFiles: '**/e2e-tests-report*.xml'
-                  testRunTitle: 'E2E Tests - Perf'
-                  mergeTestResults: true
-                condition: succeededOrFailed()
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'standardWeb'
-              teamsJsReferenceType: 'npm'
-              testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'standardWeb'
-              teamsJsReferenceType: 'scriptTag'
-              testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'electron'
-              teamsJsReferenceType: 'npm'
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
