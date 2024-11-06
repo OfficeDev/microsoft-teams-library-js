@@ -6,7 +6,7 @@ parameters:
     default: none
     type: string
 
-steps:
+jobs:
   - job: E2ETest1
     displayName: 'E2E Test - Perf'
     pool:
@@ -53,3 +53,42 @@ steps:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'electron'
       teamsJsReferenceType: 'npm'
+
+  - job: E2ETestCDN
+    displayName: 'E2E Tests - CDN (only runs on release builds)'
+    # This test only runs after deployment from a release branch and the new CDN version has been deployed
+    # This check will run on the PR to merge the release branch back into main
+    condition: and(
+      eq(variables['Build.Reason'], 'PullRequest'),
+      startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+      eq(variables['System.PullRequest.TargetBranch'], 'main')
+      )
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: 'ubuntu-latest'
+      os: linux
+    steps:
+      - template: tools/yaml-templates/build-app-host.yml@self
+        parameters:
+          appHostGitPath: AppHostingSdk
+
+      - task: CmdLine@2
+        displayName: 'Build Test App CDN'
+        inputs:
+          script: |
+            pnpm build-test-app-CDN
+          workingDirectory: '$(ClientSdkProjectDirectory)'
+
+      - bash: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --useDataFromLocal=true --reportFileName=e2e-tests-report-cdn-script-tag --envType=cdnScriptTag'
+        displayName: 'Run E2E integration tests with local script tag on latest cdn bundles'
+        condition: succeeded()
+        workingDirectory: '$(AppHostingSdkProjectDirectory)'
+        enabled: true
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/e2e-tests-report*.xml'
+          testRunTitle: 'E2E Tests - CDN'
+          mergeTestResults: true
+        condition: succeededOrFailed()
