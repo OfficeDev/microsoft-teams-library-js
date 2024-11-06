@@ -14,6 +14,7 @@ import { runtime } from '../runtime';
  * Limited to Microsoft-internal use
  *
  * @beta
+ * @module
  */
 
 /**

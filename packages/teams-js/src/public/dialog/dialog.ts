@@ -24,7 +24,9 @@ import * as url from './url/url';
  * For more details, see [Dialogs](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
  * @beta
+ * @module
  */
+
 /**
  * Data Structure to represent the SDK response when dialog closes
  *

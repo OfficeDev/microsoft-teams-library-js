@@ -16,7 +16,9 @@ const visualMediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2
  * To enable this image capability will let the app developer ask the user to get images from camera/local storage
  *
  * @beta
+ * @module
  */
+
 /**
  * @hidden
  * CameraImageProperties is for the image taken from the camera

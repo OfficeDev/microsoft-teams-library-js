@@ -10,7 +10,9 @@ const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
  * Module to get the list of content shared in a Teams meeting
  *
  * @beta
+ * @module
  */
+
 /**
  * Represents the data returned when calling {@link sharing.history.getContent}
  *

@@ -12,10 +12,12 @@ import * as map from './map';
 const geoLocationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
- * Namespace to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
+ * Module to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
  *
  * @beta
+ * @module
  */
+
 /**
  * Data struture to represent the location information
  *

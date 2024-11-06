@@ -15,7 +15,9 @@ import { DialogSubmitHandler } from '../dialog';
  * Module for interaction with adaptive card dialogs that need to communicate with the bot framework
  *
  * @beta
+ * @module
  */
+
 /**
  * Allows an app to open an adaptive card-based dialog module using bot.
  *

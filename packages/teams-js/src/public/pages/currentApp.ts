@@ -12,7 +12,9 @@ import * as pages from './pages';
  *
  * @remarks
  * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
+ * @module
  */
+
 /**
  * Parameters provided to the {@link navigateTo} function
  */

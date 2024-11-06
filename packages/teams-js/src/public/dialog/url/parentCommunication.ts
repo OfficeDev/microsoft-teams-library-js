@@ -14,7 +14,9 @@ import { PostMessageChannel } from '../dialog';
  * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
  *
  * @beta
+ * @module
  */
+
 /**
  *  Send message to the parent from dialog
  *

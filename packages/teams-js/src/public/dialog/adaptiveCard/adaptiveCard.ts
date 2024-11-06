@@ -13,7 +13,9 @@ import * as bot from './bot';
 /**
  * Subcapability for interacting with adaptive card dialogs
  * @beta
+ * @module
  */
+
 /**
  * Allows app to open an adaptive card based dialog.
  *

@@ -19,7 +19,9 @@ const meetingTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
  * get meeting details, get/update state of mic, sharing app content and more.
  *
  * To learn more, visit https://aka.ms/teamsmeetingapps
+ * @module
  */
+
 /** Error callback function type */
 export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
 /** Get live stream state callback function type */

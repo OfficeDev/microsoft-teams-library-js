@@ -15,7 +15,9 @@ import { handlerFunctionType, InstanceConfig, removeEventType, saveEventType } f
 /**
  * Provides APIs to interact with the configuration-specific part of the SDK.
  * This object is usable only on the configuration frame.
+ * @module
  */
+
 let saveHandler: undefined | ((evt: SaveEvent) => void);
 let removeHandler: undefined | ((evt: RemoveEvent) => void);
 

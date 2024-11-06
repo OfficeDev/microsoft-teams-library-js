@@ -12,7 +12,9 @@ import { runtime } from '../runtime';
  * Provides APIs to interact with the full-trust part of the SDK. Limited to 1P applications
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
+
 /**
  * @hidden
  * Hide from docs

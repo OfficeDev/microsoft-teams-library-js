@@ -10,7 +10,9 @@ import { backButtonHandlerFunctionType } from './pages';
 
 /**
  * Provides APIs for handling the user's navigational history.
+ * @module
  */
+
 let backButtonPressHandler: (() => boolean) | undefined;
 
 /**

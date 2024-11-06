@@ -9,7 +9,9 @@ import { DialogSubmitHandler, PostMessageChannel } from '../dialog';
  * Module to open a dialog that sends results to the bot framework
  *
  * @beta
+ * @module
  */
+
 /**
  * Allows an app to open a dialog that sends submitted data to a bot.
  *

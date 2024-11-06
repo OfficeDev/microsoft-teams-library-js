@@ -29,7 +29,9 @@ import * as tabs from './tabs';
 
 /**
  * Navigation-specific part of the SDK.
+ * @module
  */
+
 /** Callback function */
 export type handlerFunctionType = () => void;
 /** Full screen function */

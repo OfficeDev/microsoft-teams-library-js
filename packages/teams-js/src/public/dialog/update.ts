@@ -8,7 +8,9 @@ import { runtime } from '../runtime';
  * Module to update the dialog
  *
  * @beta
+ * @module
  */
+
 /**
  * Update dimensions - height/width of a dialog.
  *

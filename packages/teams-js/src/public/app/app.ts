@@ -28,7 +28,8 @@ import * as lifecycle from './lifecycle';
 const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
- * Namespace to interact with app initialization and lifecycle.
+ * Module to interact with app initialization and lifecycle.
+ * @module
  */
 
 const appLogger = getLogger('app');

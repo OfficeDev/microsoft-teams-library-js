@@ -13,8 +13,10 @@ const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 /**
  * Module to interact with the stage view specific part of the SDK.
  *
- *  @beta
+ * @beta
+ * @module
  */
+
 /**
  * Parameters to open a stage view.
  */

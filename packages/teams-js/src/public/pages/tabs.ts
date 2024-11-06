@@ -12,7 +12,9 @@ import { runtime } from '../runtime';
 /**
  * Provides APIs for querying and navigating between contextual tabs of an application. Unlike personal tabs,
  * contextual tabs are pages associated with a specific context, such as channel or chat.
+ * @module
  */
+
 /**
  * Navigates the hosted application to the specified tab instance.
  * @param tabInstance - The destination tab instance.

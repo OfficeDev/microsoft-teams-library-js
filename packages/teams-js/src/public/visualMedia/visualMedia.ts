@@ -16,7 +16,9 @@ const visualMediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2
  * Interact with images. Allows the app developer ask the user to get images from their camera / camera roll / file system.
  *
  * @beta
+ * @module
  */
+
 /**
  * @hidden
  * The required value of the visualMedia files from gallery
