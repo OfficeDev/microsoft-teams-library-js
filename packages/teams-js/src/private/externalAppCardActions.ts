@@ -16,7 +16,9 @@ const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersio
  * Module to delegate adaptive card action execution to the host
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
+
 /**
  * @hidden
  * The type of deeplink action that was executed by the host

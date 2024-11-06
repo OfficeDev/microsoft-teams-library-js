@@ -15,7 +15,9 @@ const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVer
  * @internal
  * Limited to Microsoft-internal use
  * @beta
+ * @module
  */
+
 /**
  * @beta
  * @hidden

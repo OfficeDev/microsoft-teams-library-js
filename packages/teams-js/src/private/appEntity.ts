@@ -16,7 +16,10 @@ const appEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @module
  */
+
 /**
  * @hidden
  *

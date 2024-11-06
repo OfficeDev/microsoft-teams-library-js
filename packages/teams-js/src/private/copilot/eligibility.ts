@@ -14,7 +14,9 @@ const copilotLogger = getLogger('copilot');
  * User information required by specific apps
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
+
 /**
  * @hidden
  * @internal

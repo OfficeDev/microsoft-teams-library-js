@@ -6,10 +6,12 @@ import * as tab from './tab';
  * @hidden
  * @internal
  * @beta
+ * @module
  * Limited to Microsoft-internal use
  *
  * This capability allows an app to associate apps with a host entity, such as a Teams channel or chat, and configure them as needed.
  */
+
 export enum AppTypes {
   edu = 'EDU',
 }

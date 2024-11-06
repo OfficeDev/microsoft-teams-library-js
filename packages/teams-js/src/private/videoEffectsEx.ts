@@ -17,7 +17,14 @@ import * as videoEffects from '../public/videoEffects';
 /**
  * @hidden
  * Extended video API
+ * @internal
+ * Limited to Microsoft-internal use
  * @beta
+ * @module
+ */
+
+/**
+ * @hidden
  *
  * @internal
  * Limited to Microsoft-internal use

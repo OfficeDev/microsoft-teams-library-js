@@ -19,7 +19,9 @@ const externalAppCommandsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNu
  * Limited to Microsoft-internal use
  *
  * @beta
+ * @module
  */
+
 /**
  * @hidden
  * The payload of IActionCommandResponse

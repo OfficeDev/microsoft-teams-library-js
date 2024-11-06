@@ -14,10 +14,12 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from '../../interf
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
+ * @module
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  */
+
 /**
  * @hidden
  * Allows an app to retrieve information of all user joined teams

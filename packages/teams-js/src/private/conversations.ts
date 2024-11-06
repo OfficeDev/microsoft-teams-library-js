@@ -130,7 +130,10 @@ export interface ConversationResponse {
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @module
  */
+
 /**
  * @hidden
  * Hide from docs

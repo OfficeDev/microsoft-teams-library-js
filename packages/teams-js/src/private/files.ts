@@ -10,7 +10,10 @@ import { runtime } from '../public/runtime';
  * @hidden
  *
  * Module to interact with the files specific part of the SDK.
- *
+ * @module
+ */
+
+/**
  * @internal
  * Limited to Microsoft-internal use
  *

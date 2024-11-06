@@ -11,7 +11,10 @@ import * as telemetry from './telemetry';
  *
  * @internal
  * Limited to Microsoft-internal use
+ *
+ * @module
  */
+
 /**
  * @hidden
  *

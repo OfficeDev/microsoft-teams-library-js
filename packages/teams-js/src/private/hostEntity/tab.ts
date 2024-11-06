@@ -17,10 +17,12 @@ const hostEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * @hidden
  * @internal
  * @beta
+ * @module
  * Limited to Microsoft-internal use
  *
  * CRUD operations for tabs associated with apps
  */
+
 /**
  * Represents information about a static tab instance
  */

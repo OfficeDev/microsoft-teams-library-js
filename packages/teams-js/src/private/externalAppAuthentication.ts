@@ -18,7 +18,9 @@ const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVer
  * Module to delegate authentication and message extension requests to the host
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
+
 /*********** BEGIN REQUEST TYPE ************/
 /**
  * @hidden

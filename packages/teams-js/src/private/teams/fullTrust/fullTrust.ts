@@ -11,10 +11,12 @@ import * as joinedTeams from './joinedTeams';
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
+ * @module
  * @hidden
  * @internal
  * Limited to Microsoft-internal use
  */
+
 /**
  * @hidden
  * Allows an app to get the configuration setting value
