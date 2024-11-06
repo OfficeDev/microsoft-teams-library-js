@@ -113,7 +113,7 @@ extends:
               image: 'ubuntu-latest'
               os: linux
             steps:
-              - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+              - template: tools/yaml-templates/build-app-host.yml@self
                 parameters:
                   appHostGitPath: AppHostingSdk
 
