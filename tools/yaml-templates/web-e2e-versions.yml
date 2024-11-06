@@ -1,3 +1,6 @@
+# This template handles running E2E tests (including all necessary setup steps) from the host SDK repo for various environments.
+# It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
+
 parameters:
   - name: AppHostingSdk
     default: none
