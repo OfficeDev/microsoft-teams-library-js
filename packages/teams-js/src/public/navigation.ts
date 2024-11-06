@@ -1,3 +1,8 @@
+/**
+ * Navigation specific part of the SDK.
+ * @module
+ */
+
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
   backStackNavigateBackHelper,
@@ -15,10 +20,6 @@ import { runtime } from './runtime';
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const navigationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * Navigation specific part of the SDK.
- */
 
 /** Navigation on complete handler function type */
 export type onCompleteHandlerFunctionType = (status: boolean, reason?: string) => void;

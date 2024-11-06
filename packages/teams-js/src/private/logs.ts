@@ -1,3 +1,12 @@
+/**
+ * @hidden
+ * Module to interact with the logging part of the SDK.
+ * This object is used to send the app logs on demand to the host client
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -7,13 +16,6 @@ import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
- * @hidden
- * Module to interact with the logging part of the SDK.
- * This object is used to send the app logs on demand to the host client
- *
- * @internal
- * Limited to Microsoft-internal use
- *
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const logsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;

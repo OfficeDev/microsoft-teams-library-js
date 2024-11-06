@@ -1,3 +1,8 @@
+/**
+ * Navigation-specific part of the SDK.
+ * @module
+ */
+
 import { appInitializeHelper } from '../../internal/appHelpers';
 import { sendAndHandleStatusAndReason, sendMessageToParent } from '../../internal/communication';
 import { registerHandlerHelper } from '../../internal/handlers';
@@ -27,9 +32,6 @@ import * as currentApp from './currentApp';
 import * as fullTrust from './fullTrust';
 import * as tabs from './tabs';
 
-/**
- * Navigation-specific part of the SDK.
- */
 /** Callback function */
 export type handlerFunctionType = () => void;
 /** Full screen function */
