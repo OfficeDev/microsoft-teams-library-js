@@ -2,16 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { dialogTelemetryVersionNumber, handleDialogMessage } from '../../internal/dialogHelpers';
-import { registerHandler, removeHandler } from '../../internal/handlers';
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { ApiName, getApiVersionTag } from '../../internal/telemetry';
-import { FrameContexts } from '../constants';
-import { runtime } from '../runtime';
-import * as adaptiveCard from './adaptiveCard/adaptiveCard';
-import * as update from './update';
-import * as url from './url/url';
-
 /**
  * This group of capabilities enables apps to show modal dialogs. There are two primary types of dialogs: URL-based dialogs and [Adaptive Card](https://learn.microsoft.com/adaptive-cards/) dialogs.
  * Both types of dialogs are shown on top of your app, preventing interaction with your app while they are displayed.
@@ -24,7 +14,19 @@ import * as url from './url/url';
  * For more details, see [Dialogs](https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/what-are-task-modules)
  *
  * @beta
+ * @module
  */
+
+import { dialogTelemetryVersionNumber, handleDialogMessage } from '../../internal/dialogHelpers';
+import { registerHandler, removeHandler } from '../../internal/handlers';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ApiName, getApiVersionTag } from '../../internal/telemetry';
+import { FrameContexts } from '../constants';
+import { runtime } from '../runtime';
+import * as adaptiveCard from './adaptiveCard/adaptiveCard';
+import * as update from './update';
+import * as url from './url/url';
+
 /**
  * Data Structure to represent the SDK response when dialog closes
  *

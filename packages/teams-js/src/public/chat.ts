@@ -1,13 +1,14 @@
+/**
+ * Describes information needed to start a chat
+ * @module
+ */
+
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForChat } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
-
-/**
- * Describes information needed to start a chat
- */
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY

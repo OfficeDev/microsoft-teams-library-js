@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 
+/**
+ * Interact with media, including capturing and viewing images.
+ * @module
+ */
+
 import { sendAndHandleSdkError, sendMessageToParent } from '../internal/communication';
 import {
   captureImageMobileSupportVersion,
@@ -39,9 +44,6 @@ const mediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 const mediaLogger = getLogger('media');
 
-/**
- * Interact with media, including capturing and viewing images.
- */
 /**
  * Function callback type used when calling {@link media.captureImage}.
  *

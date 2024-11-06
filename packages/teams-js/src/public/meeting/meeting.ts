@@ -1,3 +1,12 @@
+/**
+ * Interact with meetings, including retrieving meeting details, getting mic status, and sharing app content.
+ * This module is used to handle meeting related functionality like
+ * get meeting details, get/update state of mic, sharing app content and more.
+ *
+ * To learn more, visit https://aka.ms/teamsmeetingapps
+ * @module
+ */
+
 import { sendAndHandleSdkError, sendMessageToParent } from '../../internal/communication';
 import { doesHandlerExist, registerHandler, removeHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
@@ -13,13 +22,6 @@ import * as appShareButton from './appShareButton';
  */
 const meetingTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-/**
- * Interact with meetings, including retrieving meeting details, getting mic status, and sharing app content.
- * This module is used to handle meeting related functionality like
- * get meeting details, get/update state of mic, sharing app content and more.
- *
- * To learn more, visit https://aka.ms/teamsmeetingapps
- */
 /** Error callback function type */
 export type errorCallbackFunctionType = (error: SdkError | null, result: boolean | null) => void;
 /** Get live stream state callback function type */

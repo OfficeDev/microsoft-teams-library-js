@@ -1,3 +1,8 @@
+/**
+ * Module containing the set of APIs that support Teams-specific functionalities.
+ * @module
+ */
+
 import { GlobalVars } from '../internal/globalVars';
 import * as Handlers from '../internal/handlers'; // Conflict with some names
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -9,8 +14,6 @@ import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace containing the set of APIs that support Teams-specific functionalities.
- *
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const teamsAPIsTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;

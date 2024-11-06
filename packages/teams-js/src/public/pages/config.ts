@@ -1,3 +1,9 @@
+/**
+ * Provides APIs to interact with the configuration-specific part of the SDK.
+ * This object is usable only on the configuration frame.
+ * @module
+ */
+
 import { Communication, sendMessageEventToChild, sendMessageToParent } from '../../internal/communication';
 import { registerHandler, registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
@@ -12,10 +18,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { runtime } from '../runtime';
 import { handlerFunctionType, InstanceConfig, removeEventType, saveEventType } from './pages';
 
-/**
- * Provides APIs to interact with the configuration-specific part of the SDK.
- * This object is usable only on the configuration frame.
- */
 let saveHandler: undefined | ((evt: SaveEvent) => void);
 let removeHandler: undefined | ((evt: RemoveEvent) => void);
 

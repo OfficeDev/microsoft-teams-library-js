@@ -1,10 +1,3 @@
-import { sendMessageToParent } from '../../internal/communication';
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
-import { ApiName, getApiVersionTag } from '../../internal/telemetry';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
-import { runtime } from '../runtime';
-
 /**
  * @hidden
  * Hide from docs
@@ -12,7 +5,16 @@ import { runtime } from '../runtime';
  * Provides APIs to interact with the full-trust part of the SDK. Limited to 1P applications
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
+
+import { sendMessageToParent } from '../../internal/communication';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
+import { ApiName, getApiVersionTag } from '../../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
+import { runtime } from '../runtime';
+
 /**
  * @hidden
  * Hide from docs

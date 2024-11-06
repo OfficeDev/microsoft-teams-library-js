@@ -1,3 +1,12 @@
+/**
+ * @module
+ * @hidden
+ * Module to interact with the `teams` specific part of the SDK.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
 import { sendMessageToParent } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -7,12 +16,6 @@ import { runtime } from '../../public/runtime';
 import * as fullTrust from './fullTrust/fullTrust';
 
 /**
- * @hidden
- * Module to interact with the `teams` specific part of the SDK.
- *
- * @internal
- * Limited to Microsoft-internal use
- *
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;

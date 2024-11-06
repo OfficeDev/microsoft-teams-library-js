@@ -1,3 +1,8 @@
+/**
+ * Used to interact with call functionality, including starting calls with other users.
+ * @module
+ */
+
 import { sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { errorCallNotStarted } from '../internal/constants';
 import { createTeamsDeepLinkForCall } from '../internal/deepLinkUtilities';
@@ -11,9 +16,6 @@ import { runtime } from './runtime';
  */
 const callTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Used to interact with call functionality, including starting calls with other users.
- */
 /** Modalities that can be associated with a call. */
 export enum CallModalities {
   /** Indicates that the modality is unknown or undefined. */
