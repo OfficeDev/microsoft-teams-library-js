@@ -1,10 +1,3 @@
-import { sendMessageToParent } from '../../internal/communication';
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
-import { ApiName, getApiVersionTag } from '../../internal/telemetry';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
-import { runtime } from '../runtime';
-
 /**
  * @hidden
  * Hide from docs
@@ -14,6 +7,13 @@ import { runtime } from '../runtime';
  * Limited to Microsoft-internal use
  * @module
  */
+
+import { sendMessageToParent } from '../../internal/communication';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
+import { ApiName, getApiVersionTag } from '../../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
+import { runtime } from '../runtime';
 
 /**
  * @hidden

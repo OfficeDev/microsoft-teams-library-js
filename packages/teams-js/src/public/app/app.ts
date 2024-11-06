@@ -2,6 +2,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/**
+ * Module to interact with app initialization and lifecycle.
+ * @module
+ */
+
 import * as appHelpers from '../../internal/appHelpers';
 import { Communication, sendAndUnwrap, uninitializeCommunication } from '../../internal/communication';
 import { GlobalVars } from '../../internal/globalVars';
@@ -26,11 +31,6 @@ import * as lifecycle from './lifecycle';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to interact with app initialization and lifecycle.
- * @module
- */
 
 const appLogger = getLogger('app');
 

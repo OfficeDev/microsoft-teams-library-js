@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the location on map module-specific part of the SDK.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -5,13 +12,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { ErrorCode } from '../interfaces';
 import { runtime } from '../runtime';
 import { Location } from './geoLocation';
-
-/**
- * Module to interact with the location on map module-specific part of the SDK.
- *
- * @beta
- * @module
- */
 
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY

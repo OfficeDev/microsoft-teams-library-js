@@ -1,3 +1,9 @@
+/**
+ * Module to open a share dialog for web content.
+ * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -9,12 +15,6 @@ import * as history from './history';
 
 const sharingTelemetryVersionNumber_v1: ApiVersionNumber = ApiVersionNumber.V_1;
 const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to open a share dialog for web content.
- * For more info, see [Share to Teams from personal app or tab](https://learn.microsoft.com/microsoftteams/platform/concepts/build-and-test/share-to-teams-from-personal-app-or-tab)
- * @module
- */
 
 /** shareWebContent callback function type */
 export type shareWebContentCallbackFunctionType = (err?: SdkError) => void;

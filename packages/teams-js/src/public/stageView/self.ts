@@ -1,3 +1,10 @@
+/**
+ * Module for actions that can be taken by the stage view itself.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -8,13 +15,6 @@ import { runtime } from '../runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module for actions that can be taken by the stage view itself.
- *
- * @beta
- * @module
- */
 
 /**
  * Closes the current stage view. This function will be a no-op if called from outside of a stage view.

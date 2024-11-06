@@ -1,3 +1,10 @@
+/**
+ * Module to get the list of content shared in a Teams meeting
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -5,13 +12,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { runtime } from '../runtime';
 
 const sharingTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to get the list of content shared in a Teams meeting
- *
- * @beta
- * @module
- */
 
 /**
  * Represents the data returned when calling {@link sharing.history.getContent}

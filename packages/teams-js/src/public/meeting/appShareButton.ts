@@ -1,9 +1,3 @@
-import { sendMessageToParent } from '../../internal/communication';
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
-import { FrameContexts } from '../constants';
-import { runtime } from '../runtime';
-
 /**
  * Module for functions to control behavior of the app share button
  *
@@ -16,6 +10,12 @@ import { runtime } from '../runtime';
  * @beta
  * @module
  */
+
+import { sendMessageToParent } from '../../internal/communication';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
+import { FrameContexts } from '../constants';
+import { runtime } from '../runtime';
 
 /**
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY

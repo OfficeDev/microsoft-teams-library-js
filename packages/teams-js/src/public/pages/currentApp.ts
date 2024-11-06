@@ -1,3 +1,11 @@
+/**
+ * Provides functions for navigating within your own app
+ *
+ * @remarks
+ * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
@@ -6,14 +14,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { runtime } from '../runtime';
 //eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as pages from './pages';
-
-/**
- * Provides functions for navigating within your own app
- *
- * @remarks
- * If you are looking to navigate to a different app, use {@link pages.navigateToApp}.
- * @module
- */
 
 /**
  * Parameters provided to the {@link navigateTo} function

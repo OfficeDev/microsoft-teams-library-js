@@ -1,12 +1,3 @@
-import { sendMessageToParent } from '../../../internal/communication';
-import { dialogTelemetryVersionNumber, storedMessages } from '../../../internal/dialogHelpers';
-import { registerHandler, removeHandler } from '../../../internal/handlers';
-import { ensureInitialized } from '../../../internal/internalAPIs';
-import { ApiName, getApiVersionTag } from '../../../internal/telemetry';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../constants';
-import { runtime } from '../../runtime';
-import { PostMessageChannel } from '../dialog';
-
 /**
  * Subcapability that allows communication between the dialog and the parent app.
  *
@@ -16,6 +7,15 @@ import { PostMessageChannel } from '../dialog';
  * @beta
  * @module
  */
+
+import { sendMessageToParent } from '../../../internal/communication';
+import { dialogTelemetryVersionNumber, storedMessages } from '../../../internal/dialogHelpers';
+import { registerHandler, removeHandler } from '../../../internal/handlers';
+import { ensureInitialized } from '../../../internal/internalAPIs';
+import { ApiName, getApiVersionTag } from '../../../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../constants';
+import { runtime } from '../../runtime';
+import { PostMessageChannel } from '../dialog';
 
 /**
  *  Send message to the parent from dialog

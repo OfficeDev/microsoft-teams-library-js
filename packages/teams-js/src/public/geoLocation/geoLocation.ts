@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -10,13 +17,6 @@ import * as map from './map';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const geoLocationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to interact with the geoLocation module-specific part of the SDK. This is the newer version of location module.
- *
- * @beta
- * @module
- */
 
 /**
  * Data struture to represent the location information

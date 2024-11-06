@@ -1,4 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+/**
+ * Subcapability for interacting with adaptive card dialogs
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../../../internal/communication';
 import { dialogTelemetryVersionNumber, getDialogInfoFromAdaptiveCardDialogInfo } from '../../../internal/dialogHelpers';
 import { ensureInitialized } from '../../../internal/internalAPIs';
@@ -9,12 +16,6 @@ import { AdaptiveCardDialogInfo, DialogInfo } from '../../interfaces';
 import { runtime } from '../../runtime';
 import { DialogSubmitHandler } from '../dialog';
 import * as bot from './bot';
-
-/**
- * Subcapability for interacting with adaptive card dialogs
- * @beta
- * @module
- */
 
 /**
  * Allows app to open an adaptive card based dialog.
