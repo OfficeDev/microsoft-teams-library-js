@@ -21,10 +21,6 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: $(AppHostReleaseBranch)
-    - repository: AppHostingSdkRelease4
-      type: git
-      name: ISS/metaos-hub-sdk
-      ref: refs/heads/release/4.6.0
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
