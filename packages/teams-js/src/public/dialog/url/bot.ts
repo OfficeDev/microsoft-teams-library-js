@@ -1,3 +1,10 @@
+/**
+ * Module to open a dialog that sends results to the bot framework
+ *
+ * @beta
+ * @module
+ */
+
 import { botUrlOpenHelper, dialogTelemetryVersionNumber } from '../../../internal/dialogHelpers';
 import { ensureInitialized } from '../../../internal/internalAPIs';
 import { ApiName, getApiVersionTag } from '../../../internal/telemetry';
@@ -5,11 +12,6 @@ import { BotUrlDialogInfo } from '../../interfaces';
 import { runtime } from '../../runtime';
 import { DialogSubmitHandler, PostMessageChannel } from '../dialog';
 
-/**
- * Module to open a dialog that sends results to the bot framework
- *
- * @beta
- */
 /**
  * Allows an app to open a dialog that sends submitted data to a bot.
  *

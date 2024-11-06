@@ -1,3 +1,12 @@
+/**
+ * @hidden
+ * Extended video API
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -15,12 +24,6 @@ import { runtime } from '../public/runtime';
 import * as videoEffects from '../public/videoEffects';
 
 /**
- * @hidden
- * Extended video API
- * @beta
- *
- * @internal
- * Limited to Microsoft-internal use
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const videoEffectsExTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;

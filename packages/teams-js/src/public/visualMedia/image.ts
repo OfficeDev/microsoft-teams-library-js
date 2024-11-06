@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ * To enable this image capability will let the app developer ask the user to get images from camera/local storage
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -11,12 +19,6 @@ import { CameraProps, GalleryProps, VisualMediaFile } from './visualMedia';
  */
 const visualMediaTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * To enable this image capability will let the app developer ask the user to get images from camera/local storage
- *
- * @beta
- */
 /**
  * @hidden
  * CameraImageProperties is for the image taken from the camera
