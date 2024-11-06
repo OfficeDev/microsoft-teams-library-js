@@ -18,9 +18,6 @@ parameters:
   - name: testPrefixPatternGroups
     type: object
     default: ['{[A-Z],[a-z],[0-9]}']
-  - name: releaseBranch
-    type: string
-    default: $(AppHostReleaseBranch)
 
 jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
@@ -39,7 +36,7 @@ jobs:
             ${{ else }}:
               value: 'localScriptTag'
         steps:
-          - ${{ each versionBranch in split(parameters.releaseBranch, ',')}}:
+          - ${{ each versionBranch in parameters.releaseBranch}}:
               - bash: echo ${{versionBranch}}
                 displayName: 'Testing Variable Gathering'
                 workingDirectory: '$(AppHostingSdkProjectDirectory)'
@@ -47,7 +44,6 @@ jobs:
               - template: build-app-host.yml
                 parameters:
                   appHostGitPath: AppHostingSdk
-                  appHostReleaseBranch: versionBranch
 
               - task: CmdLine@2
                 displayName: 'Build Local Test App to Reference via Script Tag'

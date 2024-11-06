@@ -20,7 +20,11 @@ resources:
     - repository: AppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk
-      ref: refs/heads/main
+      ref: $(AppHostReleaseBranch)
+    - repository: AppHostingSdkRelease4
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: refs/heads/release/4.6.0
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -191,7 +195,6 @@ extends:
                   testRunTitle: 'E2E Tests - CDN'
                   mergeTestResults: true
                 condition: succeededOrFailed()
-
 # De-tach the tests from pipeline until we figure out why they won't run on macos-latest image
 #          - job: E2ETestAndroid
 #            displayName: 'E2E Tests - Android'
