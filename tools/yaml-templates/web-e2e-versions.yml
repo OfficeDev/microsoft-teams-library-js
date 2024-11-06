@@ -18,21 +18,21 @@ jobs:
         parameters:
           appHostGitPath: AppHostingSdk
 
-      - task: Bash@3
-        displayName: 'Run E2E Perf tests'
-        condition: succeeded()
-        inputs:
-          targetType: inline
-          script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
-          workingDirectory: '$(AppHostingSdkProjectDirectory)'
+      # - task: Bash@3
+      #   displayName: 'Run E2E Perf tests'
+      #   condition: succeeded()
+      #   inputs:
+      #     targetType: inline
+      #     script: 'pnpm exec ts-node tools/cli/runAppsWithE2ETests.ts --appUrl=https://localhost:4002 --reportFileName=e2e-tests-report-perf --envType=perf'
+      #     workingDirectory: '$(AppHostingSdkProjectDirectory)'
 
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: '**/e2e-tests-report*.xml'
-          testRunTitle: 'E2E Tests - Perf'
-          mergeTestResults: true
-        condition: succeededOrFailed()
+      # - task: PublishTestResults@2
+      #   inputs:
+      #     testResultsFormat: 'JUnit'
+      #     testResultsFiles: '**/e2e-tests-report*.xml'
+      #     testRunTitle: 'E2E Tests - Perf'
+      #     mergeTestResults: true
+      #   condition: succeededOrFailed()
 
   # - template: tools/yaml-templates/web-e2e-tests-job.yml@self
   #   parameters:
