@@ -1,5 +1,5 @@
 import { errorLibraryNotInitialized } from '../../src/internal/constants';
-import { app, FrameContexts, nestedAppAuth } from '../../src/public';
+import { app, FrameContexts, HostClientType, nestedAppAuth } from '../../src/public';
 import { _minRuntimeConfigToUninitialize, Runtime } from '../../src/public/runtime';
 import { Utils } from '../utils';
 
@@ -62,5 +62,98 @@ describe('nestedAppAuth', () => {
     };
     utils.setRuntimeConfig(runtimeConfig);
     expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return false; isNAAChannelRecommended: false, ClientType: macos', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.macos);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      isNAAChannelRecommended: false,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return false; isNAAChannelRecommended: false, ClientType: desktop', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.desktop);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      isNAAChannelRecommended: false,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return false; isNAAChannelRecommended: false, ClientType: web', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.web);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      isNAAChannelRecommended: false,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return false; isNAAChannelRecommended: false, isLegacyTeams: false', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      isNAAChannelRecommended: false,
+      isLegacyTeams: false,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return false; isNAAChannelRecommended: false, isLegacyTeams: true, ClientType: android, does not supports nestedAppAuth', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: {},
+      isNAAChannelRecommended: false,
+      isLegacyTeams: true,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeFalsy();
+  });
+
+  it('should return true; isNAAChannelRecommended: false, isLegacyTeams: true, ClientType: android, supports nestedAppAuth', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.android);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: { nestedAppAuth },
+      isNAAChannelRecommended: false,
+      isLegacyTeams: true,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
+  });
+
+  it('should return true; isNAAChannelRecommended: false, isLegacyTeams: true, ClientType: ios, supports nestedAppAuth', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.ios);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: { nestedAppAuth },
+      isNAAChannelRecommended: false,
+      isLegacyTeams: true,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
+  });
+
+  it('should return true; isNAAChannelRecommended: false, isLegacyTeams: true, ClientType: ipados, supports nestedAppAuth', async () => {
+    await utils.initializeWithContext(FrameContexts.content, HostClientType.ipados);
+    const runtimeConfig: Runtime = {
+      apiVersion: 4,
+      supports: { nestedAppAuth },
+      isNAAChannelRecommended: false,
+      isLegacyTeams: true,
+    };
+    utils.setRuntimeConfig(runtimeConfig);
+    expect(nestedAppAuth.isNAAChannelRecommended()).toBeTruthy();
   });
 });
