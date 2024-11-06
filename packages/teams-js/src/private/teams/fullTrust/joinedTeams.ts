@@ -1,3 +1,10 @@
+/**
+ * @module
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
 import { sendAndUnwrap } from '../../../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../../../internal/constants';
 import { GlobalVars } from '../../../internal/globalVars';
@@ -12,13 +19,6 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from '../../interf
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * @module
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- */
 
 /**
  * @hidden

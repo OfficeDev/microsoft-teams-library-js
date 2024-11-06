@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -6,11 +14,6 @@ import { errorNotSupportedOnPlatform } from '../public/constants';
 import { runtime } from '../public/runtime';
 
 /**
- * @hidden
- *
- * @internal
- * Limited to Microsoft-internal use
- *
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const meetingRoomTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;

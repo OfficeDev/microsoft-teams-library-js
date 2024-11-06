@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * User information required by specific apps
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendAndUnwrap } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag, getLogger } from '../../internal/telemetry';
@@ -7,15 +16,6 @@ import { runtime } from '../../public/runtime';
 
 const copilotTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 const copilotLogger = getLogger('copilot');
-
-/**
- * @beta
- * @hidden
- * User information required by specific apps
- * @internal
- * Limited to Microsoft-internal use
- * @module
- */
 
 /**
  * @hidden

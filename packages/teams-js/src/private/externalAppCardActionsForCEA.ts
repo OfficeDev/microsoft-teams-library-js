@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Module to delegate adaptive card action for Custom Engine Agent execution to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -11,15 +20,7 @@ import * as externalAppCardActions from './externalAppCardActions';
  * All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-/**
- * @beta
- * @hidden
- * Module to delegate adaptive card action for Custom Engine Agent execution to the host
- * @internal
- * Limited to Microsoft-internal use
- * @module
- * /
- 
+
 /**
  * @beta
  * @hidden

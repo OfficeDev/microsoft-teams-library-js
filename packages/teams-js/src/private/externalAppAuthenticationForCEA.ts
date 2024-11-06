@@ -1,3 +1,12 @@
+/**
+ * @hidden
+ * Module to delegate authentication requests to the host for custom engine agents
+ * @internal
+ * Limited to Microsoft-internal use
+ * @beta
+ * @module
+ */
+
 import { callFunctionInHost, callFunctionInHostAndHandleResponse } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -8,15 +17,6 @@ import { runtime } from '../public/runtime';
 import * as externalAppAuthentication from './externalAppAuthentication';
 
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * @hidden
- * Module to delegate authentication requests to the host for custom engine agents
- * @internal
- * Limited to Microsoft-internal use
- * @beta
- * @module
- */
 
 /**
  * @beta

@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * Module to interact with the conversational subEntities inside the tab
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @module
+ */
+
 import { sendAndHandleStatusAndReason, sendAndUnwrap, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -123,16 +133,6 @@ export interface ConversationResponse {
    */
   entityId?: string;
 }
-
-/**
- * @hidden
- * Module to interact with the conversational subEntities inside the tab
- *
- * @internal
- * Limited to Microsoft-internal use
- *
- * @module
- */
 
 /**
  * @hidden

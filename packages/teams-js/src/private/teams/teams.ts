@@ -1,11 +1,3 @@
-import { sendMessageToParent } from '../../internal/communication';
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
-import { errorNotSupportedOnPlatform, FrameContexts } from '../../public/constants';
-import { SdkError } from '../../public/interfaces';
-import { runtime } from '../../public/runtime';
-import * as fullTrust from './fullTrust/fullTrust';
-
 /**
  * @module
  * @hidden
@@ -14,6 +6,14 @@ import * as fullTrust from './fullTrust/fullTrust';
  * @internal
  * Limited to Microsoft-internal use
  */
+
+import { sendMessageToParent } from '../../internal/communication';
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
+import { errorNotSupportedOnPlatform, FrameContexts } from '../../public/constants';
+import { SdkError } from '../../public/interfaces';
+import { runtime } from '../../public/runtime';
+import * as fullTrust from './fullTrust/fullTrust';
 
 /**
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY

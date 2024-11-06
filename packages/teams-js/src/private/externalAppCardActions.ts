@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ * Module to delegate adaptive card action execution to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -10,14 +18,6 @@ import { ExternalAppErrorCode } from './constants';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * @hidden
- * Module to delegate adaptive card action execution to the host
- * @internal
- * Limited to Microsoft-internal use
- * @module
- */
 
 /**
  * @hidden

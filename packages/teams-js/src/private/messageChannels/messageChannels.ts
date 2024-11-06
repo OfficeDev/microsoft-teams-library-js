@@ -1,8 +1,3 @@
-import { ensureInitialized } from '../../internal/internalAPIs';
-import { runtime } from '../../public/runtime';
-import * as dataLayer from './dataLayer';
-import * as telemetry from './telemetry';
-
 /**
  * @hidden
  * Module to request message ports from the host application.
@@ -14,6 +9,11 @@ import * as telemetry from './telemetry';
  *
  * @module
  */
+
+import { ensureInitialized } from '../../internal/internalAPIs';
+import { runtime } from '../../public/runtime';
+import * as dataLayer from './dataLayer';
+import * as telemetry from './telemetry';
 
 /**
  * @hidden

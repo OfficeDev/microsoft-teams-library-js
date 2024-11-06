@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * Module to delegate the ActionCommand to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -11,16 +21,6 @@ import * as externalAppAuthentication from './externalAppAuthentication';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCommandsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * @hidden
- * Module to delegate the ActionCommand to the host
- * @internal
- * Limited to Microsoft-internal use
- *
- * @beta
- * @module
- */
 
 /**
  * @hidden

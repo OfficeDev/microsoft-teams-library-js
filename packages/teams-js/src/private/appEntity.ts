@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * Module to interact with the application entities specific part of the SDK.
+ *
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -9,16 +19,6 @@ import { runtime } from '../public/runtime';
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const appEntityTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * @hidden
- * Module to interact with the application entities specific part of the SDK.
- *
- * @internal
- * Limited to Microsoft-internal use
- *
- * @module
- */
 
 /**
  * @hidden
