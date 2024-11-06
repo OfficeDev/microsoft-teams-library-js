@@ -194,7 +194,7 @@ extends:
                 condition: succeededOrFailed()
 
 # De-tach the tests from pipeline until we figure out why they won't run on macos-latest image
-          - job: E2ETestAndroid
+          - job: E2ETestAndroidA
             displayName: 'E2E Tests - Android - Plan A'
             pool:
               name: Azure Pipelines
@@ -205,7 +205,7 @@ extends:
                 parameters:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
 
-          - job: E2ETestAndroid
+          - job: E2ETestAndroidB
             displayName: 'E2E Tests - Android - Plan B'
             pool:
               name: Azure Pipelines
