@@ -17,7 +17,9 @@ const searchTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  *
  * This functionality is in Beta.
  * @beta
+ * @module
  */
+
 const onChangeHandlerName = 'search.queryChange';
 const onClosedHandlerName = 'search.queryClose';
 const onExecutedHandlerName = 'search.queryExecute';

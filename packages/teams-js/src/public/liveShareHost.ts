@@ -14,7 +14,9 @@ const interactiveTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2
  * For more information, visit https://aka.ms/teamsliveshare
  *
  * @see LiveShareHost
+ * @module
  */
+
 /**
  * @hidden
  * The meeting roles of a user.

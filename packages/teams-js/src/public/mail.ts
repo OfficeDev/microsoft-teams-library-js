@@ -1,8 +1,3 @@
-/**
- * Used to interact with mail capability, including opening and composing mail.
- * @module
- */
-
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -13,6 +8,11 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const mailTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
+/**
+ * Used to interact with mail capability, including opening and composing mail.
+ * @module
+ */
 
 /**
  * Opens a mail message in the host.

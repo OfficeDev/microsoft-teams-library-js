@@ -20,7 +20,9 @@ const marketplaceTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2
  * @hidden
  * Module for an app to support a checkout flow by interacting with the marketplace cart in the host.
  * @beta
+ * @module
  */
+
 /**
  * @hidden
  * the version of the current cart interface

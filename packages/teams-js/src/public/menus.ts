@@ -13,7 +13,9 @@ const menuTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 /**
  * Module to interact with the menu-specific part of the SDK.
  * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+ * @module
  */
+
 /**
  * @hidden
  * Represents information about item in View Configuration.

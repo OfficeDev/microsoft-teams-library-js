@@ -18,6 +18,7 @@ const navigationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * Navigation specific part of the SDK.
+ * @module
  */
 
 /** Navigation on complete handler function type */

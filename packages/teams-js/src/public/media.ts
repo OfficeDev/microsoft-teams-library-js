@@ -41,7 +41,9 @@ const mediaLogger = getLogger('media');
 
 /**
  * Interact with media, including capturing and viewing images.
+ * @module
  */
+
 /**
  * Function callback type used when calling {@link media.captureImage}.
  *

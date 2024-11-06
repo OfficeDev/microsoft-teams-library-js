@@ -9,9 +9,10 @@ import { LoadContext } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace containing the set of APIs that support Teams-specific functionalities.
+ * Module containing the set of APIs that support Teams-specific functionalities.
  *
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
+ * @module
  */
 const teamsAPIsTelemetryVersionNumber_v2: ApiVersionNumber = ApiVersionNumber.V_2;
 

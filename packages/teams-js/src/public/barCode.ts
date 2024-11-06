@@ -12,10 +12,12 @@ import { runtime } from './runtime';
 const barCodeTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
- * Namespace to interact with the barcode scanning-specific part of the SDK.
+ * Module to interact with the barcode scanning-specific part of the SDK.
  *
  * @beta
+ * @module
  */
+
 /**
  * Data structure to customize the barcode scanning experience in scanBarCode API.
  * All properties in BarCodeConfig are optional and have default values in the platform

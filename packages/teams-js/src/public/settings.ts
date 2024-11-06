@@ -13,11 +13,13 @@ const settingsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link pages.config} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link pages.config} module instead.
  *
- * Namespace to interact with the settings-specific part of the SDK.
+ * Module to interact with the settings-specific part of the SDK.
  * This object is usable only on the settings frame.
+ * @module
  */
+
 /** Register on remove handler function type */
 export type registerOnRemoveHandlerFunctionType = (evt: RemoveEvent) => void;
 /** Register on save handler function type */

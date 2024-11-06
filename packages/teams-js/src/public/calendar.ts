@@ -12,7 +12,9 @@ const calendarTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Interact with the user's calendar, including opening calendar items and composing meetings.
+ * @module
  */
+
 /**
  * Opens a calendar item.
  *

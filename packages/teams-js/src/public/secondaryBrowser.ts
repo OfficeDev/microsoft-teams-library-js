@@ -16,7 +16,9 @@ const secondaryBrowserTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumbe
  * For e.g., opening a URL in the host app inside a browser
  *
  * @beta
+ * @module
  */
+
 /**
  * Open a URL in the secondary browser.
  *

@@ -7,6 +7,7 @@ import { runtime } from '../public/runtime';
 
 /**
  * Describes information needed to start a chat
+ * @module
  */
 
 /**

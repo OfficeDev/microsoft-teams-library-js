@@ -10,7 +10,9 @@ import { runtime } from './runtime';
  * Contains functionality enabling apps to query properties about how the host manages web storage (`Window.LocalStorage`)
  *
  * @beta
+ * @module
  */
+
 /**
  * Checks if web storage (`Window.LocalStorage`) gets cleared when a user logs out from host
  *

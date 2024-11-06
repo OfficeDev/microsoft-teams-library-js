@@ -17,7 +17,9 @@ const thirdPartyCloudStorageTelemetryVersionNumber: ApiVersionNumber = ApiVersio
  * Extended files API 3P storage providers, features like sending Blob from Teams to 3P app on user
  * actions like drag and drop to compose
  * @beta
+ * @module
  */
+
 /**
  * Interface to assemble file chunks
  * @beta

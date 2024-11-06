@@ -16,7 +16,9 @@ const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_
 /**
  * Module to support video extensibility of the SDK
  * @beta
+ * @module
  */
+
 const videoPerformanceMonitor = inServerSideRenderingEnvironment()
   ? undefined
   : new VideoPerformanceMonitor(sendMessageToParent);

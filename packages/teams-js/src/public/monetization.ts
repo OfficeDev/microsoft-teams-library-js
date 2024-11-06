@@ -11,6 +11,7 @@ import { runtime } from './runtime';
  *
  * @internal
  * Limited to Microsoft-internal use
+ * @module
  */
 
 /**

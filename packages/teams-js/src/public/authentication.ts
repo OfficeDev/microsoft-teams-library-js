@@ -15,9 +15,10 @@ import { SdkError } from './interfaces';
 import { runtime } from './runtime';
 
 /**
- * Namespace to interact with the authentication-specific part of the SDK.
+ * Module to interact with the authentication-specific part of the SDK.
  *
  * This object is used for starting or completing authentication flows.
+ * @module
  */
 
 /**

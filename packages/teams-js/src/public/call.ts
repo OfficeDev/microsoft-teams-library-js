@@ -13,7 +13,9 @@ const callTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
 /**
  * Used to interact with call functionality, including starting calls with other users.
+ * @module
  */
+
 /** Modalities that can be associated with a call. */
 export enum CallModalities {
   /** Indicates that the modality is unknown or undefined. */

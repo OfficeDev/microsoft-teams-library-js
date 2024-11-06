@@ -16,7 +16,9 @@ const clipboardTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * Interact with the system clipboard
  *
  * @beta
+ * @module
  */
+
 /**
  * Function to copy data to clipboard.
  * @remarks

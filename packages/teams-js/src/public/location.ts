@@ -13,10 +13,12 @@ const locationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
- * As of 2.1.0, please use geoLocation namespace.
+ * As of 2.1.0, please use geoLocation module.
  *
  * Module to interact with the location module-specific part of the SDK.
+ * @module
  */
+
 /** Get location callback function type */
 export type getLocationCallbackFunctionType = (error: SdkError, location: Location) => void;
 /** Show location callback function type */
@@ -133,7 +135,7 @@ export function showLocation(location: Location, callback: showLocationCallbackF
 
 /**
  * @deprecated
- * As of 2.1.0, please use geoLocation namespace, and use {@link geoLocation.isSupported geoLocation.isSupported: boolean} to check if geoLocation is supported.
+ * As of 2.1.0, please use geoLocation module, and use {@link geoLocation.isSupported geoLocation.isSupported: boolean} to check if geoLocation is supported.
  *
  * Checks if Location capability is supported by the host
  *

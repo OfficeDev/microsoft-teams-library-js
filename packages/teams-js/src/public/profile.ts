@@ -15,7 +15,9 @@ const profileTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
  * Module for profile related APIs.
  *
  * @beta
+ * @module
  */
+
 /**
  * Opens a profile card at a specified position to show profile information about a persona.
  * @param showProfileRequest The parameters to position the card and identify the target user.

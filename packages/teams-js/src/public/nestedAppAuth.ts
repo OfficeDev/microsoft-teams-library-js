@@ -4,7 +4,9 @@ import { runtime } from './runtime';
 /**
  * @beta
  * Nested app auth capabilities
+ * @module
  */
+
 /**
  * Checks if MSAL-NAA channel recommended by the host
  * @returns true if host is recommending NAA channel and false otherwise

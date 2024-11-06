@@ -17,12 +17,14 @@ const tasksTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link dialog} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link dialog} module instead.
  *
  * Module to interact with the task module-specific part of the SDK.
  * This object is usable only on the content frame.
  * The tasks module will be deprecated. Please use dialog for future developments.
+ * @module
  */
+
 /**
  * Function type that is used to receive the result when a task module is submitted by
  * calling {@link tasks.submitTask tasks.submitTask(result?: string | object, appIds?: string | string[]): void}
