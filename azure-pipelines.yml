@@ -24,6 +24,7 @@ resources:
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
+      ref: refs/heads/jeklouda/updateMacImage
     - repository: IOSAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-ios
@@ -194,10 +195,21 @@ extends:
 
 # De-tach the tests from pipeline until we figure out why they won't run on macos-latest image
           - job: E2ETestAndroid
-            displayName: 'E2E Tests - Android'
+            displayName: 'E2E Tests - Android - Plan A'
             pool:
               name: Azure Pipelines
-              image: macos-14
+              image: macos-15
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+
+          - job: E2ETestAndroid
+            displayName: 'E2E Tests - Android - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: macos-15
               os: macOS
             steps:
               - template: tools/yaml-templates/android-test.yml@self
