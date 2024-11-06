@@ -115,7 +115,7 @@ extends:
             steps:
               - template: tools/yaml-templates/web-e2e-versions.yml@self
                 parameters:
-                  appHostGitPath: AppHostingSdk
+                  AppHostingSdk: AppHostingSdk
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
