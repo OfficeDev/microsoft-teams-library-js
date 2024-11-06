@@ -1,3 +1,12 @@
+/**
+ * @deprecated
+ * As of TeamsJS v2.0.0, please use {@link pages.config} module instead.
+ *
+ * Module to interact with the settings-specific part of the SDK.
+ * This object is usable only on the settings frame.
+ * @module
+ */
+
 import { ensureInitialized } from '../internal/internalAPIs';
 import { configSetConfigHelper, configSetValidityStateHelper, getConfigHelper } from '../internal/pagesHelpers';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -10,15 +19,6 @@ import { runtime } from './runtime';
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const settingsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * @deprecated
- * As of TeamsJS v2.0.0, please use {@link pages.config} module instead.
- *
- * Module to interact with the settings-specific part of the SDK.
- * This object is usable only on the settings frame.
- * @module
- */
 
 /** Register on remove handler function type */
 export type registerOnRemoveHandlerFunctionType = (evt: RemoveEvent) => void;

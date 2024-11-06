@@ -1,3 +1,13 @@
+/**
+ * Allows your application to interact with the host M365 application's search box.
+ * By integrating your application with the host's search box, users can search
+ * your app using the same search box they use elsewhere in Teams, Outlook, or Office.
+ *
+ * This functionality is in Beta.
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleStatusAndReason, sendMessageToParent } from '../internal/communication';
 import { registerHandler, removeHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -9,16 +19,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const searchTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Allows your application to interact with the host M365 application's search box.
- * By integrating your application with the host's search box, users can search
- * your app using the same search box they use elsewhere in Teams, Outlook, or Office.
- *
- * This functionality is in Beta.
- * @beta
- * @module
- */
 
 const onChangeHandlerName = 'search.queryChange';
 const onClosedHandlerName = 'search.queryClose';

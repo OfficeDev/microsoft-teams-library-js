@@ -1,5 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+/**
+ * @deprecated
+ * As of TeamsJS v2.0.0, please use {@link dialog} module instead.
+ *
+ * Module to interact with the task module-specific part of the SDK.
+ * This object is usable only on the content frame.
+ * The tasks module will be deprecated. Please use dialog for future developments.
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { botUrlOpenHelper, updateResizeHelper, urlOpenHelper, urlSubmitHelper } from '../internal/dialogHelpers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -14,16 +24,6 @@ import { runtime } from './runtime';
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const tasksTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * @deprecated
- * As of TeamsJS v2.0.0, please use {@link dialog} module instead.
- *
- * Module to interact with the task module-specific part of the SDK.
- * This object is usable only on the content frame.
- * The tasks module will be deprecated. Please use dialog for future developments.
- * @module
- */
 
 /**
  * Function type that is used to receive the result when a task module is submitted by

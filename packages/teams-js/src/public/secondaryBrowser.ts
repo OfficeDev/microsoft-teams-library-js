@@ -1,3 +1,11 @@
+/**
+ * Module to power up the in-app browser experiences in the host app.
+ * For e.g., opening a URL in the host app inside a browser
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -10,14 +18,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const secondaryBrowserTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to power up the in-app browser experiences in the host app.
- * For e.g., opening a URL in the host app inside a browser
- *
- * @beta
- * @module
- */
 
 /**
  * Open a URL in the secondary browser.

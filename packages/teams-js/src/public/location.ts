@@ -1,3 +1,11 @@
+/**
+ * @deprecated
+ * As of 2.1.0, please use geoLocation module.
+ *
+ * Module to interact with the location module-specific part of the SDK.
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { locationAPIsRequiredVersion } from '../internal/constants';
 import { ensureInitialized, isCurrentSDKVersionAtLeast } from '../internal/internalAPIs';
@@ -10,14 +18,6 @@ import { runtime } from './runtime';
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */
 const locationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
-
-/**
- * @deprecated
- * As of 2.1.0, please use geoLocation module.
- *
- * Module to interact with the location module-specific part of the SDK.
- * @module
- */
 
 /** Get location callback function type */
 export type getLocationCallbackFunctionType = (error: SdkError, location: Location) => void;

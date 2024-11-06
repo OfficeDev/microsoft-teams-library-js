@@ -1,3 +1,10 @@
+/**
+ * Interact with the system clipboard
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -11,13 +18,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const clipboardTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Interact with the system clipboard
- *
- * @beta
- * @module
- */
 
 /**
  * Function to copy data to clipboard.

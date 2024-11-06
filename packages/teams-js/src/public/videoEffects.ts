@@ -1,3 +1,9 @@
+/**
+ * Module to support video extensibility of the SDK
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -12,12 +18,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module to support video extensibility of the SDK
- * @beta
- * @module
- */
 
 const videoPerformanceMonitor = inServerSideRenderingEnvironment()
   ? undefined

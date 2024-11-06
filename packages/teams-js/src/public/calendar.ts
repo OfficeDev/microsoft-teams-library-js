@@ -1,3 +1,8 @@
+/**
+ * Interact with the user's calendar, including opening calendar items and composing meetings.
+ * @module
+ */
+
 import { sendAndHandleStatusAndReason } from '../internal/communication';
 import { createTeamsDeepLinkForCalendar } from '../internal/deepLinkUtilities';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -9,11 +14,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const calendarTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Interact with the user's calendar, including opening calendar items and composing meetings.
- * @module
- */
 
 /**
  * Opens a calendar item.

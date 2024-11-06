@@ -1,11 +1,11 @@
-import { ensureInitialized } from '../internal/internalAPIs';
-import { runtime } from './runtime';
-
 /**
  * @beta
  * Nested app auth capabilities
  * @module
  */
+
+import { ensureInitialized } from '../internal/internalAPIs';
+import { runtime } from './runtime';
 
 /**
  * Checks if MSAL-NAA channel recommended by the host

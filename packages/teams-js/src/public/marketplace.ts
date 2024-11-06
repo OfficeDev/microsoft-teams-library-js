@@ -1,3 +1,10 @@
+/**
+ * @hidden
+ * Module for an app to support a checkout flow by interacting with the marketplace cart in the host.
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import {
@@ -15,13 +22,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const marketplaceTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * @hidden
- * Module for an app to support a checkout flow by interacting with the marketplace cart in the host.
- * @beta
- * @module
- */
 
 /**
  * @hidden

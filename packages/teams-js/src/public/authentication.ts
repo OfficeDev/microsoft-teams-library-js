@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the authentication-specific part of the SDK.
+ *
+ * This object is used for starting or completing authentication flows.
+ * @module
+ */
+
 import {
   Communication,
   sendMessageEventToChild,
@@ -13,13 +20,6 @@ import { fullyQualifyUrlString, validateUrl } from '../internal/utils';
 import { FrameContexts, HostClientType } from './constants';
 import { SdkError } from './interfaces';
 import { runtime } from './runtime';
-
-/**
- * Module to interact with the authentication-specific part of the SDK.
- *
- * This object is used for starting or completing authentication flows.
- * @module
- */
 
 /**
  * Exceptional APIs telemetry versioning file: v1 and v2 APIs are mixed together in this file

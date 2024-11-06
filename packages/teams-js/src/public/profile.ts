@@ -1,3 +1,10 @@
+/**
+ * Module for profile related APIs.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ShowProfileRequestInternal, validateShowProfileRequest } from '../internal/profileUtil';
@@ -10,13 +17,6 @@ import { runtime } from './runtime';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const profileTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Module for profile related APIs.
- *
- * @beta
- * @module
- */
 
 /**
  * Opens a profile card at a specified position to show profile information about a persona.
