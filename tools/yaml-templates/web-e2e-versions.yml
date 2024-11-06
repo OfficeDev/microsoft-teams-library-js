@@ -2,7 +2,7 @@
 # It will run one E2E job for each testPrefixPattern selector in the testPrefixPatternGroups parameter.
 
 parameters:
-  - name: AppHostingSdk
+  - name: 'AppHostingSdk'
     default: none
     type: string
 
