@@ -1,3 +1,10 @@
+/**
+ * @module
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
 import { sendAndUnwrap } from '../../../internal/communication';
 import { ensureInitialized } from '../../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../../internal/telemetry';
@@ -10,11 +17,6 @@ import * as joinedTeams from './joinedTeams';
  */
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-/**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- */
 /**
  * @hidden
  * Allows an app to get the configuration setting value

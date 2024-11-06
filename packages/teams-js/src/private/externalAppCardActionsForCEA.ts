@@ -1,3 +1,12 @@
+/**
+ * @beta
+ * @hidden
+ * Module to delegate adaptive card action for Custom Engine Agent execution to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -11,24 +20,19 @@ import * as externalAppCardActions from './externalAppCardActions';
  * All of APIs in this capability file should send out API version v2 ONLY
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
+
 /**
  * @beta
  * @hidden
- * Module to delegate adaptive card action for Custom Engine Agent execution to the host
+ * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID.
  * @internal
  * Limited to Microsoft-internal use
-  /**
-   * @beta
-   * @hidden
-   * Delegates an Adaptive Card Action.OpenUrl request to the host for the application with the provided app ID.
-   * @internal
-   * Limited to Microsoft-internal use
-   * @param appId ID of the application the request is intended for. This must be a UUID
-   * @param conversationId To tell the bot what conversation the calls are coming from
-   * @param url The URL to open
-   * @throws Error if the response has not successfully completed
-   * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
-   */
+ * @param appId ID of the application the request is intended for. This must be a UUID
+ * @param conversationId To tell the bot what conversation the calls are coming from
+ * @param url The URL to open
+ * @throws Error if the response has not successfully completed
+ * @returns Promise that resolves to ActionOpenUrlType indicating the type of URL that was opened on success and rejects with ActionOpenUrlError if the request fails
+ */
 export async function processActionOpenUrl(
   appId: AppId,
   conversationId: string,

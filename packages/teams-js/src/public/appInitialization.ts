@@ -6,7 +6,7 @@ import { version } from './version';
 
 /**
  * @deprecated
- * As of TeamsJS v2.0.0, please use {@link app} namespace instead.
+ * As of TeamsJS v2.0.0, please use {@link app} module instead.
  *
  * v1 APIs telemetry file: All of APIs in this capability file should send out API version v1 ONLY
  */

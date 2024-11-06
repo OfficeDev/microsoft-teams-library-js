@@ -1,3 +1,13 @@
+/**
+ * Subcapability that allows communication between the dialog and the parent app.
+ *
+ * @remarks
+ * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../../../internal/communication';
 import { dialogTelemetryVersionNumber, storedMessages } from '../../../internal/dialogHelpers';
 import { registerHandler, removeHandler } from '../../../internal/handlers';
@@ -7,14 +17,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../../constants';
 import { runtime } from '../../runtime';
 import { PostMessageChannel } from '../dialog';
 
-/**
- * Subcapability that allows communication between the dialog and the parent app.
- *
- * @remarks
- * Note that dialog can be invoked from parentless scenarios e.g. Search Message Extensions. The subcapability `parentCommunication` is not supported in such scenarios.
- *
- * @beta
- */
 /**
  *  Send message to the parent from dialog
  *

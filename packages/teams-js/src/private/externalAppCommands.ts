@@ -1,3 +1,13 @@
+/**
+ * @hidden
+ * Module to delegate the ActionCommand to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ *
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -12,14 +22,6 @@ import * as externalAppAuthentication from './externalAppAuthentication';
  */
 const externalAppCommandsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * Module to delegate the ActionCommand to the host
- * @internal
- * Limited to Microsoft-internal use
- *
- * @beta
- */
 /**
  * @hidden
  * The payload of IActionCommandResponse
