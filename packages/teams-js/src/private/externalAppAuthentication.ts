@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ * Module to delegate authentication and message extension requests to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ResponseHandler } from '../internal/responseHandler';
@@ -13,12 +21,6 @@ import { ISerializable } from '../public/serializable.interface';
  */
 const externalAppAuthenticationTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * Module to delegate authentication and message extension requests to the host
- * @internal
- * Limited to Microsoft-internal use
- */
 /*********** BEGIN REQUEST TYPE ************/
 /**
  * @hidden

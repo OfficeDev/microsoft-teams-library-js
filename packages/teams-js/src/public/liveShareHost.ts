@@ -1,3 +1,11 @@
+/**
+ * APIs involving Live Share, a framework for building real-time collaborative apps.
+ * For more information, visit https://aka.ms/teamsliveshare
+ *
+ * @see LiveShareHost
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -9,12 +17,6 @@ import { runtime } from './runtime';
  */
 const interactiveTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * APIs involving Live Share, a framework for building real-time collaborative apps.
- * For more information, visit https://aka.ms/teamsliveshare
- *
- * @see LiveShareHost
- */
 /**
  * @hidden
  * The meeting roles of a user.

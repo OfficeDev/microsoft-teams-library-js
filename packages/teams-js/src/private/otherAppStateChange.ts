@@ -1,12 +1,5 @@
-import { sendMessageToParent } from '../internal/communication';
-import { registerHandler, removeHandler } from '../internal/handlers';
-import { ensureInitialized } from '../internal/internalAPIs';
-import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { isNullOrUndefined } from '../internal/typeCheckUtilities';
-import { ErrorCode } from '../public/interfaces';
-import { runtime } from '../public/runtime';
-
 /**
+ * @module
  * @hidden
  * @internal
  * @beta
@@ -16,6 +9,15 @@ import { runtime } from '../public/runtime';
  * *while* the developer's application is running. For example, if the developer wants to be notified
  * when another application has been installed.
  */
+
+import { sendMessageToParent } from '../internal/communication';
+import { registerHandler, removeHandler } from '../internal/handlers';
+import { ensureInitialized } from '../internal/internalAPIs';
+import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
+import { isNullOrUndefined } from '../internal/typeCheckUtilities';
+import { ErrorCode } from '../public/interfaces';
+import { runtime } from '../public/runtime';
+
 /**
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */

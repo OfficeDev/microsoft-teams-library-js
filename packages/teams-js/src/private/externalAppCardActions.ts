@@ -1,3 +1,11 @@
+/**
+ * @hidden
+ * Module to delegate adaptive card action execution to the host
+ * @internal
+ * Limited to Microsoft-internal use
+ * @module
+ */
+
 import { sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
@@ -11,12 +19,6 @@ import { ExternalAppErrorCode } from './constants';
  */
 const externalAppCardActionsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * @hidden
- * Module to delegate adaptive card action execution to the host
- * @internal
- * Limited to Microsoft-internal use
- */
 /**
  * @hidden
  * The type of deeplink action that was executed by the host

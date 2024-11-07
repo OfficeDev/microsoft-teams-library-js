@@ -1,3 +1,9 @@
+/**
+ * Module to interact with the menu-specific part of the SDK.
+ * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -10,10 +16,6 @@ import { errorNotSupportedOnPlatform } from './constants';
  */
 const menuTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Module to interact with the menu-specific part of the SDK.
- * This object is used to show View Configuration, Action Menu and Navigation Bar Menu.
- */
 /**
  * @hidden
  * Represents information about item in View Configuration.

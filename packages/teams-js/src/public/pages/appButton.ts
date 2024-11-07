@@ -1,3 +1,8 @@
+/**
+ * Provides APIs to interact with the app button part of the SDK.
+ * @module
+ */
+
 import { registerHandlerHelper } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { pagesTelemetryVersionNumber } from '../../internal/pagesHelpers';
@@ -6,9 +11,6 @@ import { errorNotSupportedOnPlatform, FrameContexts } from '../constants';
 import { runtime } from '../runtime';
 import { handlerFunctionType } from './pages';
 
-/**
- * Provides APIs to interact with the app button part of the SDK.
- */
 /**
  * Registers a handler for clicking the app button.
  * Only one handler can be registered at a time. A subsequent registration replaces an existing registration.

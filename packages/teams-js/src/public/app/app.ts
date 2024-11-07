@@ -2,6 +2,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/**
+ * Module to interact with app initialization and lifecycle.
+ * @module
+ */
+
 import * as appHelpers from '../../internal/appHelpers';
 import { Communication, sendAndUnwrap, uninitializeCommunication } from '../../internal/communication';
 import { GlobalVars } from '../../internal/globalVars';
@@ -26,10 +31,6 @@ import * as lifecycle from './lifecycle';
  * v2 APIs telemetry file: All of APIs in this capability file should send out API version v2 ONLY
  */
 const appTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
-
-/**
- * Namespace to interact with app initialization and lifecycle.
- */
 
 const appLogger = getLogger('app');
 
@@ -683,9 +684,8 @@ export function notifyAppLoaded(): void {
 /**
  * Notifies the frame that app initialization is successful and is ready for user interaction.
  */
-export function notifySuccess(): void {
-  ensureInitializeCalled();
-  appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
+export function notifySuccess(): Promise<appHelpers.NotifySuccessResponse> {
+  return appHelpers.notifySuccessHelper(getApiVersionTag(appTelemetryVersionNumber, ApiName.App_NotifySuccess));
 }
 
 /**
@@ -778,6 +778,7 @@ export function openLink(deepLink: string): Promise<void> {
 }
 
 export { lifecycle };
+export { NotifySuccessResponse } from '../../internal/appHelpers';
 
 /**
  * @hidden

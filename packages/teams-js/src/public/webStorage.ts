@@ -1,3 +1,10 @@
+/**
+ * Contains functionality enabling apps to query properties about how the host manages web storage (`Window.LocalStorage`)
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndUnwrap } from '../internal/communication';
 import { GlobalVars } from '../internal/globalVars';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -6,11 +13,6 @@ import { getCachedHostName as getCachedHostNameHelper } from '../internal/webSto
 import { errorNotSupportedOnPlatform, HostClientType, HostName } from './constants';
 import { runtime } from './runtime';
 
-/**
- * Contains functionality enabling apps to query properties about how the host manages web storage (`Window.LocalStorage`)
- *
- * @beta
- */
 /**
  * Checks if web storage (`Window.LocalStorage`) gets cleared when a user logs out from host
  *

@@ -1,3 +1,9 @@
+/**
+ * Module to support video extensibility of the SDK
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../internal/communication';
 import { registerHandler } from '../internal/handlers';
 import { ensureInitialized } from '../internal/internalAPIs';
@@ -13,10 +19,6 @@ import { runtime } from './runtime';
  */
 const videoEffectsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Module to support video extensibility of the SDK
- * @beta
- */
 const videoPerformanceMonitor = inServerSideRenderingEnvironment()
   ? undefined
   : new VideoPerformanceMonitor(sendMessageToParent);
