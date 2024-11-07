@@ -186,38 +186,38 @@ extends:
                   testRunTitle: 'E2E Tests - CDN'
                   mergeTestResults: true
                 condition: succeededOrFailed()
-# De-tach the tests from pipeline until we figure out why they won't run on macos-latest image
-#          - job: E2ETestAndroid
-#            displayName: 'E2E Tests - Android'
-#            pool:
-#              name: Azure Pipelines
-#              image: internal-macos12
-#              os: macOS
-#            steps:
-#              - template: tools/yaml-templates/android-test.yml@self
-#                parameters:
-#                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
-#
-#          - job: E2ETestIOS
-#            displayName: 'E2E Tests - IOS - Plan A'
-#            pool:
-#              name: Azure Pipelines
-#              image: internal-macos12
-#              os: macOS
-#            steps:
-#              - template: tools/yaml-templates/ios-test.yml@self
-#                parameters:
-#                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
-#                  testPlan: iosE2ETestPlanA
-#
-#          - job: E2ETestIOS2
-#            displayName: 'E2E Tests - IOS - Plan B'
-#            pool:
-#              name: Azure Pipelines
-#              image: internal-macos12
-#              os: macOS
-#            steps:
-#              - template: tools/yaml-templates/ios-test.yml@self
-#                parameters:
-#                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
-#                  testPlan: iosE2ETestPlanB
+
+          - job: E2ETestAndroid
+            displayName: 'E2E Tests - Android'
+            pool:
+              name: Azure Pipelines
+              image: internal-macos12
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/android-test.yml@self
+                parameters:
+                  androidAppHostingSdkGitPath: AndroidAppHostingSdk
+
+          - job: E2ETestIOS
+            displayName: 'E2E Tests - IOS - Plan A'
+            pool:
+              name: Azure Pipelines
+              image: internal-macos12
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/ios-test.yml@self
+                parameters:
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanA
+
+          - job: E2ETestIOS2
+            displayName: 'E2E Tests - IOS - Plan B'
+            pool:
+              name: Azure Pipelines
+              image: internal-macos12
+              os: macOS
+            steps:
+              - template: tools/yaml-templates/ios-test.yml@self
+                parameters:
+                  iOSAppHostingSdkGitPath: IOSAppHostingSdk
+                  testPlan: iosE2ETestPlanB
