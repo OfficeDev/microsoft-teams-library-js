@@ -100,5 +100,5 @@ export async function openStoreExperience(openStoreParams: OpenStoreParams | Ope
  * @throws Error if {@linkcode app.initialize} has not successfully completed
  */
 export function isSupported(): boolean {
-  return ensureInitialized(runtime) && (!!runtime.supports.dialog?.url || !!runtime.supports.store);
+  return ensureInitialized(runtime) && !!runtime.supports.store;
 }
