@@ -43,7 +43,7 @@ export default [
       typescript(),
       json(),
       commonjs(),
-      nodePolyfills(),
+      nodePolyfills({ exclude: ['node_modules/**'] }),
     ],
     treeshake: {
       moduleSideEffects: [
