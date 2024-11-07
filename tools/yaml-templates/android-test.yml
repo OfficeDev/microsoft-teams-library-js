@@ -110,5 +110,5 @@ steps:
     displayName: 'Publish logs artifact'
     inputs:
       path: '$(Agent.BuildDirectory)/androidHost/apps/orangeandroid/androidTestArtifacts'
-      artifact: androidTestArtifacts-$(System.JobAttempt)
+      artifact: androidTestArtifacts-shard${{ parameters.shardIndex }}-attempt$(System.JobAttempt)
     condition: always()
