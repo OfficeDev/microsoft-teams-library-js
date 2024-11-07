@@ -20,11 +20,11 @@ resources:
     - repository: AppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk
-      ref: $(AppHostReleaseBranch)
+      ref: $(AppHostLatestBranch)
     - repository: AppHostingSdkV4
       type: git
       name: ISS/metaos-hub-sdk
-      ref: release/4.6.0
+      ref: $(AppHostV4ReleaseBranch)
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -144,6 +144,11 @@ extends:
               versionBranch: 'Latest'
 
           - template: tools/yaml-templates/web-e2e-versions.yml@self
+            condition: and(
+              eq(variables['Build.Reason'], 'PullRequest'),
+              startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
+              eq(variables['System.PullRequest.TargetBranch'], 'main')
+              )
             parameters:
               AppHostingSdk: AppHostingSdkV4
               versionBranch: 'v4'
