@@ -146,7 +146,6 @@
     }
   },
   "dependencies": {
-    "skeleton-buffer": "file:./skeleton-buffer",
     "uuid": "^9.0.1"
   }
 }
