@@ -53,7 +53,6 @@ export interface UserPresence {
 
   /**
    * Optional custom status message
-   * @since 2.0.0
    */
   customMessage?: string;
 }
@@ -79,7 +78,6 @@ export interface SetPresenceParams {
 
   /**
    * Optional custom status message
-   * @since 2.0.0
    */
   customMessage?: string;
 }
