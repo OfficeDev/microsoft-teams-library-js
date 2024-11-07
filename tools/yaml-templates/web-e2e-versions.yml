@@ -17,6 +17,16 @@ jobs:
       - template: tools/yaml-templates/build-app-host.yml@self
         parameters:
           appHostGitPath: AppHostingSdk
+  - job: E2ETest2
+    displayName: 'E2E Test - Perf2'
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: 'ubuntu-latest'
+      os: linux
+    steps:
+      - template: tools/yaml-templates/build-app-host.yml@self
+        parameters:
+          appHostGitPath: AppHostingSdk
 
   #     - task: Bash@3
   #       displayName: 'Run E2E Perf tests'
