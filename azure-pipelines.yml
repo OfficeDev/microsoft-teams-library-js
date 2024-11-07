@@ -147,11 +147,6 @@ extends:
             parameters:
               AppHostingSdk: AppHostingSdkV4
               versionBranch: 'v4'
-            condition: and(
-              eq(variables['Build.Reason'], 'PullRequest'),
-              startsWith(variables['System.PullRequest.SourceBranch'], 'release/'),
-              eq(variables['System.PullRequest.TargetBranch'], 'main')
-              )
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
