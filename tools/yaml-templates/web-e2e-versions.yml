@@ -4,7 +4,7 @@ parameters:
     type: string
 
 jobs:
-  - template: tools/yaml-templates/web-e2e-tests-job.yml@self
+  - template: web-e2e-tests-job.yml@self
     parameters:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'standardWeb'
