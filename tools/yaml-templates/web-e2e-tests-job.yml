@@ -20,12 +20,8 @@ parameters:
     default: ['{[A-Z],[a-z],[0-9]}']
   - name: versionBranch
     type: string
-    values:
-      - 'Latest'
-      - 'v1'
-      - 'v2'
-      - 'v3'
-      - 'v4'
+    default: none
+
 jobs:
   - ${{each testPrefixPattern in parameters.testPrefixPatternGroups}}:
       # This replaces all characters expected to be see in the test prefix pattern that are not valid in a job name with underscores.
