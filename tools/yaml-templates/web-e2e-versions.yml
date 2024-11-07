@@ -2,6 +2,9 @@ parameters:
   - name: AppHostingSdk
     default: none
     type: string
+  - name: versionBranch
+    default: 'Latest'
+    type: string
 
 jobs:
   - template: web-e2e-tests-job.yml@self
@@ -10,15 +13,18 @@ jobs:
       hostingEnvironmentType: 'standardWeb'
       teamsJsReferenceType: 'npm'
       testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
+      versionBranch: versionBranch
   - template: web-e2e-tests-job.yml@self
     parameters:
     AppHostingSdk: AppHostingSdk
     hostingEnvironmentType: 'standardWeb'
     teamsJsReferenceType: 'scriptTag'
     testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
+    versionBranch: versionBranch
 
   - template: web-e2e-tests-job.yml@self
     parameters:
       AppHostingSdk: AppHostingSdk
       hostingEnvironmentType: 'electron'
       teamsJsReferenceType: 'npm'
+      versionBranch: versionBranch

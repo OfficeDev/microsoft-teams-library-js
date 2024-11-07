@@ -21,6 +21,10 @@ resources:
       type: git
       name: ISS/metaos-hub-sdk
       ref: $(AppHostReleaseBranch)
+    - repository: AppHostingSdkV4
+      type: git
+      name: ISS/metaos-hub-sdk
+      ref: release/4.6.0
     - repository: AndroidAppHostingSdk
       type: git
       name: ISS/metaos-hub-sdk-android
@@ -54,6 +58,7 @@ extends:
       sourceRepositoriesToScan:
         include:
           - repository: AppHostingSdk
+          - repository: AppHostingSdkV4
           - repository: AndroidAppHostingSdk
           - repository: IOSAppHostingSdk
     customBuildTags:
@@ -133,12 +138,15 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - job: E2ETestLatest
-            displayName: 'E2E Tests - Latest Host'
-            steps:
-              - template: tools/yaml-templates/web-e2e-versions.yml@self
-                parameters:
-                  AppHostingSdk: AppHostingSdk
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdk
+              versionBranch: 'Latest'
+
+          - template: tools/yaml-templates/web-e2e-versions.yml@self
+            parameters:
+              AppHostingSdk: AppHostingSdkV4
+              versionBranch: 'v4.*'
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
