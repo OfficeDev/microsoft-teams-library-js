@@ -133,22 +133,12 @@ extends:
                   mergeTestResults: true
                 condition: succeededOrFailed()
 
-          - template: tools/yaml-templates/web-e2e-versions.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'standardWeb'
-              teamsJsReferenceType: 'scriptTag'
-              testPrefixPatternGroups: ['{[0-9],[A-D],[a-d]}', '{[E],[e]}', '{[F-M],[f-m]}', '{[N-Z],[n-z]}']
-
-          - template: tools/yaml-templates/web-e2e-tests-job.yml@self
-            parameters:
-              AppHostingSdk: AppHostingSdk
-              hostingEnvironmentType: 'electron'
-              teamsJsReferenceType: 'npm'
+          - job: E2ETestLatest
+            displayName: 'E2E Tests - Latest Host'
+            steps:
+              - template: tools/yaml-templates/web-e2e-versions.yml@self
+                parameters:
+                  AppHostingSdk: AppHostingSdk
 
           - job: E2ETestCDN
             displayName: 'E2E Tests - CDN (only runs on release builds)'
