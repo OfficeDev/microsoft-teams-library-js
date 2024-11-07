@@ -204,6 +204,8 @@ extends:
               - template: tools/yaml-templates/android-test.yml@self
                 parameters:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 0
 
           - job: E2ETestAndroidB
             displayName: 'E2E Tests - Android - Plan B'
@@ -215,6 +217,8 @@ extends:
               - template: tools/yaml-templates/android-test.yml@self
                 parameters:
                   androidAppHostingSdkGitPath: AndroidAppHostingSdk
+                  shardNum: 2
+                  shardIndex: 1
 #
 #          - job: E2ETestIOS
 #            displayName: 'E2E Tests - IOS - Plan A'
