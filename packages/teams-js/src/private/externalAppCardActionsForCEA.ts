@@ -1,10 +1,10 @@
 import { sendAndUnwrap, sendMessageToParentAsync } from '../internal/communication';
 import { ensureInitialized } from '../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../internal/telemetry';
-import { validateId } from '../internal/utils';
 import { AppId } from '../public';
 import { errorNotSupportedOnPlatform, FrameContexts } from '../public/constants';
 import { runtime } from '../public/runtime';
+import { validateInput } from './externalAppAuthenticationForCEA';
 import * as externalAppCardActions from './externalAppCardActions';
 
 /**
@@ -38,7 +38,7 @@ export async function processActionOpenUrl(
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
   const [error, response] = await sendMessageToParentAsync<
     [externalAppCardActions.ActionOpenUrlError, externalAppCardActions.ActionOpenUrlType]
   >(
@@ -77,7 +77,7 @@ export async function processActionSubmit(
   if (!isSupported()) {
     throw errorNotSupportedOnPlatform;
   }
-  validateId(conversationId, new Error('conversation id is not valid.'));
+  validateInput(appId, conversationId);
   const error = await sendAndUnwrap<externalAppCardActions.ActionSubmitError | undefined>(
     getApiVersionTag(
       externalAppCardActionsTelemetryVersionNumber,

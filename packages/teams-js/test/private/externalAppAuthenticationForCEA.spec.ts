@@ -122,7 +122,7 @@ describe('externalAppAuthenticationForCEA', () => {
           }
           return expect(promise).resolves.toEqual(testResponse);
         });
-        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+        it(`should throw error if the actionExecuteInvokeRequest.data is not of correct type - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
@@ -142,6 +142,23 @@ describe('externalAppAuthenticationForCEA', () => {
               errorCode: 'INTERNAL_ERROR',
               message: `Invalid data type ${typeof invalidDataRequest.data}. Data must be a primitive or a plain object.`,
             });
+          }
+        });
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          try {
+            await externalAppAuthenticationForCEA.authenticateAndResendRequest(
+              {} as unknown as AppId,
+              testConversationId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
           }
         });
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
@@ -272,6 +289,22 @@ describe('externalAppAuthenticationForCEA', () => {
     });
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          try {
+            await externalAppAuthenticationForCEA.authenticateWithSSO(
+              {} as unknown as AppId,
+              testConversationId,
+              testRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
+          }
+        });
         it('should throw error from host', async () => {
           await utils.initializeWithContext(FrameContexts.content);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
@@ -379,6 +412,24 @@ describe('externalAppAuthenticationForCEA', () => {
     const allowedFrameContexts = [FrameContexts.content];
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          try {
+            await externalAppAuthenticationForCEA.authenticateWithSSOAndResendRequest(
+              {} as unknown as AppId,
+              testConversationId,
+              testAuthRequest,
+              testOriginalRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
+          }
+        });
+
         it(`should throw error from host failure in context - ${frameContext}`, async () => {
           expect.assertions(3);
           const testError = {
@@ -450,7 +501,7 @@ describe('externalAppAuthenticationForCEA', () => {
           );
         });
 
-        it(`should throw error if the data is not of correct type - ${frameContext}`, async () => {
+        it(`should throw error if the IActionExecuteInvokeRequest.data is not of correct type - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
           utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
@@ -472,7 +523,6 @@ describe('externalAppAuthenticationForCEA', () => {
             });
           }
         });
-
         it(`should throw error on invalid original request with context - ${frameContext}`, async () => {
           expect.assertions(1);
           await utils.initializeWithContext(frameContext);
@@ -579,6 +629,22 @@ describe('externalAppAuthenticationForCEA', () => {
 
     Object.values(FrameContexts).forEach((frameContext) => {
       if (allowedFrameContexts.includes(frameContext)) {
+        it(`should throw error if the appId is not an instance of AppId class - ${frameContext}`, async () => {
+          expect.assertions(1);
+          await utils.initializeWithContext(frameContext);
+          utils.setRuntimeConfig({ apiVersion: 2, supports: { externalAppAuthenticationForCEA: {} } });
+          try {
+            await externalAppAuthenticationForCEA.authenticateWithOauth(
+              {} as unknown as AppId,
+              testConversationId,
+              testAuthRequest,
+            );
+          } catch (e) {
+            expect(e).toEqual(
+              new Error('Potential app id ([object Object]) is invalid; it is not an instance of AppId class.'),
+            );
+          }
+        });
         it(`should resolve on success with context - ${frameContext}`, async () => {
           expect.assertions(3);
           await utils.initializeWithContext(frameContext);
