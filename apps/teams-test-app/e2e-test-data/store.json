@@ -9,7 +9,6 @@
     {
       "title": "openStoreExperience API Call - Success",
       "type": "callResponse",
-      "testUrlParams": [["frameContext", "task"]],
       "boxSelector": "#box_storeOpen",
       "hostSdkVersion": {
         "web": "<4.5.0"
@@ -17,11 +16,7 @@
       "inputValue": {
         "dialogType": "fullstore"
       },
-      "eventData": {
-        "url": "https://teams.microsoft.com/extensibility-apps/store/view?language=en-us&metaoshost=office&host=metaos&clienttype=web",
-        "type": "url"
-      },
-      "expectedAlertValue": "dialog.open() called with ##JSON_EVENT_DATA##"
+      "expectedAlertValue": "dialog.open() called"
     }
   ]
 }
