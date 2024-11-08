@@ -60,8 +60,8 @@ steps:
 
   - task: Bash@3
     displayName: 'Install Emulator'
-    # This task is flaky, but when it works it almost always completes in under 10 minutes.
-    # Setting the timeout to 20 minutes so we can fail faster when it fails.
+    # This task is flaky, but when it works it almost always completes in under 5 minutes.
+    # Setting the timeout to 20 minutes because it seems to take a little longer since we moved to MacOS 15 runner
     timeoutInMinutes: 20
     inputs:
       targetType: inline
