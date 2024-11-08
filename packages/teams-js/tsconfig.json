@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist/esm",
     "declarationDir": "./dist/esm/packages/teams-js/dts",
-    "lib": ["DOM", "ES2015", "ES5"],
-    "module": "es6",
+    "lib": ["DOM", "ES2015", "ES5", "ES2021.String"],
+    "module": "ES6",
     "moduleResolution": "node",
     "noResolve": false,
     "noImplicitAny": false,
