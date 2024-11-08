@@ -1,3 +1,10 @@
+/**
+ * Module for interaction with adaptive card dialogs that need to communicate with the bot framework
+ *
+ * @beta
+ * @module
+ */
+
 import { sendMessageToParent } from '../../../internal/communication';
 import {
   dialogTelemetryVersionNumber,
@@ -11,11 +18,6 @@ import { BotAdaptiveCardDialogInfo, DialogInfo } from '../../interfaces';
 import { runtime } from '../../runtime';
 import { DialogSubmitHandler } from '../dialog';
 
-/**
- * Module for interaction with adaptive card dialogs that need to communicate with the bot framework
- *
- * @beta
- */
 /**
  * Allows an app to open an adaptive card-based dialog module using bot.
  *

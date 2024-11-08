@@ -1,3 +1,8 @@
+/**
+ * Provides APIs for handling the user's navigational history.
+ * @module
+ */
+
 import { Communication, sendMessageEventToChild, sendMessageToParent } from '../../internal/communication';
 import { registerHandler } from '../../internal/handlers';
 import { ensureInitialized } from '../../internal/internalAPIs';
@@ -8,9 +13,6 @@ import { errorNotSupportedOnPlatform } from '../constants';
 import { runtime } from '../runtime';
 import { backButtonHandlerFunctionType } from './pages';
 
-/**
- * Provides APIs for handling the user's navigational history.
- */
 let backButtonPressHandler: (() => boolean) | undefined;
 
 /**

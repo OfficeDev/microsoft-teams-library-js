@@ -1,3 +1,10 @@
+/**
+ * Module to interact with the stage view specific part of the SDK.
+ *
+ * @beta
+ * @module
+ */
+
 import { sendAndHandleSdkError } from '../../internal/communication';
 import { ensureInitialized } from '../../internal/internalAPIs';
 import { ApiName, ApiVersionNumber, getApiVersionTag } from '../../internal/telemetry';
@@ -10,11 +17,6 @@ import * as self from './self';
  */
 const stageViewTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_2;
 
-/**
- * Module to interact with the stage view specific part of the SDK.
- *
- *  @beta
- */
 /**
  * Parameters to open a stage view.
  */

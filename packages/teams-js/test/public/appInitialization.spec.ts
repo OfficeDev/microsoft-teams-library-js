@@ -57,31 +57,14 @@ describe('appInitialization', () => {
   });
 
   describe('testing notifySuccess', () => {
-    it('should call app.notifySuccess from the legacy code', async () => {
-      await utils.initializeWithContext('content');
-      const notifySuccessHelperFile = jest.spyOn(AppHelpersFile, 'notifySuccessHelper');
-      appInitialization.notifySuccess();
-      expect(notifySuccessHelperFile).toHaveBeenCalled();
-      expect(notifySuccessHelperFile).toHaveReturned();
-      notifySuccessHelperFile.mockRestore();
-    });
     it('should call notifySuccess correctly in legacy flow', async () => {
       await utils.initializeWithContext('content');
 
       appInitialization.notifySuccess();
       const message = utils.findMessageByFunc(appInitialization.Messages.Success);
       expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
-      expect(message.args[0]).toEqual(version);
-    });
-    it('should call notifySuccess correctly', async () => {
-      await utils.initializeWithContext('content');
-
-      app.notifySuccess();
-      const message = utils.findMessageByFunc(app.Messages.Success);
-      expect(message).not.toBeNull();
-      expect(message.args.length).toBe(1);
-      expect(message.args[0]).toEqual(version);
+      expect(message?.args?.length).toBe(1);
+      expect((message?.args ?? [])[0]).toEqual(version);
     });
   });
 

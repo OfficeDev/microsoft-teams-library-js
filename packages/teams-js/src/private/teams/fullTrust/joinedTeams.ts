@@ -1,3 +1,10 @@
+/**
+ * @module
+ * @hidden
+ * @internal
+ * Limited to Microsoft-internal use
+ */
+
 import { sendAndUnwrap } from '../../../internal/communication';
 import { getUserJoinedTeamsSupportedAndroidClientVersion } from '../../../internal/constants';
 import { GlobalVars } from '../../../internal/globalVars';
@@ -13,11 +20,6 @@ import { TeamInstanceParameters, UserJoinedTeamsInformation } from '../../interf
  */
 const teamsTelemetryVersionNumber: ApiVersionNumber = ApiVersionNumber.V_1;
 
-/**
- * @hidden
- * @internal
- * Limited to Microsoft-internal use
- */
 /**
  * @hidden
  * Allows an app to retrieve information of all user joined teams
