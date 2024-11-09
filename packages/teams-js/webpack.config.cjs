@@ -84,7 +84,7 @@ module.exports = {
         compiler.hooks.done.tap('wsi-test', () => {
           const manifest = JSON.parse(readFileSync(join(__dirname, 'dist/umd/MicrosoftTeams-manifest.json'), 'utf-8'));
           // If for some reason hash was not generated for the assets, this test will fail in build.
-          expect(manifest['MicrosoftTeams.min.js'].integrity).toMatch(/sha384-.*/);
+          expect(manifest['MicrosoftTeams.min.cjs'].integrity).toMatch(/sha384-.*/);
         });
       },
     },
@@ -94,8 +94,8 @@ module.exports = {
         onEnd: {
           copy: [
             {
-              source: './dist/umd/MicrosoftTeams.min.js',
-              destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.js',
+              source: './dist/umd/MicrosoftTeams.min.cjs',
+              destination: '../../apps/blazor-test-app/wwwroot/js/MicrosoftTeams.min.cjs',
             },
           ],
         },
